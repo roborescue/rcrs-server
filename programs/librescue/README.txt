@@ -1,0 +1,1 @@
+This is the readme for librescue. Someone should probably write something useful here.

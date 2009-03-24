@@ -1,0 +1,89 @@
+/*
+ * Last change: $Date: 2004/05/04 03:09:39 $
+ * $Revision: 1.3 $
+ *
+ * Copyright (c) 2004, The Black Sheep, Department of Computer Science, The University of Auckland
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of The Black Sheep, The Department of Computer Science or The University of Auckland nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+package rescuecore.tools.simulationrunner;
+
+import java.util.*;
+import java.io.*;
+
+public class ConfigFile {
+    private Map variables;
+    private List processes;
+
+    public ConfigFile(String fileName, String logPrefix) throws IOException {
+		variables = new HashMap();
+		processes = new ArrayList();
+		BufferedReader in = new BufferedReader(new FileReader(new File(fileName)));
+		String next = null;
+		do {
+			next = in.readLine();
+			if (next!=null) {
+				next = next.trim();
+				if (next.startsWith("#") || next.equals("")) continue;
+				next = substituteVariables(next);
+				if (next.indexOf("=")==-1) {
+					addProcess(next,logPrefix);
+				}
+				else addVariable(next);
+			}
+		} while (next!=null);
+    }
+
+    public List getProcesses() {
+		return processes;
+    }
+
+    private void addProcess(String line, String logPrefix) {
+		int index1 = line.indexOf("#");
+		int index2 = line.indexOf("#",index1+1);
+		String name = line.substring(0,index1);
+		String command = line.substring(index1+1,index2);
+		String rexp = line.substring(index2+1);
+		RescueProcess p = new RescueProcess(name,command,rexp,logPrefix);
+		//	System.out.println("Adding process: "+p);
+		processes.add(p);
+    }
+
+    private void addVariable(String line) {
+		int index = line.indexOf("=");
+		String name = line.substring(0,index);
+		String value = line.substring(index+1);
+		variables.put(name,value);
+		//	    System.out.println("Adding variable: "+name+"="+value);
+    }
+
+    private String substituteVariables(String original) {
+		//	    System.out.println("Substituting variables: "+original);
+		int start = 0;
+		int end = 0;
+		StringBuffer result = new StringBuffer(original);
+		do {
+			String current = result.toString();
+			start = current.indexOf("${");
+			end = current.indexOf("}",start);
+			// Make the substitution
+			if (start > 0 && end > 0) {
+				String name = current.substring(start+2,end);
+				String value = (String)variables.get(name);
+				if (value==null) value = System.getProperty(name);
+				if (value==null) value = "";
+				//System.out.println("Substituting ${"+name+"} with "+value);
+				result.replace(start,end+1,value);
+			}
+		} while (start > 0 && end > 0);
+		//	    System.out.println("Substituted variables: "+result.toString());
+		return result.toString();
+    }
+}

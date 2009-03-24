@@ -1,0 +1,426 @@
+################################################# 
+# ResQ Firesimulator options
+
+
+# The maximum power of one extinguish action. 
+max_extinguish_power_sum	:1000
+
+# If set to value diffrent from 0 a random wind is generated. 
+wind_random			:0
+# Speed of the wind in mm/minute, value range: [0,5000]
+wind_speed			:0
+# Direction of the wind in degree, value range: [0,360[
+wind_direction			:0.0
+
+gamma				:1.0
+
+# Make the building type inflammable
+fire_station_inflammable	:false
+police_office_inflammable	:false
+ambulance_center_inflammable	:false
+refuge_inflammable		:false
+
+# Randomseed of the firesimulator.
+randomseed			:23
+
+water_distance			:30000
+
+# Physical attributes
+steel_capacity			:1
+cell_size			:5000
+wooden_ignition			:60.0
+water_thermal_capacity		:10.0
+steel_burning			:850.0
+air_to_air_flow			:0.9
+concrete_energy		:10.0
+steel_energy			:110.0
+steel_ignition			:60.0
+energy_loss			:0.95
+radiation_coefficient		:0.0050
+wooden_burning			:800.0
+air_to_building_flow		:1.0
+concrete_burning		:800.0
+wooden_energy			:400.0
+wooden_capacity			:1
+concrete_ignition		:104.0
+concrete_speed			:0.05
+steel_speed			:0.05
+concrete_capacity		:4
+wooden_speed			:0.05
+
+################################################# 
+# new/modified options for the 2004 competition.
+
+# GIS generates random IDs for units in each simulation.
+random_IDs		: false
+
+# KA_HEAR_TELL and KA_HEAR_SAY are added to the RoboCup Rescue protocol.
+additional_hearing	: true
+
+################################################# 
+# options for the 2003 competition.
+
+# avoid that the fire simulator becomes some laps behind.
+step			: 2000
+
+# avoid slowdown for spredding fire.
+send_far_fire_changed_only	: true
+notify_unchangeable_informaion	: false
+
+# use new synchronization mechanism.
+use_gettimeofday		: false
+
+# An agent can discover a fire within a distance D[m] roughly proportional
+# to its fieryness, where
+#       D = K * (cycles from the start of burnup)
+# If fire_cognition_spredding_speed >= 0, K is given by                 
+# fire_cognition_spredding_speed. Otherwise, K is infinite.
+fire_cognition_spredding_speed	: 10000
+
+# If simulate_tank_quantity is true, tank quantity properties are       
+# decreased by extinguishments.  If tank is empty, extinguishments      
+# should be faild.
+simulate_tank_quantity		: true
+
+# Tank quantity properties are increased by tank_quantity_recovery_on_refuge
+# if the agent is in a refuge.
+tank_quantity_recovery_on_refuge : 1000
+# same as max_extinguish_power
+
+# Gives the maximum quantity of a tank.
+tank_quantity_maximum		: 15000
+
+
+# not new, but the subject of the discussion
+say_max_bytes			: 80
+
+
+################################################# new options for the 2002 competition.
+
+ignore_nozzle_position		: true
+area_per_repair_cost		: 20000000
+round_down_quantity		: false
+accept_multiple_nozzles		: true
+near_agents_rescuable		: true
+steps_far_fire_invisible	: 5
+steps_agents_freezed		: 3
+notify_initial_position		: false
+notify_position_history		: false
+miscsimulator_supports_load	: false
+notify_only_fire_for_far_buildings	: true
+
+
+################################################# traditional options
+
+port			: 7000
+gis_port		: 7001
+period			: 300
+send_udp_size		: 1472
+send_udp_wait		: 1
+
+mesh_size		: 1000
+
+#logname			: rescue.log
+
+#textlogname_kernel_publicsock		: kernel.publicsock.log.txt
+#textlogname_kernel_gissock		: kernel.gissock.log.txt
+#textlogname_kernel_agentsock		: kernel.agentsock.log.txt
+#textlogname_kernel_simulatorsock	: kernel.simulatorsock.log.txt
+
+
+vision			: 10000
+voice			: 30000
+
+
+################################################# for firesimulator
+
+
+#[Parameters]
+#焼け落ち時間（木造,防火,耐火）
+TSL1	:	50
+TSL2	:	80
+TSL3	:	120
+
+#火炎吹出し時間（木造,防火,耐火）
+TS11	:	15
+TS12	:	60
+TS13	:	60
+
+#最盛期までの時間比率Ｃ
+PRC	:	-0.4
+
+#ロジスチック関数の傾き係数
+PRA	:	7.8
+
+#風速補正係数
+PRV1	:	-0.4
+
+#建物構造別ウエイト
+CWW1	:	1
+CWW2	:	0.7
+CWW3	:	0.02
+
+#基準１Ｆ面積(m2)
+STA1	:	100.0
+
+#基準延べ床面積(m2)
+STAL	:	100.0
+
+#基準１Ｆ建物高さ(m)
+STF1	:	3
+
+#基準火災荷重(Kg/m2)
+STQW	:	120.0
+
+#基準見通し角度
+STS	:	2.94
+
+#基準距離(m)
+STD	:	1.0
+
+#木造建物着火基準値(累積延焼影響量,単位時間延焼影響量,単位時間最大延焼影響量)
+CTW1	:	0.02
+CTW2	:	0.015
+CTW3	:	0.01
+
+
+#Δt時間刻み(秒)
+DT	:	60
+
+#[System]
+#通信ログをファイルに書き出す(ON)、書き出さない(OFF)
+#WRITELOG	:	OFF
+
+#通信ログを画面に書き出す(ON)、書き出さない(OFF)
+#DISPLOG	:	ON
+
+
+
+
+################################################# for miscsimulator
+
+# Random Seed
+# if this value < 0, seed for random number is the current time.
+#misc_random_seed : 829594
+misc_random_seed : -1
+
+# Dice の大きさ
+magnitude_dice : 10000
+
+# DamageBury のダメージ進行関数のパラメータ k * damage^2 + l + mutation
+# parameter for progress DamageBury function
+parameter_damage_bury_k :         0.000035         # 0.00055
+parameter_damage_bury_l :         0.01		  # 0.1
+probability_mutation_damage_bury : 0.05        
+
+# DamageBroken のダメージ進行関数のパラメータ k * damage^2 + l + mutation
+# parameter for progress DamageBroken function
+parameter_damage_broken_k         0.00025
+parameter_damage_broken_l         0.01
+probability_mutation_damage_broken : 0.05           
+
+# DamageFiery のダメージ進行関数のパラメータ k * damage^2 + l + mutation
+# parameter for progress DamageFiery function
+parameter_damage_fiery_k          0.00025
+parameter_damage_fiery_l          0.03
+probability_mutation_damage_fiery : 0.05
+
+# DamageBlock のダメージ進行関数のパラメータ k * damage^2 + l + mutation
+# parameter for progress DamageBlock function
+parameter_damage_block_k          0.00025
+parameter_damage_block_l          0.03
+probability_mutation_damage_block : 0.05
+
+# 家屋倒壊の度合 (don't change. relative to collapse-simulator)
+brokenness_partial_collapsed :    25
+brokenness_half_collapsed :       50
+brokenness_all_collapsed :        100
+
+# 埋没度 (埋没度_構造_倒壊度_震度_)             
+#   木造, 一部損壊
+buriedness_wood_partial_5seismic : 20  # less than seismic 5
+buriedness_wood_partial_6seismic : 20  # seismic 6
+buriedness_wood_partial_7seismic : 20  # seismic 7
+buriedness_wood_partial_8seismic : 20  # more than seismic 7
+#   木造, 半壊
+buriedness_wood_half_5seismic : 30
+buriedness_wood_half_6seismic : 30
+buriedness_wood_half_7seismic : 30
+buriedness_wood_half_8seismic : 30
+#   木造, 全壊
+buriedness_wood_all_5seismic : 60
+buriedness_wood_all_6seismic : 60
+buriedness_wood_all_7seismic : 60
+buriedness_wood_all_8seismic : 60
+
+#   鉄骨造, 一部損壊
+buriedness_steel_partial_5seismic : 20  # less than seismic 5
+buriedness_steel_partial_6seismic : 20  # seismic 6
+buriedness_steel_partial_7seismic : 20  # seismic 7
+buriedness_steel_partial_8seismic : 20  # more than seismic 7
+#   鉄骨造, 半壊
+buriedness_steel_half_5seismic : 35
+buriedness_steel_half_6seismic : 35
+buriedness_steel_half_7seismic : 35
+buriedness_steel_half_8seismic : 50
+#   鉄骨造, 全壊
+buriedness_steel_all_5seismic : 70
+buriedness_steel_all_6seismic : 70
+buriedness_steel_all_7seismic : 70
+buriedness_steel_all_8seismic : 70
+
+#   コンクリート造, 一部損壊
+buriedness_rc_partial_5seismic : 35
+buriedness_rc_partial_6seismic : 35
+buriedness_rc_partial_7seismic : 35
+buriedness_rc_partial_8seismic : 35
+#   コンクリート造, 半壊
+buriedness_rc_half_5seismic : 60
+buriedness_rc_half_6seismic : 60
+buriedness_rc_half_7seismic : 60
+buriedness_rc_half_8seismic : 60
+#   コンクリート造, 全壊
+buriedness_rc_all_5seismic : 80
+buriedness_rc_all_6seismic : 80
+buriedness_rc_all_7seismic : 80
+buriedness_rc_all_8seismic : 80
+
+# 死傷率 (構造_負傷程度_震度)
+# occurrence rate ( victims / indoor [wood] people)
+rate_wood_death_5seismic :     0.0
+rate_wood_death_6seismic :     0.0024917
+rate_wood_death_7seismic :     0.0092440
+rate_wood_death_8seismic :     0.0200000  # 暫定: 統計データ無し
+
+rate_wood_serious_5seismic :  0.3 # 0.0
+rate_wood_serious_6seismic :  0.3 # 0.0027906
+rate_wood_serious_7seismic :  0.3 # 0.0096705
+rate_wood_serious_8seismic :  0.3 # 0.0200000  # 暫定: 統計データ無し
+
+rate_wood_slight_5seismic :   0.5 # 0.0
+rate_wood_slight_6seismic :   0.5 # 0.0080275
+rate_wood_slight_7seismic :   0.5 # 0.0258145
+rate_wood_slight_8seismic :   0.5 # 0.0600000  # 暫定: 統計データ無し
+
+rate_steel_death_5seismic :   0.00000535
+rate_steel_death_6seismic :   0.00012521
+rate_steel_death_7seismic :   0.0007503
+rate_steel_death_8seismic :   0.005 # 暫定: 統計データ無し
+
+rate_steel_serious_5seismic :   0.0001275427
+rate_steel_serious_6seismic :   0.000279061
+rate_steel_serious_7seismic :   0.0096705
+rate_steel_serious_8seismic :   0.03 # 暫定: 統計データ無し
+
+rate_steel_slight_5seismic :    0.0005437693
+rate_steel_slight_6seismic :    0.00798749
+rate_steel_slight_7seismic :    0.0257665
+rate_steel_slight_8seismic :    0.1 # 暫定: 統計データ無し
+
+rate_rc_death_5seismic :   0.00000535
+rate_rc_death_6seismic :   0.00012521
+rate_rc_death_7seismic :   0.0007503
+rate_rc_death_8seismic :   0.005 # 暫定: 統計データ無し
+
+rate_rc_serious_5seismic :   0.0001275427
+rate_rc_serious_6seismic :   0.000279061
+rate_rc_serious_7seismic :   0.0096705
+rate_rc_serious_8seismic :   0.03 # 暫定: 統計データ無し
+
+rate_rc_slight_5seismic :    0.0005437693
+rate_rc_slight_6seismic :    0.00798749
+rate_rc_slight_7seismic :    0.0257665
+rate_rc_slight_8seismic :    0.1 # 暫定: 統計データ無し
+
+# 埋没率
+rate_bury_wood_5seismic:    1.0 # 0.00001
+rate_bury_wood_6seismic:    1.0 # 0.0292
+rate_bury_wood_7seismic:    1.0 # 0.1
+rate_bury_wood_8seismic:    1.0 # 0.2 # 統計資料なし
+
+rate_bury_steel_5seismic:   0.0
+rate_bury_steel_6seismic:   0.001782
+rate_bury_steel_7seismic:   0.0040
+rate_bury_steel_8seismic:   0.008 # 統計資料なし
+
+rate_bury_rc_5seismic:   0.0
+rate_bury_rc_6seismic:   0.001782
+rate_bury_rc_7seismic:   0.0040
+rate_bury_rc_8seismic:   0.008 # 統計資料なし
+
+# 埋没時にダメージを受ける確率 (these sumation <= 1.0)
+prob_bury_slight:        0.4
+prob_bury_serious:       0.5
+prob_bury_dying:         0.1
+
+# 延焼している建物内でダメージを受ける確率 (these sumation <= 1.0)
+prob_fiery_slight:       0.4 # 0.4
+prob_fiery_serious:      0.2 # 0.5
+prob_fiery_dying:        0.1 # 0.1
+
+# 道路閉塞でダメージを受ける確率 (these sumation <= 1.0)
+prob_block_slight:       0.4 # 0.5
+prob_block_serious:      0.2 # 0.4
+prob_block_dying:        0.1 # 0.1
+
+# 倒壊によるダメージ
+# 無傷
+damage_broken_unhurt:      0
+# 軽傷
+damage_broken_slight:      2
+# 重傷
+damage_broken_serious:     10
+# 死亡
+damage_broken_death:	   10000
+
+# 埋没によるダメージ
+# 無傷
+damage_bury_unhurt :   0
+# 軽傷
+damage_bury_slight :   3
+# 重傷
+damage_bury_serious:   15
+# 瀕死
+damage_bury_dying:     100
+
+# 火災によるダメージ
+# 無傷
+damage_fiery_unhurt :   0
+# 軽傷
+damage_fiery_slight :   5
+# 重傷
+damage_fiery_serious:   20
+# 瀕死
+damage_fiery_dying:     100
+# 死亡
+damage_fiery_death:     10000
+
+# 道路閉塞によるダメージ
+# 無傷
+damage_block_unhurt :   0
+# 軽傷
+damage_block_slight :   3
+# 重傷
+damage_block_serious:   8
+# 瀕死
+damage_block_dying:     15
+# 死亡
+damage_block_death:     10000
+
+# Civilian に与えるダメージに対する倍率
+# Civilian 以外のエージェントに適用
+# for AmbulanceTeam
+magnification_damage_bury_ambulance:      0.2
+magnification_damage_broken_ambulance:    0.2
+magnification_damage_fiery_ambulance:     1.0
+magnification_damage_block_ambulance:     0.5
+# for PoliceForce
+magnification_damage_bury_police:         0.2
+magnification_damage_broken_police:       0.2
+magnification_damage_fiery_police:        1.0
+magnification_damage_block_police:        0.2
+# for FireBrigade
+magnification_damage_bury_firebrigade:    0.2
+magnification_damage_broken_firebrigade:  0.2
+magnification_damage_fiery_firebrigade:   0.2
+magnification_damage_block_firebrigade:   0.2

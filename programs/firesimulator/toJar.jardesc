@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="/Users/ce/Desktop/resq_firesimulator.jar"/>
+    <options overwrite="true" compress="false" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/Firesimulator/toJar.jardesc" useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="false" manifestLocation="/Firesimulator/manifest">
+        <sealing sealJar="true">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="false">
+        <javaElement handleIdentifier="=Firesimulator/&lt;world"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;kernel"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;io"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;util"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;kernel.viewer.extinguishManager"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;kernel.viewer.monitor"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;simulator"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;"/>
+        <javaElement handleIdentifier="=Firesimulator/&lt;kernel.viewer"/>
+    </selectedElements>
+</jardesc>

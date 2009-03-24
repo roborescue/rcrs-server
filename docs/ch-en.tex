@@ -1,0 +1,93 @@
+\documentclass{article}
+
+\title {Robocup Rescue Simulation - Communication Channels}
+\author {Mohammad Mehdi Saboorian}
+\date{February 2007\\Rev.2}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+Till now, agents could only discriminate between unread received
+messages based on senders of them. Now with introducing channels,
+agents can easily decide which channel(s) they want to listen to. So
+there will be more information about a message available for agents.
+On the other hand, finally, kernel can force constraint on number of
+messages each agent reads.
+
+\section{Protocol changes}
+Agent developers should consider these changes in order to use new
+communication system. Please note that for detailed information
+about rescue simulation communication protocol (including channels)
+you should see {\sl "Robocup Rescue Simulation - Communication
+Protocol"}.
+\begin{itemize}
+	\item From now on, \textbf{AK\_TELL} will be the only communication
+	command. And it'll include an extra field for specifying target channel.
+	\item \textbf{AK\_SAY} will be completely ignored by kernel.
+	\item \textbf{KA\_HEAR} now includes a channel number, that
+	specifies source of it's data.
+	\item Kernel will not send \textbf{KA\_HEAR\_SAY} and 
+	\textbf{KA\_HEAR\_TELL} anymore.
+	\item Agents should use the new \textbf{AK\_CHANNEL} command to
+	inform kernel about their preferences for reading messages.
+	For instance, in a simple scenario, agent \textsl{A} selects
+	channel 1 and 2. (We assume that each agent can read maximum of 4
+	messages at each cycle.) Now with this command kernel will remember
+	to forward maximum of 2 messages from channel 1 and 2 messages from
+	channel 2 to \textsl{A}.
+\end{itemize}
+
+Those teams using \textsl{librescue} can use these new features easily.
+Required changes for \textsl{Yab} are listed at appendix~\ref{yab}. Also, 
+\textsl{RescueCore} will support channel based communication in near
+future.
+
+\section{Communication rules}
+\begin{itemize}
+	\item Previous constraint on number of messages for agents are still valid.
+	\item Now all channels are accessible for each agent.
+	\item Agents can read their own message with no restriction.
+	\item Currently two types of channels are supported:
+	\begin{enumerate}
+		\item Say channel (channel 0)
+		\item Radio channels
+	\end{enumerate}
+	\item Say channel is a replacement for AK\_SAY messages and have
+	similar restrictions. (only hearable within a specified range)
+\end{itemize}
+ 
+\newpage 
+\appendix
+
+\section{Yab API}
+\label{yab}
+\textbf{in RCRSSProtocolSocket.java}
+\begin{verbatim}
+    public void akTell (int selfId, int channel, String message)
+    {
+        send(AK_TELL, new Object[] {
+            new Integer(selfId), new Integer(channel),   
+            message});
+    }
+    
+    public void akChannel (int selfId, byte[] Channels)
+    {
+        send (AK_CHANNEL, new Object[] {
+            new Integer (selfId), Channels});  
+    }
+\end{verbatim}
+\textbf{in KaHear.java}
+\begin{verbatim}
+    public final int channelId;
+    public KaHear(DataInputStream dis) throws IOException 
+    {
+        selfId = dis.readInt();
+        senderId = dis.readInt();
+        channelId = dis.readInt();
+        message = RCRSSProtocol.readStringElement(dis);
+    }
+\end{verbatim}
+\textbf{in ProtocolConstants.java} \\
+\verb$    AK_CHANNEL		 = 0x90; $
+
+\end{document}
