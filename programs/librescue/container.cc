@@ -20,6 +20,7 @@
 #include "container.h"
 #include "error.h"
 #include <iostream>
+#include <stdlib.h>
 
 namespace Librescue {
   Container::Container(int argc, char** argv) {

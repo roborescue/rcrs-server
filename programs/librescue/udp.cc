@@ -303,7 +303,7 @@ namespace Librescue {
 
   const char* LongUDPConnection::toString() const {
 	//	if (name[0]==0) {
-	  snprintf(name,1024,"LongUDPConnection: target=%s, packetSize=%d, timeout=%d, wait=%d, input queue size=%d",m_target.toString(),m_packetSize,(int)m_timeout,m_wait,finishedPackets.size());
+	  snprintf(name,1024,"LongUDPConnection: target=%s, packetSize=%d, timeout=%d, wait=%d, input queue size=%zd",m_target.toString(),m_packetSize,(int)m_timeout,m_wait,finishedPackets.size());
 	  //	}
 	return name;
   }

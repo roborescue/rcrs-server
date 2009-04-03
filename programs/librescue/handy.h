@@ -18,7 +18,7 @@
 #define HANDY_H
 
 #include "common.h"
-#include <time.h>
+#include <sys/time.h>
 #include <string>
 
 namespace Librescue {
@@ -64,7 +64,7 @@ namespace Librescue {
 
   private:
 	std::string m_msg;
-	std::clock_t m_start;
+	clock_t m_start;
   };
 }
 

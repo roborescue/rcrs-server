@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	LOG_INFO("Connecting new civilian");
 	civs.push_back(civ);
   } while(c.addAgent(civ));
-  LOG_INFO("Connected %d civilians",civs.size()-1);
+  LOG_INFO("Connected %zd civilians",civs.size()-1);
   c.run();
   for (std::vector<CivilianAgent*>::iterator it = civs.begin();it!=civs.end();++it) {
 	CivilianAgent* next = *it;

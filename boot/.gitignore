@@ -1,0 +1,2 @@
+# Ignore .log files. These are generated in this directory by default
+*.log

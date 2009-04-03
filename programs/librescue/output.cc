@@ -20,6 +20,7 @@
 #include "error.h"
 #include "command.h"
 #include "handy.h"
+#include "string.h"
 
 namespace Librescue {
   OutputBuffer::OutputBuffer() {

@@ -20,6 +20,8 @@
 #include "objects.h"
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <stdlib.h>
 
 using namespace Librescue;
 
@@ -60,7 +62,7 @@ int BlockadeSimulator::step(INT_32 time, const AgentCommandList& commands, Objec
 	  if (r) roads.push_back(r);
 	}
 	// Sort them
-	sort(roads.begin(),roads.end(),RoadSortFunction(m_pool));
+	std::sort(roads.begin(),roads.end(),RoadSortFunction(m_pool));
 	// Read from the blockade file
 	std::ifstream inFile(m_config->mapfile(m_blockadeFile).c_str());
 	char line[256];

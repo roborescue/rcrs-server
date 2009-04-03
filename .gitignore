@@ -1,0 +1,8 @@
+# Ignore .o files
+*.o
+
+# Ignore .class files
+*.class
+
+# Ignore temporary files
+*~

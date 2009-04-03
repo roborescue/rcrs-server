@@ -22,7 +22,7 @@
 #include "common.h"
 #include "input.h"
 #include "output.h"
-#include <string>
+#include <string.h>
 #include <netinet/in.h>
 #include <time.h>
 

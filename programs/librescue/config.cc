@@ -24,6 +24,7 @@ January 2006
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 extern int errno;
 

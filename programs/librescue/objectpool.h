@@ -21,7 +21,7 @@
 #include "objects.h"
 #include "common.h"
 #include "output.h"
-#include <vector.h>
+#include <vector>
 #include <map>
 
 namespace Librescue {
@@ -36,11 +36,11 @@ namespace Librescue {
 	// This will delete all RescueObjects that we know about.
 	virtual ~ObjectPool();
         int xr,yr,bxr,byr;
-        vector<vector<ObjectSet> > preData;
-        vector<vector<ObjectSet> > preBData;
+	std::vector<std::vector<ObjectSet> > preData;
+	std::vector<std::vector<ObjectSet> > preBData;
 
-         int ObjectPool::preProcessData(int mmaxX,int mmaxY,int mminX,int mminY,int visionRange,int fireRange);
-         int ObjectPool::postProcessData(int visionRange,int fireRange);
+	int preProcessData(int mmaxX,int mmaxY,int mminX,int mminY,int visionRange,int fireRange);
+	int postProcessData(int visionRange,int fireRange);
 
 	// Add an object to the pool
 	void addObject(RescueObject* object);

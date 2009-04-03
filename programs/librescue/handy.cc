@@ -16,7 +16,7 @@
 
 #include "handy.h"
 #include "error.h"
-#include <time.h>
+#include <sys/time.h>
 #include <stdlib.h>
 #include <iostream>
 
@@ -380,14 +380,14 @@ namespace Librescue {
 	return result;
   }
 
-  StopWatch::StopWatch() : m_start(std::clock()) {
+  StopWatch::StopWatch() : m_start(clock()) {
   }
 
   StopWatch::StopWatch(std::string msg) : m_msg(msg), m_start(clock()) {
   }
 
   StopWatch::~StopWatch() {
-	std::clock_t total = clock()-m_start;
+	clock_t total = clock()-m_start;
 	std::cout << (m_msg.empty()?"Activity":m_msg.c_str()) << " took " << total << " tics ("<< ((double)total)/CLOCKS_PER_SEC << "s)" << std::endl;
   }
 }

@@ -1,0 +1,5 @@
+# Ignore the compiled library
+librescue.so*
+
+# Ignore the test program
+test

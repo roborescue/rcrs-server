@@ -242,8 +242,8 @@ namespace Rescue {
 		delete c;
 	  }
 	  else {
-		LOG_INFO("%d %d %d %d %d %d %d noack=%d",m_connectionState.pendingAgents.civ.size(),m_connectionState.pendingAgents.fire.size(),m_connectionState.pendingAgents.fireStation.size(),m_connectionState.pendingAgents.police.size(),m_connectionState.pendingAgents.policeOffice.size(),m_connectionState.pendingAgents.ambulance.size(),m_connectionState.pendingAgents.ambulanceCenter.size(),m_connectionState.waitingAgents.size());
-		LOG_INFO("Waiting for %d simulators and %d viewers to acknowledge",m_connectionState.waitingSimulators.size(),m_connectionState.waitingViewers.size());
+		LOG_INFO("%zd %zd %zd %zd %zd %zd %zd noack=%zd",m_connectionState.pendingAgents.civ.size(),m_connectionState.pendingAgents.fire.size(),m_connectionState.pendingAgents.fireStation.size(),m_connectionState.pendingAgents.police.size(),m_connectionState.pendingAgents.policeOffice.size(),m_connectionState.pendingAgents.ambulance.size(),m_connectionState.pendingAgents.ambulanceCenter.size(),m_connectionState.waitingAgents.size());
+		LOG_INFO("Waiting for %zd simulators and %zd viewers to acknowledge",m_connectionState.waitingSimulators.size(),m_connectionState.waitingViewers.size());
 	  }
 	}
   }
@@ -392,7 +392,7 @@ namespace Rescue {
 		sim.id = next.id;
 		sim.address = next.address;
 		m_simulators.push_back(sim);
-		LOG_INFO("Simulator %d at %s has acknowledged. Now waiting for %d simulator(s)",id,from.toString(),m_connectionState.waitingSimulators.size());
+		LOG_INFO("Simulator %d at %s has acknowledged. Now waiting for %zd simulator(s)",id,from.toString(),m_connectionState.waitingSimulators.size());
 		return;
 	  }
 	}
@@ -446,7 +446,7 @@ namespace Rescue {
 		Viewer v;
 		v.address = next.address;
 		m_viewers.push_back(v);
-		LOG_INFO("Viewer at %s has acknowledged. Now waiting for %d viewer(s)",from.toString(),m_connectionState.waitingViewers.size());
+		LOG_INFO("Viewer at %s has acknowledged. Now waiting for %zd viewer(s)",from.toString(),m_connectionState.waitingViewers.size());
 		return;
 	  }
 	}
@@ -609,7 +609,7 @@ namespace Rescue {
 		  return;
 		}
 		if ((int)command->getData().size() > m_config.getInt("say_max_bytes",256)) {
-		  LOG_INFO("Agent %d can not send a message of length %d",command->getAgentId(),command->getData().size());
+		  LOG_INFO("Agent %d can not send a message of length %zd",command->getAgentId(),command->getData().size());
 		  return;
 		}
 		if (m_config.getBool("send_voice_synchronously",true)) {
@@ -667,12 +667,12 @@ namespace Rescue {
 		  }
 		  else 
 		  {
-			  INT_32 maxPlatoonMessageCount = m_config.getInt("max_platoon_message_count", 4);
-			  INT_32 maxAmbulanceCenterMessageCount = 2 * ambulanceCount;
-			  INT_32 maxFireStationMessageCount = 2 * fireCount;
-			  INT_32 maxPoliceOfficeMessageCount = 2 * policeCount;
+			  unsigned int maxPlatoonMessageCount = m_config.getInt("max_platoon_message_count", 4);
+			  unsigned int maxAmbulanceCenterMessageCount = 2 * ambulanceCount;
+			  unsigned int maxFireStationMessageCount = 2 * fireCount;
+			  unsigned int maxPoliceOfficeMessageCount = 2 * policeCount;
 
-			  INT_32 maxMessageCount;
+			  unsigned int maxMessageCount;
 			  TypeId type = o->type();
 			  Bytes refinedChannels;
 
@@ -693,14 +693,17 @@ namespace Rescue {
 				  if (refinedChannels.size() == maxMessageCount)
 					  break;
 
-				  if (ch < channelCount)
-					if (ch != 0)
-						refinedChannels.push_back(ch);
-				  else
-					  LOG_INFO("Unavailable channel %d (Agent: %d)", (int)ch, command->getAgentId());
+				  if (ch < channelCount) {
+				    if (ch != 0) {
+				      refinedChannels.push_back(ch);
+				    }
+				  }
+				  else {
+				    LOG_INFO("Unavailable channel %d (Agent: %d)", (int)ch, command->getAgentId());
+				  }
 			  }
 
-		      LOG_DEBUG("Received registration request for %d channels from %d", refinedChannels.size(), command->getAgentId());
+		      LOG_DEBUG("Received registration request for %zd channels from %d", refinedChannels.size(), command->getAgentId());
 			  int tempIndex = 0;
 			  while (refinedChannels.size() < maxMessageCount)
 			  {
@@ -708,7 +711,7 @@ namespace Rescue {
 				  tempIndex++;
 			  }
 			  m_channelRequests[o->id()] = refinedChannels;
-			  LOG_DEBUG("Registered %d channels for %d", refinedChannels.size(), command->getAgentId());
+			  LOG_DEBUG("Registered %zd channels for %d", refinedChannels.size(), command->getAgentId());
 		  }
 	  }
 	  else LOG_INFO("Received unexpected agent command from %s",from.toString());
@@ -719,7 +722,7 @@ namespace Rescue {
 	  LOG_INFO("Received unexpected GISConnectOK");
 	  return;
 	}
-	LOG_INFO("Connected to GIS. %d objects received",command->getObjects().size());
+	LOG_INFO("Connected to GIS. %zd objects received",command->getObjects().size());
 	m_pool.update(command->getObjects());
 	// Send an acknowledge
 	OutputBuffer out;
@@ -915,7 +918,7 @@ namespace Rescue {
 		handleCommand(c,from);
 		delete c;
 	  }
-	  LOG_INFO("Still waiting for %d simulators",waiting.size());
+	  LOG_INFO("Still waiting for %zd simulators",waiting.size());
 	}
   }
 
@@ -1041,8 +1044,8 @@ namespace Rescue {
   bool Kernel::canHear(const Agent* agent, const VoiceCommand* command) 
   {
 	RescueObject* speaker = m_pool.getObject(command->getAgentId());
-	TypeId hearer = agent->object->type();
-    ChannelInfo* ch;
+	//	TypeId hearer = agent->object->type();
+	ChannelInfo* ch;
 	ChannelRegistration::iterator regItr;
 	ch = m_channels[command->getChannel()];
 		

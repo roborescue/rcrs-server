@@ -28,6 +28,7 @@
 #include <map>
 #include <string>
 #include <errno.h>
+#include <stdlib.h>
 
 using namespace Librescue;
 

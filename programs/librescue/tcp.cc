@@ -29,6 +29,7 @@
 #include <cstdio>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
 #define MAX_TCP_SEND 4000
 
@@ -119,7 +120,7 @@ namespace Librescue {
 	}
 	delete[] buffer;
 
-	if (result.size()>0 && result.size()!=length) LOG_WARNING("WARNING: Message is too small: Received %d of %d bytes",result.size(),length);
+	if (result.size()>0 && result.size()!=length) LOG_WARNING("WARNING: Message is too small: Received %zd of %d bytes",result.size(),length);
   }
 
   bool TcpConnection::receiveData(Byte* buffer, int length) {

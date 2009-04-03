@@ -39,7 +39,7 @@ namespace Rescue {
   //  }
 
   void OrdinaryAgentPerception::getVisibleProperties(const RescueObject* agent, const RescueObject* object, int time, const ObjectPool& allObjects, PropertySet& result) {
-	Id agentId = agent->id();
+    //	Id agentId = agent->id();
 //	int x;
 //	int y;
 //	if (allObjects.locate(agent,&x,&y)) {

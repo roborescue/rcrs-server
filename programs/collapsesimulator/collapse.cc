@@ -7,6 +7,7 @@
 #include "collapse.h"
 #include "error.h"
 #include <math.h>
+#include <stdlib.h>
 
 CollapseSimulator::CollapseSimulator() {
 }
@@ -228,13 +229,13 @@ judgePolygon CollapseSimulator::polygonIn(long int ptTx, long int ptTy, coordina
     if ( ptTy < ptB1y && ptTy < ptB2y ) {
       continue;
     }
-    if ( (ptTx-ptB1x<0)&&(ptTx-ptB2x<0) || (ptTx-ptB1x>0)&&(ptTx-ptB2x>0) ){
+    if ( ((ptTx-ptB1x<0)&&(ptTx-ptB2x<0)) || ((ptTx-ptB1x>0)&&(ptTx-ptB2x>0)) ){
       continue;
     }
     
     //Y¼´¤ËÊ¿¹Ô¤Ê¾ì¹ç¡¤Æ±°ìÅÀ¤Î½èÍý: ONLINE¢ª½ªÎ»¡¤¤½¤ì°Ê³°¢ªskip
     if ( (ptTx == ptB1x) && (ptTx == ptB2x) ){
-      if ( (ptTy-ptB1y<=0)&&(ptTy-ptB2y>=0) || (ptTy-ptB1y>=0)&&(ptTy-ptB2y<=0) )
+      if ( ((ptTy-ptB1y<=0)&&(ptTy-ptB2y>=0)) || ((ptTy-ptB1y>=0)&&(ptTy-ptB2y<=0)) )
 	return(IN_SIDE);  //ÀþÊ¬¾å¤ËÂÐ¾ÝºÂÉ¸Í­
       else{
 	continue;
