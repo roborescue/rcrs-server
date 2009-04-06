@@ -37,7 +37,7 @@ if [ ! -z $LOGDIR ] ; then
   LOG="$LOGDIR/$LOG"
 fi
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/../programs/librescue
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/../src/librescue
 
 OPTIONS="-logname $LOG -shindopolydata $MAP/shindopolydata.dat -galpolydata $MAP/galpolydata.dat"
 

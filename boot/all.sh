@@ -21,7 +21,7 @@ if [ ! -z $LOGDIR ] ; then
   LOG="$LOGDIR/$LOG"
 fi
 
-LD_COMMAND="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/../programs/librescue"
+LD_COMMAND="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/../src/librescue"
 
 OPTIONS="--mapdir $MAP --config $DIR/config.txt"
 

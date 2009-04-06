@@ -1,3 +1,3 @@
 #! /bin/sh
 DIR=`dirname $0`
-$DIR/../programs/blockadessimulator/blockadessimulator $*
+$DIR/../src/blockadessimulator/blockadessimulator $*
