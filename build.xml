@@ -1,22 +1,23 @@
 <project default="jars" name="Robocup rescue simulation software">
   <!-- Common properties: source, build, jar and lib directories -->
-  <property name="srcdir" value="${basedir}/src"/>
-  <property name="builddir" value="${basedir}/build"/>
-  <property name="jardir" value="${basedir}/jars"/>
-  <property name="libdir" value="${basedir}/lib"/>
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="build.dir" value="${basedir}/build"/>
+  <property name="jar.dir" value="${basedir}/jars"/>
+  <property name="lib.dir" value="${basedir}/lib"/>
+  <property name="test.dir" value="${basedir}/test"/>
 
   <property name="debug" value="true"/>
 
-  <property name="findbugs.home" value="${libdir}/findbugs-1.3.8"/>
+  <property name="findbugs.home" value="${lib.dir}/findbugs-1.3.8"/>
 
   <path id="path.jars">
-    <fileset dir="${jardir}">
+    <fileset dir="${jar.dir}">
       <include name="**/*.jar"/>
     </fileset>
   </path>
 
   <path id="path.lib">
-    <fileset dir="${libdir}">
+    <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
     </fileset>
   </path>
@@ -33,47 +34,77 @@
   </path>
 
   <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties" classpath="${libdir}/checkstyle.jar"/>
+  <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/checkstyle-all-5.0-beta2.jar"/>
 
   <!-- Findbugs task definition -->
   <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
 
   <!-- Stuff to do before a compile -->
   <target name="_init">
-    <mkdir dir="${builddir}"/>
-    <mkdir dir="${jardir}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dir}/tests"/>
+    <mkdir dir="${jar.dir}"/>
   </target>
 
   <!-- Rescuecore targets -->
-  <target name="rescuecore" depends="_init" description="Build the rescuecore package">
-    <javac srcdir="${srcdir}" destdir="${builddir}" classpathref="path.all" debug="${debug}">
+  <target name="rescuecore-compile" depends="_init" description="Build the rescuecore package">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="path.all" debug="${debug}">
       <include name="rescuecore/**/*.java"/>
     </javac>
   </target>
 
   <target name="rescuecore-clean" description="Delete all classes and build artifacts in the rescuecore package">
-    <delete dir="${builddir}/rescuecore"/>
-    <delete dir="${jardir}/rescuecore.jar"/>
+    <delete dir="${build.dir}/rescuecore"/>
+    <delete dir="${build.dir}/test/rescuecore"/>
+    <delete dir="${jar.dir}/rescuecore.jar"/>
+    <delete>
+      <fileset dir="${test.dir}/rescuecore">
+        <include name="**/*.class"/>
+      </fileset>
+    </delete>
   </target>
 
-  <target name="rescuecore-jar" depends="rescuecore" description="Build the rescuecore jar">
-    <jar basedir="${builddir}/rescuecore" destfile="${jardir}/rescuecore.jar"/>
+  <target name="rescuecore-jar" depends="rescuecore-compile" description="Build the rescuecore jar">
+    <jar basedir="${build.dir}" destfile="${jar.dir}/rescuecore.jar">
+      <include name="rescuecore/**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="rescuecore-unit" depends="rescuecore-jar" description="Run the rescuecore unit tests">
+    <javac srcdir="${test.dir}" destdir="${test.dir}" classpathref="path.all" debug="${debug}">
+      <include name="rescuecore/**/*.java"/>
+    </javac>
+    <junit>
+      <classpath refid="path.junit"/>
+      <formatter type="xml"/>
+      <batchtest todir="${build.dir}/tests">
+        <fileset dir="${test.dir}">
+          <include name="rescuecore/**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
   </target>
 
   <!-- Kernel targets -->
-  <target name="kernel" depends="_init,rescuecore-jar" description="Build the kernel package">
-    <javac srcdir="${srcdir}" destdir="${builddir}" classpathref="path.all" debug="${debug}">
+  <target name="kernel-compile" depends="_init,rescuecore-jar" description="Build the kernel package">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="path.all" debug="${debug}">
       <include name="kernel/**/*.java"/>
     </javac>
   </target>
 
   <target name="kernel-clean" description="Delete all classes and build artifacts in the kernel package">
-    <delete dir="${builddir}/kernel"/>
-    <delete dir="${jardir}/kernel.jar"/>
+    <delete dir="${build.dir}/kernel"/>
+    <delete dir="${build.dir}/test/kernel"/>
+    <delete dir="${jar.dir}/kernel.jar"/>
   </target>
 
-  <target name="kernel-jar" depends="kernel" description="Build the kernel jar">
-    <jar basedir="${builddir}/kernel" destfile="${jardir}/kernel.jar"/>
+  <target name="kernel-jar" depends="kernel-compile" description="Build the kernel jar">
+    <jar basedir="${build.dir}" destfile="${jar.dir}/kernel.jar">
+      <include name="kernel/**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="kernel-unit" depends="kernel-jar" description="Run the kernel unit tests">
   </target>
 
   <!-- Useful tools: checkstyle and findbugs -->
@@ -95,9 +126,17 @@
   </target>
 
   <!-- Combined targets -->
-  <target name="compile" depends="rescuecore,kernel" description="Compile all packages"/>
+  <target name="compile" depends="rescuecore-compile,kernel-compile" description="Compile all packages"/>
 
   <target name="jars" depends="rescuecore-jar,kernel-jar" description="Compile and jar all packages"/>
 
   <target name="clean" depends="rescuecore-clean,kernel-clean" description="Delete classes and build artifacts for all packages"/>
+
+  <target name="test-static" depends="checkstyle,findbugs" description="Run the static tests (checkstyle and findbugs) for all packages"/>
+
+  <target name="test-unit" depends="rescuecore-unit, kernel-unit" description="Run the unit tests for all packages"/>
+
+  <target name="test-all" depends="test-static,test-unit" description="Run the static and unit tests for all packages"/>
+
+  <target name="complete-build" depends="clean,compile,jars,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
 </project>

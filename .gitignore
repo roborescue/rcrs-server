@@ -6,3 +6,7 @@
 
 # Ignore temporary files
 *~
+
+# Ignore the build and jars directories
+build/
+jars/
