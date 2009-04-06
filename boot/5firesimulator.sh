@@ -2,4 +2,4 @@
 DIR=`dirname $0`
 
 cd $DIR/../programs/firesimulator
-java -cp .. firesimulator.Main -cstp $DIR/config.txt -stp default.stp -p 7000
+java -Xmx256m -cp .. firesimulator.Main -cstp $DIR/config.txt -stp default.stp -p 7000

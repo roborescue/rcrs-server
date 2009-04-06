@@ -1,0 +1,103 @@
+<project default="jars" name="Robocup rescue simulation software">
+  <!-- Common properties: source, build, jar and lib directories -->
+  <property name="srcdir" value="${basedir}/src"/>
+  <property name="builddir" value="${basedir}/build"/>
+  <property name="jardir" value="${basedir}/jars"/>
+  <property name="libdir" value="${basedir}/lib"/>
+
+  <property name="debug" value="true"/>
+
+  <property name="findbugs.home" value="${libdir}/findbugs-1.3.8"/>
+
+  <path id="path.jars">
+    <fileset dir="${jardir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="path.lib">
+    <fileset dir="${libdir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="path.all">
+    <path refid="path.jars"/>
+    <path refid="path.lib"/>
+  </path>
+
+  <path id="path.junit">
+    <pathelement location="${lib.dir}/junit-4.5.jar"/>
+    <path refid="path.all"/>
+    <pathelement location="${test.dir}"/>
+  </path>
+
+  <!-- Checkstyle task definition -->
+  <taskdef resource="checkstyletask.properties" classpath="${libdir}/checkstyle.jar"/>
+
+  <!-- Findbugs task definition -->
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
+
+  <!-- Stuff to do before a compile -->
+  <target name="_init">
+    <mkdir dir="${builddir}"/>
+    <mkdir dir="${jardir}"/>
+  </target>
+
+  <!-- Rescuecore targets -->
+  <target name="rescuecore" depends="_init" description="Build the rescuecore package">
+    <javac srcdir="${srcdir}" destdir="${builddir}" classpathref="path.all" debug="${debug}">
+      <include name="rescuecore/**/*.java"/>
+    </javac>
+  </target>
+
+  <target name="rescuecore-clean" description="Delete all classes and build artifacts in the rescuecore package">
+    <delete dir="${builddir}/rescuecore"/>
+    <delete dir="${jardir}/rescuecore.jar"/>
+  </target>
+
+  <target name="rescuecore-jar" depends="rescuecore" description="Build the rescuecore jar">
+    <jar basedir="${builddir}/rescuecore" destfile="${jardir}/rescuecore.jar"/>
+  </target>
+
+  <!-- Kernel targets -->
+  <target name="kernel" depends="_init,rescuecore-jar" description="Build the kernel package">
+    <javac srcdir="${srcdir}" destdir="${builddir}" classpathref="path.all" debug="${debug}">
+      <include name="kernel/**/*.java"/>
+    </javac>
+  </target>
+
+  <target name="kernel-clean" description="Delete all classes and build artifacts in the kernel package">
+    <delete dir="${builddir}/kernel"/>
+    <delete dir="${jardir}/kernel.jar"/>
+  </target>
+
+  <target name="kernel-jar" depends="kernel" description="Build the kernel jar">
+    <jar basedir="${builddir}/kernel" destfile="${jardir}/kernel.jar"/>
+  </target>
+
+  <!-- Useful tools: checkstyle and findbugs -->
+  <target name="checkstyle" depends="compile" description="Run Checkstyle on all packages">
+    <checkstyle config="supplement/checkstyle.xml" classpathref="path.all" failOnViolation="false">
+      <fileset dir="${src.dir}">
+<!--        <include name="kernel/**/*.java"/>-->
+        <include name="rescuecore/**/*.java"/>
+      </fileset>
+      <formatter type="xml" toFile="${build.dir}/checkstyle_errors.xml"/>
+    </checkstyle>
+  </target>
+
+  <target name="findbugs" depends="compile" description="Run Findbugs on all packages">
+    <findbugs home="${findbugs.home}" output="xml" outputFile="${build.dir}/findbugs_errors.xml">
+<!--      <class location="${build.dir}/kernel"/>-->
+      <class location="${build.dir}/rescuecore"/>
+    </findbugs>
+  </target>
+
+  <!-- Combined targets -->
+  <target name="compile" depends="rescuecore,kernel" description="Compile all packages"/>
+
+  <target name="jars" depends="rescuecore-jar,kernel-jar" description="Compile and jar all packages"/>
+
+  <target name="clean" depends="rescuecore-clean,kernel-clean" description="Delete classes and build artifacts for all packages"/>
+</project>
