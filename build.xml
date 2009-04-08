@@ -75,7 +75,8 @@
     <javac srcdir="${test.dir}" destdir="${test.dir}" classpathref="path.all" debug="${debug}">
       <include name="rescuecore/**/*.java"/>
     </javac>
-    <junit>
+    <junit fork="true">
+      <sysproperty key="rescuecore.tests.basedir" value="${test.dir}"/>
       <classpath refid="path.junit"/>
       <formatter type="xml"/>
       <batchtest todir="${build.dir}/tests">
@@ -127,6 +128,15 @@
     </findbugs>
   </target>
 
+  <target name="unit-test-report">
+    <junitreport todir="${build.dir}">
+      <fileset dir="${build.dir}/tests">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="noframes" todir="${build.dir}"/>
+    </junitreport>
+  </target>
+
   <!-- Combined targets -->
   <target name="compile" depends="rescuecore-compile,kernel-compile" description="Compile all packages"/>
 
@@ -136,7 +146,7 @@
 
   <target name="test-static" depends="checkstyle,findbugs" description="Run the static tests (checkstyle and findbugs) for all packages"/>
 
-  <target name="test-unit" depends="rescuecore-unit, kernel-unit" description="Run the unit tests for all packages"/>
+  <target name="test-unit" depends="rescuecore-unit, kernel-unit, unit-test-report" description="Run the unit tests for all packages"/>
 
   <target name="test-all" depends="test-static,test-unit" description="Run the static and unit tests for all packages"/>
 
