@@ -11,6 +11,8 @@
   <property name="test.dir" value="${basedir}/test"/>
   <property name="supplement.dir" value="${basedir}/supplement"/>
 
+  <property name="findbugs.output" value="html"/>
+
   <property name="debug" value="true"/>
 
   <property name="findbugs.home" value="${lib.dir}/findbugs-1.3.8"/>
@@ -168,8 +170,8 @@
     <xslt in="${checkstyle.dir}/checkstyle_errors.xml" out="${checkstyle.dir}/checkstyle_errors.html" style="${supplement.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
-  <target name="findbugs" depends="compile" description="Run Findbugs on all packages">
-    <findbugs home="${findbugs.home}" output="html" outputFile="${findbugs.dir}/findbugs_errors.html">
+  <target name="findbugs" depends="compile" description="Run Findbugs on all packages and produce xml output">
+    <findbugs home="${findbugs.home}" output="${findbugs.output}" outputFile="${findbugs.dir}/findbugs_errors.${findbugs.output}">
       <sourcePath path="${src.dir}"/>
       <class location="${jar.dir}/kernel.jar"/>
       <class location="${jar.dir}/rescuecore2.jar"/>
