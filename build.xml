@@ -2,6 +2,10 @@
   <!-- Common properties: source, build, jar and lib directories -->
   <property name="src.dir" value="${basedir}/src"/>
   <property name="build.dir" value="${basedir}/build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="junit.dir" value="${build.dir}/junit-results"/>
+  <property name="checkstyle.dir" value="${build.dir}/checkstyle-results"/>
+  <property name="findbugs.dir" value="${build.dir}/findbugs-results"/>
   <property name="jar.dir" value="${basedir}/jars"/>
   <property name="lib.dir" value="${basedir}/lib"/>
   <property name="test.dir" value="${basedir}/test"/>
@@ -43,20 +47,23 @@
   <!-- Stuff to do before a compile -->
   <target name="_init">
     <mkdir dir="${build.dir}"/>
-    <mkdir dir="${build.dir}/tests"/>
+    <mkdir dir="${classes.dir}"/>
+    <mkdir dir="${junit.dir}"/>
+    <mkdir dir="${checkstyle.dir}"/>
+    <mkdir dir="${findbugs.dir}"/>
     <mkdir dir="${jar.dir}"/>
   </target>
 
   <!-- Rescuecore targets -->
   <target name="rescuecore-compile" depends="_init" description="Build the rescuecore package">
-    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="path.all" debug="${debug}">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="path.all" debug="${debug}">
       <include name="rescuecore/**/*.java"/>
     </javac>
   </target>
 
   <target name="rescuecore-clean" description="Delete all classes and build artifacts in the rescuecore package">
-    <delete dir="${build.dir}/rescuecore"/>
-    <delete dir="${build.dir}/test/rescuecore"/>
+    <delete dir="${classes.dir}/rescuecore"/>
+    <delete dir="${junit.dir}/rescuecore"/>
     <delete dir="${jar.dir}/rescuecore.jar"/>
     <delete>
       <fileset dir="${test.dir}/rescuecore">
@@ -66,7 +73,7 @@
   </target>
 
   <target name="rescuecore-jar" depends="rescuecore-compile" description="Build the rescuecore jar">
-    <jar basedir="${build.dir}" destfile="${jar.dir}/rescuecore.jar">
+    <jar basedir="${classes.dir}" destfile="${jar.dir}/rescuecore.jar">
       <include name="rescuecore/**/*.class"/>
     </jar>
   </target>
@@ -79,7 +86,7 @@
       <sysproperty key="rescuecore.tests.basedir" value="${test.dir}"/>
       <classpath refid="path.junit"/>
       <formatter type="xml"/>
-      <batchtest todir="${build.dir}/tests">
+      <batchtest todir="${junit.dir}">
         <fileset dir="${test.dir}">
           <include name="rescuecore/**/*Test.java"/>
         </fileset>
@@ -87,21 +94,61 @@
     </junit>
   </target>
 
+  <!-- Rescuecore2 targets -->
+  <target name="rescuecore2-compile" depends="_init" description="Build the rescuecore2 package">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="path.all" debug="${debug}">
+      <include name="rescuecore2/**/*.java"/>
+    </javac>
+  </target>
+
+  <target name="rescuecore2-clean" description="Delete all classes and build artifacts in the rescuecore2 package">
+    <delete dir="${classes.dir}/rescuecore2"/>
+    <delete dir="${junit.dir}/rescuecore2"/>
+    <delete dir="${jar.dir}/rescuecore2.jar"/>
+    <delete>
+      <fileset dir="${test.dir}/rescuecore2">
+        <include name="**/*.class"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="rescuecore2-jar" depends="rescuecore2-compile" description="Build the rescuecore2 jar">
+    <jar basedir="${classes.dir}" destfile="${jar.dir}/rescuecore2.jar">
+      <include name="rescuecore2/**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="rescuecore2-unit" depends="rescuecore2-jar" description="Run the rescuecore2 unit tests">
+    <javac srcdir="${test.dir}" destdir="${test.dir}" classpathref="path.all" debug="${debug}">
+      <include name="rescuecore2/**/*.java"/>
+    </javac>
+    <junit fork="true">
+      <sysproperty key="rescuecore2.tests.basedir" value="${test.dir}"/>
+      <classpath refid="path.junit"/>
+      <formatter type="xml"/>
+      <batchtest todir="${junit.dir}">
+        <fileset dir="${test.dir}">
+          <include name="rescuecore2/**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
   <!-- Kernel targets -->
-  <target name="kernel-compile" depends="_init,rescuecore-jar" description="Build the kernel package">
-    <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="path.all" debug="${debug}">
+  <target name="kernel-compile" depends="_init,rescuecore2-jar" description="Build the kernel package">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="path.all" debug="${debug}">
       <include name="kernel/**/*.java"/>
     </javac>
   </target>
 
   <target name="kernel-clean" description="Delete all classes and build artifacts in the kernel package">
-    <delete dir="${build.dir}/kernel"/>
-    <delete dir="${build.dir}/test/kernel"/>
+    <delete dir="${classes.dir}/kernel"/>
+    <delete dir="${junit.dir}/kernel"/>
     <delete dir="${jar.dir}/kernel.jar"/>
   </target>
 
   <target name="kernel-jar" depends="kernel-compile" description="Build the kernel jar">
-    <jar basedir="${build.dir}" destfile="${jar.dir}/kernel.jar">
+    <jar basedir="${classes.dir}" destfile="${jar.dir}/kernel.jar">
       <include name="kernel/**/*.class"/>
     </jar>
   </target>
@@ -113,40 +160,46 @@
   <target name="checkstyle" depends="compile" description="Run Checkstyle on all packages">
     <checkstyle config="supplement/checkstyle.xml" classpathref="path.all" failOnViolation="false">
       <fileset dir="${src.dir}">
-<!--        <include name="kernel/**/*.java"/>-->
-        <include name="rescuecore/**/*.java"/>
+        <include name="kernel/**/*.java"/>
+        <include name="rescuecore2/**/*.java"/>
       </fileset>
-      <formatter type="xml" toFile="${build.dir}/checkstyle_errors.xml"/>
+      <formatter type="xml" toFile="${checkstyle.dir}/checkstyle_errors.xml"/>
     </checkstyle>
-    <xslt in="${build.dir}/checkstyle_errors.xml" out="${build.dir}/checkstyle_errors.html" style="${supplement.dir}/checkstyle-noframes-sorted.xsl"/>
+    <xslt in="${checkstyle.dir}/checkstyle_errors.xml" out="${checkstyle.dir}/checkstyle_errors.html" style="${supplement.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
   <target name="findbugs" depends="compile" description="Run Findbugs on all packages">
-    <findbugs home="${findbugs.home}" output="xml" outputFile="${build.dir}/findbugs_errors.xml">
-<!--      <class location="${build.dir}/kernel"/>-->
-      <class location="${build.dir}/rescuecore"/>
+    <findbugs home="${findbugs.home}" output="html" outputFile="${findbugs.dir}/findbugs_errors.html">
+      <sourcePath path="${src.dir}"/>
+      <class location="${jar.dir}/kernel.jar"/>
+      <class location="${jar.dir}/rescuecore2.jar"/>
+      <auxClasspath refid="path.all"/>
     </findbugs>
   </target>
 
   <target name="unit-test-report">
-    <junitreport todir="${build.dir}">
-      <fileset dir="${build.dir}/tests">
+    <junitreport todir="${junit.dir}">
+      <fileset dir="${junit.dir}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="noframes" todir="${build.dir}"/>
+      <report format="noframes" todir="${junit.dir}"/>
     </junitreport>
   </target>
 
+  <target name="build-clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
   <!-- Combined targets -->
-  <target name="compile" depends="rescuecore-compile,kernel-compile" description="Compile all packages"/>
+  <target name="compile" depends="rescuecore-compile,rescuecore2-compile,kernel-compile" description="Compile all packages"/>
 
-  <target name="jars" depends="rescuecore-jar,kernel-jar" description="Compile and jar all packages"/>
+  <target name="jars" depends="rescuecore-jar,rescuecore2-jar,kernel-jar" description="Compile and jar all packages"/>
 
-  <target name="clean" depends="rescuecore-clean,kernel-clean" description="Delete classes and build artifacts for all packages"/>
+  <target name="clean" depends="rescuecore-clean,rescuecore2-clean,kernel-clean,build-clean" description="Delete classes and build artifacts for all packages"/>
 
   <target name="test-static" depends="checkstyle,findbugs" description="Run the static tests (checkstyle and findbugs) for all packages"/>
 
-  <target name="test-unit" depends="rescuecore-unit, kernel-unit, unit-test-report" description="Run the unit tests for all packages"/>
+  <target name="test-unit" depends="rescuecore-unit,rescuecore2-unit,kernel-unit,unit-test-report" description="Run the unit tests for all packages"/>
 
   <target name="test-all" depends="test-static,test-unit" description="Run the static and unit tests for all packages"/>
 

@@ -1,4 +1,4 @@
-package rescuecore.config;
+package rescuecore2.config;
 
 import java.io.IOException;
 import java.io.FileReader;
@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+   This class represents a config file and any other config files that might have been included with a !include directive. Config files must be defined relative to a base directory so that includes can be resolved.
+ */
 public class Config {
     private static final String INCLUDE = "!include";
 
