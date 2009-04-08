@@ -5,6 +5,7 @@
   <property name="jar.dir" value="${basedir}/jars"/>
   <property name="lib.dir" value="${basedir}/lib"/>
   <property name="test.dir" value="${basedir}/test"/>
+  <property name="supplement.dir" value="${basedir}/supplement"/>
 
   <property name="debug" value="true"/>
 
@@ -116,6 +117,7 @@
       </fileset>
       <formatter type="xml" toFile="${build.dir}/checkstyle_errors.xml"/>
     </checkstyle>
+    <xslt in="${build.dir}/checkstyle_errors.xml" out="${build.dir}/checkstyle_errors.html" style="${supplement.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
   <target name="findbugs" depends="compile" description="Run Findbugs on all packages">
