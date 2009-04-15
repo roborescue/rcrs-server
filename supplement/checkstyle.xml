@@ -11,19 +11,28 @@
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>
 
+  <!-- Allow suppression of checks -->
+  <module name="SuppressionCommentFilter">
+    <property name="offCommentFormat" value="CHECKSTYLE:OFF:(\w)+"/>
+    <property name="onCommentFormat" value="CHECKSTYLE:ON:(\w)+"/>
+    <property name="checkFormat" value="$1"/>
+  </module>
+
+
   <module name="TreeWalker">
+    <module name="FileContentsHolder"/>
+
     <module name="RegexpSinglelineJava">
       <property name="format" value="\s+$"/>
       <property name="message" value="Line has trailing spaces."/>
     </module>
-
-
 
     <!-- Checks for Javadoc comments.                     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
     <module name="JavadocMethod">
       <property name="allowUndeclaredRTE" value="true"/>
       <property name="allowThrowsTagsForSubclasses" value="true"/>
+      <property name="scope" value="package"/>
     </module>
     <module name="JavadocType"/>
     <module name="JavadocVariable">
@@ -74,7 +83,10 @@
     <module name="WhitespaceAfter">
       <property name="tokens" value="COMMA, SEMI"/>
     </module>
-    <module name="WhitespaceAround"/>
+    <module name="WhitespaceAround">
+      <property name="allowEmptyMethods" value="true"/>
+      <property name="allowEmptyConstructors" value="true"/>
+    </module>
 
 
     <!-- Modifier Checks                                    -->
