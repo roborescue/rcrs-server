@@ -7,8 +7,10 @@ import java.util.concurrent.CountDownLatch;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.connection.Connection;
-import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
+import rescuecore2.connection.TCPConnection;
+import rescuecore2.connection.ConnectionManager;
+import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.messages.MessageCodec;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.legacy.LegacyMessageCodec;
@@ -17,6 +19,8 @@ import rescuecore2.messages.legacy.KGAcknowledge;
 import rescuecore2.messages.legacy.GKConnectOK;
 import rescuecore2.messages.legacy.GKConnectError;
 import rescuecore2.worldmodel.WorldModel;
+
+import kernel.legacy.LegacyAgentManager;
 
 /**
    The Robocup Rescue kernel.
@@ -29,6 +33,7 @@ public class Kernel {
     private MessageCodec codec;
     private Connection gisConnection;
 
+    private ConnectionManager connectionManager;
     private AgentManager agentManager;
 
     private WorldModel worldModel;
@@ -52,7 +57,7 @@ public class Kernel {
             ++i;
         }
         codec = new LegacyMessageCodec();
-	agentManager = new AgentManager();
+	agentManager = new LegacyAgentManager();
     }
 
     /**
@@ -102,13 +107,13 @@ public class Kernel {
 	agentManager.setWorldModel(worldModel);
     }
 
-    private void openSockets() {
+    private void openSockets() throws IOException {
 	connectionManager = new ConnectionManager();
 	ConnectionManagerListener listener = new ConnectionManagerListener() {
 		public void newConnection(Connection c) {
 		    System.out.println("New connection: " + c);
 		    agentManager.newConnection(c);
-		    c.start();
+		    c.startup();
 		}
 	    };
 	connectionManager.listen(config.getIntValue("port"), codec, listener);
@@ -142,7 +147,7 @@ public class Kernel {
             if (m instanceof GKConnectOK) {
                 try {
                     // Update the internal world model
-		    model.removeAllEntites();
+		    model.removeAllEntities();
 		    model.addEntities(((GKConnectOK)m).getWorldModel().getAllEntities());
                     // Send an acknowledgement
                     gisConnection.sendMessage(new KGAcknowledge());

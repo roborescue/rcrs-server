@@ -4,7 +4,13 @@ import java.util.Set;
 import java.util.HashSet;
 
 import kernel.AgentManager;
+
+import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionListener;
+import rescuecore2.messages.Message;
+//import rescuecore2.messages.legacy.AKConnect;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.entities.legacy.Civilian;
 import rescuecore2.worldmodel.entities.legacy.FireBrigade;
 import rescuecore2.worldmodel.entities.legacy.AmbulanceTeam;
@@ -58,8 +64,8 @@ public class LegacyAgentManager implements AgentManager {
     private class AgentConnectionListener implements ConnectionListener {
 	@Override
 	public void messageReceived(Message msg) {
-	    if (msg instanceof AKConnect) {
-	    }
+            //	    if (msg instanceof AKConnect) {
+            //	    }
 	}
     }
 }
