@@ -9,13 +9,13 @@ import rescuecore2.config.ConfigException;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
-import rescuecore2.messages.StandardMessageCodec;
 import rescuecore2.messages.MessageCodec;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.KGConnect;
-import rescuecore2.messages.KGAcknowledge;
-import rescuecore2.messages.GKConnectOK;
-import rescuecore2.messages.GKConnectError;
+import rescuecore2.messages.legacy.LegacyMessageCodec;
+import rescuecore2.messages.legacy.KGConnect;
+import rescuecore2.messages.legacy.KGAcknowledge;
+import rescuecore2.messages.legacy.GKConnectOK;
+import rescuecore2.messages.legacy.GKConnectError;
 import rescuecore2.worldmodel.WorldModel;
 
 /**
@@ -28,6 +28,8 @@ public class Kernel {
     private Config config;
     private MessageCodec codec;
     private Connection gisConnection;
+
+    private AgentManager agentManager;
 
     private WorldModel worldModel;
 
@@ -49,7 +51,8 @@ public class Kernel {
             }
             ++i;
         }
-        codec = new StandardMessageCodec();
+        codec = new LegacyMessageCodec();
+	agentManager = new AgentManager();
     }
 
     /**
@@ -85,6 +88,7 @@ public class Kernel {
     }
 
     private void connectToGIS() throws IOException, InterruptedException {
+	System.out.println("Connecting to GIS...");
         worldModel = new WorldModel();
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue("gis_port");
@@ -94,9 +98,20 @@ public class Kernel {
         gisConnection.sendMessage(new KGConnect(0));
         // Wait for a reply
         latch.await();
+	// Tell the agent manager about the world
+	agentManager.setWorldModel(worldModel);
     }
 
     private void openSockets() {
+	connectionManager = new ConnectionManager();
+	ConnectionManagerListener listener = new ConnectionManagerListener() {
+		public void newConnection(Connection c) {
+		    System.out.println("New connection: " + c);
+		    agentManager.newConnection(c);
+		    c.start();
+		}
+	    };
+	connectionManager.listen(config.getIntValue("port"), codec, listener);
     }
 
     private void waitForSimulatorsAndAgents() {
@@ -127,8 +142,11 @@ public class Kernel {
             if (m instanceof GKConnectOK) {
                 try {
                     // Update the internal world model
+		    model.removeAllEntites();
+		    model.addEntities(((GKConnectOK)m).getWorldModel().getAllEntities());
                     // Send an acknowledgement
                     gisConnection.sendMessage(new KGAcknowledge());
+		    System.out.println("GIS connected OK");
                     // Trigger the countdown latch
                     latch.countDown();
                 }
