@@ -27,16 +27,16 @@ public abstract class WorkerThread extends Thread {
     }
 
     @Override
-	public void run() {
-	setup();
-	try {
-	    while (running && !killed) {
-		running = work();
-	    }
-	}
-	finally {
-	    cleanup();
-	}
+    public void run() {
+        setup();
+        try {
+            while (running && !killed) {
+                running = work();
+            }
+        }
+        finally {
+            cleanup();
+        }
     }
 
     /**

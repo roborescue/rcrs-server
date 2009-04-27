@@ -1,6 +1,7 @@
 package rescuecore2.connection;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.MessageFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -44,4 +45,16 @@ public interface Connection {
        Shut this connection down.
      */
     void shutdown();
+
+    /**
+       Set the factory for interpreting messages that come in on this connection.
+       @param factory The new factory to use.
+    */
+    void setMessageFactory(MessageFactory factory);
+
+    /**
+       Turn byte-level logging on or off.
+       @param enable Whether to enable byte-level logging.
+    */
+    void setLogBytes(boolean enabled);
 }

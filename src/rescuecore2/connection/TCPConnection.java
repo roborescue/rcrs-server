@@ -1,16 +1,18 @@
 package rescuecore2.connection;
 
-import static rescuecore2.connection.EncodingTools.writeInt32;
-import static rescuecore2.connection.EncodingTools.readInt32;
+import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.readInt32;
+import static rescuecore2.misc.EncodingTools.readBytes;
 
 import java.net.Socket;
+import java.net.SocketException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.InterruptedIOException;
 
-import rescuecore2.messages.MessageCodec;
+import rescuecore2.messages.MessageFactory;
 import rescuecore2.misc.WorkerThread;
 
 /**
@@ -25,33 +27,34 @@ public class TCPConnection extends AbstractConnection {
 
     /**
        Make a connection to the local host on a given port.
-       @param codec The MessageCodec to use for encoding/decoding messages.
+       @param factory The MessageFactory to use for creating messages.
        @param port The port to connect to.
        @throws IOException If the host cannot be contacted.
      */
-    public TCPConnection(MessageCodec codec, int port) throws IOException {
-        this(codec, null, port);
+    public TCPConnection(MessageFactory factory, int port) throws IOException {
+        this(factory, null, port);
     }
 
     /**
        Make a connection to a specific host on a given port.
-       @param codec The MessageCodec to use for encoding/decoding messages.
+       @param factory The MessageFactory to use for creating messages.
        @param address The address of the host.
        @param port The port to connect to.
        @throws IOException If the host cannot be contacted.
      */
-    public TCPConnection(MessageCodec codec, String address, int port) throws IOException {
-        this(codec, new Socket(address, port));
+    public TCPConnection(MessageFactory factory, String address, int port) throws IOException {
+        this(factory, new Socket(address, port));
     }
 
     /**
        Create a TCPConnection from an existing socket.
-       @param codec The MessageCodec to use for encoding/decoding messages.
+       @param factory The MessageFactory to use for creating messages.
        @param socket The socket to attach to.
      */
-    public TCPConnection(MessageCodec codec, Socket socket) throws IOException {
-	super(codec);
+    public TCPConnection(MessageFactory factory, Socket socket) throws IOException {
+	super(factory);
 	this.socket = socket;
+        socket.setSoTimeout(1000);
         in = socket.getInputStream();
         out = socket.getOutputStream();
         readThread = new ReadThread();
@@ -116,25 +119,23 @@ public class TCPConnection extends AbstractConnection {
         @Override
         protected boolean work() {
             try {
-                System.out.println("TCPConnection read thread: waiting for input");
+                //                System.out.println("TCPConnection read thread: waiting for input");
                 int size = readInt32(in);
-                System.out.println("TCPConnection read thread: reading " + size + " bytes");
-                byte[] buffer = new byte[size];
-                int count = 0;
-                while (count < size) {
-                    int read = in.read(buffer, count, size - count);
-                    if (read == -1) {
-                        throw new EOFException("TCP connection was truncated: read " + count + " bytes of " + size + ".");
-                    }
-                    count += read;
+                //                System.out.println("TCPConnection read thread: reading " + size + " bytes");
+                if (size > -1) {
+                    byte[] buffer = readBytes(size, in);
+                    bytesReceived(buffer);
                 }
-                bytesReceived(buffer);
                 return true;
             }
             catch (InterruptedIOException e) {
                 return false;
             }
+            catch (SocketException e) {
+                return false;
+            }
             catch (IOException e) {
+                System.err.println(e);
                 return true;
             }
         }

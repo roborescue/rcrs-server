@@ -1,12 +1,20 @@
 package rescuecore2.connection;
 
+import static rescuecore2.misc.EncodingTools.readInt32;
+import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.readBytes;
+
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageCodec;
+import rescuecore2.messages.MessageComponent;
+import rescuecore2.messages.MessageFactory;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,15 +24,28 @@ import java.io.IOException;
  */
 public abstract class AbstractConnection implements Connection {
     private List<ConnectionListener> listeners;
-    private MessageCodec codec;
+    private MessageFactory factory;
+
+    private boolean logBytes;
 
     /**
        Construct an abstract connection.
-       @param codec The MessageCodec to use for encoding/decoding messages.
+       @param factory The factory class used to generate new messages.
     */
-    protected AbstractConnection(MessageCodec codec) {
+    protected AbstractConnection(MessageFactory factory) {
         listeners = new ArrayList<ConnectionListener>();
-        this.codec = codec;
+        this.factory = factory;
+        logBytes = false;
+    }
+
+    @Override
+    public void setLogBytes(boolean enabled) {
+        logBytes = enabled;
+    }
+
+    @Override
+    public void setMessageFactory(MessageFactory factory) {
+        this.factory = factory;
     }
 
     @Override
@@ -49,17 +70,21 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public void sendMessage(Message msg) throws IOException {
-        // Turn the message into bytes
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        codec.encode(msg, out);
-        sendBytes(out.toByteArray());
+        sendMessages(Collections.singleton(msg));
     }
 
     @Override
     public void sendMessages(Collection<Message> messages) throws IOException {
-        // Turn the messages into bytes
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        codec.encode(messages, out);
+        for (Message next : messages) {
+            encodeMessage(next, out);
+        }
+        // Add a zero to indicate no more messages
+        writeInt32(0, out);
+        // Send the bytes
+        if (logBytes) {
+            ByteLogger.log(out.toByteArray());
+        }
         sendBytes(out.toByteArray());
     }
 
@@ -79,7 +104,7 @@ public abstract class AbstractConnection implements Connection {
         Message m = null;
         try {
             do {
-                m = codec.decode(decode);
+                m = decodeMessage(decode);
                 if (m != null) {
                     fireMessageReceived(m);
                 }
@@ -105,5 +130,35 @@ public abstract class AbstractConnection implements Connection {
         for (ConnectionListener next : l) {
             next.messageReceived(m);
         }
+    }
+
+    private void encodeMessage(Message msg, OutputStream out) throws IOException {
+        System.out.println("Sending message: " + msg);
+        // Turn the message into bytes
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        for (MessageComponent next : msg.getComponents()) {
+            next.write(bytes);
+        }
+        // Write the header then the message body
+        writeInt32(msg.getMessageTypeID(), out);
+        writeInt32(bytes.size(), out);
+        out.write(bytes.toByteArray());
+    }
+
+    private Message decodeMessage(InputStream in) throws IOException {
+        int id = readInt32(in);
+        if (id == 0) {
+            return null;
+        }
+        int size = readInt32(in);
+        byte[] data = readBytes(size, in);
+        Message result = factory.createMessage(id);
+        // Read all the message components
+        InputStream input = new ByteArrayInputStream(data);
+        for (MessageComponent next : result.getComponents()) {
+            next.read(input);
+        }
+        System.out.println("Received message: " + result);
+        return result;
     }
 }

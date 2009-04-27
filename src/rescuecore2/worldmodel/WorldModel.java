@@ -2,6 +2,7 @@ package rescuecore2.worldmodel;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -57,7 +58,7 @@ public class WorldModel {
        Add a set of entities to the world.
        @param e The entities to add.
      */
-    public void addEntities(Set<Entity> e) {
+    public void addEntities(Collection<Entity> e) {
 	entities.addAll(e);
 	for (Entity next : e) {
 	    fireEntityAdded(next);

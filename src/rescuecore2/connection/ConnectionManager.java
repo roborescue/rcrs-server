@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import rescuecore2.misc.WorkerThread;
-import rescuecore2.messages.MessageCodec;
+import rescuecore2.messages.MessageFactory;
 
 /**
    A class for managing incoming connections.
@@ -25,21 +25,38 @@ public class ConnectionManager {
        Listen for connections on a particular port.
        @param port The port to listen on.
      */
-    public void listen(int port, MessageCodec codec, ConnectionManagerListener listener) throws IOException {
+    public void listen(int port, MessageFactory factory, ConnectionManagerListener listener) throws IOException {
+        System.out.println("Listening for connections on port " + port);
 	ServerSocket socket = new ServerSocket(port);
-	Reader r = new Reader(socket, codec, listener);
+        socket.setSoTimeout(1000);
+	Reader r = new Reader(socket, factory, listener);
 	readers.add(r);
 	r.start();
     }
 
-    private class Reader extends WorkerThread {
+    /**
+       Shut down this ConnectionManager.
+    */
+    public void shutdown() {
+        for (Reader next : readers) {
+            try {
+                next.kill();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+                // FIXME: Log it!
+            }
+        }
+    }
+
+    private static class Reader extends WorkerThread {
 	private ServerSocket socket;
-	private MessageCodec codec;
+	private MessageFactory factory;
 	private ConnectionManagerListener callback;
 
-	public Reader(ServerSocket socket, MessageCodec codec, ConnectionManagerListener callback) {
+	public Reader(ServerSocket socket, MessageFactory factory, ConnectionManagerListener callback) {
 	    this.socket = socket;
-	    this.codec = codec;
+	    this.factory = factory;
 	    this.callback = callback;
 	}
 
@@ -47,7 +64,7 @@ public class ConnectionManager {
 	protected boolean work() {
 	    try {
 		Socket s = socket.accept();
-		TCPConnection conn = new TCPConnection(codec, s);
+		TCPConnection conn = new TCPConnection(factory, s);
 		callback.newConnection(conn);
 	    }
 	    catch (InterruptedIOException e) {
