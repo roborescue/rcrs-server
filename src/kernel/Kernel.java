@@ -11,16 +11,13 @@ import rescuecore2.connection.ConnectionListener;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionManager;
 import rescuecore2.connection.ConnectionManagerListener;
-import rescuecore2.messages.MessageCodec;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.legacy.LegacyMessageCodec;
-import rescuecore2.messages.legacy.KGConnect;
-import rescuecore2.messages.legacy.KGAcknowledge;
-import rescuecore2.messages.legacy.GKConnectOK;
-import rescuecore2.messages.legacy.GKConnectError;
+import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.version0.messages.Version0MessageFactory;
 
 import kernel.legacy.LegacyAgentManager;
+import kernel.legacy.LegacyWorldModelCreator;
 
 /**
    The Robocup Rescue kernel.
@@ -30,8 +27,7 @@ public class Kernel {
     private static final String CONFIG_LONG_FLAG = "--config";
 
     private Config config;
-    private MessageCodec codec;
-    private Connection gisConnection;
+    private WorldModelCreator worldModelCreator;
 
     private ConnectionManager connectionManager;
     private AgentManager agentManager;
@@ -41,23 +37,26 @@ public class Kernel {
     /**
        Construct a kernel from some command line arguments.
        @param args The command line arguments.
-       @throws IOException If there is a problem reading the config file.
+       @throws KernelException If something blows up.
        @throws ConfigException If the config file is broken.
     */
-    public Kernel(String[] args) throws IOException, ConfigException {
+    public Kernel(String[] args) throws KernelException, ConfigException {
         config = new Config();
         int i = 0;
         while (i < args.length) {
             if (args[i].equalsIgnoreCase(CONFIG_FLAG) || args[i].equalsIgnoreCase(CONFIG_LONG_FLAG)) {
-                config.read(new File(args[++i]));
+                try {
+                    config.read(new File(args[++i]));
+                }
+                catch (IOException e) {
+                    throw new KernelException("Error reading config file", e);
+                }
             }
             else {
                 System.out.println("Unrecognised option: " + args[i]);
             }
             ++i;
         }
-        codec = new LegacyMessageCodec();
-	agentManager = new LegacyAgentManager();
     }
 
     /**
@@ -68,10 +67,7 @@ public class Kernel {
         try {
             new Kernel(args).runSimulation();
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (InterruptedException e) {
+        catch (KernelException e) {
             e.printStackTrace();
         }
         catch (ConfigException e) {
@@ -81,87 +77,52 @@ public class Kernel {
 
     /**
        Start the kernel, run the simulation and clean up.
-       @throws IOException If there is a problem connecting to the GIS.
-       @throws InterruptedException If the kernel is interrupted before the simulation has finished.
+       @throws KernelException If there is a problem running the simulation.
     */
-    public void runSimulation() throws IOException, InterruptedException {
-        connectToGIS();
+    public void runSimulation() throws KernelException {
+        buildWorldModel();
         openSockets();
         waitForSimulatorsAndAgents();
         waitForSimulationToFinish();
         cleanUp();
     }
 
-    private void connectToGIS() throws IOException, InterruptedException {
-	System.out.println("Connecting to GIS...");
-        worldModel = new WorldModel();
-        CountDownLatch latch = new CountDownLatch(1);
-        int gisPort = config.getIntValue("gis_port");
-        gisConnection = new TCPConnection(codec, gisPort);
-        gisConnection.addConnectionListener(new GISConnectionListener(latch, worldModel, gisConnection));
-        gisConnection.startup();
-        gisConnection.sendMessage(new KGConnect(0));
-        // Wait for a reply
-        latch.await();
-	// Tell the agent manager about the world
-	agentManager.setWorldModel(worldModel);
+    private void buildWorldModel() throws KernelException {
+        worldModelCreator = new LegacyWorldModelCreator();
+        worldModel = worldModelCreator.buildWorldModel(config);
     }
 
-    private void openSockets() throws IOException {
-	connectionManager = new ConnectionManager();
-	ConnectionManagerListener listener = new ConnectionManagerListener() {
-		public void newConnection(Connection c) {
-		    System.out.println("New connection: " + c);
-		    agentManager.newConnection(c);
-		    c.startup();
-		}
-	    };
-	connectionManager.listen(config.getIntValue("port"), codec, listener);
+    private void openSockets() throws KernelException {
+        connectionManager = new ConnectionManager();
+        ConnectionManagerListener listener = new ConnectionManagerListener() {
+                public void newConnection(Connection c) {
+                    System.out.println("New connection: " + c);
+                    agentManager.newConnection(c);
+                    c.startup();
+                }
+            };
+        try {
+            connectionManager.listen(config.getIntValue("kernel_port"), Version0MessageFactory.INSTANCE, listener);
+        }
+        catch (IOException e) {
+            throw new KernelException("Couldn't open kernel port", e);
+        }
     }
 
-    private void waitForSimulatorsAndAgents() {
+    private void waitForSimulatorsAndAgents() throws KernelException {
+        agentManager = new LegacyAgentManager(worldModel);
+        try {
+            agentManager.waitForAllAgents();
+        }
+        catch (InterruptedException e) {
+            throw new KernelException("Interrupted while waiting for agents", e);
+        }
     }
 
     private void waitForSimulationToFinish() {
     }
 
     private void cleanUp() {
-        gisConnection.shutdown();
-    }
-
-    /**
-       Listener for the GIS connection.
-    */
-    private static class GISConnectionListener implements ConnectionListener {
-        private CountDownLatch latch;
-        private WorldModel model;
-        private Connection gisConnection;
-
-        public GISConnectionListener(CountDownLatch latch, WorldModel model, Connection gisConnection) {
-            this.latch = latch;
-            this.model = model;
-            this.gisConnection = gisConnection;
-        }
-
-        public void messageReceived(Message m) {
-            if (m instanceof GKConnectOK) {
-                try {
-                    // Update the internal world model
-		    model.removeAllEntities();
-		    model.addEntities(((GKConnectOK)m).getWorldModel().getAllEntities());
-                    // Send an acknowledgement
-                    gisConnection.sendMessage(new KGAcknowledge());
-		    System.out.println("GIS connected OK");
-                    // Trigger the countdown latch
-                    latch.countDown();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (m instanceof GKConnectError) {
-                System.err.println("Error: " + ((GKConnectError)m).getReason());
-            }
-        }
+        connectionManager.shutdown();
     }
 }

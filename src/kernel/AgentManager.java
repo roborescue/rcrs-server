@@ -8,8 +8,7 @@ import rescuecore2.connection.ConnectionManagerListener;
  */
 public interface AgentManager extends ConnectionManagerListener {
     /**
-       Tell the AgentManager which world model to use.
-       @param model The new WorldModel.
-     */
-    public void setWorldModel(WorldModel model);
+       Wait until all agents have connected.
+    */
+    public void waitForAllAgents() throws InterruptedException;
 }
