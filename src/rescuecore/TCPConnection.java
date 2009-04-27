@@ -113,7 +113,10 @@ public class TCPConnection implements Connection {
 			while (running) {
 				try {
 					int length = in.read()<<24 | in.read()<<16 | in.read()<<8 | in.read();
-					if (length<0) continue;
+					if (length<0) {
+                                            running = false;
+                                            continue;
+                                        }
 					byte[] data = new byte[length];
 					int count = 0;
 					while (count<length) {
