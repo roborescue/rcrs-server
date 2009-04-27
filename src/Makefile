@@ -24,7 +24,7 @@ export CLASSPATH=$(shell pwd)
 export JFLAGS=-g
 export TOP_DIR=$(shell pwd)
 
-SUBDIRS = librescue blockadessimulator collapsesimulator firesimulator gis kernel miscsimulator civilian traffic viewer ticker yab
+SUBDIRS = librescue blockadessimulator collapsesimulator firesimulator gis miscsimulator civilian traffic viewer ticker yab
 .PHONY: $(SUBDIRS)
 
 all:
