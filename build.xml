@@ -206,4 +206,11 @@
   <target name="test-all" depends="test-static,test-unit" description="Run the static and unit tests for all packages"/>
 
   <target name="complete-build" depends="clean,compile,jars,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
+
+  <target name="start-kernel" depends="kernel-jar" description="Start the kernel">
+    <java classname="kernel.Kernel" classpathref="path.all">
+      <arg value="-c"/>
+      <arg value="boot/config.txt"/>
+    </java>
+  </target>
 </project>
