@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Collection;
 import java.io.IOException;
 
 import kernel.AgentManager;
@@ -22,6 +23,10 @@ import rescuecore2.version0.entities.AmbulanceTeam;
 import rescuecore2.version0.entities.AmbulanceCentre;
 import rescuecore2.version0.entities.PoliceForce;
 import rescuecore2.version0.entities.PoliceOffice;
+import rescuecore2.version0.entities.Road;
+import rescuecore2.version0.entities.Node;
+import rescuecore2.version0.entities.Building;
+import rescuecore2.version0.entities.properties.PropertyType;
 import rescuecore2.version0.messages.AKConnect;
 import rescuecore2.version0.messages.AKAcknowledge;
 import rescuecore2.version0.messages.KAConnectError;
@@ -42,6 +47,8 @@ public class LegacyAgentManager implements AgentManager {
 
     private Set<AgentInfo> toAcknowledge;
 
+    private Set<Entity> initialEntities;
+
     private final Object lock = new Object();
 
     /**
@@ -58,6 +65,7 @@ public class LegacyAgentManager implements AgentManager {
         pf = new LinkedList<PoliceForce>();
         po = new LinkedList<PoliceOffice>();
         toAcknowledge = new HashSet<AgentInfo>();
+        initialEntities = new HashSet<Entity>();
         for (Entity e : worldModel.getAllEntities()) {
             if (e instanceof Civilian) {
                 civ.add((Civilian)e);
@@ -80,6 +88,7 @@ public class LegacyAgentManager implements AgentManager {
             else if (e instanceof PoliceOffice) {
                 po.add((PoliceOffice)e);
             }
+            maybeAddInitialEntity(e);
         }
     }
 
@@ -162,6 +171,33 @@ public class LegacyAgentManager implements AgentManager {
         }
     }
 
+    private Collection<Entity> getInitialEntityList() {
+        return initialEntities;
+    }
+
+    private void maybeAddInitialEntity(Entity e) {
+        if (e instanceof Road) {
+            // Clone the road and remove some properties
+            Entity r = e.copy();
+            r.getProperty(PropertyType.BLOCK.getID()).clearValue();
+            r.getProperty(PropertyType.REPAIR_COST.getID()).clearValue();
+            initialEntities.add(r);
+        }
+        if (e instanceof Node) {
+            initialEntities.add(e);
+        }
+        if (e instanceof Building) {
+            // Clone the building and remove some properties
+            Entity b = e.copy();
+            b.getProperty(PropertyType.IGNITION.getID()).clearValue();
+            b.getProperty(PropertyType.FIERYNESS.getID()).clearValue();
+            b.getProperty(PropertyType.BROKENNESS.getID()).clearValue();
+            b.getProperty(PropertyType.TEMPERATURE.getID()).clearValue();
+            b.getProperty(PropertyType.BUILDING_APEXES.getID()).clearValue();
+            initialEntities.add(b);
+        }
+    }
+
     private class AgentConnectionListener implements ConnectionListener {
         private Connection connection;
 
@@ -187,7 +223,7 @@ public class LegacyAgentManager implements AgentManager {
                         info.tempID = tempID;
                         info.connection = connection;
                         // Send an OK
-                        connection.sendMessage(new KAConnectOK(tempID, info.entity.getID().getValue(), info.entity, worldModel.getAllEntities()));
+                        connection.sendMessage(new KAConnectOK(tempID, info.entity.getID().getValue(), info.entity, getInitialEntityList()));
                     }
                 }
                 catch (IOException e) {
