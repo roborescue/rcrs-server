@@ -15,6 +15,9 @@ public class KAConnectOK extends AbstractMessage {
     private EntityComponent agent;
     private EntityListComponent world;
 
+    /**
+       An empty KAConnectOK message.
+     */
     public KAConnectOK() {
         super("KA_CONNECT_OK", MessageConstants.KA_CONNECT_OK);
         tempID = new IntComponent("Temp ID");
@@ -27,6 +30,13 @@ public class KAConnectOK extends AbstractMessage {
         addMessageComponent(world);
     }
 
+    /**
+       A populated KAConnectOK message.
+       @param tempID The tempID of the agent that has successfully connected.
+       @param agentID The ID of the Entity that the agent will be controlling.
+       @param object The Entity that the agent will be controlling.
+       @param allEntities All other Entities that the agent knows about.
+     */
     public KAConnectOK(int tempID, int agentID, Entity object, Collection<Entity> allEntities) {
         this();
         this.tempID.setValue(tempID);

@@ -1,6 +1,5 @@
 package rescuecore2.version0.messages;
 
-import rescuecore2.messages.Message;
 import rescuecore2.messages.AbstractMessage;
 
 /**

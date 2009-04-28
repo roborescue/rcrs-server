@@ -10,11 +10,11 @@ import java.nio.charset.Charset;
    A bunch of useful tools for encoding and decoding things like integers.
  */
 public final class EncodingTools {
-    /** Charset for encoding/decoding strings. Should always be UTF-8 */
-    private static final Charset CHARSET = Charset.forName("UTF-8");
-
     /** The size of an INT_32 in bytes. */
     public static final int INT_32_SIZE = 4;
+
+    /** Charset for encoding/decoding strings. Should always be UTF-8 */
+    private static final Charset CHARSET = Charset.forName("UTF-8");
 
     /**
        Private constructor: this is a utility class.

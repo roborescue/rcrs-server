@@ -14,7 +14,7 @@ public class AKAcknowledge extends AbstractMessage {
     public AKAcknowledge() {
         super("AK_ACKNOWLEDGE", MessageConstants.AK_ACKNOWLEDGE);
         id = new IntComponent("ID");
-        addMessageComponent(id);        
+        addMessageComponent(id);
     }
 
     /**

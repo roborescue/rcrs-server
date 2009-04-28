@@ -66,7 +66,7 @@ public class EntityRefProperty extends RescueProperty {
 
     @Override
     public void read(InputStream in) throws IOException {
-        value = new EntityID(readInt32(in));
+        setValue(new EntityID(readInt32(in)));
     }
 
     @Override

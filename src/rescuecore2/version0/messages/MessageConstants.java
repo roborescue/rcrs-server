@@ -22,6 +22,5 @@ public final class MessageConstants {
     /** Kernel-Agent error. */
     public static final int KA_CONNECT_ERROR = 0x43;
 
-    /** Utility class: private constructor */
     private MessageConstants() {}
 }

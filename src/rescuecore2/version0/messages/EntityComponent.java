@@ -62,6 +62,7 @@ public class EntityComponent extends AbstractMessageComponent {
     @Override
     public void write(OutputStream out) throws IOException {
         ByteArrayOutputStream gather = new ByteArrayOutputStream();
+        writeInt32(value.getID().getValue(), gather);
         value.write(gather);
         // Type
         writeInt32(value.getType().getID(), out);

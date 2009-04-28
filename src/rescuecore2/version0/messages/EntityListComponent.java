@@ -66,6 +66,7 @@ public class EntityListComponent extends AbstractMessageComponent {
     public void write(OutputStream out) throws IOException {
         for (Entity next : entities) {
             ByteArrayOutputStream gather = new ByteArrayOutputStream();
+            writeInt32(next.getID().getValue(), gather);
             next.write(gather);
             // Type
             writeInt32(next.getType().getID(), out);
@@ -89,9 +90,10 @@ public class EntityListComponent extends AbstractMessageComponent {
                 EntityType type = RescueEntityFactory.INSTANCE.makeEntityType(typeID);
                 int size = readInt32(in);
                 byte[] data = readBytes(size, in);
-                EntityID id = new EntityID(readInt32(data));
+                ByteArrayInputStream eIn = new ByteArrayInputStream(data);
+                EntityID id = new EntityID(readInt32(eIn));
                 Entity e = RescueEntityFactory.INSTANCE.makeEntity(type, id);
-                e.read(new ByteArrayInputStream(data, 4, data.length - 4));
+                e.read(eIn);
                 entities.add(e);
             }
         } while (typeID != 0);

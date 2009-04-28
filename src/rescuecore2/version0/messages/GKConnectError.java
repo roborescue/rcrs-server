@@ -28,7 +28,7 @@ public class GKConnectError extends AbstractMessage {
 
     /**
        Get the reason for the error.
-       @param The reason for the error.
+       @return The reason for the error.
      */
     public String getReason() {
         return reason.getValue();

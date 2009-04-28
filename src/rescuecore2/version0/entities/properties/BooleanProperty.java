@@ -63,7 +63,7 @@ public class BooleanProperty extends RescueProperty {
 
     @Override
     public void read(InputStream in) throws IOException {
-        value = readInt32(in) != 0;
+        setValue(readInt32(in) != 0);
     }
 
     @Override

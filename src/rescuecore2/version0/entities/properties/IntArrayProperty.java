@@ -95,9 +95,11 @@ public class IntArrayProperty extends RescueProperty {
     public void read(InputStream in) throws IOException {
         int size = readInt32(in);
         data.clear();
+        int[] result = new int[size];
         for (int i = 0; i < size; ++i) {
-            push(readInt32(in));
+            result[i] = readInt32(in);
         }
+        setValues(result);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class IntProperty extends RescueProperty {
 
     @Override
     public void read(InputStream in) throws IOException {
-        value = readInt32(in);
+        setValue(readInt32(in));
     }
 
     @Override

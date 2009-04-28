@@ -7,9 +7,10 @@ import rescuecore2.worldmodel.EntityID;
  */
 public class PoliceOffice extends Building {
     /**
-       Construct a PoliceOffice object with entirely undefined values.
+       Construct a PoliceOffice object with entirely undefined property values.
+       @param id The ID of this entity.
      */
     public PoliceOffice(EntityID id) {
-	super(id, EntityConstants.POLICE_OFFICE);
+        super(id, EntityConstants.POLICE_OFFICE);
     }
 }
