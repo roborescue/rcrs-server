@@ -21,6 +21,17 @@ public interface Property {
     boolean isDefined();
 
     /**
+       Clear the value of this property. Future calls to {@link #isDefined()} will return false.
+     */
+    void clearValue();
+
+    /**
+       Take on the value of another property.
+       @param other The other property to inspect.
+     */
+    void takeValue(Property p);
+
+    /**
        Write this property to a stream.
        @param out The stream to write to.
        @throws IOException If the write fails.

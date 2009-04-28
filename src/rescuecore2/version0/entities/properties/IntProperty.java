@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import rescuecore2.worldmodel.Property;
+
 /**
    A single integer property.
  */
@@ -49,9 +51,18 @@ public class IntProperty extends RescueProperty {
         setDefined(true);
     }
 
-    /**
-       Clear the value of this property. Future calls to {@link #isDefined()} will return false.
-     */
+    @Override
+    public void takeValue(Property p) {
+        IntProperty i = (IntProperty)p;
+        if (i.isDefined()) {
+            setValue(i.getValue());
+        }
+        else {
+            clearValue();
+        }
+    }
+
+    @Override
     public void clearValue() {
         value = 0;
         setDefined(false);

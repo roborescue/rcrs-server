@@ -4,6 +4,7 @@ import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,9 +52,18 @@ public class EntityRefProperty extends RescueProperty {
         setDefined(true);
     }
 
-    /**
-       Clear the value of this property. Future calls to {@link #isDefined()} will return false.
-     */
+    @Override
+    public void takeValue(Property p) {
+        EntityRefProperty e = (EntityRefProperty)p;
+        if (e.isDefined()) {
+            setValue(e.getValue());
+        }
+        else {
+            clearValue();
+        }
+    }
+
+    @Override
     public void clearValue() {
         value = null;
         setDefined(false);

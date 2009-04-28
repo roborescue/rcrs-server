@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import rescuecore2.worldmodel.Property;
+
 /**
    A boolean property.
  */
@@ -49,9 +51,18 @@ public class BooleanProperty extends RescueProperty {
         setDefined(true);
     }
 
-    /**
-       Clear the value of this property. Future calls to {@link #isDefined()} will return false.
-     */
+    @Override
+    public void takeValue(Property p) {
+        BooleanProperty b = (BooleanProperty)p;
+        if (b.isDefined()) {
+            setValue(b.getValue());
+        }
+        else {
+            clearValue();
+        }
+    }
+
+    @Override
     public void clearValue() {
         setDefined(false);
     }

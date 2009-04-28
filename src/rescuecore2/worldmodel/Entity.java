@@ -48,4 +48,10 @@ public interface Entity {
        @throws IOException If the read fails.
      */
     void read(InputStream in) throws IOException;
+
+    /**
+       Create a copy of this entity.
+       @return A new Entity with the same ID and property values.
+     */
+    Entity copy();
 }

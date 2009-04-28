@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import rescuecore2.worldmodel.Property;
+
 /**
    An integer-array property.
  */
@@ -75,9 +77,18 @@ public class IntArrayProperty extends RescueProperty {
         data.add(i);
     }
 
-    /**
-       Clear the value of this property. Future calls to {@link #isDefined()} will return false.
-     */
+    @Override
+    public void takeValue(Property p) {
+        IntArrayProperty i = (IntArrayProperty)p;
+        if (i.isDefined()) {
+            setValues(i.getValues());
+        }
+        else {
+            clearValue();
+        }
+    }
+
+    @Override
     public void clearValue() {
         data.clear();
         setDefined(false);

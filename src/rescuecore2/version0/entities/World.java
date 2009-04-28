@@ -1,5 +1,6 @@
 package rescuecore2.version0.entities;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.version0.entities.properties.IntProperty;
 import rescuecore2.version0.entities.properties.PropertyType;
@@ -29,5 +30,10 @@ public class World extends RescueObject {
               new IntProperty(PropertyType.LATITUDE),
               new IntProperty(PropertyType.WIND_FORCE),
               new IntProperty(PropertyType.WIND_DIRECTION));
+    }
+
+    @Override
+    protected Entity copyImpl() {
+        return new World(getID());
     }
 }

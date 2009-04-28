@@ -1,5 +1,6 @@
 package rescuecore2.version0.entities;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.version0.entities.properties.IntProperty;
@@ -42,5 +43,10 @@ public class Building extends RescueObject {
               new IntArrayProperty(PropertyType.BUILDING_APEXES),
               new IntArrayProperty(PropertyType.ENTRANCES)
               );
+    }
+
+    @Override
+    protected Entity copyImpl() {
+        return new Building(getID());
     }
 }

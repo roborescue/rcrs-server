@@ -1,5 +1,6 @@
 package rescuecore2.version0.entities;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.version0.entities.properties.IntProperty;
 import rescuecore2.version0.entities.properties.IntArrayProperty;
@@ -27,5 +28,10 @@ public class Node extends Vertex {
               new IntProperty(PropertyType.Y),
               new IntArrayProperty(PropertyType.EDGES)
               );
+    }
+
+    @Override
+    protected Entity copyImpl() {
+        return new Node(getID());
     }
 }

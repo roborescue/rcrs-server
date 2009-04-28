@@ -40,6 +40,23 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
+    public Entity copy() {
+        Entity result = copyImpl();
+        for (Map.Entry<Integer, Property> next : properties.entrySet()) {
+            Property original = next.getValue();
+            Property copy = result.getProperty(next.getKey());
+            copy.takeValue(original);
+        }
+        return result;
+    }
+
+    /**
+       Create a copy of this entity. Property values do not need to be copied.
+       @return A new Entity of the same type as this and with the same ID.
+     */
+    protected abstract Entity copyImpl();
+
+    @Override
     public Set<Property> getProperties() {
         return new HashSet<Property>(properties.values());
     }

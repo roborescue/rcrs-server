@@ -1,5 +1,6 @@
 package rescuecore2.version0.entities;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.version0.entities.properties.IntProperty;
 import rescuecore2.version0.entities.properties.BooleanProperty;
@@ -34,5 +35,10 @@ public class Road extends Edge {
               new IntProperty(PropertyType.TAIL),
               new IntProperty(PropertyType.LENGTH)
               );
+    }
+
+    @Override
+    protected Entity copyImpl() {
+        return new Road(getID());
     }
 }

@@ -1,5 +1,6 @@
 package rescuecore2.version0.entities;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -12,5 +13,10 @@ public class Civilian extends Human {
     */
     public Civilian(EntityID id) {
         super(id, EntityConstants.CIVILIAN);
+    }
+
+    @Override
+    protected Entity copyImpl() {
+        return new Civilian(getID());
     }
 }
