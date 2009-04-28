@@ -1,6 +1,5 @@
 package kernel;
 
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.connection.ConnectionManagerListener;
 
 /**
@@ -9,6 +8,7 @@ import rescuecore2.connection.ConnectionManagerListener;
 public interface AgentManager extends ConnectionManagerListener {
     /**
        Wait until all agents have connected.
+       @throws InterruptedException If this thread is interrupted while waiting for agents.
     */
-    public void waitForAllAgents() throws InterruptedException;
+    void waitForAllAgents() throws InterruptedException;
 }

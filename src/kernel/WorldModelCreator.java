@@ -10,6 +10,7 @@ public interface WorldModelCreator {
     /**
        Build the world model.
        @param config The config to use.
+       @return A new WorldModel.
        @throws KernelException If there is a problem building the world model.
     */
     WorldModel buildWorldModel(Config config) throws KernelException;

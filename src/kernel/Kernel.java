@@ -2,22 +2,17 @@ package kernel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
 
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionListener;
-import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionManager;
 import rescuecore2.connection.ConnectionManagerListener;
-import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.version0.messages.Version0MessageFactory;
 
 import kernel.legacy.LegacyAgentManager;
-import kernel.legacy.LegacyWorldModelCreator;
+import kernel.legacy.GISWorldModelCreator;
 
 /**
    The Robocup Rescue kernel.
@@ -88,7 +83,7 @@ public class Kernel {
     }
 
     private void buildWorldModel() throws KernelException {
-        worldModelCreator = new LegacyWorldModelCreator();
+        worldModelCreator = new GISWorldModelCreator();
         worldModel = worldModelCreator.buildWorldModel(config);
     }
 

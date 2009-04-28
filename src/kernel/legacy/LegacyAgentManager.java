@@ -44,57 +44,61 @@ public class LegacyAgentManager implements AgentManager {
 
     private final Object AGENT_LOCK = new Object();
 
+    /**
+       Start a LegacyAgentManager based on a world model.
+       @param m The world model that contains all entities, including controllable agents.
+     */
     public LegacyAgentManager(WorldModel m) {
-	worldModel = m;
-	civ = new LinkedList<Civilian>();
-	fb = new LinkedList<FireBrigade>();
-	fs = new LinkedList<FireStation>();
-	at = new LinkedList<AmbulanceTeam>();
-	ac = new LinkedList<AmbulanceCentre>();
-	pf = new LinkedList<PoliceForce>();
-	po = new LinkedList<PoliceOffice>();
+        worldModel = m;
+        civ = new LinkedList<Civilian>();
+        fb = new LinkedList<FireBrigade>();
+        fs = new LinkedList<FireStation>();
+        at = new LinkedList<AmbulanceTeam>();
+        ac = new LinkedList<AmbulanceCentre>();
+        pf = new LinkedList<PoliceForce>();
+        po = new LinkedList<PoliceOffice>();
         toAcknowledge = new HashSet<AgentInfo>();
-	for (Entity e : worldModel.getAllEntities()) {
-	    if (e instanceof Civilian) {
-		civ.add((Civilian)e);
-	    }
-	    else if (e instanceof FireBrigade) {
-		fb.add((FireBrigade)e);
-	    }
-	    else if (e instanceof FireStation) {
-		fs.add((FireStation)e);
-	    }
-	    else if (e instanceof AmbulanceTeam) {
-		at.add((AmbulanceTeam)e);
-	    }
-	    else if (e instanceof AmbulanceCentre) {
-		ac.add((AmbulanceCentre)e);
-	    }
-	    else if (e instanceof PoliceForce) {
-		pf.add((PoliceForce)e);
-	    }
-	    else if (e instanceof PoliceOffice) {
-		po.add((PoliceOffice)e);
-	    }
-	}
+        for (Entity e : worldModel.getAllEntities()) {
+            if (e instanceof Civilian) {
+                civ.add((Civilian)e);
+            }
+            else if (e instanceof FireBrigade) {
+                fb.add((FireBrigade)e);
+            }
+            else if (e instanceof FireStation) {
+                fs.add((FireStation)e);
+            }
+            else if (e instanceof AmbulanceTeam) {
+                at.add((AmbulanceTeam)e);
+            }
+            else if (e instanceof AmbulanceCentre) {
+                ac.add((AmbulanceCentre)e);
+            }
+            else if (e instanceof PoliceForce) {
+                pf.add((PoliceForce)e);
+            }
+            else if (e instanceof PoliceOffice) {
+                po.add((PoliceOffice)e);
+            }
+        }
     }
 
     @Override
     public void newConnection(Connection c) {
-	c.addConnectionListener(new AgentConnectionListener(c));
+        c.addConnectionListener(new AgentConnectionListener(c));
     }
 
     @Override
     public void waitForAllAgents() throws InterruptedException {
         synchronized (AGENT_LOCK) {
-            while (!civ.isEmpty() ||
-                   !fb.isEmpty() ||
-                   !fs.isEmpty() ||
-                   !at.isEmpty() ||
-                   !ac.isEmpty() ||
-                   !po.isEmpty() ||
-                   !pf.isEmpty() ||
-                   !toAcknowledge.isEmpty()) {
+            while (!civ.isEmpty()
+                   || !fb.isEmpty()
+                   || !fs.isEmpty()
+                   || !at.isEmpty()
+                   || !ac.isEmpty()
+                   || !po.isEmpty()
+                   || !pf.isEmpty()
+                   || !toAcknowledge.isEmpty()) {
                 AGENT_LOCK.wait(1000);
                 System.out.println("Waiting for " + civ.size() + " civilians, "
                                    + fb.size() + " fire brigades, "
@@ -146,7 +150,7 @@ public class LegacyAgentManager implements AgentManager {
     }
 
     private boolean acknowledge(int id) {
-        synchronized(AGENT_LOCK) {
+        synchronized (AGENT_LOCK) {
             for (AgentInfo next : toAcknowledge) {
                 if (next.entity.getID().getValue() == id) {
                     toAcknowledge.remove(next);
@@ -165,8 +169,8 @@ public class LegacyAgentManager implements AgentManager {
             connection = c;
         }
 
-	@Override
-	public void messageReceived(Message msg) {
+        @Override
+        public void messageReceived(Message msg) {
             if (msg instanceof AKConnect) {
                 // Pull out the temp ID and agent type mask
                 AKConnect connect = (AKConnect)msg;
@@ -199,7 +203,7 @@ public class LegacyAgentManager implements AgentManager {
                     System.out.println("Unexpected acknowledge from agent " + id);
                 }
             }
-	}
+        }
     }
 
     private static class AgentInfo {
@@ -207,7 +211,7 @@ public class LegacyAgentManager implements AgentManager {
         int tempID;
         Connection connection;
 
-        public AgentInfo(Entity entity) {
+        AgentInfo(Entity entity) {
             this.entity = entity;
         }
     }

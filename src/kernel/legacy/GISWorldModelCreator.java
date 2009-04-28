@@ -19,7 +19,10 @@ import rescuecore2.version0.messages.GKConnectError;
 import rescuecore2.version0.messages.KGConnect;
 import rescuecore2.version0.messages.KGAcknowledge;
 
-public class LegacyWorldModelCreator implements WorldModelCreator {
+/**
+   A WorldModelCreator that talks to the GIS.
+ */
+public class GISWorldModelCreator implements WorldModelCreator {
     @Override
     public WorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
