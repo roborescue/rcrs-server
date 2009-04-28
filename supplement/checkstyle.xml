@@ -34,7 +34,9 @@
       <property name="allowThrowsTagsForSubclasses" value="true"/>
       <property name="scope" value="package"/>
     </module>
-    <module name="JavadocType"/>
+    <module name="JavadocType">
+      <property name="scope" value="package"/>
+    </module>
     <module name="JavadocVariable">
       <property name="scope" value="package"/>
     </module>
@@ -153,6 +155,7 @@
     <module name="InterfaceIsType"/>
     <module name="VisibilityModifier">
       <property name="protectedAllowed" value="true"/>
+      <property name="packageAllowed" value="true"/>
     </module>
 
 

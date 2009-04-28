@@ -42,7 +42,7 @@ public class LegacyAgentManager implements AgentManager {
 
     private Set<AgentInfo> toAcknowledge;
 
-    private final Object AGENT_LOCK = new Object();
+    private final Object lock = new Object();
 
     /**
        Start a LegacyAgentManager based on a world model.
@@ -90,7 +90,7 @@ public class LegacyAgentManager implements AgentManager {
 
     @Override
     public void waitForAllAgents() throws InterruptedException {
-        synchronized (AGENT_LOCK) {
+        synchronized (lock) {
             while (!civ.isEmpty()
                    || !fb.isEmpty()
                    || !fs.isEmpty()
@@ -99,7 +99,7 @@ public class LegacyAgentManager implements AgentManager {
                    || !po.isEmpty()
                    || !pf.isEmpty()
                    || !toAcknowledge.isEmpty()) {
-                AGENT_LOCK.wait(1000);
+                lock.wait(1000);
                 System.out.println("Waiting for " + civ.size() + " civilians, "
                                    + fb.size() + " fire brigades, "
                                    + fs.size() + " fire stations, "
@@ -113,7 +113,7 @@ public class LegacyAgentManager implements AgentManager {
     }
 
     private AgentInfo findEntityToControl(int mask) {
-        synchronized (AGENT_LOCK) {
+        synchronized (lock) {
             List<Queue<? extends Entity>> toTry = new ArrayList<Queue<? extends Entity>>();
             if ((mask & Constants.AGENT_TYPE_CIVILIAN) == Constants.AGENT_TYPE_CIVILIAN) {
                 toTry.add(civ);
@@ -141,7 +141,7 @@ public class LegacyAgentManager implements AgentManager {
                 if (e != null) {
                     AgentInfo info = new AgentInfo(e);
                     toAcknowledge.add(info);
-                    AGENT_LOCK.notifyAll();
+                    lock.notifyAll();
                     return info;
                 }
             }
@@ -150,11 +150,11 @@ public class LegacyAgentManager implements AgentManager {
     }
 
     private boolean acknowledge(int id) {
-        synchronized (AGENT_LOCK) {
+        synchronized (lock) {
             for (AgentInfo next : toAcknowledge) {
                 if (next.entity.getID().getValue() == id) {
                     toAcknowledge.remove(next);
-                    AGENT_LOCK.notifyAll();
+                    lock.notifyAll();
                     return true;
                 }
             }
