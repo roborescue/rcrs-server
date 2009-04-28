@@ -6,7 +6,7 @@ package rescuecore2.worldmodel;
 public interface EntityFactory {
     /**
        Create an EntityType object from a numeric ID.
-       @param The ID of the requested entity type.
+       @param id The ID of the requested entity type.
        @return An EntityType object. This should probably be a shared instance.
      */
     EntityType makeEntityType(int id);

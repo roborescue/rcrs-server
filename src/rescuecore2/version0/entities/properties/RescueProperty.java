@@ -23,7 +23,7 @@ public abstract class RescueProperty extends AbstractProperty {
      */
     protected RescueProperty(PropertyType type, boolean defined) {
         super(type.getID(), defined);
-	this.type = type;
+        this.type = type;
     }
 
     /**
@@ -31,6 +31,6 @@ public abstract class RescueProperty extends AbstractProperty {
        @return The name of this property.
      */
     public String getName() {
-	return type.getName();
+        return type.getName();
     }
 }

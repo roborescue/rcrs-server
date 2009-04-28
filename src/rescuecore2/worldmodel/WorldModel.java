@@ -12,9 +12,12 @@ public class WorldModel {
     private Set<Entity> entities;
     private Set<WorldModelListener> listeners;
 
+    /**
+       Construct an empty world model.
+     */
     public WorldModel() {
-	entities = new HashSet<Entity>();
-	listeners = new HashSet<WorldModelListener>();
+        entities = new HashSet<Entity>();
+        listeners = new HashSet<WorldModelListener>();
     }
 
     /**
@@ -22,9 +25,9 @@ public class WorldModel {
        @param l The listener to add.
      */
     public void addWorldModelListener(WorldModelListener l) {
-	synchronized(listeners) {
-	    listeners.add(l);
-	}
+        synchronized (listeners) {
+            listeners.add(l);
+        }
     }
 
     /**
@@ -32,9 +35,9 @@ public class WorldModel {
        @param l The listener to remove.
      */
     public void removeWorldModelListener(WorldModelListener l) {
-	synchronized(listeners) {
-	    listeners.remove(l);
-	}
+        synchronized (listeners) {
+            listeners.remove(l);
+        }
     }
 
     /**
@@ -42,7 +45,7 @@ public class WorldModel {
        @return An immutable view of all entities in the world.
      */
     public Set<Entity> getAllEntities() {
-	return Collections.unmodifiableSet(entities);
+        return Collections.unmodifiableSet(entities);
     }
 
     /**
@@ -50,8 +53,8 @@ public class WorldModel {
        @param e The entity to add.
      */
     public void addEntity(Entity e) {
-	entities.add(e);
-	fireEntityAdded(e);
+        entities.add(e);
+        fireEntityAdded(e);
     }
 
     /**
@@ -59,10 +62,10 @@ public class WorldModel {
        @param e The entities to add.
      */
     public void addEntities(Collection<Entity> e) {
-	entities.addAll(e);
-	for (Entity next : e) {
-	    fireEntityAdded(next);
-	}
+        entities.addAll(e);
+        for (Entity next : e) {
+            fireEntityAdded(next);
+        }
     }
 
     /**
@@ -70,39 +73,39 @@ public class WorldModel {
        @param e The entity to remove.
      */
     public void removeEntity(Entity e) {
-	entities.remove(e);
-	fireEntityRemoved(e);
+        entities.remove(e);
+        fireEntityRemoved(e);
     }
 
     /**
        Remove all entities from the world.
      */
     public void removeAllEntities() {
-	Set<Entity> copy = new HashSet<Entity>(entities);
-	entities.clear();
-	for (Entity e : copy) {
-	    fireEntityRemoved(e);
-	}
+        Set<Entity> copy = new HashSet<Entity>(entities);
+        entities.clear();
+        for (Entity e : copy) {
+            fireEntityRemoved(e);
+        }
     }
 
     private void fireEntityAdded(Entity e) {
-	for (WorldModelListener l : getListeners()) {
-	    l.entityAdded(e);
-	}
+        for (WorldModelListener l : getListeners()) {
+            l.entityAdded(e);
+        }
     }
 
     private void fireEntityRemoved(Entity e) {
-	for (WorldModelListener l : getListeners()) {
-	    l.entityRemoved(e);
-	}
+        for (WorldModelListener l : getListeners()) {
+            l.entityRemoved(e);
+        }
     }
 
     private WorldModelListener[] getListeners() {
-	WorldModelListener[] l;
-	synchronized(listeners) {
-	    l = new WorldModelListener[listeners.size()];
-	    listeners.toArray(l);
-	}
-	return l;
+        WorldModelListener[] l;
+        synchronized (listeners) {
+            l = new WorldModelListener[listeners.size()];
+            listeners.toArray(l);
+        }
+        return l;
     }
 }

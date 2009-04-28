@@ -20,7 +20,7 @@ public class EntityRefProperty extends RescueProperty {
        @param type The type of this property.
      */
     public EntityRefProperty(PropertyType type) {
-	super(type);
+        super(type);
     }
 
     /**
@@ -29,8 +29,8 @@ public class EntityRefProperty extends RescueProperty {
        @param value The initial value of the property.
      */
     public EntityRefProperty(PropertyType type, EntityID value) {
-	super(type, true);
-	this.value = value;
+        super(type, true);
+        this.value = value;
     }
 
     /**
@@ -39,7 +39,7 @@ public class EntityRefProperty extends RescueProperty {
        @see #isDefined()
      */
     public EntityID getValue() {
-	return value;
+        return value;
     }
 
     /**
@@ -47,16 +47,16 @@ public class EntityRefProperty extends RescueProperty {
        @param value The new value.
      */
     public void setValue(EntityID value) {
-	this.value = value;
-	setDefined(true);
+        this.value = value;
+        setDefined(true);
     }
 
     /**
        Clear the value of this property. Future calls to {@link #isDefined()} will return false.
      */
     public void clearValue() {
-	value = null;
-	setDefined(false);
+        value = null;
+        setDefined(false);
     }
 
     @Override

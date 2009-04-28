@@ -1,10 +1,6 @@
 package rescuecore2.version0.messages;
 
-import java.util.List;
-
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.version0.messages.IntComponent;
 
 /**
    A message for connecting an agent to the kernel.
@@ -14,6 +10,9 @@ public class AKConnect extends AbstractMessage {
     private IntComponent tempID;
     private IntComponent agentMask;
 
+    /**
+       An AKConnect with undefined values.
+     */
     public AKConnect() {
         super("AK_CONNECT", MessageConstants.AK_CONNECT);
         version = new IntComponent("Version", 0);
@@ -22,6 +21,17 @@ public class AKConnect extends AbstractMessage {
         addMessageComponent(tempID);
         addMessageComponent(version);
         addMessageComponent(agentMask);
+    }
+
+    /**
+       An AKConnect with particular tempID and agentMask values.
+       @param tempID The temporary ID.
+       @param agentMask The logical OR of requested agent types.
+     */
+    public AKConnect(int tempID, int agentMask) {
+        this();
+        this.tempID.setValue(tempID);
+        this.agentMask.setValue(agentMask);
     }
 
     /**

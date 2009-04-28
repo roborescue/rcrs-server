@@ -2,15 +2,13 @@ package rescuecore2.version0.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readString;
-import static rescuecore2.misc.EncodingTools.writeString;
 import static rescuecore2.misc.EncodingTools.readBytes;
+import static rescuecore2.misc.EncodingTools.INT_32_SIZE;
 
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
-import rescuecore2.worldmodel.Property;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
 
@@ -80,7 +78,7 @@ public class EntityComponent extends AbstractMessageComponent {
         byte[] data = readBytes(size, in);
         EntityID id = new EntityID(readInt32(data));
         value = RescueEntityFactory.INSTANCE.makeEntity(type, id);
-        value.read(new ByteArrayInputStream(data, 4, data.length - 4));
+        value.read(new ByteArrayInputStream(data, INT_32_SIZE, data.length - INT_32_SIZE));
     }
 
     @Override

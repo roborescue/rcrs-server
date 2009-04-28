@@ -54,7 +54,7 @@ public interface Connection {
 
     /**
        Turn byte-level logging on or off.
-       @param enable Whether to enable byte-level logging.
+       @param enabled Whether to enable byte-level logging.
     */
     void setLogBytes(boolean enabled);
 }

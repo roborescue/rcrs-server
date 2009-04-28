@@ -19,14 +19,15 @@ public class World extends RescueObject {
 
     /**
        Construct a World object with entirely undefined values.
-     */
+       @param id The ID of this entity.
+    */
     public World(EntityID id) {
-	super(id,
+        super(id,
               EntityConstants.WORLD,
-	      new IntProperty(PropertyType.START_TIME),
-	      new IntProperty(PropertyType.LONGITUDE),
-	      new IntProperty(PropertyType.LATITUDE),
-	      new IntProperty(PropertyType.WIND_FORCE),
-	      new IntProperty(PropertyType.WIND_DIRECTION));
+              new IntProperty(PropertyType.START_TIME),
+              new IntProperty(PropertyType.LONGITUDE),
+              new IntProperty(PropertyType.LATITUDE),
+              new IntProperty(PropertyType.WIND_FORCE),
+              new IntProperty(PropertyType.WIND_DIRECTION));
     }
 }

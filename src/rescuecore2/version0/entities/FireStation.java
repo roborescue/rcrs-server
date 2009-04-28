@@ -8,6 +8,7 @@ import rescuecore2.worldmodel.EntityID;
 public class FireStation extends Building {
     /**
        Construct a FireStation object with entirely undefined values.
+       @param id The ID of this entity.
      */
     public FireStation(EntityID id) {
         super(id, EntityConstants.FIRE_STATION);

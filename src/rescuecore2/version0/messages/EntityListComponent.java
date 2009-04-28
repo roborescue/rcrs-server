@@ -2,8 +2,6 @@ package rescuecore2.version0.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readString;
-import static rescuecore2.misc.EncodingTools.writeString;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import java.util.List;
@@ -20,7 +18,6 @@ import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
-import rescuecore2.worldmodel.Property;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
 

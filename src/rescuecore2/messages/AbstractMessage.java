@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import rescuecore2.messages.MessageComponent;
-
 /**
    An abstract base class for Message objects.
  */
@@ -14,6 +12,11 @@ public abstract class AbstractMessage implements Message {
     private int id;
     private List<MessageComponent> components;
 
+    /**
+       Construct a message with a given name and type ID.
+       @param name The name of the message.
+       @param id The type ID of the message.
+     */
     protected AbstractMessage(String name, int id) {
         this.name = name;
         this.id = id;
@@ -50,7 +53,7 @@ public abstract class AbstractMessage implements Message {
         result.append(" (");
         result.append(id);
         result.append(") : ");
-        for (Iterator<MessageComponent> it = components.iterator(); it.hasNext(); ) {
+        for (Iterator<MessageComponent> it = components.iterator(); it.hasNext();) {
             MessageComponent next = it.next();
             result.append(next.getName());
             result.append(": ");

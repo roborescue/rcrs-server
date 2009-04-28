@@ -30,22 +30,22 @@ public interface Entity {
 
     /**
        Get a property by ID.
-       @param id The ID to look up.
+       @param propID The ID to look up.
        @return The property with the given ID or null if no such property exists.
     */
-    Property getProperty(int id);
+    Property getProperty(int propID);
 
     /**
        Write this Entity to a stream.
        @param out The stream to write to.
        @throws IOException If the write fails.
      */
-    public void write(OutputStream out) throws IOException;
+    void write(OutputStream out) throws IOException;
 
     /**
        Read this Entity from a stream.
        @param in The stream to read from.
        @throws IOException If the read fails.
      */
-    public void read(InputStream in) throws IOException;
+    void read(InputStream in) throws IOException;
 }

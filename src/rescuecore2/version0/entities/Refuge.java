@@ -8,8 +8,9 @@ import rescuecore2.worldmodel.EntityID;
 public class Refuge extends Building {
     /**
        Construct a Refuge object with entirely undefined values.
+       @param id The ID of this entity.
      */
     public Refuge(EntityID id) {
-	super(id, EntityConstants.REFUGE);
+        super(id, EntityConstants.REFUGE);
     }
 }

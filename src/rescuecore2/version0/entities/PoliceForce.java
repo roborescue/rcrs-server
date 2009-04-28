@@ -3,10 +3,14 @@ package rescuecore2.version0.entities;
 import rescuecore2.worldmodel.EntityID;
 
 /**
-   PoliceForce class
+   The PoliceForce object.
  */
 public class PoliceForce extends Human {
-    public PoliceForce(EntityID id) {
-	super(id, EntityConstants.POLICE_FORCE);
+   /**
+       Construct a PoliceForce object with entirely undefined values.
+       @param id The ID of this entity.
+     */
+     public PoliceForce(EntityID id) {
+        super(id, EntityConstants.POLICE_FORCE);
     }
 }

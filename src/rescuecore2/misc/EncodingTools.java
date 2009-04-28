@@ -13,6 +13,9 @@ public final class EncodingTools {
     /** Charset for encoding/decoding strings. Should always be UTF-8 */
     private static final Charset CHARSET = Charset.forName("UTF-8");
 
+    /** The size of an INT_32 in bytes. */
+    public static final int INT_32_SIZE = 4;
+
     /**
        Private constructor: this is a utility class.
     */

@@ -13,21 +13,21 @@ public final class EntityType {
        @param name The name of this entity type.
      */
     public EntityType(int id, String name) {
-	this.id = id;
+        this.id = id;
         this.name = name;
     }
 
     @Override
     public boolean equals(Object o) {
-	if (o instanceof EntityType) {
-	    return this.id == ((EntityType)o).id;
-	}
-	return false;
+        if (o instanceof EntityType) {
+            return this.id == ((EntityType)o).id;
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-	return id;
+        return id;
     }
 
     /**
@@ -35,7 +35,7 @@ public final class EntityType {
        @return The numeric ID.
      */
     public int getID() {
-	return id;
+        return id;
     }
 
     /**

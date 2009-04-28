@@ -18,7 +18,7 @@ public class IntProperty extends RescueProperty {
        @param type The type of this property.
      */
     public IntProperty(PropertyType type) {
-	super(type);
+        super(type);
     }
 
     /**
@@ -27,8 +27,8 @@ public class IntProperty extends RescueProperty {
        @param value The initial value of the property.
      */
     public IntProperty(PropertyType type, int value) {
-	super(type, true);
-	this.value = value;
+        super(type, true);
+        this.value = value;
     }
 
     /**
@@ -37,7 +37,7 @@ public class IntProperty extends RescueProperty {
        @see #isDefined()
      */
     public int getValue() {
-	return value;
+        return value;
     }
 
     /**
@@ -45,16 +45,16 @@ public class IntProperty extends RescueProperty {
        @param value The new value.
      */
     public void setValue(int value) {
-	this.value = value;
-	setDefined(true);
+        this.value = value;
+        setDefined(true);
     }
 
     /**
        Clear the value of this property. Future calls to {@link #isDefined()} will return false.
      */
     public void clearValue() {
-	value = 0;
-	setDefined(false);
+        value = 0;
+        setDefined(false);
     }
 
     @Override

@@ -13,35 +13,40 @@ import rescuecore2.version0.entities.properties.PropertyType;
 public abstract class Human extends RescueObject {
     /**
        Construct a subclass of a Human object with entirely undefined values.
+       @param id The ID of this entity.
+       @param type The type ID of this entity.
     */
     protected Human(EntityID id, EntityType type) {
-	super(id,
+        super(id,
               type,
-	      new IntProperty(PropertyType.POSITION),
-	      new IntProperty(PropertyType.POSITION_EXTRA),
-	      new IntArrayProperty(PropertyType.POSITION_HISTORY),
-	      new IntProperty(PropertyType.DIRECTION),
-	      new IntProperty(PropertyType.STAMINA),
-	      new IntProperty(PropertyType.HP),
-	      new IntProperty(PropertyType.DAMAGE),
-	      new IntProperty(PropertyType.BURIEDNESS)
-	      );
+              new IntProperty(PropertyType.POSITION),
+              new IntProperty(PropertyType.POSITION_EXTRA),
+              new IntArrayProperty(PropertyType.POSITION_HISTORY),
+              new IntProperty(PropertyType.DIRECTION),
+              new IntProperty(PropertyType.STAMINA),
+              new IntProperty(PropertyType.HP),
+              new IntProperty(PropertyType.DAMAGE),
+              new IntProperty(PropertyType.BURIEDNESS)
+              );
     }
 
     /**
        Construct a subclass of a Human object with entirely undefined values.
+       @param id The ID of this entity.
+       @param type The type ID of this entity.
+       @param extraProp An extra property for this entity, e.g. WATER_QUANTITY.
     */
     protected Human(EntityID id, EntityType type, Property extraProp) {
-	super(id,
+        super(id,
               type,
-	      new IntProperty(PropertyType.POSITION),
-	      new IntProperty(PropertyType.POSITION_EXTRA),
-	      new IntArrayProperty(PropertyType.POSITION_HISTORY),
-	      new IntProperty(PropertyType.DIRECTION),
-	      new IntProperty(PropertyType.STAMINA),
-	      new IntProperty(PropertyType.HP),
-	      new IntProperty(PropertyType.DAMAGE),
-	      new IntProperty(PropertyType.BURIEDNESS),
-	      extraProp);
+              new IntProperty(PropertyType.POSITION),
+              new IntProperty(PropertyType.POSITION_EXTRA),
+              new IntArrayProperty(PropertyType.POSITION_HISTORY),
+              new IntProperty(PropertyType.DIRECTION),
+              new IntProperty(PropertyType.STAMINA),
+              new IntProperty(PropertyType.HP),
+              new IntProperty(PropertyType.DAMAGE),
+              new IntProperty(PropertyType.BURIEDNESS),
+              extraProp);
     }
 }

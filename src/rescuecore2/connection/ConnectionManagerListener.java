@@ -8,5 +8,5 @@ public interface ConnectionManagerListener {
        Notification that a new connection has been made. This connection will be initialised but not started.
        @param c The new connection.
      */
-    public void newConnection(Connection c);
+    void newConnection(Connection c);
 }

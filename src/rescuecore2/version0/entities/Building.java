@@ -13,14 +13,17 @@ import rescuecore2.version0.entities.properties.PropertyType;
 public class Building extends RescueObject {
     /**
        Construct a Building object with entirely undefined values.
-     */
+       @param id The ID of this entity.
+    */
     public Building(EntityID id) {
         this(id, EntityConstants.BUILDING);
     }
 
     /**
        Construct a subclass of a Building object with entirely undefined values.
-     */
+       @param id The ID of this entity.
+       @param type The real type of this building.
+    */
     protected Building(EntityID id, EntityType type) {
         super(id,
               type,

@@ -3,9 +3,12 @@ package rescuecore2.version0.messages;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageFactory;
 
-public class Version0MessageFactory implements MessageFactory {
-    /** Singleton instance */
-    public final static Version0MessageFactory INSTANCE = new Version0MessageFactory();
+/**
+   A factory for version 0 messages.
+ */
+public final class Version0MessageFactory implements MessageFactory {
+    /** Singleton instance. */
+    public static final Version0MessageFactory INSTANCE = new Version0MessageFactory();
 
     /**
        Singleton class: private constructor.

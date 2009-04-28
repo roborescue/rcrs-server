@@ -8,7 +8,7 @@ public abstract class AbstractMessageComponent implements MessageComponent {
 
     /**
        Construct a message component with a name.
-       @param The name of this component.
+       @param name The name of this component.
      */
     protected AbstractMessageComponent(String name) {
         this.name = name;

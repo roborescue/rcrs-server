@@ -44,8 +44,8 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void setMessageFactory(MessageFactory factory) {
-        this.factory = factory;
+    public void setMessageFactory(MessageFactory newFactory) {
+        this.factory = newFactory;
     }
 
     @Override
@@ -113,7 +113,7 @@ public abstract class AbstractConnection implements Connection {
         catch (IOException e) {
             // Log and ignore
             // FIXME: Log it!
-	    System.err.println(e);
+            System.err.println(e);
         }
     }
 

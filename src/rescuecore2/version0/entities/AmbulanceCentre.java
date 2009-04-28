@@ -8,6 +8,7 @@ import rescuecore2.worldmodel.EntityID;
 public class AmbulanceCentre extends Building {
     /**
        Construct a AmbulanceCentre object with entirely undefined values.
+       @param id The ID of this entity.
      */
     public AmbulanceCentre(EntityID id) {
 	super(id, EntityConstants.AMBULANCE_CENTRE);

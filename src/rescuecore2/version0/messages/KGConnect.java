@@ -2,7 +2,6 @@ package rescuecore2.version0.messages;
 
 import rescuecore2.messages.Message;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.version0.messages.IntComponent;
 
 /**
    A message for connecting to the GIS.
@@ -10,6 +9,9 @@ import rescuecore2.version0.messages.IntComponent;
 public class KGConnect extends AbstractMessage {
     private IntComponent version;
 
+    /**
+       A KGConnect message. The version number will be zero.
+     */
     public KGConnect() {
         super("KG_CONNECT", MessageConstants.KG_CONNECT);
         version = new IntComponent("Version", 0);

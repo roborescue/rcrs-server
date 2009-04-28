@@ -9,7 +9,6 @@ import java.net.SocketException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.io.EOFException;
 import java.io.InterruptedIOException;
 
 import rescuecore2.messages.MessageFactory;
@@ -50,10 +49,11 @@ public class TCPConnection extends AbstractConnection {
        Create a TCPConnection from an existing socket.
        @param factory The MessageFactory to use for creating messages.
        @param socket The socket to attach to.
+       @throws IOException If there is a problem opening the streams.
      */
     public TCPConnection(MessageFactory factory, Socket socket) throws IOException {
-	super(factory);
-	this.socket = socket;
+        super(factory);
+        this.socket = socket;
         socket.setSoTimeout(1000);
         in = socket.getInputStream();
         out = socket.getOutputStream();

@@ -8,11 +8,11 @@ import rescuecore2.worldmodel.Entity;
 /**
    EntityFactory that builds standard Robocup Rescue objects.
  */
-public class RescueEntityFactory implements EntityFactory {
+public final class RescueEntityFactory implements EntityFactory {
     /**
        Singleton class. Use this instance to do stuff.
      */
-    public static RescueEntityFactory INSTANCE = new RescueEntityFactory();
+    public static final RescueEntityFactory INSTANCE = new RescueEntityFactory();
 
     /**
        Singleton class: private constructor.
@@ -90,6 +90,6 @@ public class RescueEntityFactory implements EntityFactory {
        @return A new World object.
      */
     public Entity makeWorld(EntityID id) {
-	return new World(id);
+        return new World(id);
     }
 }

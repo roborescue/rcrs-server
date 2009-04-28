@@ -9,7 +9,10 @@ import rescuecore2.worldmodel.Property;
  */
 public abstract class Vertex extends RescueObject {
     /**
-       Construct a Vertex object with entirely undefined values.
+       Construct a Vertex object with entirely undefined property values.
+       @param id The ID of this entity.
+       @param type The type ID of this entity.
+       @param props The set of properties this entity has.
      */
     protected Vertex(EntityID id, EntityType type, Property... props) {
         super(id, type, props);

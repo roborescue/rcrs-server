@@ -14,7 +14,7 @@ import java.io.IOException;
    An integer-array property.
  */
 public class IntArrayProperty extends RescueProperty {
-    /** Implement as a list to allow for growth */
+    /** Implement as a list to allow for growth. */
     private List<Integer> data;
 
     /**
@@ -22,8 +22,8 @@ public class IntArrayProperty extends RescueProperty {
        @param type The type of this property.
      */
     public IntArrayProperty(PropertyType type) {
-	super(type);
-	data = new ArrayList<Integer>();
+        super(type);
+        data = new ArrayList<Integer>();
     }
 
     /**
@@ -32,11 +32,11 @@ public class IntArrayProperty extends RescueProperty {
        @param values The initial values of the property.
      */
     public IntArrayProperty(PropertyType type, int[] values) {
-	super(type, true);
-	data = new ArrayList<Integer>(values.length);
-	for (Integer next : values) {
-	    data.add(next);
-	}
+        super(type, true);
+        data = new ArrayList<Integer>(values.length);
+        for (Integer next : values) {
+            data.add(next);
+        }
     }
 
     /**
@@ -45,25 +45,25 @@ public class IntArrayProperty extends RescueProperty {
        @see #isDefined()
      */
     public int[] getValues() {
-	Integer[] result = new Integer[data.size()];
-	data.toArray(result);
-	int[] out = new int[result.length];
-	for (int i=0; i < out.length; ++i) {
-	    out[i] = result[i].intValue();
-	}
-	return out;
+        Integer[] result = new Integer[data.size()];
+        data.toArray(result);
+        int[] out = new int[result.length];
+        for (int i = 0; i < out.length; ++i) {
+            out[i] = result[i].intValue();
+        }
+        return out;
     }
 
     /**
        Set the value of this property. Future calls to {@link #isDefined()} will return true.
-       @param value The new value.
+       @param values The new values.
      */
     public void setValues(int[] values) {
-	this.data = new ArrayList<Integer>(values.length);
-	for (Integer next : values) {
-	    data.add(next);
-	}
-	setDefined(true);
+        this.data = new ArrayList<Integer>(values.length);
+        for (Integer next : values) {
+            data.add(next);
+        }
+        setDefined(true);
     }
 
     /**
@@ -72,15 +72,15 @@ public class IntArrayProperty extends RescueProperty {
      */
     public void push(int i) {
         setDefined(true);
-	data.add(i);
+        data.add(i);
     }
 
     /**
        Clear the value of this property. Future calls to {@link #isDefined()} will return false.
      */
     public void clearValue() {
-	data.clear();
-	setDefined(false);
+        data.clear();
+        setDefined(false);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class IntArrayProperty extends RescueProperty {
         result.append(getName());
         if (isDefined()) {
             result.append(" = {");
-            for (Iterator<Integer> it = data.iterator(); it.hasNext(); ) {
+            for (Iterator<Integer> it = data.iterator(); it.hasNext();) {
                 result.append(it.next());
                 if (it.hasNext()) {
                     result.append(", ");

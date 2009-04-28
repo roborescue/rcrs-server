@@ -8,23 +8,23 @@ public final class EntityID {
 
     /**
        Construct a new EntityID object.
-       @param The numeric ID to use.
+       @param id The numeric ID to use.
      */
     public EntityID(int id) {
-	this.id = id;
+        this.id = id;
     }
 
     @Override
     public boolean equals(Object o) {
-	if (o instanceof EntityID) {
-	    return this.id == ((EntityID)o).id;
-	}
-	return false;
+        if (o instanceof EntityID) {
+            return this.id == ((EntityID)o).id;
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-	return id;
+        return id;
     }
 
     /**
@@ -32,6 +32,6 @@ public final class EntityID {
        @return The numeric ID.
      */
     public int getValue() {
-	return id;
+        return id;
     }
 }

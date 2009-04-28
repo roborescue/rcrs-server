@@ -6,6 +6,9 @@ import rescuecore2.messages.AbstractMessage;
    A message for acknowleding a connection to the GIS.
  */
 public class KGAcknowledge extends AbstractMessage {
+    /**
+       A KGAcknowldge message.
+     */
     public KGAcknowledge() {
         super("KG_ACKNOWLEDGE", MessageConstants.KG_ACKNOWLEDGE);
     }
