@@ -162,10 +162,10 @@ public class LegacyAgentManager implements AgentManager {
         }
     }
 
-    private boolean acknowledge(int id) {
+    private boolean acknowledge(int id, Connection c) {
         synchronized (lock) {
             for (AgentInfo next : toAcknowledge) {
-                if (next.entity.getID().getValue() == id) {
+                if (next.entity.getID().getValue() == id && next.connection == c) {
                     toAcknowledge.remove(next);
                     lock.notifyAll();
                     return true;
@@ -224,7 +224,6 @@ public class LegacyAgentManager implements AgentManager {
                         connection.sendMessage(new KAConnectError(tempID, "No more agents"));
                     }
                     else {
-                        info.tempID = tempID;
                         info.connection = connection;
                         // Send an OK
                         connection.sendMessage(new KAConnectOK(tempID, info.entity.getID().getValue(), info.entity, getInitialEntityList()));
@@ -236,7 +235,7 @@ public class LegacyAgentManager implements AgentManager {
             }
             if (msg instanceof AKAcknowledge) {
                 int id = ((AKAcknowledge)msg).getAgentID();
-                if (acknowledge(id)) {
+                if (acknowledge(id, connection)) {
                     System.out.println("Agent " + id + " acknowledged");
                 }
                 else {
@@ -248,7 +247,6 @@ public class LegacyAgentManager implements AgentManager {
 
     private static class AgentInfo {
         Entity entity;
-        int tempID;
         Connection connection;
 
         AgentInfo(Entity entity) {

@@ -53,10 +53,10 @@ public class LegacySimulatorManager implements SimulatorManager {
     public void shutdown() {
     }
 
-    private boolean acknowledge(int id) {
+    private boolean acknowledge(int id, Connection c) {
         synchronized (lock) {
             for (SimulatorInfo next : toAcknowledge) {
-                if (next.id == id) {
+                if (next.id == id && next.connection == c) {
                     toAcknowledge.remove(next);
                     lock.notifyAll();
                     return true;
@@ -98,7 +98,7 @@ public class LegacySimulatorManager implements SimulatorManager {
             }
             if (msg instanceof SKAcknowledge) {
                 int id = ((SKAcknowledge)msg).getSimulatorID();
-                if (acknowledge(id)) {
+                if (acknowledge(id, connection)) {
                     System.out.println("Simulator " + id + " acknowledged");
                 }
                 else {

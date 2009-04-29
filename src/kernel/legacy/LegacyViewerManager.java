@@ -51,12 +51,14 @@ public class LegacyViewerManager implements ViewerManager {
     public void shutdown() {
     }
 
-    private boolean acknowledge() {
+    private boolean acknowledge(Connection c) {
         synchronized (lock) {
             for (ViewerInfo next : toAcknowledge) {
-                toAcknowledge.remove(next);
-                lock.notifyAll();
-                return true;
+                if (next.connection == c) {
+                    toAcknowledge.remove(next);
+                    lock.notifyAll();
+                    return true;
+                }
             }
             return false;
         }
@@ -85,7 +87,7 @@ public class LegacyViewerManager implements ViewerManager {
                 }
             }
             if (msg instanceof VKAcknowledge) {
-                if (acknowledge()) {
+                if (acknowledge(connection)) {
                     System.out.println("Viewer acknowledged");
                 }
                 else {
