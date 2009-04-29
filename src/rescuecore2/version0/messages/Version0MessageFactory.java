@@ -26,6 +26,22 @@ public final class Version0MessageFactory implements MessageFactory {
             return new GKConnectOK();
         case MessageConstants.GK_CONNECT_ERROR:
             return new GKConnectError();
+        case MessageConstants.SK_CONNECT:
+            return new SKConnect();
+        case MessageConstants.SK_ACKNOWLEDGE:
+            return new SKAcknowledge();
+        case MessageConstants.KS_CONNECT_OK:
+            return new KSConnectOK();
+        case MessageConstants.KS_CONNECT_ERROR:
+            return new KSConnectError();
+        case MessageConstants.VK_CONNECT:
+            return new VKConnect();
+        case MessageConstants.VK_ACKNOWLEDGE:
+            return new VKAcknowledge();
+        case MessageConstants.KV_CONNECT_OK:
+            return new KVConnectOK();
+        case MessageConstants.KV_CONNECT_ERROR:
+            return new KVConnectError();
         case MessageConstants.AK_CONNECT:
             return new AKConnect();
         case MessageConstants.AK_ACKNOWLEDGE:

@@ -5,32 +5,32 @@ import rescuecore2.messages.AbstractMessage;
 /**
    A message for acknowleding a connection to the kernel.
  */
-public class AKAcknowledge extends AbstractMessage {
+public class VKAcknowledge extends AbstractMessage {
     private IntComponent id;
 
     /**
-       AKAcknowledge message with an undefined ID component.
+       VKAcknowledge message with an undefined ID component.
      */
-    public AKAcknowledge() {
-        super("AK_ACKNOWLEDGE", MessageConstants.AK_ACKNOWLEDGE);
+    public VKAcknowledge() {
+        super("VK_ACKNOWLEDGE", MessageConstants.VK_ACKNOWLEDGE);
         id = new IntComponent("ID");
         addMessageComponent(id);
     }
 
     /**
-       AKAcknowledge message with a specific ID component.
+       VKAcknowledge message with a specific ID component.
        @param id The value of the ID component.
      */
-    public AKAcknowledge(int id) {
+    public VKAcknowledge(int id) {
         this();
         this.id.setValue(id);
     }
 
     /**
-       Get the ID of the agent that is acknowledging the connection.
-       @return The agent ID component.
+       Get the ID of the viewer that is acknowledging the connection.
+       @return The viewer ID component.
      */
-    public int getAgentID() {
+    public int getViewerID() {
         return id.getValue();
     }
 }
