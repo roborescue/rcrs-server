@@ -12,6 +12,8 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.version0.messages.Version0MessageFactory;
 
 import kernel.legacy.LegacyAgentManager;
+import kernel.legacy.LegacySimulatorManager;
+import kernel.legacy.LegacyViewerManager;
 import kernel.legacy.GISWorldModelCreator;
 
 /**
@@ -25,6 +27,8 @@ public class Kernel {
     private WorldModelCreator worldModelCreator;
 
     private ConnectionManager connectionManager;
+    private SimulatorManager simulatorManager;
+    private ViewerManager viewerManager;
     private AgentManager agentManager;
 
     private WorldModel worldModel;
@@ -92,6 +96,8 @@ public class Kernel {
         ConnectionManagerListener listener = new ConnectionManagerListener() {
                 public void newConnection(Connection c) {
                     System.out.println("New connection: " + c);
+                    simulatorManager.newConnection(c);
+                    viewerManager.newConnection(c);
                     agentManager.newConnection(c);
                     c.startup();
                 }
@@ -105,12 +111,26 @@ public class Kernel {
     }
 
     private void waitForSimulatorsAndAgents() throws KernelException {
+        simulatorManager = new LegacySimulatorManager(worldModel);
+        viewerManager = new LegacyViewerManager(worldModel);
         agentManager = new LegacyAgentManager(worldModel);
         try {
             agentManager.waitForAllAgents();
         }
         catch (InterruptedException e) {
             throw new KernelException("Interrupted while waiting for agents", e);
+        }
+        try {
+            viewerManager.waitForAcknowledgements();
+        }
+        catch (InterruptedException e) {
+            throw new KernelException("Interrupted while waiting for viewers", e);
+        }
+        try {
+            simulatorManager.waitForAcknowledgements();
+        }
+        catch (InterruptedException e) {
+            throw new KernelException("Interrupted while waiting for simulators", e);
         }
     }
 
@@ -119,5 +139,8 @@ public class Kernel {
 
     private void cleanUp() {
         connectionManager.shutdown();
+        simulatorManager.shutdown();
+        viewerManager.shutdown();
+        agentManager.shutdown();
     }
 }

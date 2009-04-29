@@ -11,4 +11,9 @@ public interface AgentManager extends ConnectionManagerListener {
        @throws InterruptedException If this thread is interrupted while waiting for agents.
     */
     void waitForAllAgents() throws InterruptedException;
+
+    /**
+       Shut this manager down.
+     */
+    void shutdown();
 }

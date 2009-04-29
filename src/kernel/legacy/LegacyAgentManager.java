@@ -54,7 +54,7 @@ public class LegacyAgentManager implements AgentManager {
     /**
        Start a LegacyAgentManager based on a world model.
        @param m The world model that contains all entities, including controllable agents.
-     */
+    */
     public LegacyAgentManager(WorldModel m) {
         worldModel = m;
         civ = new LinkedList<Civilian>();
@@ -119,6 +119,10 @@ public class LegacyAgentManager implements AgentManager {
                                    + toAcknowledge.size() + " agents have not acknowledged.");
             }
         }
+    }
+
+    @Override
+    public void shutdown() {
     }
 
     private AgentInfo findEntityToControl(int mask) {
