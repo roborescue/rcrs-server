@@ -99,9 +99,7 @@ public class Config {
                             throw new ConfigException(name, "Line " + lineNumber + ": Empty include directive");
                         }
                         String includeName = line.substring(INCLUDE.length() + 1).trim();
-                        if ("".equals(includeName)) {
-                            throw new ConfigException(name, "Line " + lineNumber + ": Empty include directive");
-                        }
+                        // includeName cannot be the empty string because the line was trimmed when it was read from the stream.
                         read(new File(in.getParentFile(), includeName));
                     }
                     else {

@@ -512,8 +512,43 @@ public class ConfigTest {
     }
 
     @Test(expected=IllegalArgumentException.class)
+    public void testGetNullIntKey() throws IOException, ConfigException {
+        config.getIntValue(null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetNullFloatKey() throws IOException, ConfigException {
+        config.getFloatValue(null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetNullBooleanKey() throws IOException, ConfigException {
+        config.getBooleanValue(null);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
     public void testSetNullKey() throws IOException, ConfigException {
         config.setValue(null, "value");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetNullIntKey() throws IOException, ConfigException {
+        config.setIntValue(null, 0);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetNullFloatKey() throws IOException, ConfigException {
+        config.setFloatValue(null, 0);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSetNullBooleanKey() throws IOException, ConfigException {
+        config.setBooleanValue(null, false);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testRemoveNullKey() throws IOException, ConfigException {
+        config.removeKey(null);
     }
 
     @Test
