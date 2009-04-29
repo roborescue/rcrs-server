@@ -29,7 +29,7 @@ public interface Property {
        Take on the value of another property.
        @param other The other property to inspect.
      */
-    void takeValue(Property p);
+    void takeValue(Property other);
 
     /**
        Write this property to a stream.
