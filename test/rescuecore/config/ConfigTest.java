@@ -39,7 +39,7 @@ public class ConfigTest {
 
     @Before
     public void setup() {
-        baseDir = new File(System.getProperty("rescuecore.tests.basedir"));
+        baseDir = new File(System.getProperty("tests.basedir"));
         config = new Config();
     }
 
