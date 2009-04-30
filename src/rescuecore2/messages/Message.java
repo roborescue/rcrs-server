@@ -1,6 +1,9 @@
 package rescuecore2.messages;
 
 import java.util.List;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 
 /**
    The top-level interface for messages that are sent between simulator components.
@@ -19,8 +22,16 @@ public interface Message {
     int getMessageTypeID();
 
     /**
-       Get all the components of this message.
-       @return A List of MessageComponent objects.
+       Write the content of this message to a stream. The content should not include the message type ID.
+       @param out The stream to write to.
+       @throws IOException If the write fails.
      */
-    List<MessageComponent> getComponents();
+    void write(OutputStream out) throws IOException;
+
+    /**
+       Read the content of this message from a stream. The content should not include the message type ID.
+       @param in The stream to read from.
+       @throws IOException If the read fails.
+     */
+    void read(InputStream in) throws IOException;
 }

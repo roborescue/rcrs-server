@@ -3,9 +3,12 @@ package rescuecore2.messages;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 
 /**
-   An abstract base class for Message objects.
+   An abstract base class for Message objects. This class is implemented in terms of MessageComponent objects so subclasses need only provide a name, ID and a list of MessageComponent objects.
  */
 public abstract class AbstractMessage implements Message {
     private String name;
@@ -33,7 +36,10 @@ public abstract class AbstractMessage implements Message {
         return id;
     }
 
-    @Override
+    /**
+       Get all the components of this message.
+       @return A List of MessageComponent objects.
+     */
     public final List<MessageComponent> getComponents() {
         return components;
     }
@@ -63,5 +69,19 @@ public abstract class AbstractMessage implements Message {
             }
         }
         return result.toString();
+    }
+
+    @Override
+    public void write(OutputStream out) throws IOException {
+        for (MessageComponent next : components) {
+            next.write(out);
+        }	
+    }
+
+    @Override
+    public void read(InputStream in) throws IOException {
+        for (MessageComponent next : components) {
+            next.read(in);
+        }	
     }
 }
