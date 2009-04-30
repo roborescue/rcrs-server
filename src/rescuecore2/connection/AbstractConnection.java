@@ -28,6 +28,8 @@ public abstract class AbstractConnection implements Connection {
 
     private boolean logBytes;
 
+    protected volatile State state;
+
     /**
        Construct an abstract connection.
        @param factory The factory class used to generate new messages.
@@ -36,6 +38,7 @@ public abstract class AbstractConnection implements Connection {
         listeners = new ArrayList<ConnectionListener>();
         this.factory = factory;
         logBytes = false;
+	state = State.NOT_STARTED;
     }
 
     @Override
@@ -45,14 +48,25 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public void setMessageFactory(MessageFactory newFactory) {
+	if (newFactory == null) {
+	    throw new IllegalArgumentException("Message factory cannot be null");
+	}
         this.factory = newFactory;
     }
 
     @Override
-    public void startup() {}
+    public void startup() {
+	if (state == State.NOT_STARTED) {
+	    state = State.STARTED;
+	}
+    }
 
     @Override
-    public void shutdown() {}
+    public void shutdown() {
+	if (state == State.STARTED) {
+	    state = State.SHUTDOWN;
+	}
+    }
 
     @Override
     public void addConnectionListener(ConnectionListener l) {
@@ -69,12 +83,24 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void sendMessage(Message msg) throws IOException {
+    public void sendMessage(Message msg) throws IOException, ConnectionException {
+	if (msg == null) {
+	    throw new IllegalArgumentException("Message cannot be null");
+	}
         sendMessages(Collections.singleton(msg));
     }
 
     @Override
-    public void sendMessages(Collection<Message> messages) throws IOException {
+    public void sendMessages(Collection<Message> messages) throws IOException, ConnectionException {
+	if (messages == null) {
+	    throw new IllegalArgumentException("Messages cannot be null");
+	}
+	if (state == State.NOT_STARTED) {
+	    throw new ConnectionException("Connection has not been started");
+	}
+	if (state == State.SHUTDOWN) {
+	    throw new ConnectionException("Connection has been shut down");
+	}
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (Message next : messages) {
             encodeMessage(next, out);
@@ -136,9 +162,7 @@ public abstract class AbstractConnection implements Connection {
         System.out.println("Sending message: " + msg);
         // Turn the message into bytes
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        for (MessageComponent next : msg.getComponents()) {
-            next.write(bytes);
-        }
+	msg.write(bytes);
         // Write the header then the message body
         writeInt32(msg.getMessageTypeID(), out);
         writeInt32(bytes.size(), out);
@@ -155,10 +179,14 @@ public abstract class AbstractConnection implements Connection {
         Message result = factory.createMessage(id);
         // Read all the message components
         InputStream input = new ByteArrayInputStream(data);
-        for (MessageComponent next : result.getComponents()) {
-            next.read(input);
-        }
+	result.read(input);
         System.out.println("Received message: " + result);
         return result;
+    }
+
+    protected enum State {
+	NOT_STARTED,
+	STARTED,
+	SHUTDOWN;
     }
 }

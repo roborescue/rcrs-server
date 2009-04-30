@@ -14,15 +14,17 @@ public interface Connection {
        Send a message across this connection.
        @param msg The message to send.
        @throws IOException If the message cannot be sent.
+       @throws ConnectionException If the connection has not been started up or has been shut down.
      */
-    void sendMessage(Message msg) throws IOException;
+    void sendMessage(Message msg) throws IOException, ConnectionException;
 
     /**
        Send a set of messages across this connection.
        @param messages The messages to send.
        @throws IOException If any of the messages cannot be sent.
+       @throws ConnectionException If the connection has not been started up or has been shut down.
      */
-    void sendMessages(Collection<Message> messages) throws IOException;
+    void sendMessages(Collection<Message> messages) throws IOException, ConnectionException;
 
     /**
        Add a ConnectionListener. This listener will be notified when messages arrive on this connection.

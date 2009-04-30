@@ -29,7 +29,7 @@ public class TCPConnection extends AbstractConnection {
        @param factory The MessageFactory to use for creating messages.
        @param port The port to connect to.
        @throws IOException If the host cannot be contacted.
-     */
+    */
     public TCPConnection(MessageFactory factory, int port) throws IOException {
         this(factory, null, port);
     }
@@ -40,7 +40,7 @@ public class TCPConnection extends AbstractConnection {
        @param address The address of the host.
        @param port The port to connect to.
        @throws IOException If the host cannot be contacted.
-     */
+    */
     public TCPConnection(MessageFactory factory, String address, int port) throws IOException {
         this(factory, new Socket(address, port));
     }
@@ -50,7 +50,7 @@ public class TCPConnection extends AbstractConnection {
        @param factory The MessageFactory to use for creating messages.
        @param socket The socket to attach to.
        @throws IOException If there is a problem opening the streams.
-     */
+    */
     public TCPConnection(MessageFactory factory, Socket socket) throws IOException {
         super(factory);
         this.socket = socket;
@@ -62,47 +62,52 @@ public class TCPConnection extends AbstractConnection {
 
     @Override
     public void startup() {
-        readThread.start();
+	if (state != State.STARTED) {
+	    readThread.start();
+	}
+	super.startup();
     }
 
     @Override
     public void shutdown() {
+	if (state != State.SHUTDOWN) {
+	    try {
+		readThread.kill();
+	    }
+	    catch (InterruptedException e) {
+		// Log and ignore
+		// FIXME: Log it!
+	    }
+	    try {
+		out.flush();
+	    }
+	    catch (IOException e) {
+		// Log and ignore
+		// FIXME: Log it!
+	    }
+	    try {
+		out.close();
+	    }
+	    catch (IOException e) {
+		// Log and ignore
+		// FIXME: Log it!
+	    }
+	    try {
+		in.close();
+	    }
+	    catch (IOException e) {
+		// Log and ignore
+		// FIXME: Log it!
+	    }
+	    try {
+		socket.close();
+	    }
+	    catch (IOException e) {
+		// Log and ignore
+		// FIXME: Log it!
+	    }
+	}
         super.shutdown();
-        try {
-            readThread.kill();
-        }
-        catch (InterruptedException e) {
-            // Log and ignore
-            // FIXME: Log it!
-        }
-        try {
-            out.flush();
-        }
-        catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-        }
-        try {
-            out.close();
-        }
-        catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-        }
-        try {
-            in.close();
-        }
-        catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-        }
-        try {
-            socket.close();
-        }
-        catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-        }
     }
 
     @Override
@@ -114,14 +119,14 @@ public class TCPConnection extends AbstractConnection {
 
     /**
        Worker thread that reads from the TCP input stream.
-     */
+    */
     private class ReadThread extends WorkerThread {
         @Override
-        protected boolean work() {
+	protected boolean work() {
             try {
-                //                System.out.println("TCPConnection read thread: waiting for input");
+		System.out.println("TCPConnection read thread: waiting for input");
                 int size = readInt32(in);
-                //                System.out.println("TCPConnection read thread: reading " + size + " bytes");
+		System.out.println("TCPConnection read thread: reading " + size + " bytes");
                 if (size > -1) {
                     byte[] buffer = readBytes(size, in);
                     bytesReceived(buffer);
