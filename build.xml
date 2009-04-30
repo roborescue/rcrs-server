@@ -242,6 +242,12 @@
       </fileset>
       <report format="noframes" todir="${junit.output.dir}"/>
     </junitreport>
+    <junitreport todir="${junit.output.dir}">
+      <fileset dir="${junit.output.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${junit.output.dir}"/>
+    </junitreport>
   </target>
 
   <target name="cobertura-instrument" depends="jars">
