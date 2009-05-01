@@ -10,3 +10,4 @@
 # Ignore the build and jars directories
 build/
 jars/
+jars-instrumented/
