@@ -30,6 +30,9 @@ public abstract class AbstractConnection implements Connection {
 
     protected volatile State state;
 
+    private final Object stateLock = new Object();
+    private final Object factoryLock = new Object();
+
     /**
        Construct an abstract connection.
        @param factory The factory class used to generate new messages.
@@ -51,21 +54,29 @@ public abstract class AbstractConnection implements Connection {
 	if (newFactory == null) {
 	    throw new IllegalArgumentException("Message factory cannot be null");
 	}
-        this.factory = newFactory;
+        synchronized (factoryLock) {
+            this.factory = newFactory;
+        }
     }
 
     @Override
-    public void startup() {
-	if (state == State.NOT_STARTED) {
-	    state = State.STARTED;
-	}
+    public final void startup() {
+        synchronized (stateLock) {
+            if (state == State.NOT_STARTED) {
+                startupImpl();
+                state = State.STARTED;
+            }
+        }
     }
 
     @Override
-    public void shutdown() {
-	if (state == State.STARTED) {
-	    state = State.SHUTDOWN;
-	}
+    public final void shutdown() {
+        synchronized (stateLock) {
+            if (state == State.STARTED) {
+                shutdownImpl();
+                state = State.SHUTDOWN;
+            }
+        }
     }
 
     @Override
@@ -95,12 +106,14 @@ public abstract class AbstractConnection implements Connection {
 	if (messages == null) {
 	    throw new IllegalArgumentException("Messages cannot be null");
 	}
-	if (state == State.NOT_STARTED) {
-	    throw new ConnectionException("Connection has not been started");
-	}
-	if (state == State.SHUTDOWN) {
-	    throw new ConnectionException("Connection has been shut down");
-	}
+        synchronized (stateLock) {
+            if (state == State.NOT_STARTED) {
+                throw new ConnectionException("Connection has not been started");
+            }
+            if (state == State.SHUTDOWN) {
+                throw new ConnectionException("Connection has been shut down");
+            }
+        }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (Message next : messages) {
             encodeMessage(next, out);
@@ -122,6 +135,16 @@ public abstract class AbstractConnection implements Connection {
     protected abstract void sendBytes(byte[] b) throws IOException;
 
     /**
+       Perform startup actions. This will only ever be called once.
+    */
+    protected abstract void startupImpl();
+
+    /**
+       Perform shutdown actions. This will only ever be called once.
+    */
+    protected abstract void shutdownImpl();
+
+    /**
        Process some bytes that were received. The default implementation will use the installed MessageCodec to decode all messages in the buffer and send them to listeners.
        @param b The received bytes.
     */
@@ -130,7 +153,12 @@ public abstract class AbstractConnection implements Connection {
         Message m = null;
         try {
             do {
-                m = decodeMessage(decode);
+                // Take a copy of the message factory reference in case someone tries to change the factory while we're decoding the message
+                MessageFactory f;
+                synchronized (factoryLock) {
+                    f = factory;
+                }
+                m = decodeMessage(decode, f);
                 if (m != null) {
                     fireMessageReceived(m);
                 }
@@ -159,7 +187,7 @@ public abstract class AbstractConnection implements Connection {
     }
 
     private void encodeMessage(Message msg, OutputStream out) throws IOException {
-        System.out.println("Sending message: " + msg);
+        //        System.out.println(this + ": Sending message: " + msg);
         // Turn the message into bytes
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 	msg.write(bytes);
@@ -169,7 +197,7 @@ public abstract class AbstractConnection implements Connection {
         out.write(bytes.toByteArray());
     }
 
-    private Message decodeMessage(InputStream in) throws IOException {
+    private Message decodeMessage(InputStream in, MessageFactory factory) throws IOException {
         int id = readInt32(in);
         if (id == 0) {
             return null;
@@ -180,13 +208,13 @@ public abstract class AbstractConnection implements Connection {
         // Read all the message components
         InputStream input = new ByteArrayInputStream(data);
 	result.read(input);
-        System.out.println("Received message: " + result);
+        //        System.out.println(this + ": Received message: " + result);
         return result;
     }
 
     protected enum State {
 	NOT_STARTED,
-	STARTED,
-	SHUTDOWN;
+            STARTED,
+            SHUTDOWN;
     }
 }

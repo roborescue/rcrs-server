@@ -23,6 +23,7 @@ public class TCPConnection extends AbstractConnection {
     private OutputStream out;
     private Socket socket;
     private ReadThread readThread;
+    private String name;
 
     /**
        Make a connection to the local host on a given port.
@@ -58,60 +59,61 @@ public class TCPConnection extends AbstractConnection {
         in = socket.getInputStream();
         out = socket.getOutputStream();
         readThread = new ReadThread();
+        name = "TCPConnection: local port " + socket.getLocalPort() + ", endpoint = " + socket.getInetAddress() + ":" + socket.getPort();
     }
 
     @Override
-    public void startup() {
-	if (state != State.STARTED) {
-	    readThread.start();
-	}
-	super.startup();
+    public String toString() {
+        return name;
     }
 
     @Override
-    public void shutdown() {
-	if (state != State.SHUTDOWN) {
-	    try {
-		readThread.kill();
-	    }
-	    catch (InterruptedException e) {
-		// Log and ignore
-		// FIXME: Log it!
-	    }
-	    try {
-		out.flush();
-	    }
-	    catch (IOException e) {
-		// Log and ignore
-		// FIXME: Log it!
-	    }
-	    try {
-		out.close();
-	    }
-	    catch (IOException e) {
-		// Log and ignore
-		// FIXME: Log it!
-	    }
-	    try {
-		in.close();
-	    }
-	    catch (IOException e) {
-		// Log and ignore
-		// FIXME: Log it!
-	    }
-	    try {
-		socket.close();
-	    }
-	    catch (IOException e) {
-		// Log and ignore
-		// FIXME: Log it!
-	    }
-	}
-        super.shutdown();
+    protected void startupImpl() {
+        readThread.start();
+    }
+
+    @Override
+    protected void shutdownImpl() {
+        try {
+            readThread.kill();
+        }
+        catch (InterruptedException e) {
+            // Log and ignore
+            // FIXME: Log it!
+        }
+        try {
+            out.flush();
+        }
+        catch (IOException e) {
+            // Log and ignore
+            // FIXME: Log it!
+        }
+        try {
+            out.close();
+        }
+        catch (IOException e) {
+            // Log and ignore
+            // FIXME: Log it!
+        }
+        try {
+            in.close();
+        }
+        catch (IOException e) {
+            // Log and ignore
+            // FIXME: Log it!
+        }
+        try {
+            socket.close();
+        }
+        catch (IOException e) {
+            // Log and ignore
+            // FIXME: Log it!
+        }
     }
 
     @Override
     protected void sendBytes(byte[] b) throws IOException {
+        //        System.out.println(this + ": sending " + b.length + " bytes");
         writeInt32(b.length, out);
         out.write(b);
         out.flush();
@@ -124,10 +126,11 @@ public class TCPConnection extends AbstractConnection {
         @Override
 	protected boolean work() {
             try {
-		System.out.println("TCPConnection read thread: waiting for input");
+                //		System.out.println(TCPConnection.this + ": read thread waiting for input");
                 int size = readInt32(in);
-		System.out.println("TCPConnection read thread: reading " + size + " bytes");
-                if (size > -1) {
+                //		System.out.println(TCPConnection.this + ": read thread reading " + size + " bytes");
+                if (size > 0) {
+                    //                    System.out.println(TCPConnection.this + ": read thread reading " + size + " bytes");
                     byte[] buffer = readBytes(size, in);
                     bytesReceived(buffer);
                 }
