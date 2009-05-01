@@ -57,10 +57,10 @@ public class WorldModel {
        Add a set of entities to the world.
        @param e The entities to add.
      */
-    public void addEntity(Set<Entity> e) {
+    public void addEntities(Set<Entity> e) {
 	entities.addAll(e);
 	for (Entity next : e) {
-	    fireEntityAdded(e);
+	    fireEntityAdded(next);
 	}
     }
 
@@ -77,7 +77,7 @@ public class WorldModel {
        Remove all entities from the world.
      */
     public void removeAllEntities() {
-	Set<Entity> copy = new Set<Entity>(entities);
+	Set<Entity> copy = new HashSet<Entity>(entities);
 	entities.clear();
 	for (Entity e : copy) {
 	    fireEntityRemoved(e);
@@ -96,7 +96,7 @@ public class WorldModel {
 	}
     }
 
-    private WorldModelListener getListeners() {
+    private WorldModelListener[] getListeners() {
 	WorldModelListener[] l;
 	synchronized(listeners) {
 	    l = new WorldModelListener[listeners.size()];

@@ -3,6 +3,10 @@ package rescuecore2.connection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.InterruptedIOException;
+import java.io.IOException;
+
+import java.util.Set;
+import java.util.HashSet;
 
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.messages.MessageCodec;
@@ -21,7 +25,7 @@ public class ConnectionManager {
        Listen for connections on a particular port.
        @param port The port to listen on.
      */
-    public void listen(int port, MessageCodec codec, ConnectionManagerListener listener) {
+    public void listen(int port, MessageCodec codec, ConnectionManagerListener listener) throws IOException {
 	ServerSocket socket = new ServerSocket(port);
 	Reader r = new Reader(socket, codec, listener);
 	readers.add(r);
@@ -49,6 +53,11 @@ public class ConnectionManager {
 	    catch (InterruptedIOException e) {
 		// Ignore
 	    }
+            catch (IOException e) {
+                e.printStackTrace();
+                // FIXME: Log it!
+            }
+            return true;
 	}
 
 	@Override
