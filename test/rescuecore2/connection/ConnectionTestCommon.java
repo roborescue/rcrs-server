@@ -22,6 +22,7 @@ public abstract class ConnectionTestCommon {
     private TestConnectionListener serverListener;
     protected MessageFactory factory;
 
+    private static final int DELAY = 1000;
     private static final int TIMEOUT = 3000;
 
     @Before
@@ -48,11 +49,11 @@ public abstract class ConnectionTestCommon {
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
 	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	Thread.sleep(DELAY);
 	assertEquals(0, serverListener.getMessageCount());
 	// Start the server connection
 	server.startup();
-	Thread.sleep(TIMEOUT);
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
     }
 
@@ -63,8 +64,8 @@ public abstract class ConnectionTestCommon {
 	server.startup();
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
-	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	// Wait for a message
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
 	// Shutdown the server connection
 	server.shutdown();
@@ -75,7 +76,7 @@ public abstract class ConnectionTestCommon {
 	catch (IOException e) {
 	    // Could reasonably expect an IOException right now: the server is gone.
 	}
-	Thread.sleep(TIMEOUT);
+	Thread.sleep(DELAY);
 	assertEquals(1, serverListener.getMessageCount());
     }
 
@@ -86,35 +87,35 @@ public abstract class ConnectionTestCommon {
 	// Send a message from the client
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
-	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	// Wait for a message
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
 	// Remove the listener
 	server.removeConnectionListener(serverListener);
 	// Send another message
 	client.sendMessage(m);
 	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	Thread.sleep(DELAY);
 	// Check that the new message didn't arrive
 	assertEquals(1, serverListener.getMessageCount());
     }
 
     @Test
     public void testMultipleStartup() throws IOException, InterruptedException, ConnectionException {
-	client.startup();
-	client.startup();
-	server.startup();
-	// Send a message from the client
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
-	client.sendMessage(m);
-	// Wait a bit
-	Thread.sleep(TIMEOUT);
-	assertEquals(1, serverListener.getMessageCount());
-	client.startup();
-	client.sendMessage(m);
-	// Wait a bit
-	Thread.sleep(TIMEOUT);
-	assertEquals(2, serverListener.getMessageCount());
+        client.startup();
+        client.startup();
+        server.startup();
+        // Send a message from the client
+        Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+        client.sendMessage(m);
+        // Wait for a message
+        serverListener.waitForMessages(1, TIMEOUT);
+        assertEquals(1, serverListener.getMessageCount());
+        client.startup();
+        client.sendMessage(m);
+        // Wait for a message
+        serverListener.waitForMessages(2, TIMEOUT);
+        assertEquals(2, serverListener.getMessageCount());
     }
 
     @Test
@@ -124,8 +125,8 @@ public abstract class ConnectionTestCommon {
 	// Send a message from the client
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
-	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	// Wait for a message
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
 	server.shutdown();
 	// Send another message
@@ -136,7 +137,7 @@ public abstract class ConnectionTestCommon {
 	    // Could reasonably expect an IOException right now: the server is gone.
 	}
 	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	Thread.sleep(DELAY);
 	// Check that the new message didn't arrive
 	assertEquals(1, serverListener.getMessageCount());
 	server.shutdown();
@@ -148,7 +149,7 @@ public abstract class ConnectionTestCommon {
 	    // Could reasonably expect an IOException right now: the server is gone.
 	}
 	// Wait a bit
-	Thread.sleep(TIMEOUT);
+	Thread.sleep(DELAY);
 	// Check that the new message didn't arrive
 	assertEquals(1, serverListener.getMessageCount());
     }
@@ -159,7 +160,7 @@ public abstract class ConnectionTestCommon {
 	server.startup();
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
-	Thread.sleep(TIMEOUT);
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
 	assertEquals(m, serverListener.getMessage(0));
     }
@@ -171,7 +172,7 @@ public abstract class ConnectionTestCommon {
 	Message m1 = new TestMessage(TestMessageFactory.MESSAGE_1, 3);
 	Message m2 = new TestMessage(TestMessageFactory.MESSAGE_1, 4, 5);
 	client.sendMessages(Arrays.asList(m1, m2));
-	Thread.sleep(TIMEOUT);
+        serverListener.waitForMessages(2, TIMEOUT);
 	assertEquals(2, serverListener.getMessageCount());
 	assertEquals(m1, serverListener.getMessage(0));
 	assertEquals(m2, serverListener.getMessage(1));
@@ -203,7 +204,7 @@ public abstract class ConnectionTestCommon {
 	server.startup();
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
-	Thread.sleep(TIMEOUT);
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
 	client.shutdown();
 	client.sendMessage(m);
@@ -215,13 +216,13 @@ public abstract class ConnectionTestCommon {
 	server.startup();
 	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
 	client.sendMessage(m);
-	Thread.sleep(TIMEOUT);
+        serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
 	assertEquals(m, serverListener.getMessage(0));
 	server.setMessageFactory(new NewMessageFactory());
 	client.sendMessage(m);
 	// Check that the second message was interpreted by the new message factory and that the old message is still OK.
-	Thread.sleep(TIMEOUT);
+        serverListener.waitForMessages(2, TIMEOUT);
 	assertEquals(2, serverListener.getMessageCount());
 	assertEquals(TestMessageFactory.MESSAGE_1, serverListener.getMessage(0).getMessageTypeID());
 	assertEquals(TestMessageFactory.MESSAGE_2, serverListener.getMessage(1).getMessageTypeID());
