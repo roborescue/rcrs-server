@@ -7,6 +7,7 @@ import java.io.IOException;
 import kernel.SimulatorManager;
 
 import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
@@ -93,6 +94,9 @@ public class LegacySimulatorManager implements SimulatorManager {
                     connection.sendMessage(new KSConnectOK(id, worldModel.getAllEntities()));
                 }
                 catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch (ConnectionException e) {
                     e.printStackTrace();
                 }
             }

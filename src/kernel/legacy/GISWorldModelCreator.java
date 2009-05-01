@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
@@ -37,6 +38,9 @@ public class GISWorldModelCreator implements WorldModelCreator {
             conn.sendMessage(new KGConnect());
         }
         catch (IOException e) {
+            throw new KernelException("Couldn't connect to GIS", e);
+        }
+        catch (ConnectionException e) {
             throw new KernelException("Couldn't connect to GIS", e);
         }
         // Wait for a reply
@@ -77,6 +81,9 @@ public class GISWorldModelCreator implements WorldModelCreator {
                     latch.countDown();
                 }
                 catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch (ConnectionException e) {
                     e.printStackTrace();
                 }
             }

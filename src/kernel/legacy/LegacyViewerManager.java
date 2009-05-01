@@ -7,6 +7,7 @@ import java.io.IOException;
 import kernel.ViewerManager;
 
 import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
@@ -83,6 +84,9 @@ public class LegacyViewerManager implements ViewerManager {
                     connection.sendMessage(new KVConnectOK(worldModel.getAllEntities()));
                 }
                 catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch (ConnectionException e) {
                     e.printStackTrace();
                 }
             }

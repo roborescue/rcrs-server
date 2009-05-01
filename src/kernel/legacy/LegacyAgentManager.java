@@ -12,6 +12,7 @@ import java.io.IOException;
 import kernel.AgentManager;
 
 import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
@@ -230,6 +231,9 @@ public class LegacyAgentManager implements AgentManager {
                     }
                 }
                 catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch (ConnectionException e) {
                     e.printStackTrace();
                 }
             }
