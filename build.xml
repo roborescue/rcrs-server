@@ -29,6 +29,9 @@
   <!-- Whether to compile with debugging symbols -->
   <property name="debug" value="true"/>
 
+  <!-- General javac flags -->
+  <property name="javac.flags" value="-Xlint:unchecked"/>
+
   <!-- Findbugs and cobertura home directories -->
   <property name="findbugs.home" value="${lib.dir}/findbugs-1.3.8"/>
   <property name="cobertura.home" value="${lib.dir}/cobertura-1.9.1"/>
@@ -97,6 +100,7 @@
   <target name="_compile">
     <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="path.all" debug="${debug}">
       <include name="${module}/**/*.java"/>
+      <compilerarg value="${javac.flags}"/>
     </javac>
   </target>
 
