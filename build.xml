@@ -140,6 +140,7 @@
 
 
   <!-- Rescuecore targets -->
+<!--
   <target name="rescuecore-compile" depends="_init" description="Build the rescuecore package">
     <antcall target="_compile">
       <param name="module" value="rescuecore"/>
@@ -163,6 +164,7 @@
       <param name="module" value="rescuecore"/>
     </antcall>
   </target>
+-->
 
   <!-- Rescuecore2 targets -->
   <target name="rescuecore2-compile" depends="_init" description="Build the rescuecore2 package">
@@ -235,7 +237,7 @@
     </findbugs>
   </target>
 
-  <target name="junit" depends="cobertura-instrument,rescuecore-unit,rescuecore2-unit,kernel-unit" description="Run the junit tests for all packages and generate a report">
+  <target name="junit" depends="cobertura-instrument,rescuecore2-unit,kernel-unit" description="Run the junit tests for all packages and generate a report">
     <junitreport todir="${junit.output.dir}">
       <fileset dir="${junit.output.dir}">
         <include name="TEST-*.xml"/>
@@ -268,11 +270,11 @@
   </target>
 
   <!-- Combined targets -->
-  <target name="compile" depends="rescuecore-compile,rescuecore2-compile,kernel-compile" description="Compile all packages"/>
+  <target name="compile" depends="rescuecore2-compile,kernel-compile" description="Compile all packages"/>
 
-  <target name="jars" depends="rescuecore-jar,rescuecore2-jar,kernel-jar" description="Compile and jar all packages"/>
+  <target name="jars" depends="rescuecore2-jar,kernel-jar" description="Compile and jar all packages"/>
 
-  <target name="clean" depends="rescuecore-clean,rescuecore2-clean,kernel-clean,build-clean" description="Delete classes and build artifacts for all packages"/>
+  <target name="clean" depends="rescuecore2-clean,kernel-clean,build-clean" description="Delete classes and build artifacts for all packages"/>
 
   <target name="test-static" depends="checkstyle,findbugs" description="Run the static tests (checkstyle and findbugs) for all packages"/>
 
