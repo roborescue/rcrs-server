@@ -5,7 +5,6 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageComponent;
 import rescuecore2.messages.MessageFactory;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public abstract class AbstractConnection implements Connection {
 
     private boolean logBytes;
 
-    protected volatile State state;
+    private volatile State state;
 
     private final Object stateLock = new Object();
     private final Object factoryLock = new Object();
