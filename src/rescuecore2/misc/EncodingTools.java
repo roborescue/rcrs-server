@@ -57,14 +57,26 @@ public final class EncodingTools {
        @param in The InputStream to read from.
        @return The next big-endian, 32-bit integer in the stream.
        @throws IOException If the InputStream blows up.
+       @throws EOFException If the end of the stream is reached.
      */
     public static int readInt32(InputStream in) throws IOException {
-        int result = 0;
-        result |= in.read() << 24;
-        result |= in.read() << 16;
-        result |= in.read() << 8;
-        result |= in.read();
-        return result;
+        int first = in.read();
+        if (first == -1) {
+            throw new EOFException("Broken input pipe. Read 0 bytes of 4.");
+        }
+        int second = in.read();
+        if (second == -1) {
+            throw new EOFException("Broken input pipe. Read 1 bytes of 4.");
+        }
+        int third = in.read();
+        if (third == -1) {
+            throw new EOFException("Broken input pipe. Read 2 bytes of 4.");
+        }
+        int fourth = in.read();
+        if (fourth == -1) {
+            throw new EOFException("Broken input pipe. Read 3 bytes of 4.");
+        }
+        return (first << 24) | (second << 16) | (third << 8) | fourth;
     }
 
     /**
@@ -114,6 +126,7 @@ public final class EncodingTools {
        Read a String from an InputStream.
        @param in The InputStream to read.
        @throws IOException If the InputStream blows up.
+       @throws EOFException If the end of the stream is reached.
     */
     public static String readString(InputStream in) throws IOException {
         int length = readInt32(in);
