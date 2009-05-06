@@ -34,6 +34,14 @@ public abstract class AbstractEntity implements Entity {
         this.id = id;
         this.type = type;
         properties = new HashMap<Integer, Property>();
+        addProperties(props);
+    }
+
+    /**
+       Add a set of properties to this entity. This should only be used by subclasses during construction.
+       @param props The properties to add.
+     */
+    protected void addProperties(Property... props) {
         for (Property next : props) {
             properties.put(next.getID(), next);
         }
