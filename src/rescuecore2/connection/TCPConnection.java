@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.EOFException;
 import java.io.InterruptedIOException;
 
 import rescuecore2.messages.MessageFactory;
@@ -124,7 +125,7 @@ public class TCPConnection extends AbstractConnection {
     */
     private class ReadThread extends WorkerThread {
         @Override
-	protected boolean work() {
+        protected boolean work() {
             try {
                 //		System.out.println(TCPConnection.this + ": read thread waiting for input");
                 int size = readInt32(in);
@@ -140,6 +141,9 @@ public class TCPConnection extends AbstractConnection {
                 return false;
             }
             catch (SocketException e) {
+                return false;
+            }
+            catch (EOFException e) {
                 return false;
             }
             catch (IOException e) {
