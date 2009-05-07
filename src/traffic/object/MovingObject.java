@@ -191,7 +191,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
 				if (ASSERT)
 					Util.myassert(it.hasNext());
 			}
-			temp.writeInt(count * RescueConstants.INT_SIZE);
+			temp.writeInt((count + 1) * RescueConstants.INT_SIZE);
 			temp.writeInt(count);
 			for (int i=0;i<count;++i) temp.writeInt(history[i]);
 		}
