@@ -14,6 +14,7 @@ import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
 
+import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.messages.Version0MessageFactory;
 import rescuecore2.version0.messages.GKConnectOK;
 import rescuecore2.version0.messages.GKConnectError;
@@ -23,17 +24,17 @@ import rescuecore2.version0.messages.KGAcknowledge;
 /**
    A WorldModelCreator that talks to the GIS.
  */
-public class GISWorldModelCreator implements WorldModelCreator {
+public class GISWorldModelCreator implements WorldModelCreator<RescueObject> {
     @Override
-    public WorldModel buildWorldModel(Config config) throws KernelException {
+    public WorldModel<RescueObject> buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
-        WorldModel result = new WorldModel();
+        WorldModel<RescueObject> world = new WorldModel<RescueObject>();
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue("gis_port");
         Connection conn;
         try {
             conn = new TCPConnection(Version0MessageFactory.INSTANCE, gisPort);
-            conn.addConnectionListener(new GISConnectionListener(latch, result, conn));
+            conn.addConnectionListener(new GISConnectionListener(latch, world, conn));
             conn.startup();
             conn.sendMessage(new KGConnect());
         }
@@ -51,7 +52,7 @@ public class GISWorldModelCreator implements WorldModelCreator {
             throw new KernelException("Interrupted while connecting to GIS", e);
         }
         conn.shutdown();
-        return result;
+        return world;
     }
 
     /**
@@ -59,10 +60,10 @@ public class GISWorldModelCreator implements WorldModelCreator {
     */
     private static class GISConnectionListener implements ConnectionListener {
         private CountDownLatch latch;
-        private WorldModel model;
+        private WorldModel<RescueObject> model;
         private Connection gisConnection;
 
-        public GISConnectionListener(CountDownLatch latch, WorldModel model, Connection gisConnection) {
+        public GISConnectionListener(CountDownLatch latch, WorldModel<RescueObject> model, Connection gisConnection) {
             this.latch = latch;
             this.model = model;
             this.gisConnection = gisConnection;

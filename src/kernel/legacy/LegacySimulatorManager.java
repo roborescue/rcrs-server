@@ -2,6 +2,10 @@ package kernel.legacy;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
 import java.io.IOException;
 
 import kernel.SimulatorManager;
@@ -11,29 +15,41 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.messages.SKConnect;
 import rescuecore2.version0.messages.SKAcknowledge;
+import rescuecore2.version0.messages.SKUpdate;
 import rescuecore2.version0.messages.KSConnectOK;
+import rescuecore2.version0.messages.Update;
 
 /**
    SimulatorManager implementation for classic Robocup Rescue.
  */
-public class LegacySimulatorManager implements SimulatorManager {
-    private WorldModel worldModel;
+public class LegacySimulatorManager implements SimulatorManager<RescueObject> {
+    private WorldModel<RescueObject> worldModel;
 
     private Set<SimulatorInfo> toAcknowledge;
     private int nextID;
 
+    private Set<SimulatorInfo> allSims;
+    /** Map from simulator ID to update list. */
+    private Map<Integer, Collection<RescueObject>> updates;
+
     private final Object lock = new Object();
 
     /**
-       Start a LegacySimulatorManager based on a world model.
-       @param m The world model that contains all entities.
+       Create a LegacySimulatorManager.
     */
-    public LegacySimulatorManager(WorldModel m) {
-        worldModel = m;
+    public LegacySimulatorManager() {
+        allSims = new HashSet<SimulatorInfo>();
         toAcknowledge = new HashSet<SimulatorInfo>();
+        updates = new HashMap<Integer, Collection<RescueObject>>();
         nextID = 1;
+    }
+
+    @Override
+    public void setWorldModel(WorldModel<RescueObject> world) {
+        worldModel = world;
     }
 
     @Override
@@ -46,6 +62,7 @@ public class LegacySimulatorManager implements SimulatorManager {
         synchronized (lock) {
             while (!toAcknowledge.isEmpty()) {
                 lock.wait(1000);
+                System.out.println("Waiting for " + toAcknowledge.size() + " simulators to acknowledge");
             }
         }
     }
@@ -54,11 +71,58 @@ public class LegacySimulatorManager implements SimulatorManager {
     public void shutdown() {
     }
 
+    @Override
+    public void sendToAll(Collection<? extends Message> messages) {
+        Collection<SimulatorInfo> info = new HashSet<SimulatorInfo>();
+        synchronized (lock) {
+            info.addAll(allSims);
+        }
+        for (SimulatorInfo next : info) {
+            try {
+                if (!next.dead) {
+                    next.connection.sendMessages(messages);
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                next.dead = true;
+            }
+            catch (ConnectionException e) {
+                e.printStackTrace();
+                next.dead = true;
+            }
+        }
+    }
+
+    @Override
+    public Collection<RescueObject> getAllUpdates() throws InterruptedException {
+        Collection<RescueObject> result = new HashSet<RescueObject>();
+        synchronized (lock) {
+            // Wait until all simulators have sent an update
+            while (updates.size() < allSims.size()) {
+                lock.wait(1000);
+                System.out.println("Waiting for " + (allSims.size() - updates.size()) + " simulator updates");
+            }
+            // Pull the results together
+            for (Collection<RescueObject> next : updates.values()) {
+                result.addAll(next);
+            }
+            updates.clear();
+        }
+        return result;
+    }
+
+    @Override
+    public void sendUpdate(int time, Collection<RescueObject> updates) {
+        sendToAll(Collections.singleton(new Update(time, updates)));
+    }
+
     private boolean acknowledge(int id, Connection c) {
         synchronized (lock) {
             for (SimulatorInfo next : toAcknowledge) {
                 if (next.id == id && next.connection == c) {
                     toAcknowledge.remove(next);
+                    allSims.add(next);
                     lock.notifyAll();
                     return true;
                 }
@@ -70,6 +134,13 @@ public class LegacySimulatorManager implements SimulatorManager {
     private int getNextID() {
         synchronized (lock) {
             return nextID++;
+        }
+    }
+
+    private void updateReceived(int id, Collection<RescueObject> entities) {
+        synchronized (lock) {
+            updates.put(id, entities);
+            lock.notifyAll();
         }
     }
 
@@ -109,16 +180,23 @@ public class LegacySimulatorManager implements SimulatorManager {
                     System.out.println("Unexpected acknowledge from simulator " + id);
                 }
             }
+            if (msg instanceof SKUpdate) {
+                System.out.println("Received simulator update: " + msg);
+                SKUpdate update = (SKUpdate)msg;
+                updateReceived(update.getSimulatorID(), update.getUpdatedEntities());
+            }
         }
     }
 
     private static class SimulatorInfo {
         int id;
         Connection connection;
+        boolean dead;
 
         SimulatorInfo(int id, Connection c) {
             this.id = id;
             this.connection = c;
+            this.dead = false;
         }
     }
 }
