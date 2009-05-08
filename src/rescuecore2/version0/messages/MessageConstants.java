@@ -17,6 +17,8 @@ public final class MessageConstants {
     public static final int SK_CONNECT = 0x20;
     /** Simulator-Kernel acknowledge. */
     public static final int SK_ACKNOWLEDGE = 0x21;
+    /** Simulator-Kernel update. */
+    public static final int SK_UPDATE = 0x22;
     /** Kernel-Simulator OK. */
     public static final int KS_CONNECT_OK = 0x23;
     /** Kernel-Simulator error. */
@@ -39,6 +41,16 @@ public final class MessageConstants {
     public static final int KA_CONNECT_OK = 0x42;
     /** Kernel-Agent error. */
     public static final int KA_CONNECT_ERROR = 0x43;
+    /** Kernel-Agent perception update. */
+    public static final int KA_SENSE = 0x44;
+
+    /** Kernel update broadcast. */
+    public static final int UPDATE = 0x50;
+    /** Kernel commands broadcast. */
+    public static final int COMMANDS = 0x51;
+
+    /** Move command. */
+    public static final int AK_MOVE = 0x81;
 
     private MessageConstants() {}
 }

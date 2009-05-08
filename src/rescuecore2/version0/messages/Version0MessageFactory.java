@@ -30,6 +30,8 @@ public final class Version0MessageFactory implements MessageFactory {
             return new SKConnect();
         case MessageConstants.SK_ACKNOWLEDGE:
             return new SKAcknowledge();
+        case MessageConstants.SK_UPDATE:
+            return new SKUpdate();
         case MessageConstants.KS_CONNECT_OK:
             return new KSConnectOK();
         case MessageConstants.KS_CONNECT_ERROR:
@@ -50,8 +52,11 @@ public final class Version0MessageFactory implements MessageFactory {
             return new KAConnectOK();
         case MessageConstants.KA_CONNECT_ERROR:
             return new KAConnectError();
-        default:
-            throw new IllegalArgumentException("Unrecognised message ID: " + id);
-        }
+        case MessageConstants.AK_MOVE:
+            return new AKMove();
+        default: 
+            System.out.println("Unrecognised message ID: " + id);
+            return null;
+       }
     }
 }
