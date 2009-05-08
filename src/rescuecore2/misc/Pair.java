@@ -32,4 +32,9 @@ public class Pair<S, T> {
     public T second() {
 	return second;
     }
+
+    @Override
+    public String toString() {
+        return "<" + first + ", " + second + ">";
+    }
 }
