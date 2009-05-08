@@ -6,6 +6,8 @@ import java.util.List;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.AbstractMessage;
 
+import rescuecore2.version0.entities.RescueObject;
+
 /**
    A message for signalling a successful connection to the kernel.
  */
@@ -37,7 +39,7 @@ public class KAConnectOK extends AbstractMessage {
        @param object The Entity that the agent will be controlling.
        @param allEntities All other Entities that the agent knows about.
      */
-    public KAConnectOK(int tempID, int agentID, Entity object, Collection<Entity> allEntities) {
+    public KAConnectOK(int tempID, int agentID, RescueObject object, Collection<RescueObject> allEntities) {
         this();
         this.tempID.setValue(tempID);
         this.agentID.setValue(agentID);
@@ -65,7 +67,7 @@ public class KAConnectOK extends AbstractMessage {
        Get the agent-controlled entity.
        @return The agent-controlled entity.
      */
-    public Entity getAgent() {
+    public RescueObject getAgent() {
         return agent.getValue();
     }
 
@@ -73,7 +75,7 @@ public class KAConnectOK extends AbstractMessage {
        Get the entity list.
        @return All entities in the world.
      */
-    public List<Entity> getEntities() {
+    public List<RescueObject> getEntities() {
         return world.getEntities();
     }
 }

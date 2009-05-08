@@ -6,6 +6,8 @@ import java.util.List;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.AbstractMessage;
 
+import rescuecore2.version0.entities.RescueObject;
+
 /**
    A message for signalling a successful connection to the kernel.
  */
@@ -29,7 +31,7 @@ public class KSConnectOK extends AbstractMessage {
        @param simulatorID The ID of the simulator that has successfully connected.
        @param allEntities All Entities in the world.
      */
-    public KSConnectOK(int simulatorID, Collection<Entity> allEntities) {
+    public KSConnectOK(int simulatorID, Collection<RescueObject> allEntities) {
         this();
         this.simulatorID.setValue(simulatorID);
         this.world.setEntities(allEntities);
@@ -47,7 +49,7 @@ public class KSConnectOK extends AbstractMessage {
        Get the entity list.
        @return All entities in the world.
      */
-    public List<Entity> getEntities() {
+    public List<RescueObject> getEntities() {
         return world.getEntities();
     }
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.AbstractMessage;
 
+import rescuecore2.version0.entities.RescueObject;
+
 /**
    A message for signalling a successful connection to the GIS.
  */
@@ -24,7 +26,7 @@ public class GKConnectOK extends AbstractMessage {
        A GKConnectOK with a specified entity list.
        @param entities The entities to send.
      */
-    public GKConnectOK(List<Entity> entities) {
+    public GKConnectOK(List<RescueObject> entities) {
         this();
         world.setEntities(entities);
     }
@@ -33,7 +35,7 @@ public class GKConnectOK extends AbstractMessage {
        Get the entity list.
        @return All entities.
      */
-    public List<Entity> getEntities() {
+    public List<RescueObject> getEntities() {
         return world.getEntities();
     }
 }

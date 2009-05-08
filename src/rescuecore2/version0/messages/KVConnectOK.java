@@ -6,6 +6,8 @@ import java.util.List;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.AbstractMessage;
 
+import rescuecore2.version0.entities.RescueObject;
+
 /**
    A message for signalling a successful connection to the kernel.
  */
@@ -25,7 +27,7 @@ public class KVConnectOK extends AbstractMessage {
        A populated KVConnectOK message.
        @param allEntities All Entities in the world.
      */
-    public KVConnectOK(Collection<Entity> allEntities) {
+    public KVConnectOK(Collection<RescueObject> allEntities) {
         this();
         this.world.setEntities(allEntities);
     }
@@ -34,7 +36,7 @@ public class KVConnectOK extends AbstractMessage {
        Get the entity list.
        @return All entities in the world.
      */
-    public List<Entity> getEntities() {
+    public List<RescueObject> getEntities() {
         return world.getEntities();
     }
 }
