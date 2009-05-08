@@ -86,7 +86,9 @@ miscsimulator_supports_load	: false
 kernel_port			: 7000
 gis_port		: 7001
 kernel_udp_port : 8000
+# 'Period' replaced with 'timesteps'
 period			: 300
+timesteps               : 300
 send_udp_size		: 1472
 send_udp_wait		: 1
 
@@ -174,7 +176,7 @@ DT	:	60
 # Random Seed
 # if this value < 0, seed for random number is the current time.
 #misc_random_seed : 829594
-misc_random_seed : 3245623345
+misc_random_seed : 623345
 
 # Dice ‚Ì‘å‚«‚³
 magnitude_dice : 10000
