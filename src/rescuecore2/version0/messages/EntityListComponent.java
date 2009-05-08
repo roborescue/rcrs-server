@@ -20,12 +20,13 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.version0.entities.RescueObject;
 
 /**
    An EntityList component to a message.
  */
 public class EntityListComponent extends AbstractMessageComponent {
-    private List<Entity> entities;
+    private List<RescueObject> entities;
 
     /**
        Construct an EntityListComponent with no content.
@@ -33,7 +34,7 @@ public class EntityListComponent extends AbstractMessageComponent {
     */
     public EntityListComponent(String name) {
         super(name);
-        entities = new ArrayList<Entity>();
+        entities = new ArrayList<RescueObject>();
     }
 
     /**
@@ -41,16 +42,16 @@ public class EntityListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param entities The entities in this message component.
     */
-    public EntityListComponent(String name, Collection<Entity> entities) {
+    public EntityListComponent(String name, Collection<RescueObject> entities) {
         super(name);
-        this.entities = new ArrayList<Entity>(entities);
+        this.entities = new ArrayList<RescueObject>(entities);
     }
 
     /**
        Get the entities that make up this message component.
        @return The entities in this component.
     */
-    public List<Entity> getEntities() {
+    public List<RescueObject> getEntities() {
         return entities;
     }
 
@@ -58,13 +59,13 @@ public class EntityListComponent extends AbstractMessageComponent {
        Set the entities that make up this message component.
        @param entities The entities in this component.
     */
-    public void setEntities(Collection<Entity> entities) {
-        this.entities = new ArrayList<Entity>(entities);
+    public void setEntities(Collection<RescueObject> entities) {
+        this.entities = new ArrayList<RescueObject>(entities);
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        for (Entity next : entities) {
+        for (RescueObject next : entities) {
             ByteArrayOutputStream gather = new ByteArrayOutputStream();
             writeInt32(next.getID().getValue(), gather);
             next.write(gather);
@@ -81,7 +82,7 @@ public class EntityListComponent extends AbstractMessageComponent {
 
     @Override
     public void read(InputStream in) throws IOException {
-        System.out.println("Reading entity list");
+        //        System.out.println("Reading entity list");
         entities.clear();
         int typeID;
         do {
@@ -92,7 +93,9 @@ public class EntityListComponent extends AbstractMessageComponent {
                 byte[] data = readBytes(size, in);
                 ByteArrayInputStream eIn = new ByteArrayInputStream(data);
                 EntityID id = new EntityID(readInt32(eIn));
-                Entity e = RescueEntityFactory.INSTANCE.makeEntity(type, id);
+                RescueObject e = RescueEntityFactory.INSTANCE.makeEntity(type, id);
+                //                System.out.println("Reading " + e);
+                //                System.out.println("Size: " + size);
                 e.read(eIn);
                 entities.add(e);
             }

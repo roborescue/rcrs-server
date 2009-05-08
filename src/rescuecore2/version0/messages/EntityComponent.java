@@ -11,6 +11,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.version0.entities.RescueObject;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,7 +23,7 @@ import java.io.ByteArrayOutputStream;
    An Entity component to a message.
  */
 public class EntityComponent extends AbstractMessageComponent {
-    private Entity value;
+    private RescueObject value;
 
     /**
        Construct an EntityComponent with no content.
@@ -38,7 +39,7 @@ public class EntityComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param value The value of this component.
      */
-    public EntityComponent(String name, Entity value) {
+    public EntityComponent(String name, RescueObject value) {
         super(name);
         this.value = value;
     }
@@ -47,7 +48,7 @@ public class EntityComponent extends AbstractMessageComponent {
        Get the value of this message component.
        @return The value of the component.
      */
-    public Entity getValue() {
+    public RescueObject getValue() {
         return value;
     }
 
@@ -55,7 +56,7 @@ public class EntityComponent extends AbstractMessageComponent {
        Set the value of this message component.
        @param e The new value of the component.
      */
-    public void setValue(Entity e) {
+    public void setValue(RescueObject e) {
         value = e;
     }
 
