@@ -52,7 +52,7 @@ public final class RescueEntityFactory implements EntityFactory {
     }
 
     @Override
-    public Entity makeEntity(EntityType type, EntityID id) {
+    public RescueObject makeEntity(EntityType type, EntityID id) {
         switch (type.getID()) {
         case EntityConstants.TYPE_WORLD:
             return new World(id);
@@ -81,15 +81,5 @@ public final class RescueEntityFactory implements EntityFactory {
         default:
             throw new IllegalArgumentException("Unrecognised entity type: " + type);
         }
-    }
-
-
-    /**
-       Construct a World object.
-       @param id The ID of the new object.
-       @return A new World object.
-     */
-    public Entity makeWorld(EntityID id) {
-        return new World(id);
     }
 }

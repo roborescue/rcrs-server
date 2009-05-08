@@ -10,31 +10,38 @@ import rescuecore2.version0.entities.properties.PropertyType;
    The Road object.
  */
 public class Road extends Edge {
+    private IntProperty kind;
+    private IntProperty carsToHead;
+    private IntProperty carsToTail;
+    private IntProperty humansToHead;
+    private IntProperty humansToTail;
+    private IntProperty width;
+    private IntProperty block;
+    private IntProperty cost;
+    private BooleanProperty hasMedian;
+    private IntProperty linesToHead;
+    private IntProperty linesToTail;
+    private IntProperty widthForWalkers;
+
     /**
-       Construct a Road object with entirely undefined values.
+       Construct a Road object with entirely undefined property values.
        @param id The ID of this entity.
      */
     public Road(EntityID id) {
-        super(id,
-              EntityConstants.ROAD,
-              // Road properties
-              new IntProperty(PropertyType.ROAD_KIND),
-              new IntProperty(PropertyType.CARS_PASS_TO_HEAD),
-              new IntProperty(PropertyType.CARS_PASS_TO_TAIL),
-              new IntProperty(PropertyType.HUMANS_PASS_TO_HEAD),
-              new IntProperty(PropertyType.HUMANS_PASS_TO_TAIL),
-              new IntProperty(PropertyType.WIDTH),
-              new IntProperty(PropertyType.BLOCK),
-              new IntProperty(PropertyType.REPAIR_COST),
-              new BooleanProperty(PropertyType.MEDIAN_STRIP),
-              new IntProperty(PropertyType.LINES_TO_HEAD),
-              new IntProperty(PropertyType.LINES_TO_TAIL),
-              new IntProperty(PropertyType.WIDTH_FOR_WALKERS),
-              // Edge properties
-              new IntProperty(PropertyType.HEAD),
-              new IntProperty(PropertyType.TAIL),
-              new IntProperty(PropertyType.LENGTH)
-              );
+        super(id, EntityConstants.ROAD);
+        kind = new IntProperty(PropertyType.ROAD_KIND);
+        carsToHead = new IntProperty(PropertyType.CARS_PASS_TO_HEAD);
+        carsToTail = new IntProperty(PropertyType.CARS_PASS_TO_TAIL);
+        humansToHead = new IntProperty(PropertyType.HUMANS_PASS_TO_HEAD);
+        humansToTail = new IntProperty(PropertyType.HUMANS_PASS_TO_TAIL);
+        width = new IntProperty(PropertyType.WIDTH);
+        block = new IntProperty(PropertyType.BLOCK);
+        cost = new IntProperty(PropertyType.REPAIR_COST);
+        hasMedian = new BooleanProperty(PropertyType.MEDIAN_STRIP);
+        linesToHead = new IntProperty(PropertyType.LINES_TO_HEAD);
+        linesToTail = new IntProperty(PropertyType.LINES_TO_TAIL);
+        widthForWalkers = new IntProperty(PropertyType.WIDTH_FOR_WALKERS);
+        addProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
     }
 
     @Override
