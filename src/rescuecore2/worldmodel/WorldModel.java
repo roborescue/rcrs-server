@@ -111,6 +111,27 @@ public class WorldModel<T extends Entity> implements Iterable<T> {
         return entities.get(id);
     }
 
+    /**
+       Merge a set of entities into this world. New entities will be added, existing entities will have properties replaced with those taken from the given objects.
+       @param toMerge The set of entities to merge into this world model.
+    */
+    public void merge(Collection<? extends T> toMerge) {
+        for (T next : toMerge) {
+            Entity existing = getEntity(next.getID());
+            if (existing == null) {
+                addEntity(next);
+            }
+            else {
+                for (Property prop : existing.getProperties()) {
+                    Property other = next.getProperty(prop.getID());
+                    if (other.isDefined()) {
+                        prop.takeValue(other);
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public Iterator<T> iterator() {
         return entities.values().iterator();
