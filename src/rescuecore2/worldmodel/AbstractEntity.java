@@ -29,7 +29,7 @@ public abstract class AbstractEntity implements Entity {
        @param id The ID of this entity.
        @param type The type of this entity.
        @param props The properties of this entity.
-     */
+    */
     protected AbstractEntity(EntityID id, EntityType type, Property... props) {
         this.id = id;
         this.type = type;
@@ -40,7 +40,7 @@ public abstract class AbstractEntity implements Entity {
     /**
        Add a set of properties to this entity. This should only be used by subclasses during construction.
        @param props The properties to add.
-     */
+    */
     protected void addProperties(Property... props) {
         for (Property next : props) {
             properties.put(next.getID(), next);
@@ -61,7 +61,7 @@ public abstract class AbstractEntity implements Entity {
     /**
        Create a copy of this entity. Property values do not need to be copied.
        @return A new Entity of the same type as this and with the same ID.
-     */
+    */
     protected abstract Entity copyImpl();
 
     @Override
@@ -88,14 +88,16 @@ public abstract class AbstractEntity implements Entity {
     public void write(OutputStream out) throws IOException {
         for (Property next : getProperties()) {
             ByteArrayOutputStream gather = new ByteArrayOutputStream();
-            next.write(gather);
-            byte[] bytes = gather.toByteArray();
-            //   Type
-            writeInt32(next.getID(), out);
-            //   Size
-            writeInt32(bytes.length, out);
-            //   Data
-            out.write(bytes);
+            if (next.isDefined()) {
+                next.write(gather);
+                byte[] bytes = gather.toByteArray();
+                //   Type
+                writeInt32(next.getID(), out);
+                //   Size
+                writeInt32(bytes.length, out);
+                //   Data
+                out.write(bytes);
+            }
         }
         // end-of-properties marker
         writeInt32(0, out);
@@ -107,10 +109,13 @@ public abstract class AbstractEntity implements Entity {
         do {
             propID = readInt32(in);
             if (propID != 0) {
+                //                System.out.println("Reading property " + propID);
                 int size = readInt32(in);
+                //                System.out.println("Size " + size);
                 byte[] data = readBytes(size, in);
                 Property prop = getProperty(propID);
                 prop.read(new ByteArrayInputStream(data));
+                //                System.out.println("Updated state: " + this);
             }
         } while (propID != 0);
     }
