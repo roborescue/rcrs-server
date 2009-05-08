@@ -27,7 +27,9 @@ public abstract class RescueObject extends AbstractEntity {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append(getType().getName());
-        result.append(" [");
+        result.append(" (");
+        result.append(getID());
+        result.append(") [");
         for (Iterator<Property> it = getProperties().iterator(); it.hasNext();) {
             result.append(it.next().toString());
             if (it.hasNext()) {
