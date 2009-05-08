@@ -127,9 +127,9 @@ public class TCPConnection extends AbstractConnection {
         @Override
         protected boolean work() {
             try {
-                //		System.out.println(TCPConnection.this + ": read thread waiting for input");
+                //                System.out.println(TCPConnection.this + ": read thread waiting for input");
                 int size = readInt32(in);
-                //		System.out.println(TCPConnection.this + ": read thread reading " + size + " bytes");
+                //                System.out.println(TCPConnection.this + ": read thread reading " + size + " bytes");
                 if (size > 0) {
                     //                    System.out.println(TCPConnection.this + ": read thread reading " + size + " bytes");
                     byte[] buffer = readBytes(size, in);
@@ -138,7 +138,7 @@ public class TCPConnection extends AbstractConnection {
                 return true;
             }
             catch (InterruptedIOException e) {
-                return false;
+                return true;
             }
             catch (SocketException e) {
                 return false;
@@ -147,8 +147,8 @@ public class TCPConnection extends AbstractConnection {
                 return false;
             }
             catch (IOException e) {
-                System.err.println(e);
-                return true;
+                e.printStackTrace();
+                return false;
             }
         }
     }
