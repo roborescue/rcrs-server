@@ -34,4 +34,9 @@ public final class EntityID {
     public int getValue() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }
