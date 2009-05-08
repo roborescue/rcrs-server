@@ -101,7 +101,7 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void sendMessages(Collection<Message> messages) throws IOException, ConnectionException {
+    public void sendMessages(Collection<? extends Message> messages) throws IOException, ConnectionException {
 	if (messages == null) {
 	    throw new IllegalArgumentException("Messages cannot be null");
 	}
@@ -159,6 +159,7 @@ public abstract class AbstractConnection implements Connection {
                 }
                 m = decodeMessage(decode, f);
                 if (m != null) {
+                    //                    System.out.println("Received: " + m);
                     fireMessageReceived(m);
                 }
             } while (m != null);
@@ -167,6 +168,7 @@ public abstract class AbstractConnection implements Connection {
             // Log and ignore
             // FIXME: Log it!
             System.err.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -204,6 +206,11 @@ public abstract class AbstractConnection implements Connection {
         int size = readInt32(in);
         byte[] data = readBytes(size, in);
         Message result = factory.createMessage(id);
+        if (result == null) {
+            return null;
+        }
+        //        System.out.println("Decoding message: " + result.getName());
+        //        System.out.println("Size: " + size);
         // Read all the message components
         InputStream input = new ByteArrayInputStream(data);
 	result.read(input);
