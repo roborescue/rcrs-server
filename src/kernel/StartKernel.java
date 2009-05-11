@@ -18,10 +18,17 @@ import kernel.legacy.LegacyPerception;
 /**
    A class for launching the kernel.
  */
-public class StartKernel {
+public final class StartKernel {
     private static final String CONFIG_FLAG = "-c";
     private static final String CONFIG_LONG_FLAG = "--config";
 
+    /** Utility class: private constructor. */
+    private StartKernel() {}
+
+    /**
+       Start a kernel.
+       @param args Command line arguments.
+     */
     public static void main(String[] args) {
         Kernel<? extends Entity> kernel = null;
         Config config = new Config();

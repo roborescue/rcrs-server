@@ -9,6 +9,7 @@ import java.util.Collection;
 
 /**
    This class manages connections from simulators.
+   @param <T> The subclass of Entity that this manager understands.
  */
 public interface SimulatorManager<T extends Entity> extends ConnectionManagerListener {
     /**

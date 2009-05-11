@@ -9,6 +9,7 @@ import java.util.Collection;
 
 /**
    This class manages connections from viewers.
+   @param <T> The subclass of Entity that this manager understands.
  */
 public interface ViewerManager<T extends Entity> extends ConnectionManagerListener {
     /**

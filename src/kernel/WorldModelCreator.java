@@ -6,6 +6,7 @@ import rescuecore2.config.Config;
 
 /**
    Implementations of this class are responsible for creating the initial world model.
+   @param <T> The subclass of Entity that this world model creator understands.
  */
 public interface WorldModelCreator<T extends Entity> {
     /**

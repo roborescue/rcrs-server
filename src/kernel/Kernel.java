@@ -1,6 +1,5 @@
 package kernel;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -15,14 +14,9 @@ import rescuecore2.messages.Message;
 
 import rescuecore2.version0.messages.Version0MessageFactory;
 
-import kernel.legacy.LegacyAgentManager;
-import kernel.legacy.LegacySimulatorManager;
-import kernel.legacy.LegacyViewerManager;
-import kernel.legacy.GISWorldModelCreator;
-import kernel.legacy.LegacyPerception;
-
 /**
    The Robocup Rescue kernel.
+   @param <T> The subclass of Entity that this kernel operates on.
  */
 public class Kernel<T extends Entity> {
     private Config config;
@@ -38,7 +32,12 @@ public class Kernel<T extends Entity> {
 
     /**
        Construct a kernel.
-       @param args The command line arguments.
+       @param config The configuration to use.
+       @param worldModelCreator An object that will create the world model.
+       @param simulatorManager A manager for simulators.
+       @param viewerManager A manager for viewers.
+       @param agentManager A manager for agents.
+       @param perception A perception calculator.
        @throws KernelException If something blows up.
        @throws ConfigException If the config file is broken.
     */

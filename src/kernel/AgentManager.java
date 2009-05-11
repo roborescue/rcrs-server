@@ -6,11 +6,11 @@ import java.util.Collection;
 import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 
 /**
    This class manages connections from agents, including assigning which Robocup Rescue object each agent controls, and passing messages between the kernel and the agents.
+   @param <T> The subclass of Entity that this AgentManager understands.
  */
 public interface AgentManager<T extends Entity> extends ConnectionManagerListener {
     /**

@@ -113,8 +113,8 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject> {
     }
 
     @Override
-    public void sendUpdate(int time, Collection<RescueObject> updates) {
-        sendToAll(Collections.singleton(new Update(time, updates)));
+    public void sendUpdate(int time, Collection<RescueObject> updatedObjects) {
+        sendToAll(Collections.singleton(new Update(time, updatedObjects)));
     }
 
     private boolean acknowledge(int id, Connection c) {

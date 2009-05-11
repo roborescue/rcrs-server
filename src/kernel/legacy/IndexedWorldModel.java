@@ -8,16 +8,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityType;
-import rescuecore2.worldmodel.Property;
 import rescuecore2.misc.Pair;
 
 import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.entities.Human;
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.EntityRefProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
 
 /**
    A wrapper around a WorldModel that indexes Entities by location.
@@ -52,7 +47,7 @@ public class IndexedWorldModel {
 
     /**
        Tell this index to remember a certain class of entities.
-       @param ids The EntityTypes to remember.
+       @param types The EntityTypes to remember.
      */
     public void indexClass(EntityType... types) {
         for (EntityType type : types) {
@@ -78,7 +73,7 @@ public class IndexedWorldModel {
         maxX = Integer.MIN_VALUE;
         minY = Integer.MAX_VALUE;
         maxY = Integer.MIN_VALUE;
-        int[] location = new int[2];
+        Pair<Integer, Integer> location;
         for (RescueObject next : world) {
             if (next instanceof Human) {
                 mobileEntities.add(next);
@@ -86,11 +81,14 @@ public class IndexedWorldModel {
             else {
                 staticEntities.add(next);
             }
-            if (locate(next, location)) {
-                minX = Math.min(minX, location[0]);
-                maxX = Math.max(maxX, location[0]);
-                minY = Math.min(minY, location[1]);
-                maxY = Math.max(maxY, location[1]);
+            location = next.getLocation(world);
+            if (location != null) {
+                int x = location.first().intValue();
+                int y = location.second().intValue();
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x);
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y);
             }
         }
         // Now divide the world into a grid
@@ -109,8 +107,9 @@ public class IndexedWorldModel {
             }
         }
         for (RescueObject next : staticEntities) {
-            if (locate(next, location)) {
-                Collection<RescueObject> cell = getCell(getXCell(location[0]), getYCell(location[1]));
+            location = next.getLocation(world);
+            if (location != null) {
+                Collection<RescueObject> cell = getCell(getXCell(location.first().intValue()), getYCell(location.second().intValue()));
                 cell.add(next);
             }
         }
@@ -128,6 +127,7 @@ public class IndexedWorldModel {
        @param x The x coordinate of the location.
        @param y The y coordinate of the location.
        @param range The range to look up.
+       @return A collection of RescueObjects that are within range.
      */
     public Collection<RescueObject> getObjectsInRange(int x, int y, int range) {
         Collection<RescueObject> result = new HashSet<RescueObject>();
@@ -160,14 +160,14 @@ public class IndexedWorldModel {
                 if (distance <= range) {
                     result.add(next);
                 }
-            }            
+            }
         }
         return result;
     }
 
     /**
        Get all entities of a particular type.
-       @param The type to look up.
+       @param type The type to look up.
        @return A new Collection of entities of the specified type.
      */
     public Collection<RescueObject> getEntitiesOfType(EntityType type) {
@@ -181,22 +181,6 @@ public class IndexedWorldModel {
             }
         }
         return result;
-    }
-
-    /**
-       Locate an entity.
-       @param e The entity to locate.
-       @param result An int array to store the coordinates of the entity in. X is index 0, y is index 1.
-       @return true If the entity was located, false otherwise.
-     */
-    public boolean locate(RescueObject e, int[] result) {
-        Pair<Integer, Integer> location = e.getLocation(world);
-        if (location == null) {
-            return false;
-        }
-        result[0] = location.first().intValue();
-        result[1] = location.second().intValue();
-        return true;
     }
 
     private int getXCell(int x) {
