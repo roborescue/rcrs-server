@@ -19,8 +19,8 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.entities.Civilian;
 import rescuecore2.version0.entities.FireBrigade;
@@ -265,24 +265,82 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
 
     private void maybeAddInitialEntity(RescueObject e) {
         if (e instanceof Road) {
-            // Clone the road and remove some properties
             Road r = (Road)e.copy();
-            r.getProperty(PropertyType.BLOCK.getID()).clearValue();
-            r.getProperty(PropertyType.REPAIR_COST.getID()).clearValue();
+            filterRoadProperties(r);
             initialEntities.add(r);
         }
         if (e instanceof Node) {
-            initialEntities.add(e);
+            Node n = (Node)e.copy();
+            filterNodeProperties(n);
+            initialEntities.add(n);
         }
         if (e instanceof Building) {
-            // Clone the building and remove some properties
             Building b = (Building)e.copy();
-            b.getProperty(PropertyType.IGNITION.getID()).clearValue();
-            b.getProperty(PropertyType.FIERYNESS.getID()).clearValue();
-            b.getProperty(PropertyType.BROKENNESS.getID()).clearValue();
-            b.getProperty(PropertyType.TEMPERATURE.getID()).clearValue();
-            b.getProperty(PropertyType.BUILDING_APEXES.getID()).clearValue();
+            filterBuildingProperties(b);
             initialEntities.add(b);
+        }
+    }
+
+    private void filterRoadProperties(Road r) {
+        for (Property next : r.getProperties()) {
+            // Road properties: ROAD_KIND, WIDTH, MEDIAN_STRIP, LINES_TO_HEAD, LINES_TO_TAIL and WIDTH_FOR_WALKERS
+            // Edge properties: HEAD, TAIL, LENGTH
+            // Everything else should be undefined
+            switch (PropertyType.fromID(next.getID())) {
+            case ROAD_KIND:
+            case WIDTH:
+            case MEDIAN_STRIP:
+            case LINES_TO_HEAD:
+            case LINES_TO_TAIL:
+            case WIDTH_FOR_WALKERS:
+            case HEAD:
+            case TAIL:
+            case LENGTH:
+                break;
+            default:
+                next.undefine();
+            }
+        }
+    }
+
+    private void filterNodeProperties(Node n) {
+        for (Property next : n.getProperties()) {
+            // Node properties: SIGNAL, SHORTCUT_TO_TURN, POCKET_TO_TURN_ACROSS, SIGNAL_TIMING
+            // Vertex properties: X, Y, EDGES
+            // Everything else should be undefined
+            switch (PropertyType.fromID(next.getID())) {
+            case SIGNAL:
+            case SHORTCUT_TO_TURN:
+            case POCKET_TO_TURN_ACROSS:
+            case SIGNAL_TIMING:
+            case X:
+            case Y:
+            case EDGES:
+                break;
+            default:
+                next.undefine();
+            }
+        }
+    }
+
+    private void filterBuildingProperties(Building b) {
+        for (Property next : b.getProperties()) {
+            // Building properties: X, Y, FLOORS, BUILDING_CODE, BUILDING_ATTRIBUTES, BUILDING_AREA_GROUND, BUILDING_AREA_TOTAL, IMPORTANCE, ENTRANCES
+            // Everything else should be undefined
+            switch (PropertyType.fromID(next.getID())) {
+            case X:
+            case Y:
+            case FLOORS:
+            case BUILDING_CODE:
+            case BUILDING_ATTRIBUTES:
+            case BUILDING_AREA_GROUND:
+            case BUILDING_AREA_TOTAL:
+            case IMPORTANCE:
+            case ENTRANCES:
+                break;
+            default:
+                next.undefine();
+            }
         }
     }
 
@@ -336,7 +394,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
             if (msg instanceof AKAcknowledge) {
                 int id = ((AKAcknowledge)msg).getAgentID();
                 if (acknowledge(id, connection)) {
-                    //                    System.out.println("Agent " + id + " acknowledged");
+                    System.out.println("Agent " + id + " acknowledged");
                 }
                 else {
                     System.out.println("Unexpected acknowledge from agent " + id);

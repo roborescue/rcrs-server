@@ -6,13 +6,15 @@ import java.util.HashSet;
 import kernel.Perception;
 
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.config.Config;
+import rescuecore2.misc.Pair;
 import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.entities.EntityConstants;
 import rescuecore2.version0.entities.Road;
-import rescuecore2.version0.entities.Node;
 import rescuecore2.version0.entities.Building;
 import rescuecore2.version0.entities.Human;
+import rescuecore2.version0.entities.properties.PropertyType;
 
 /**
    Legacy implementation of perception.
@@ -33,8 +35,8 @@ public class LegacyPerception implements Perception<RescueObject> {
     }
 
     @Override
-    public void setWorldModel(WorldModel<RescueObject> world) {
-        this.world = world;
+    public void setWorldModel(WorldModel<RescueObject> newWorld) {
+        this.world = newWorld;
         index = new IndexedWorldModel(world, viewDistance);
         index.index();
         index.indexClass(EntityConstants.ROAD, EntityConstants.NODE, EntityConstants.BUILDING, EntityConstants.REFUGE, EntityConstants.FIRE_STATION, EntityConstants.AMBULANCE_CENTRE, EntityConstants.POLICE_OFFICE, EntityConstants.CIVILIAN, EntityConstants.FIRE_BRIGADE, EntityConstants.AMBULANCE_TEAM, EntityConstants.POLICE_FORCE);
@@ -45,42 +47,82 @@ public class LegacyPerception implements Perception<RescueObject> {
     public Collection<RescueObject> getVisibleEntities(RescueObject agent) {
         Collection<RescueObject> result = new HashSet<RescueObject>();
         // Look for roads/nodes/buildings/humans within range
-        int[] location = new int[2];
-        if (index.locate(agent, location)) {
-            int x = location[0];
-            int y = location[1];
+        Pair<Integer, Integer> location = agent.getLocation(world);
+        if (location != null) {
+            int x = location.first().intValue();
+            int y = location.second().intValue();
             Collection<RescueObject> nearby = index.getObjectsInRange(x, y, viewDistance);
             // Copy entities and set property values
             for (RescueObject next : nearby) {
-                RescueObject copy = (RescueObject)next.copy();
-                if (copy instanceof Road) {
-                    processRoadProperties((Road)copy);
-                }
-                if (copy instanceof Node) {
-                    processNodeProperties((Node)copy);
+                RescueObject copy = null;
+                // Update roads, buildings and humans
+                // Nodes have only static data
+                if (next instanceof Road) {
+                    copy = (RescueObject)next.copy();
+                    filterRoadProperties((Road)copy);
                 }
                 if (copy instanceof Building) {
-                    processBuildingProperties((Building)copy);
+                    copy = (RescueObject)next.copy();
+                    filterBuildingProperties((Building)copy);
                 }
                 if (copy instanceof Human) {
-                    processHumanProperties((Human)copy);
+                    copy = (RescueObject)next.copy();
+                    // Always send all properties of the agent-controlled object
+                    if (next != agent) {
+                        filterHumanProperties((Human)copy);
+                    }
                 }
-                result.add(copy);
+                if (copy != null) {
+                    result.add(copy);
+                }
             }
         }
         // Now look for far fires
         return result;
     }
 
-    private void processRoadProperties(Road road) {
+    private void filterRoadProperties(Road road) {
+        // Update BLOCK only
+        for (Property next : road.getProperties()) {
+            switch (PropertyType.fromID(next.getID())) {
+            case BLOCK:
+                break;
+            default:
+                next.undefine();
+            }
+        }
     }
 
-    private void processNodeProperties(Node node) {
+    private void filterBuildingProperties(Building building) {
+        // Update TEMPERATURE, FIERYNESS and BROKENNESS
+        for (Property next : building.getProperties()) {
+            switch (PropertyType.fromID(next.getID())) {
+            case TEMPERATURE:
+            case FIERYNESS:
+            case BROKENNESS:
+                break;
+            default:
+                next.undefine();
+            }
+        }
     }
 
-    private void processBuildingProperties(Building building) {
-    }
-
-    private void processHumanProperties(Human human) {
+    private void filterHumanProperties(Human human) {
+        // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
+        // TODO: Round hp/damage
+        for (Property next : human.getProperties()) {
+            switch (PropertyType.fromID(next.getID())) {
+            case POSITION:
+            case POSITION_EXTRA:
+            case DIRECTION:
+            case STAMINA:
+            case HP:
+            case DAMAGE:
+            case BURIEDNESS:
+                break;
+            default:
+                next.undefine();
+            }
+        }
     }
 }
