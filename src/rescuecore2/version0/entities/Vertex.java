@@ -7,8 +7,10 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.Pair;
 
 import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.IntArrayProperty;
+import rescuecore2.version0.entities.properties.EntityRefListProperty;
 import rescuecore2.version0.entities.properties.PropertyType;
+
+import java.util.List;
 
 /**
    Vertex-type entities (e.g. nodes).
@@ -16,7 +18,7 @@ import rescuecore2.version0.entities.properties.PropertyType;
 public abstract class Vertex extends RescueObject {
     private IntProperty x;
     private IntProperty y;
-    private IntArrayProperty edges;
+    private EntityRefListProperty edges;
 
     /**
        Construct a Vertex object with entirely undefined property values.
@@ -28,12 +30,129 @@ public abstract class Vertex extends RescueObject {
         super(id, type, props);
         x = new IntProperty(PropertyType.X);
         y = new IntProperty(PropertyType.Y);
-        edges = new IntArrayProperty(PropertyType.EDGES);
+        edges = new EntityRefListProperty(PropertyType.EDGES);
         addProperties(x, y, edges);
     }
 
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueObject> world) {
         return new Pair<Integer, Integer>(x.getValue(), y.getValue());
+    }
+
+    /**
+       Get the x property.
+       @return The x property.
+     */
+    public IntProperty getXProperty() {
+        return x;
+    }
+
+    /**
+       Get the value of the x property.
+       @return The value of the x property.
+     */
+    public int getX() {
+        return x.getValue();
+    }
+
+    /**
+       Set the x property.
+       @param x The new x.
+    */
+    public void setX(int x) {
+        this.x.setValue(x);
+    }
+
+    /**
+       Find out if the x property has been defined.
+       @return True if the x property has been defined, false otherwise.
+     */
+    public boolean isXDefined() {
+        return x.isDefined();
+    }
+
+    /**
+       Undefine the x property.
+    */
+    public void undefineX() {
+        x.undefine();
+    }
+
+    /**
+       Get the y property.
+       @return The y property.
+     */
+    public IntProperty getYProperty() {
+        return y;
+    }
+
+    /**
+       Get the value of the y property.
+       @return The value of the y property.
+     */
+    public int getY() {
+        return y.getValue();
+    }
+
+    /**
+       Set the y property.
+       @param y The new y.
+    */
+    public void setY(int y) {
+        this.y.setValue(y);
+    }
+
+    /**
+       Find out if the y property has been defined.
+       @return True if the y property has been defined, false otherwise.
+     */
+    public boolean isYDefined() {
+        return y.isDefined();
+    }
+
+    /**
+       Undefine the y property.
+    */
+    public void undefineY() {
+        y.undefine();
+    }
+
+    /**
+       Get the edges property.
+       @return The edges property.
+     */
+    public EntityRefListProperty getEdgesProperty() {
+        return edges;
+    }
+
+    /**
+       Get the value of the edges property.
+       @return The value of the edges property.
+     */
+    public List<EntityID> getEdges() {
+        return edges.getValue();
+    }
+
+    /**
+       Set the edges property.
+       @param edges The new edges.
+    */
+    public void setEdges(List<EntityID> edges) {
+        this.edges.setValue(edges);
+    }
+
+    /**
+       Find out if the edges property has been defined.
+       @return True if the edges property has been defined, false otherwise.
+     */
+    public boolean isEdgesDefined() {
+        return edges.isDefined();
+    }
+
+    /**
+       Undefine the edges property.
+    */
+    public void undefineEdges() {
+        edges.undefine();
     }
 }

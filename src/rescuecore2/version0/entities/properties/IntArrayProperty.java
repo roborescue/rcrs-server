@@ -42,11 +42,11 @@ public class IntArrayProperty extends RescueProperty {
     }
 
     /**
-       Get the values of this property. If {@link #isDefined()} returns false then the result will be undefined.
+       Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
        @return The values of this property, or an undefined result if the values have not been set.
        @see #isDefined()
      */
-    public int[] getValues() {
+    public int[] getValue() {
         Integer[] result = new Integer[data.size()];
         data.toArray(result);
         int[] out = new int[result.length];
@@ -60,12 +60,12 @@ public class IntArrayProperty extends RescueProperty {
        Set the value of this property. Future calls to {@link #isDefined()} will return true.
        @param values The new values.
      */
-    public void setValues(int[] values) {
+    public void setValue(int[] values) {
         this.data = new ArrayList<Integer>(values.length);
         for (Integer next : values) {
             data.add(next);
         }
-        setDefined(true);
+        setDefined();
     }
 
     /**
@@ -73,7 +73,7 @@ public class IntArrayProperty extends RescueProperty {
        @param i The value to add.
      */
     public void push(int i) {
-        setDefined(true);
+        setDefined();
         data.add(i);
     }
 
@@ -81,17 +81,11 @@ public class IntArrayProperty extends RescueProperty {
     public void takeValue(Property p) {
         IntArrayProperty i = (IntArrayProperty)p;
         if (i.isDefined()) {
-            setValues(i.getValues());
+            setValue(i.getValue());
         }
         else {
-            clearValue();
+            undefine();
         }
-    }
-
-    @Override
-    public void clearValue() {
-        data.clear();
-        setDefined(false);
     }
 
     @Override
@@ -110,7 +104,7 @@ public class IntArrayProperty extends RescueProperty {
         for (int i = 0; i < size; ++i) {
             result[i] = readInt32(in);
         }
-        setValues(result);
+        setValue(result);
     }
 
     @Override

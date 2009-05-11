@@ -48,7 +48,7 @@ public class BooleanProperty extends RescueProperty {
      */
     public void setValue(boolean value) {
         this.value = value;
-        setDefined(true);
+        setDefined();
     }
 
     @Override
@@ -58,13 +58,8 @@ public class BooleanProperty extends RescueProperty {
             setValue(b.getValue());
         }
         else {
-            clearValue();
+            undefine();
         }
-    }
-
-    @Override
-    public void clearValue() {
-        setDefined(false);
     }
 
     @Override

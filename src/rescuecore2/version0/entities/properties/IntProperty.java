@@ -48,7 +48,7 @@ public class IntProperty extends RescueProperty {
      */
     public void setValue(int value) {
         this.value = value;
-        setDefined(true);
+        setDefined();
     }
 
     @Override
@@ -58,14 +58,8 @@ public class IntProperty extends RescueProperty {
             setValue(i.getValue());
         }
         else {
-            clearValue();
+            undefine();
         }
-    }
-
-    @Override
-    public void clearValue() {
-        value = 0;
-        setDefined(false);
     }
 
     @Override

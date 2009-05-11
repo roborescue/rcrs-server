@@ -3,7 +3,6 @@ package rescuecore2.version0.entities;
 import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.Entity;
 
 /**
    EntityFactory that builds standard Robocup Rescue objects.

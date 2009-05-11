@@ -49,7 +49,7 @@ public class EntityRefProperty extends RescueProperty {
      */
     public void setValue(EntityID value) {
         this.value = value;
-        setDefined(true);
+        setDefined();
     }
 
     @Override
@@ -59,14 +59,8 @@ public class EntityRefProperty extends RescueProperty {
             setValue(e.getValue());
         }
         else {
-            clearValue();
+            undefine();
         }
-    }
-
-    @Override
-    public void clearValue() {
-        value = null;
-        setDefined(false);
     }
 
     @Override
