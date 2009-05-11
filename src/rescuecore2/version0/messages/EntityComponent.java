@@ -6,7 +6,6 @@ import static rescuecore2.misc.EncodingTools.readBytes;
 import static rescuecore2.misc.EncodingTools.INT_32_SIZE;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 

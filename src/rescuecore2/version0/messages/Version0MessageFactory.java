@@ -54,7 +54,7 @@ public final class Version0MessageFactory implements MessageFactory {
             return new KAConnectError();
         case MessageConstants.AK_MOVE:
             return new AKMove();
-        default: 
+        default:
             System.out.println("Unrecognised message ID: " + id);
             return null;
        }

@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 /**
    This class encapsulates everything about a world model. The world model can be parameterised on a subclass of Entity if required.
+   @param <T> The subclass of Entity that this world model holds.
 */
 public class WorldModel<T extends Entity> implements Iterable<T> {
     private Map<EntityID, T> entities;

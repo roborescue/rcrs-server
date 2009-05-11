@@ -1,6 +1,5 @@
 package rescuecore2.messages;
 
-import java.util.List;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;

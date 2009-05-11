@@ -3,7 +3,6 @@ package rescuecore2.version0.messages;
 import java.util.Collection;
 import java.util.List;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.AbstractMessage;
 
 import rescuecore2.version0.entities.RescueObject;

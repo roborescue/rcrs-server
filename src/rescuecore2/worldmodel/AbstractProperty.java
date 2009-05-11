@@ -26,16 +26,20 @@ public abstract class AbstractProperty implements Property {
     }
 
     /**
-       Set whether the value is defined or not.
-       @param b The new defined status.
+       Set the property status to defined.
      */
-    protected void setDefined(boolean b) {
-        defined = b;
+    protected void setDefined() {
+        defined = true;
     }
 
     @Override
     public boolean isDefined() {
         return defined;
+    }
+
+    @Override
+    public void undefine() {
+        defined = false;
     }
 
     @Override

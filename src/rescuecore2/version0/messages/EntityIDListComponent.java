@@ -48,10 +48,10 @@ public class EntityIDListComponent extends AbstractMessageComponent {
 
     /**
        Set the list of entity IDs in this component.
-       @param ids The new set of entity IDs.
+       @param newIDs The new set of entity IDs.
      */
-    public void setIDs(List<EntityID> ids) {
-        this.ids = new ArrayList<EntityID>(ids);
+    public void setIDs(List<EntityID> newIDs) {
+        this.ids = new ArrayList<EntityID>(newIDs);
     }
 
     @Override

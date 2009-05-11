@@ -2,6 +2,8 @@ package rescuecore2.misc;
 
 /**
    Utility class for a 2-tuple, often known as a pair.
+   @param <S> The type of the first element of the pair.
+   @param <T> The type of the second element of the pair.
  */
 public class Pair<S, T> {
     private S first;
@@ -13,8 +15,8 @@ public class Pair<S, T> {
        @param second The second element.
      */
     public Pair(S first, T second) {
-	this.first = first;
-	this.second = second;
+        this.first = first;
+        this.second = second;
     }
 
     /**
@@ -22,7 +24,7 @@ public class Pair<S, T> {
        @return The first element.
      */
     public S first() {
-	return first;
+        return first;
     }
 
     /**
@@ -30,7 +32,7 @@ public class Pair<S, T> {
        @return The second element.
      */
     public T second() {
-	return second;
+        return second;
     }
 
     @Override

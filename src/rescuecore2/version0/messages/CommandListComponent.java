@@ -16,12 +16,6 @@ import java.io.ByteArrayOutputStream;
 
 import rescuecore2.messages.Message;
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.EntityType;
-
-import rescuecore2.version0.entities.RescueEntityFactory;
-import rescuecore2.version0.entities.RescueObject;
 
 /**
    A message component made up of a list of agent commands.

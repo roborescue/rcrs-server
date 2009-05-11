@@ -5,6 +5,9 @@ import rescuecore2.messages.AbstractMessage;
 import java.util.Collection;
 import java.util.List;
 
+/**
+   A message containing a list of agent commands. This is sent from the kernel to all simulators and viewers.
+ */
 public class Commands extends AbstractMessage {
     private IntComponent time;
     private CommandListComponent commands;

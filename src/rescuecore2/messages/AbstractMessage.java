@@ -75,13 +75,13 @@ public abstract class AbstractMessage implements Message {
     public void write(OutputStream out) throws IOException {
         for (MessageComponent next : components) {
             next.write(out);
-        }	
+        }
     }
 
     @Override
     public void read(InputStream in) throws IOException {
         for (MessageComponent next : components) {
             next.read(in);
-        }	
+        }
     }
 }
