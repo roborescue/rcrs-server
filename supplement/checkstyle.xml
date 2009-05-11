@@ -125,7 +125,7 @@
     <module name="InnerAssignment"/>
     <module name="MagicNumber">
       <!-- 1000 is a common timeout value -->
-      <property name="ignoreNumbers" value="-1, 0, 1, 1000"/>
+      <property name="ignoreNumbers" value="-1, 0, 1, 2, 1000"/>
     </module>
     <module name="MissingSwitchDefault"/>
     <module name="ModifiedControlVariable"/>
