@@ -21,9 +21,9 @@ public interface Property {
     boolean isDefined();
 
     /**
-       Clear the value of this property. Future calls to {@link #isDefined()} will return false.
+       Undefine the value of this property. Future calls to {@link #isDefined()} will return false.
      */
-    void clearValue();
+    void undefine();
 
     /**
        Take on the value of another property.
