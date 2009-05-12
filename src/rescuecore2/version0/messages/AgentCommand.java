@@ -10,25 +10,30 @@ public abstract class AgentCommand extends AbstractMessage {
     private EntityIDComponent agentID;
 
     /**
-       An AgentCommand with undefined values.
+       Construct an empty AgentCommand.
        @param name The name of this command.
        @param typeID The typeID of this command.
      */
     protected AgentCommand(String name, int typeID) {
         super(name, typeID);
-        agentID = new EntityIDComponent("Agent ID");
-        addMessageComponent(agentID);
+        init();
     }
 
     /**
-       An AgentCommand with particular agentID.
+       Construct an AgentCommand with an agent ID.
        @param name The name of this command.
        @param typeID The typeID of this command.
-       @param agentID The agent ID.
+       @param agentID The ID of the agent issuing the command.
      */
     protected AgentCommand(String name, int typeID, EntityID agentID) {
-        this(name, typeID);
+        super(name, typeID);
+        init();
         this.agentID.setValue(agentID);
+    }
+
+    private void init() {
+        agentID = new EntityIDComponent("Agent ID");
+        addMessageComponent(agentID);
     }
 
     /**
@@ -37,5 +42,14 @@ public abstract class AgentCommand extends AbstractMessage {
      */
     public EntityID getAgentID() {
         return agentID.getValue();
+    }
+
+    /**
+       Set the ID of the agent issuing the command.
+       @param agentID The new agent ID.
+     */
+    protected void setAgentID(EntityID agentID) {
+        this.agentID.setValue(agentID);
+
     }
 }

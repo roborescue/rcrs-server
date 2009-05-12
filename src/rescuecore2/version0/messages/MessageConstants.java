@@ -51,6 +51,20 @@ public final class MessageConstants {
 
     /** Move command. */
     public static final int AK_MOVE = 0x81;
+    /** Load command. */
+    public static final int AK_LOAD = 0x82;
+    /** Unload command. */
+    public static final int AK_UNLOAD = 0x83;
+    /** Say command. */
+    public static final int AK_SAY = 0x84;
+    /** Tell command. */
+    public static final int AK_TELL = 0x85;
+    /** Extinguish command. */
+    public static final int AK_EXTINGUISH = 0x86;
+    /** Rescue command. */
+    public static final int AK_RESCUE = 0x88;
+    /** Clear command. */
+    public static final int AK_CLEAR = 0x89;
 
     private MessageConstants() {}
 }

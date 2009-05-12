@@ -1,5 +1,8 @@
 package rescuecore2.version0.messages;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageFactory;
 
@@ -12,51 +15,93 @@ public final class Version0MessageFactory implements MessageFactory {
 
     /**
        Singleton class: private constructor.
-     */
+    */
     private Version0MessageFactory() {}
 
     @Override
-    public Message createMessage(int id) {
+    public Message createMessage(int id, InputStream data) throws IOException {
+        Message result = null;
         switch (id) {
         case MessageConstants.KG_CONNECT:
-            return new KGConnect();
+            result = new KGConnect();
+            break;
         case MessageConstants.KG_ACKNOWLEDGE:
-            return new KGAcknowledge();
+            result = new KGAcknowledge();
+            break;
         case MessageConstants.GK_CONNECT_OK:
-            return new GKConnectOK();
+            result = new GKConnectOK();
+            break;
         case MessageConstants.GK_CONNECT_ERROR:
-            return new GKConnectError();
+            result = new GKConnectError();
+            break;
         case MessageConstants.SK_CONNECT:
-            return new SKConnect();
+            result = new SKConnect();
+            break;
         case MessageConstants.SK_ACKNOWLEDGE:
-            return new SKAcknowledge();
+            result = new SKAcknowledge();
+            break;
         case MessageConstants.SK_UPDATE:
-            return new SKUpdate();
+            result = new SKUpdate();
+            break;
         case MessageConstants.KS_CONNECT_OK:
-            return new KSConnectOK();
+            result = new KSConnectOK();
+            break;
         case MessageConstants.KS_CONNECT_ERROR:
-            return new KSConnectError();
+            result = new KSConnectError();
+            break;
         case MessageConstants.VK_CONNECT:
-            return new VKConnect();
+            result = new VKConnect();
+            break;
         case MessageConstants.VK_ACKNOWLEDGE:
-            return new VKAcknowledge();
+            result = new VKAcknowledge();
+            break;
         case MessageConstants.KV_CONNECT_OK:
-            return new KVConnectOK();
+            result = new KVConnectOK();
+            break;
         case MessageConstants.KV_CONNECT_ERROR:
-            return new KVConnectError();
+            result = new KVConnectError();
+            break;
         case MessageConstants.AK_CONNECT:
-            return new AKConnect();
+            result = new AKConnect();
+            break;
         case MessageConstants.AK_ACKNOWLEDGE:
-            return new AKAcknowledge();
+            result = new AKAcknowledge();
+            break;
         case MessageConstants.KA_CONNECT_OK:
-            return new KAConnectOK();
+            result = new KAConnectOK();
+            break;
         case MessageConstants.KA_CONNECT_ERROR:
-            return new KAConnectError();
+            result = new KAConnectError();
+            break;
         case MessageConstants.AK_MOVE:
-            return new AKMove();
+            result = new AKMove();
+            break;
+        case MessageConstants.AK_LOAD:
+            result = new AKLoad();
+            break;
+        case MessageConstants.AK_UNLOAD:
+            result = new AKUnload();
+            break;
+        case MessageConstants.AK_SAY:
+            result = new AKSay();
+            break;
+        case MessageConstants.AK_TELL:
+            result = new AKTell();
+            break;
+        case MessageConstants.AK_EXTINGUISH:
+            result = new AKExtinguish();
+            break;
+        case MessageConstants.AK_RESCUE:
+            result = new AKRescue();
+            break;
+        case MessageConstants.AK_CLEAR:
+            result = new AKClear();
+            break;
         default:
             System.out.println("Unrecognised message ID: " + id);
             return null;
-       }
+        }
+        result.read(data);
+        return result;
     }
 }

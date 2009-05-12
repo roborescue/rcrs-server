@@ -11,20 +11,21 @@ public class AKMove extends AgentCommand {
     private EntityIDListComponent path;
 
     /**
-       Construct a move command with no path information.
+       Create an empty AKMove command.
      */
-    public AKMove() {
+    AKMove() {
         super("AK_MOVE", MessageConstants.AK_MOVE);
-        path = new EntityIDListComponent("Path");
-        addMessageComponent(path);
+        init();
     }
 
     /**
-       Construct a move command with path information.
+       Construct a move command.
+       @param agent The ID of the agent issuing the command.
        @param path The path to move.
      */
-    public AKMove(List<EntityID> path) {
-        this();
+    public AKMove(EntityID agent, List<EntityID> path) {
+        super("AK_MOVE", MessageConstants.AK_MOVE, agent);
+        init();
         this.path.setIDs(path);
     }
 
@@ -34,5 +35,10 @@ public class AKMove extends AgentCommand {
      */
     public List<EntityID> getPath() {
         return path.getIDs();
+    }
+
+    private void init() {
+        path = new EntityIDListComponent("Path");
+        addMessageComponent(path);
     }
 }
