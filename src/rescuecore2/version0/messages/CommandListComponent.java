@@ -81,12 +81,11 @@ public class CommandListComponent extends AbstractMessageComponent {
         do {
             typeID = readInt32(in);
             if (typeID != 0) {
-                Message next = Version0MessageFactory.INSTANCE.createMessage(typeID);
                 int size = readInt32(in);
                 byte[] data = readBytes(size, in);
+                ByteArrayInputStream dataIn = new ByteArrayInputStream(data);
+                Message next = Version0MessageFactory.INSTANCE.createMessage(typeID, dataIn);
                 if (next instanceof AgentCommand) {
-                    ByteArrayInputStream dataIn = new ByteArrayInputStream(data);
-                    next.read(dataIn);
                     commands.add((AgentCommand)next);
                 }
             }

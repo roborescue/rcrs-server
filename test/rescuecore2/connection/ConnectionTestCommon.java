@@ -46,7 +46,7 @@ public abstract class ConnectionTestCommon {
     public void testNoMessagesReceivedBeforeStartup() throws IOException, InterruptedException, ConnectionException {
 	// Send a message from the client
 	client.startup();
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
 	// Wait a bit
 	Thread.sleep(DELAY);
@@ -62,7 +62,7 @@ public abstract class ConnectionTestCommon {
 	// Send a message from the client
 	client.startup();
 	server.startup();
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
 	// Wait for a message
         serverListener.waitForMessages(1, TIMEOUT);
@@ -85,7 +85,7 @@ public abstract class ConnectionTestCommon {
 	client.startup();
 	server.startup();
 	// Send a message from the client
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
 	// Wait for a message
         serverListener.waitForMessages(1, TIMEOUT);
@@ -106,7 +106,7 @@ public abstract class ConnectionTestCommon {
         client.startup();
         server.startup();
         // Send a message from the client
-        Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+        Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
         client.sendMessage(m);
         // Wait for a message
         serverListener.waitForMessages(1, TIMEOUT);
@@ -123,7 +123,7 @@ public abstract class ConnectionTestCommon {
 	client.startup();
 	server.startup();
 	// Send a message from the client
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
 	// Wait for a message
         serverListener.waitForMessages(1, TIMEOUT);
@@ -158,7 +158,7 @@ public abstract class ConnectionTestCommon {
     public void testSendMessage() throws IOException, InterruptedException, ConnectionException {
 	client.startup();
 	server.startup();
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
         serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
@@ -195,14 +195,15 @@ public abstract class ConnectionTestCommon {
     @Test(expected=rescuecore2.connection.ConnectionException.class)
     public void testSendMessageBeforeStartup() throws IOException, InterruptedException, ConnectionException {
 	server.startup();
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
     }
 
     @Test(expected=rescuecore2.connection.ConnectionException.class)
     public void testSendMessageAfterShutdown() throws IOException, InterruptedException, ConnectionException {
 	server.startup();
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+        client.startup();
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
         serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
@@ -214,7 +215,7 @@ public abstract class ConnectionTestCommon {
     public void testSetMessageFactory() throws IOException, InterruptedException, ConnectionException {
 	client.startup();
 	server.startup();
-	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1);
+	Message m = factory.createMessage(TestMessageFactory.MESSAGE_1, null);
 	client.sendMessage(m);
         serverListener.waitForMessages(1, TIMEOUT);
 	assertEquals(1, serverListener.getMessageCount());
@@ -234,15 +235,24 @@ public abstract class ConnectionTestCommon {
     }
 
     private class NewMessageFactory implements MessageFactory {
-	public Message createMessage(int id) {
+        @Override
+	public Message createMessage(int id, InputStream in) throws IOException {
+            Message result = null;
 	    // Switch the IDs
 	    switch (id) {
 	    case TestMessageFactory.MESSAGE_1:
-		return new TestMessage(TestMessageFactory.MESSAGE_2);
+		result = new TestMessage(TestMessageFactory.MESSAGE_2);
+                break;
 	    case TestMessageFactory.MESSAGE_2:
-		return new TestMessage(TestMessageFactory.MESSAGE_1);
+		result = new TestMessage(TestMessageFactory.MESSAGE_1);
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognised ID: " + id);
 	    }
-	    throw new IllegalArgumentException("Unrecognised ID: " + id);
+            if (in != null) {
+                result.read(in);
+            }
+            return result;
 	}
     }
 }

@@ -205,16 +205,8 @@ public abstract class AbstractConnection implements Connection {
         }
         int size = readInt32(in);
         byte[] data = readBytes(size, in);
-        Message result = messageFactory.createMessage(id);
-        if (result == null) {
-            return null;
-        }
-        //        System.out.println("Decoding message: " + result.getName());
-        //        System.out.println("Size: " + size);
-        // Read all the message components
         InputStream input = new ByteArrayInputStream(data);
-        result.read(input);
-        //        System.out.println(this + ": Received message: " + result);
+        Message result = messageFactory.createMessage(id, input);
         return result;
     }
 
