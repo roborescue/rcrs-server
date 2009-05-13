@@ -22,6 +22,9 @@ xterm -T blockades -e "$LD_COMMAND; $DIR/6blockadessimulator.sh $OPTIONS 2>&1 | 
 BLOCKADES=$!
 xterm -T collapse -e "$LD_COMMAND; $DIR/7collapsesimulator.sh $OPTIONS 2>&1 | tee collapse.log" &
 COLLAPSE=$!
+
+sleep 2
+
 xterm -T civilian -e "$LD_COMMAND; $DIR/8civilian.sh $OPTIONS 2>&1 | tee civilian.log" &
 CIVILIAN=$!
 xterm -T agents -e "$DIR/sampleagent.sh 2>&1 | tee agents.log" &
