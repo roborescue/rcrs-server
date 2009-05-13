@@ -1,8 +1,6 @@
 package rescuecore2.version0.messages;
 
 import java.util.List;
-import java.io.InputStream;
-import java.io.IOException;
 
 import rescuecore2.worldmodel.EntityID;
 
