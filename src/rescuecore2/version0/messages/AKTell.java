@@ -6,6 +6,7 @@ import rescuecore2.worldmodel.EntityID;
    An agent TELL command.
  */
 public class AKTell extends AgentCommand {
+    private IntComponent channel;
     private RawDataComponent data;
 
     /**
@@ -36,7 +37,9 @@ public class AKTell extends AgentCommand {
     }
 
     private void init() {
+        channel = new IntComponent("Channel");
         data = new RawDataComponent("Message");
+        addMessageComponent(channel);
         addMessageComponent(data);
     }
 }
