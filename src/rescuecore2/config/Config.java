@@ -169,6 +169,22 @@ public class Config {
     }
 
     /**
+       Get the value of a key as a String or use a default value.
+       @param key The key to look up. Must not be null.
+       @param defaultValue The default value to return if the key has no defined value.
+       @return The value associated with that key, or the default value of the key has no value.
+    */
+    public String getValue(String key, String defaultValue) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (!data.containsKey(key)) {
+            return defaultValue;
+        }
+        return data.get(key);
+    }
+
+    /**
        Get the value of a key as an integer.
        @param key The key to look up. Must not be null.
        @return The value associated with that key interpreted as an integer.
@@ -188,6 +204,30 @@ public class Config {
     }
 
     /**
+       Get the value of a key as an integer or use a default value.
+       @param key The key to look up. Must not be null.
+       @param defaultValue The default value to return if the key has no defined value.
+       @return The value associated with that key interpreted as an integer, or the default value of the key has no value.
+       @throws NumberFormatException If the value of the key cannot be interpreted as an integer.
+    */
+    public int getIntValue(String key, int defaultValue) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (intData.containsKey(key)) {
+            return intData.get(key);
+        }
+        try {
+            int result = Integer.parseInt(getValue(key));
+            intData.put(key, result);
+            return result;
+        }
+        catch (NoSuchConfigOptionException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
        Get the value of a key as a floating point number.
        @param key The key to look up. Must not be null.
        @return The value associated with that key interpreted as a floating point number.
@@ -204,6 +244,30 @@ public class Config {
         double result = Double.parseDouble(getValue(key));
         floatData.put(key, result);
         return result;
+    }
+
+    /**
+       Get the value of a key as a floating point number or use a default value.
+       @param key The key to look up. Must not be null.
+       @param defaultValue The default value to return if the key has no defined value.
+       @return The value associated with that key interpreted as a floating point number, or the default value of the key has no value.
+       @throws NumberFormatException If the value of the key cannot be interpreted as a floating point number.
+    */
+    public double getFloatValue(String key, double defaultValue) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (floatData.containsKey(key)) {
+            return floatData.get(key);
+        }
+        try {
+            double result = Double.parseDouble(getValue(key));
+            floatData.put(key, result);
+            return result;
+        }
+        catch (NoSuchConfigOptionException e) {
+            return defaultValue;
+        }
     }
 
     /**
@@ -230,6 +294,37 @@ public class Config {
         }
         booleanData.put(key, result);
         return result;
+    }
+
+    /**
+       Get the value of a key as a boolean or use a default value. "true", "t", "yes", "y" and "1" (case insensitive) are all interpreted as true, all other values are false.
+       @param key The key to look up. Must not be null.
+       @param defaultValue The default value to return if the key has no defined value.
+       @return The value associated with that key interpreted as a boolean, or the default value of the key has no value.
+    */
+    public boolean getBooleanValue(String key, boolean defaultValue) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (booleanData.containsKey(key)) {
+            return booleanData.get(key);
+        }
+        try {
+            boolean result = false;
+            String value = getValue(key);
+            if ("true".equalsIgnoreCase(value)
+                || "t".equalsIgnoreCase(value)
+                || "yes".equalsIgnoreCase(value)
+                || "y".equalsIgnoreCase(value)
+                || "1".equalsIgnoreCase(value)) {
+                result = true;
+            }
+            booleanData.put(key, result);
+            return result;
+        }
+        catch (NoSuchConfigOptionException e) {
+            return defaultValue;
+        }
     }
 
     /**
