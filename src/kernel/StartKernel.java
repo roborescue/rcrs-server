@@ -47,7 +47,7 @@ public final class StartKernel {
             WorldModelCreator<RescueObject> worldModelCreator = new GISWorldModelCreator();
             SimulatorManager<RescueObject> simulatorManager = new LegacySimulatorManager();
             ViewerManager<RescueObject> viewerManager = new LegacyViewerManager();
-            AgentManager<RescueObject> agentManager = new LegacyAgentManager();
+            AgentManager<RescueObject> agentManager = new LegacyAgentManager(config);
             Perception<RescueObject> perception = new LegacyPerception(config);
             kernel = new Kernel<RescueObject>(config, worldModelCreator, simulatorManager, viewerManager, agentManager, perception);
         }

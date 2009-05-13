@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.io.IOException;
 
 import kernel.AgentManager;
 
+import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
@@ -40,6 +42,8 @@ import rescuecore2.version0.messages.KAConnectOK;
 import rescuecore2.version0.messages.KASense;
 import rescuecore2.version0.messages.AgentCommand;
 import rescuecore2.version0.messages.Commands;
+import rescuecore2.version0.messages.AKSay;
+import rescuecore2.version0.messages.AKTell;
 
 /**
    AgentManager implementation for classic Robocup Rescue.
@@ -63,12 +67,15 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
 
     private Map<EntityID, List<Message>> agentCommands;
 
+    private int freezeTime;
+
     private final Object lock = new Object();
 
     /**
        Create a LegacyAgentManager.
+       @param config The kernel configuration.
     */
-    public LegacyAgentManager() {
+    public LegacyAgentManager(Config config) {
         civ = new LinkedList<Civilian>();
         fb = new LinkedList<FireBrigade>();
         fs = new LinkedList<FireStation>();
@@ -81,6 +88,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
         controlledEntities = new HashSet<RescueObject>();
         agents = new HashMap<RescueObject, AgentInfo>();
         agentCommands = new HashMap<EntityID, List<Message>>();
+        freezeTime = config.getIntValue("steps_agents_frozen", 0);
     }
 
     @Override
@@ -203,6 +211,16 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
                 }
             }
             agentCommands.clear();
+        }
+        if (timestep < freezeTime) {
+            // Only allow say and tell commands if it's too early
+            for (Iterator<AgentCommand> it = commands.iterator(); it.hasNext();) {
+                AgentCommand next = it.next();
+                if (!(next instanceof AKSay || next instanceof AKTell)) {
+                    System.out.println("Ignoring " + next + ": " + timestep + " < " + freezeTime);
+                    it.remove();
+                }
+            }
         }
         Message result = new Commands(timestep, commands);
         return Collections.singleton(result);
