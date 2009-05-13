@@ -61,11 +61,11 @@ public class LegacyPerception implements Perception<RescueObject> {
                     copy = (RescueObject)next.copy();
                     filterRoadProperties((Road)copy);
                 }
-                if (copy instanceof Building) {
+                if (next instanceof Building) {
                     copy = (RescueObject)next.copy();
                     filterBuildingProperties((Building)copy);
                 }
-                if (copy instanceof Human) {
+                if (next instanceof Human) {
                     copy = (RescueObject)next.copy();
                     // Always send all properties of the agent-controlled object
                     if (next != agent) {
