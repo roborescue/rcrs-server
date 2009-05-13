@@ -13,9 +13,8 @@ public abstract class AgentCommand extends AbstractMessage {
        Construct an empty AgentCommand.
        @param name The name of this command.
        @param typeID The typeID of this command.
-       @param agent The agent ID. This may be null.
      */
-    protected AgentCommand(String name, int typeID, EntityID agent) {
+    protected AgentCommand(String name, int typeID) {
         super(name, typeID);
         init();
     }
