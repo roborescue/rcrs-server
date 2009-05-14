@@ -12,7 +12,6 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.messages.Version0MessageFactory;

@@ -5,12 +5,10 @@ import java.util.HashSet;
 
 import kernel.Perception;
 
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
 import rescuecore2.version0.entities.RescueObject;
-import rescuecore2.version0.entities.EntityConstants;
 import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Building;
 import rescuecore2.version0.entities.Human;

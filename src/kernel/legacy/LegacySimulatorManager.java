@@ -15,7 +15,6 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.messages.SKConnect;
 import rescuecore2.version0.messages.SKAcknowledge;

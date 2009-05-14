@@ -20,7 +20,6 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.version0.entities.RescueObject;
@@ -41,7 +40,6 @@ import rescuecore2.version0.messages.KAConnectError;
 import rescuecore2.version0.messages.KAConnectOK;
 import rescuecore2.version0.messages.KASense;
 import rescuecore2.version0.messages.AgentCommand;
-import rescuecore2.version0.messages.Commands;
 import rescuecore2.version0.messages.AKSay;
 import rescuecore2.version0.messages.AKTell;
 

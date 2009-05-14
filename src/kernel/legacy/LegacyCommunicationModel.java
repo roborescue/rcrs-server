@@ -28,13 +28,17 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
     private IndexedWorldModel world;
     private int sayDistance;
 
+    /**
+       Construct a LegacyCommunicationModel.
+       @param config The kernel configuration.
+     */
     public LegacyCommunicationModel(Config config) {
         sayDistance = config.getIntValue("voice");
     }
 
     @Override
-    public void setWorldModel(IndexedWorldModel world) {
-        this.world = world;
+    public void setWorldModel(IndexedWorldModel newWorld) {
+        this.world = newWorld;
     }
 
     @Override
