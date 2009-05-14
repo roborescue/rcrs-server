@@ -167,6 +167,8 @@ public class InputBuffer {
 			c = new KASense(this);
 			break;
 		case RescueConstants.KA_HEAR:
+		case RescueConstants.KA_HEAR_SAY:
+		case RescueConstants.KA_HEAR_TELL:
 			c = new KAHear(this);
 			break;
 			/*

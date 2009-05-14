@@ -148,8 +148,8 @@ public abstract class Agent extends RescueComponent {
 			handleSense((KASense)c);
 			break;
 		case RescueConstants.KA_HEAR:
-			//		case RescueConstants.KA_HEAR_SAY:
-			//		case RescueConstants.KA_HEAR_TELL:
+                case RescueConstants.KA_HEAR_SAY:
+                case RescueConstants.KA_HEAR_TELL:
 			handleHear(c);
 			break;
 		case RescueConstants.KA_CONNECT_OK:
