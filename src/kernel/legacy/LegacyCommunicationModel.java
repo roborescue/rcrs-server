@@ -54,7 +54,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
                 RescueObject sender = world.getEntity(senderID);
                 int distance = world.getDistance(agent, sender);
                 if (distance <= sayDistance) {
-                    System.out.println(agent + " hears say from " + sender);
+                    //                    System.out.println(agent + " hears say from " + sender);
                     result.add(new KAHearSay(senderID, say.getContent()));
                 }
             }
@@ -63,7 +63,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
                 EntityID senderID = tell.getAgentID();
                 RescueObject sender = world.getEntity(senderID);
                 if (canHear(agent, sender)) {
-                    System.out.println(agent + " hears tell from " + sender);
+                    //                    System.out.println(agent + " hears tell from " + sender);
                     result.add(new KAHearTell(senderID, tell.getContent()));
                 }
             }
