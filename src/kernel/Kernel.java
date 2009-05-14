@@ -116,7 +116,6 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         int timestep = 0;
         int maxTimestep = config.getIntValue("timesteps");
         Collection<Message> agentCommands = new HashSet<Message>();
-        Collection<T> updates = new HashSet<T>();
         // Each timestep:
         // Work out what the agents can see and hear (using the commands from the previous timestep).
         // Wait for new commands
@@ -130,7 +129,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
             System.out.println("Timestep " + timestep);
             sendAgentUpdates(timestep, agentCommands);
             agentCommands = waitForCommands(timestep);
-            updates = sendCommandsToViewersAndSimulators(timestep, agentCommands);
+            Collection<T> updates = sendCommandsToViewersAndSimulators(timestep, agentCommands);
             // Merge updates into world model
             worldModel.merge(updates);
             sendUpdatesToViewersAndSimulators(timestep, updates);
