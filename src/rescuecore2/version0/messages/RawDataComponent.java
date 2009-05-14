@@ -56,8 +56,16 @@ public class RawDataComponent extends AbstractMessageComponent {
 
     @Override
     public void write(OutputStream out) throws IOException {
-        writeInt32(data.length, out);
+        // Pad to a multiple of 4 bytes
+        int pad = 4 - (data.length % 4);
+        if (pad == 4) {
+            pad = 0;
+        }
+        writeInt32(data.length + pad, out);
         out.write(data);
+        for (int i = 0; i < pad; ++i) {
+            out.write(0);
+        }
     }
 
     @Override
