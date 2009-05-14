@@ -13,6 +13,7 @@ import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Building;
 import rescuecore2.version0.entities.Human;
 import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.version0.entities.properties.IntProperty;
 
 /**
    Legacy implementation of perception.
@@ -104,20 +105,36 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
 
     private void filterHumanProperties(Human human) {
         // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
-        // TODO: Round hp/damage
         for (Property next : human.getProperties()) {
             switch (PropertyType.fromID(next.getID())) {
             case POSITION:
             case POSITION_EXTRA:
             case DIRECTION:
             case STAMINA:
-            case HP:
-            case DAMAGE:
             case BURIEDNESS:
+                break;
+            case HP:
+                roundProperty((IntProperty)next, 1000);
+                break;
+            case DAMAGE:
+                roundProperty((IntProperty)next, 100);
                 break;
             default:
                 next.undefine();
             }
         }
+    }
+
+    private void roundProperty(IntProperty p, int precision) {
+        p.setValue(round(p.getValue(), precision));
+    }
+
+    private int round(int value, int precision) {
+        int remainder = value % precision;
+        value -= remainder;
+        if (remainder >= precision / 2) {
+            value += precision;
+        }
+        return value;
     }
 }
