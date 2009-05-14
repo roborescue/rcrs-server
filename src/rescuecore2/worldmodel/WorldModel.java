@@ -1,12 +1,6 @@
 package rescuecore2.worldmodel;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
    This class encapsulates everything about a world model. The world model can be parameterised on a subclass of Entity if required.
