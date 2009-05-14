@@ -10,15 +10,10 @@ import rescuecore2.worldmodel.WorldModel;
 
 /**
    This class manages connections from agents, including assigning which Robocup Rescue object each agent controls, and passing messages between the kernel and the agents.
+   @param <S> The subclass of WorldModel that this AgentManager understands.
    @param <T> The subclass of Entity that this AgentManager understands.
  */
-public interface AgentManager<T extends Entity> extends ConnectionManagerListener {
-    /**
-       Set the world model.
-       @param world The new world model.
-    */
-    void setWorldModel(WorldModel<T> world);
-
+public interface AgentManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S>  {
     /**
        Wait until all agents have connected.
        @throws InterruptedException If this thread is interrupted while waiting for agents.
@@ -50,4 +45,11 @@ public interface AgentManager<T extends Entity> extends ConnectionManagerListene
        @param visible The set of visible entitites.
      */
     void sendPerceptionUpdate(int time, T agentEntity, Collection<T> visible);
+
+    /**
+       Send a set of messages to a particular agent-controlled entity.
+       @param agentEntity The entity that should receive the messages.
+       @param messages The messages to send.
+     */
+    void sendMessages(T agentEntity, Collection<Message> messages);
 }

@@ -9,15 +9,10 @@ import java.util.Collection;
 
 /**
    This class manages connections from simulators.
+   @param <S> The subclass of WorldModel that this manager understands.
    @param <T> The subclass of Entity that this manager understands.
  */
-public interface SimulatorManager<T extends Entity> extends ConnectionManagerListener {
-    /**
-       Set the world model.
-       @param world The new world model.
-    */
-    void setWorldModel(WorldModel<T> world);
-
+public interface SimulatorManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S> {
     /**
        Wait until all simulators have acknowledged.
        @throws InterruptedException If this thread is interrupted while waiting for simulators.
@@ -43,6 +38,13 @@ public interface SimulatorManager<T extends Entity> extends ConnectionManagerLis
        @param updates The updated entities.
     */
     void sendUpdate(int time, Collection<T> updates);
+
+    /**
+       Send a set of agent commands to all simulators.
+       @param time The current time.
+       @param commands The agent commands to send.
+     */
+    void sendAgentCommands(int time, Collection<? extends Message> commands);
 
     /**
        Shut this manager down.

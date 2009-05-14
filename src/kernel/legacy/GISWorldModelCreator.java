@@ -24,11 +24,11 @@ import rescuecore2.version0.messages.KGAcknowledge;
 /**
    A WorldModelCreator that talks to the GIS.
  */
-public class GISWorldModelCreator implements WorldModelCreator<RescueObject> {
+public class GISWorldModelCreator implements WorldModelCreator<RescueObject, IndexedWorldModel> {
     @Override
-    public WorldModel<RescueObject> buildWorldModel(Config config) throws KernelException {
+    public IndexedWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
-        WorldModel<RescueObject> world = new WorldModel<RescueObject>();
+        IndexedWorldModel world = new IndexedWorldModel(config.getIntValue("vision"));
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue("gis_port");
         Connection conn;
@@ -52,6 +52,7 @@ public class GISWorldModelCreator implements WorldModelCreator<RescueObject> {
             throw new KernelException("Interrupted while connecting to GIS", e);
         }
         conn.shutdown();
+        world.index();
         return world;
     }
 
@@ -60,10 +61,10 @@ public class GISWorldModelCreator implements WorldModelCreator<RescueObject> {
     */
     private static class GISConnectionListener implements ConnectionListener {
         private CountDownLatch latch;
-        private WorldModel<RescueObject> model;
+        private IndexedWorldModel model;
         private Connection gisConnection;
 
-        public GISConnectionListener(CountDownLatch latch, WorldModel<RescueObject> model, Connection gisConnection) {
+        public GISConnectionListener(CountDownLatch latch, IndexedWorldModel model, Connection gisConnection) {
             this.latch = latch;
             this.model = model;
             this.gisConnection = gisConnection;

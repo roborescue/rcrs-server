@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.io.IOException;
 
 import kernel.SimulatorManager;
@@ -21,12 +22,14 @@ import rescuecore2.version0.messages.SKAcknowledge;
 import rescuecore2.version0.messages.SKUpdate;
 import rescuecore2.version0.messages.KSConnectOK;
 import rescuecore2.version0.messages.Update;
+import rescuecore2.version0.messages.AgentCommand;
+import rescuecore2.version0.messages.Commands;
 
 /**
    SimulatorManager implementation for classic Robocup Rescue.
  */
-public class LegacySimulatorManager implements SimulatorManager<RescueObject> {
-    private WorldModel<RescueObject> worldModel;
+public class LegacySimulatorManager implements SimulatorManager<RescueObject, IndexedWorldModel> {
+    private IndexedWorldModel worldModel;
 
     private Set<SimulatorInfo> toAcknowledge;
     private int nextID;
@@ -48,7 +51,7 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject> {
     }
 
     @Override
-    public void setWorldModel(WorldModel<RescueObject> world) {
+    public void setWorldModel(IndexedWorldModel world) {
         worldModel = world;
     }
 
@@ -115,6 +118,17 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject> {
     @Override
     public void sendUpdate(int time, Collection<RescueObject> updatedObjects) {
         sendToAll(Collections.singleton(new Update(time, updatedObjects)));
+    }
+
+    @Override
+    public void sendAgentCommands(int time, Collection<? extends Message> commands) {
+        Collection<AgentCommand> agentCommands = new ArrayList<AgentCommand>();
+        for (Message next : commands) {
+            if (next instanceof AgentCommand) {
+                agentCommands.add((AgentCommand)next);
+            }
+        }
+        sendToAll(Collections.singleton(new Commands(time, agentCommands)));
     }
 
     private boolean acknowledge(int id, Connection c) {

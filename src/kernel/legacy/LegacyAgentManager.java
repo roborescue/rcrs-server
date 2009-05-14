@@ -48,8 +48,8 @@ import rescuecore2.version0.messages.AKTell;
 /**
    AgentManager implementation for classic Robocup Rescue.
  */
-public class LegacyAgentManager implements AgentManager<RescueObject> {
-    private WorldModel<RescueObject> worldModel;
+public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWorldModel> {
+    private IndexedWorldModel worldModel;
     private Queue<Civilian> civ;
     private Queue<FireBrigade> fb;
     private Queue<FireStation> fs;
@@ -92,7 +92,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
     }
 
     @Override
-    public void setWorldModel(WorldModel<RescueObject> world) {
+    public void setWorldModel(IndexedWorldModel world) {
         worldModel = world;
         civ.clear();
         fb.clear();
@@ -181,27 +181,22 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
         if (info == null) {
             throw new IllegalArgumentException("Unrecognised object: " + agent);
         }
-        if (info.dead) {
-            //            System.out.println("Not sending a message to a dead agent: " + agent);
-            return;
-        }
         KASense sense = new KASense(agent.getID().getValue(), time, visible);
-        try {
-            info.connection.sendMessage(sense);
+        info.send(Collections.singleton(sense));
+    }
+
+    @Override
+    public void sendMessages(RescueObject agent, Collection<Message> messages) {
+        AgentInfo info = agents.get(agent);
+        if (info == null) {
+            throw new IllegalArgumentException("Unrecognised object: " + agent);
         }
-        catch (IOException e) {
-            e.printStackTrace();
-            info.dead = true;
-        }
-        catch (ConnectionException e) {
-            e.printStackTrace();
-            info.dead = true;
-        }
+        info.send(messages);
     }
 
     @Override
     public Collection<Message> getAgentCommands(int timestep) {
-        Collection<AgentCommand> commands = new ArrayList<AgentCommand>();
+        Collection<Message> commands = new ArrayList<Message>();
         synchronized (agentCommands) {
             for (List<Message> list : agentCommands.values()) {
                 for (Message next : list) {
@@ -214,16 +209,15 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
         }
         if (timestep < freezeTime) {
             // Only allow say and tell commands if it's too early
-            for (Iterator<AgentCommand> it = commands.iterator(); it.hasNext();) {
-                AgentCommand next = it.next();
+            for (Iterator<Message> it = commands.iterator(); it.hasNext();) {
+                Message next = it.next();
                 if (!(next instanceof AKSay || next instanceof AKTell)) {
                     System.out.println("Ignoring " + next + ": " + timestep + " < " + freezeTime);
                     it.remove();
                 }
             }
         }
-        Message result = new Commands(timestep, commands);
-        return Collections.singleton(result);
+        return commands;
     }
 
     private AgentInfo findEntityToControl(int mask) {
@@ -433,6 +427,23 @@ public class LegacyAgentManager implements AgentManager<RescueObject> {
         AgentInfo(RescueObject entity) {
             this.entity = entity;
             dead = false;
+        }
+
+        void send(Collection<? extends Message> m) {
+            if (dead) {
+                return;
+            }
+            try {
+                connection.sendMessages(m);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                dead = true;
+            }
+            catch (ConnectionException e) {
+                e.printStackTrace();
+                dead = true;
+            }
         }
     }
 }

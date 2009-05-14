@@ -6,6 +6,7 @@ import java.io.IOException;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.version0.entities.RescueObject;
 
@@ -14,6 +15,8 @@ import kernel.legacy.LegacySimulatorManager;
 import kernel.legacy.LegacyViewerManager;
 import kernel.legacy.LegacyAgentManager;
 import kernel.legacy.LegacyPerception;
+import kernel.legacy.LegacyCommunicationModel;
+import kernel.legacy.IndexedWorldModel;
 
 /**
    A class for launching the kernel.
@@ -30,7 +33,7 @@ public final class StartKernel {
        @param args Command line arguments.
      */
     public static void main(String[] args) {
-        Kernel<? extends Entity> kernel = null;
+        Kernel<? extends Entity, ? extends WorldModel<? extends Entity>> kernel = null;
         Config config = new Config();
         try {
             int i = 0;
@@ -44,12 +47,13 @@ public final class StartKernel {
                 ++i;
             }
 
-            WorldModelCreator<RescueObject> worldModelCreator = new GISWorldModelCreator();
-            SimulatorManager<RescueObject> simulatorManager = new LegacySimulatorManager();
-            ViewerManager<RescueObject> viewerManager = new LegacyViewerManager();
-            AgentManager<RescueObject> agentManager = new LegacyAgentManager(config);
-            Perception<RescueObject> perception = new LegacyPerception(config);
-            kernel = new Kernel<RescueObject>(config, worldModelCreator, simulatorManager, viewerManager, agentManager, perception);
+            WorldModelCreator<RescueObject, IndexedWorldModel> worldModelCreator = new GISWorldModelCreator();
+            SimulatorManager<RescueObject, IndexedWorldModel> simulatorManager = new LegacySimulatorManager();
+            ViewerManager<RescueObject, IndexedWorldModel> viewerManager = new LegacyViewerManager();
+            AgentManager<RescueObject, IndexedWorldModel> agentManager = new LegacyAgentManager(config);
+            Perception<RescueObject, IndexedWorldModel> perception = new LegacyPerception(config);
+            CommunicationModel<RescueObject, IndexedWorldModel> comms = new LegacyCommunicationModel(config);
+            kernel = new Kernel<RescueObject, IndexedWorldModel>(config, worldModelCreator, simulatorManager, viewerManager, agentManager, perception, comms);
         }
         catch (IOException e) {
             System.err.println("Couldn't start kernel");

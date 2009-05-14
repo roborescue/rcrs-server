@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.io.IOException;
 
 import kernel.ViewerManager;
@@ -19,12 +20,14 @@ import rescuecore2.version0.messages.VKConnect;
 import rescuecore2.version0.messages.VKAcknowledge;
 import rescuecore2.version0.messages.KVConnectOK;
 import rescuecore2.version0.messages.Update;
+import rescuecore2.version0.messages.AgentCommand;
+import rescuecore2.version0.messages.Commands;
 
 /**
    ViewerManager implementation for classic Robocup Rescue.
  */
-public class LegacyViewerManager implements ViewerManager<RescueObject> {
-    private WorldModel<RescueObject> worldModel;
+public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedWorldModel> {
+    private IndexedWorldModel worldModel;
 
     private Set<ViewerInfo> toAcknowledge;
     private Set<ViewerInfo> allViewers;
@@ -40,7 +43,7 @@ public class LegacyViewerManager implements ViewerManager<RescueObject> {
     }
 
     @Override
-    public void setWorldModel(WorldModel<RescueObject> world) {
+    public void setWorldModel(IndexedWorldModel world) {
         worldModel = world;
     }
 
@@ -85,6 +88,17 @@ public class LegacyViewerManager implements ViewerManager<RescueObject> {
     @Override
     public void sendUpdate(int time, Collection<RescueObject> updates) {
         sendToAll(Collections.singleton(new Update(time, updates)));
+    }
+
+    @Override
+    public void sendAgentCommands(int time, Collection<? extends Message> commands) {
+        Collection<AgentCommand> agentCommands = new ArrayList<AgentCommand>();
+        for (Message next : commands) {
+            if (next instanceof AgentCommand) {
+                agentCommands.add((AgentCommand)next);
+            }
+        }
+        sendToAll(Collections.singleton(new Commands(time, agentCommands)));
     }
 
     @Override

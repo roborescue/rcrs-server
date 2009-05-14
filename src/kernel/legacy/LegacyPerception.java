@@ -19,11 +19,10 @@ import rescuecore2.version0.entities.properties.PropertyType;
 /**
    Legacy implementation of perception.
  */
-public class LegacyPerception implements Perception<RescueObject> {
+public class LegacyPerception implements Perception<RescueObject, IndexedWorldModel> {
     private int viewDistance;
     private int farFireDistance;
-    private WorldModel<RescueObject> world;
-    private IndexedWorldModel index;
+    private IndexedWorldModel world;
 
     /**
        Create a LegacyPerception object.
@@ -35,11 +34,9 @@ public class LegacyPerception implements Perception<RescueObject> {
     }
 
     @Override
-    public void setWorldModel(WorldModel<RescueObject> newWorld) {
+    public void setWorldModel(IndexedWorldModel newWorld) {
         this.world = newWorld;
-        index = new IndexedWorldModel(world, viewDistance);
-        index.index();
-        index.indexClass(EntityConstants.ROAD, EntityConstants.NODE, EntityConstants.BUILDING, EntityConstants.REFUGE, EntityConstants.FIRE_STATION, EntityConstants.AMBULANCE_CENTRE, EntityConstants.POLICE_OFFICE, EntityConstants.CIVILIAN, EntityConstants.FIRE_BRIGADE, EntityConstants.AMBULANCE_TEAM, EntityConstants.POLICE_FORCE);
+        //        world.indexClass(EntityConstants.ROAD, EntityConstants.NODE, EntityConstants.BUILDING, EntityConstants.REFUGE, EntityConstants.FIRE_STATION, EntityConstants.AMBULANCE_CENTRE, EntityConstants.POLICE_OFFICE, EntityConstants.CIVILIAN, EntityConstants.FIRE_BRIGADE, EntityConstants.AMBULANCE_TEAM, EntityConstants.POLICE_FORCE);
     }
 
 
@@ -51,7 +48,7 @@ public class LegacyPerception implements Perception<RescueObject> {
         if (location != null) {
             int x = location.first().intValue();
             int y = location.second().intValue();
-            Collection<RescueObject> nearby = index.getObjectsInRange(x, y, viewDistance);
+            Collection<RescueObject> nearby = world.getObjectsInRange(x, y, viewDistance);
             // Copy entities and set property values
             for (RescueObject next : nearby) {
                 RescueObject copy = null;
