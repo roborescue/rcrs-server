@@ -232,7 +232,7 @@
     <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${supplement.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
-  <target name="findbugs" depends="compile" description="Run Findbugs on all packages">
+  <target name="findbugs" depends="jars" description="Run Findbugs on all packages">
     <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}">
       <sourcePath path="${src.dir}"/>
       <class location="${jar.dir}/kernel.jar"/>
