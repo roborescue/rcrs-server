@@ -43,6 +43,10 @@ public final class MessageConstants {
     public static final int KA_CONNECT_ERROR = 0x43;
     /** Kernel-Agent perception update. */
     public static final int KA_SENSE = 0x44;
+    /** Kernel-Agent hear (say). */
+    public static final int KA_HEAR_SAY = 0x46;
+    /** Kernel-Agent hear (tell). */
+    public static final int KA_HEAR_TELL = 0x47;
 
     /** Kernel update broadcast. */
     public static final int UPDATE = 0x50;

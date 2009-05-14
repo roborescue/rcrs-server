@@ -73,6 +73,15 @@ public final class Version0MessageFactory implements MessageFactory {
         case MessageConstants.KA_CONNECT_ERROR:
             result = new KAConnectError();
             break;
+        case MessageConstants.KA_SENSE:
+            result = new KASense();
+            break;
+        case MessageConstants.KA_HEAR_SAY:
+            result = new KAHearSay();
+            break;
+        case MessageConstants.KA_HEAR_TELL:
+            result = new KAHearTell();
+            break;
         case MessageConstants.AK_MOVE:
             result = new AKMove();
             break;
