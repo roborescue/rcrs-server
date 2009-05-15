@@ -59,6 +59,12 @@ public class ConfigTest {
         assertEquals("true", config.getValue("boolean"));
     }
 
+    @Test(expected=NoSuchConfigOptionException.class)
+    public void testCommentsIgnored() throws IOException, ConfigException {
+        read(BASIC_CONFIG);
+        config.getValue("ignore");
+    }
+
     @Test
     public void testReadFromConstructor() throws IOException, ConfigException {
         config = new Config(new File(baseDir, BASIC_CONFIG));
@@ -669,6 +675,71 @@ public class ConfigTest {
         catch (NoSuchConfigOptionException e) {
             // Expected
         }
+    }
+
+    @Test
+    public void testGetValueWithDefault() throws IOException, ConfigException {
+        read(BASIC_CONFIG);
+        assertEquals("defaultvalue", config.getValue("newkey", "defaultvalue"));
+        assertEquals("value", config.getValue("key", "defaultvalue"));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetValueWithNullKeyAndDefault() throws ConfigException {
+        config.getValue(null, "defaultvalue");
+    }
+
+    @Test
+    public void testGetIntValueWithDefault() throws IOException, ConfigException {
+        read(BASIC_CONFIG);
+        assertEquals(10, config.getIntValue("newkey", 10));
+        assertEquals(5, config.getIntValue("int", 10));
+        // Look up a real key again to check that cached values are handled correctly
+        assertEquals(5, config.getIntValue("int", 10));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetIntValueWithNullKeyAndDefault() throws ConfigException {
+        config.getIntValue(null, 10);
+    }
+
+    @Test
+    public void testGetFloatValueWithDefault() throws IOException, ConfigException {
+        read(BASIC_CONFIG);
+        assertEquals(10.0, config.getFloatValue("newkey", 10.0), 0.001);
+        assertEquals(3.4, config.getFloatValue("float", 10.0), 0.001);
+        // Look up a real key again to check that cached values are handled correctly
+        assertEquals(3.4, config.getFloatValue("float", 10.0), 0.001);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetFloatValueWithNullKeyAndDefault() throws ConfigException {
+        config.getFloatValue(null, 10.0);
+    }
+
+    @Test
+    public void testGetBooleanValueWithDefault() throws IOException, ConfigException {
+        read(BASIC_CONFIG);
+        assertEquals(false, config.getBooleanValue("newkey", false));
+        assertEquals(true, config.getBooleanValue("boolean", false));
+        config.setBooleanValue("boolean2", false);
+        assertEquals(false, config.getBooleanValue("boolean2", true));
+        // Look up a real key again to check that cached values are handled correctly
+        assertEquals(true, config.getBooleanValue("boolean", false));
+        // Cover all versions of 'true'
+        config.setValue("boolean3", "t");
+        config.setValue("boolean4", "y");
+        config.setValue("boolean5", "yes");
+        config.setValue("boolean6", "1");
+        assertEquals(true, config.getBooleanValue("boolean3", false));
+        assertEquals(true, config.getBooleanValue("boolean4", false));
+        assertEquals(true, config.getBooleanValue("boolean5", false));
+        assertEquals(true, config.getBooleanValue("boolean6", false));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetBooleanValueWithNullKeyAndDefault() throws ConfigException {
+        config.getBooleanValue(null, false);
     }
 
     private void read(String name) throws IOException, ConfigException {
