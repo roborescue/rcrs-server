@@ -23,6 +23,9 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     private int farFireDistance;
     private IndexedWorldModel world;
 
+    private final static int HP_PRECISION = 1000;
+    private final static int DAMAGE_PRECISION = 100;
+
     /**
        Create a LegacyPerception object.
        @param config The configuration of the kernel.
@@ -114,10 +117,10 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
             case BURIEDNESS:
                 break;
             case HP:
-                roundProperty((IntProperty)next, 1000);
+                roundProperty((IntProperty)next, HP_PRECISION);
                 break;
             case DAMAGE:
-                roundProperty((IntProperty)next, 100);
+                roundProperty((IntProperty)next, DAMAGE_PRECISION);
                 break;
             default:
                 next.undefine();
