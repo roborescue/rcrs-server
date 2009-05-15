@@ -19,12 +19,12 @@ import rescuecore2.version0.entities.properties.IntProperty;
    Legacy implementation of perception.
  */
 public class LegacyPerception implements Perception<RescueObject, IndexedWorldModel> {
+    private static final int HP_PRECISION = 1000;
+    private static final int DAMAGE_PRECISION = 100;
+
     private int viewDistance;
     private int farFireDistance;
     private IndexedWorldModel world;
-
-    private final static int HP_PRECISION = 1000;
-    private final static int DAMAGE_PRECISION = 100;
 
     /**
        Create a LegacyPerception object.
