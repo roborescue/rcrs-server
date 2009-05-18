@@ -9,6 +9,18 @@ import java.io.IOException;
  */
 public interface Property {
     /**
+       Add a PropertyListener.
+       @param l The listener to add.
+     */
+    void addPropertyListener(PropertyListener l);
+
+    /**
+       Remove a PropertyListener.
+       @param l The listener to remove.
+     */
+    void removePropertyListener(PropertyListener l);
+
+    /**
        Get the ID number of this property.
        @return The ID of this property.
      */

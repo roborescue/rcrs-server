@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collection;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +24,8 @@ public abstract class AbstractEntity implements Entity {
     private final Map<Integer, Property> properties;
     private final EntityID id;
     private final EntityType type;
+    private final Set<EntityListener> listeners;
+    private final InternalPropertyListener propListener;
 
     /**
        Construct an AbstractEntity with a set of properties.
@@ -33,8 +36,10 @@ public abstract class AbstractEntity implements Entity {
     protected AbstractEntity(EntityID id, EntityType type, Property... props) {
         this.id = id;
         this.type = type;
+        propListener = new InternalPropertyListener();
         properties = new HashMap<Integer, Property>();
         addProperties(props);
+        listeners = new HashSet<EntityListener>();
     }
 
     /**
@@ -44,6 +49,21 @@ public abstract class AbstractEntity implements Entity {
     protected void addProperties(Property... props) {
         for (Property next : props) {
             properties.put(next.getID(), next);
+            next.addPropertyListener(propListener);
+        }
+    }
+
+    @Override
+    public void addEntityListener(EntityListener l) {
+        synchronized (listeners) {
+            listeners.add(l);
+        }
+    }
+
+    @Override
+    public void removeEntityListener(EntityListener l) {
+        synchronized (listeners) {
+            listeners.remove(l);
         }
     }
 
@@ -118,5 +138,29 @@ public abstract class AbstractEntity implements Entity {
                 //                System.out.println("Updated state: " + this);
             }
         } while (propID != 0);
+    }
+
+    /**
+       Notify all listeners that a property has changed.
+       @param p The changed property.
+    */
+    protected void firePropertyChanged(Property p) {
+        Collection<EntityListener> copy;
+        synchronized (listeners) {
+            copy = new HashSet<EntityListener>(listeners);
+        }
+        for (EntityListener next : copy) {
+            next.propertyChanged(this, p);
+        }
+    }
+
+    /**
+       A class for forwarding property change events to entity listeners.
+    */
+    private class InternalPropertyListener implements PropertyListener {
+        @Override
+        public void propertyChanged(Property p) {
+            firePropertyChanged(p);
+        }
     }
 }

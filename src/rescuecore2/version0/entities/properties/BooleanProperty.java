@@ -49,6 +49,7 @@ public class BooleanProperty extends RescueProperty {
     public void setValue(boolean value) {
         this.value = value;
         setDefined();
+        firePropertyChanged();
     }
 
     @Override

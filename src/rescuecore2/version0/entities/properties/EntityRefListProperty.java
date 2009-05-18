@@ -56,6 +56,7 @@ public class EntityRefListProperty extends RescueProperty {
         ids.clear();
         ids.addAll(newIDs);
         setDefined();
+        firePropertyChanged();
     }
 
     @Override

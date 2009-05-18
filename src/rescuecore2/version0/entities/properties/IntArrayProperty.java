@@ -66,6 +66,7 @@ public class IntArrayProperty extends RescueProperty {
             data.add(next);
         }
         setDefined();
+        firePropertyChanged();
     }
 
     /**
@@ -75,6 +76,7 @@ public class IntArrayProperty extends RescueProperty {
     public void push(int i) {
         setDefined();
         data.add(i);
+        firePropertyChanged();
     }
 
     @Override

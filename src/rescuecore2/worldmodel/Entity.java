@@ -11,6 +11,18 @@ import java.io.IOException;
  */
 public interface Entity {
     /**
+       Add an EntityListener.
+       @param l The listener to add.
+     */
+    void addEntityListener(EntityListener l);
+
+    /**
+       Remove an EntityListener.
+       @param l The listener to remove.
+     */
+    void removeEntityListener(EntityListener l);
+
+    /**
        Get the ID of this Entity.
        @return The ID.
     */
