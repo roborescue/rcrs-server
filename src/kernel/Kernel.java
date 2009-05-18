@@ -144,6 +144,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     }
 
     private void sendAgentUpdates(int timestep, Collection<Message> commandsLastTimestep) throws InterruptedException {
+        perception.setTime(timestep);
         for (T next : agentManager.getControlledEntities()) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
@@ -165,6 +166,9 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         return agentManager.getAgentCommands(timestep);
     }
 
+    /**
+       Send commands to all viewers and simulators and return which entities have been updated by the simulators.
+    */
     private Collection<T> sendCommandsToViewersAndSimulators(int timestep, Collection<Message> commands) throws InterruptedException {
         simulatorManager.sendAgentCommands(timestep, commands);
         viewerManager.sendAgentCommands(timestep, commands);

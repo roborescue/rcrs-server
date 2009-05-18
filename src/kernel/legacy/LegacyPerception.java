@@ -1,7 +1,11 @@
 package kernel.legacy;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import kernel.Perception;
 
@@ -25,6 +29,9 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     private int viewDistance;
     private int farFireDistance;
     private IndexedWorldModel world;
+    private int time;
+    private Set<Building> unburntBuildings;
+    private Map<Building, Integer> ignitionTimes;
 
     /**
        Create a LegacyPerception object.
@@ -33,14 +40,46 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     public LegacyPerception(Config config) {
         this.viewDistance = config.getIntValue("vision");
         this.farFireDistance = config.getIntValue("fire_cognition_spreading_speed");
+        ignitionTimes = new HashMap<Building, Integer>();
+        unburntBuildings = new HashSet<Building>();
+        time = 0;
     }
 
     @Override
     public void setWorldModel(IndexedWorldModel newWorld) {
+        time = 0;
         this.world = newWorld;
-        //        world.indexClass(EntityConstants.ROAD, EntityConstants.NODE, EntityConstants.BUILDING, EntityConstants.REFUGE, EntityConstants.FIRE_STATION, EntityConstants.AMBULANCE_CENTRE, EntityConstants.POLICE_OFFICE, EntityConstants.CIVILIAN, EntityConstants.FIRE_BRIGADE, EntityConstants.AMBULANCE_TEAM, EntityConstants.POLICE_FORCE);
+        unburntBuildings.clear();
+        ignitionTimes.clear();
+        for (RescueObject next : world) {
+            if (next instanceof Building) {
+                Building b = (Building)next;
+                if (b.getFieryness() == 0) {
+                    unburntBuildings.add(b);
+                }
+                else {
+                    ignitionTimes.put(b, time);
+                }
+            }
+        }
     }
 
+    @Override
+    public void setTime(int timestep) {
+        // Look for buildings that caught fire last timestep
+        for (Iterator<Building> it = unburntBuildings.iterator(); it.hasNext();) {
+            Building next = it.next();
+            int fieryness = next.getFieryness();
+            // Fieryness 1, 2 and 3 mean on fire
+            // CHECKSTYLE:OFF:MagicNumber
+            if (fieryness > 0 && fieryness < 4) {
+            // CHECKSTYLE:ON:MagicNumber
+                ignitionTimes.put(next, time);
+                it.remove();
+            }
+        }
+        time = timestep;
+    }
 
     @Override
     public Collection<RescueObject> getVisibleEntities(RescueObject agent) {
@@ -75,8 +114,20 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
                     result.add(copy);
                 }
             }
+            // Now look for far fires
+            for (Map.Entry<Building, Integer> next : ignitionTimes.entrySet()) {
+                Building b = next.getKey();
+                int ignitionTime = next.getValue();
+                int timeDelta = time - ignitionTime;
+                int visibleRange = timeDelta * farFireDistance;
+                int range = world.getDistance(agent, b);
+                if (range <= visibleRange) {
+                    Building copy = (Building)b.copy();
+                    filterFarBuildingProperties(copy);
+                    result.add(copy);
+                }
+            }
         }
-        // Now look for far fires
         return result;
     }
 
@@ -99,6 +150,18 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
             case TEMPERATURE:
             case FIERYNESS:
             case BROKENNESS:
+                break;
+            default:
+                next.undefine();
+            }
+        }
+    }
+
+    private void filterFarBuildingProperties(Building building) {
+        // Update FIERYNESS only
+        for (Property next : building.getProperties()) {
+            switch (PropertyType.fromID(next.getID())) {
+            case FIERYNESS:
                 break;
             default:
                 next.undefine();

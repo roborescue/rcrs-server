@@ -17,4 +17,10 @@ public interface Perception<T extends Entity, S extends WorldModel<T>> extends W
        @return A collection of entities that the agent can perceive.
      */
     Collection<T> getVisibleEntities(T agent);
+
+    /**
+       Notify this perception object of the current time.
+       @param timestep The current timestep.
+    */
+    void setTime(int timestep);
 }
