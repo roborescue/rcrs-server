@@ -52,6 +52,27 @@ public class TCPConnectionTest extends ConnectionTestCommon {
 	assertIncomingConnection();
     }
 
+    @Test
+    public void testName() throws IOException {
+        Socket socket = new Socket("localhost", SERVER_PORT);
+	TCPConnection c = new TCPConnection(factory, socket);
+	assertIncomingConnection();
+        assertEquals("TCPConnection: local port " + socket.getLocalPort() + ", endpoint = " + socket.getInetAddress() + ":" + socket.getPort(), c.toString());
+    }
+
+    @Test
+    public void testShutdownIOException() throws IOException {
+        Socket socket = new Socket("localhost", SERVER_PORT) {
+                public void close() throws IOException {
+                    throw new IOException("Socket close failed");
+                }
+            };
+        TCPConnection c = new TCPConnection(factory, socket);
+        assertIncomingConnection();
+        c.startup();
+        c.shutdown();
+    }
+
     private Socket assertIncomingConnection() throws IOException {
 	Socket serverSocket = server.accept();
 	if (serverSocket == null) {
@@ -59,26 +80,4 @@ public class TCPConnectionTest extends ConnectionTestCommon {
 	}
 	return serverSocket;
     }
-
-    /*
-    @Override
-    protected byte[] encodeMessages(Message... messages) throws IOException {
-	ByteArrayOutputStream out = new ByteArrayOutputStream();
-	for (Message next : messages) {
-	    writeInt32(next.getMessageTypeID(), out);
-	    ByteArrayOutputStream body = new ByteArrayOutputStream();
-	    next.write(body);
-	    byte[] bytes = body.toByteArray();
-	    writeInt32(bytes.length, out);
-	    out.write(bytes);
-	}
-	writeInt32(0, out);
-	return out.toByteArray();
-    }
-
-    @Override
-    protected Message decodeMessages(byte[] in) {
-	
-    }
-    */
 }

@@ -2,6 +2,8 @@ package rescuecore2.connection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +24,8 @@ public abstract class ConnectionTestCommon {
     private TestConnectionListener serverListener;
     protected MessageFactory factory;
 
-    private static final int DELAY = 1000;
-    private static final int TIMEOUT = 3000;
+    protected static final int DELAY = 1000;
+    protected static final int TIMEOUT = 3000;
 
     @Before
     public void setup() throws IOException {
@@ -73,11 +75,23 @@ public abstract class ConnectionTestCommon {
 	try {
 	    client.sendMessage(m);
 	}
+	catch (ConnectionException e) {
+            // Could reasonably expect a ConnectionException right now: the server is gone so the client might have shut itself down
+        }
 	catch (IOException e) {
 	    // Could reasonably expect an IOException right now: the server is gone.
 	}
 	Thread.sleep(DELAY);
 	assertEquals(1, serverListener.getMessageCount());
+    }
+
+    @Test
+    public void testIsAlive() throws IOException, InterruptedException {
+        assertFalse(client.isAlive());
+        client.startup();
+        assertTrue(client.isAlive());
+        client.shutdown();
+        assertFalse(client.isAlive());
     }
 
     @Test
@@ -133,6 +147,9 @@ public abstract class ConnectionTestCommon {
 	try {
 	    client.sendMessage(m);
 	}
+	catch (ConnectionException e) {
+	    // Could reasonably expect a ConnectionException right now: the server is gone so the client might have shut itself down.
+	}
 	catch (IOException e) {
 	    // Could reasonably expect an IOException right now: the server is gone.
 	}
@@ -145,6 +162,9 @@ public abstract class ConnectionTestCommon {
 	try {
 	    client.sendMessage(m);
 	}
+	catch (ConnectionException e) {
+	    // Could reasonably expect a ConnectionException right now: the server is gone so the client might have shut itself down.
+        }
 	catch (IOException e) {
 	    // Could reasonably expect an IOException right now: the server is gone.
 	}
