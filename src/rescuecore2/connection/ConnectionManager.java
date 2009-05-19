@@ -18,7 +18,7 @@ public class ConnectionManager {
     private Set<Reader> readers;
     private boolean shutdown;
 
-    private final Object SHUTDOWN_LOCK = new Object();
+    private final Object lock = new Object();
 
     /**
        Construct a new ConnectionManager.
@@ -36,7 +36,7 @@ public class ConnectionManager {
        @throws IOException If there is a problem listening on the port.
     */
     public void listen(int port, MessageFactory factory, ConnectionManagerListener listener) throws IOException {
-        synchronized (SHUTDOWN_LOCK) {
+        synchronized (lock) {
             if (shutdown) {
                 throw new IOException("Connection manager has been shut down");
             }
@@ -54,7 +54,7 @@ public class ConnectionManager {
        Shut down this ConnectionManager.
     */
     public void shutdown() {
-        synchronized (SHUTDOWN_LOCK) {
+        synchronized (lock) {
             if (shutdown) {
                 return;
             }
@@ -71,8 +71,12 @@ public class ConnectionManager {
         }
     }
 
+    /**
+       Find out if this ConnectionManager is alive.
+       @return True if this manager has not been shut down.
+     */
     public boolean isAlive() {
-        synchronized (SHUTDOWN_LOCK) {
+        synchronized (lock) {
             return !shutdown;
         }
     }
