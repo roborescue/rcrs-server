@@ -44,6 +44,12 @@ public interface Connection {
     void startup();
 
     /**
+       Find out if this connection is still alive. The connection is alive if it has been started, not stopped, and no fatal errors have occurred.
+       @return True if this connection is alive and is still able to send/receive messages, false otherwise.
+     */
+    boolean isAlive();
+
+    /**
        Shut this connection down.
      */
     void shutdown();

@@ -79,6 +79,15 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
+    public boolean isAlive() {
+        boolean result;
+        synchronized (stateLock) {
+            result = state == State.STARTED;
+        }
+        return result;
+    }
+
+    @Override
     public void addConnectionListener(ConnectionListener l) {
         synchronized (listeners) {
             listeners.add(l);
@@ -111,6 +120,9 @@ public abstract class AbstractConnection implements Connection {
             }
             if (state == State.SHUTDOWN) {
                 throw new ConnectionException("Connection has been shut down");
+            }
+            if (!isAlive()) {
+                throw new ConnectionException("Connection is dead");
             }
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
