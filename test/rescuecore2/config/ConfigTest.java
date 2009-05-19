@@ -735,6 +735,9 @@ public class ConfigTest {
         assertEquals(true, config.getBooleanValue("boolean4", false));
         assertEquals(true, config.getBooleanValue("boolean5", false));
         assertEquals(true, config.getBooleanValue("boolean6", false));
+        // Cover a version of false
+        config.setValue("boolean7", "not true");
+        assertEquals(false, config.getBooleanValue("boolean7", true));
     }
 
     @Test(expected=IllegalArgumentException.class)
