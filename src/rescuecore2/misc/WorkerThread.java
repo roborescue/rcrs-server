@@ -30,13 +30,21 @@ public abstract class WorkerThread extends Thread {
     public void run() {
         setup();
         try {
-            while (running && !killed) {
+            while (isRunning()) {
                 running = work();
             }
         }
         finally {
             cleanup();
         }
+    }
+
+    /**
+       Find out if this thread is still running. If {@link #kill} has been called or if {@link #work} has returned false then this worker thread is not still running.
+       @return True if it is still running and has not been killed, false otherwise.
+     */
+    public boolean isRunning() {
+        return running && !killed;
     }
 
     /**
