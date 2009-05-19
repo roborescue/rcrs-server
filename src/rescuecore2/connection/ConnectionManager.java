@@ -16,12 +16,16 @@ import rescuecore2.messages.MessageFactory;
  */
 public class ConnectionManager {
     private Set<Reader> readers;
+    private boolean shutdown;
+
+    private final Object SHUTDOWN_LOCK = new Object();
 
     /**
        Construct a new ConnectionManager.
-     */
+    */
     public ConnectionManager() {
         readers = new HashSet<Reader>();
+        shutdown = false;
     }
 
     /**
@@ -30,20 +34,32 @@ public class ConnectionManager {
        @param factory The MessageFactory for interpreting incoming messages.
        @param listener A ConnectionManagerListener that will be informed of new connections.
        @throws IOException If there is a problem listening on the port.
-     */
+    */
     public void listen(int port, MessageFactory factory, ConnectionManagerListener listener) throws IOException {
-        System.out.println("Listening for connections on port " + port);
-        ServerSocket socket = new ServerSocket(port);
-        socket.setSoTimeout(1000);
-        Reader r = new Reader(socket, factory, listener);
-        readers.add(r);
-        r.start();
+        synchronized (SHUTDOWN_LOCK) {
+            if (shutdown) {
+                throw new IOException("Connection manager has been shut down");
+            }
+            System.out.println("Listening for connections on port " + port);
+            ServerSocket socket = new ServerSocket(port);
+            socket.setSoTimeout(1000);
+            socket.setReuseAddress(true);
+            Reader r = new Reader(socket, factory, listener);
+            readers.add(r);
+            r.start();
+        }
     }
 
     /**
        Shut down this ConnectionManager.
     */
     public void shutdown() {
+        synchronized (SHUTDOWN_LOCK) {
+            if (shutdown) {
+                return;
+            }
+            shutdown = true;
+        }
         for (Reader next : readers) {
             try {
                 next.kill();
@@ -55,7 +71,13 @@ public class ConnectionManager {
         }
     }
 
-    private static class Reader extends WorkerThread {
+    public boolean isAlive() {
+        synchronized (SHUTDOWN_LOCK) {
+            return !shutdown;
+        }
+    }
+
+    private class Reader extends WorkerThread {
         private ServerSocket socket;
         private MessageFactory factory;
         private ConnectionManagerListener callback;
@@ -71,7 +93,9 @@ public class ConnectionManager {
             try {
                 Socket s = socket.accept();
                 TCPConnection conn = new TCPConnection(factory, s);
-                callback.newConnection(conn);
+                if (ConnectionManager.this.isAlive()) {
+                    callback.newConnection(conn);
+                }
             }
             // CHECKSTYLE:OFF:EmptyBlock OK here
             catch (InterruptedIOException e) {
