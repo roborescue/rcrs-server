@@ -143,6 +143,23 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
         } while (propID != 0);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(type.getName());
+        result.append(" (");
+        result.append(id);
+        result.append(") [");
+        for (Iterator<Property> it = getProperties().iterator(); it.hasNext();) {
+            result.append(it.next().toString());
+            if (it.hasNext()) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
+        return result.toString();
+    }
+
     /**
        Notify all listeners that a property has changed.
        @param p The changed property.

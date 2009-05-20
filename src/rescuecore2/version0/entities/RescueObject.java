@@ -21,23 +21,6 @@ public abstract class RescueObject extends AbstractEntity<RescueEntityType> {
         super(id, type);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(getType().getName());
-        result.append(" (");
-        result.append(getID());
-        result.append(") [");
-        for (Iterator<Property> it = getProperties().iterator(); it.hasNext();) {
-            result.append(it.next().toString());
-            if (it.hasNext()) {
-                result.append(", ");
-            }
-        }
-        result.append("]");
-        return result.toString();
-    }
-
     /**
        Get the location of this rescue object.
        @param world The world model to look up for entity references.
