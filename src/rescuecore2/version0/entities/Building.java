@@ -2,7 +2,6 @@ package rescuecore2.version0.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.IntArrayProperty;

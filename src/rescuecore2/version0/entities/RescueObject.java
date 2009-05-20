@@ -1,7 +1,6 @@
 package rescuecore2.version0.entities;
 
 import rescuecore2.worldmodel.AbstractEntity;
-import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
@@ -17,7 +16,6 @@ public abstract class RescueObject extends AbstractEntity<RescueEntityType> {
        Construct a RescueObject with entirely undefined property values.
        @param id The ID of this entity.
        @param type The type ID of this entity.
-       @param props The set of properties this entity has.
      */
     protected RescueObject(EntityID id, RescueEntityType type) {
         super(id, type);

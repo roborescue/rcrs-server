@@ -44,6 +44,8 @@ public enum RescueEntityType implements EntityType {
     /**
        Look up a type by ID.
        @param id The ID number to look up.
+       @return A RescueEntityType instance with the right ID.
+       @throws IllegalArgumentException If the ID is not recognised.
      */
     public static RescueEntityType fromID(int id) {
         for (RescueEntityType next : values()) {

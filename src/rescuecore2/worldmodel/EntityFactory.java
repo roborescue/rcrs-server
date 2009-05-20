@@ -2,6 +2,7 @@ package rescuecore2.worldmodel;
 
 /**
    A factory for vending Entities.
+   @param <T> A subclass of EntityType. This factory will only deal with subclasses of <T>.
  */
 public interface EntityFactory<T extends EntityType> {
     /**
