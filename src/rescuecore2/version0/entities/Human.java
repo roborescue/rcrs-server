@@ -3,10 +3,9 @@ package rescuecore2.version0.entities;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.EntityRefProperty;
-import rescuecore2.version0.entities.properties.EntityRefListProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.worldmodel.properties.IntProperty;
+import rescuecore2.worldmodel.properties.EntityRefProperty;
+import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
 
 import java.util.List;
@@ -29,16 +28,16 @@ public abstract class Human extends RescueObject {
        @param id The ID of this entity.
        @param type The type ID of this entity.
     */
-    protected Human(EntityID id, EntityType type) {
+    protected Human(EntityID id, RescueEntityType type) {
         super(id, type);
-        position = new EntityRefProperty(PropertyType.POSITION);
-        positionExtra = new IntProperty(PropertyType.POSITION_EXTRA);
-        positionHistory = new EntityRefListProperty(PropertyType.POSITION_HISTORY);
-        direction = new IntProperty(PropertyType.DIRECTION);
-        stamina = new IntProperty(PropertyType.STAMINA);
-        hp = new IntProperty(PropertyType.HP);
-        damage = new IntProperty(PropertyType.DAMAGE);
-        buriedness = new IntProperty(PropertyType.BURIEDNESS);
+        position = new EntityRefProperty(RescuePropertyType.POSITION);
+        positionExtra = new IntProperty(RescuePropertyType.POSITION_EXTRA);
+        positionHistory = new EntityRefListProperty(RescuePropertyType.POSITION_HISTORY);
+        direction = new IntProperty(RescuePropertyType.DIRECTION);
+        stamina = new IntProperty(RescuePropertyType.STAMINA);
+        hp = new IntProperty(RescuePropertyType.HP);
+        damage = new IntProperty(RescuePropertyType.DAMAGE);
+        buriedness = new IntProperty(RescuePropertyType.BURIEDNESS);
         addProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
     }
 

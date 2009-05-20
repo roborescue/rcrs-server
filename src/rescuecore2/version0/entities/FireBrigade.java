@@ -2,8 +2,7 @@ package rescuecore2.version0.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.worldmodel.properties.IntProperty;
 
 /**
    The FireBrigade object.
@@ -16,8 +15,8 @@ public class FireBrigade extends Human {
        @param id The ID of this entity.
     */
     public FireBrigade(EntityID id) {
-        super(id, EntityConstants.FIRE_BRIGADE);
-        water = new IntProperty(PropertyType.WATER_QUANTITY);
+        super(id, RescueEntityType.FIRE_BRIGADE);
+        water = new IntProperty(RescuePropertyType.WATER_QUANTITY);
         addProperties(water);
     }
 

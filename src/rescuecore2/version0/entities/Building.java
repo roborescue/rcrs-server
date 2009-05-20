@@ -4,11 +4,10 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.IntArrayProperty;
-import rescuecore2.version0.entities.properties.BooleanProperty;
-import rescuecore2.version0.entities.properties.EntityRefListProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.worldmodel.properties.IntProperty;
+import rescuecore2.worldmodel.properties.IntArrayProperty;
+import rescuecore2.worldmodel.properties.BooleanProperty;
+import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class Building extends RescueObject {
        @param id The ID of this entity.
     */
     public Building(EntityID id) {
-        this(id, EntityConstants.BUILDING);
+        this(id, RescueEntityType.BUILDING);
     }
 
     /**
@@ -46,22 +45,22 @@ public class Building extends RescueObject {
        @param id The ID of this entity.
        @param type The real type of this building.
     */
-    protected Building(EntityID id, EntityType type) {
+    protected Building(EntityID id, RescueEntityType type) {
         super(id, type);
-        x = new IntProperty(PropertyType.X);
-        y = new IntProperty(PropertyType.Y);
-        floors = new IntProperty(PropertyType.FLOORS);
-        ignition = new BooleanProperty(PropertyType.IGNITION);
-        fieryness = new IntProperty(PropertyType.FIERYNESS);
-        brokenness = new IntProperty(PropertyType.BROKENNESS);
-        code = new IntProperty(PropertyType.BUILDING_CODE);
-        attributes = new IntProperty(PropertyType.BUILDING_ATTRIBUTES);
-        groundArea = new IntProperty(PropertyType.BUILDING_AREA_GROUND);
-        totalArea = new IntProperty(PropertyType.BUILDING_AREA_TOTAL);
-        temperature = new IntProperty(PropertyType.TEMPERATURE);
-        importance = new IntProperty(PropertyType.IMPORTANCE);
-        apexes = new IntArrayProperty(PropertyType.BUILDING_APEXES);
-        entrances = new EntityRefListProperty(PropertyType.ENTRANCES);
+        x = new IntProperty(RescuePropertyType.X);
+        y = new IntProperty(RescuePropertyType.Y);
+        floors = new IntProperty(RescuePropertyType.FLOORS);
+        ignition = new BooleanProperty(RescuePropertyType.IGNITION);
+        fieryness = new IntProperty(RescuePropertyType.FIERYNESS);
+        brokenness = new IntProperty(RescuePropertyType.BROKENNESS);
+        code = new IntProperty(RescuePropertyType.BUILDING_CODE);
+        attributes = new IntProperty(RescuePropertyType.BUILDING_ATTRIBUTES);
+        groundArea = new IntProperty(RescuePropertyType.BUILDING_AREA_GROUND);
+        totalArea = new IntProperty(RescuePropertyType.BUILDING_AREA_TOTAL);
+        temperature = new IntProperty(RescuePropertyType.TEMPERATURE);
+        importance = new IntProperty(RescuePropertyType.IMPORTANCE);
+        apexes = new IntArrayProperty(RescuePropertyType.BUILDING_APEXES);
+        entrances = new EntityRefListProperty(RescuePropertyType.ENTRANCES);
         addProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
     }
 

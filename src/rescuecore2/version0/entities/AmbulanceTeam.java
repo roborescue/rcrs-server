@@ -12,7 +12,7 @@ public class AmbulanceTeam extends Human {
        @param id The ID of this entity.
      */
     public AmbulanceTeam(EntityID id) {
-        super(id, EntityConstants.AMBULANCE_TEAM);
+        super(id, RescueEntityType.AMBULANCE_TEAM);
     }
 
     @Override

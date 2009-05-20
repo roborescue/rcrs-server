@@ -20,6 +20,7 @@ import rescuecore2.worldmodel.EntityType;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
 import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntityType;
 
 /**
    An EntityList component to a message.
@@ -87,7 +88,7 @@ public class EntityListComponent extends AbstractMessageComponent {
         do {
             typeID = readInt32(in);
             if (typeID != 0) {
-                EntityType type = RescueEntityFactory.INSTANCE.makeEntityType(typeID);
+                RescueEntityType type = RescueEntityFactory.INSTANCE.makeEntityType(typeID);
                 int size = readInt32(in);
                 byte[] data = readBytes(size, in);
                 ByteArrayInputStream eIn = new ByteArrayInputStream(data);

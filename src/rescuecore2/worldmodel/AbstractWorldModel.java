@@ -35,13 +35,14 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
     @Override
     public void merge(Collection<? extends T> toMerge) {
         for (T next : toMerge) {
-            Entity existing = getEntity(next.getID());
+            T existing = getEntity(next.getID());
             if (existing == null) {
                 addEntity(next);
             }
             else {
-                for (Property prop : existing.getProperties()) {
-                    Property other = next.getProperty(prop.getID());
+                Set<Property> props = existing.getProperties();
+                for (Property prop : props) {
+                    Property other = next.getProperty(prop.getType());
                     if (other.isDefined()) {
                         prop.takeValue(other);
                     }

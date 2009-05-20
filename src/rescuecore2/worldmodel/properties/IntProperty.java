@@ -1,4 +1,4 @@
-package rescuecore2.version0.entities.properties;
+package rescuecore2.worldmodel.properties;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
@@ -8,27 +8,29 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.PropertyType;
+import rescuecore2.worldmodel.AbstractProperty;
 
 /**
-   A boolean property.
+   A single integer property.
  */
-public class BooleanProperty extends RescueProperty {
-    private boolean value;
+public class IntProperty extends AbstractProperty {
+    private int value;
 
     /**
-       Construct a BooleanProperty with no defined value.
+       Construct an IntProperty with no defined value.
        @param type The type of this property.
-     */
-    public BooleanProperty(PropertyType type) {
+    */
+    public IntProperty(PropertyType type) {
         super(type);
     }
 
     /**
-       Construct a BooleanProperty with a defined value.
+       Construct an IntProperty with a defined value.
        @param type The type of this property.
        @param value The initial value of the property.
-     */
-    public BooleanProperty(PropertyType type, boolean value) {
+    */
+    public IntProperty(PropertyType type, int value) {
         super(type, true);
         this.value = value;
     }
@@ -37,40 +39,44 @@ public class BooleanProperty extends RescueProperty {
        Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
        @return The value of this property, or an undefined result if the value has not been set.
        @see #isDefined()
-     */
-    public boolean getValue() {
+    */
+    public int getValue() {
         return value;
     }
 
     /**
        Set the value of this property. Future calls to {@link #isDefined()} will return true.
        @param value The new value.
-     */
-    public void setValue(boolean value) {
+    */
+    public void setValue(int value) {
         this.value = value;
         setDefined();
-        firePropertyChanged();
     }
 
     @Override
     public void takeValue(Property p) {
-        BooleanProperty b = (BooleanProperty)p;
-        if (b.isDefined()) {
-            setValue(b.getValue());
+        if (p instanceof IntProperty) {
+            IntProperty i = (IntProperty)p;
+            if (i.isDefined()) {
+                setValue(i.getValue());
+            }
+            else {
+                undefine();
+            }
         }
         else {
-            undefine();
+            throw new IllegalArgumentException(this + " cannot take value from " + p);
         }
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        writeInt32(value ? 1 : 0, out);
+        writeInt32(value, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        setValue(readInt32(in) != 0);
+        setValue(readInt32(in));
     }
 
     @Override

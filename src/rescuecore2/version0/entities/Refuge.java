@@ -12,7 +12,7 @@ public class Refuge extends Building {
        @param id The ID of this entity.
      */
     public Refuge(EntityID id) {
-        super(id, EntityConstants.REFUGE);
+        super(id, RescueEntityType.REFUGE);
     }
 
     @Override

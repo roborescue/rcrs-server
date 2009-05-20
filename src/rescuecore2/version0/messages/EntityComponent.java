@@ -11,6 +11,7 @@ import rescuecore2.worldmodel.EntityType;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
 import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntityType;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,7 +75,7 @@ public class EntityComponent extends AbstractMessageComponent {
 
     @Override
     public void read(InputStream in) throws IOException {
-        EntityType type = RescueEntityFactory.INSTANCE.makeEntityType(readInt32(in));
+        RescueEntityType type = RescueEntityFactory.INSTANCE.makeEntityType(readInt32(in));
         int size = readInt32(in);
         byte[] data = readBytes(size, in);
         EntityID id = new EntityID(readInt32(data));

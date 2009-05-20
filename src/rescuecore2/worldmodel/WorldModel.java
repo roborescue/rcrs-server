@@ -62,7 +62,7 @@ public interface WorldModel<T extends Entity> extends Iterable<T> {
     T getEntity(EntityID id);
 
     /**
-       Merge a set of entities into this world. New entities will be added, existing entities will have properties replaced with those taken from the given objects.
+       Merge a set of entities into this world. New entities will be added; existing entities will have properties replaced with those taken from the given objects.
        @param toMerge The set of entities to merge into this world model.
     */
     void merge(Collection<? extends T> toMerge);

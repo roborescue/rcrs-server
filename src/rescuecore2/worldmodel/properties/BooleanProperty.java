@@ -1,35 +1,36 @@
-package rescuecore2.version0.entities.properties;
+package rescuecore2.worldmodel.properties;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.Property;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.PropertyType;
+import rescuecore2.worldmodel.AbstractProperty;
+
 /**
-   A property that refers to an entity ID.
+   A boolean property.
  */
-public class EntityRefProperty extends RescueProperty {
-    private EntityID value;
+public class BooleanProperty extends AbstractProperty {
+    private boolean value;
 
     /**
-       Construct an EntityRefProperty with no defined value.
+       Construct a BooleanProperty with no defined value.
        @param type The type of this property.
-     */
-    public EntityRefProperty(PropertyType type) {
+    */
+    public BooleanProperty(PropertyType type) {
         super(type);
     }
 
     /**
-       Construct an EntityRefProperty with a defined value.
+       Construct a BooleanProperty with a defined value.
        @param type The type of this property.
        @param value The initial value of the property.
-     */
-    public EntityRefProperty(PropertyType type, EntityID value) {
+    */
+    public BooleanProperty(PropertyType type, boolean value) {
         super(type, true);
         this.value = value;
     }
@@ -38,16 +39,16 @@ public class EntityRefProperty extends RescueProperty {
        Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
        @return The value of this property, or an undefined result if the value has not been set.
        @see #isDefined()
-     */
-    public EntityID getValue() {
+    */
+    public boolean getValue() {
         return value;
     }
 
     /**
        Set the value of this property. Future calls to {@link #isDefined()} will return true.
        @param value The new value.
-     */
-    public void setValue(EntityID value) {
+    */
+    public void setValue(boolean value) {
         this.value = value;
         setDefined();
         firePropertyChanged();
@@ -55,23 +56,28 @@ public class EntityRefProperty extends RescueProperty {
 
     @Override
     public void takeValue(Property p) {
-        EntityRefProperty e = (EntityRefProperty)p;
-        if (e.isDefined()) {
-            setValue(e.getValue());
+        if (p instanceof BooleanProperty) {
+            BooleanProperty b = (BooleanProperty)p;
+            if (b.isDefined()) {
+                setValue(b.getValue());
+            }
+            else {
+                undefine();
+            }
         }
         else {
-            undefine();
+            throw new IllegalArgumentException(this + " cannot take value from " + p);
         }
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        writeInt32(value.getValue(), out);
+        writeInt32(value ? 1 : 0, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        setValue(new EntityID(readInt32(in)));
+        setValue(readInt32(in) != 0);
     }
 
     @Override

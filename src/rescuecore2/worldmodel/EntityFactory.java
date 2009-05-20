@@ -3,13 +3,13 @@ package rescuecore2.worldmodel;
 /**
    A factory for vending Entities.
  */
-public interface EntityFactory {
+public interface EntityFactory<T extends EntityType> {
     /**
        Create an EntityType object from a numeric ID.
        @param id The ID of the requested entity type.
        @return An EntityType object. This should probably be a shared instance.
      */
-    EntityType makeEntityType(int id);
+    T makeEntityType(int id);
 
 
     /**
@@ -18,5 +18,5 @@ public interface EntityFactory {
        @param id The id of the new entity.
        @return A new Entity of the correct type.
      */
-    Entity makeEntity(EntityType type, EntityID id);
+    Entity makeEntity(T type, EntityID id);
 }

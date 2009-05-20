@@ -4,11 +4,10 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.misc.Pair;
+import rescuecore2.worldmodel.properties.IntProperty;
+import rescuecore2.worldmodel.properties.EntityRefListProperty;
 
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.EntityRefListProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.misc.Pair;
 
 import java.util.List;
 
@@ -24,13 +23,12 @@ public abstract class Vertex extends RescueObject {
        Construct a Vertex object with entirely undefined property values.
        @param id The ID of this entity.
        @param type The type ID of this entity.
-       @param props The set of properties this entity has.
      */
-    protected Vertex(EntityID id, EntityType type, Property... props) {
-        super(id, type, props);
-        x = new IntProperty(PropertyType.X);
-        y = new IntProperty(PropertyType.Y);
-        edges = new EntityRefListProperty(PropertyType.EDGES);
+    protected Vertex(EntityID id, RescueEntityType type) {
+        super(id, type);
+        x = new IntProperty(RescuePropertyType.X);
+        y = new IntProperty(RescuePropertyType.Y);
+        edges = new EntityRefListProperty(RescuePropertyType.EDGES);
         addProperties(x, y, edges);
     }
 

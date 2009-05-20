@@ -12,15 +12,15 @@ import java.util.Iterator;
 /**
    Abstract base class for all version0 entities.
  */
-public abstract class RescueObject extends AbstractEntity {
+public abstract class RescueObject extends AbstractEntity<RescueEntityType> {
     /**
        Construct a RescueObject with entirely undefined property values.
        @param id The ID of this entity.
        @param type The type ID of this entity.
        @param props The set of properties this entity has.
      */
-    protected RescueObject(EntityID id, EntityType type, Property... props) {
-        super(id, type, props);
+    protected RescueObject(EntityID id, RescueEntityType type) {
+        super(id, type);
     }
 
     @Override

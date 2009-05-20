@@ -1,4 +1,4 @@
-package rescuecore2.version0.entities.properties;
+package rescuecore2.worldmodel.properties;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
@@ -11,18 +11,20 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.PropertyType;
+import rescuecore2.worldmodel.AbstractProperty;
 
 /**
    An integer-array property.
  */
-public class IntArrayProperty extends RescueProperty {
+public class IntArrayProperty extends AbstractProperty {
     /** Implement as a list to allow for growth. */
     private List<Integer> data;
 
     /**
        Construct an IntArrayProperty with no defined value.
        @param type The type of this property.
-     */
+    */
     public IntArrayProperty(PropertyType type) {
         super(type);
         data = new ArrayList<Integer>();
@@ -32,7 +34,7 @@ public class IntArrayProperty extends RescueProperty {
        Construct an IntArrayProperty with a defined value.
        @param type The type of this property.
        @param values The initial values of the property.
-     */
+    */
     public IntArrayProperty(PropertyType type, int[] values) {
         super(type, true);
         data = new ArrayList<Integer>(values.length);
@@ -45,7 +47,7 @@ public class IntArrayProperty extends RescueProperty {
        Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
        @return The values of this property, or an undefined result if the values have not been set.
        @see #isDefined()
-     */
+    */
     public int[] getValue() {
         Integer[] result = new Integer[data.size()];
         data.toArray(result);
@@ -59,7 +61,7 @@ public class IntArrayProperty extends RescueProperty {
     /**
        Set the value of this property. Future calls to {@link #isDefined()} will return true.
        @param values The new values.
-     */
+    */
     public void setValue(int[] values) {
         this.data = new ArrayList<Integer>(values.length);
         for (Integer next : values) {
@@ -72,7 +74,7 @@ public class IntArrayProperty extends RescueProperty {
     /**
        Add a value to the array.
        @param i The value to add.
-     */
+    */
     public void push(int i) {
         setDefined();
         data.add(i);
@@ -81,12 +83,17 @@ public class IntArrayProperty extends RescueProperty {
 
     @Override
     public void takeValue(Property p) {
-        IntArrayProperty i = (IntArrayProperty)p;
-        if (i.isDefined()) {
-            setValue(i.getValue());
+        if (p instanceof IntArrayProperty) {
+            IntArrayProperty i = (IntArrayProperty)p;
+            if (i.isDefined()) {
+                setValue(i.getValue());
+            }
+            else {
+                undefine();
+            }
         }
         else {
-            undefine();
+            throw new IllegalArgumentException(this + " cannot take value from " + p);
         }
     }
 

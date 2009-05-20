@@ -2,8 +2,7 @@ package rescuecore2.version0.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.worldmodel.properties.IntProperty;
 
 /**
    The World object.
@@ -20,12 +19,12 @@ public class World extends RescueObject {
        @param id The ID of this entity.
     */
     public World(EntityID id) {
-        super(id, EntityConstants.WORLD);
-        startTime = new IntProperty(PropertyType.START_TIME);
-        longitude = new IntProperty(PropertyType.LONGITUDE);
-        latitude = new IntProperty(PropertyType.LATITUDE);
-        windForce = new IntProperty(PropertyType.WIND_FORCE);
-        windDirection = new IntProperty(PropertyType.WIND_DIRECTION);
+        super(id, RescueEntityType.WORLD);
+        startTime = new IntProperty(RescuePropertyType.START_TIME);
+        longitude = new IntProperty(RescuePropertyType.LONGITUDE);
+        latitude = new IntProperty(RescuePropertyType.LATITUDE);
+        windForce = new IntProperty(RescuePropertyType.WIND_FORCE);
+        windDirection = new IntProperty(RescuePropertyType.WIND_DIRECTION);
         addProperties(startTime, longitude, latitude, windForce, windDirection);
     }
 

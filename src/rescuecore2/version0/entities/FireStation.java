@@ -12,7 +12,7 @@ public class FireStation extends Building {
        @param id The ID of this entity.
      */
     public FireStation(EntityID id) {
-        super(id, EntityConstants.FIRE_STATION);
+        super(id, RescueEntityType.FIRE_STATION);
     }
 
     @Override

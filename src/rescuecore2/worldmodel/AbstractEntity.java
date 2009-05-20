@@ -19,11 +19,11 @@ import java.io.ByteArrayOutputStream;
 /**
    Abstract base class for concrete Entity implementations.
  */
-public abstract class AbstractEntity implements Entity {
+public abstract class AbstractEntity<T extends EntityType> implements Entity {
     /** Map from id to Property. */
     private final Map<Integer, Property> properties;
     private final EntityID id;
-    private final EntityType type;
+    private final T type;
     private final Set<EntityListener> listeners;
     private final InternalPropertyListener propListener;
 
@@ -33,12 +33,11 @@ public abstract class AbstractEntity implements Entity {
        @param type The type of this entity.
        @param props The properties of this entity.
     */
-    protected AbstractEntity(EntityID id, EntityType type, Property... props) {
+    protected AbstractEntity(EntityID id, T type) {
         this.id = id;
         this.type = type;
         propListener = new InternalPropertyListener();
         properties = new HashMap<Integer, Property>();
-        addProperties(props);
         listeners = new HashSet<EntityListener>();
     }
 
@@ -48,7 +47,7 @@ public abstract class AbstractEntity implements Entity {
     */
     protected void addProperties(Property... props) {
         for (Property next : props) {
-            properties.put(next.getID(), next);
+            properties.put(next.getType().getID(), next);
             next.addPropertyListener(propListener);
         }
     }
@@ -70,9 +69,8 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public Entity copy() {
         Entity result = copyImpl();
-        for (Map.Entry<Integer, Property> next : properties.entrySet()) {
-            Property original = next.getValue();
-            Property copy = result.getProperty(next.getKey());
+        for (Property original : properties.values()) {
+            Property copy = result.getProperty(original.getType());
             copy.takeValue(original);
         }
         return result;
@@ -90,8 +88,13 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public Property getProperty(int propID) {
-        return properties.get(propID);
+    public Property getProperty(PropertyType type) {
+        return properties.get(type.getID());
+    }
+
+    @Override
+    public Property getProperty(int id) {
+        return properties.get(id);
     }
 
     @Override
@@ -100,7 +103,7 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public EntityType getType() {
+    public T getType() {
         return type;
     }
 

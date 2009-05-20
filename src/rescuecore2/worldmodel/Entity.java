@@ -29,8 +29,8 @@ public interface Entity {
     EntityID getID();
 
     /**
-       Get the type ID of this Entity.
-       @return The type ID.
+       Get the type of this Entity.
+       @return The type.
      */
     EntityType getType();
 
@@ -41,11 +41,18 @@ public interface Entity {
     Set<Property> getProperties();
 
     /**
-       Get a property by ID.
-       @param propID The ID to look up.
-       @return The property with the given ID or null if no such property exists.
+       Get a property by type.
+       @param type The type to look up.
+       @return The property with the given type or null if no such property exists.
     */
-    Property getProperty(int propID);
+    Property getProperty(PropertyType type);
+
+    /**
+       Get a property by id.
+       @param id The id to look up.
+       @return The property with the given id or null if no such property exists.
+    */
+    Property getProperty(int id);
 
     /**
        Write this Entity to a stream.

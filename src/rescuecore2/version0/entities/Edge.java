@@ -4,11 +4,10 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.properties.EntityRefProperty;
+import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.misc.Pair;
 
-import rescuecore2.version0.entities.properties.EntityRefProperty;
-import rescuecore2.version0.entities.properties.IntProperty;
-import rescuecore2.version0.entities.properties.PropertyType;
 
 /**
    Edge-type entities (e.g. roads).
@@ -24,11 +23,11 @@ public abstract class Edge extends RescueObject {
        @param type The type ID of this entity.
        @param props The set of properties this entity has.
      */
-    protected Edge(EntityID id, EntityType type, Property... props) {
-        super(id, type, props);
-        head = new EntityRefProperty(PropertyType.HEAD);
-        tail = new EntityRefProperty(PropertyType.TAIL);
-        length = new IntProperty(PropertyType.LENGTH);
+    protected Edge(EntityID id, RescueEntityType type) {
+        super(id, type);
+        head = new EntityRefProperty(RescuePropertyType.HEAD);
+        tail = new EntityRefProperty(RescuePropertyType.TAIL);
+        length = new IntProperty(RescuePropertyType.LENGTH);
         addProperties(head, tail, length);
     }
 

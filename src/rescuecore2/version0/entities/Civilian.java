@@ -12,7 +12,7 @@ public class Civilian extends Human {
        @param id The ID of this entity.
     */
     public Civilian(EntityID id) {
-        super(id, EntityConstants.CIVILIAN);
+        super(id, RescueEntityType.CIVILIAN);
     }
 
     @Override

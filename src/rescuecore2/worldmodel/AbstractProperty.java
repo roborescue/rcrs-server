@@ -9,24 +9,24 @@ import java.util.Collection;
 */
 public abstract class AbstractProperty implements Property {
     private boolean defined;
-    private final int id;
+    private final PropertyType type;
     private final Set<PropertyListener> listeners;
 
     /**
-       Construct a property with a given id and assume that the value of this property is initially undefined.
-       @param id The ID of the property.
+       Construct a property with a given type and assume that the value of this property is initially undefined.
+       @param type The type of the property.
      */
-    protected AbstractProperty(int id) {
-        this(id, false);
+    protected AbstractProperty(PropertyType type) {
+        this(type, false);
     }
 
     /**
-       Construct a property with a given id and whether the value of this property is initially defined or not.
-       @param id The ID of the property.
+       Construct a property with a given type and whether the value of this property is initially defined or not.
+       @param type The type of the property.
        @param defined Whether the value is initially defined or not.
      */
-    protected AbstractProperty(int id, boolean defined) {
-        this.id = id;
+    protected AbstractProperty(PropertyType type, boolean defined) {
+        this.type = type;
         this.defined = defined;
         listeners = new HashSet<PropertyListener>();
     }
@@ -50,8 +50,18 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
+    public PropertyType getType() {
+        return type;
+    }
+
+    @Override
     public int getID() {
-        return id;
+        return type.getID();
+    }
+
+    @Override
+    public String getName() {
+        return type.getName();
     }
 
     @Override
