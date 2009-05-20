@@ -98,7 +98,7 @@ public class StreamConnection extends AbstractConnection {
             try {
                 //                System.out.println(StreamConnection.this + ": read thread waiting for input");
                 int size = readInt32(in);
-                System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
+                //                System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
                 if (size > 0) {
                     //                    System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
                     byte[] buffer = readBytes(size, in);
