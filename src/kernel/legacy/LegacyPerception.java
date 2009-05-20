@@ -10,14 +10,14 @@ import java.util.Iterator;
 import kernel.Perception;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
 import rescuecore2.version0.entities.RescueObject;
 import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Building;
 import rescuecore2.version0.entities.Human;
-import rescuecore2.version0.entities.properties.PropertyType;
-import rescuecore2.version0.entities.properties.IntProperty;
+import rescuecore2.version0.entities.RescuePropertyType;
 
 /**
    Legacy implementation of perception.
@@ -93,22 +93,32 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
             // Copy entities and set property values
             for (RescueObject next : nearby) {
                 RescueObject copy = null;
-                // Update roads, buildings and humans
-                // Nodes have only static data
-                if (next instanceof Road) {
+                switch (next.getType()) {
+                case ROAD:
                     copy = (RescueObject)next.copy();
                     filterRoadProperties((Road)copy);
-                }
-                if (next instanceof Building) {
+                    break;
+                case BUILDING:
+                case REFUGE:
+                case FIRE_STATION:
+                case AMBULANCE_CENTRE:
+                case POLICE_OFFICE:
                     copy = (RescueObject)next.copy();
                     filterBuildingProperties((Building)copy);
-                }
-                if (next instanceof Human) {
+                    break;
+                case CIVILIAN:
+                case FIRE_BRIGADE:
+                case AMBULANCE_TEAM:
+                case POLICE_FORCE:
                     copy = (RescueObject)next.copy();
                     // Always send all properties of the agent-controlled object
                     if (next != agent) {
                         filterHumanProperties((Human)copy);
                     }
+                    break;
+                default:
+                    // Ignore other types
+                    break;
                 }
                 if (copy != null) {
                     result.add(copy);
@@ -134,7 +144,7 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     private void filterRoadProperties(Road road) {
         // Update BLOCK only
         for (Property next : road.getProperties()) {
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case BLOCK:
                 break;
             default:
@@ -146,7 +156,7 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     private void filterBuildingProperties(Building building) {
         // Update TEMPERATURE, FIERYNESS and BROKENNESS
         for (Property next : building.getProperties()) {
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case TEMPERATURE:
             case FIERYNESS:
             case BROKENNESS:
@@ -160,7 +170,7 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     private void filterFarBuildingProperties(Building building) {
         // Update FIERYNESS only
         for (Property next : building.getProperties()) {
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case FIERYNESS:
                 break;
             default:
@@ -172,7 +182,7 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     private void filterHumanProperties(Human human) {
         // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
         for (Property next : human.getProperties()) {
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case POSITION:
             case POSITION_EXTRA:
             case DIRECTION:

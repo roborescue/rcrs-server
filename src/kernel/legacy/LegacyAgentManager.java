@@ -33,7 +33,7 @@ import rescuecore2.version0.entities.PoliceOffice;
 import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Node;
 import rescuecore2.version0.entities.Building;
-import rescuecore2.version0.entities.properties.PropertyType;
+import rescuecore2.version0.entities.RescuePropertyType;
 import rescuecore2.version0.messages.AKConnect;
 import rescuecore2.version0.messages.AKAcknowledge;
 import rescuecore2.version0.messages.KAConnectError;
@@ -296,7 +296,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
             // Road properties: ROAD_KIND, WIDTH, MEDIAN_STRIP, LINES_TO_HEAD, LINES_TO_TAIL and WIDTH_FOR_WALKERS
             // Edge properties: HEAD, TAIL, LENGTH
             // Everything else should be undefined
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case ROAD_KIND:
             case WIDTH:
             case MEDIAN_STRIP:
@@ -318,7 +318,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
             // Node properties: SIGNAL, SHORTCUT_TO_TURN, POCKET_TO_TURN_ACROSS, SIGNAL_TIMING
             // Vertex properties: X, Y, EDGES
             // Everything else should be undefined
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case SIGNAL:
             case SHORTCUT_TO_TURN:
             case POCKET_TO_TURN_ACROSS:
@@ -337,7 +337,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
         for (Property next : b.getProperties()) {
             // Building properties: X, Y, FLOORS, BUILDING_CODE, BUILDING_ATTRIBUTES, BUILDING_AREA_GROUND, BUILDING_AREA_TOTAL, IMPORTANCE, ENTRANCES
             // Everything else should be undefined
-            switch (PropertyType.fromID(next.getID())) {
+            switch ((RescuePropertyType)next.getType()) {
             case X:
             case Y:
             case FLOORS:
