@@ -60,7 +60,6 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        int oldSize = downstream.size();
         boolean result = downstream.addAll(index, c);
         fireContentsChanged(this, index, downstream.size() - 1);
         return result;
