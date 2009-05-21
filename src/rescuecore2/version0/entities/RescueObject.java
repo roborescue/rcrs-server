@@ -2,11 +2,8 @@ package rescuecore2.version0.entities;
 
 import rescuecore2.worldmodel.AbstractEntity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.Pair;
-
-import java.util.Iterator;
 
 /**
    Abstract base class for all version0 entities.
