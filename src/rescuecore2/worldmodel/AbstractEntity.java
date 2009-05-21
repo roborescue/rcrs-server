@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
+import java.util.Iterator;
 
 import java.io.InputStream;
 import java.io.OutputStream;
