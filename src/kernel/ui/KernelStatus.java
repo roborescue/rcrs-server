@@ -1,6 +1,5 @@
 package kernel.ui;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -29,6 +28,9 @@ public class KernelStatus extends JPanel implements KernelListener, AgentManager
     private JList simulatorsList;
     private JList viewersList;
 
+    /**
+       Construct a KernelStatus component.
+     */
     public KernelStatus() {
         super(new BorderLayout());
         agents = new ListModelList<AgentInfo>(new ArrayList<AgentInfo>());
@@ -37,7 +39,9 @@ public class KernelStatus extends JPanel implements KernelListener, AgentManager
         agentsList = new JList(agents);
         simulatorsList = new JList(simulators);
         viewersList = new JList(viewers);
-        JPanel lists = new JPanel(new GridLayout(3,1));
+        // CHECKSTYLE:OFF:MagicNumber
+        JPanel lists = new JPanel(new GridLayout(3, 1));
+        // CHECKSTYLE:ON:MagicNumber
         JScrollPane agentsScroll = new JScrollPane(agentsList);
         JScrollPane simulatorsScroll = new JScrollPane(simulatorsList);
         JScrollPane viewersScroll = new JScrollPane(viewersList);

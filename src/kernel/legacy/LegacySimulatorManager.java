@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.IOException;
 
-import kernel.SimulatorManager;
 import kernel.AbstractSimulatorManager;
 import kernel.SimulatorInfo;
 

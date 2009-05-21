@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.io.IOException;
 
-import kernel.AgentManager;
 import kernel.AbstractAgentManager;
 import kernel.AgentInfo;
 

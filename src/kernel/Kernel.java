@@ -70,7 +70,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
        @param l The listener to add.
      */
     public void addKernelListener(KernelListener l) {
-        synchronized(listeners) {
+        synchronized (listeners) {
             listeners.add(l);
         }
     }
@@ -80,7 +80,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
        @param l The listener to remove.
      */
     public void removeKernelListener(KernelListener l) {
-        synchronized(listeners) {
+        synchronized (listeners) {
             listeners.remove(l);
         }
     }

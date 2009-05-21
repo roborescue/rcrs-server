@@ -8,10 +8,15 @@ import rescuecore2.worldmodel.WorldModel;
 
 /**
    Abstract base class for AgentManager implementations.
+   @param <S> The subclass of WorldModel that this AgentManager understands.
+   @param <T> The subclass of Entity that this AgentManager understands.
 */
 public abstract class AbstractAgentManager<T extends Entity, S extends WorldModel<T>> implements AgentManager<T, S> {
     private Set<AgentManagerListener> listeners;
 
+    /**
+       Construct an AbstractAgentManager.
+     */
     protected AbstractAgentManager() {
         listeners = new HashSet<AgentManagerListener>();
     }

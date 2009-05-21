@@ -10,10 +10,15 @@ import javax.swing.event.ListDataListener;
 
 /**
    A List implementation that also implements ListModel. This class delegates to a real list for storing data.
+   @param <T> The type of object that lives in this list.
  */
 public class ListModelList<T> extends AbstractListModel implements List<T>, ListModel {
     private List<T> downstream;
 
+    /**
+       Construct a ListModelList backed by a List.
+       @param downstream The backing List.
+     */
     public ListModelList(List<T> downstream) {
         this.downstream = downstream;
     }
@@ -62,7 +67,7 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
     }
 
     @Override
-    public void	clear() {
+    public void clear() {
         int size = downstream.size();
         downstream.clear();
         fireIntervalRemoved(this, 0, size - 1);

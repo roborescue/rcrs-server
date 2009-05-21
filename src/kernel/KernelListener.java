@@ -1,7 +1,7 @@
 package kernel;
 
 /**
-   Interface for objects that are interested in kernel events
+   Interface for objects that are interested in kernel events.
  */
 public interface KernelListener {
     /**

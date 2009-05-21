@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.io.IOException;
 
-import kernel.ViewerManager;
 import kernel.AbstractViewerManager;
 import kernel.ViewerInfo;
 

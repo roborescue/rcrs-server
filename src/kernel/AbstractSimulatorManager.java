@@ -8,10 +8,15 @@ import rescuecore2.worldmodel.WorldModel;
 
 /**
    Abstract base class for SimulatorManager implementations.
+   @param <S> The subclass of WorldModel that this AgentManager understands.
+   @param <T> The subclass of Entity that this AgentManager understands.
 */
 public abstract class AbstractSimulatorManager<T extends Entity, S extends WorldModel<T>> implements SimulatorManager<T, S> {
     private Set<SimulatorManagerListener> listeners;
 
+    /**
+       Construct an AbstractSimulatorManager.
+     */
     protected AbstractSimulatorManager() {
         listeners = new HashSet<SimulatorManagerListener>();
     }
