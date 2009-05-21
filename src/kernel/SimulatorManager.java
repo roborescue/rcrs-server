@@ -14,6 +14,18 @@ import java.util.Collection;
  */
 public interface SimulatorManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S> {
     /**
+       Add a SimulatorManagerListener.
+       @param l The listener to add.
+    */
+    void addSimulatorManagerListener(SimulatorManagerListener l);
+
+    /**
+       Remove a SimulatorManagerListener.
+       @param l The listener to add.
+    */
+    void removeSimulatorManagerListener(SimulatorManagerListener l);
+
+    /**
        Wait until all simulators have acknowledged.
        @throws InterruptedException If this thread is interrupted while waiting for simulators.
     */

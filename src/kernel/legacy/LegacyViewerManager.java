@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import kernel.ViewerManager;
+import kernel.AbstractViewerManager;
+import kernel.ViewerInfo;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
@@ -25,11 +27,11 @@ import rescuecore2.version0.messages.Commands;
 /**
    ViewerManager implementation for classic Robocup Rescue.
  */
-public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedWorldModel> {
+public class LegacyViewerManager extends AbstractViewerManager<RescueObject, IndexedWorldModel> {
     private IndexedWorldModel worldModel;
 
-    private Set<ViewerInfo> toAcknowledge;
-    private Set<ViewerInfo> allViewers;
+    private Set<ViewerData> toAcknowledge;
+    private Set<ViewerData> allViewers;
 
     private final Object lock = new Object();
 
@@ -37,8 +39,8 @@ public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedW
        Create a LegacyViewerManager.
     */
     public LegacyViewerManager() {
-        toAcknowledge = new HashSet<ViewerInfo>();
-        allViewers = new HashSet<ViewerInfo>();
+        toAcknowledge = new HashSet<ViewerData>();
+        allViewers = new HashSet<ViewerData>();
     }
 
     @Override
@@ -63,11 +65,11 @@ public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedW
 
     @Override
     public void sendToAll(Collection<? extends Message> messages) {
-        Collection<ViewerInfo> info = new HashSet<ViewerInfo>();
+        Collection<ViewerData> data = new HashSet<ViewerData>();
         synchronized (lock) {
-            info.addAll(allViewers);
+            data.addAll(allViewers);
         }
-        for (ViewerInfo next : info) {
+        for (ViewerData next : data) {
             try {
                 if (!next.dead) {
                     next.connection.sendMessages(messages);
@@ -106,11 +108,12 @@ public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedW
 
     private boolean acknowledge(Connection c) {
         synchronized (lock) {
-            for (ViewerInfo next : toAcknowledge) {
+            for (ViewerData next : toAcknowledge) {
                 if (next.connection == c) {
                     toAcknowledge.remove(next);
                     allViewers.add(next);
                     lock.notifyAll();
+                    fireViewerConnected(new ViewerInfo(next.connection.toString()));
                     return true;
                 }
             }
@@ -129,9 +132,9 @@ public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedW
         public void messageReceived(Message msg) {
             if (msg instanceof VKConnect) {
                 System.out.println("Viewer connected");
-                ViewerInfo info = new ViewerInfo(connection);
+                ViewerData data = new ViewerData(connection);
                 synchronized (lock) {
-                    toAcknowledge.add(info);
+                    toAcknowledge.add(data);
                 }
                 // Send an OK
                 try {
@@ -139,11 +142,11 @@ public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedW
                 }
                 catch (IOException e) {
                     e.printStackTrace();
-                    info.dead = true;
+                    data.dead = true;
                 }
                 catch (ConnectionException e) {
                     e.printStackTrace();
-                    info.dead = true;
+                    data.dead = true;
                 }
             }
             if (msg instanceof VKAcknowledge) {
@@ -157,11 +160,11 @@ public class LegacyViewerManager implements ViewerManager<RescueObject, IndexedW
         }
     }
 
-    private static class ViewerInfo {
+    private static class ViewerData {
         Connection connection;
         boolean dead;
 
-        ViewerInfo(Connection c) {
+        ViewerData(Connection c) {
             this.connection = c;
             this.dead = false;
         }

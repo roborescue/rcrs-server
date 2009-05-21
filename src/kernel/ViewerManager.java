@@ -14,6 +14,18 @@ import java.util.Collection;
  */
 public interface ViewerManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S> {
     /**
+       Add a ViewerManagerListener.
+       @param l The listener to add.
+    */
+    void addViewerManagerListener(ViewerManagerListener l);
+
+    /**
+       Remove a ViewerManagerListener.
+       @param l The listener to add.
+    */
+    void removeViewerManagerListener(ViewerManagerListener l);
+
+    /**
        Wait until all viewers have acknowledged.
        @throws InterruptedException If this thread is interrupted while waiting for viewers.
     */

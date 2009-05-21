@@ -3,6 +3,7 @@ package kernel;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
@@ -33,6 +34,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
 
     private ConnectionManager connectionManager;
 
+    private Set<KernelListener> listeners;
+
     /**
        Construct a kernel.
        @param config The configuration to use.
@@ -59,6 +62,27 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         this.agentManager = agentManager;
         this.perception = perception;
         this.communicationModel = communicationModel;
+        listeners = new HashSet<KernelListener>();
+    }
+
+    /**
+       Add a KernelListener.
+       @param l The listener to add.
+     */
+    public void addKernelListener(KernelListener l) {
+        synchronized(listeners) {
+            listeners.add(l);
+        }
+    }
+
+    /**
+       Remove a KernelListener.
+       @param l The listener to remove.
+     */
+    public void removeKernelListener(KernelListener l) {
+        synchronized(listeners) {
+            listeners.remove(l);
+        }
     }
 
     /**
@@ -82,6 +106,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         agentManager.setWorldModel(worldModel);
         perception.setWorldModel(worldModel);
         communicationModel.setWorldModel(worldModel);
+        fireWorldModelComplete();
     }
 
     private void setupCommunication() throws KernelException {
@@ -126,6 +151,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
                 throw new InterruptedException();
             }
             ++timestep;
+            fireTimestep(timestep);
             System.out.println("Timestep " + timestep);
             sendAgentUpdates(timestep, agentCommands);
             agentCommands = waitForCommands(timestep);
@@ -179,5 +205,25 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     private void sendUpdatesToViewersAndSimulators(int timestep, Collection<T> updates) throws InterruptedException {
         simulatorManager.sendUpdate(timestep, updates);
         viewerManager.sendUpdate(timestep, updates);
+    }
+
+    private Set<KernelListener> getListeners() {
+        Set<KernelListener> result;
+        synchronized (listeners) {
+            result = new HashSet<KernelListener>(listeners);
+        }
+        return result;
+    }
+
+    private void fireWorldModelComplete() {
+        for (KernelListener next : getListeners()) {
+            next.worldModelComplete();
+        }
+    }
+
+    private void fireTimestep(int time) {
+        for (KernelListener next : getListeners()) {
+            next.timestep(time);
+        }
     }
 }

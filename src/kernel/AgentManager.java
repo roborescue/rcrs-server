@@ -15,6 +15,18 @@ import rescuecore2.worldmodel.WorldModel;
  */
 public interface AgentManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S>  {
     /**
+       Add an AgentManagerListener.
+       @param l The listener to add.
+    */
+    void addAgentManagerListener(AgentManagerListener l);
+
+    /**
+       Remove an AgentManagerListener.
+       @param l The listener to add.
+    */
+    void removeAgentManagerListener(AgentManagerListener l);
+
+    /**
        Wait until all agents have connected.
        @throws InterruptedException If this thread is interrupted while waiting for agents.
     */

@@ -10,6 +10,9 @@ import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.version0.entities.RescueObject;
 
+import kernel.ui.KernelStatus;
+import javax.swing.JFrame;
+
 import kernel.legacy.GISWorldModelCreator;
 import kernel.legacy.LegacySimulatorManager;
 import kernel.legacy.LegacyViewerManager;
@@ -35,6 +38,7 @@ public final class StartKernel {
     public static void main(String[] args) {
         Kernel<? extends Entity, ? extends WorldModel<? extends Entity>> kernel = null;
         Config config = new Config();
+        KernelStatus status = new KernelStatus();
         try {
             int i = 0;
             while (i < args.length) {
@@ -54,6 +58,10 @@ public final class StartKernel {
             Perception<RescueObject, IndexedWorldModel> perception = new LegacyPerception(config);
             CommunicationModel<RescueObject, IndexedWorldModel> comms = new LegacyCommunicationModel(config);
             kernel = new Kernel<RescueObject, IndexedWorldModel>(config, worldModelCreator, simulatorManager, viewerManager, agentManager, perception, comms);
+            agentManager.addAgentManagerListener(status);
+            simulatorManager.addSimulatorManagerListener(status);
+            viewerManager.addViewerManagerListener(status);
+            kernel.addKernelListener(status);
         }
         catch (IOException e) {
             System.err.println("Couldn't start kernel");
@@ -69,6 +77,10 @@ public final class StartKernel {
         }
         try {
             if (kernel != null) {
+                JFrame frame = new JFrame("Kernel status");
+                frame.getContentPane().add(status);
+                frame.pack();
+                frame.setVisible(true);
                 kernel.runSimulation();
             }
         }

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import kernel.SimulatorManager;
+import kernel.AbstractSimulatorManager;
+import kernel.SimulatorInfo;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
@@ -27,13 +29,13 @@ import rescuecore2.version0.messages.Commands;
 /**
    SimulatorManager implementation for classic Robocup Rescue.
  */
-public class LegacySimulatorManager implements SimulatorManager<RescueObject, IndexedWorldModel> {
+public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObject, IndexedWorldModel> {
     private IndexedWorldModel worldModel;
 
-    private Set<SimulatorInfo> toAcknowledge;
+    private Set<SimulatorData> toAcknowledge;
     private int nextID;
 
-    private Set<SimulatorInfo> allSims;
+    private Set<SimulatorData> allSims;
     /** Map from simulator ID to update list. */
     private Map<Integer, Collection<RescueObject>> updates;
 
@@ -43,8 +45,8 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject, In
        Create a LegacySimulatorManager.
     */
     public LegacySimulatorManager() {
-        allSims = new HashSet<SimulatorInfo>();
-        toAcknowledge = new HashSet<SimulatorInfo>();
+        allSims = new HashSet<SimulatorData>();
+        toAcknowledge = new HashSet<SimulatorData>();
         updates = new HashMap<Integer, Collection<RescueObject>>();
         nextID = 1;
     }
@@ -75,11 +77,11 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject, In
 
     @Override
     public void sendToAll(Collection<? extends Message> messages) {
-        Collection<SimulatorInfo> info = new HashSet<SimulatorInfo>();
+        Collection<SimulatorData> data = new HashSet<SimulatorData>();
         synchronized (lock) {
-            info.addAll(allSims);
+            data.addAll(allSims);
         }
-        for (SimulatorInfo next : info) {
+        for (SimulatorData next : data) {
             try {
                 if (!next.dead) {
                     next.connection.sendMessages(messages);
@@ -132,11 +134,12 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject, In
 
     private boolean acknowledge(int id, Connection c) {
         synchronized (lock) {
-            for (SimulatorInfo next : toAcknowledge) {
+            for (SimulatorData next : toAcknowledge) {
                 if (next.id == id && next.connection == c) {
                     toAcknowledge.remove(next);
                     allSims.add(next);
                     lock.notifyAll();
+                    fireSimulatorConnected(new SimulatorInfo(next.connection.toString() + ": " + next.id));
                     return true;
                 }
             }
@@ -169,9 +172,9 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject, In
             if (msg instanceof SKConnect) {
                 int id = getNextID();
                 System.out.println("Simulator " + id + " connected");
-                SimulatorInfo info = new SimulatorInfo(id, connection);
+                SimulatorData data = new SimulatorData(id, connection);
                 synchronized (lock) {
-                    toAcknowledge.add(info);
+                    toAcknowledge.add(data);
                 }
                 // Send an OK
                 try {
@@ -201,12 +204,12 @@ public class LegacySimulatorManager implements SimulatorManager<RescueObject, In
         }
     }
 
-    private static class SimulatorInfo {
+    private static class SimulatorData {
         int id;
         Connection connection;
         boolean dead;
 
-        SimulatorInfo(int id, Connection c) {
+        SimulatorData(int id, Connection c) {
             this.id = id;
             this.connection = c;
             this.dead = false;

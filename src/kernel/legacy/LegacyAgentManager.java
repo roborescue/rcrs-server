@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.io.IOException;
 
 import kernel.AgentManager;
+import kernel.AbstractAgentManager;
+import kernel.AgentInfo;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -46,7 +48,7 @@ import rescuecore2.version0.messages.AKTell;
 /**
    AgentManager implementation for classic Robocup Rescue.
  */
-public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWorldModel> {
+public class LegacyAgentManager extends AbstractAgentManager<RescueObject, IndexedWorldModel> {
     private IndexedWorldModel worldModel;
     private Queue<Civilian> civ;
     private Queue<FireBrigade> fb;
@@ -56,12 +58,12 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
     private Queue<PoliceForce> pf;
     private Queue<PoliceOffice> po;
 
-    private Set<AgentInfo> toAcknowledge;
+    private Set<AgentData> toAcknowledge;
 
     private Set<RescueObject> initialEntities;
 
     private Set<RescueObject> controlledEntities;
-    private Map<RescueObject, AgentInfo> agents;
+    private Map<RescueObject, AgentData> agents;
 
     private Map<EntityID, List<Message>> agentCommands;
 
@@ -81,10 +83,10 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
         ac = new LinkedList<AmbulanceCentre>();
         pf = new LinkedList<PoliceForce>();
         po = new LinkedList<PoliceOffice>();
-        toAcknowledge = new HashSet<AgentInfo>();
+        toAcknowledge = new HashSet<AgentData>();
         initialEntities = new HashSet<RescueObject>();
         controlledEntities = new HashSet<RescueObject>();
-        agents = new HashMap<RescueObject, AgentInfo>();
+        agents = new HashMap<RescueObject, AgentData>();
         agentCommands = new HashMap<EntityID, List<Message>>();
         freezeTime = config.getIntValue("steps_agents_frozen", 0);
     }
@@ -152,6 +154,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
                    || !pf.isEmpty()
                    || !toAcknowledge.isEmpty()) {
                 lock.wait(1000);
+                /*
                 System.out.println("Waiting for " + civ.size() + " civilians, "
                                    + fb.size() + " fire brigades, "
                                    + fs.size() + " fire stations, "
@@ -160,6 +163,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
                                    + pf.size() + " police forces, "
                                    + po.size() + " police offices. "
                                    + toAcknowledge.size() + " agents have not acknowledged.");
+                */
             }
         }
     }
@@ -175,21 +179,21 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
 
     @Override
     public void sendPerceptionUpdate(int time, RescueObject agent, Collection<RescueObject> visible) {
-        AgentInfo info = agents.get(agent);
-        if (info == null) {
+        AgentData data = agents.get(agent);
+        if (data == null) {
             throw new IllegalArgumentException("Unrecognised object: " + agent);
         }
         KASense sense = new KASense(agent.getID().getValue(), time, visible);
-        info.send(Collections.singleton(sense));
+        data.send(Collections.singleton(sense));
     }
 
     @Override
     public void sendMessages(RescueObject agent, Collection<Message> messages) {
-        AgentInfo info = agents.get(agent);
-        if (info == null) {
+        AgentData data = agents.get(agent);
+        if (data == null) {
             throw new IllegalArgumentException("Unrecognised object: " + agent);
         }
-        info.send(messages);
+        data.send(messages);
     }
 
     @Override
@@ -210,7 +214,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
             for (Iterator<Message> it = commands.iterator(); it.hasNext();) {
                 Message next = it.next();
                 if (!(next instanceof AKSay || next instanceof AKTell)) {
-                    System.out.println("Ignoring " + next + ": " + timestep + " < " + freezeTime);
+                    //                    System.out.println("Ignoring " + next + ": " + timestep + " < " + freezeTime);
                     it.remove();
                 }
             }
@@ -218,7 +222,7 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
         return commands;
     }
 
-    private AgentInfo findEntityToControl(int mask) {
+    private AgentData findEntityToControl(int mask) {
         synchronized (lock) {
             List<Queue<? extends RescueObject>> toTry = new ArrayList<Queue<? extends RescueObject>>();
             if ((mask & Constants.AGENT_TYPE_CIVILIAN) == Constants.AGENT_TYPE_CIVILIAN) {
@@ -245,10 +249,10 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
             for (Queue<? extends RescueObject> next : toTry) {
                 RescueObject e = next.poll();
                 if (e != null) {
-                    AgentInfo info = new AgentInfo(e);
-                    toAcknowledge.add(info);
+                    AgentData data = new AgentData(e);
+                    toAcknowledge.add(data);
                     lock.notifyAll();
-                    return info;
+                    return data;
                 }
             }
             return null;
@@ -257,11 +261,12 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
 
     private boolean acknowledge(int id, Connection c) {
         synchronized (lock) {
-            for (AgentInfo next : toAcknowledge) {
+            for (AgentData next : toAcknowledge) {
                 if (next.entity.getID().getValue() == id && next.connection == c) {
                     toAcknowledge.remove(next);
                     agents.put(next.entity, next);
                     lock.notifyAll();
+                    fireAgentConnected(new AgentInfo(next.connection.toString() + ": " + next.entity.toString()));
                     return true;
                 }
             }
@@ -380,25 +385,25 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
                 int tempID = connect.getTemporaryID();
                 int mask = connect.getAgentTypeMask();
                 // See if we can find an entity for this agent to control.
-                AgentInfo info = findEntityToControl(mask);
+                AgentData data = findEntityToControl(mask);
                 try {
-                    if (info == null) {
+                    if (data == null) {
                         // Send an error
                         connection.sendMessage(new KAConnectError(tempID, "No more agents"));
                     }
                     else {
-                        info.connection = connection;
+                        data.connection = connection;
                         // Send an OK
-                        connection.sendMessage(new KAConnectOK(tempID, info.entity.getID().getValue(), info.entity, getInitialEntityList()));
+                        connection.sendMessage(new KAConnectOK(tempID, data.entity.getID().getValue(), data.entity, getInitialEntityList()));
                     }
                 }
                 catch (IOException e) {
                     e.printStackTrace();
-                    info.dead = true;
+                    data.dead = true;
                 }
                 catch (ConnectionException e) {
                     e.printStackTrace();
-                    info.dead = true;
+                    data.dead = true;
                 }
             }
             if (msg instanceof AKAcknowledge) {
@@ -417,12 +422,12 @@ public class LegacyAgentManager implements AgentManager<RescueObject, IndexedWor
         }
     }
 
-    private static class AgentInfo {
+    private static class AgentData {
         RescueObject entity;
         Connection connection;
         boolean dead;
 
-        AgentInfo(RescueObject entity) {
+        AgentData(RescueObject entity) {
             this.entity = entity;
             dead = false;
         }
