@@ -36,7 +36,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
                                                        0x00, 0x00, 0x00, 0x00};
     // One byte short
     private static final byte[] SHORT_CONTENT = {0x00, 0x00, 0x00, 0x04,
-                                               0x01, 0x02, 0x03};
+                                                 0x01, 0x02, 0x03};
     private static final byte[] SHORT_SIZE_FIELD = {0x00, 0x00, 0x01};
     private static final int MESSAGE_ID = 0x01020304;
 
@@ -189,7 +189,6 @@ public class StreamConnectionTest extends ConnectionTestCommon {
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream();
         Connection c = new StreamConnection(null, in, out);
-        in.setFailOnClose(true);
         c.startup();
         assertTrue(c.isAlive());
         Thread.currentThread().interrupt();
