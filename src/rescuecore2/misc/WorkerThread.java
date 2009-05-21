@@ -23,6 +23,10 @@ public abstract class WorkerThread extends Thread {
         running = false;
         killed = true;
         this.interrupt();
+        // Maybe the calling thread is already interrupted
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
         this.join();
     }
 
