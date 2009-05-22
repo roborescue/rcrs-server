@@ -182,16 +182,94 @@ public final class EncodingTools {
         return buffer;
     }
 
-    /*
-    public static byte[] encodeProperty(Property prop) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        prop.write(out);
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        result.write(prop.getID());
-        return result.toByteArray();
+    /**
+       Write a double to an OutputStream.
+       @param d The double to write.
+       @param out The OutputStream to write it to.
+       @throws IOException If the OutputStream blows up.
+     */
+    public static void writeDouble(double d, OutputStream out) throws IOException {
+        long bits = Double.doubleToLongBits(d);
+        out.write((byte) (bits >> 56) & 0xFF);
+        out.write((byte) (bits >> 48) & 0xFF);
+        out.write((byte) (bits >> 40) & 0xFF);
+        out.write((byte) (bits >> 32) & 0xFF);
+        out.write((byte) (bits >> 24) & 0xFF);
+        out.write((byte) (bits >> 16) & 0xFF);
+        out.write((byte) (bits >> 8) & 0xFF);
+        out.write((byte) bits & 0xFF);
     }
-    */
 
+    /**
+       Write a double integer to a byte array.
+       @param d The double to write.
+       @param out The buffer to write it to.
+       @param offset Where in the buffer to write it.
+     */
+    public static void writeDouble(double d, byte[] out, int offset) {
+        long bits = Double.doubleToLongBits(d);
+        out[offset + 0] = (byte) ((bits >> 56) & 0xFF);
+        out[offset + 1] = (byte) ((bits >> 48) & 0xFF);
+        out[offset + 2] = (byte) ((bits >> 40) & 0xFF);
+        out[offset + 3] = (byte) ((bits >> 32) & 0xFF);
+        out[offset + 4] = (byte) ((bits >> 24) & 0xFF);
+        out[offset + 5] = (byte) ((bits >> 16) & 0xFF);
+        out[offset + 6] = (byte) ((bits >> 8) & 0xFF);
+        out[offset + 7] = (byte) (bits & 0xFF);
+    }
+
+    /**
+       Read a double from an input stream.
+       @param in The InputStream to read from.
+       @return The next double in the stream.
+       @throws IOException If the InputStream blows up.
+       @throws EOFException If the end of the stream is reached.
+     */
+    public static double readDouble(InputStream in) throws IOException {
+        int[] data = new int[8];
+        for (int i = 0; i < data.length; ++i ) {
+            data[i] = in.read();
+            if (data[i] == -1) {
+                throw new EOFException("Broken input pipe. Read " + i + " bytes of 8.");
+            }
+        }
+        long result = data[0] << 56
+            | data[1] << 48
+            | data[2] << 40
+            | data[3] << 32
+            | data[4] << 24
+            | data[5] << 16
+            | data[6] << 8
+            | data[7];
+        return Double.longBitsToDouble(result);
+    }
+
+    /**
+       Read a double from a byte array.
+       @param in The buffer to read from.
+       @param offset Where to begin reading.
+       @return The next double in the buffer.
+     */
+    public static double readDouble(byte[] in, int offset) {
+        long result = in[offset] << 56
+            | in[offset + 1] << 48
+            | in[offset + 2] << 40
+            | in[offset + 3] << 32
+            | in[offset + 4] << 24
+            | in[offset + 5] << 16
+            | in[offset + 6] << 8
+            | in[offset + 7];
+        return Double.longBitsToDouble(result);
+    }
+
+    /**
+       Read a double from a byte array. This is equivalent to calling {@link #readDouble(byte[], int) readDouble(in, 0)}.
+       @param in The buffer to read from.
+       @return The first double in the buffer.
+     */
+    public static double readDouble(byte[] in) {
+        return readDouble(in, 0);
+    }
 
     /** CHECKSTYLE:ON:MagicNumber */
 }
