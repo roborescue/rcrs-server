@@ -6,7 +6,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
    EntityFactory that builds standard Robocup Rescue objects.
  */
-public final class RescueEntityFactory implements EntityFactory<RescueEntityType> {
+public final class RescueEntityFactory implements EntityFactory<RescueEntityType, RescueEntity> {
     /**
        Singleton class. Use this instance to do stuff.
      */
@@ -23,7 +23,7 @@ public final class RescueEntityFactory implements EntityFactory<RescueEntityType
     }
 
     @Override
-    public RescueObject makeEntity(RescueEntityType type, EntityID id) {
+    public RescueEntity makeEntity(RescueEntityType type, EntityID id) {
         switch (type) {
         case WORLD:
             return new World(id);

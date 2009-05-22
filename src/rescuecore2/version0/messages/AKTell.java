@@ -1,6 +1,8 @@
 package rescuecore2.version0.messages;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.RawDataComponent;
 
 /**
    An agent TELL command.

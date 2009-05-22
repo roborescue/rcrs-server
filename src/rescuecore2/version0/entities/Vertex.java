@@ -12,7 +12,7 @@ import java.util.List;
 /**
    Vertex-type entities (e.g. nodes).
  */
-public abstract class Vertex extends RescueObject {
+public abstract class Vertex extends RescueEntity {
     private IntProperty x;
     private IntProperty y;
     private EntityRefListProperty edges;
@@ -31,7 +31,7 @@ public abstract class Vertex extends RescueObject {
     }
 
     @Override
-    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueObject> world) {
+    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueEntity> world) {
         return new Pair<Integer, Integer>(x.getValue(), y.getValue());
     }
 

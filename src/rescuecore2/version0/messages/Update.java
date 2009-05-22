@@ -1,8 +1,12 @@
 package rescuecore2.version0.messages;
 
 import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.EntityListComponent;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
+import rescuecore2.version0.entities.RescueEntityType;
+import rescuecore2.version0.entities.RescueEntityFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +16,7 @@ import java.util.List;
  */
 public class Update extends AbstractMessage {
     private IntComponent time;
-    private EntityListComponent updates;
+    private EntityListComponent<RescueEntityType, RescueEntity> updates;
 
     /**
        An empty Update message.
@@ -20,7 +24,7 @@ public class Update extends AbstractMessage {
     public Update() {
         super("Update", MessageConstants.UPDATE);
         time = new IntComponent("Time");
-        updates = new EntityListComponent("Updates");
+        updates = new EntityListComponent<RescueEntityType, RescueEntity>("Updates", RescueEntityFactory.INSTANCE);
         addMessageComponent(time);
         addMessageComponent(updates);
     }
@@ -30,7 +34,7 @@ public class Update extends AbstractMessage {
        @param time The timestep of the simulation.
        @param updates All updated entities.
      */
-    public Update(int time, Collection<RescueObject> updates) {
+    public Update(int time, Collection<RescueEntity> updates) {
         this();
         this.time.setValue(time);
         this.updates.setEntities(updates);
@@ -48,7 +52,7 @@ public class Update extends AbstractMessage {
        Get the list of updated entities.
        @return The updated entities.
      */
-    public List<RescueObject> getUpdatedEntities() {
+    public List<RescueEntity> getUpdatedEntities() {
         return updates.getEntities();
     }
 }

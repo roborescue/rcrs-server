@@ -12,7 +12,7 @@ import java.util.List;
 /**
    Abstract base class for Humans.
  */
-public abstract class Human extends RescueObject {
+public abstract class Human extends RescueEntity {
     private EntityRefProperty position;
     private IntProperty positionExtra;
     private EntityRefListProperty positionHistory;
@@ -41,11 +41,11 @@ public abstract class Human extends RescueObject {
     }
 
     @Override
-    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueObject> world) {
+    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueEntity> world) {
         if (!position.isDefined()) {
             return null;
         }
-        RescueObject positionEntity = world.getEntity(position.getValue());
+        RescueEntity positionEntity = world.getEntity(position.getValue());
         if (positionEntity == null) {
             return null;
         }
@@ -57,8 +57,8 @@ public abstract class Human extends RescueObject {
             int extra = positionExtra.getValue();
             Edge edge = (Edge)positionEntity;
             double d = ((double)extra) / (double)edge.getLength();
-            RescueObject head = edge.getHead(world);
-            RescueObject tail = edge.getTail(world);
+            RescueEntity head = edge.getHead(world);
+            RescueEntity tail = edge.getTail(world);
             if (head == null || tail == null) {
                 return null;
             }

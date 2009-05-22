@@ -4,21 +4,24 @@ import java.util.Collection;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.EntityListComponent;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
+import rescuecore2.version0.entities.RescueEntityType;
+import rescuecore2.version0.entities.RescueEntityFactory;
 
 /**
    A message for signalling a successful connection to the kernel.
  */
 public class KVConnectOK extends AbstractMessage {
-    private EntityListComponent world;
+    private EntityListComponent<RescueEntityType, RescueEntity> world;
 
     /**
        An empty KVConnectOK message.
      */
     public KVConnectOK() {
         super("KV_CONNECT_OK", MessageConstants.KV_CONNECT_OK);
-        world = new EntityListComponent("Entities");
+        world = new EntityListComponent<RescueEntityType, RescueEntity>("Entities", RescueEntityFactory.INSTANCE);
         addMessageComponent(world);
     }
 
@@ -26,7 +29,7 @@ public class KVConnectOK extends AbstractMessage {
        A populated KVConnectOK message.
        @param allEntities All Entities in the world.
      */
-    public KVConnectOK(Collection<RescueObject> allEntities) {
+    public KVConnectOK(Collection<RescueEntity> allEntities) {
         this();
         this.world.setEntities(allEntities);
     }
@@ -35,7 +38,7 @@ public class KVConnectOK extends AbstractMessage {
        Get the entity list.
        @return All entities in the world.
      */
-    public List<RescueObject> getEntities() {
+    public List<RescueEntity> getEntities() {
         return world.getEntities();
     }
 }

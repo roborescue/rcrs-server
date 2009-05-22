@@ -2,6 +2,9 @@ package rescuecore2.version0.messages;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.EntityIDComponent;
+import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.RawDataComponent;
 
 /**
    An kernel hear-tell command.

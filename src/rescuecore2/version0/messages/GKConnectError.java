@@ -1,6 +1,7 @@
 package rescuecore2.version0.messages;
 
 import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.StringComponent;
 
 /**
    A message for signalling an unsuccessful connection to the GIS.

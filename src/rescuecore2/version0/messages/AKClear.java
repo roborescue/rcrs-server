@@ -1,6 +1,7 @@
 package rescuecore2.version0.messages;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.messages.EntityIDComponent;
 
 /**
    An agent Clear command.

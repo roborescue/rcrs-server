@@ -7,7 +7,7 @@ import rescuecore2.worldmodel.properties.IntProperty;
 /**
    The World object.
  */
-public class World extends RescueObject {
+public class World extends RescueEntity {
     private IntProperty startTime;
     private IntProperty longitude;
     private IntProperty latitude;

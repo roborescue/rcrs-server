@@ -10,7 +10,7 @@ import rescuecore2.misc.Pair;
 /**
    Edge-type entities (e.g. roads).
  */
-public abstract class Edge extends RescueObject {
+public abstract class Edge extends RescueEntity {
     private EntityRefProperty head;
     private EntityRefProperty tail;
     private IntProperty length;
@@ -29,9 +29,9 @@ public abstract class Edge extends RescueObject {
     }
 
     @Override
-    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueObject> world) {
-        RescueObject headEntity = world.getEntity(head.getValue());
-        RescueObject tailEntity = world.getEntity(tail.getValue());
+    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueEntity> world) {
+        RescueEntity headEntity = world.getEntity(head.getValue());
+        RescueEntity tailEntity = world.getEntity(tail.getValue());
         if (headEntity == null || tailEntity == null) {
             return null;
         }
@@ -167,7 +167,7 @@ public abstract class Edge extends RescueObject {
        @param model The WorldModel to look up entity references.
        @return The entity represented by the HEAD property.
      */
-    public RescueObject getHead(WorldModel<? extends RescueObject> model) {
+    public RescueEntity getHead(WorldModel<? extends RescueEntity> model) {
         if (!head.isDefined()) {
             return null;
         }
@@ -179,7 +179,7 @@ public abstract class Edge extends RescueObject {
        @param model The WorldModel to look up entity references.
        @return The entity represented by the TAIL property.
      */
-    public RescueObject getTail(WorldModel<? extends RescueObject> model) {
+    public RescueEntity getTail(WorldModel<? extends RescueEntity> model) {
         if (!tail.isDefined()) {
             return null;
         }

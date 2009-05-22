@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
    The Building object.
  */
-public class Building extends RescueObject {
+public class Building extends RescueEntity {
     private IntProperty x;
     private IntProperty y;
     private IntProperty floors;
@@ -69,7 +69,7 @@ public class Building extends RescueObject {
     }
 
     @Override
-    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueObject> world) {
+    public Pair<Integer, Integer> getLocation(WorldModel<? extends RescueEntity> world) {
         return new Pair<Integer, Integer>(x.getValue(), y.getValue());
     }
 

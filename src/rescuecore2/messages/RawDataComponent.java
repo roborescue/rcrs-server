@@ -1,4 +1,4 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
@@ -7,8 +7,6 @@ import static rescuecore2.misc.EncodingTools.readBytes;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-
-import rescuecore2.messages.AbstractMessageComponent;
 
 /**
    An raw data component to a message.
@@ -77,6 +75,6 @@ public class RawDataComponent extends AbstractMessageComponent {
 
     @Override
     public String toString() {
-        return data.length + " bytes of raw data";
+        return getName() + " = " + data.length + " bytes of raw data";
     }
 }

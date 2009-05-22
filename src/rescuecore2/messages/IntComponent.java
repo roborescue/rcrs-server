@@ -1,36 +1,32 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-
-import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.worldmodel.EntityID;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
 /**
-   An EntityID component to a message.
+   An integer component to a message.
  */
-public class EntityIDComponent extends AbstractMessageComponent {
-    private EntityID value;
+public class IntComponent extends AbstractMessageComponent {
+    private int value;
 
     /**
-       Construct an EntityIDComponent with no content.
+       Construct an IntComponent with no content.
        @param name The name of the component.
      */
-    public EntityIDComponent(String name) {
+    public IntComponent(String name) {
         super(name);
-        value = null;
     }
 
     /**
-       Construct an EntityIDComponent with a specific value.
+       Construct an IntComponent with a specific value.
        @param name The name of the component.
        @param value The value of this component.
      */
-    public EntityIDComponent(String name, EntityID value) {
+    public IntComponent(String name, int value) {
         super(name);
         this.value = value;
     }
@@ -39,30 +35,30 @@ public class EntityIDComponent extends AbstractMessageComponent {
        Get the value of this message component.
        @return The value of the component.
      */
-    public EntityID getValue() {
+    public int getValue() {
         return value;
     }
 
     /**
        Set the value of this message component.
-       @param id The new value of the component.
+       @param value The value of the component.
      */
-    public void setValue(EntityID id) {
-        value = id;
+    public void setValue(int value) {
+        this.value = value;
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        writeInt32(value.getValue(), out);
+        writeInt32(value, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        value = new EntityID(readInt32(in));
+        value = readInt32(in);
     }
 
     @Override
     public String toString() {
-        return value.toString();
+        return getName() + " = " + value;
     }
 }

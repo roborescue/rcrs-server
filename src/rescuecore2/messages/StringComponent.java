@@ -1,34 +1,33 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.readString;
+import static rescuecore2.misc.EncodingTools.writeString;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import rescuecore2.messages.AbstractMessageComponent;
-
 /**
-   An integer component to a message.
+   A string component to a message.
  */
-public class IntComponent extends AbstractMessageComponent {
-    private int value;
+public class StringComponent extends AbstractMessageComponent {
+    private String value;
 
     /**
-       Construct an IntComponent with no content.
+       Construct a StringComponent with no content.
        @param name The name of the component.
      */
-    public IntComponent(String name) {
+    public StringComponent(String name) {
         super(name);
+        value = "";
     }
 
     /**
-       Construct an IntComponent with a specific value.
+       Construct a StringComponent with a specific value.
        @param name The name of the component.
        @param value The value of this component.
      */
-    public IntComponent(String name, int value) {
+    public StringComponent(String name, String value) {
         super(name);
         this.value = value;
     }
@@ -37,7 +36,7 @@ public class IntComponent extends AbstractMessageComponent {
        Get the value of this message component.
        @return The value of the component.
      */
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -45,22 +44,22 @@ public class IntComponent extends AbstractMessageComponent {
        Set the value of this message component.
        @param value The value of the component.
      */
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        writeInt32(value, out);
+        writeString(value, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        value = readInt32(in);
+        value = readString(in);
     }
 
     @Override
     public String toString() {
-        return "" + value;
+        return getName() + " = " + value;
     }
 }
