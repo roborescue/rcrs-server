@@ -195,7 +195,7 @@ public abstract class AbstractConnection implements Connection {
             listeners.toArray(l);
         }
         for (ConnectionListener next : l) {
-            next.messageReceived(m);
+            next.messageReceived(this, m);
         }
     }
 

@@ -8,7 +8,8 @@ import rescuecore2.messages.Message;
 public interface ConnectionListener {
     /**
        Notification that a message was received.
+       @param c The Connection that the message arrived on.
        @param msg The Message that arrived.
      */
-    void messageReceived(Message msg);
+    void messageReceived(Connection c, Message msg);
 }
