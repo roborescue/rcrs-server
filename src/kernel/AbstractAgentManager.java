@@ -209,7 +209,9 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
     }
 
     /**
-       Filter the agent commands if necessary.
+       Filter the agent commands if necessary. The default implementation does nothing.
+       @param commands The commands to filter.
+       @param timestep The current time.
      */
     protected void filterAgentCommands(Collection<Message> commands, int timestep) {
     }
@@ -222,15 +224,27 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         return result;
     }
 
+    /**
+       An internal representation of an Agent that controls an entity.
+     */
     protected static class Agent<T extends Entity> {
         private T entity;
         private Connection connection;
 
+        /**
+           Create an Agent.
+           @param entity The entity controlled by this agent.
+           @param connection The Connection for talking to the agent.
+        */
         public Agent(T entity, Connection connection) {
             this.entity = entity;
             this.connection = connection;
         }
 
+        /**
+           Send some messages to the agent.
+           @param m The messages to send.
+         */
         public void send(Collection<? extends Message> m) {
             if (!connection.isAlive()) {
                 return;
@@ -246,14 +260,26 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
             }
         }
 
+        /**
+           Get the entity controlled by this agent.
+           @return The controlled entity.
+         */
         public T getEntity() {
             return entity;
         }
 
+        /**
+           Get the ID of the entity controlled by this agent.
+           @return The controlled entity ID.
+         */
         public EntityID getEntityID() {
             return entity.getID();
         }
 
+        /**
+           Get the connection for talking to this agent.
+           @return The connection.
+         */
         public Connection getConnection() {
             return connection;
         }
