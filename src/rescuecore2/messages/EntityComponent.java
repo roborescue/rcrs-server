@@ -18,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 
 /**
    An Entity component to a message.
+   @param <T> The subtype of EntityType that this component knows about.
+   @param <E> The subtype of Entity that this component knows about.
  */
 public class EntityComponent<T extends EntityType, E extends Entity> extends AbstractMessageComponent {
     private E entity;

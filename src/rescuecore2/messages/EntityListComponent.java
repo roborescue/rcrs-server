@@ -21,6 +21,8 @@ import rescuecore2.worldmodel.EntityFactory;
 
 /**
    An EntityList component to a message.
+   @param <T> The subtype of EntityType that this component knows about.
+   @param <E> The subtype of Entity that this component knows about.
  */
 public class EntityListComponent<T extends EntityType, E extends Entity> extends AbstractMessageComponent {
     private List<E> entities;

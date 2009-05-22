@@ -226,7 +226,7 @@ public final class EncodingTools {
        @throws EOFException If the end of the stream is reached.
      */
     public static double readDouble(InputStream in) throws IOException {
-        int[] data = new int[8];
+        long[] data = new long[8];
         for (int i = 0; i < data.length; ++i ) {
             data[i] = in.read();
             if (data[i] == -1) {
@@ -251,14 +251,18 @@ public final class EncodingTools {
        @return The next double in the buffer.
      */
     public static double readDouble(byte[] in, int offset) {
-        long result = in[offset] << 56
-            | in[offset + 1] << 48
-            | in[offset + 2] << 40
-            | in[offset + 3] << 32
-            | in[offset + 4] << 24
-            | in[offset + 5] << 16
-            | in[offset + 6] << 8
-            | in[offset + 7];
+        long[] parts = new long[8];
+        for (int i = 0; i < 8; ++i) {
+            parts[i] = in[offset + i];
+        }
+        long result = parts[0] << 56
+            | parts[1] << 48
+            | parts[2] << 40
+            | parts[3] << 32
+            | parts[4] << 24
+            | parts[5] << 16
+            | parts[6] << 8
+            | parts[7];
         return Double.longBitsToDouble(result);
     }
 
