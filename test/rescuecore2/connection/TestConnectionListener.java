@@ -13,7 +13,7 @@ public class TestConnectionListener implements ConnectionListener {
     }
 
     @Override
-    public void messageReceived(Message m) {
+    public void messageReceived(Connection c, Message m) {
         synchronized (this) {
             messages.add(m);
             this.notifyAll();
