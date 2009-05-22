@@ -23,7 +23,7 @@ import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.Civilian;
 import rescuecore2.version0.entities.FireBrigade;
 import rescuecore2.version0.entities.FireStation;
@@ -47,8 +47,7 @@ import rescuecore2.version0.messages.AKTell;
 /**
    AgentManager implementation for classic Robocup Rescue.
  */
-public class LegacyAgentManager extends AbstractAgentManager<RescueObject, IndexedWorldModel> {
-    private IndexedWorldModel worldModel;
+public class LegacyAgentManager extends AbstractAgentManager<RescueEntity, IndexedWorldModel> {
     private Queue<Civilian> civ;
     private Queue<FireBrigade> fb;
     private Queue<FireStation> fs;
@@ -57,17 +56,13 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
     private Queue<PoliceForce> pf;
     private Queue<PoliceOffice> po;
 
-    private Set<AgentData> toAcknowledge;
+    private Set<Agent<RescueEntity>> toAcknowledge;
 
-    private Set<RescueObject> initialEntities;
-
-    private Set<RescueObject> controlledEntities;
-    private Map<RescueObject, AgentData> agents;
-
-    private Map<EntityID, List<Message>> agentCommands;
+    private Set<RescueEntity> initialEntities;
 
     private int freezeTime;
 
+    /** Lock object for when new agents connect and choose an entity to control. */
     private final Object lock = new Object();
 
     /**
@@ -82,17 +77,14 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
         ac = new LinkedList<AmbulanceCentre>();
         pf = new LinkedList<PoliceForce>();
         po = new LinkedList<PoliceOffice>();
-        toAcknowledge = new HashSet<AgentData>();
-        initialEntities = new HashSet<RescueObject>();
-        controlledEntities = new HashSet<RescueObject>();
-        agents = new HashMap<RescueObject, AgentData>();
-        agentCommands = new HashMap<EntityID, List<Message>>();
+        toAcknowledge = new HashSet<Agent<RescueEntity>>();
+        initialEntities = new HashSet<RescueEntity>();
         freezeTime = config.getIntValue("steps_agents_frozen", 0);
     }
 
     @Override
     public void setWorldModel(IndexedWorldModel world) {
-        worldModel = world;
+        super.setWorldModel(world);
         civ.clear();
         fb.clear();
         fs.clear();
@@ -102,35 +94,34 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
         po.clear();
         toAcknowledge.clear();
         initialEntities.clear();
-        agents.clear();
-        for (RescueObject e : worldModel.getAllEntities()) {
+        for (RescueEntity e : world.getAllEntities()) {
             if (e instanceof Civilian) {
                 civ.add((Civilian)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             else if (e instanceof FireBrigade) {
                 fb.add((FireBrigade)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             else if (e instanceof FireStation) {
                 fs.add((FireStation)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             else if (e instanceof AmbulanceTeam) {
                 at.add((AmbulanceTeam)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             else if (e instanceof AmbulanceCentre) {
                 ac.add((AmbulanceCentre)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             else if (e instanceof PoliceForce) {
                 pf.add((PoliceForce)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             else if (e instanceof PoliceOffice) {
                 po.add((PoliceOffice)e);
-                controlledEntities.add(e);
+                addControlledEntity(e);
             }
             maybeAddInitialEntity(e);
         }
@@ -138,9 +129,10 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
 
     @Override
     public void newConnection(Connection c) {
-        c.addConnectionListener(new AgentConnectionListener(c));
+        c.addConnectionListener(new AgentConnectionListener());
     }
 
+    /*
     @Override
     public void waitForAllAgents() throws InterruptedException {
         synchronized (lock) {
@@ -153,7 +145,6 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
                    || !pf.isEmpty()
                    || !toAcknowledge.isEmpty()) {
                 lock.wait(1000);
-                /*
                 System.out.println("Waiting for " + civ.size() + " civilians, "
                                    + fb.size() + " fire brigades, "
                                    + fs.size() + " fire stations, "
@@ -162,68 +153,37 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
                                    + pf.size() + " police forces, "
                                    + po.size() + " police offices. "
                                    + toAcknowledge.size() + " agents have not acknowledged.");
-                */
             }
         }
     }
+    */
 
     @Override
-    public Set<RescueObject> getControlledEntities() {
-        return controlledEntities;
+    protected Collection<? extends Message> getPerceptionMessages(int time, Agent<RescueEntity> agent, Collection<RescueEntity> visible) {
+        KASense sense = new KASense(agent.getEntityID().getValue(), time, visible);
+        return Collections.singleton(sense);
     }
 
     @Override
-    public void shutdown() {
-    }
-
-    @Override
-    public void sendPerceptionUpdate(int time, RescueObject agent, Collection<RescueObject> visible) {
-        AgentData data = agents.get(agent);
-        if (data == null) {
-            throw new IllegalArgumentException("Unrecognised object: " + agent);
-        }
-        KASense sense = new KASense(agent.getID().getValue(), time, visible);
-        data.send(Collections.singleton(sense));
-    }
-
-    @Override
-    public void sendMessages(RescueObject agent, Collection<Message> messages) {
-        AgentData data = agents.get(agent);
-        if (data == null) {
-            throw new IllegalArgumentException("Unrecognised object: " + agent);
-        }
-        data.send(messages);
-    }
-
-    @Override
-    public Collection<Message> getAgentCommands(int timestep) {
-        Collection<Message> commands = new ArrayList<Message>();
-        synchronized (agentCommands) {
-            for (List<Message> list : agentCommands.values()) {
-                for (Message next : list) {
-                    if (next instanceof AgentCommand) {
-                        commands.add((AgentCommand)next);
-                    }
-                }
+    protected void filterAgentCommands(Collection<Message> commands, int timestep) {
+        for (Iterator<Message> it = commands.iterator(); it.hasNext();) {
+            Message next = it.next();
+            // If the message is not an AgentCommand then remove it
+            if (!(next instanceof AgentCommand)) {
+                it.remove();
             }
-            agentCommands.clear();
-        }
-        if (timestep < freezeTime) {
-            // Only allow say and tell commands if it's too early
-            for (Iterator<Message> it = commands.iterator(); it.hasNext();) {
-                Message next = it.next();
-                if (!(next instanceof AKSay || next instanceof AKTell)) {
-                    //                    System.out.println("Ignoring " + next + ": " + timestep + " < " + freezeTime);
+            else {
+                // Only allow say and tell commands if it's too early
+                if (timestep < freezeTime && !(next instanceof AKSay || next instanceof AKTell)) {
                     it.remove();
                 }
             }
         }
-        return commands;
     }
 
-    private AgentData findEntityToControl(int mask) {
+    private RescueEntity findEntityToControl(int mask) {
         synchronized (lock) {
-            List<Queue<? extends RescueObject>> toTry = new ArrayList<Queue<? extends RescueObject>>();
+            List<Queue<? extends RescueEntity>> toTry = new ArrayList<Queue<? extends RescueEntity>>();
             if ((mask & Constants.AGENT_TYPE_CIVILIAN) == Constants.AGENT_TYPE_CIVILIAN) {
                 toTry.add(civ);
             }
@@ -245,13 +205,10 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
             if ((mask & Constants.AGENT_TYPE_POLICE_OFFICE) == Constants.AGENT_TYPE_POLICE_OFFICE) {
                 toTry.add(po);
             }
-            for (Queue<? extends RescueObject> next : toTry) {
-                RescueObject e = next.poll();
+            for (Queue<? extends RescueEntity> next : toTry) {
+                RescueEntity e = next.poll();
                 if (e != null) {
-                    AgentData data = new AgentData(e);
-                    toAcknowledge.add(data);
-                    lock.notifyAll();
-                    return data;
+                    return e;
                 }
             }
             return null;
@@ -259,25 +216,29 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
     }
 
     private boolean acknowledge(int id, Connection c) {
+        Agent<RescueEntity> agent = null;
         synchronized (lock) {
-            for (AgentData next : toAcknowledge) {
-                if (next.entity.getID().getValue() == id && next.connection == c) {
+            for (Agent<RescueEntity> next : toAcknowledge) {
+                if (next.getEntityID().getValue() == id && next.getConnection() == c) {
+                    agent = next;
                     toAcknowledge.remove(next);
-                    agents.put(next.entity, next);
-                    lock.notifyAll();
-                    fireAgentConnected(new AgentInfo(next.connection.toString() + ": " + next.entity.toString()));
-                    return true;
+                    break;
                 }
             }
+        }
+        if (agent == null) {
             return false;
         }
+        setController(agent.getEntity(), agent);
+        fireAgentConnected(new AgentInfo(agent.getConnection().toString() + ": " + agent.getEntity().toString()));
+        return true;
     }
 
-    private Collection<RescueObject> getInitialEntityList() {
+    private Collection<RescueEntity> getInitialEntityList() {
         return initialEntities;
     }
 
-    private void maybeAddInitialEntity(RescueObject e) {
+    private void maybeAddInitialEntity(RescueEntity e) {
         if (e instanceof Road) {
             Road r = (Road)e.copy();
             filterRoadProperties(r);
@@ -358,51 +319,38 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
         }
     }
 
-    private void agentCommandReceived(EntityID id, Message message) {
-        synchronized (agentCommands) {
-            List<Message> messages = agentCommands.get(id);
-            if (messages == null) {
-                messages = new ArrayList<Message>();
-                agentCommands.put(id, messages);
-            }
-            messages.add(message);
-        }
-    }
-
     private class AgentConnectionListener implements ConnectionListener {
-        private Connection connection;
-
-        public AgentConnectionListener(Connection c) {
-            connection = c;
-        }
-
         @Override
-        public void messageReceived(Message msg) {
+        public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof AKConnect) {
                 // Pull out the temp ID and agent type mask
                 AKConnect connect = (AKConnect)msg;
                 int tempID = connect.getTemporaryID();
                 int mask = connect.getAgentTypeMask();
                 // See if we can find an entity for this agent to control.
-                AgentData data = findEntityToControl(mask);
+                Agent<RescueEntity> agent = null;
+                synchronized (lock) {
+                    RescueEntity entity = findEntityToControl(mask);
+                    if (entity != null) {
+                        agent = new Agent<RescueEntity>(entity, connection);
+                        toAcknowledge.add(agent);
+                    }
+                }
                 try {
-                    if (data == null) {
+                    if (agent == null) {
                         // Send an error
                         connection.sendMessage(new KAConnectError(tempID, "No more agents"));
                     }
                     else {
-                        data.connection = connection;
                         // Send an OK
-                        connection.sendMessage(new KAConnectOK(tempID, data.entity.getID().getValue(), data.entity, getInitialEntityList()));
+                        connection.sendMessage(new KAConnectOK(tempID, agent.getEntityID().getValue(), agent.getEntity(), getInitialEntityList()));
                     }
                 }
                 catch (IOException e) {
                     e.printStackTrace();
-                    data.dead = true;
                 }
                 catch (ConnectionException e) {
                     e.printStackTrace();
-                    data.dead = true;
                 }
             }
             if (msg instanceof AKAcknowledge) {
@@ -416,35 +364,10 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueObject, Index
             }
             if (msg instanceof AgentCommand) {
                 EntityID id = ((AgentCommand)msg).getAgentID();
-                agentCommandReceived(id, msg);
-            }
-        }
-    }
-
-    private static class AgentData {
-        RescueObject entity;
-        Connection connection;
-        boolean dead;
-
-        AgentData(RescueObject entity) {
-            this.entity = entity;
-            dead = false;
-        }
-
-        void send(Collection<? extends Message> m) {
-            if (dead) {
-                return;
-            }
-            try {
-                connection.sendMessages(m);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                dead = true;
-            }
-            catch (ConnectionException e) {
-                e.printStackTrace();
-                dead = true;
+                Agent<RescueEntity> controller = getController(id);
+                if (controller != null) {
+                    agentCommandReceived(controller, msg);
+                }
             }
         }
     }

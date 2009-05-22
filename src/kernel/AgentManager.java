@@ -63,5 +63,5 @@ public interface AgentManager<T extends Entity, S extends WorldModel<T>> extends
        @param agentEntity The entity that should receive the messages.
        @param messages The messages to send.
      */
-    void sendMessages(T agentEntity, Collection<Message> messages);
+    void sendMessages(T agentEntity, Collection<? extends Message> messages);
 }

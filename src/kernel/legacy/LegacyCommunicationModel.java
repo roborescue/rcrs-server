@@ -9,7 +9,7 @@ import rescuecore2.messages.Message;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.EntityID;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.FireBrigade;
 import rescuecore2.version0.entities.FireStation;
 import rescuecore2.version0.entities.PoliceForce;
@@ -24,7 +24,7 @@ import rescuecore2.version0.messages.KAHearTell;
 /**
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
  */
-public class LegacyCommunicationModel implements CommunicationModel<RescueObject, IndexedWorldModel> {
+public class LegacyCommunicationModel implements CommunicationModel<RescueEntity, IndexedWorldModel> {
     private IndexedWorldModel world;
     private int sayDistance;
 
@@ -42,7 +42,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
     }
 
     @Override
-    public Collection<Message> process(RescueObject agent, Collection<Message> agentCommands) {
+    public Collection<Message> process(RescueEntity agent, Collection<Message> agentCommands) {
         //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
         Collection<Message> result = new HashSet<Message>();
         // Look for SAY messages from entities within range
@@ -51,7 +51,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
             if (next instanceof AKSay) {
                 AKSay say = (AKSay)next;
                 EntityID senderID = say.getAgentID();
-                RescueObject sender = world.getEntity(senderID);
+                RescueEntity sender = world.getEntity(senderID);
                 int distance = world.getDistance(agent, sender);
                 if (distance <= sayDistance) {
                     //                    System.out.println(agent + " hears say from " + sender);
@@ -61,7 +61,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
             if (next instanceof AKTell) {
                 AKTell tell = (AKTell)next;
                 EntityID senderID = tell.getAgentID();
-                RescueObject sender = world.getEntity(senderID);
+                RescueEntity sender = world.getEntity(senderID);
                 if (canHear(agent, sender)) {
                     //                    System.out.println(agent + " hears tell from " + sender);
                     result.add(new KAHearTell(senderID, tell.getContent()));
@@ -71,7 +71,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueObject
         return result;
     }
 
-    private boolean canHear(RescueObject receiver, RescueObject sender) {
+    private boolean canHear(RescueEntity receiver, RescueEntity sender) {
         if (receiver instanceof FireBrigade) {
             return sender instanceof FireBrigade || sender instanceof FireStation;
         }

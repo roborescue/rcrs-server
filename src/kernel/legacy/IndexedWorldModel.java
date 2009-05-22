@@ -12,23 +12,23 @@ import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.Pair;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.Human;
 
 /**
    A wrapper around a WorldModel that indexes Entities by location.
  */
-public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
-    private Map<EntityType, Collection<RescueObject>> storedTypes;
-    private Collection<RescueObject> mobileEntities;
-    private Collection<RescueObject> staticEntities;
+public class IndexedWorldModel extends DefaultWorldModel<RescueEntity> {
+    private Map<EntityType, Collection<RescueEntity>> storedTypes;
+    private Collection<RescueEntity> mobileEntities;
+    private Collection<RescueEntity> staticEntities;
 
     private int meshSize;
     private int minX;
     private int maxX;
     private int minY;
     private int maxY;
-    private List<List<Collection<RescueObject>>> grid;
+    private List<List<Collection<RescueEntity>>> grid;
     private int gridWidth;
     private int gridHeight;
 
@@ -38,9 +38,9 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
      */
     public IndexedWorldModel(int meshSize) {
         this.meshSize = meshSize;
-        storedTypes = new HashMap<EntityType, Collection<RescueObject>>();
-        mobileEntities = new HashSet<RescueObject>();
-        staticEntities = new HashSet<RescueObject>();
+        storedTypes = new HashMap<EntityType, Collection<RescueEntity>>();
+        mobileEntities = new HashSet<RescueEntity>();
+        staticEntities = new HashSet<RescueEntity>();
     }
 
     /**
@@ -49,8 +49,8 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
      */
     public void indexClass(EntityType... types) {
         for (EntityType type : types) {
-            Collection<RescueObject> bucket = new HashSet<RescueObject>();
-            for (RescueObject next : this) {
+            Collection<RescueEntity> bucket = new HashSet<RescueEntity>();
+            for (RescueEntity next : this) {
                 if (next.getType().equals(type)) {
                     bucket.add(next);
                 }
@@ -72,7 +72,7 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
         minY = Integer.MAX_VALUE;
         maxY = Integer.MIN_VALUE;
         Pair<Integer, Integer> location;
-        for (RescueObject next : this) {
+        for (RescueEntity next : this) {
             if (next instanceof Human) {
                 mobileEntities.add(next);
             }
@@ -95,19 +95,19 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
         System.out.println("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
         gridWidth = (int)Math.ceil(width / (double)meshSize);
         gridHeight = (int)Math.ceil(height / (double)meshSize);
-        grid = new ArrayList<List<Collection<RescueObject>>>(gridWidth);
+        grid = new ArrayList<List<Collection<RescueEntity>>>(gridWidth);
         System.out.println("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
         for (int i = 0; i < gridWidth; ++i) {
-            List<Collection<RescueObject>> list = new ArrayList<Collection<RescueObject>>(gridHeight);
+            List<Collection<RescueEntity>> list = new ArrayList<Collection<RescueEntity>>(gridHeight);
             grid.add(list);
             for (int j = 0; j < gridHeight; ++j) {
-                list.add(new HashSet<RescueObject>());
+                list.add(new HashSet<RescueEntity>());
             }
         }
-        for (RescueObject next : staticEntities) {
+        for (RescueEntity next : staticEntities) {
             location = next.getLocation(this);
             if (location != null) {
-                Collection<RescueObject> cell = getCell(getXCell(location.first().intValue()), getYCell(location.second().intValue()));
+                Collection<RescueEntity> cell = getCell(getXCell(location.first().intValue()), getYCell(location.second().intValue()));
                 cell.add(next);
             }
         }
@@ -125,17 +125,17 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
        @param x The x coordinate of the location.
        @param y The y coordinate of the location.
        @param range The range to look up.
-       @return A collection of RescueObjects that are within range.
+       @return A collection of RescueEntitys that are within range.
      */
-    public Collection<RescueObject> getObjectsInRange(int x, int y, int range) {
-        Collection<RescueObject> result = new HashSet<RescueObject>();
+    public Collection<RescueEntity> getObjectsInRange(int x, int y, int range) {
+        Collection<RescueEntity> result = new HashSet<RescueEntity>();
         int cellX = getXCell(x);
         int cellY = getYCell(y);
         int cellRange = range / meshSize;
         for (int i = Math.max(0, cellX - cellRange); i <= Math.min(gridWidth - 1, cellX + cellRange); ++i) {
             for (int j = Math.max(0, cellY - cellRange); j <= Math.min(gridHeight - 1, cellY + cellRange); ++j) {
-                Collection<RescueObject> cell = getCell(i, j);
-                for (RescueObject next : cell) {
+                Collection<RescueEntity> cell = getCell(i, j);
+                for (RescueEntity next : cell) {
                     Pair<Integer, Integer> location = next.getLocation(this);
                     if (location != null) {
                         int targetX = location.first().intValue();
@@ -149,7 +149,7 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
             }
         }
         // Now do mobile entities
-        for (RescueObject next : mobileEntities) {
+        for (RescueEntity next : mobileEntities) {
             Pair<Integer, Integer> location = next.getLocation(this);
             if (location != null) {
                 int targetX = location.first().intValue();
@@ -168,12 +168,12 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
        @param type The type to look up.
        @return A new Collection of entities of the specified type.
      */
-    public Collection<RescueObject> getEntitiesOfType(EntityType type) {
+    public Collection<RescueEntity> getEntitiesOfType(EntityType type) {
         if (storedTypes.containsKey(type)) {
             return storedTypes.get(type);
         }
-        Collection<RescueObject> result = new HashSet<RescueObject>();
-        for (RescueObject next : this) {
+        Collection<RescueEntity> result = new HashSet<RescueEntity>();
+        for (RescueEntity next : this) {
             if (next.getType().equals(type)) {
                 result.add(next);
             }
@@ -188,8 +188,8 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
        @return The distance between the two entities. A negative value indicates that one or both objects either doesn't exist or could not be located.
     */
     public int getDistance(EntityID first, EntityID second) {
-        RescueObject a = getEntity(first);
-        RescueObject b = getEntity(second);
+        RescueEntity a = getEntity(first);
+        RescueEntity b = getEntity(second);
         if (a == null || b == null) {
             return -1;
         }
@@ -202,7 +202,7 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
        @param second The second entity.
        @return The distance between the two entities. A negative value indicates that one or both objects could not be located.
     */
-    public int getDistance(RescueObject first, RescueObject second) {
+    public int getDistance(RescueEntity first, RescueEntity second) {
         Pair<Integer, Integer> a = first.getLocation(this);
         Pair<Integer, Integer> b = second.getLocation(this);
         if (a == null || b == null) {
@@ -219,7 +219,7 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueObject> {
         return (y - minY) / meshSize;
     }
 
-    private Collection<RescueObject> getCell(int x, int y) {
+    private Collection<RescueEntity> getCell(int x, int y) {
         return grid.get(x).get(y);
     }
 

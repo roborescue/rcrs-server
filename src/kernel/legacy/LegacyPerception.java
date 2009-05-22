@@ -13,7 +13,7 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Building;
 import rescuecore2.version0.entities.Human;
@@ -22,7 +22,7 @@ import rescuecore2.version0.entities.RescuePropertyType;
 /**
    Legacy implementation of perception.
  */
-public class LegacyPerception implements Perception<RescueObject, IndexedWorldModel> {
+public class LegacyPerception implements Perception<RescueEntity, IndexedWorldModel> {
     private static final int HP_PRECISION = 1000;
     private static final int DAMAGE_PRECISION = 100;
 
@@ -51,7 +51,7 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
         this.world = newWorld;
         unburntBuildings.clear();
         ignitionTimes.clear();
-        for (RescueObject next : world) {
+        for (RescueEntity next : world) {
             if (next instanceof Building) {
                 Building b = (Building)next;
                 if (b.getFieryness() == 0) {
@@ -82,20 +82,20 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
     }
 
     @Override
-    public Collection<RescueObject> getVisibleEntities(RescueObject agent) {
-        Collection<RescueObject> result = new HashSet<RescueObject>();
+    public Collection<RescueEntity> getVisibleEntities(RescueEntity agent) {
+        Collection<RescueEntity> result = new HashSet<RescueEntity>();
         // Look for roads/nodes/buildings/humans within range
         Pair<Integer, Integer> location = agent.getLocation(world);
         if (location != null) {
             int x = location.first().intValue();
             int y = location.second().intValue();
-            Collection<RescueObject> nearby = world.getObjectsInRange(x, y, viewDistance);
+            Collection<RescueEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
             // Copy entities and set property values
-            for (RescueObject next : nearby) {
-                RescueObject copy = null;
+            for (RescueEntity next : nearby) {
+                RescueEntity copy = null;
                 switch (next.getType()) {
                 case ROAD:
-                    copy = (RescueObject)next.copy();
+                    copy = (RescueEntity)next.copy();
                     filterRoadProperties((Road)copy);
                     break;
                 case BUILDING:
@@ -103,14 +103,14 @@ public class LegacyPerception implements Perception<RescueObject, IndexedWorldMo
                 case FIRE_STATION:
                 case AMBULANCE_CENTRE:
                 case POLICE_OFFICE:
-                    copy = (RescueObject)next.copy();
+                    copy = (RescueEntity)next.copy();
                     filterBuildingProperties((Building)copy);
                     break;
                 case CIVILIAN:
                 case FIRE_BRIGADE:
                 case AMBULANCE_TEAM:
                 case POLICE_FORCE:
-                    copy = (RescueObject)next.copy();
+                    copy = (RescueEntity)next.copy();
                     // Always send all properties of the agent-controlled object
                     if (next != agent) {
                         filterHumanProperties((Human)copy);

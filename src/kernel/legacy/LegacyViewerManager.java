@@ -15,7 +15,7 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.VKConnect;
 import rescuecore2.version0.messages.VKAcknowledge;
 import rescuecore2.version0.messages.KVConnectOK;
@@ -26,7 +26,7 @@ import rescuecore2.version0.messages.Commands;
 /**
    ViewerManager implementation for classic Robocup Rescue.
  */
-public class LegacyViewerManager extends AbstractViewerManager<RescueObject, IndexedWorldModel> {
+public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, IndexedWorldModel> {
     private IndexedWorldModel worldModel;
 
     private Set<ViewerData> toAcknowledge;
@@ -49,7 +49,7 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueObject, Ind
 
     @Override
     public void newConnection(Connection c) {
-        c.addConnectionListener(new ViewerConnectionListener(c));
+        c.addConnectionListener(new ViewerConnectionListener());
     }
 
     @Override
@@ -86,7 +86,7 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueObject, Ind
     }
 
     @Override
-    public void sendUpdate(int time, Collection<RescueObject> updates) {
+    public void sendUpdate(int time, Collection<RescueEntity> updates) {
         sendToAll(Collections.singleton(new Update(time, updates)));
     }
 
@@ -121,14 +121,8 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueObject, Ind
     }
 
     private class ViewerConnectionListener implements ConnectionListener {
-        private Connection connection;
-
-        public ViewerConnectionListener(Connection c) {
-            connection = c;
-        }
-
         @Override
-        public void messageReceived(Message msg) {
+        public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof VKConnect) {
                 System.out.println("Viewer connected");
                 ViewerData data = new ViewerData(connection);

@@ -8,7 +8,7 @@ import rescuecore2.config.ConfigException;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 
 import kernel.ui.KernelStatus;
 import javax.swing.JFrame;
@@ -51,13 +51,13 @@ public final class StartKernel {
                 ++i;
             }
 
-            WorldModelCreator<RescueObject, IndexedWorldModel> worldModelCreator = new GISWorldModelCreator();
-            SimulatorManager<RescueObject, IndexedWorldModel> simulatorManager = new LegacySimulatorManager();
-            ViewerManager<RescueObject, IndexedWorldModel> viewerManager = new LegacyViewerManager();
-            AgentManager<RescueObject, IndexedWorldModel> agentManager = new LegacyAgentManager(config);
-            Perception<RescueObject, IndexedWorldModel> perception = new LegacyPerception(config);
-            CommunicationModel<RescueObject, IndexedWorldModel> comms = new LegacyCommunicationModel(config);
-            kernel = new Kernel<RescueObject, IndexedWorldModel>(config, worldModelCreator, simulatorManager, viewerManager, agentManager, perception, comms);
+            WorldModelCreator<RescueEntity, IndexedWorldModel> worldModelCreator = new GISWorldModelCreator();
+            SimulatorManager<RescueEntity, IndexedWorldModel> simulatorManager = new LegacySimulatorManager();
+            ViewerManager<RescueEntity, IndexedWorldModel> viewerManager = new LegacyViewerManager();
+            AgentManager<RescueEntity, IndexedWorldModel> agentManager = new LegacyAgentManager(config);
+            Perception<RescueEntity, IndexedWorldModel> perception = new LegacyPerception(config);
+            CommunicationModel<RescueEntity, IndexedWorldModel> comms = new LegacyCommunicationModel(config);
+            kernel = new Kernel<RescueEntity, IndexedWorldModel>(config, worldModelCreator, simulatorManager, viewerManager, agentManager, perception, comms);
             agentManager.addAgentManagerListener(status);
             simulatorManager.addSimulatorManagerListener(status);
             viewerManager.addViewerManagerListener(status);

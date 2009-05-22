@@ -16,7 +16,7 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.SKConnect;
 import rescuecore2.version0.messages.SKAcknowledge;
 import rescuecore2.version0.messages.SKUpdate;
@@ -28,7 +28,7 @@ import rescuecore2.version0.messages.Commands;
 /**
    SimulatorManager implementation for classic Robocup Rescue.
  */
-public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObject, IndexedWorldModel> {
+public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntity, IndexedWorldModel> {
     private IndexedWorldModel worldModel;
 
     private Set<SimulatorData> toAcknowledge;
@@ -36,7 +36,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
 
     private Set<SimulatorData> allSims;
     /** Map from simulator ID to update list. */
-    private Map<Integer, Collection<RescueObject>> updates;
+    private Map<Integer, Collection<RescueEntity>> updates;
 
     private final Object lock = new Object();
 
@@ -46,7 +46,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
     public LegacySimulatorManager() {
         allSims = new HashSet<SimulatorData>();
         toAcknowledge = new HashSet<SimulatorData>();
-        updates = new HashMap<Integer, Collection<RescueObject>>();
+        updates = new HashMap<Integer, Collection<RescueEntity>>();
         nextID = 1;
     }
 
@@ -57,7 +57,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
 
     @Override
     public void newConnection(Connection c) {
-        c.addConnectionListener(new SimulatorConnectionListener(c));
+        c.addConnectionListener(new SimulatorConnectionListener());
     }
 
     @Override
@@ -98,8 +98,8 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
     }
 
     @Override
-    public Collection<RescueObject> getAllUpdates() throws InterruptedException {
-        Collection<RescueObject> result = new HashSet<RescueObject>();
+    public Collection<RescueEntity> getAllUpdates() throws InterruptedException {
+        Collection<RescueEntity> result = new HashSet<RescueEntity>();
         synchronized (lock) {
             // Wait until all simulators have sent an update
             while (updates.size() < allSims.size()) {
@@ -107,7 +107,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
                 System.out.println("Waiting for " + (allSims.size() - updates.size()) + " simulator updates");
             }
             // Pull the results together
-            for (Collection<RescueObject> next : updates.values()) {
+            for (Collection<RescueEntity> next : updates.values()) {
                 result.addAll(next);
             }
             updates.clear();
@@ -116,7 +116,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
     }
 
     @Override
-    public void sendUpdate(int time, Collection<RescueObject> updatedObjects) {
+    public void sendUpdate(int time, Collection<RescueEntity> updatedObjects) {
         sendToAll(Collections.singleton(new Update(time, updatedObjects)));
     }
 
@@ -152,7 +152,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
         }
     }
 
-    private void updateReceived(int id, Collection<RescueObject> entities) {
+    private void updateReceived(int id, Collection<RescueEntity> entities) {
         synchronized (lock) {
             updates.put(id, entities);
             lock.notifyAll();
@@ -160,14 +160,8 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueObjec
     }
 
     private class SimulatorConnectionListener implements ConnectionListener {
-        private Connection connection;
-
-        public SimulatorConnectionListener(Connection c) {
-            connection = c;
-        }
-
         @Override
-        public void messageReceived(Message msg) {
+        public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof SKConnect) {
                 int id = getNextID();
                 System.out.println("Simulator " + id + " connected");

@@ -13,7 +13,7 @@ import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 
-import rescuecore2.version0.entities.RescueObject;
+import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.Version0MessageFactory;
 import rescuecore2.version0.messages.GKConnectOK;
 import rescuecore2.version0.messages.GKConnectError;
@@ -23,7 +23,7 @@ import rescuecore2.version0.messages.KGAcknowledge;
 /**
    A WorldModelCreator that talks to the GIS.
  */
-public class GISWorldModelCreator implements WorldModelCreator<RescueObject, IndexedWorldModel> {
+public class GISWorldModelCreator implements WorldModelCreator<RescueEntity, IndexedWorldModel> {
     @Override
     public IndexedWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
@@ -33,7 +33,7 @@ public class GISWorldModelCreator implements WorldModelCreator<RescueObject, Ind
         Connection conn;
         try {
             conn = new TCPConnection(Version0MessageFactory.INSTANCE, gisPort);
-            conn.addConnectionListener(new GISConnectionListener(latch, world, conn));
+            conn.addConnectionListener(new GISConnectionListener(latch, world));
             conn.startup();
             conn.sendMessage(new KGConnect());
         }
@@ -61,22 +61,20 @@ public class GISWorldModelCreator implements WorldModelCreator<RescueObject, Ind
     private static class GISConnectionListener implements ConnectionListener {
         private CountDownLatch latch;
         private IndexedWorldModel model;
-        private Connection gisConnection;
 
-        public GISConnectionListener(CountDownLatch latch, IndexedWorldModel model, Connection gisConnection) {
+        public GISConnectionListener(CountDownLatch latch, IndexedWorldModel model) {
             this.latch = latch;
             this.model = model;
-            this.gisConnection = gisConnection;
         }
 
-        public void messageReceived(Message m) {
+        public void messageReceived(Connection c, Message m) {
             if (m instanceof GKConnectOK) {
                 try {
                     // Update the internal world model
                     model.removeAllEntities();
                     model.addEntities(((GKConnectOK)m).getEntities());
                     // Send an acknowledgement
-                    gisConnection.sendMessage(new KGAcknowledge());
+                    c.sendMessage(new KGAcknowledge());
                     System.out.println("GIS connected OK");
                     // Trigger the countdown latch
                     latch.countDown();
