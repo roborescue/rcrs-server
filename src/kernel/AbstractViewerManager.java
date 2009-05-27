@@ -3,7 +3,6 @@ package kernel;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
-import java.io.IOException;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
@@ -121,9 +120,6 @@ public abstract class AbstractViewerManager<T extends Entity, S extends WorldMod
             }
             try {
                 connection.sendMessages(m);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
             }
             catch (ConnectionException e) {
                 e.printStackTrace();

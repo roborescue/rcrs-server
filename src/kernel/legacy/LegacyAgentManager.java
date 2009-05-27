@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.io.IOException;
 
 import kernel.AbstractAgentManager;
 
@@ -337,9 +336,6 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueEntity, Index
                         // Send an OK
                         connection.sendMessage(new KAConnectOK(tempID, agent.getEntityID().getValue(), agent.getEntity(), initialEntities));
                     }
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
                 }
                 catch (ConnectionException e) {
                     e.printStackTrace();

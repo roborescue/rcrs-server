@@ -79,9 +79,6 @@ public class GISWorldModelCreator implements WorldModelCreator<RescueEntity, Ind
                     // Trigger the countdown latch
                     latch.countDown();
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
                 catch (ConnectionException e) {
                     e.printStackTrace();
                 }

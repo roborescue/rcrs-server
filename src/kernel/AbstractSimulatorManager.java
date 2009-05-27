@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.io.IOException;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
@@ -144,9 +143,6 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
             }
             try {
                 connection.sendMessages(m);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
             }
             catch (ConnectionException e) {
                 e.printStackTrace();
