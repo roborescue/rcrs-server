@@ -102,7 +102,7 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void sendMessage(Message msg) throws IOException, ConnectionException {
+    public void sendMessage(Message msg) throws ConnectionException {
         if (msg == null) {
             throw new IllegalArgumentException("Message cannot be null");
         }
@@ -110,7 +110,7 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public void sendMessages(Collection<? extends Message> messages) throws IOException, ConnectionException {
+    public void sendMessages(Collection<? extends Message> messages) throws ConnectionException {
         if (messages == null) {
             throw new IllegalArgumentException("Messages cannot be null");
         }
@@ -125,17 +125,22 @@ public abstract class AbstractConnection implements Connection {
                 throw new ConnectionException("Connection is dead");
             }
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (Message next : messages) {
-            encodeMessage(next, out);
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            for (Message next : messages) {
+                encodeMessage(next, out);
+            }
+            // Add a zero to indicate no more messages
+            writeInt32(0, out);
+            // Send the bytes
+            if (logBytes) {
+                ByteLogger.log(out.toByteArray());
+            }
+            sendBytes(out.toByteArray());
         }
-        // Add a zero to indicate no more messages
-        writeInt32(0, out);
-        // Send the bytes
-        if (logBytes) {
-            ByteLogger.log(out.toByteArray());
+        catch (IOException e) {
+            throw new ConnectionException(e);
         }
-        sendBytes(out.toByteArray());
     }
 
     /**
@@ -224,7 +229,7 @@ public abstract class AbstractConnection implements Connection {
 
     /**
        The state of this connection: either not yet started, started or shut down.
-     */
+    */
     protected enum State {
         /** CHECKSTYLE:OFF:JavadocVariableCheck. */
         NOT_STARTED,

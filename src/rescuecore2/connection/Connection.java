@@ -3,7 +3,6 @@ package rescuecore2.connection;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageFactory;
 
-import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -13,18 +12,16 @@ public interface Connection {
     /**
        Send a message across this connection.
        @param msg The message to send.
-       @throws IOException If the message cannot be sent.
-       @throws ConnectionException If the connection has not been started up or has been shut down.
+       @throws ConnectionException If the connection has not been started up or has been shut down, or if there is an error sending the message.
      */
-    void sendMessage(Message msg) throws IOException, ConnectionException;
+    void sendMessage(Message msg) throws ConnectionException;
 
     /**
        Send a set of messages across this connection.
        @param messages The messages to send.
-       @throws IOException If any of the messages cannot be sent.
-       @throws ConnectionException If the connection has not been started up or has been shut down.
+       @throws ConnectionException If the connection has not been started up or has been shut down, or if there is an error sending the message.
      */
-    void sendMessages(Collection<? extends Message> messages) throws IOException, ConnectionException;
+    void sendMessages(Collection<? extends Message> messages) throws ConnectionException;
 
     /**
        Add a ConnectionListener. This listener will be notified when messages arrive on this connection.

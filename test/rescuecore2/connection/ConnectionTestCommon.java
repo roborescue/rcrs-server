@@ -78,15 +78,12 @@ public abstract class ConnectionTestCommon {
 	catch (ConnectionException e) {
             // Could reasonably expect a ConnectionException right now: the server is gone so the client might have shut itself down
         }
-	catch (IOException e) {
-	    // Could reasonably expect an IOException right now: the server is gone.
-	}
 	Thread.sleep(DELAY);
 	assertEquals(1, serverListener.getMessageCount());
     }
 
     @Test
-    public void testIsAlive() throws IOException, InterruptedException {
+    public void testIsAlive() throws InterruptedException {
         assertFalse(client.isAlive());
         client.startup();
         assertTrue(client.isAlive());
@@ -150,9 +147,6 @@ public abstract class ConnectionTestCommon {
 	catch (ConnectionException e) {
 	    // Could reasonably expect a ConnectionException right now: the server is gone so the client might have shut itself down.
 	}
-	catch (IOException e) {
-	    // Could reasonably expect an IOException right now: the server is gone.
-	}
 	// Wait a bit
 	Thread.sleep(DELAY);
 	// Check that the new message didn't arrive
@@ -165,9 +159,6 @@ public abstract class ConnectionTestCommon {
 	catch (ConnectionException e) {
 	    // Could reasonably expect a ConnectionException right now: the server is gone so the client might have shut itself down.
         }
-	catch (IOException e) {
-	    // Could reasonably expect an IOException right now: the server is gone.
-	}
 	// Wait a bit
 	Thread.sleep(DELAY);
 	// Check that the new message didn't arrive
@@ -186,7 +177,7 @@ public abstract class ConnectionTestCommon {
     }
 
     @Test
-    public void testSendMessages() throws IOException, InterruptedException, ConnectionException{
+    public void testSendMessages() throws InterruptedException, ConnectionException{
 	client.startup();
 	server.startup();
 	Message m1 = new TestMessage(TestMessageFactory.MESSAGE_1, 3);
@@ -199,14 +190,14 @@ public abstract class ConnectionTestCommon {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testSendNullMessage() throws IOException, InterruptedException, ConnectionException {
+    public void testSendNullMessage() throws InterruptedException, ConnectionException {
 	client.startup();
 	server.startup();
 	client.sendMessage(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testSendNullMessages() throws IOException, InterruptedException, ConnectionException {
+    public void testSendNullMessages() throws InterruptedException, ConnectionException {
 	client.startup();
 	server.startup();
 	client.sendMessages(null);
@@ -250,7 +241,7 @@ public abstract class ConnectionTestCommon {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void testSetNullMessageFactory() throws IOException, InterruptedException {
+    public void testSetNullMessageFactory() throws InterruptedException {
 	client.setMessageFactory(null);
     }
 
