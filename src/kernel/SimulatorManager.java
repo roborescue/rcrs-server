@@ -26,10 +26,10 @@ public interface SimulatorManager<T extends Entity, S extends WorldModel<? super
     void removeSimulatorManagerListener(SimulatorManagerListener l);
 
     /**
-       Wait until all simulators have acknowledged.
+       Wait until all simulators have connected.
        @throws InterruptedException If this thread is interrupted while waiting for simulators.
     */
-    void waitForAcknowledgements() throws InterruptedException;
+    void waitForSimulators() throws InterruptedException;
 
     /**
        Send a set of messages to all simulators.

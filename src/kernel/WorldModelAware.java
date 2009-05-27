@@ -1,6 +1,5 @@
 package kernel;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
 /**

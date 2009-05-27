@@ -5,13 +5,10 @@ import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.io.IOException;
 
 import kernel.AbstractViewerManager;
-import kernel.ViewerInfo;
 
 import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 
@@ -27,24 +24,13 @@ import rescuecore2.version0.messages.Commands;
    ViewerManager implementation for classic Robocup Rescue.
  */
 public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, IndexedWorldModel> {
-    private IndexedWorldModel worldModel;
-
-    private Set<ViewerData> toAcknowledge;
-    private Set<ViewerData> allViewers;
-
-    private final Object lock = new Object();
+    private Set<Viewer> toAcknowledge;
 
     /**
        Create a LegacyViewerManager.
     */
     public LegacyViewerManager() {
-        toAcknowledge = new HashSet<ViewerData>();
-        allViewers = new HashSet<ViewerData>();
-    }
-
-    @Override
-    public void setWorldModel(IndexedWorldModel world) {
-        worldModel = world;
+        toAcknowledge = new HashSet<Viewer>();
     }
 
     @Override
@@ -53,34 +39,11 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
     }
 
     @Override
-    public void waitForAcknowledgements() throws InterruptedException {
-        synchronized (lock) {
+    public void waitForViewers() throws InterruptedException {
+        synchronized (toAcknowledge) {
             while (!toAcknowledge.isEmpty()) {
-                lock.wait(1000);
+                toAcknowledge.wait(1000);
                 System.out.println("Waiting for " + toAcknowledge.size() + " viewers");
-            }
-        }
-    }
-
-    @Override
-    public void sendToAll(Collection<? extends Message> messages) {
-        Collection<ViewerData> data = new HashSet<ViewerData>();
-        synchronized (lock) {
-            data.addAll(allViewers);
-        }
-        for (ViewerData next : data) {
-            try {
-                if (!next.dead) {
-                    next.connection.sendMessages(messages);
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                next.dead = true;
-            }
-            catch (ConnectionException e) {
-                e.printStackTrace();
-                next.dead = true;
             }
         }
     }
@@ -106,13 +69,13 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
     }
 
     private boolean acknowledge(Connection c) {
-        synchronized (lock) {
-            for (ViewerData next : toAcknowledge) {
-                if (next.connection == c) {
+        synchronized (toAcknowledge) {
+            for (Viewer next : toAcknowledge) {
+                if (next.getConnection() == c) {
                     toAcknowledge.remove(next);
-                    allViewers.add(next);
-                    lock.notifyAll();
-                    fireViewerConnected(new ViewerInfo(next.connection.toString()));
+                    addViewer(next);
+                    toAcknowledge.notifyAll();
+                    fireViewerConnected(next);
                     return true;
                 }
             }
@@ -125,22 +88,12 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
         public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof VKConnect) {
                 System.out.println("Viewer connected");
-                ViewerData data = new ViewerData(connection);
-                synchronized (lock) {
+                Viewer data = new Viewer(connection);
+                synchronized (toAcknowledge) {
                     toAcknowledge.add(data);
                 }
                 // Send an OK
-                try {
-                    connection.sendMessage(new KVConnectOK(worldModel.getAllEntities()));
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                    data.dead = true;
-                }
-                catch (ConnectionException e) {
-                    e.printStackTrace();
-                    data.dead = true;
-                }
+                data.send(Collections.singleton(new KVConnectOK(getWorldModel().getAllEntities())));
             }
             if (msg instanceof VKAcknowledge) {
                 if (acknowledge(connection)) {
@@ -150,16 +103,6 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
                     System.out.println("Unexpected viewer acknowledge");
                 }
             }
-        }
-    }
-
-    private static class ViewerData {
-        Connection connection;
-        boolean dead;
-
-        ViewerData(Connection c) {
-            this.connection = c;
-            this.dead = false;
         }
     }
 }

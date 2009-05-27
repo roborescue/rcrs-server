@@ -26,10 +26,10 @@ public interface ViewerManager<T extends Entity, S extends WorldModel<? super T>
     void removeViewerManagerListener(ViewerManagerListener l);
 
     /**
-       Wait until all viewers have acknowledged.
+       Wait until all viewers have connected.
        @throws InterruptedException If this thread is interrupted while waiting for viewers.
     */
-    void waitForAcknowledgements() throws InterruptedException;
+    void waitForViewers() throws InterruptedException;
 
     /**
        Send a set of messages to all viewers.

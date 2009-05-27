@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.io.IOException;
 
 import kernel.AbstractAgentManager;
-import kernel.AgentInfo;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -227,12 +226,8 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueEntity, Index
             return false;
         }
         setController(agent.getEntity(), agent);
-        fireAgentConnected(new AgentInfo(agent.getConnection().toString() + ": " + agent.getEntity().toString()));
+        fireAgentConnected(agent);
         return true;
-    }
-
-    private Collection<RescueEntity> getInitialEntityList() {
-        return initialEntities;
     }
 
     private void maybeAddInitialEntity(RescueEntity e) {
@@ -340,7 +335,7 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueEntity, Index
                     }
                     else {
                         // Send an OK
-                        connection.sendMessage(new KAConnectOK(tempID, agent.getEntityID().getValue(), agent.getEntity(), getInitialEntityList()));
+                        connection.sendMessage(new KAConnectOK(tempID, agent.getEntityID().getValue(), agent.getEntity(), initialEntities));
                     }
                 }
                 catch (IOException e) {

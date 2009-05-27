@@ -7,13 +7,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.io.IOException;
 
 import kernel.AbstractSimulatorManager;
-import kernel.SimulatorInfo;
 
 import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.version0.entities.RescueEntity;
@@ -29,12 +26,9 @@ import rescuecore2.version0.messages.Commands;
    SimulatorManager implementation for classic Robocup Rescue.
  */
 public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntity, IndexedWorldModel> {
-    private IndexedWorldModel worldModel;
-
-    private Set<SimulatorData> toAcknowledge;
+    private Set<Simulator> toAcknowledge;
     private int nextID;
 
-    private Set<SimulatorData> allSims;
     /** Map from simulator ID to update list. */
     private Map<Integer, Collection<RescueEntity>> updates;
 
@@ -44,15 +38,9 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
        Create a LegacySimulatorManager.
     */
     public LegacySimulatorManager() {
-        allSims = new HashSet<SimulatorData>();
-        toAcknowledge = new HashSet<SimulatorData>();
+        toAcknowledge = new HashSet<Simulator>();
         updates = new HashMap<Integer, Collection<RescueEntity>>();
         nextID = 1;
-    }
-
-    @Override
-    public void setWorldModel(IndexedWorldModel world) {
-        worldModel = world;
     }
 
     @Override
@@ -61,7 +49,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
     }
 
     @Override
-    public void waitForAcknowledgements() throws InterruptedException {
+    public void waitForSimulators() throws InterruptedException {
         synchronized (lock) {
             while (!toAcknowledge.isEmpty()) {
                 lock.wait(1000);
@@ -75,36 +63,13 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
     }
 
     @Override
-    public void sendToAll(Collection<? extends Message> messages) {
-        Collection<SimulatorData> data = new HashSet<SimulatorData>();
-        synchronized (lock) {
-            data.addAll(allSims);
-        }
-        for (SimulatorData next : data) {
-            try {
-                if (!next.dead) {
-                    next.connection.sendMessages(messages);
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                next.dead = true;
-            }
-            catch (ConnectionException e) {
-                e.printStackTrace();
-                next.dead = true;
-            }
-        }
-    }
-
-    @Override
     public Collection<RescueEntity> getAllUpdates() throws InterruptedException {
         Collection<RescueEntity> result = new HashSet<RescueEntity>();
         synchronized (lock) {
             // Wait until all simulators have sent an update
-            while (updates.size() < allSims.size()) {
+            while (updates.size() < getAllSimulators().size()) {
                 lock.wait(1000);
-                System.out.println("Waiting for " + (allSims.size() - updates.size()) + " simulator updates");
+                System.out.println("Waiting for " + (getAllSimulators().size() - updates.size()) + " simulator updates");
             }
             // Pull the results together
             for (Collection<RescueEntity> next : updates.values()) {
@@ -133,12 +98,12 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
 
     private boolean acknowledge(int id, Connection c) {
         synchronized (lock) {
-            for (SimulatorData next : toAcknowledge) {
-                if (next.id == id && next.connection == c) {
+            for (Simulator next : toAcknowledge) {
+                if (next.getID() == id && next.getConnection() == c) {
                     toAcknowledge.remove(next);
-                    allSims.add(next);
+                    addSimulator(next);
                     lock.notifyAll();
-                    fireSimulatorConnected(new SimulatorInfo(next.connection.toString() + ": " + next.id));
+                    fireSimulatorConnected(next);
                     return true;
                 }
             }
@@ -165,20 +130,12 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
             if (msg instanceof SKConnect) {
                 int id = getNextID();
                 System.out.println("Simulator " + id + " connected");
-                SimulatorData data = new SimulatorData(id, connection);
+                Simulator sim = new Simulator(id, connection);
                 synchronized (lock) {
-                    toAcknowledge.add(data);
+                    toAcknowledge.add(sim);
                 }
                 // Send an OK
-                try {
-                    connection.sendMessage(new KSConnectOK(id, worldModel.getAllEntities()));
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-                catch (ConnectionException e) {
-                    e.printStackTrace();
-                }
+                sim.send(Collections.singleton(new KSConnectOK(id, getWorldModel().getAllEntities())));
             }
             if (msg instanceof SKAcknowledge) {
                 int id = ((SKAcknowledge)msg).getSimulatorID();
@@ -194,18 +151,6 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
                 SKUpdate update = (SKUpdate)msg;
                 updateReceived(update.getSimulatorID(), update.getUpdatedEntities());
             }
-        }
-    }
-
-    private static class SimulatorData {
-        int id;
-        Connection connection;
-        boolean dead;
-
-        SimulatorData(int id, Connection c) {
-            this.id = id;
-            this.connection = c;
-            this.dead = false;
         }
     }
 }

@@ -130,8 +130,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
 
     private void waitForSimulatorsAndAgents() throws KernelException, InterruptedException {
         agentManager.waitForAllAgents();
-        viewerManager.waitForAcknowledgements();
-        simulatorManager.waitForAcknowledgements();
+        viewerManager.waitForViewers();
+        simulatorManager.waitForSimulators();
     }
 
     private void setupSimulation() {

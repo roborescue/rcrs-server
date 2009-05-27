@@ -178,9 +178,10 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
 
     /**
        Fire an 'agent connected' event to all listeners.
-       @param info The AgentInfo to send.
+       @param agent The AgentInfo to send.
      */
-    protected void fireAgentConnected(AgentInfo info) {
+    protected void fireAgentConnected(Agent<T> agent) {
+        AgentInfo info = new AgentInfo(agent.toString());
         for (AgentManagerListener next : getListeners()) {
             next.agentConnected(info);
         }
@@ -289,6 +290,11 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
          */
         public Connection getConnection() {
             return connection;
+        }
+
+        @Override
+        public String toString() {
+            return connection.toString() + ": " + entity.toString();
         }
     }
 }
