@@ -23,7 +23,7 @@ import rescuecore2.messages.Message;
    @param <S> The subclass of WorldModel that this AgentManager understands.
    @param <T> The subclass of Entity that this AgentManager understands.
 */
-public abstract class AbstractAgentManager<T extends Entity, S extends WorldModel<T>> implements AgentManager<T, S> {
+public abstract class AbstractAgentManager<T extends Entity, S extends WorldModel<? super T>> implements AgentManager<T, S> {
     private Set<AgentManagerListener> listeners;
 
     private Map<T, Agent<T>> allAgents;
@@ -48,9 +48,16 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
     }
 
     @Override
-    public void setWorldModel(S world) {
+    public final void setWorldModel(S world) {
         worldModel = world;
+        processNewWorldModel(world);
     }
+
+    /**
+       Perform any processing required after the world model has been set.
+       @param world The new world model.
+     */
+    protected abstract void processNewWorldModel(S world);
 
     /**
        Get the world model.

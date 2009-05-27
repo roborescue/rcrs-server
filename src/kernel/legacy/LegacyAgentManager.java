@@ -81,8 +81,7 @@ public class LegacyAgentManager extends AbstractAgentManager<RescueEntity, Index
     }
 
     @Override
-    public void setWorldModel(IndexedWorldModel world) {
-        super.setWorldModel(world);
+    protected void processNewWorldModel(IndexedWorldModel world) {
         civ.clear();
         fb.clear();
         fs.clear();

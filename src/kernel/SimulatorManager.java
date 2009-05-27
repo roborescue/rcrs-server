@@ -12,7 +12,7 @@ import java.util.Collection;
    @param <S> The subclass of WorldModel that this manager understands.
    @param <T> The subclass of Entity that this manager understands.
  */
-public interface SimulatorManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S> {
+public interface SimulatorManager<T extends Entity, S extends WorldModel<? super T>> extends ConnectionManagerListener, WorldModelAware<S> {
     /**
        Add a SimulatorManagerListener.
        @param l The listener to add.

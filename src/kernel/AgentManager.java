@@ -13,7 +13,7 @@ import rescuecore2.worldmodel.WorldModel;
    @param <S> The subclass of WorldModel that this AgentManager understands.
    @param <T> The subclass of Entity that this AgentManager understands.
  */
-public interface AgentManager<T extends Entity, S extends WorldModel<T>> extends ConnectionManagerListener, WorldModelAware<T, S>  {
+public interface AgentManager<T extends Entity, S extends WorldModel<? super T>> extends ConnectionManagerListener, WorldModelAware<S>  {
     /**
        Add an AgentManagerListener.
        @param l The listener to add.

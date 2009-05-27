@@ -11,7 +11,7 @@ import rescuecore2.messages.Message;
    @param <S> The subclass of WorldModel that this model understands.
    @param <T> The subclass of Entity that this model understands.
  */
-public interface CommunicationModel<T extends Entity, S extends WorldModel<T>> extends WorldModelAware<T, S> {
+public interface CommunicationModel<T extends Entity, S extends WorldModel<? super T>> extends WorldModelAware<S> {
     /**
        Process a set of agent commands and work out what communications a particular agent can hear.
        @param agent The agent-controlled entity.
