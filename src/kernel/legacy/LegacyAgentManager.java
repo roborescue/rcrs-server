@@ -6,9 +6,6 @@ import java.util.Queue;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 import kernel.AbstractAgentManager;
 import kernel.Agent;
@@ -18,7 +15,6 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.Civilian;
@@ -36,10 +32,6 @@ import rescuecore2.version0.messages.AKConnect;
 import rescuecore2.version0.messages.AKAcknowledge;
 import rescuecore2.version0.messages.KAConnectError;
 import rescuecore2.version0.messages.KAConnectOK;
-import rescuecore2.version0.messages.KASense;
-import rescuecore2.version0.messages.AgentCommand;
-import rescuecore2.version0.messages.AKSay;
-import rescuecore2.version0.messages.AKTell;
 
 /**
    AgentManager implementation for classic Robocup Rescue.

@@ -1,20 +1,14 @@
 package kernel;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionException;
-import rescuecore2.messages.Message;
 
 /**
    Abstract base class for AgentManager implementations.
@@ -28,11 +22,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
     private Map<EntityID, Agent<T>> allAgentsByID;
     private Set<T> controlledEntities;
 
-    private Map<EntityID, List<Message>> agentCommands;
-
     private S worldModel;
-
-    private final Object lock = new Object();
 
     /**
        Construct an AbstractAgentManager.
@@ -42,7 +32,6 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         allAgents = new HashMap<T, Agent<T>>();
         allAgentsByID = new HashMap<EntityID, Agent<T>>();
         controlledEntities = new HashSet<T>();
-        agentCommands = new HashMap<EntityID, List<Message>>();
     }
 
     @Override
@@ -84,10 +73,10 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
     }
 
     @Override
-    public Set<Agent<T>> getAllAgents() throws InterruptedException {
-        synchronized (lock) {
+    public Collection<Agent<T>> getAllAgents() throws InterruptedException {
+        synchronized (allAgents) {
             while (allAgents.size() != controlledEntities.size()) {
-                lock.wait();
+                allAgents.wait();
                 int waiting = controlledEntities.size() - allAgents.size();
                 System.out.println("Waiting for " + waiting + " agents.");
             }
@@ -123,11 +112,11 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         if (!controlledEntities.contains(entity)) {
             throw new IllegalArgumentException(entity + " is not registered as being agent-controlled");
         }
-        synchronized (lock) {
+        synchronized (allAgents) {
             allAgents.put(entity, agent);
             allAgentsByID.put(entity.getID(), agent);
             fireAgentConnected(agent);
-            lock.notifyAll();
+            allAgents.notifyAll();
         }
     }
 
@@ -137,7 +126,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
        @return The Agent controlling the entity, or null if it is not controlled by an agent.
      */
     protected Agent<T> getController(T entity) {
-        synchronized (lock) {
+        synchronized (allAgents) {
             return allAgents.get(entity);
         }
     }
@@ -148,7 +137,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
        @return The Agent controlling the entity, or null if it is not controlled by an agent or the ID could not be found.
      */
     protected Agent<T> getController(EntityID id) {
-        synchronized (lock) {
+        synchronized (allAgents) {
             return allAgentsByID.get(id);
         }
     }
@@ -163,49 +152,6 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
             next.agentConnected(info);
         }
     }
-
-    /**
-       Register an agent command.
-       @param agent The agent that sent the command.
-       @param message The command message that arrived.
-     */
-    /*
-    protected void agentCommandReceived(Agent<T> agent, Message message) {
-        synchronized (agentCommands) {
-            List<Message> messages = agentCommands.get(agent.getEntityID());
-            if (messages == null) {
-                messages = new ArrayList<Message>();
-                agentCommands.put(agent.getEntityID(), messages);
-            }
-            messages.add(message);
-        }
-    }
-    */
-
-    /*
-    @Override
-    public Collection<Message> getAgentCommands(int timestep) {
-        Collection<Message> commands = new ArrayList<Message>();
-        synchronized (agentCommands) {
-            for (List<Message> list : agentCommands.values()) {
-                commands.addAll(list);
-            }
-            agentCommands.clear();
-        }
-        filterAgentCommands(commands, timestep);
-        return commands;
-    }
-    */
-
-    /**
-       Filter the agent commands if necessary. The default implementation does nothing.
-       @param commands The commands to filter.
-       @param timestep The current time.
-     */
-    /*
-    protected void filterAgentCommands(Collection<Message> commands, int timestep) {
-    }
-    */
 
     private Set<AgentManagerListener> getListeners() {
         Set<AgentManagerListener> result;

@@ -4,9 +4,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 import kernel.AbstractSimulatorManager;
 import kernel.Simulator;
@@ -14,24 +11,16 @@ import kernel.Simulator;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.Command;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.SKConnect;
 import rescuecore2.version0.messages.SKAcknowledge;
-import rescuecore2.version0.messages.SKUpdate;
 import rescuecore2.version0.messages.KSConnectOK;
-import rescuecore2.version0.messages.Update;
-import rescuecore2.version0.messages.AgentCommand;
-import rescuecore2.version0.messages.Commands;
-
 /**
    SimulatorManager implementation for classic Robocup Rescue.
  */
 public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntity, IndexedWorldModel> {
     private Set<LegacySimulator> toAcknowledge;
     private int nextID;
-
-    private final Object lock = new Object();
 
     /**
        Create a LegacySimulatorManager.
@@ -47,10 +36,10 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
     }
 
     @Override
-    public Collection<Simulator<RescueEntity, IndexedWorldModel>> getAllSimulators() throws InterruptedException {
-        synchronized (lock) {
+    public Collection<Simulator<RescueEntity>> getAllSimulators() throws InterruptedException {
+        synchronized (toAcknowledge) {
             while (!toAcknowledge.isEmpty()) {
-                lock.wait(1000);
+                toAcknowledge.wait(1000);
                 System.out.println("Waiting for " + toAcknowledge.size() + " simulators to acknowledge");
             }
         }
@@ -58,12 +47,12 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
     }
 
     private boolean acknowledge(int id, Connection c) {
-        synchronized (lock) {
+        synchronized (toAcknowledge) {
             for (LegacySimulator next : toAcknowledge) {
                 if (next.getID() == id && next.getConnection() == c) {
                     toAcknowledge.remove(next);
                     addSimulator(next);
-                    lock.notifyAll();
+                    toAcknowledge.notifyAll();
                     fireSimulatorConnected(next);
                     return true;
                 }
@@ -73,7 +62,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
     }
 
     private int getNextID() {
-        synchronized (lock) {
+        synchronized (toAcknowledge) {
             return nextID++;
         }
     }
@@ -85,7 +74,7 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
                 int id = getNextID();
                 System.out.println("Simulator " + id + " connected");
                 LegacySimulator sim = new LegacySimulator(connection, id);
-                synchronized (lock) {
+                synchronized (toAcknowledge) {
                     toAcknowledge.add(sim);
                 }
                 // Send an OK

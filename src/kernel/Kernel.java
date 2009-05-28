@@ -38,7 +38,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     private Set<KernelListener> listeners;
 
     private Collection<Agent<T>> agents;
-    private Collection<Simulator<T, S>> sims;
+    private Collection<Simulator<T>> sims;
+    private Collection<Viewer<T>> viewers;
 
     /**
        Construct a kernel.
@@ -68,7 +69,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         this.communicationModel = communicationModel;
         listeners = new HashSet<KernelListener>();
         agents = new HashSet<Agent<T>>();
-        sims = new HashSet<Simulator<T, S>>();
+        sims = new HashSet<Simulator<T>>();
+        viewers = new HashSet<Viewer<T>>();
     }
 
     /**
@@ -136,8 +138,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
 
     private void waitForSimulatorsAndAgents() throws KernelException, InterruptedException {
         agents = agentManager.getAllAgents();
-        viewerManager.waitForViewers();
         sims = simulatorManager.getAllSimulators();
+        viewers = viewerManager.getAllViewers();
     }
 
     private void setupSimulation() {
@@ -176,7 +178,10 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         for (Agent<T> next : agents) {
             next.shutdown();
         }
-        for (Simulator<T, S> next : sims) {
+        for (Simulator<T> next : sims) {
+            next.shutdown();
+        }
+        for (Viewer<T> next : viewers) {
             next.shutdown();
         }
     }
@@ -212,23 +217,27 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
        Send commands to all viewers and simulators and return which entities have been updated by the simulators.
     */
     private Collection<T> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
-        for (Simulator<T, S> next : sims) {
+        for (Simulator<T> next : sims) {
             next.sendAgentCommands(timestep, commands);
         }
-        viewerManager.sendAgentCommands(timestep, commands);
+        for (Viewer<T> next : viewers) {
+            next.sendAgentCommands(timestep, commands);
+        }
         // Wait until all simulators have sent updates
         Collection<T> result = new HashSet<T>();
-        for (Simulator<T, S> next : sims) {
+        for (Simulator<T> next : sims) {
             result.addAll(next.getUpdates(timestep));
         }
         return result;
     }
 
     private void sendUpdatesToViewersAndSimulators(int timestep, Collection<T> updates) throws InterruptedException {
-        for (Simulator<T, S> next : sims) {
+        for (Simulator<T> next : sims) {
             next.sendUpdate(timestep, updates);
         }
-        viewerManager.sendUpdate(timestep, updates);
+        for (Viewer<T> next : viewers) {
+            next.sendUpdate(timestep, updates);
+        }
     }
 
     private Set<KernelListener> getListeners() {

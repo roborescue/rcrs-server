@@ -1,8 +1,6 @@
 package kernel;
 
 import rescuecore2.connection.ConnectionManagerListener;
-import rescuecore2.messages.Message;
-import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
@@ -27,30 +25,11 @@ public interface ViewerManager<T extends Entity, S extends WorldModel<? super T>
     void removeViewerManagerListener(ViewerManagerListener l);
 
     /**
-       Wait until all viewers have connected.
+       Get all Viewers. This method may block if it needs to wait for viewers to connect.
+       @return The set of all viewers.
        @throws InterruptedException If this thread is interrupted while waiting for viewers.
     */
-    void waitForViewers() throws InterruptedException;
-
-    /**
-       Send a set of messages to all viewers.
-       @param m The messages to send.
-     */
-    void sendToAll(Collection<? extends Message> m);
-
-    /**
-       Send an update message to all viewers.
-       @param time The simulation time.
-       @param updates The updated entities.
-    */
-    void sendUpdate(int time, Collection<T> updates);
-
-    /**
-       Send a set of agent commands to all viewers.
-       @param time The current time.
-       @param commands The agent commands to send.
-     */
-    void sendAgentCommands(int time, Collection<? extends Command> commands);
+    Collection<Viewer<T>> getAllViewers() throws InterruptedException;
 
     /**
        Shut this manager down.

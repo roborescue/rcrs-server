@@ -14,9 +14,18 @@ import rescuecore2.version0.messages.AgentCommand;
 import rescuecore2.version0.messages.AKSay;
 import rescuecore2.version0.messages.AKTell;
 
+/**
+   Legacy agent implementation.
+ */
 public class LegacyAgent extends AbstractAgent<RescueEntity> {
     private int freezeTime;
 
+    /**
+       Construct a legacy agent.
+       @param e The entity controlled by the agent.
+       @param c The connection to the agent.
+       @param freezeTime The number of timesteps before which movement commands will be ignored. Say and tell commands will work at all times.
+     */
     public LegacyAgent(RescueEntity e, Connection c, int freezeTime) {
         super(e, c);
         this.freezeTime = freezeTime;
@@ -31,19 +40,16 @@ public class LegacyAgent extends AbstractAgent<RescueEntity> {
     @Override
     public Collection<Command> getAgentCommands(int timestep) {
         Collection<Command> result = super.getAgentCommands(timestep);
-        System.out.println("Filtering agent commands at time " + timestep + ": " + result);
         for (Iterator<Command> it = result.iterator(); it.hasNext();) {
             Command next = it.next();
             // If the message is not a version0 AgentCommand then remove it
             if (!(next instanceof AgentCommand)) {
                 it.remove();
-                System.out.println("Removing strange command: " + next);
             }
             else {
                 // Only allow say and tell commands if it's too early
                 if (timestep < freezeTime && !(next instanceof AKSay || next instanceof AKTell)) {
                     it.remove();
-                    System.out.println("Removing early command: " + next);
                 }
             }
         }

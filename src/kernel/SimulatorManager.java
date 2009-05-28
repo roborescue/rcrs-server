@@ -1,8 +1,6 @@
 package kernel;
 
 import rescuecore2.connection.ConnectionManagerListener;
-import rescuecore2.messages.Message;
-import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
@@ -28,9 +26,10 @@ public interface SimulatorManager<T extends Entity, S extends WorldModel<? super
 
     /**
        Get all Simulators. This method may block if it needs to wait for simulators to connect.
+       @return The set of all simulators.
        @throws InterruptedException If this thread is interrupted while waiting for simulators.
     */
-    Collection<Simulator<T, S>> getAllSimulators() throws InterruptedException;
+    Collection<Simulator<T>> getAllSimulators() throws InterruptedException;
 
     /**
        Shut this manager down.

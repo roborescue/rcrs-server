@@ -7,9 +7,6 @@ import java.util.Collections;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.messages.Message;
-import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionException;
 
 /**
    Abstract base class for SimulatorManager implementations.
@@ -21,14 +18,14 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
 
     private S worldModel;
 
-    private Set<Simulator<T, S>> allSims;
+    private Set<Simulator<T>> allSims;
 
     /**
        Construct an AbstractSimulatorManager.
      */
     protected AbstractSimulatorManager() {
         listeners = new HashSet<SimulatorManagerListener>();
-        allSims = new HashSet<Simulator<T, S>>();
+        allSims = new HashSet<Simulator<T>>();
     }
 
     @Override
@@ -46,7 +43,7 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
     }
 
     @Override
-    public Collection<Simulator<T, S>> getAllSimulators() throws InterruptedException {
+    public Collection<Simulator<T>> getAllSimulators() throws InterruptedException {
         synchronized (allSims) {
             return Collections.unmodifiableCollection(allSims);
         }
@@ -65,7 +62,7 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
        Register a new simulator.
        @param s The new simulator.
      */
-    protected void addSimulator(Simulator<T, S> s) {
+    protected void addSimulator(Simulator<T> s) {
         synchronized (allSims) {
             allSims.add(s);
         }
@@ -83,7 +80,7 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
        Fire a 'simulator connected' event to all listeners.
        @param sim The Simulator that has connected.
      */
-    protected void fireSimulatorConnected(Simulator sim) {
+    protected void fireSimulatorConnected(Simulator<T> sim) {
         SimulatorInfo info = new SimulatorInfo(sim.toString());
         for (SimulatorManagerListener next : getListeners()) {
             next.simulatorConnected(info);

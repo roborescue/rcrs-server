@@ -6,7 +6,6 @@ import rescuecore2.connection.Connection;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.WorldModel;
 
 /**
    This class is the kernel interface to an agent.

@@ -1,12 +1,8 @@
 package kernel;
 
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.Command;
 import rescuecore2.messages.Message;
 import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionListener;
 import rescuecore2.connection.ConnectionException;
 
 import java.util.Collection;
@@ -16,11 +12,11 @@ import java.util.HashSet;
 
 /**
    Abstract base class for Simulator implementations.
+   @param <T> The subclass of Entity that this simulator understands.
  */
-public abstract class AbstractSimulator<T extends Entity, S extends WorldModel<? super T>> implements Simulator<T, S> {
+public abstract class AbstractSimulator<T extends Entity> implements Simulator<T> {
     private Connection connection;
     private Map<Integer, Collection<T>> updates;
-    private S worldModel;
 
     /**
        Construct a new abstract simulator.
@@ -29,15 +25,6 @@ public abstract class AbstractSimulator<T extends Entity, S extends WorldModel<?
     protected AbstractSimulator(Connection c) {
         this.connection = c;
         updates = new HashMap<Integer, Collection<T>>();
-    }
-
-    @Override
-    public void setWorldModel(S model) {
-        worldModel = model;
-    }
-
-    protected S getWorldModel() {
-        return worldModel;
     }
 
     @Override
@@ -82,6 +69,11 @@ public abstract class AbstractSimulator<T extends Entity, S extends WorldModel<?
         return connection.toString();
     }
 
+    /**
+       Register an update from the simulator.
+       @param time The timestep of the update.
+       @param u The set of updated entities.
+     */
     protected void updateReceived(int time, Collection<? extends T> u) {
         synchronized (updates) {
             Collection<T> c = updates.get(time);

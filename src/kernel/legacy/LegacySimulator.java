@@ -8,7 +8,6 @@ import kernel.AbstractSimulator;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.version0.entities.RescueEntity;
@@ -17,9 +16,17 @@ import rescuecore2.version0.messages.Commands;
 import rescuecore2.version0.messages.SKUpdate;
 import rescuecore2.version0.messages.AgentCommand;
 
-public class LegacySimulator extends AbstractSimulator<RescueEntity, IndexedWorldModel> {
+/**
+   Version0 simulator implementation.
+ */
+public class LegacySimulator extends AbstractSimulator<RescueEntity> {
     private int id;
 
+    /**
+       Construct a legacy simulator.
+       @param c The connection to the simulator.
+       @param id The ID of the simulator.
+     */
     public LegacySimulator(Connection c, int id) {
         super(c);
         c.addConnectionListener(new SimulatorConnectionListener());
@@ -33,7 +40,6 @@ public class LegacySimulator extends AbstractSimulator<RescueEntity, IndexedWorl
 
     @Override
     public void sendAgentCommands(int time, Collection<? extends Command> commands) {
-        System.out.println("Sending commands at time " + time + ": " + commands);
         Collection<AgentCommand> cmd = new ArrayList<AgentCommand>();
         for (Command next : commands) {
             if (next instanceof AgentCommand) {
@@ -43,6 +49,15 @@ public class LegacySimulator extends AbstractSimulator<RescueEntity, IndexedWorl
         send(Collections.singleton(new Commands(time, cmd)));
     }
 
+    @Override
+    public String toString() {
+        return "Simulator " + id + ": " + super.toString();
+    }
+
+    /**
+       Get the ID of this simulator.
+       @return The id of this simulator.
+     */
     public int getID() {
         return id;
     }

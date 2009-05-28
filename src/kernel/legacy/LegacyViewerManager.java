@@ -4,34 +4,30 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 
 import kernel.AbstractViewerManager;
+import kernel.Viewer;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.Command;
 
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.VKConnect;
 import rescuecore2.version0.messages.VKAcknowledge;
 import rescuecore2.version0.messages.KVConnectOK;
-import rescuecore2.version0.messages.Update;
-import rescuecore2.version0.messages.AgentCommand;
-import rescuecore2.version0.messages.Commands;
 
 /**
    ViewerManager implementation for classic Robocup Rescue.
  */
 public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, IndexedWorldModel> {
-    private Set<Viewer> toAcknowledge;
+    private Set<LegacyViewer> toAcknowledge;
 
     /**
        Create a LegacyViewerManager.
     */
     public LegacyViewerManager() {
-        toAcknowledge = new HashSet<Viewer>();
+        toAcknowledge = new HashSet<LegacyViewer>();
     }
 
     @Override
@@ -40,29 +36,14 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
     }
 
     @Override
-    public void waitForViewers() throws InterruptedException {
+    public Collection<Viewer<RescueEntity>> getAllViewers() throws InterruptedException {
         synchronized (toAcknowledge) {
             while (!toAcknowledge.isEmpty()) {
                 toAcknowledge.wait(1000);
-                System.out.println("Waiting for " + toAcknowledge.size() + " viewers");
+                System.out.println("Waiting for " + toAcknowledge.size() + " viewers to acknowledge");
             }
         }
-    }
-
-    @Override
-    public void sendUpdate(int time, Collection<RescueEntity> updates) {
-        sendToAll(Collections.singleton(new Update(time, updates)));
-    }
-
-    @Override
-    public void sendAgentCommands(int time, Collection<? extends Command> commands) {
-        Collection<AgentCommand> agentCommands = new ArrayList<AgentCommand>();
-        for (Command next : commands) {
-            if (next instanceof AgentCommand) {
-                agentCommands.add((AgentCommand)next);
-            }
-        }
-        sendToAll(Collections.singleton(new Commands(time, agentCommands)));
+        return super.getAllViewers();
     }
 
     @Override
@@ -71,7 +52,7 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
 
     private boolean acknowledge(Connection c) {
         synchronized (toAcknowledge) {
-            for (Viewer next : toAcknowledge) {
+            for (LegacyViewer next : toAcknowledge) {
                 if (next.getConnection() == c) {
                     toAcknowledge.remove(next);
                     addViewer(next);
@@ -89,12 +70,12 @@ public class LegacyViewerManager extends AbstractViewerManager<RescueEntity, Ind
         public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof VKConnect) {
                 System.out.println("Viewer connected");
-                Viewer data = new Viewer(connection);
+                LegacyViewer viewer = new LegacyViewer(connection);
                 synchronized (toAcknowledge) {
-                    toAcknowledge.add(data);
+                    toAcknowledge.add(viewer);
                 }
                 // Send an OK
-                data.send(Collections.singleton(new KVConnectOK(getWorldModel().getAllEntities())));
+                viewer.send(Collections.singleton(new KVConnectOK(getWorldModel().getAllEntities())));
             }
             if (msg instanceof VKAcknowledge) {
                 if (acknowledge(connection)) {

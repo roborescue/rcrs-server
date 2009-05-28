@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 /**
    Abstract base class for Agent implementations.
+   @param <T> The subclass of Entity that this agent understands.
  */
 public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
     private T entity;
@@ -74,6 +75,10 @@ public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
         return connection.toString() + ": " + entity.toString();
     }
 
+    /**
+       Register an agent command received.
+       @param c The command that was received.
+     */
     protected void commandReceived(Command c) {
         synchronized (commands) {
             commands.add(c);
@@ -82,7 +87,7 @@ public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
 
     private class AgentConnectionListener implements ConnectionListener {
         @Override
-        public void messageReceived(Connection connection, Message msg) {
+        public void messageReceived(Connection c, Message msg) {
             if (msg instanceof Command) {
                 EntityID id = ((Command)msg).getAgentID();
                 if (id.equals(getControlledEntity().getID())) {

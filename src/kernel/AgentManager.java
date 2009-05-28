@@ -1,10 +1,8 @@
 package kernel;
 
-import java.util.Set;
 import java.util.Collection;
 
 import rescuecore2.connection.ConnectionManagerListener;
-import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
@@ -28,15 +26,10 @@ public interface AgentManager<T extends Entity, S extends WorldModel<? super T>>
 
     /**
        Get all Agents. This method may block if it needs to wait for agents to connect.
+       @return The set of all agents.
        @throws InterruptedException If this thread is interrupted while waiting for agents.
     */
-    Set<Agent<T>> getAllAgents() throws InterruptedException;
-
-    /**
-       Get all entities that are controlled by agents.
-       @return A set of entities that are controlled by agents.
-     */
-    //    Set<T> getControlledEntities();
+    Collection<Agent<T>> getAllAgents() throws InterruptedException;
 
     /**
        Shut this manager down.

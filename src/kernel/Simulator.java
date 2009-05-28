@@ -4,18 +4,16 @@ import rescuecore2.connection.Connection;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.WorldModel;
 
 import java.util.Collection;
 
 /**
    This class is the kernel interface to a simulator.
-   @param <S> The subclass of WorldModel that this simulator understands.
    @param <T> The subclass of Entity that this simulator understands.
  */
-public interface Simulator<T extends Entity, S extends WorldModel<? super T>> extends WorldModelAware<S> {
+public interface Simulator<T extends Entity> {
     /**
-       Send a set of messages to all simulators.
+       Send a set of messages to this simulator.
        @param m The messages to send.
      */
     void send(Collection<? extends Message> m);
