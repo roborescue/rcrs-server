@@ -2,12 +2,13 @@ package rescuecore2.version0.messages;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.Command;
 import rescuecore2.messages.EntityIDComponent;
 
 /**
    Abstract base class for all agent commands.
  */
-public abstract class AgentCommand extends AbstractMessage {
+public abstract class AgentCommand extends AbstractMessage implements Command {
     private EntityIDComponent agentID;
 
     /**
@@ -37,10 +38,7 @@ public abstract class AgentCommand extends AbstractMessage {
         addMessageComponent(agentID);
     }
 
-    /**
-       Get the ID of the agent issuing the command.
-       @return The agent ID.
-     */
+    @Override
     public EntityID getAgentID() {
         return agentID.getValue();
     }

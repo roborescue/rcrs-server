@@ -34,7 +34,7 @@ public class Update extends AbstractMessage {
        @param time The timestep of the simulation.
        @param updates All updated entities.
      */
-    public Update(int time, Collection<RescueEntity> updates) {
+    public Update(int time, Collection<? extends RescueEntity> updates) {
         this();
         this.time.setValue(time);
         this.updates.setEntities(updates);

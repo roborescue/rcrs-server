@@ -29,7 +29,7 @@ public class Commands extends AbstractMessage {
        @param time The timestep of the simulation.
        @param commands All AgentCommands.
      */
-    public Commands(int time, Collection<AgentCommand> commands) {
+    public Commands(int time, Collection<? extends AgentCommand> commands) {
         this();
         this.time.setValue(time);
         this.commands.setCommands(commands);

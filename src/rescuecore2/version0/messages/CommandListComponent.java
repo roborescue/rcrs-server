@@ -37,7 +37,7 @@ public class CommandListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param commands The agent commands in this message component.
     */
-    public CommandListComponent(String name, Collection<AgentCommand> commands) {
+    public CommandListComponent(String name, Collection<? extends AgentCommand> commands) {
         super(name);
         this.commands = new ArrayList<AgentCommand>(commands);
     }
@@ -54,7 +54,7 @@ public class CommandListComponent extends AbstractMessageComponent {
        Set the commands that make up this message component.
        @param commands The commands in this component.
     */
-    public void setCommands(Collection<AgentCommand> commands) {
+    public void setCommands(Collection<? extends AgentCommand> commands) {
         this.commands = new ArrayList<AgentCommand>(commands);
     }
 

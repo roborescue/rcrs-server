@@ -57,4 +57,12 @@ public class SKUpdate extends AbstractMessage {
     public List<RescueEntity> getUpdatedEntities() {
         return update.getEntities();
     }
+
+    /**
+       Get the timestep this update is for.
+       @return The timestep.
+     */
+    public int getTime() {
+        return time.getValue();
+    }
 }
