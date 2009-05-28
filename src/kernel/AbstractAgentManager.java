@@ -79,33 +79,8 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         }
     }
 
-    /*
-    @Override
-    public final void sendPerceptionUpdate(int time, T entity, Collection<T> visible) {
-        Agent<T> controller = getController(entity);
-        if (controller == null) {
-            throw new IllegalArgumentException("Unrecognised object: " + entity);
-        }
-        controller.send(getPerceptionMessages(time, controller, visible));
-    }
-
-    @Override
-    public final void sendMessages(T entity, Collection<? extends Message> messages) {
-        Agent<T> controller = getController(entity);
-        if (controller == null) {
-            throw new IllegalArgumentException("Unrecognised object: " + entity);
-        }
-        controller.send(messages);
-    }
-    */
-
     @Override
     public void shutdown() {
-    }
-
-    @Override
-    public Set<T> getControlledEntities() {
-        return Collections.unmodifiableSet(controlledEntities);
     }
 
     @Override

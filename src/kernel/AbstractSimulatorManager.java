@@ -21,14 +21,14 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
 
     private S worldModel;
 
-    private Set<Simulator> allSims;
+    private Set<Simulator<T, S>> allSims;
 
     /**
        Construct an AbstractSimulatorManager.
      */
     protected AbstractSimulatorManager() {
         listeners = new HashSet<SimulatorManagerListener>();
-        allSims = new HashSet<Simulator>();
+        allSims = new HashSet<Simulator<T, S>>();
     }
 
     @Override
@@ -45,21 +45,8 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
         }
     }
 
-    /**
-       Register a new simulator.
-       @param s The new simulator.
-     */
-    protected void addSimulator(Simulator s) {
-        synchronized (allSims) {
-            allSims.add(s);
-        }
-    }
-
-    /**
-       Get all connected simulators.
-       @return All simulators.
-     */
-    protected Collection<Simulator> getAllSimulators() {
+    @Override
+    public Collection<Simulator<T, S>> getAllSimulators() throws InterruptedException {
         synchronized (allSims) {
             return Collections.unmodifiableCollection(allSims);
         }
@@ -70,23 +57,26 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
         worldModel = world;
     }
 
+    @Override
+    public void shutdown() {
+    }
+
+    /**
+       Register a new simulator.
+       @param s The new simulator.
+     */
+    protected void addSimulator(Simulator<T, S> s) {
+        synchronized (allSims) {
+            allSims.add(s);
+        }
+    }
+
     /**
        Get the world model.
        @return The world model.
      */
     protected S getWorldModel() {
         return worldModel;
-    }
-
-    @Override
-    public void sendToAll(Collection<? extends Message> messages) {
-        Collection<Simulator> data = new HashSet<Simulator>();
-        synchronized (allSims) {
-            data.addAll(allSims);
-        }
-        for (Simulator next : data) {
-            next.send(messages);
-        }
     }
 
     /**
@@ -106,60 +96,5 @@ public abstract class AbstractSimulatorManager<T extends Entity, S extends World
             result = new HashSet<SimulatorManagerListener>(listeners);
         }
         return result;
-    }
-
-    /**
-       Internal representation of a simulator.
-     */
-    protected static class Simulator {
-        private int id;
-        private Connection connection;
-
-        /**
-           Construct a Simulator.
-           @param id The simulator ID.
-           @param c The connection for talking to the simulator.
-         */
-        public Simulator(int id, Connection c) {
-            this.id = id;
-            this.connection = c;
-        }
-
-        /**
-           Get the ID of this simulator.
-           @return The simulator ID.
-         */
-        public int getID() {
-            return id;
-        }
-
-        /**
-           Send some messages to the simulator.
-           @param m The messages to send.
-         */
-        public void send(Collection<? extends Message> m) {
-            if (!connection.isAlive()) {
-                return;
-            }
-            try {
-                connection.sendMessages(m);
-            }
-            catch (ConnectionException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-           Get the connection for talking to this simulator.
-           @return The connection.
-         */
-        public Connection getConnection() {
-            return connection;
-        }
-
-        @Override
-        public String toString() {
-            return connection.toString() + ": " + id;
-        }
     }
 }

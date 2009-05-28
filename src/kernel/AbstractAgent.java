@@ -1,7 +1,12 @@
 package kernel;
 
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
+import rescuecore2.messages.Message;
+import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionListener;
+import rescuecore2.connection.ConnectionException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,13 +16,79 @@ import java.util.HashSet;
  */
 public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
     private T entity;
+    private Connection connection;
+    private Collection<Command> commands;
 
-    protected AbstractAgent(T entity) {
+    /**
+       Construct a new abstract agent.
+       @param entity The entity controlled by this agent.
+       @param c The connection this agent is using.
+     */
+    protected AbstractAgent(T entity, Connection c) {
         this.entity = entity;
+        this.connection = c;
+        commands = new HashSet<Command>();
+        c.addConnectionListener(new AgentConnectionListener());
     }
 
     @Override
     public T getControlledEntity() {
         return entity;
+    }
+
+    @Override
+    public Connection getConnection() {
+        return connection;
+    }
+
+    @Override
+    public void shutdown() {
+        connection.shutdown();
+    }
+
+    @Override
+    public void sendMessages(Collection<? extends Message> messages) {
+        if (!connection.isAlive()) {
+            return;
+        }
+        try {
+            connection.sendMessages(messages);
+        }
+        catch (ConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Collection<Command> getAgentCommands(int timestep) {
+        Collection<Command> result;
+        synchronized (commands) {
+            result = new HashSet<Command>(commands);
+            commands.clear();
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return connection.toString() + ": " + entity.toString();
+    }
+
+    protected void commandReceived(Command c) {
+        synchronized (commands) {
+            commands.add(c);
+        }
+    }
+
+    private class AgentConnectionListener implements ConnectionListener {
+        @Override
+        public void messageReceived(Connection connection, Message msg) {
+            if (msg instanceof Command) {
+                EntityID id = ((Command)msg).getAgentID();
+                if (id.equals(getControlledEntity().getID())) {
+                    commandReceived((Command)msg);
+                }
+            }
+        }
     }
 }

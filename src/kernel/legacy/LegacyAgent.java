@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import kernel.RemoteAgent;
+import kernel.AbstractAgent;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.messages.Command;
@@ -14,7 +14,7 @@ import rescuecore2.version0.messages.AgentCommand;
 import rescuecore2.version0.messages.AKSay;
 import rescuecore2.version0.messages.AKTell;
 
-public class LegacyAgent extends RemoteAgent<RescueEntity> {
+public class LegacyAgent extends AbstractAgent<RescueEntity> {
     private int freezeTime;
 
     public LegacyAgent(RescueEntity e, Connection c, int freezeTime) {
@@ -31,16 +31,19 @@ public class LegacyAgent extends RemoteAgent<RescueEntity> {
     @Override
     public Collection<Command> getAgentCommands(int timestep) {
         Collection<Command> result = super.getAgentCommands(timestep);
+        System.out.println("Filtering agent commands at time " + timestep + ": " + result);
         for (Iterator<Command> it = result.iterator(); it.hasNext();) {
             Command next = it.next();
             // If the message is not a version0 AgentCommand then remove it
             if (!(next instanceof AgentCommand)) {
                 it.remove();
+                System.out.println("Removing strange command: " + next);
             }
             else {
                 // Only allow say and tell commands if it's too early
                 if (timestep < freezeTime && !(next instanceof AKSay || next instanceof AKTell)) {
                     it.remove();
+                    System.out.println("Removing early command: " + next);
                 }
             }
         }

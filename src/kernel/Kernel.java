@@ -37,7 +37,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
 
     private Set<KernelListener> listeners;
 
-    private Set<Agent<T>> agents;
+    private Collection<Agent<T>> agents;
+    private Collection<Simulator<T, S>> sims;
 
     /**
        Construct a kernel.
@@ -67,6 +68,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         this.communicationModel = communicationModel;
         listeners = new HashSet<KernelListener>();
         agents = new HashSet<Agent<T>>();
+        sims = new HashSet<Simulator<T, S>>();
     }
 
     /**
@@ -135,7 +137,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     private void waitForSimulatorsAndAgents() throws KernelException, InterruptedException {
         agents = agentManager.getAllAgents();
         viewerManager.waitForViewers();
-        simulatorManager.waitForSimulators();
+        sims = simulatorManager.getAllSimulators();
     }
 
     private void setupSimulation() {
@@ -174,6 +176,9 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         for (Agent<T> next : agents) {
             next.shutdown();
         }
+        for (Simulator<T, S> next : sims) {
+            next.shutdown();
+        }
     }
 
     private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException {
@@ -207,14 +212,22 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
        Send commands to all viewers and simulators and return which entities have been updated by the simulators.
     */
     private Collection<T> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
-        simulatorManager.sendAgentCommands(timestep, commands);
+        for (Simulator<T, S> next : sims) {
+            next.sendAgentCommands(timestep, commands);
+        }
         viewerManager.sendAgentCommands(timestep, commands);
         // Wait until all simulators have sent updates
-        return simulatorManager.getAllUpdates();
+        Collection<T> result = new HashSet<T>();
+        for (Simulator<T, S> next : sims) {
+            result.addAll(next.getUpdates(timestep));
+        }
+        return result;
     }
 
     private void sendUpdatesToViewersAndSimulators(int timestep, Collection<T> updates) throws InterruptedException {
-        simulatorManager.sendUpdate(timestep, updates);
+        for (Simulator<T, S> next : sims) {
+            next.sendUpdate(timestep, updates);
+        }
         viewerManager.sendUpdate(timestep, updates);
     }
 

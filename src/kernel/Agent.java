@@ -1,9 +1,8 @@
 package kernel;
 
-import java.util.Set;
 import java.util.Collection;
 
-import rescuecore2.connection.ConnectionManagerListener;
+import rescuecore2.connection.Connection;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
@@ -44,4 +43,10 @@ public interface Agent<T extends Entity> {
        @param messages The messages to send.
      */
     void sendMessages(Collection<? extends Message> messages);
+
+    /**
+       Get this agent's connection.
+       @return The connection to the agent.
+     */
+    Connection getConnection();
 }

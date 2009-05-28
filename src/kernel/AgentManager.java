@@ -9,7 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
 /**
-   This class manages connections from agents, including assigning which Robocup Rescue object each agent controls, and passing messages between the kernel and the agents.
+   This class manages connections from agents. When a new connection is established by the ConnectionManager this class will be informed. If the connection is from an agent then it should be assigned an entity to control and a new Agent object should be created. This should eventually be returned from a call to {@link #getAllAgents}.
    @param <S> The subclass of WorldModel that this AgentManager understands.
    @param <T> The subclass of Entity that this AgentManager understands.
  */
@@ -27,7 +27,7 @@ public interface AgentManager<T extends Entity, S extends WorldModel<? super T>>
     void removeAgentManagerListener(AgentManagerListener l);
 
     /**
-       Wait until all agents have connected.
+       Get all Agents. This method may block if it needs to wait for agents to connect.
        @throws InterruptedException If this thread is interrupted while waiting for agents.
     */
     Set<Agent<T>> getAllAgents() throws InterruptedException;
@@ -36,32 +36,10 @@ public interface AgentManager<T extends Entity, S extends WorldModel<? super T>>
        Get all entities that are controlled by agents.
        @return A set of entities that are controlled by agents.
      */
-    Set<T> getControlledEntities();
-
-    /**
-       Get all agent commands since the last call to this method.
-       @param timestep The current timestep.
-       @return A collection of messages representing all input from each agent since the last time this method was called.
-     */
-    //    Collection<Message> getAgentCommands(int timestep);
+    //    Set<T> getControlledEntities();
 
     /**
        Shut this manager down.
      */
     void shutdown();
-
-    /**
-       Notify an agent of a perception update.
-       @param time The current timestep.
-       @param agentEntity The entity that is controlled by an agent.
-       @param visible The set of visible entitites.
-     */
-    //    void sendPerceptionUpdate(int time, T agentEntity, Collection<T> visible);
-
-    /**
-       Send a set of messages to a particular agent-controlled entity.
-       @param agentEntity The entity that should receive the messages.
-       @param messages The messages to send.
-     */
-    //    void sendMessages(T agentEntity, Collection<? extends Message> messages);
 }

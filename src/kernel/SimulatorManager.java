@@ -27,37 +27,10 @@ public interface SimulatorManager<T extends Entity, S extends WorldModel<? super
     void removeSimulatorManagerListener(SimulatorManagerListener l);
 
     /**
-       Wait until all simulators have connected.
+       Get all Simulators. This method may block if it needs to wait for simulators to connect.
        @throws InterruptedException If this thread is interrupted while waiting for simulators.
     */
-    void waitForSimulators() throws InterruptedException;
-
-    /**
-       Send a set of messages to all simulators.
-       @param m The messages to send.
-     */
-    void sendToAll(Collection<? extends Message> m);
-
-    /**
-       Get updates from all simulators. This method should block until all updates are available.
-       @return A collection of entities representing the updates from simulators.
-       @throws InterruptedException If this thread is interrupted while waiting for updates.
-    */
-    Collection<T> getAllUpdates() throws InterruptedException;
-
-    /**
-       Send an update message to all simulators.
-       @param time The simulation time.
-       @param updates The updated entities.
-    */
-    void sendUpdate(int time, Collection<T> updates);
-
-    /**
-       Send a set of agent commands to all simulators.
-       @param time The current time.
-       @param commands The agent commands to send.
-     */
-    void sendAgentCommands(int time, Collection<? extends Command> commands);
+    Collection<Simulator<T, S>> getAllSimulators() throws InterruptedException;
 
     /**
        Shut this manager down.
