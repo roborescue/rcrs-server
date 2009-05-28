@@ -45,7 +45,7 @@ public class EntityListComponent<T extends EntityType, E extends Entity> extends
        @param factory A factory for reading entities from an input stream.
        @param entities The entities in this message component.
     */
-    public EntityListComponent(String name, EntityFactory<T, E> factory, Collection<E> entities) {
+    public EntityListComponent(String name, EntityFactory<T, E> factory, Collection<? extends E> entities) {
         this(name, factory);
         this.entities = new ArrayList<E>(entities);
     }
@@ -62,7 +62,7 @@ public class EntityListComponent<T extends EntityType, E extends Entity> extends
        Set the entities that make up this message component.
        @param entities The entities in this component.
     */
-    public void setEntities(Collection<E> entities) {
+    public void setEntities(Collection<? extends E> entities) {
         this.entities = new ArrayList<E>(entities);
     }
 

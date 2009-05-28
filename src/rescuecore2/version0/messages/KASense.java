@@ -38,7 +38,7 @@ public class KASense extends AbstractMessage {
        @param time The timestep of the simulation.
        @param updates All Entities that the agent can perceive.
      */
-    public KASense(int agentID, int time, Collection<RescueEntity> updates) {
+    public KASense(int agentID, int time, Collection<? extends RescueEntity> updates) {
         this();
         this.agentID.setValue(agentID);
         this.time.setValue(time);
