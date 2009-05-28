@@ -61,8 +61,6 @@ public abstract class AbstractMessage implements Message {
         result.append(") : ");
         for (Iterator<MessageComponent> it = components.iterator(); it.hasNext();) {
             MessageComponent next = it.next();
-            result.append(next.getName());
-            result.append(": ");
             result.append(next.toString());
             if (it.hasNext()) {
                 result.append(", ");
