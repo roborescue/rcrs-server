@@ -2,6 +2,7 @@ package kernel;
 
 import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 
@@ -49,7 +50,7 @@ public interface ViewerManager<T extends Entity, S extends WorldModel<? super T>
        @param time The current time.
        @param commands The agent commands to send.
      */
-    void sendAgentCommands(int time, Collection<? extends Message> commands);
+    void sendAgentCommands(int time, Collection<? extends Command> commands);
 
     /**
        Shut this manager down.

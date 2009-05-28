@@ -13,10 +13,10 @@ import rescuecore2.worldmodel.WorldModel;
 public interface Perception<T extends Entity, S extends WorldModel<? super T>> extends WorldModelAware<S> {
     /**
        Determine what Entities are visible to a particular agent. The returned Entities should be copies of Entities in the ground-truth WorldModel. Only visible properties should have defined values.
-       @param agent The Entity that is perceiving the world.
+       @param agent The agent that is perceiving the world.
        @return A collection of entities that the agent can perceive.
      */
-    Collection<T> getVisibleEntities(T agent);
+    Collection<T> getVisibleEntities(Agent<? extends T> agent);
 
     /**
        Notify this perception object of the current time.

@@ -13,6 +13,7 @@ import kernel.AbstractSimulatorManager;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.Command;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.SKConnect;
 import rescuecore2.version0.messages.SKAcknowledge;
@@ -86,9 +87,9 @@ public class LegacySimulatorManager extends AbstractSimulatorManager<RescueEntit
     }
 
     @Override
-    public void sendAgentCommands(int time, Collection<? extends Message> commands) {
+    public void sendAgentCommands(int time, Collection<? extends Command> commands) {
         Collection<AgentCommand> agentCommands = new ArrayList<AgentCommand>();
-        for (Message next : commands) {
+        for (Command next : commands) {
             if (next instanceof AgentCommand) {
                 agentCommands.add((AgentCommand)next);
             }

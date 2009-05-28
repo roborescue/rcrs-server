@@ -79,6 +79,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         }
     }
 
+    /*
     @Override
     public final void sendPerceptionUpdate(int time, T entity, Collection<T> visible) {
         Agent<T> controller = getController(entity);
@@ -96,6 +97,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         }
         controller.send(messages);
     }
+    */
 
     @Override
     public void shutdown() {
@@ -107,7 +109,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
     }
 
     @Override
-    public void waitForAllAgents() throws InterruptedException {
+    public Set<Agent<T>> getAllAgents() throws InterruptedException {
         synchronized (lock) {
             while (allAgents.size() != controlledEntities.size()) {
                 lock.wait();
@@ -115,10 +117,11 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
                 System.out.println("Waiting for " + waiting + " agents.");
             }
         }
+        return new HashSet<Agent<T>>(allAgents.values());
     }
 
     /**
-       Register an entity as being agent-controlled. This does not mean that an agent is currently in control of the entity; {@link #setController} does that job.
+       Register an entity as being agent-controlled. This does not mean that an agent is currently in control of the entity; {@link #addAgent} does that job.
        @param entity The entity that will be agent-controlled.
      */
     protected void addControlledEntity(T entity) {
@@ -132,22 +135,23 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
        @param visible The set of entities visible to the agent.
        @return A collection of messages to send to the agent.
      */
-    protected abstract Collection<? extends Message> getPerceptionMessages(int time, Agent<T> agent, Collection<T> visible);
+    //    protected abstract Collection<? extends Message> getPerceptionMessages(int time, Agent<T> agent, Collection<T> visible);
 
     /**
-       Set which agent is controlling a particular entity.
-       @param entity The entity being controlled.
-       @param agent The agent controlling the entity.
-       @throws IllegalArgumentException If the entity has not been registered as agent-controlled.
+       Add an agent.
+       @param agent The new agent.
+       @throws IllegalArgumentException If the entity controlled by this agent has not been registered as agent-controlled.
        @see #addControlledEntity
      */
-    protected void setController(T entity, Agent<T> agent) {
+    protected void addAgent(Agent<T> agent) {
+        T entity = agent.getControlledEntity();
         if (!controlledEntities.contains(entity)) {
             throw new IllegalArgumentException(entity + " is not registered as being agent-controlled");
         }
         synchronized (lock) {
             allAgents.put(entity, agent);
             allAgentsByID.put(entity.getID(), agent);
+            fireAgentConnected(agent);
             lock.notifyAll();
         }
     }
@@ -190,6 +194,7 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
        @param agent The agent that sent the command.
        @param message The command message that arrived.
      */
+    /*
     protected void agentCommandReceived(Agent<T> agent, Message message) {
         synchronized (agentCommands) {
             List<Message> messages = agentCommands.get(agent.getEntityID());
@@ -200,7 +205,9 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
             messages.add(message);
         }
     }
+    */
 
+    /*
     @Override
     public Collection<Message> getAgentCommands(int timestep) {
         Collection<Message> commands = new ArrayList<Message>();
@@ -213,14 +220,17 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
         filterAgentCommands(commands, timestep);
         return commands;
     }
+    */
 
     /**
        Filter the agent commands if necessary. The default implementation does nothing.
        @param commands The commands to filter.
        @param timestep The current time.
      */
+    /*
     protected void filterAgentCommands(Collection<Message> commands, int timestep) {
     }
+    */
 
     private Set<AgentManagerListener> getListeners() {
         Set<AgentManagerListener> result;
@@ -228,68 +238,5 @@ public abstract class AbstractAgentManager<T extends Entity, S extends WorldMode
             result = new HashSet<AgentManagerListener>(listeners);
         }
         return result;
-    }
-
-    /**
-       An internal representation of an Agent that controls an entity.
-     */
-    protected static class Agent<T extends Entity> {
-        private T entity;
-        private Connection connection;
-
-        /**
-           Create an Agent.
-           @param entity The entity controlled by this agent.
-           @param connection The Connection for talking to the agent.
-        */
-        public Agent(T entity, Connection connection) {
-            this.entity = entity;
-            this.connection = connection;
-        }
-
-        /**
-           Send some messages to the agent.
-           @param m The messages to send.
-         */
-        public void send(Collection<? extends Message> m) {
-            if (!connection.isAlive()) {
-                return;
-            }
-            try {
-                connection.sendMessages(m);
-            }
-            catch (ConnectionException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-           Get the entity controlled by this agent.
-           @return The controlled entity.
-         */
-        public T getEntity() {
-            return entity;
-        }
-
-        /**
-           Get the ID of the entity controlled by this agent.
-           @return The controlled entity ID.
-         */
-        public EntityID getEntityID() {
-            return entity.getID();
-        }
-
-        /**
-           Get the connection for talking to this agent.
-           @return The connection.
-         */
-        public Connection getConnection() {
-            return connection;
-        }
-
-        @Override
-        public String toString() {
-            return connection.toString() + ": " + entity.toString();
-        }
     }
 }

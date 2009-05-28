@@ -13,6 +13,7 @@ import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.Command;
 
 import rescuecore2.version0.messages.Version0MessageFactory;
 
@@ -35,6 +36,8 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     private ConnectionManager connectionManager;
 
     private Set<KernelListener> listeners;
+
+    private Set<Agent<T>> agents;
 
     /**
        Construct a kernel.
@@ -63,6 +66,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         this.perception = perception;
         this.communicationModel = communicationModel;
         listeners = new HashSet<KernelListener>();
+        agents = new HashSet<Agent<T>>();
     }
 
     /**
@@ -129,7 +133,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     }
 
     private void waitForSimulatorsAndAgents() throws KernelException, InterruptedException {
-        agentManager.waitForAllAgents();
+        agents = agentManager.getAllAgents();
         viewerManager.waitForViewers();
         simulatorManager.waitForSimulators();
     }
@@ -140,7 +144,7 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
     private void waitForSimulationToFinish() throws InterruptedException {
         int timestep = 0;
         int maxTimestep = config.getIntValue("timesteps");
-        Collection<Message> agentCommands = new HashSet<Message>();
+        Collection<Command> agentCommands = new HashSet<Command>();
         // Each timestep:
         // Work out what the agents can see and hear (using the commands from the previous timestep).
         // Wait for new commands
@@ -167,35 +171,42 @@ public class Kernel<T extends Entity, S extends WorldModel<T>> {
         simulatorManager.shutdown();
         viewerManager.shutdown();
         agentManager.shutdown();
+        for (Agent<T> next : agents) {
+            next.shutdown();
+        }
     }
 
-    private void sendAgentUpdates(int timestep, Collection<Message> commandsLastTimestep) throws InterruptedException {
+    private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException {
         perception.setTime(timestep);
-        for (T next : agentManager.getControlledEntities()) {
+        for (Agent<T> next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
             Collection<T> visible = perception.getVisibleEntities(next);
-            agentManager.sendPerceptionUpdate(timestep, next, visible);
+            next.sendPerceptionUpdate(timestep, visible);
             Collection<Message> comms = communicationModel.process(next, commandsLastTimestep);
-            agentManager.sendMessages(next, comms);
+            next.sendMessages(comms);
         }
     }
 
-    private Collection<Message> waitForCommands(int timestep) throws InterruptedException {
+    private Collection<Command> waitForCommands(int timestep) throws InterruptedException {
         long now = System.currentTimeMillis();
         long end = now + config.getIntValue("step");
         while (now < end) {
             Thread.sleep(end - now);
             now = System.currentTimeMillis();
         }
-        return agentManager.getAgentCommands(timestep);
+        Collection<Command> result = new HashSet<Command>();
+        for (Agent<T> next : agents) {
+            result.addAll(next.getAgentCommands(timestep));
+        }
+        return result;
     }
 
     /**
        Send commands to all viewers and simulators and return which entities have been updated by the simulators.
     */
-    private Collection<T> sendCommandsToViewersAndSimulators(int timestep, Collection<Message> commands) throws InterruptedException {
+    private Collection<T> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
         simulatorManager.sendAgentCommands(timestep, commands);
         viewerManager.sendAgentCommands(timestep, commands);
         // Wait until all simulators have sent updates

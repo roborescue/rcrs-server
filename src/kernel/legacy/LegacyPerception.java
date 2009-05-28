@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import kernel.Perception;
+import kernel.Agent;
 
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
@@ -82,10 +83,11 @@ public class LegacyPerception implements Perception<RescueEntity, IndexedWorldMo
     }
 
     @Override
-    public Collection<RescueEntity> getVisibleEntities(RescueEntity agent) {
+    public Collection<RescueEntity> getVisibleEntities(Agent<? extends RescueEntity> agent) {
+        RescueEntity agentEntity = agent.getControlledEntity();
         Collection<RescueEntity> result = new HashSet<RescueEntity>();
         // Look for roads/nodes/buildings/humans within range
-        Pair<Integer, Integer> location = agent.getLocation(world);
+        Pair<Integer, Integer> location = agentEntity.getLocation(world);
         if (location != null) {
             int x = location.first().intValue();
             int y = location.second().intValue();
@@ -112,7 +114,7 @@ public class LegacyPerception implements Perception<RescueEntity, IndexedWorldMo
                 case POLICE_FORCE:
                     copy = (RescueEntity)next.copy();
                     // Always send all properties of the agent-controlled object
-                    if (next != agent) {
+                    if (next != agentEntity) {
                         filterHumanProperties((Human)copy);
                     }
                     break;
@@ -130,7 +132,7 @@ public class LegacyPerception implements Perception<RescueEntity, IndexedWorldMo
                 int ignitionTime = next.getValue();
                 int timeDelta = time - ignitionTime;
                 int visibleRange = timeDelta * farFireDistance;
-                int range = world.getDistance(agent, b);
+                int range = world.getDistance(agentEntity, b);
                 if (range <= visibleRange) {
                     Building copy = (Building)b.copy();
                     filterFarBuildingProperties(copy);

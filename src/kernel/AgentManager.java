@@ -30,7 +30,7 @@ public interface AgentManager<T extends Entity, S extends WorldModel<? super T>>
        Wait until all agents have connected.
        @throws InterruptedException If this thread is interrupted while waiting for agents.
     */
-    void waitForAllAgents() throws InterruptedException;
+    Set<Agent<T>> getAllAgents() throws InterruptedException;
 
     /**
        Get all entities that are controlled by agents.
@@ -43,7 +43,7 @@ public interface AgentManager<T extends Entity, S extends WorldModel<? super T>>
        @param timestep The current timestep.
        @return A collection of messages representing all input from each agent since the last time this method was called.
      */
-    Collection<Message> getAgentCommands(int timestep);
+    //    Collection<Message> getAgentCommands(int timestep);
 
     /**
        Shut this manager down.
@@ -56,12 +56,12 @@ public interface AgentManager<T extends Entity, S extends WorldModel<? super T>>
        @param agentEntity The entity that is controlled by an agent.
        @param visible The set of visible entitites.
      */
-    void sendPerceptionUpdate(int time, T agentEntity, Collection<T> visible);
+    //    void sendPerceptionUpdate(int time, T agentEntity, Collection<T> visible);
 
     /**
        Send a set of messages to a particular agent-controlled entity.
        @param agentEntity The entity that should receive the messages.
        @param messages The messages to send.
      */
-    void sendMessages(T agentEntity, Collection<? extends Message> messages);
+    //    void sendMessages(T agentEntity, Collection<? extends Message> messages);
 }

@@ -3,9 +3,11 @@ package kernel.legacy;
 import java.util.Collection;
 import java.util.HashSet;
 
+import kernel.Agent;
 import kernel.CommunicationModel;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.Command;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.EntityID;
 
@@ -42,17 +44,17 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueEntity
     }
 
     @Override
-    public Collection<Message> process(RescueEntity agent, Collection<Message> agentCommands) {
+    public Collection<Message> process(Agent<RescueEntity> agent, Collection<Command> agentCommands) {
         //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
         Collection<Message> result = new HashSet<Message>();
         // Look for SAY messages from entities within range
         // Look for TELL messages from appropriate entities
-        for (Message next : agentCommands) {
+        for (Command next : agentCommands) {
             if (next instanceof AKSay) {
                 AKSay say = (AKSay)next;
                 EntityID senderID = say.getAgentID();
                 RescueEntity sender = world.getEntity(senderID);
-                int distance = world.getDistance(agent, sender);
+                int distance = world.getDistance(agent.getControlledEntity(), sender);
                 if (distance <= sayDistance) {
                     //                    System.out.println(agent + " hears say from " + sender);
                     result.add(new KAHearSay(senderID, say.getContent()));
@@ -62,7 +64,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueEntity
                 AKTell tell = (AKTell)next;
                 EntityID senderID = tell.getAgentID();
                 RescueEntity sender = world.getEntity(senderID);
-                if (canHear(agent, sender)) {
+                if (canHear(agent.getControlledEntity(), sender)) {
                     //                    System.out.println(agent + " hears tell from " + sender);
                     result.add(new KAHearTell(senderID, tell.getContent()));
                 }
