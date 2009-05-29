@@ -13,6 +13,12 @@ import rescuecore2.worldmodel.Entity;
  */
 public interface Agent<T extends Entity> {
     /**
+       Send a set of messages to the agent.
+       @param messages The messages to send.
+     */
+    void send(Collection<? extends Message> messages);
+
+    /**
        Get the entity controlled by this agent.
        @return The entity controlled by this agent.
      */
@@ -26,22 +32,17 @@ public interface Agent<T extends Entity> {
     Collection<Command> getAgentCommands(int timestep);
 
     /**
-       Shut this agent down.
-     */
-    void shutdown();
-
-    /**
        Notify the of a perception update.
        @param time The current timestep.
        @param visible The set of visible entitites.
+       @param communication The set of communication messages that the agent perceived.
      */
-    void sendPerceptionUpdate(int time, Collection<? extends T> visible);
+    void sendPerceptionUpdate(int time, Collection<? extends T> visible, Collection<? extends Message> communication);
 
     /**
-       Send a set of messages to the agent.
-       @param messages The messages to send.
+       Shut this agent down.
      */
-    void sendMessages(Collection<? extends Message> messages);
+    void shutdown();
 
     /**
        Get this agent's connection.

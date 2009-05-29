@@ -26,21 +26,18 @@ import rescuecore2.version0.messages.KAHearTell;
 /**
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
  */
-public class LegacyCommunicationModel implements CommunicationModel<RescueEntity, IndexedWorldModel> {
+public class LegacyCommunicationModel implements CommunicationModel<RescueEntity> {
     private IndexedWorldModel world;
     private int sayDistance;
 
     /**
        Construct a LegacyCommunicationModel.
        @param config The kernel configuration.
+       @param world The world model.
      */
-    public LegacyCommunicationModel(Config config) {
+    public LegacyCommunicationModel(Config config, IndexedWorldModel world) {
+        this.world = world;
         sayDistance = config.getIntValue("voice");
-    }
-
-    @Override
-    public void setWorldModel(IndexedWorldModel newWorld) {
-        this.world = newWorld;
     }
 
     @Override

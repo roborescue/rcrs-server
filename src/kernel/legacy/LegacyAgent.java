@@ -1,13 +1,14 @@
 package kernel.legacy;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 import kernel.AbstractAgent;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.messages.Command;
+import rescuecore2.messages.Message;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.KASense;
 import rescuecore2.version0.messages.AgentCommand;
@@ -32,9 +33,12 @@ public class LegacyAgent extends AbstractAgent<RescueEntity> {
     }
 
     @Override
-    public void sendPerceptionUpdate(int time, Collection<? extends RescueEntity> visible) {
+    public void sendPerceptionUpdate(int time, Collection<? extends RescueEntity> visible, Collection<? extends Message> comms) {
         KASense sense = new KASense(getControlledEntity().getID().getValue(), time, visible);
-        sendMessages(Collections.singleton(sense));
+        Collection<Message> all = new ArrayList<Message>();
+        all.add(sense);
+        all.addAll(comms);
+        send(all);
     }
 
     @Override

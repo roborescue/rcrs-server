@@ -82,6 +82,7 @@ public abstract class AbstractSimulator<T extends Entity> implements Simulator<T
                 updates.put(time, c);
             }
             c.addAll(u);
+            updates.notifyAll();
         }
     }
 }

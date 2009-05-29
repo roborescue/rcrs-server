@@ -48,7 +48,7 @@ public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
     }
 
     @Override
-    public void sendMessages(Collection<? extends Message> messages) {
+    public void send(Collection<? extends Message> messages) {
         if (!connection.isAlive()) {
             return;
         }
@@ -82,6 +82,7 @@ public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
     protected void commandReceived(Command c) {
         synchronized (commands) {
             commands.add(c);
+            commands.notifyAll();
         }
     }
 

@@ -23,7 +23,7 @@ import rescuecore2.version0.entities.RescuePropertyType;
 /**
    Legacy implementation of perception.
  */
-public class LegacyPerception implements Perception<RescueEntity, IndexedWorldModel> {
+public class LegacyPerception implements Perception<RescueEntity> {
     private static final int HP_PRECISION = 1000;
     private static final int DAMAGE_PRECISION = 100;
 
@@ -37,21 +37,15 @@ public class LegacyPerception implements Perception<RescueEntity, IndexedWorldMo
     /**
        Create a LegacyPerception object.
        @param config The configuration of the kernel.
+       @param world The world model.
      */
-    public LegacyPerception(Config config) {
+    public LegacyPerception(Config config, IndexedWorldModel world) {
+        this.world = world;
         this.viewDistance = config.getIntValue("vision");
         this.farFireDistance = config.getIntValue("fire_cognition_spreading_speed");
         ignitionTimes = new HashMap<Building, Integer>();
         unburntBuildings = new HashSet<Building>();
         time = 0;
-    }
-
-    @Override
-    public void setWorldModel(IndexedWorldModel newWorld) {
-        time = 0;
-        this.world = newWorld;
-        unburntBuildings.clear();
-        ignitionTimes.clear();
         for (RescueEntity next : world) {
             if (next instanceof Building) {
                 Building b = (Building)next;

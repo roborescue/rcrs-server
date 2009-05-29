@@ -2,17 +2,15 @@ package kernel;
 
 import java.util.Collection;
 
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 
 /**
    A model of communication. Implementers are responsible for determining what communications are received by each agent in the world.
-   @param <S> The subclass of WorldModel that this model understands.
    @param <T> The subclass of Entity that this model understands.
  */
-public interface CommunicationModel<T extends Entity, S extends WorldModel<? super T>> extends WorldModelAware<S> {
+public interface CommunicationModel<T extends Entity> {
     /**
        Process a set of agent commands and work out what communications a particular agent can hear.
        @param agent The agent-controlled entity.
