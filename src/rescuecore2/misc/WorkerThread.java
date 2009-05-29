@@ -35,7 +35,12 @@ public abstract class WorkerThread extends Thread {
         setup();
         try {
             while (isRunning()) {
-                running = work();
+                try {
+                    running = work();
+                }
+                catch (InterruptedException e) {
+                    running = false;
+                }
             }
         }
         finally {
@@ -52,10 +57,11 @@ public abstract class WorkerThread extends Thread {
     }
 
     /**
-       Do a unit of work and return whether there is more work to be done. Implementations should check periodically for interruptions and return when signalled.
+       Do a unit of work and return whether there is more work to be done. Implementations should check periodically for interruptions and throw an exception when required.
        @return True if more work remains, false otherwise.
+       @throws InterruptedException If the worker thread is interrupted.
     */
-    protected abstract boolean work();
+    protected abstract boolean work() throws InterruptedException;
 
     /**
        Perform any setup necessary before work begins. Default implementation does nothing.
