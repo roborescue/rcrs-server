@@ -1,19 +1,20 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
 /**
    A message for acknowleding a connection to the kernel.
  */
-public class SKAcknowledge extends AbstractMessage {
+public class SKAcknowledge extends AbstractMessage implements Control {
     private IntComponent id;
 
     /**
        SKAcknowledge message with an undefined ID component.
      */
     public SKAcknowledge() {
-        super("SK_ACKNOWLEDGE", MessageConstants.SK_ACKNOWLEDGE);
+        super("SK_ACKNOWLEDGE", ControlMessageConstants.SK_ACKNOWLEDGE);
         id = new IntComponent("ID");
         addMessageComponent(id);
     }

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.EOFException;
 import java.io.InterruptedIOException;
 
-import rescuecore2.messages.MessageFactory;
 import rescuecore2.misc.WorkerThread;
 
 /**
@@ -24,12 +23,11 @@ public class StreamConnection extends AbstractConnection {
 
     /**
        Create a StreamConnection.
-       @param factory The MessageFactory to use for creating messages.
        @param in The InputStream to read.
        @param out The OutputStream to write to.
     */
-    public StreamConnection(MessageFactory factory, InputStream in, OutputStream out) {
-        super(factory);
+    public StreamConnection(InputStream in, OutputStream out) {
+        super();
         this.in = in;
         this.out = out;
         readThread = new ReadThread();
@@ -100,7 +98,7 @@ public class StreamConnection extends AbstractConnection {
                 int size = readInt32(in);
                 //                System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
                 if (size > 0) {
-                    //                    System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
+                    //                    System.err.println(StreamConnection.this + ": read thread reading " + size + " bytes");
                     byte[] buffer = readBytes(size, in);
                     bytesReceived(buffer);
                 }

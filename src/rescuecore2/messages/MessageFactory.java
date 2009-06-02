@@ -22,4 +22,10 @@ public interface MessageFactory {
        @throws IOException If there is a problem reading the stream.
      */
     Message createMessage(int id, InputStream data) throws IOException;
+
+    /**
+       Get all message type IDs understood by this factory.
+       @return All message type IDs.
+    */
+    int[] getKnownMessageTypeIDs();
 }

@@ -1,5 +1,6 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
    A message for sending updates from a simulator to the kernel.
  */
-public class SKUpdate extends AbstractMessage {
+public class SKUpdate extends AbstractMessage implements Control {
     private IntComponent id;
     private IntComponent time;
     private EntityListComponent<RescueEntityType, RescueEntity> update;
@@ -22,7 +23,7 @@ public class SKUpdate extends AbstractMessage {
        SKUpdate message with a undefined data.
      */
     public SKUpdate() {
-        super("SK_UPDATE", MessageConstants.SK_UPDATE);
+        super("SK_UPDATE", ControlMessageConstants.SK_UPDATE);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
         update = new EntityListComponent<RescueEntityType, RescueEntity>("Updated objects", RescueEntityFactory.INSTANCE);

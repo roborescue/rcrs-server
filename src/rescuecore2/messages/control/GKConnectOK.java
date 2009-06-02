@@ -1,7 +1,8 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
 import java.util.List;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.EntityListComponent;
 
@@ -12,14 +13,14 @@ import rescuecore2.version0.entities.RescueEntityFactory;
 /**
    A message for signalling a successful connection to the GIS.
  */
-public class GKConnectOK extends AbstractMessage {
+public class GKConnectOK extends AbstractMessage implements Control {
     private EntityListComponent<RescueEntityType, RescueEntity> world;
 
     /**
        A GKConnectOK with no entities.
      */
     public GKConnectOK() {
-        super("GK_CONNECT_OK", MessageConstants.GK_CONNECT_OK);
+        super("GK_CONNECT_OK", ControlMessageConstants.GK_CONNECT_OK);
         world = new EntityListComponent<RescueEntityType, RescueEntity>("Entities", RescueEntityFactory.INSTANCE);
         addMessageComponent(world);
     }

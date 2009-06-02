@@ -7,25 +7,32 @@ import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageFactory;
 
 public class TestMessageFactory implements MessageFactory {
-    public final static int MESSAGE_1 = 1;
-    public final static int MESSAGE_2 = 2;
+    private String description;
+    private int[] ids;
+
+    public TestMessageFactory(String description, int... ids) {
+        this.description = description;
+        this.ids = ids;
+    }
+
+    @Override
+    public int[] getKnownMessageTypeIDs() {
+        return ids;
+    }
 
     @Override
     public Message createMessage(int id, InputStream in) throws IOException {
-        Message result = null;
-	switch (id) {
-	case MESSAGE_1:
-	    result = new TestMessage(MESSAGE_1);
-            break;
-	case MESSAGE_2:
-	    result =  new TestMessage(MESSAGE_2);
-            break;
-        default:
-            throw new IllegalArgumentException("Unrecognised ID: " + id);
-	}
-        if (in != null) {
-            result.read(in);
+        boolean found = false;
+        for (int i = 0; i < ids.length && !found; ++i) {
+            if (ids[i] == id) {
+                found = true;
+            }
         }
+        if (!found) {
+            return null;
+        }
+        Message result = new TestMessage(id, description);
+        result.read(in);
         return result;
     }
 }

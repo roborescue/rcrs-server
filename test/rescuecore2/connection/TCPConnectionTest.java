@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.After;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
 import rescuecore2.misc.Pair;
 
 public class TCPConnectionTest extends ConnectionTestCommon {
@@ -34,28 +33,28 @@ public class TCPConnectionTest extends ConnectionTestCommon {
     }
 
     @Override
-    protected Pair<Connection, Connection> makeConnectionPair(MessageFactory factory) throws IOException {
-	Connection client = new TCPConnection(factory, "localhost", SERVER_PORT);
-	Connection server = new TCPConnection(factory, assertIncomingConnection());
+    protected Pair<Connection, Connection> makeConnectionPair() throws IOException {
+	Connection client = new TCPConnection("localhost", SERVER_PORT);
+	Connection server = new TCPConnection(assertIncomingConnection());
 	return new Pair<Connection, Connection>(client, server);
     }
 
     @Test
     public void testConnectToPort() throws IOException {
-	TCPConnection c = new TCPConnection(factory, SERVER_PORT);
+	TCPConnection c = new TCPConnection(SERVER_PORT);
 	assertIncomingConnection();
     }
 
     @Test
     public void testConnectToHostAndPort() throws IOException {
-	TCPConnection c = new TCPConnection(factory, "localhost", SERVER_PORT);
+	TCPConnection c = new TCPConnection("localhost", SERVER_PORT);
 	assertIncomingConnection();
     }
 
     @Test
     public void testName() throws IOException {
         Socket socket = new Socket("localhost", SERVER_PORT);
-	TCPConnection c = new TCPConnection(factory, socket);
+	TCPConnection c = new TCPConnection(socket);
 	assertIncomingConnection();
         assertEquals("TCPConnection: local port " + socket.getLocalPort() + ", endpoint = " + socket.getInetAddress() + ":" + socket.getPort(), c.toString());
     }
@@ -67,7 +66,7 @@ public class TCPConnectionTest extends ConnectionTestCommon {
                     throw new IOException("Socket close failed");
                 }
             };
-        TCPConnection c = new TCPConnection(factory, socket);
+        TCPConnection c = new TCPConnection(socket);
         assertIncomingConnection();
         c.startup();
         c.shutdown();

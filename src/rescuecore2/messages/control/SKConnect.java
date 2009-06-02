@@ -1,19 +1,20 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
 /**
-   A message for connecting a viewer to the kernel.
+   A message for connecting a simulator to the kernel.
  */
-public class VKConnect extends AbstractMessage {
+public class SKConnect extends AbstractMessage implements Control {
     private IntComponent version;
 
     /**
-       An VKConnect with version 0.
+       An SKConnect with version 0.
      */
-    public VKConnect() {
-        super("VK_CONNECT", MessageConstants.VK_CONNECT);
+    public SKConnect() {
+        super("SK_CONNECT", ControlMessageConstants.SK_CONNECT);
         version = new IntComponent("Version", 0);
         addMessageComponent(version);
     }

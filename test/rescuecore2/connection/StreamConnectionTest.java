@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.After;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
 import rescuecore2.misc.Pair;
 
 public class StreamConnectionTest extends ConnectionTestCommon {
@@ -30,24 +29,27 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     private static final byte[] GOOD_INPUT = {0x00, 0x00, 0x00, 0x08,
                                               0x01, 0x02, 0x03, 0x04,
                                               0x00, 0x00, 0x00, 0x00};
-    private static final byte[] NEGATIVE_SIZE_INPUT = {(byte)0x80, 0x00, 0x00, 0x00,
-                                                       0x00, 0x00, 0x00, 0x08,
-                                                       0x01, 0x02, 0x03, 0x04,
-                                                       0x00, 0x00, 0x00, 0x00};
+    private static final byte[] NEGATIVE_SIZE_INPUT = {(byte)0x80, 0x00, 0x00, 0x00, // Malformed size
+                                                       0x00, 0x00, 0x00, 0x0C, // Good size
+                                                       0x00, 0x00, 0x01, 0x00, // ID
+                                                       0x00, 0x00, 0x00, 0x04, // Size of message
+                                                       0x00, 0x00, 0x00, 0x00  // Message data
+    };
+    
     // One byte short
     private static final byte[] SHORT_CONTENT = {0x00, 0x00, 0x00, 0x04,
                                                  0x01, 0x02, 0x03};
     private static final byte[] SHORT_SIZE_FIELD = {0x00, 0x00, 0x01};
-    private static final int MESSAGE_ID = 0x01020304;
+    private static final int MESSAGE_ID = 0x00000100;
 
     @Override
-    protected Pair<Connection, Connection> makeConnectionPair(MessageFactory factory) throws IOException {
+    protected Pair<Connection, Connection> makeConnectionPair() throws IOException {
         PipedInputStream serverIn = new PipedInputStream();
         PipedInputStream clientIn = new PipedInputStream();
         PipedOutputStream serverOut = new PipedOutputStream(clientIn);
         PipedOutputStream clientOut = new PipedOutputStream(serverIn);
-	Connection client = new StreamConnection(factory, clientIn, clientOut);
-	Connection server = new StreamConnection(factory, serverIn, serverOut);
+	Connection client = new StreamConnection(clientIn, clientOut);
+	Connection server = new StreamConnection(serverIn, serverOut);
 	return new Pair<Connection, Connection>(client, server);
     }
 
@@ -56,7 +58,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream(bout);
-        StreamConnection c = new StreamConnection(null, in, out);
+        StreamConnection c = new StreamConnection(in, out);
         c.sendBytes(TEST_DATA);
         assertArrayEquals(EXPECTED_TEST_OUTPUT, bout.toByteArray());
     }
@@ -65,7 +67,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testIOExceptionOnReadSize() throws IOException, InterruptedException {
         TestInputStream in = new TestInputStream(GOOD_INPUT);
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         TestConnectionListener l = new TestConnectionListener();
         c.addConnectionListener(l);
         in.setFailOnRead(true);
@@ -80,7 +82,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testIOExceptionOnReadSize2() throws IOException, InterruptedException {
         TestInputStream in = new TestInputStream(GOOD_INPUT);
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         TestConnectionListener l = new TestConnectionListener();
         c.addConnectionListener(l);
         in.setFailOnRead(2);
@@ -95,7 +97,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testIOExceptionOnReadContent() throws IOException, InterruptedException {
         TestInputStream in = new TestInputStream(GOOD_INPUT);
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         TestConnectionListener l = new TestConnectionListener();
         c.addConnectionListener(l);
         in.setFailOnRead(6);
@@ -108,23 +110,29 @@ public class StreamConnectionTest extends ConnectionTestCommon {
 
     @Test
     public void testNegativeSizeInput() throws IOException, InterruptedException {
-        TestInputStream in = new TestInputStream(NEGATIVE_SIZE_INPUT);
-        TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(new StreamTestMessageFactory(), in, out);
-        TestConnectionListener l = new TestConnectionListener();
-        c.addConnectionListener(l);
-        c.startup();
-        // Should ignore the first negative size field then read a message with id 0x01020304
-        l.waitForMessages(1, TIMEOUT);
-        assertEquals(1, l.getMessageCount());
-        assertEquals(MESSAGE_ID, l.getMessage(0).getMessageTypeID());
+        System.err.println("Test negative size input");
+        try {
+            TestInputStream in = new TestInputStream(NEGATIVE_SIZE_INPUT);
+            TestOutputStream out = new TestOutputStream();
+            Connection c = new StreamConnection(in, out);
+            TestConnectionListener l = new TestConnectionListener();
+            c.addConnectionListener(l);
+            c.startup();
+            // Should ignore the first negative size field then read a message with id 0x00000100
+            l.waitForMessages(1, TIMEOUT);
+            assertEquals(1, l.getMessageCount());
+            assertEquals(MESSAGE_ID, l.getMessage(0).getMessageTypeID());
+        }
+        finally {
+            System.err.println("Test negative size input finished");
+        }
     }
 
     @Test
     public void testShortContent() throws IOException, InterruptedException {
         TestInputStream in = new TestInputStream(SHORT_CONTENT);
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         TestConnectionListener l = new TestConnectionListener();
         c.addConnectionListener(l);
         c.startup();
@@ -138,7 +146,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testShortSizeField() throws IOException, InterruptedException {
         TestInputStream in = new TestInputStream(SHORT_SIZE_FIELD);
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         TestConnectionListener l = new TestConnectionListener();
         c.addConnectionListener(l);
         c.startup();
@@ -152,7 +160,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testExceptionOnOutputFlush() throws IOException {
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         out.setFailOnFlush(true);
         c.startup();
         assertTrue(c.isAlive());
@@ -164,7 +172,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testExceptionOnOutputClose() throws IOException {
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         out.setFailOnClose(true);
         c.startup();
         assertTrue(c.isAlive());
@@ -176,7 +184,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testExceptionOnInputClose() throws IOException {
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         in.setFailOnClose(true);
         c.startup();
         assertTrue(c.isAlive());
@@ -188,19 +196,12 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testInterruptedDuringShutdown() throws IOException {
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream();
-        Connection c = new StreamConnection(null, in, out);
+        Connection c = new StreamConnection(in, out);
         c.startup();
         assertTrue(c.isAlive());
         Thread.currentThread().interrupt();
         c.shutdown();
         assertFalse(c.isAlive());
-    }
-
-    private class StreamTestMessageFactory implements MessageFactory {
-        @Override
-        public Message createMessage(int id, InputStream data) throws IOException {
-            return new TestMessage(id);
-        }
     }
 
     private class TestInputStream extends InputStream {

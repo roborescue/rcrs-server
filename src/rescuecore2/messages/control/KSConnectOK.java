@@ -1,8 +1,9 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
 import java.util.Collection;
 import java.util.List;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
@@ -14,7 +15,7 @@ import rescuecore2.version0.entities.RescueEntityFactory;
 /**
    A message for signalling a successful connection to the kernel.
  */
-public class KSConnectOK extends AbstractMessage {
+public class KSConnectOK extends AbstractMessage implements Control {
     private IntComponent simulatorID;
     private EntityListComponent<RescueEntityType, RescueEntity> world;
 
@@ -22,7 +23,7 @@ public class KSConnectOK extends AbstractMessage {
        An empty KSConnectOK message.
      */
     public KSConnectOK() {
-        super("KS_CONNECT_OK", MessageConstants.KS_CONNECT_OK);
+        super("KS_CONNECT_OK", ControlMessageConstants.KS_CONNECT_OK);
         simulatorID = new IntComponent("Simulator ID");
         world = new EntityListComponent<RescueEntityType, RescueEntity>("Entities", RescueEntityFactory.INSTANCE);
         addMessageComponent(simulatorID);

@@ -19,48 +19,29 @@ public final class Version0MessageFactory implements MessageFactory {
     private Version0MessageFactory() {}
 
     @Override
+    public int[] getKnownMessageTypeIDs() {
+        return new int[] {MessageConstants.AK_CONNECT,
+                          MessageConstants.AK_ACKNOWLEDGE,
+                          MessageConstants.KA_CONNECT_OK,
+                          MessageConstants.KA_CONNECT_ERROR,
+                          MessageConstants.KA_SENSE,
+                          MessageConstants.KA_HEAR_SAY,
+                          MessageConstants.KA_HEAR_TELL,
+                          MessageConstants.AK_MOVE,
+                          MessageConstants.AK_LOAD,
+                          MessageConstants.AK_UNLOAD,
+                          MessageConstants.AK_SAY,
+                          MessageConstants.AK_TELL,
+                          MessageConstants.AK_RESCUE,
+                          MessageConstants.AK_CLEAR,
+                          MessageConstants.AK_EXTINGUISH
+        };
+    }
+
+    @Override
     public Message createMessage(int id, InputStream data) throws IOException {
         Message result = null;
         switch (id) {
-        case MessageConstants.KG_CONNECT:
-            result = new KGConnect();
-            break;
-        case MessageConstants.KG_ACKNOWLEDGE:
-            result = new KGAcknowledge();
-            break;
-        case MessageConstants.GK_CONNECT_OK:
-            result = new GKConnectOK();
-            break;
-        case MessageConstants.GK_CONNECT_ERROR:
-            result = new GKConnectError();
-            break;
-        case MessageConstants.SK_CONNECT:
-            result = new SKConnect();
-            break;
-        case MessageConstants.SK_ACKNOWLEDGE:
-            result = new SKAcknowledge();
-            break;
-        case MessageConstants.SK_UPDATE:
-            result = new SKUpdate();
-            break;
-        case MessageConstants.KS_CONNECT_OK:
-            result = new KSConnectOK();
-            break;
-        case MessageConstants.KS_CONNECT_ERROR:
-            result = new KSConnectError();
-            break;
-        case MessageConstants.VK_CONNECT:
-            result = new VKConnect();
-            break;
-        case MessageConstants.VK_ACKNOWLEDGE:
-            result = new VKAcknowledge();
-            break;
-        case MessageConstants.KV_CONNECT_OK:
-            result = new KVConnectOK();
-            break;
-        case MessageConstants.KV_CONNECT_ERROR:
-            result = new KVConnectError();
-            break;
         case MessageConstants.AK_CONNECT:
             result = new AKConnect();
             break;

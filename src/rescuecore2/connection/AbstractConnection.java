@@ -5,7 +5,7 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
+import rescuecore2.messages.MessageRegistry;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,22 +23,18 @@ import java.io.IOException;
  */
 public abstract class AbstractConnection implements Connection {
     private List<ConnectionListener> listeners;
-    private MessageFactory factory;
 
     private boolean logBytes;
 
     private volatile State state;
 
     private final Object stateLock = new Object();
-    private final Object factoryLock = new Object();
 
     /**
        Construct an abstract connection.
-       @param factory The factory class used to generate new messages.
     */
-    protected AbstractConnection(MessageFactory factory) {
+    protected AbstractConnection() {
         listeners = new ArrayList<ConnectionListener>();
-        this.factory = factory;
         logBytes = false;
         state = State.NOT_STARTED;
     }
@@ -46,16 +42,6 @@ public abstract class AbstractConnection implements Connection {
     @Override
     public void setLogBytes(boolean enabled) {
         logBytes = enabled;
-    }
-
-    @Override
-    public void setMessageFactory(MessageFactory newFactory) {
-        if (newFactory == null) {
-            throw new IllegalArgumentException("Message factory cannot be null");
-        }
-        synchronized (factoryLock) {
-            this.factory = newFactory;
-        }
     }
 
     @Override
@@ -169,12 +155,7 @@ public abstract class AbstractConnection implements Connection {
         Message m = null;
         try {
             do {
-                // Take a copy of the message factory reference in case someone tries to change the factory while we're decoding the message
-                MessageFactory f;
-                synchronized (factoryLock) {
-                    f = factory;
-                }
-                m = decodeMessage(decode, f);
+                m = decodeMessage(decode);
                 if (m != null) {
                     //                    System.out.println("Received: " + m);
                     fireMessageReceived(m);
@@ -215,7 +196,7 @@ public abstract class AbstractConnection implements Connection {
         out.write(bytes.toByteArray());
     }
 
-    private Message decodeMessage(InputStream in, MessageFactory messageFactory) throws IOException {
+    private Message decodeMessage(InputStream in) throws IOException {
         int id = readInt32(in);
         if (id == 0) {
             return null;
@@ -223,7 +204,7 @@ public abstract class AbstractConnection implements Connection {
         int size = readInt32(in);
         byte[] data = readBytes(size, in);
         InputStream input = new ByteArrayInputStream(data);
-        Message result = messageFactory.createMessage(id, input);
+        Message result = MessageRegistry.createMessage(id, input);
         return result;
     }
 

@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.HashSet;
 
 import rescuecore2.misc.WorkerThread;
-import rescuecore2.messages.MessageFactory;
 
 /**
    A class for managing incoming connections.
@@ -31,11 +30,10 @@ public class ConnectionManager {
     /**
        Listen for connections on a particular port.
        @param port The port to listen on.
-       @param factory The MessageFactory for interpreting incoming messages.
        @param listener A ConnectionManagerListener that will be informed of new connections.
        @throws IOException If there is a problem listening on the port.
     */
-    public void listen(int port, MessageFactory factory, ConnectionManagerListener listener) throws IOException {
+    public void listen(int port, ConnectionManagerListener listener) throws IOException {
         synchronized (lock) {
             if (shutdown) {
                 throw new IOException("Connection manager has been shut down");
@@ -44,7 +42,7 @@ public class ConnectionManager {
             ServerSocket socket = new ServerSocket(port);
             socket.setSoTimeout(1000);
             socket.setReuseAddress(true);
-            Reader r = new Reader(socket, factory, listener);
+            Reader r = new Reader(socket, listener);
             readers.add(r);
             r.start();
         }
@@ -83,12 +81,10 @@ public class ConnectionManager {
 
     private class Reader extends WorkerThread {
         private ServerSocket socket;
-        private MessageFactory factory;
         private ConnectionManagerListener callback;
 
-        public Reader(ServerSocket socket, MessageFactory factory, ConnectionManagerListener callback) {
+        public Reader(ServerSocket socket, ConnectionManagerListener callback) {
             this.socket = socket;
-            this.factory = factory;
             this.callback = callback;
         }
 
@@ -96,7 +92,7 @@ public class ConnectionManager {
         protected boolean work() {
             try {
                 Socket s = socket.accept();
-                TCPConnection conn = new TCPConnection(factory, s);
+                TCPConnection conn = new TCPConnection(s);
                 if (ConnectionManager.this.isAlive()) {
                     callback.newConnection(conn);
                 }

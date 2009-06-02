@@ -1,28 +1,29 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.StringComponent;
 
 /**
    A message for signalling an unsuccessful connection to the kernel.
  */
-public class KVConnectError extends AbstractMessage {
+public class KSConnectError extends AbstractMessage implements Control {
     private StringComponent reason;
 
     /**
-       A KVConnectError with no reason.
+       A KSConnectError with no reason.
      */
-    public KVConnectError() {
-        super("KV_CONNECT_ERROR", MessageConstants.KV_CONNECT_ERROR);
+    public KSConnectError() {
+        super("KS_CONNECT_ERROR", ControlMessageConstants.KS_CONNECT_ERROR);
         reason = new StringComponent("Reason");
         addMessageComponent(reason);
     }
 
     /**
-       A KVConnectError with specified reason.
+       A KSConnectError with specified reason.
        @param message The reason for the error.
      */
-    public KVConnectError(String message) {
+    public KSConnectError(String message) {
         this();
         reason.setValue(message);
     }
