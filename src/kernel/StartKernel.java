@@ -8,13 +8,16 @@ import rescuecore2.connection.ConnectionManager;
 import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
+import rescuecore2.messages.MessageRegistry;
 
 import rescuecore2.version0.entities.RescueEntity;
 
 import kernel.ui.KernelStatus;
 import javax.swing.JFrame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-import kernel.legacy.GISWorldModelCreator;
+import kernel.legacy.LegacyWorldModelCreator;
 import kernel.legacy.LegacyComponentManager;
 import kernel.legacy.LegacyPerception;
 import kernel.legacy.LegacyCommunicationModel;
@@ -58,13 +61,19 @@ public final class StartKernel {
                 }
                 ++i;
             }
-            Kernel<RescueEntity> kernel = createLegacyKernel(config);
+            final Kernel<RescueEntity> kernel = createLegacyKernel(config);
             if (gui) {
                 KernelStatus<RescueEntity> status = new KernelStatus<RescueEntity>(kernel, config, !justRun);
                 kernel.addKernelListener(status);
                 JFrame frame = new JFrame("Kernel status");
                 frame.getContentPane().add(status);
                 frame.pack();
+                frame.addWindowListener(new WindowAdapter() {
+                        public void windowClosing(WindowEvent e) {
+                            kernel.shutdown();
+                            System.exit(0);
+                        }
+                    });
                 frame.setVisible(true);
             }
             setupLegacyKernel(config, kernel);
@@ -95,7 +104,7 @@ public final class StartKernel {
 
     private static Kernel<RescueEntity> createLegacyKernel(Config config) throws KernelException, ConfigException, InterruptedException {
         // Get the world model
-        IndexedWorldModel worldModel = new GISWorldModelCreator().buildWorldModel(config);
+        IndexedWorldModel worldModel = new LegacyWorldModelCreator().buildWorldModel(config);
         LegacyPerception perception = new LegacyPerception(config, worldModel);
         LegacyCommunicationModel comms = new LegacyCommunicationModel(config, worldModel);
         return new Kernel<RescueEntity>(config, perception, comms, worldModel);
@@ -103,6 +112,8 @@ public final class StartKernel {
 
     private static void setupLegacyKernel(Config config, Kernel<RescueEntity> kernel) throws KernelException, InterruptedException {
         final LegacyComponentManager manager = new LegacyComponentManager(kernel, config);
+        // Register legacy messages
+        MessageRegistry.register(Version0MessageFactory.INSTANCE);
 
         // Start the connection manager
         ConnectionManager connectionManager = new ConnectionManager();
@@ -114,7 +125,7 @@ public final class StartKernel {
             }
         };
         try {
-            connectionManager.listen(config.getIntValue("kernel_port"), Version0MessageFactory.INSTANCE, listener);
+            connectionManager.listen(config.getIntValue("kernel_port"), listener);
         }
         catch (IOException e) {
             throw new KernelException("Couldn't open kernel port", e);

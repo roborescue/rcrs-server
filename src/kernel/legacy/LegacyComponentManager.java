@@ -16,8 +16,15 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.control.VKConnect;
+import rescuecore2.messages.control.VKAcknowledge;
+import rescuecore2.messages.control.KVConnectOK;
+import rescuecore2.messages.control.SKConnect;
+import rescuecore2.messages.control.SKAcknowledge;
+import rescuecore2.messages.control.KSConnectOK;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Property;
+
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.Civilian;
 import rescuecore2.version0.entities.FireBrigade;
@@ -34,12 +41,6 @@ import rescuecore2.version0.messages.AKConnect;
 import rescuecore2.version0.messages.AKAcknowledge;
 import rescuecore2.version0.messages.KAConnectError;
 import rescuecore2.version0.messages.KAConnectOK;
-import rescuecore2.version0.messages.SKConnect;
-import rescuecore2.version0.messages.SKAcknowledge;
-import rescuecore2.version0.messages.KSConnectOK;
-import rescuecore2.version0.messages.VKConnect;
-import rescuecore2.version0.messages.VKAcknowledge;
-import rescuecore2.version0.messages.KVConnectOK;
 
 /**
    Class that manages connecting legacy components.

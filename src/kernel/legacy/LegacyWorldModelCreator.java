@@ -12,18 +12,17 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.control.GKConnectOK;
+import rescuecore2.messages.control.GKConnectError;
+import rescuecore2.messages.control.KGConnect;
+import rescuecore2.messages.control.KGAcknowledge;
 
 import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.messages.Version0MessageFactory;
-import rescuecore2.version0.messages.GKConnectOK;
-import rescuecore2.version0.messages.GKConnectError;
-import rescuecore2.version0.messages.KGConnect;
-import rescuecore2.version0.messages.KGAcknowledge;
 
 /**
-   A WorldModelCreator that talks to the GIS.
+   A WorldModelCreator that talks to the GIS to build RescueEntities.
  */
-public class GISWorldModelCreator implements WorldModelCreator<RescueEntity, IndexedWorldModel> {
+public class LegacyWorldModelCreator implements WorldModelCreator<RescueEntity, IndexedWorldModel> {
     @Override
     public IndexedWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
@@ -32,7 +31,7 @@ public class GISWorldModelCreator implements WorldModelCreator<RescueEntity, Ind
         int gisPort = config.getIntValue("gis_port");
         Connection conn;
         try {
-            conn = new TCPConnection(Version0MessageFactory.INSTANCE, gisPort);
+            conn = new TCPConnection(gisPort);
             conn.addConnectionListener(new GISConnectionListener(latch, world));
             conn.startup();
             conn.sendMessage(new KGConnect());

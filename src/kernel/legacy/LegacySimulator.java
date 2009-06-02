@@ -10,10 +10,10 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
+import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.Update;
 import rescuecore2.version0.messages.Commands;
-import rescuecore2.version0.messages.SKUpdate;
 import rescuecore2.version0.messages.AgentCommand;
 
 /**
