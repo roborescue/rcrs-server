@@ -74,6 +74,7 @@ public final class StartKernel {
                             System.exit(0);
                         }
                     });
+                status.start();
                 frame.setVisible(true);
             }
             setupLegacyKernel(config, kernel);

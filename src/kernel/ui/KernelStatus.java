@@ -147,11 +147,20 @@ public class KernelStatus<T extends Entity> extends JPanel implements KernelList
                         run();
                     }
                 });
+            runThread = new RunThread(config.getIntValue("timesteps"));
         }
         running = false;
-        runThread = new RunThread(config.getIntValue("timesteps"));
-        runThread.start();
     }
+
+    /**
+       Start the background UI thread.
+     */
+    public void start() {
+        if (runThread != null) {
+            runThread.start();
+        }
+    }
+
 
     @Override
     public void timestepCompleted(int time) {
