@@ -34,8 +34,13 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
 
     @Override
     public final void addEntity(Entity e) {
+        System.out.println("Checking if we can add " + e);
         if (isAllowed(e)) {
+            System.out.println("Allowed");
             addEntityImpl((T)e);
+        }
+        else {
+            System.out.println("Not allowed");
         }
     }
 
@@ -48,7 +53,7 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
 
     /**
        Subclasses should provide their implementation of addEntity here.
-       @param e The entity to add.
+       @param t The entity to add.
     */
     protected abstract void addEntityImpl(T t);
 

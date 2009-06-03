@@ -18,6 +18,7 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
 
     /**
        Construct an empty world model.
+       @param clazz The class of objects that are allowed in this world model. This approach is a workaround for the limitations of Java generics.
     */
     public DefaultWorldModel(Class<T> clazz) {
         entities = new HashMap<EntityID, T>();

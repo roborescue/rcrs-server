@@ -10,8 +10,6 @@ import rescuecore2.messages.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 
 import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.RescueEntityType;
-import rescuecore2.version0.entities.RescueEntityFactory;
 
 /**
    A message for signalling a perception update for an agent.

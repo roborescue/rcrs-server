@@ -21,7 +21,7 @@ public class KGConnect extends AbstractMessage implements Control {
 
     /**
        A KGConnect message with a specified version number.
-       @param The version number field.
+       @param version The version number field.
      */
     public KGConnect(int version) {
         this();

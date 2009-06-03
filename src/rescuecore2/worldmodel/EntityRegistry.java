@@ -2,8 +2,6 @@ package rescuecore2.worldmodel;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.io.InputStream;
-import java.io.IOException;
 
 /**
    A class for managing the different types of entities and their associated factories.
@@ -55,7 +53,7 @@ public final class EntityRegistry {
        @param id The EntityID of the Entity that will be created.
        @return A new Entity object, or null if the ID is not recognised.
      */
-    public static Entity createEntity(int type, EntityID id) throws IOException {
+    public static Entity createEntity(int type, EntityID id) {
         EntityFactory factory;
         synchronized (factories) {
             factory = factories.get(type);
