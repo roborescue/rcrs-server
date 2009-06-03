@@ -2,7 +2,6 @@ package kernel;
 
 import java.util.Collection;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 

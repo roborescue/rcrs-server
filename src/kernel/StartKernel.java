@@ -14,7 +14,6 @@ import rescuecore2.config.ConfigException;
 import rescuecore2.messages.MessageRegistry;
 import rescuecore2.worldmodel.EntityRegistry;
 
-import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.RescueEntityFactory;
 import rescuecore2.version0.messages.Version0MessageFactory;
 
@@ -112,7 +111,7 @@ public final class StartKernel {
            @return A new, uninitialised Kernel object.
            @throws KernelException If there is a problem constructing the kernel.
         */
-        public Kernel createKernel(Config config) throws KernelException;
+        Kernel createKernel(Config config) throws KernelException;
 
         /**
            Initialise a kernel: add agents/viewers/simulators if required and do any other necessary startup.
@@ -120,7 +119,7 @@ public final class StartKernel {
            @param config The kernel configuration.
            @throws KernelException If there is a problem initialising the kernel.
         */
-        public void initialiseKernel(Kernel kernel, Config config) throws KernelException;
+        void initialiseKernel(Kernel kernel, Config config) throws KernelException;
     }
 
     private static class LegacyKernelBuilder implements KernelBuilder {

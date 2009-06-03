@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rescuecore2.config.Config;
-import rescuecore2.config.ConfigException;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;

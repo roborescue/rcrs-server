@@ -1,6 +1,5 @@
 package kernel.legacy;
 
-import kernel.WorldModelCreator;
 import kernel.KernelException;
 
 import java.io.IOException;
@@ -26,7 +25,12 @@ import rescuecore2.version0.entities.RescueEntity;
    A WorldModelCreator that talks to the GIS to build RescueEntities.
  */
 public class LegacyWorldModelCreator {
-    //    @Override
+    /**
+       Create a new IndexedWorldModel.
+       @param config The config to use.
+       @return A new world model.
+       @throws KernelException If there is a problem building the world model.
+    */
     public IndexedWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
         IndexedWorldModel world = new IndexedWorldModel(config.getIntValue("vision"));

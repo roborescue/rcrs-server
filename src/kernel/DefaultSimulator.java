@@ -2,7 +2,6 @@ package kernel;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;

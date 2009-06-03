@@ -1,6 +1,5 @@
 package kernel;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.Message;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;

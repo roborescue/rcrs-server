@@ -24,7 +24,6 @@ import rescuecore2.messages.control.KVConnectOK;
 import rescuecore2.messages.control.SKConnect;
 import rescuecore2.messages.control.SKAcknowledge;
 import rescuecore2.messages.control.KSConnectOK;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Property;
 
 import rescuecore2.version0.entities.RescueEntity;

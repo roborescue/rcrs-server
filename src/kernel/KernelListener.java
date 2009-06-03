@@ -1,7 +1,5 @@
 package kernel;
 
-import rescuecore2.worldmodel.Entity;
-
 /**
    Interface for objects that are interested in kernel events.
  */

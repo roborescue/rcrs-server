@@ -19,7 +19,6 @@ import kernel.Simulator;
 import kernel.Viewer;
 import kernel.Kernel;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.config.Config;
 import rescuecore2.misc.WorkerThread;
 
@@ -53,6 +52,7 @@ public class KernelStatus extends JPanel implements KernelListener {
     /**
        Construct a KernelStatus component.
        @param config The kernel configuration.
+       @param kernel The Kernel to watch.
        @param allowControl Whether to allow the control buttons or not.
     */
     public KernelStatus(Config config, Kernel kernel, boolean allowControl) {
