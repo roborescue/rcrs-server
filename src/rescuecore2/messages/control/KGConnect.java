@@ -18,4 +18,21 @@ public class KGConnect extends AbstractMessage implements Control {
         version = new IntComponent("Version", 0);
         addMessageComponent(version);
     }
+
+    /**
+       A KGConnect message with a specified version number.
+       @param The version number field.
+     */
+    public KGConnect(int version) {
+        this();
+        this.version.setValue(version);
+    }
+
+    /**
+       Get the version number of the message.
+       @return The version number field.
+    */
+    public int getVersion() {
+        return version.getValue();
+    }
 }

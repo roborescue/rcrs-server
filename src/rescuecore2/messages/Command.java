@@ -5,7 +5,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
    A sub-interface of Message that tags messages that are interpreted as agent commands.
  */
-public interface Command {
+public interface Command extends Message {
     /**
        Get the id of the agent-controlled entity that has issued this command.
        @return The id of the agent.

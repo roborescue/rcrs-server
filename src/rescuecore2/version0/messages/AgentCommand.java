@@ -49,6 +49,5 @@ public abstract class AgentCommand extends AbstractMessage implements Command {
      */
     protected void setAgentID(EntityID agentID) {
         this.agentID.setValue(agentID);
-
     }
 }

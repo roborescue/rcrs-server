@@ -1,7 +1,10 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
+import rescuecore2.messages.Command;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.CommandListComponent;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.List;
 /**
    A message containing a list of agent commands. This is sent from the kernel to all simulators and viewers.
  */
-public class Commands extends AbstractMessage {
+public class Commands extends AbstractMessage implements Control {
     private IntComponent time;
     private CommandListComponent commands;
 
@@ -17,7 +20,7 @@ public class Commands extends AbstractMessage {
        An empty Commands message.
      */
     public Commands() {
-        super("Commands", MessageConstants.COMMANDS);
+        super("Commands", ControlMessageConstants.COMMANDS);
         time = new IntComponent("Time");
         commands = new CommandListComponent("Commands");
         addMessageComponent(time);
@@ -29,7 +32,7 @@ public class Commands extends AbstractMessage {
        @param time The timestep of the simulation.
        @param commands All AgentCommands.
      */
-    public Commands(int time, Collection<? extends AgentCommand> commands) {
+    public Commands(int time, Collection<? extends Command> commands) {
         this();
         this.time.setValue(time);
         this.commands.setCommands(commands);
@@ -47,7 +50,7 @@ public class Commands extends AbstractMessage {
        Get the list of agent commands.
        @return The agent commands.
      */
-    public List<AgentCommand> getCommands() {
+    public List<Command> getCommands() {
         return commands.getCommands();
     }
 }

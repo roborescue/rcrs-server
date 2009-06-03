@@ -1,12 +1,10 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
-
-import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.RescueEntityType;
-import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.worldmodel.Entity;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,17 +12,17 @@ import java.util.List;
 /**
    A broadcast update from the kernel.
  */
-public class Update extends AbstractMessage {
+public class Update extends AbstractMessage implements Control {
     private IntComponent time;
-    private EntityListComponent<RescueEntityType, RescueEntity> updates;
+    private EntityListComponent updates;
 
     /**
        An empty Update message.
      */
     public Update() {
-        super("Update", MessageConstants.UPDATE);
+        super("Update", ControlMessageConstants.UPDATE);
         time = new IntComponent("Time");
-        updates = new EntityListComponent<RescueEntityType, RescueEntity>("Updates", RescueEntityFactory.INSTANCE);
+        updates = new EntityListComponent("Updates");
         addMessageComponent(time);
         addMessageComponent(updates);
     }
@@ -34,7 +32,7 @@ public class Update extends AbstractMessage {
        @param time The timestep of the simulation.
        @param updates All updated entities.
      */
-    public Update(int time, Collection<? extends RescueEntity> updates) {
+    public Update(int time, Collection<? extends Entity> updates) {
         this();
         this.time.setValue(time);
         this.updates.setEntities(updates);
@@ -52,7 +50,7 @@ public class Update extends AbstractMessage {
        Get the list of updated entities.
        @return The updated entities.
      */
-    public List<RescueEntity> getUpdatedEntities() {
+    public List<Entity> getUpdatedEntities() {
         return updates.getEntities();
     }
 }

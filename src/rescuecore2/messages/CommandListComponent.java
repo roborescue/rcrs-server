@@ -1,4 +1,4 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
@@ -14,14 +14,11 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import rescuecore2.messages.Message;
-import rescuecore2.messages.AbstractMessageComponent;
-
 /**
    A message component made up of a list of agent commands.
  */
 public class CommandListComponent extends AbstractMessageComponent {
-    private List<AgentCommand> commands;
+    private List<Command> commands;
 
     /**
        Construct a CommandListComponent with no content.
@@ -29,7 +26,7 @@ public class CommandListComponent extends AbstractMessageComponent {
     */
     public CommandListComponent(String name) {
         super(name);
-        commands = new ArrayList<AgentCommand>();
+        commands = new ArrayList<Command>();
     }
 
     /**
@@ -37,16 +34,16 @@ public class CommandListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param commands The agent commands in this message component.
     */
-    public CommandListComponent(String name, Collection<? extends AgentCommand> commands) {
+    public CommandListComponent(String name, Collection<? extends Command> commands) {
         super(name);
-        this.commands = new ArrayList<AgentCommand>(commands);
+        this.commands = new ArrayList<Command>(commands);
     }
 
     /**
        Get the agent commands that make up this message component.
        @return The agent commands in this component.
     */
-    public List<AgentCommand> getCommands() {
+    public List<Command> getCommands() {
         return commands;
     }
 
@@ -54,13 +51,13 @@ public class CommandListComponent extends AbstractMessageComponent {
        Set the commands that make up this message component.
        @param commands The commands in this component.
     */
-    public void setCommands(Collection<? extends AgentCommand> commands) {
-        this.commands = new ArrayList<AgentCommand>(commands);
+    public void setCommands(Collection<? extends Command> commands) {
+        this.commands = new ArrayList<Command>(commands);
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        for (AgentCommand next : commands) {
+        for (Command next : commands) {
             ByteArrayOutputStream gather = new ByteArrayOutputStream();
             next.write(gather);
             // Type
@@ -84,9 +81,12 @@ public class CommandListComponent extends AbstractMessageComponent {
                 int size = readInt32(in);
                 byte[] data = readBytes(size, in);
                 ByteArrayInputStream dataIn = new ByteArrayInputStream(data);
-                Message next = Version0MessageFactory.INSTANCE.createMessage(typeID, dataIn);
-                if (next instanceof AgentCommand) {
-                    commands.add((AgentCommand)next);
+                Message next = MessageRegistry.createMessage(typeID, dataIn);
+                if (next instanceof Command) {
+                    commands.add((Command)next);
+                }
+                else {
+                    System.err.println("Command list stream contained a non-command message: " + next + " (" + next.getClass().getName() + ")");
                 }
             }
         } while (typeID != 0);

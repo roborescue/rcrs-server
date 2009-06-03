@@ -19,11 +19,6 @@ public final class MessageConstants {
     /** Kernel-Agent hear (tell). */
     public static final int KA_HEAR_TELL = 0x47;
 
-    /** Kernel update broadcast. */
-    public static final int UPDATE = 0x50;
-    /** Kernel commands broadcast. */
-    public static final int COMMANDS = 0x51;
-
     /** Move command. */
     public static final int AK_MOVE = 0x81;
     /** Load command. */
