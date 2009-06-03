@@ -8,14 +8,13 @@ import rescuecore2.messages.Command;
 
 /**
    A model of communication. Implementers are responsible for determining what communications are received by each agent in the world.
-   @param <T> The subclass of Entity that this model understands.
  */
-public interface CommunicationModel<T extends Entity> {
+public interface CommunicationModel {
     /**
        Process a set of agent commands and work out what communications a particular agent can hear.
        @param agent The agent-controlled entity.
        @param agentCommands The set of all agent commands last timestep.
        @return A collection of communication update messages to be sent to the agent.
      */
-    Collection<Message> process(Agent<T> agent, Collection<Command> agentCommands);
+    Collection<Message> process(Agent agent, Collection<Command> agentCommands);
 }

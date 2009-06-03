@@ -5,6 +5,8 @@ import kernel.KernelException;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+import java.util.Collection;
+import java.util.ArrayList;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -16,14 +18,15 @@ import rescuecore2.messages.control.GKConnectOK;
 import rescuecore2.messages.control.GKConnectError;
 import rescuecore2.messages.control.KGConnect;
 import rescuecore2.messages.control.KGAcknowledge;
+import rescuecore2.worldmodel.Entity;
 
 import rescuecore2.version0.entities.RescueEntity;
 
 /**
    A WorldModelCreator that talks to the GIS to build RescueEntities.
  */
-public class LegacyWorldModelCreator implements WorldModelCreator<RescueEntity, IndexedWorldModel> {
-    @Override
+public class LegacyWorldModelCreator {
+    //    @Override
     public IndexedWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
         IndexedWorldModel world = new IndexedWorldModel(config.getIntValue("vision"));
@@ -71,7 +74,14 @@ public class LegacyWorldModelCreator implements WorldModelCreator<RescueEntity, 
                 try {
                     // Update the internal world model
                     model.removeAllEntities();
-                    model.addEntities(((GKConnectOK)m).getEntities());
+                    Collection<Entity> response = ((GKConnectOK)m).getEntities();
+                    Collection<RescueEntity> all = new ArrayList<RescueEntity>(response.size());
+                    for (Entity next : response) {
+                        if (next instanceof RescueEntity) {
+                            all.add((RescueEntity)next);
+                        }
+                    }
+                    model.addEntities(all);
                     // Send an acknowledgement
                     c.sendMessage(new KGAcknowledge());
                     System.out.println("GIS connected OK");

@@ -13,10 +13,9 @@ import java.util.HashSet;
 
 /**
    Abstract base class for Agent implementations.
-   @param <T> The subclass of Entity that this agent understands.
  */
-public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
-    private T entity;
+public abstract class AbstractAgent implements Agent {
+    private Entity entity;
     private Connection connection;
     private Collection<Command> commands;
 
@@ -25,7 +24,7 @@ public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
        @param entity The entity controlled by this agent.
        @param c The connection this agent is using.
      */
-    protected AbstractAgent(T entity, Connection c) {
+    protected AbstractAgent(Entity entity, Connection c) {
         this.entity = entity;
         this.connection = c;
         commands = new HashSet<Command>();
@@ -33,7 +32,7 @@ public abstract class AbstractAgent<T extends Entity> implements Agent<T> {
     }
 
     @Override
-    public T getControlledEntity() {
+    public Entity getControlledEntity() {
         return entity;
     }
 

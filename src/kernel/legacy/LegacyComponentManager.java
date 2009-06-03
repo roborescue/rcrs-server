@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Collections;
 
 import kernel.Kernel;
+import kernel.Viewer;
+import kernel.DefaultViewer;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -48,7 +50,7 @@ import rescuecore2.version0.messages.KAConnectOK;
 public class LegacyComponentManager implements ConnectionManagerListener {
     private static final int WAIT_TIME = 10000;
 
-    private Kernel<RescueEntity> kernel;
+    private Kernel kernel;
 
     // Entities that have no controller yet
     private Queue<Civilian> civ;
@@ -67,10 +69,10 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     private int nextSimulatorID;
 
     // Connected viewers
-    private Set<LegacyViewer> viewersToAcknowledge;
+    private Set<Viewer> viewersToAcknowledge;
 
     // World information
-    private WorldModel<RescueEntity> world;
+    private IndexedWorldModel world;
     private Set<RescueEntity> initialEntities;
     private int freezeTime;
 
@@ -82,11 +84,12 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     /**
        Create a LegacyComponentManager.
        @param kernel The kernel.
+       @param world The world model.
        @param config The kernel configuration.
     */
-    public LegacyComponentManager(Kernel<RescueEntity> kernel, Config config) {
+    public LegacyComponentManager(Kernel kernel, IndexedWorldModel world, Config config) {
         this.kernel = kernel;
-        this.world = kernel.getWorldModel();
+        this.world = world;
         civ = new LinkedList<Civilian>();
         fb = new LinkedList<FireBrigade>();
         fs = new LinkedList<FireStation>();
@@ -123,7 +126,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
         agentsToAcknowledge = new HashSet<LegacyAgent>();
         simsToAcknowledge = new HashSet<LegacySimulator>();
-        viewersToAcknowledge = new HashSet<LegacyViewer>();
+        viewersToAcknowledge = new HashSet<Viewer>();
         nextSimulatorID = 1;
     }
 
@@ -215,7 +218,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
     private boolean viewerAcknowledge(Connection c) {
         synchronized (viewerLock) {
-            for (LegacyViewer next : viewersToAcknowledge) {
+            for (Viewer next : viewersToAcknowledge) {
                 if (next.getConnection() == c) {
                     viewersToAcknowledge.remove(next);
                     kernel.addViewer(next);
@@ -385,7 +388,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
                         LegacyAgent agent = new LegacyAgent(entity, connection, freezeTime);
                         agentsToAcknowledge.add(agent);
                         // Send an OK
-                        agent.send(Collections.singleton(new KAConnectOK(tempID, agent.getControlledEntity().getID().getValue(), agent.getControlledEntity(), initialEntities)));
+                        agent.send(Collections.singleton(new KAConnectOK(tempID, agent.getControlledEntity().getID().getValue(), (RescueEntity)agent.getControlledEntity(), initialEntities)));
                     }
                 }
                 catch (ConnectionException e) {
@@ -427,7 +430,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
         private void handleVKConnect(VKConnect msg, Connection connection) {
             System.out.println("Viewer connected");
-            LegacyViewer viewer = new LegacyViewer(connection);
+            Viewer viewer = new DefaultViewer(connection);
             synchronized (viewerLock) {
                 viewersToAcknowledge.add(viewer);
             }

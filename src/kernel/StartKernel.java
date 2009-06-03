@@ -2,6 +2,9 @@ package kernel;
 
 import java.io.File;
 import java.io.IOException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionManager;
@@ -9,20 +12,18 @@ import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.messages.MessageRegistry;
+import rescuecore2.worldmodel.EntityRegistry;
 
 import rescuecore2.version0.entities.RescueEntity;
-
-import kernel.ui.KernelStatus;
-import javax.swing.JFrame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.version0.messages.Version0MessageFactory;
 
 import kernel.legacy.LegacyWorldModelCreator;
 import kernel.legacy.LegacyComponentManager;
 import kernel.legacy.LegacyPerception;
 import kernel.legacy.LegacyCommunicationModel;
 import kernel.legacy.IndexedWorldModel;
-import rescuecore2.version0.messages.Version0MessageFactory;
+import kernel.ui.KernelStatus;
 
 /**
    A class for launching the kernel.
@@ -39,7 +40,7 @@ public final class StartKernel {
     /**
        Start a kernel.
        @param args Command line arguments.
-     */
+    */
     public static void main(String[] args) {
         Config config = new Config();
         boolean gui = true;
@@ -61,10 +62,12 @@ public final class StartKernel {
                 }
                 ++i;
             }
-            final Kernel<RescueEntity> kernel = createLegacyKernel(config);
+            KernelBuilder builder = new LegacyKernelBuilder();
+            final Kernel kernel = builder.createKernel(config);
             if (gui) {
-                KernelStatus<RescueEntity> status = new KernelStatus<RescueEntity>(kernel, config, !justRun);
+                KernelStatus status = new KernelStatus(config, kernel, !justRun);
                 kernel.addKernelListener(status);
+                status.activate();
                 JFrame frame = new JFrame("Kernel status");
                 frame.getContentPane().add(status);
                 frame.pack();
@@ -74,10 +77,9 @@ public final class StartKernel {
                             System.exit(0);
                         }
                     });
-                status.start();
                 frame.setVisible(true);
             }
-            setupLegacyKernel(config, kernel);
+            builder.initialiseKernel(kernel, config);
             if (!gui || justRun) {
                 int maxTime = config.getIntValue("timesteps");
                 while (kernel.getTime() <= maxTime) {
@@ -103,37 +105,66 @@ public final class StartKernel {
         }
     }
 
-    private static Kernel<RescueEntity> createLegacyKernel(Config config) throws KernelException, ConfigException, InterruptedException {
-        // Get the world model
-        IndexedWorldModel worldModel = new LegacyWorldModelCreator().buildWorldModel(config);
-        LegacyPerception perception = new LegacyPerception(config, worldModel);
-        LegacyCommunicationModel comms = new LegacyCommunicationModel(config, worldModel);
-        return new Kernel<RescueEntity>(config, perception, comms, worldModel);
+    private static interface KernelBuilder {
+        /**
+           Create a new Kernel object.
+           @param config The kernel configuration.
+           @return A new, uninitialised Kernel object.
+           @throws KernelException If there is a problem constructing the kernel.
+        */
+        public Kernel createKernel(Config config) throws KernelException;
+
+        /**
+           Initialise a kernel: add agents/viewers/simulators if required and do any other necessary startup.
+           @param kernel The kernel to initialise.
+           @param config The kernel configuration.
+           @throws KernelException If there is a problem initialising the kernel.
+        */
+        public void initialiseKernel(Kernel kernel, Config config) throws KernelException;
     }
 
-    private static void setupLegacyKernel(Config config, Kernel<RescueEntity> kernel) throws KernelException, InterruptedException {
-        final LegacyComponentManager manager = new LegacyComponentManager(kernel, config);
-        // Register legacy messages
-        MessageRegistry.register(Version0MessageFactory.INSTANCE);
+    private static class LegacyKernelBuilder implements KernelBuilder {
+        @Override
+        public Kernel createKernel(Config config) throws KernelException {
+            // Register legacy messages and entities
+            MessageRegistry.register(Version0MessageFactory.INSTANCE);
+            EntityRegistry.register(RescueEntityFactory.INSTANCE);
+            // Get the world model
+            IndexedWorldModel worldModel = new LegacyWorldModelCreator().buildWorldModel(config);
+            LegacyPerception perception = new LegacyPerception(config, worldModel);
+            LegacyCommunicationModel comms = new LegacyCommunicationModel(config, worldModel);
+            return new Kernel(config, perception, comms, worldModel);
+        }
 
-        // Start the connection manager
-        ConnectionManager connectionManager = new ConnectionManager();
-        ConnectionManagerListener listener = new ConnectionManagerListener() {
-            public void newConnection(Connection c) {
-                System.out.println("New connection: " + c);
-                manager.newConnection(c);
-                c.startup();
+        @Override
+        public void initialiseKernel(Kernel kernel, Config config) throws KernelException {
+            IndexedWorldModel worldModel = (IndexedWorldModel)kernel.getWorldModel();
+            final LegacyComponentManager manager = new LegacyComponentManager(kernel, worldModel, config);
+
+            // Start the connection manager
+            ConnectionManager connectionManager = new ConnectionManager();
+            ConnectionManagerListener listener = new ConnectionManagerListener() {
+                    public void newConnection(Connection c) {
+                        System.out.println("New connection: " + c);
+                        manager.newConnection(c);
+                        c.startup();
+                    }
+                };
+            try {
+                connectionManager.listen(config.getIntValue("kernel_port"), listener);
             }
-        };
-        try {
-            connectionManager.listen(config.getIntValue("kernel_port"), listener);
+            catch (IOException e) {
+                throw new KernelException("Couldn't open kernel port", e);
+            }
+            // Wait for all connections
+            try {
+                manager.waitForAllAgents();
+                manager.waitForAllSimulators();
+                manager.waitForAllViewers();
+            }
+            catch (InterruptedException e) {
+                throw new KernelException(e);
+            }
         }
-        catch (IOException e) {
-            throw new KernelException("Couldn't open kernel port", e);
-        }
-        // Wait for all connections
-        manager.waitForAllAgents();
-        manager.waitForAllSimulators();
-        manager.waitForAllViewers();
     }
 }

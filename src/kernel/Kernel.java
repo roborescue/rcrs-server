@@ -13,19 +13,18 @@ import rescuecore2.messages.Command;
 
 /**
    The Robocup Rescue kernel.
-   @param <T> The subclass of Entity that this kernel operates on.
  */
-public class Kernel<T extends Entity> {
+public class Kernel {
     private Config config;
-    private Perception<T> perception;
-    private CommunicationModel<T> communicationModel;
-    private WorldModel<T> worldModel;
+    private Perception perception;
+    private CommunicationModel communicationModel;
+    private WorldModel<? extends Entity> worldModel;
 
-    private Set<KernelListener<T>> listeners;
+    private Set<KernelListener> listeners;
 
-    private Collection<Agent<T>> agents;
-    private Collection<Simulator<T>> sims;
-    private Collection<Viewer<T>> viewers;
+    private Collection<Agent> agents;
+    private Collection<Simulator> sims;
+    private Collection<Viewer> viewers;
     private int time;
     private Collection<Command> agentCommandsLastTimestep;
 
@@ -35,21 +34,19 @@ public class Kernel<T extends Entity> {
        @param perception A perception calculator.
        @param communicationModel A communication model.
        @param worldModel The world model.
-       @throws KernelException If something blows up.
-       @throws ConfigException If the config file is broken.
     */
     public Kernel(Config config,
-                  Perception<T> perception,
-                  CommunicationModel<T> communicationModel,
-                  WorldModel<T> worldModel) throws KernelException, ConfigException {
+                  Perception perception,
+                  CommunicationModel communicationModel,
+                  WorldModel<? extends Entity> worldModel) {
         this.config = config;
         this.perception = perception;
         this.communicationModel = communicationModel;
         this.worldModel = worldModel;
-        listeners = new HashSet<KernelListener<T>>();
-        agents = new HashSet<Agent<T>>();
-        sims = new HashSet<Simulator<T>>();
-        viewers = new HashSet<Viewer<T>>();
+        listeners = new HashSet<KernelListener>();
+        agents = new HashSet<Agent>();
+        sims = new HashSet<Simulator>();
+        viewers = new HashSet<Viewer>();
         time = 0;
         agentCommandsLastTimestep = new HashSet<Command>();
     }
@@ -58,7 +55,7 @@ public class Kernel<T extends Entity> {
        Add a KernelListener.
        @param l The listener to add.
     */
-    public void addKernelListener(KernelListener<T> l) {
+    public void addKernelListener(KernelListener l) {
         synchronized (listeners) {
             listeners.add(l);
         }
@@ -68,7 +65,7 @@ public class Kernel<T extends Entity> {
        Remove a KernelListener.
        @param l The listener to remove.
     */
-    public void removeKernelListener(KernelListener<T> l) {
+    public void removeKernelListener(KernelListener l) {
         synchronized (listeners) {
             listeners.remove(l);
         }
@@ -78,7 +75,7 @@ public class Kernel<T extends Entity> {
        Add an agent to the system.
        @param agent The agent to add.
     */
-    public void addAgent(Agent<T> agent) {
+    public void addAgent(Agent agent) {
         synchronized (this) {
             agents.add(agent);
         }
@@ -89,7 +86,7 @@ public class Kernel<T extends Entity> {
        Remove an agent from the system.
        @param agent The agent to remove.
     */
-    public void removeAgent(Agent<T> agent) {
+    public void removeAgent(Agent agent) {
         synchronized (this) {
             agents.remove(agent);
         }
@@ -100,7 +97,7 @@ public class Kernel<T extends Entity> {
        Add a simulator to the system.
        @param sim The simulator to add.
     */
-    public void addSimulator(Simulator<T> sim) {
+    public void addSimulator(Simulator sim) {
         synchronized (this) {
             sims.add(sim);
         }
@@ -111,7 +108,7 @@ public class Kernel<T extends Entity> {
        Remove a simulator from the system.
        @param sim The simulator to remove.
     */
-    public void removeSimulator(Simulator<T> sim) {
+    public void removeSimulator(Simulator sim) {
         synchronized (this) {
             sims.remove(sim);
         }
@@ -122,7 +119,7 @@ public class Kernel<T extends Entity> {
        Add a viewer to the system.
        @param viewer The viewer to add.
     */
-    public void addViewer(Viewer<T> viewer) {
+    public void addViewer(Viewer viewer) {
         synchronized (this) {
             viewers.add(viewer);
         }
@@ -133,7 +130,7 @@ public class Kernel<T extends Entity> {
        Remove a viewer from the system.
        @param viewer The viewer to remove.
     */
-    public void removeViewer(Viewer<T> viewer) {
+    public void removeViewer(Viewer viewer) {
         synchronized (this) {
             viewers.remove(viewer);
         }
@@ -153,16 +150,28 @@ public class Kernel<T extends Entity> {
             // Collate updates and broadcast to simulators/viewers
             System.out.println("Timestep " + time);
             System.out.println("Sending agent updates");
+            long start = System.currentTimeMillis();
             sendAgentUpdates(time, agentCommandsLastTimestep);
+            long perceptionTime = System.currentTimeMillis();
             System.out.println("Waiting for commands");
             agentCommandsLastTimestep = waitForCommands(time);
+            long commandsTime = System.currentTimeMillis();
             System.out.println("Broadcasting commands");
-            Collection<T> updates = sendCommandsToViewersAndSimulators(time, agentCommandsLastTimestep);
+            Collection<Entity> updates = sendCommandsToViewersAndSimulators(time, agentCommandsLastTimestep);
+            long updatesTime = System.currentTimeMillis();
             // Merge updates into world model
             System.out.println("Broadcasting updates");
             worldModel.merge(updates);
+            long mergeTime = System.currentTimeMillis();
             sendUpdatesToViewersAndSimulators(time, updates);
+            long broadcastTime = System.currentTimeMillis();
             System.out.println("Timestep " + time + " complete");
+            System.out.println("Perception took        : " + (perceptionTime - start) + "ms");
+            System.out.println("Agent commands took    : " + (commandsTime - perceptionTime) + "ms");
+            System.out.println("Simulator updates took : " + (updatesTime - commandsTime) + "ms");
+            System.out.println("World model merge took : " + (mergeTime - updatesTime) + "ms");
+            System.out.println("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
+            System.out.println("Total time             : " + (broadcastTime - start) + "ms");
             fireTimestepCompleted(time);
         }
     }
@@ -181,7 +190,7 @@ public class Kernel<T extends Entity> {
        Get the world model.
        @return The world model.
     */
-    public WorldModel<T> getWorldModel() {
+    public WorldModel getWorldModel() {
         return worldModel;
     }
 
@@ -189,24 +198,24 @@ public class Kernel<T extends Entity> {
        Shut down the kernel. This method will notify all agents/simulators/viewers of the shutdown.
      */
     public void shutdown() {
-        for (Agent<T> next : agents) {
+        for (Agent next : agents) {
             next.shutdown();
         }
-        for (Simulator<T> next : sims) {
+        for (Simulator next : sims) {
             next.shutdown();
         }
-        for (Viewer<T> next : viewers) {
+        for (Viewer next : viewers) {
             next.shutdown();
         }
     }
 
     private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException {
         perception.setTime(timestep);
-        for (Agent<T> next : agents) {
+        for (Agent next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
-            Collection<T> visible = perception.getVisibleEntities(next);
+            Collection<Entity> visible = perception.getVisibleEntities(next);
             Collection<Message> comms = communicationModel.process(next, commandsLastTimestep);
             next.sendPerceptionUpdate(timestep, visible, comms);
         }
@@ -220,7 +229,7 @@ public class Kernel<T extends Entity> {
             now = System.currentTimeMillis();
         }
         Collection<Command> result = new HashSet<Command>();
-        for (Agent<T> next : agents) {
+        for (Agent next : agents) {
             result.addAll(next.getAgentCommands(timestep));
         }
         return result;
@@ -229,76 +238,76 @@ public class Kernel<T extends Entity> {
     /**
        Send commands to all viewers and simulators and return which entities have been updated by the simulators.
     */
-    private Collection<T> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
-        for (Simulator<T> next : sims) {
+    private Collection<Entity> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
+        for (Simulator next : sims) {
             next.sendAgentCommands(timestep, commands);
         }
-        for (Viewer<T> next : viewers) {
+        for (Viewer next : viewers) {
             next.sendAgentCommands(timestep, commands);
         }
         // Wait until all simulators have sent updates
-        Collection<T> result = new HashSet<T>();
-        for (Simulator<T> next : sims) {
+        Collection<Entity> result = new HashSet<Entity>();
+        for (Simulator next : sims) {
             result.addAll(next.getUpdates(timestep));
         }
         return result;
     }
 
-    private void sendUpdatesToViewersAndSimulators(int timestep, Collection<T> updates) throws InterruptedException {
-        for (Simulator<T> next : sims) {
+    private void sendUpdatesToViewersAndSimulators(int timestep, Collection<Entity> updates) throws InterruptedException {
+        for (Simulator next : sims) {
             next.sendUpdate(timestep, updates);
         }
-        for (Viewer<T> next : viewers) {
+        for (Viewer next : viewers) {
             next.sendUpdate(timestep, updates);
         }
     }
 
-    private Set<KernelListener<T>> getListeners() {
-        Set<KernelListener<T>> result;
+    private Set<KernelListener> getListeners() {
+        Set<KernelListener> result;
         synchronized (listeners) {
-            result = new HashSet<KernelListener<T>>(listeners);
+            result = new HashSet<KernelListener>(listeners);
         }
         return result;
     }
 
     private void fireTimestepCompleted(int timestep) {
-        for (KernelListener<T> next : getListeners()) {
+        for (KernelListener next : getListeners()) {
             next.timestepCompleted(timestep);
         }
     }
 
-    private void fireAgentAdded(Agent<T> agent) {
-        for (KernelListener<T> next : getListeners()) {
+    private void fireAgentAdded(Agent agent) {
+        for (KernelListener next : getListeners()) {
             next.agentAdded(agent);
         }
     }
 
-    private void fireAgentRemoved(Agent<T> agent) {
-        for (KernelListener<T> next : getListeners()) {
+    private void fireAgentRemoved(Agent agent) {
+        for (KernelListener next : getListeners()) {
             next.agentRemoved(agent);
         }
     }
 
-    private void fireSimulatorAdded(Simulator<T> sim) {
-        for (KernelListener<T> next : getListeners()) {
+    private void fireSimulatorAdded(Simulator sim) {
+        for (KernelListener next : getListeners()) {
             next.simulatorAdded(sim);
         }
     }
 
-    private void fireSimulatorRemoved(Simulator<T> sim) {
-        for (KernelListener<T> next : getListeners()) {
+    private void fireSimulatorRemoved(Simulator sim) {
+        for (KernelListener next : getListeners()) {
             next.simulatorRemoved(sim);
         }
     }
 
-    private void fireViewerAdded(Viewer<T> viewer) {
-        for (KernelListener<T> next : getListeners()) {
+    private void fireViewerAdded(Viewer viewer) {
+        for (KernelListener next : getListeners()) {
             next.viewerAdded(viewer);
         }
     }
 
-    private void fireViewerRemoved(Viewer<T> viewer) {
-        for (KernelListener<T> next : getListeners()) {
+    private void fireViewerRemoved(Viewer viewer) {
+        for (KernelListener next : getListeners()) {
             next.viewerRemoved(viewer);
         }
     }

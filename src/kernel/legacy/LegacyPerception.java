@@ -10,6 +10,7 @@ import java.util.Iterator;
 import kernel.Perception;
 import kernel.Agent;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
@@ -23,7 +24,7 @@ import rescuecore2.version0.entities.RescuePropertyType;
 /**
    Legacy implementation of perception.
  */
-public class LegacyPerception implements Perception<RescueEntity> {
+public class LegacyPerception implements Perception {
     private static final int HP_PRECISION = 1000;
     private static final int DAMAGE_PRECISION = 100;
 
@@ -77,9 +78,9 @@ public class LegacyPerception implements Perception<RescueEntity> {
     }
 
     @Override
-    public Collection<RescueEntity> getVisibleEntities(Agent<? extends RescueEntity> agent) {
-        RescueEntity agentEntity = agent.getControlledEntity();
-        Collection<RescueEntity> result = new HashSet<RescueEntity>();
+    public Collection<Entity> getVisibleEntities(Agent agent) {
+        RescueEntity agentEntity = (RescueEntity)agent.getControlledEntity();
+        Collection<Entity> result = new HashSet<Entity>();
         // Look for roads/nodes/buildings/humans within range
         Pair<Integer, Integer> location = agentEntity.getLocation(world);
         if (location != null) {

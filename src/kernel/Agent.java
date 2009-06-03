@@ -9,9 +9,8 @@ import rescuecore2.worldmodel.Entity;
 
 /**
    This class is the kernel interface to an agent.
-   @param <T> The subclass of Entity that this Agent understands.
  */
-public interface Agent<T extends Entity> {
+public interface Agent {
     /**
        Send a set of messages to the agent.
        @param messages The messages to send.
@@ -22,7 +21,7 @@ public interface Agent<T extends Entity> {
        Get the entity controlled by this agent.
        @return The entity controlled by this agent.
      */
-    T getControlledEntity();
+    Entity getControlledEntity();
 
     /**
        Get all agent commands since the last call to this method.
@@ -37,7 +36,7 @@ public interface Agent<T extends Entity> {
        @param visible The set of visible entitites.
        @param communication The set of communication messages that the agent perceived.
      */
-    void sendPerceptionUpdate(int time, Collection<? extends T> visible, Collection<? extends Message> communication);
+    void sendPerceptionUpdate(int time, Collection<? extends Entity> visible, Collection<? extends Message> communication);
 
     /**
        Shut this agent down.

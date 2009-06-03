@@ -25,15 +25,14 @@ import rescuecore2.misc.WorkerThread;
 
 /**
    A status panel for the kernel.
-   @param <T> The subclass of Entity that this status object understands.
  */
-public class KernelStatus<T extends Entity> extends JPanel implements KernelListener<T> {
-    private Kernel<T> kernel;
+public class KernelStatus extends JPanel implements KernelListener {
+    private Kernel kernel;
     private Config config;
 
-    private ListModelList<Agent<T>> agents;
-    private ListModelList<Simulator<T>> simulators;
-    private ListModelList<Viewer<T>> viewers;
+    private ListModelList<Agent> agents;
+    private ListModelList<Simulator> simulators;
+    private ListModelList<Viewer> viewers;
 
     private JList agentsList;
     private JList simulatorsList;
@@ -53,16 +52,15 @@ public class KernelStatus<T extends Entity> extends JPanel implements KernelList
 
     /**
        Construct a KernelStatus component.
-       @param kernel The kernel.
        @param config The kernel configuration.
        @param allowControl Whether to allow the control buttons or not.
     */
-    public KernelStatus(Kernel<T> kernel, Config config, boolean allowControl) {
+    public KernelStatus(Config config, Kernel kernel, boolean allowControl) {
         super(new BorderLayout());
         this.kernel = kernel;
-        agents = new ListModelList<Agent<T>>(new ArrayList<Agent<T>>());
-        simulators = new ListModelList<Simulator<T>>(new ArrayList<Simulator<T>>());
-        viewers = new ListModelList<Viewer<T>>(new ArrayList<Viewer<T>>());
+        agents = new ListModelList<Agent>(new ArrayList<Agent>());
+        simulators = new ListModelList<Simulator>(new ArrayList<Simulator>());
+        viewers = new ListModelList<Viewer>(new ArrayList<Viewer>());
         agentsList = new JList(agents);
         simulatorsList = new JList(simulators);
         viewersList = new JList(viewers);
@@ -153,9 +151,9 @@ public class KernelStatus<T extends Entity> extends JPanel implements KernelList
     }
 
     /**
-       Start the background UI thread.
+       Activate this status object.
      */
-    public void start() {
+    public void activate() {
         if (runThread != null) {
             runThread.start();
         }
@@ -168,37 +166,37 @@ public class KernelStatus<T extends Entity> extends JPanel implements KernelList
     }
 
     @Override
-    public void agentAdded(Agent<T> info) {
+    public void agentAdded(Agent info) {
         System.out.println("Agent added: " + info);
         agents.add(info);
     }
 
     @Override
-    public void agentRemoved(Agent<T> info) {
+    public void agentRemoved(Agent info) {
         System.out.println("Agent removed: " + info);
         agents.remove(info);
     }
 
     @Override
-    public void simulatorAdded(Simulator<T> info) {
+    public void simulatorAdded(Simulator info) {
         System.out.println("Simulator added: " + info);
         simulators.add(info);
     }
 
     @Override
-    public void simulatorRemoved(Simulator<T> info) {
+    public void simulatorRemoved(Simulator info) {
         System.out.println("Simulator removed: " + info);
         simulators.remove(info);
     }
 
     @Override
-    public void viewerAdded(Viewer<T> info) {
+    public void viewerAdded(Viewer info) {
         System.out.println("Viewer added: " + info);
         viewers.add(info);
     }
 
     @Override
-    public void viewerRemoved(Viewer<T> info) {
+    public void viewerRemoved(Viewer info) {
         System.out.println("Viewer removed: " + info);
         viewers.remove(info);
     }

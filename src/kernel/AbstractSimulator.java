@@ -12,11 +12,10 @@ import java.util.HashSet;
 
 /**
    Abstract base class for Simulator implementations.
-   @param <T> The subclass of Entity that this simulator understands.
  */
-public abstract class AbstractSimulator<T extends Entity> implements Simulator<T> {
+public abstract class AbstractSimulator implements Simulator {
     private Connection connection;
-    private Map<Integer, Collection<T>> updates;
+    private Map<Integer, Collection<Entity>> updates;
 
     /**
        Construct a new abstract simulator.
@@ -24,7 +23,7 @@ public abstract class AbstractSimulator<T extends Entity> implements Simulator<T
      */
     protected AbstractSimulator(Connection c) {
         this.connection = c;
-        updates = new HashMap<Integer, Collection<T>>();
+        updates = new HashMap<Integer, Collection<Entity>>();
     }
 
     @Override
@@ -41,8 +40,8 @@ public abstract class AbstractSimulator<T extends Entity> implements Simulator<T
     }
 
     @Override
-    public Collection<T> getUpdates(int timestep) throws InterruptedException {
-        Collection<T> result = null;
+    public Collection<Entity> getUpdates(int timestep) throws InterruptedException {
+        Collection<Entity> result = null;
         synchronized (updates) {
             while (result == null) {
                 result = updates.get(timestep);
@@ -64,21 +63,16 @@ public abstract class AbstractSimulator<T extends Entity> implements Simulator<T
         connection.shutdown();
     }
 
-    @Override
-    public String toString() {
-        return connection.toString();
-    }
-
     /**
        Register an update from the simulator.
        @param time The timestep of the update.
        @param u The set of updated entities.
      */
-    protected void updateReceived(int time, Collection<? extends T> u) {
+    protected void updateReceived(int time, Collection<? extends Entity> u) {
         synchronized (updates) {
-            Collection<T> c = updates.get(time);
+            Collection<Entity> c = updates.get(time);
             if (c == null) {
-                c = new HashSet<T>();
+                c = new HashSet<Entity>();
                 updates.put(time, c);
             }
             c.addAll(u);

@@ -37,11 +37,19 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueEntity> {
        @param meshSize The size of the mesh to create.
      */
     public IndexedWorldModel(int meshSize) {
+        super(RescueEntity.class);
         this.meshSize = meshSize;
         storedTypes = new HashMap<EntityType, Collection<RescueEntity>>();
         mobileEntities = new HashSet<RescueEntity>();
         staticEntities = new HashSet<RescueEntity>();
     }
+
+    /*
+    @Override
+    protected boolean allowed(Entity e) {
+        return RescueEntity.class.isAssignableFrom(e.getClass());
+    }
+    */
 
     /**
        Tell this index to remember a certain class of entities.

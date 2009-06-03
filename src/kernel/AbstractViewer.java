@@ -9,9 +9,8 @@ import java.util.Collection;
 
 /**
    Abstract base class for Viewer implementations.
-   @param <T> The subclass of Entity that this viewer understands.
  */
-public abstract class AbstractViewer<T extends Entity> implements Viewer<T> {
+public abstract class AbstractViewer implements Viewer {
     private Connection connection;
 
     /**
@@ -47,6 +46,6 @@ public abstract class AbstractViewer<T extends Entity> implements Viewer<T> {
 
     @Override
     public String toString() {
-        return connection.toString();
+        return "Viewer: " + connection.toString();
     }
 }

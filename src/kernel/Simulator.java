@@ -9,9 +9,8 @@ import java.util.Collection;
 
 /**
    This class is the kernel interface to a simulator.
-   @param <T> The subclass of Entity that this simulator understands.
  */
-public interface Simulator<T extends Entity> {
+public interface Simulator {
     /**
        Send a set of messages to this simulator.
        @param m The messages to send.
@@ -24,14 +23,14 @@ public interface Simulator<T extends Entity> {
        @return A collection of entities representing the updates from this simulator.
        @throws InterruptedException If this thread is interrupted while waiting for updates.
     */
-    Collection<T> getUpdates(int time) throws InterruptedException;
+    Collection<Entity> getUpdates(int time) throws InterruptedException;
 
     /**
        Send an update message to this simulator.
        @param time The simulation time.
        @param updates The updated entities.
     */
-    void sendUpdate(int time, Collection<? extends T> updates);
+    void sendUpdate(int time, Collection<? extends Entity> updates);
 
     /**
        Send a set of agent commands to this simulator.

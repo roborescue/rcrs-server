@@ -9,6 +9,7 @@ import kernel.CommunicationModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.config.Config;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.version0.entities.RescueEntity;
@@ -26,7 +27,7 @@ import rescuecore2.version0.messages.KAHearTell;
 /**
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
  */
-public class LegacyCommunicationModel implements CommunicationModel<RescueEntity> {
+public class LegacyCommunicationModel implements CommunicationModel {
     private IndexedWorldModel world;
     private int sayDistance;
 
@@ -41,7 +42,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueEntity
     }
 
     @Override
-    public Collection<Message> process(Agent<RescueEntity> agent, Collection<Command> agentCommands) {
+    public Collection<Message> process(Agent agent, Collection<Command> agentCommands) {
         //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
         Collection<Message> result = new HashSet<Message>();
         // Look for SAY messages from entities within range
@@ -51,7 +52,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueEntity
                 AKSay say = (AKSay)next;
                 EntityID senderID = say.getAgentID();
                 RescueEntity sender = world.getEntity(senderID);
-                int distance = world.getDistance(agent.getControlledEntity(), sender);
+                int distance = world.getDistance((RescueEntity)agent.getControlledEntity(), sender);
                 if (distance <= sayDistance) {
                     //                    System.out.println(agent + " hears say from " + sender);
                     result.add(new KAHearSay(senderID, say.getContent()));
@@ -70,7 +71,7 @@ public class LegacyCommunicationModel implements CommunicationModel<RescueEntity
         return result;
     }
 
-    private boolean canHear(RescueEntity receiver, RescueEntity sender) {
+    private boolean canHear(Entity receiver, RescueEntity sender) {
         if (receiver instanceof FireBrigade) {
             return sender instanceof FireBrigade || sender instanceof FireStation;
         }

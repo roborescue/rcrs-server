@@ -9,9 +9,8 @@ import java.util.Collection;
 
 /**
    This class is the kernel interface to a viewer.
-   @param <T> The subclass of Entity that this viewer understands.
  */
-public interface Viewer<T extends Entity> {
+public interface Viewer {
     /**
        Send a set of messages to this viewer.
        @param m The messages to send.
@@ -23,7 +22,7 @@ public interface Viewer<T extends Entity> {
        @param time The simulation time.
        @param updates The updated entities.
     */
-    void sendUpdate(int time, Collection<? extends T> updates);
+    void sendUpdate(int time, Collection<? extends Entity> updates);
 
     /**
        Send a set of agent commands to this viewer.
