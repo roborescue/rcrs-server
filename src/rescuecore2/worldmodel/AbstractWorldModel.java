@@ -33,14 +33,10 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public final void addEntity(Entity e) {
-        System.out.println("Checking if we can add " + e);
         if (isAllowed(e)) {
-            System.out.println("Allowed");
             addEntityImpl((T)e);
-        }
-        else {
-            System.out.println("Not allowed");
         }
     }
 
