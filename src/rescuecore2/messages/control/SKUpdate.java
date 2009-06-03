@@ -4,12 +4,10 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
-
-import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.RescueEntityType;
-import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.worldmodel.Entity;
 
 import java.util.List;
+import java.util.Collection;
 
 /**
    A message for sending updates from a simulator to the kernel.
@@ -17,7 +15,7 @@ import java.util.List;
 public class SKUpdate extends AbstractMessage implements Control {
     private IntComponent id;
     private IntComponent time;
-    private EntityListComponent<RescueEntityType, RescueEntity> update;
+    private EntityListComponent update;
 
     /**
        SKUpdate message with a undefined data.
@@ -26,7 +24,7 @@ public class SKUpdate extends AbstractMessage implements Control {
         super("SK_UPDATE", ControlMessageConstants.SK_UPDATE);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
-        update = new EntityListComponent<RescueEntityType, RescueEntity>("Updated objects", RescueEntityFactory.INSTANCE);
+        update = new EntityListComponent("Updated objects");
         addMessageComponent(id);
         addMessageComponent(time);
         addMessageComponent(update);
@@ -37,7 +35,7 @@ public class SKUpdate extends AbstractMessage implements Control {
        @param id The id of the simulator sending the update.
        @param data The updated objects.
      */
-    public SKUpdate(int id, List<RescueEntity> data) {
+    public SKUpdate(int id, Collection<? extends Entity> data) {
         this();
         this.id.setValue(id);
         this.update.setEntities(data);
@@ -55,7 +53,7 @@ public class SKUpdate extends AbstractMessage implements Control {
        Get the updated entity list.
        @return The updated entity list.
      */
-    public List<RescueEntity> getUpdatedEntities() {
+    public List<Entity> getUpdatedEntities() {
         return update.getEntities();
     }
 

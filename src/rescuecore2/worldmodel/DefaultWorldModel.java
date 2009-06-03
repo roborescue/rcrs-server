@@ -14,12 +14,20 @@ import java.util.Iterator;
 */
 public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
     private Map<EntityID, T> entities;
+    private Collection<Class<? extends T>> allowedClasses;
 
     /**
        Construct an empty world model.
     */
-    public DefaultWorldModel() {
+    public DefaultWorldModel(Class<T> clazz) {
         entities = new HashMap<EntityID, T>();
+        allowedClasses = new HashSet<Class<? extends T>>();
+        allowedClasses.add(clazz);
+    }
+
+    @Override
+    public final Collection<Class<? extends T>> getAllowedClasses() {
+        return allowedClasses;
     }
 
     @Override
@@ -28,16 +36,9 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
     }
 
     @Override
-    public final void addEntity(T e) {
+    public final void addEntityImpl(T e) {
         entities.put(e.getID(), e);
         fireEntityAdded(e);
-    }
-
-    @Override
-    public final void addEntities(Collection<? extends T> e) {
-        for (T next : e) {
-            addEntity(next);
-        }
     }
 
     @Override

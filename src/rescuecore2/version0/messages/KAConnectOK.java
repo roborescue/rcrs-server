@@ -2,11 +2,13 @@ package rescuecore2.version0.messages;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityComponent;
 import rescuecore2.messages.EntityListComponent;
+import rescuecore2.worldmodel.Entity;
 
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.RescueEntityType;
@@ -18,8 +20,8 @@ import rescuecore2.version0.entities.RescueEntityFactory;
 public class KAConnectOK extends AbstractMessage {
     private IntComponent tempID;
     private IntComponent agentID;
-    private EntityComponent<RescueEntityType, RescueEntity> agent;
-    private EntityListComponent<RescueEntityType, RescueEntity> world;
+    private EntityComponent agent;
+    private EntityListComponent world;
 
     /**
        An empty KAConnectOK message.
@@ -28,8 +30,8 @@ public class KAConnectOK extends AbstractMessage {
         super("KA_CONNECT_OK", MessageConstants.KA_CONNECT_OK);
         tempID = new IntComponent("Temp ID");
         agentID = new IntComponent("Agent ID");
-        agent = new EntityComponent<RescueEntityType, RescueEntity>("Agent", RescueEntityFactory.INSTANCE);
-        world = new EntityListComponent<RescueEntityType, RescueEntity>("Entities", RescueEntityFactory.INSTANCE);
+        agent = new EntityComponent("Agent");
+        world = new EntityListComponent("Entities");
         addMessageComponent(tempID);
         addMessageComponent(agentID);
         addMessageComponent(agent);
@@ -43,7 +45,7 @@ public class KAConnectOK extends AbstractMessage {
        @param object The Entity that the agent will be controlling.
        @param allEntities All other Entities that the agent knows about.
      */
-    public KAConnectOK(int tempID, int agentID, RescueEntity object, Collection<RescueEntity> allEntities) {
+    public KAConnectOK(int tempID, int agentID, RescueEntity object, Collection<? extends RescueEntity> allEntities) {
         this();
         this.tempID.setValue(tempID);
         this.agentID.setValue(agentID);
@@ -72,7 +74,7 @@ public class KAConnectOK extends AbstractMessage {
        @return The agent-controlled entity.
      */
     public RescueEntity getAgent() {
-        return agent.getEntity();
+        return (RescueEntity)agent.getEntity();
     }
 
     /**
@@ -80,6 +82,12 @@ public class KAConnectOK extends AbstractMessage {
        @return All entities in the world.
      */
     public List<RescueEntity> getEntities() {
-        return world.getEntities();
+        List<RescueEntity> result = new ArrayList<RescueEntity>();
+        for (Entity next : world.getEntities()) {
+            if (next instanceof RescueEntity) {
+                result.add((RescueEntity)next);
+            }
+        }
+        return result;
     }
 }

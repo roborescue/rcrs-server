@@ -6,7 +6,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
    EntityFactory that builds standard Robocup Rescue objects.
  */
-public final class RescueEntityFactory implements EntityFactory<RescueEntityType, RescueEntity> {
+public final class RescueEntityFactory implements EntityFactory {
     /**
        Singleton class. Use this instance to do stuff.
      */
@@ -17,13 +17,16 @@ public final class RescueEntityFactory implements EntityFactory<RescueEntityType
      */
     private RescueEntityFactory() {}
 
+    /*
     @Override
     public RescueEntityType makeEntityType(int id) {
         return RescueEntityType.fromID(id);
     }
+    */
 
     @Override
-    public RescueEntity makeEntity(RescueEntityType type, EntityID id) {
+    public RescueEntity makeEntity(int typeID, EntityID id) {
+        RescueEntityType type = RescueEntityType.fromID(typeID);
         switch (type) {
         case WORLD:
             return new World(id);
@@ -52,5 +55,22 @@ public final class RescueEntityFactory implements EntityFactory<RescueEntityType
         default:
             throw new IllegalArgumentException("Unrecognised entity type: " + type);
         }
+    }
+
+    @Override
+    public int[] getKnownEntityTypeIDs() {
+        return new int[] {RescueEntityType.WORLD.getID(),
+                          RescueEntityType.ROAD.getID(),
+                          RescueEntityType.NODE.getID(),
+                          RescueEntityType.BUILDING.getID(),
+                          RescueEntityType.REFUGE.getID(),
+                          RescueEntityType.FIRE_STATION.getID(),
+                          RescueEntityType.AMBULANCE_CENTRE.getID(),
+                          RescueEntityType.POLICE_OFFICE.getID(),
+                          RescueEntityType.CIVILIAN.getID(),
+                          RescueEntityType.FIRE_BRIGADE.getID(),
+                          RescueEntityType.AMBULANCE_TEAM.getID(),
+                          RescueEntityType.POLICE_FORCE.getID()
+        };
     }
 }

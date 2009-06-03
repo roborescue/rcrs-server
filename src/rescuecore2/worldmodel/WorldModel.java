@@ -26,16 +26,16 @@ public interface WorldModel<T extends Entity> extends Iterable<T> {
     Collection<T> getAllEntities();
 
     /**
-       Add an entity to the world.
+       Add an entity to the world. Note that this method is not parameterised by T.
        @param e The entity to add.
     */
-    void addEntity(T e);
+    void addEntity(Entity e);
 
     /**
-       Add a set of entities to the world.
+       Add a set of entities to the world. Note that this method is not parameterised by T.
        @param e The entities to add.
     */
-    void addEntities(Collection<? extends T> e);
+    void addEntities(Collection<? extends Entity> e);
 
     /**
        Remove an entity from the world.
@@ -62,8 +62,14 @@ public interface WorldModel<T extends Entity> extends Iterable<T> {
     T getEntity(EntityID id);
 
     /**
-       Merge a set of entities into this world. New entities will be added; existing entities will have properties replaced with those taken from the given objects.
+       Merge a set of entities into this world. New entities will be added; existing entities will have properties replaced with those taken from the given objects. Note that this method is not parameterised by T.
        @param toMerge The set of entities to merge into this world model.
     */
-    void merge(Collection<? extends T> toMerge);
+    void merge(Collection<? extends Entity> toMerge);
+
+    /**
+       Get the classes that specify what is allowed into this world model. This is to work around some of the limitations of Java generics, and also allows fine-grained control of what goes into the model.
+       @return A collection of Class objects.
+     */
+    Collection<Class<? extends T>> getAllowedClasses();
 }

@@ -7,13 +7,15 @@ package rescuecore2.worldmodel;
 public interface WorldModelListener<T extends Entity> {
     /**
        Notification that an Entity was added to the world.
+       @param model The WorldModel that was updated.
        @param e The entity that was added.
      */
-    void entityAdded(T e);
+    void entityAdded(WorldModel<? extends T> model, T e);
 
     /**
        Notification that an Entity was removed from the world.
+       @param model The WorldModel that was updated.
        @param e The entity that was removed.
      */
-    void entityRemoved(T e);
+    void entityRemoved(WorldModel<? extends T> model, T e);
 }

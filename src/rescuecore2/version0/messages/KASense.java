@@ -2,10 +2,12 @@ package rescuecore2.version0.messages;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
+import rescuecore2.worldmodel.Entity;
 
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.RescueEntityType;
@@ -17,7 +19,7 @@ import rescuecore2.version0.entities.RescueEntityFactory;
 public class KASense extends AbstractMessage {
     private IntComponent agentID;
     private IntComponent time;
-    private EntityListComponent<RescueEntityType, RescueEntity> updates;
+    private EntityListComponent updates;
 
     /**
        An empty KASense message.
@@ -26,7 +28,7 @@ public class KASense extends AbstractMessage {
         super("KA_SENSE", MessageConstants.KA_SENSE);
         agentID = new IntComponent("Agent ID");
         time = new IntComponent("Time");
-        updates = new EntityListComponent<RescueEntityType, RescueEntity>("Updates", RescueEntityFactory.INSTANCE);
+        updates = new EntityListComponent("Updates");
         addMessageComponent(agentID);
         addMessageComponent(time);
         addMessageComponent(updates);
@@ -66,6 +68,12 @@ public class KASense extends AbstractMessage {
        @return All entities that have been updated.
      */
     public List<RescueEntity> getUpdates() {
-        return updates.getEntities();
+        List<RescueEntity> result = new ArrayList<RescueEntity>();
+        for (Entity next : updates.getEntities()) {
+            if (next instanceof RescueEntity) {
+                result.add((RescueEntity)next);
+            }
+        }
+        return result;
     }
 }

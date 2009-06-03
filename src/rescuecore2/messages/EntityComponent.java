@@ -7,8 +7,7 @@ import static rescuecore2.misc.EncodingTools.INT_32_SIZE;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.EntityType;
-import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.worldmodel.EntityRegistry;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,32 +17,26 @@ import java.io.ByteArrayOutputStream;
 
 /**
    An Entity component to a message.
-   @param <T> The subtype of EntityType that this component knows about.
-   @param <E> The subtype of Entity that this component knows about.
  */
-public class EntityComponent<T extends EntityType, E extends Entity> extends AbstractMessageComponent {
-    private E entity;
-    private EntityFactory<T, E> factory;
+public class EntityComponent extends AbstractMessageComponent {
+    private Entity entity;
 
     /**
        Construct an EntityComponent with no content.
        @param name The name of the component.
-       @param factory A factory for reading entities from an input stream.
      */
-    public EntityComponent(String name, EntityFactory<T, E> factory) {
+    public EntityComponent(String name) {
         super(name);
-        this.factory = factory;
         entity = null;
     }
 
     /**
        Construct an EntityComponent with a specific entity value.
        @param name The name of the component.
-       @param factory A factory for reading entities from an input stream.
        @param entity The value of this component.
      */
-    public EntityComponent(String name, EntityFactory<T, E> factory, E entity) {
-        this(name, factory);
+    public EntityComponent(String name, Entity entity) {
+        super(name);
         this.entity = entity;
     }
 
@@ -51,7 +44,7 @@ public class EntityComponent<T extends EntityType, E extends Entity> extends Abs
        Get the entity.
        @return The entity.
      */
-    public E getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
@@ -59,7 +52,7 @@ public class EntityComponent<T extends EntityType, E extends Entity> extends Abs
        Set the entity.
        @param e The new entity.
      */
-    public void setEntity(E e) {
+    public void setEntity(Entity e) {
         entity = e;
     }
 
@@ -78,11 +71,11 @@ public class EntityComponent<T extends EntityType, E extends Entity> extends Abs
 
     @Override
     public void read(InputStream in) throws IOException {
-        T type = factory.makeEntityType(readInt32(in));
+        int typeID = readInt32(in);
         int size = readInt32(in);
         byte[] data = readBytes(size, in);
         EntityID id = new EntityID(readInt32(data));
-        entity = factory.makeEntity(type, id);
+        entity = EntityRegistry.createEntity(typeID, id);
         entity.read(new ByteArrayInputStream(data, INT_32_SIZE, data.length - INT_32_SIZE));
     }
 

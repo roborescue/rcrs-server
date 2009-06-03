@@ -33,8 +33,28 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
     }
 
     @Override
-    public void merge(Collection<? extends T> toMerge) {
-        for (T next : toMerge) {
+    public final void addEntity(Entity e) {
+        if (isAllowed(e)) {
+            addEntityImpl((T)e);
+        }
+    }
+
+    @Override
+    public final void addEntities(Collection<? extends Entity> e) {
+        for (Entity next : e) {
+            addEntity(next);
+        }
+    }
+
+    /**
+       Subclasses should provide their implementation of addEntity here.
+       @param e The entity to add.
+    */
+    protected abstract void addEntityImpl(T t);
+
+    @Override
+    public void merge(Collection<? extends Entity> toMerge) {
+        for (Entity next : toMerge) {
             T existing = getEntity(next.getID());
             if (existing == null) {
                 addEntity(next);
@@ -57,7 +77,7 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
      */
     protected final void fireEntityAdded(T e) {
         for (WorldModelListener<? super T> l : getListeners()) {
-            l.entityAdded(e);
+            l.entityAdded(this, e);
         }
     }
 
@@ -67,8 +87,22 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
      */
     protected final void fireEntityRemoved(T e) {
         for (WorldModelListener<? super T> l : getListeners()) {
-            l.entityRemoved(e);
+            l.entityRemoved(this, e);
         }
+    }
+
+    /**
+       Find out if a particular Entity is allowed into this world model. The default implementation checks that the object is assignable to at least one class returned by {@link #getAllowedClasses}.
+       @param e The entity to check.
+       @return True if the entity is allowed, false otherwise.
+     */
+    protected boolean isAllowed(Entity e) {
+        for (Class<? extends T> next : getAllowedClasses()) {
+            if (next.isAssignableFrom(e.getClass())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Collection<WorldModelListener<? super T>> getListeners() {

@@ -16,45 +16,38 @@ import java.io.ByteArrayOutputStream;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.EntityType;
-import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.worldmodel.EntityRegistry;
 
 /**
    An EntityList component to a message.
-   @param <T> The subtype of EntityType that this component knows about.
-   @param <E> The subtype of Entity that this component knows about.
  */
-public class EntityListComponent<T extends EntityType, E extends Entity> extends AbstractMessageComponent {
-    private List<E> entities;
-    private EntityFactory<T, E> factory;
+public class EntityListComponent extends AbstractMessageComponent {
+    private List<Entity> entities;
 
     /**
        Construct an EntityListComponent with no content.
        @param name The name of the component.
-       @param factory A factory for reading entities from an input stream.
     */
-    public EntityListComponent(String name, EntityFactory<T, E> factory) {
+    public EntityListComponent(String name) {
         super(name);
-        this.factory = factory;
-        entities = new ArrayList<E>();
+        entities = new ArrayList<Entity>();
     }
 
     /**
        Construct an EntityListComponent with a specific list of entities.
        @param name The name of the component.
-       @param factory A factory for reading entities from an input stream.
        @param entities The entities in this message component.
     */
-    public EntityListComponent(String name, EntityFactory<T, E> factory, Collection<? extends E> entities) {
-        this(name, factory);
-        this.entities = new ArrayList<E>(entities);
+    public EntityListComponent(String name, Collection<? extends Entity> entities) {
+        super(name);
+        this.entities = new ArrayList<Entity>(entities);
     }
 
     /**
        Get the entities that make up this message component.
        @return The entities in this component.
     */
-    public List<E> getEntities() {
+    public List<Entity> getEntities() {
         return entities;
     }
 
@@ -62,13 +55,13 @@ public class EntityListComponent<T extends EntityType, E extends Entity> extends
        Set the entities that make up this message component.
        @param entities The entities in this component.
     */
-    public void setEntities(Collection<? extends E> entities) {
-        this.entities = new ArrayList<E>(entities);
+    public void setEntities(Collection<? extends Entity> entities) {
+        this.entities = new ArrayList<Entity>(entities);
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
-        for (E next : entities) {
+        for (Entity next : entities) {
             ByteArrayOutputStream gather = new ByteArrayOutputStream();
             writeInt32(next.getID().getValue(), gather);
             next.write(gather);
@@ -85,22 +78,20 @@ public class EntityListComponent<T extends EntityType, E extends Entity> extends
 
     @Override
     public void read(InputStream in) throws IOException {
-        //        System.out.println("Reading entity list");
         entities.clear();
         int typeID;
         do {
             typeID = readInt32(in);
             if (typeID != 0) {
-                T type = factory.makeEntityType(typeID);
                 int size = readInt32(in);
                 byte[] data = readBytes(size, in);
                 ByteArrayInputStream eIn = new ByteArrayInputStream(data);
                 EntityID id = new EntityID(readInt32(eIn));
-                E e = factory.makeEntity(type, id);
-                //                System.out.println("Reading " + e);
-                //                System.out.println("Size: " + size);
-                e.read(eIn);
-                entities.add(e);
+                Entity e = EntityRegistry.createEntity(typeID, id);
+                if (e != null) {
+                    e.read(eIn);
+                    entities.add(e);
+                }
             }
         } while (typeID != 0);
     }

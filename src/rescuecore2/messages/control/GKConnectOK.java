@@ -1,27 +1,25 @@
 package rescuecore2.messages.control;
 
 import java.util.List;
+import java.util.Collection;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.EntityListComponent;
-
-import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.RescueEntityType;
-import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.worldmodel.Entity;
 
 /**
    A message for signalling a successful connection to the GIS.
  */
 public class GKConnectOK extends AbstractMessage implements Control {
-    private EntityListComponent<RescueEntityType, RescueEntity> world;
+    private EntityListComponent world;
 
     /**
        A GKConnectOK with no entities.
      */
     public GKConnectOK() {
         super("GK_CONNECT_OK", ControlMessageConstants.GK_CONNECT_OK);
-        world = new EntityListComponent<RescueEntityType, RescueEntity>("Entities", RescueEntityFactory.INSTANCE);
+        world = new EntityListComponent("Entities");
         addMessageComponent(world);
     }
 
@@ -29,7 +27,7 @@ public class GKConnectOK extends AbstractMessage implements Control {
        A GKConnectOK with a specified entity list.
        @param entities The entities to send.
      */
-    public GKConnectOK(List<RescueEntity> entities) {
+    public GKConnectOK(Collection<? extends Entity> entities) {
         this();
         world.setEntities(entities);
     }
@@ -38,7 +36,7 @@ public class GKConnectOK extends AbstractMessage implements Control {
        Get the entity list.
        @return All entities.
      */
-    public List<RescueEntity> getEntities() {
+    public List<Entity> getEntities() {
         return world.getEntities();
     }
 }
