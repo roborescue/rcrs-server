@@ -20,12 +20,7 @@ public final class Version0MessageFactory implements MessageFactory {
 
     @Override
     public int[] getKnownMessageTypeIDs() {
-        return new int[] {MessageConstants.AK_CONNECT,
-                          MessageConstants.AK_ACKNOWLEDGE,
-                          MessageConstants.KA_CONNECT_OK,
-                          MessageConstants.KA_CONNECT_ERROR,
-                          MessageConstants.KA_SENSE,
-                          MessageConstants.KA_HEAR_SAY,
+        return new int[] {MessageConstants.KA_HEAR_SAY,
                           MessageConstants.KA_HEAR_TELL,
                           MessageConstants.AK_MOVE,
                           MessageConstants.AK_LOAD,
@@ -42,21 +37,6 @@ public final class Version0MessageFactory implements MessageFactory {
     public Message createMessage(int id, InputStream data) throws IOException {
         Message result = null;
         switch (id) {
-        case MessageConstants.AK_CONNECT:
-            result = new AKConnect();
-            break;
-        case MessageConstants.AK_ACKNOWLEDGE:
-            result = new AKAcknowledge();
-            break;
-        case MessageConstants.KA_CONNECT_OK:
-            result = new KAConnectOK();
-            break;
-        case MessageConstants.KA_CONNECT_ERROR:
-            result = new KAConnectError();
-            break;
-        case MessageConstants.KA_SENSE:
-            result = new KASense();
-            break;
         case MessageConstants.KA_HEAR_SAY:
             result = new KAHearSay();
             break;

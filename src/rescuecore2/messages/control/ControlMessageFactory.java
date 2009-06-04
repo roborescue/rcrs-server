@@ -24,7 +24,12 @@ public final class ControlMessageFactory implements MessageFactory {
                           ControlMessageConstants.VK_CONNECT,
                           ControlMessageConstants.VK_ACKNOWLEDGE,
                           ControlMessageConstants.KV_CONNECT_OK,
-                          ControlMessageConstants.KV_CONNECT_ERROR
+                          ControlMessageConstants.KV_CONNECT_ERROR,
+                          ControlMessageConstants.AK_CONNECT,
+                          ControlMessageConstants.AK_ACKNOWLEDGE,
+                          ControlMessageConstants.KA_CONNECT_OK,
+                          ControlMessageConstants.KA_CONNECT_ERROR,
+                          ControlMessageConstants.KA_SENSE
         };
     }
 
@@ -71,22 +76,22 @@ public final class ControlMessageFactory implements MessageFactory {
         case ControlMessageConstants.KV_CONNECT_ERROR:
             result = new KVConnectError();
             break;
+        case ControlMessageConstants.AK_CONNECT:
+            result = new AKConnect();
+            break;
+        case ControlMessageConstants.AK_ACKNOWLEDGE:
+            result = new AKAcknowledge();
+            break;
+        case ControlMessageConstants.KA_CONNECT_OK:
+            result = new KAConnectOK();
+            break;
+        case ControlMessageConstants.KA_CONNECT_ERROR:
+            result = new KAConnectError();
+            break;
+        case ControlMessageConstants.KA_SENSE:
+            result = new KASense();
+            break;
             /*
-              case MessageConstants.AK_CONNECT:
-              result = new AKConnect();
-              break;
-              case MessageConstants.AK_ACKNOWLEDGE:
-              result = new AKAcknowledge();
-              break;
-              case MessageConstants.KA_CONNECT_OK:
-              result = new KAConnectOK();
-              break;
-              case MessageConstants.KA_CONNECT_ERROR:
-              result = new KAConnectError();
-              break;
-              case MessageConstants.KA_SENSE:
-              result = new KASense();
-              break;
               case MessageConstants.KA_HEAR_SAY:
               result = new KAHearSay();
               break;

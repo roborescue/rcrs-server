@@ -1,4 +1,4 @@
-package rescuecore2.version0.messages;
+package rescuecore2.messages.control;
 
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
@@ -8,37 +8,37 @@ import rescuecore2.messages.StringComponent;
    A message for signalling an unsuccessful connection to the kernel.
  */
 public class KAConnectError extends AbstractMessage {
-    private IntComponent tempID;
+    private IntComponent requestID;
     private StringComponent reason;
 
     /**
        A KAConnectError with no tempID or reason.
      */
     public KAConnectError() {
-        super("KA_CONNECT_ERROR", MessageConstants.KA_CONNECT_ERROR);
-        tempID = new IntComponent("TempID");
+        super("KA_CONNECT_ERROR", ControlMessageConstants.KA_CONNECT_ERROR);
+        requestID = new IntComponent("Request ID");
         reason = new StringComponent("Reason");
-        addMessageComponent(tempID);
+        addMessageComponent(requestID);
         addMessageComponent(reason);
     }
 
     /**
-       A KAConnectError with specified tempID and reason.
-       @param id The tempID of the agent that failed to connect.
+       A KAConnectError with specified request ID and reason.
+       @param id The ID of the request that failed.
        @param message The reason for the error.
      */
     public KAConnectError(int id, String message) {
         this();
-        tempID.setValue(id);
+        requestID.setValue(id);
         reason.setValue(message);
     }
 
     /**
-       Get the temp ID for the message.
-       @return The temp ID for the message.
+       Get the request ID for the message.
+       @return The request ID for the message.
      */
-    public int getTempID() {
-        return tempID.getValue();
+    public int getRequestID() {
+        return requestID.getValue();
     }
 
     /**
