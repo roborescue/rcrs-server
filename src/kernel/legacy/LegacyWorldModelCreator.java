@@ -4,8 +4,6 @@ import kernel.KernelException;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
-import java.util.Collection;
-import java.util.ArrayList;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -17,9 +15,7 @@ import rescuecore2.messages.control.GKConnectOK;
 import rescuecore2.messages.control.GKConnectError;
 import rescuecore2.messages.control.KGConnect;
 import rescuecore2.messages.control.KGAcknowledge;
-import rescuecore2.worldmodel.Entity;
 
-import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.RescueWorldModel;
 
 /**

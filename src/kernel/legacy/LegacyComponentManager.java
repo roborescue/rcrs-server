@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.HashMap;
 import kernel.Kernel;
 import kernel.Agent;
 import kernel.Viewer;
-import kernel.Simulator;
+//import kernel.Simulator;
 import kernel.DefaultViewer;
 
 import rescuecore2.config.Config;

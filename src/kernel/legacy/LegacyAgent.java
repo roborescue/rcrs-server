@@ -14,8 +14,6 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.messages.KASense;
 import rescuecore2.version0.messages.AgentCommand;
-import rescuecore2.version0.messages.AKSay;
-import rescuecore2.version0.messages.AKTell;
 
 /**
    Legacy agent implementation.
