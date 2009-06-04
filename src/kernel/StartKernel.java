@@ -22,7 +22,7 @@ import kernel.legacy.LegacyComponentManager;
 import kernel.legacy.LegacyPerception;
 import kernel.legacy.LegacyCommunicationModel;
 import kernel.legacy.IndexedWorldModel;
-import kernel.ui.KernelStatus;
+import kernel.ui.KernelGUI;
 
 /**
    A class for launching the kernel.
@@ -42,7 +42,7 @@ public final class StartKernel {
     */
     public static void main(String[] args) {
         Config config = new Config();
-        boolean gui = true;
+        boolean showGUI = true;
         boolean justRun = false;
         try {
             int i = 0;
@@ -51,7 +51,7 @@ public final class StartKernel {
                     config.read(new File(args[++i]));
                 }
                 else if (args[i].equalsIgnoreCase(NO_GUI)) {
-                    gui = false;
+                    showGUI = false;
                 }
                 else if (args[i].equalsIgnoreCase(JUST_RUN)) {
                     justRun = true;
@@ -63,12 +63,10 @@ public final class StartKernel {
             }
             KernelBuilder builder = new LegacyKernelBuilder();
             final Kernel kernel = builder.createKernel(config);
-            if (gui) {
-                KernelStatus status = new KernelStatus(config, kernel, !justRun);
-                kernel.addKernelListener(status);
-                status.activate();
-                JFrame frame = new JFrame("Kernel status");
-                frame.getContentPane().add(status);
+            if (showGUI) {
+                KernelGUI gui = new KernelGUI(kernel, config, !justRun);
+                JFrame frame = new JFrame("Kernel GUI");
+                frame.getContentPane().add(gui);
                 frame.pack();
                 frame.addWindowListener(new WindowAdapter() {
                         public void windowClosing(WindowEvent e) {
@@ -79,7 +77,7 @@ public final class StartKernel {
                 frame.setVisible(true);
             }
             builder.initialiseKernel(kernel, config);
-            if (!gui || justRun) {
+            if (!showGUI || justRun) {
                 int maxTime = config.getIntValue("timesteps");
                 while (kernel.getTime() <= maxTime) {
                     kernel.timestep();
