@@ -1,4 +1,4 @@
-package kernel.legacy;
+package rescuecore2.version0.entities;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ import rescuecore2.version0.entities.Human;
 /**
    A wrapper around a WorldModel that indexes Entities by location.
  */
-public class IndexedWorldModel extends DefaultWorldModel<RescueEntity> {
+public class RescueWorldModel extends DefaultWorldModel<RescueEntity> {
     private Map<EntityType, Collection<RescueEntity>> storedTypes;
     private Collection<RescueEntity> mobileEntities;
     private Collection<RescueEntity> staticEntities;
@@ -33,23 +33,16 @@ public class IndexedWorldModel extends DefaultWorldModel<RescueEntity> {
     private int gridHeight;
 
     /**
-       Create an IndexedWorldModel.
+       Create an RescueWorldModel.
        @param meshSize The size of the mesh to create.
      */
-    public IndexedWorldModel(int meshSize) {
+    public RescueWorldModel(int meshSize) {
         super(RescueEntity.class);
         this.meshSize = meshSize;
         storedTypes = new HashMap<EntityType, Collection<RescueEntity>>();
         mobileEntities = new HashSet<RescueEntity>();
         staticEntities = new HashSet<RescueEntity>();
     }
-
-    /*
-    @Override
-    protected boolean allowed(Entity e) {
-        return RescueEntity.class.isAssignableFrom(e.getClass());
-    }
-    */
 
     /**
        Tell this index to remember a certain class of entities.
