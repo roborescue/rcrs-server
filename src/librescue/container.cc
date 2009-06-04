@@ -314,11 +314,11 @@ namespace Librescue {
 	agent->connected(*ok);
 	m_idToAgent[agent->getId()] = agent;
 	// Send an acknowledgement
-	AgentAcknowledge ack(ok->getId());
+	AgentAcknowledge ack(ok->getRequestId());
 	OutputBuffer out;
 	out.writeCommand(&ack);
 	out.writeInt32(HEADER_NULL);
-	LOG_DEBUG("Sending AK_ACKNOWLEDGE for id %d",agent->getId());
+	LOG_DEBUG("Sending AK_ACKNOWLEDGE for id %d",ok->getRequestId());
 	if (!m_connection.send(out.buffer(),m_kernelAddress)) {
 	  LOG_WARNING("WARNING: Error sending agent acknowledge");
 	}

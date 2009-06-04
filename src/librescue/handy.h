@@ -54,7 +54,7 @@ namespace Librescue {
   std::string propertyName(PropertyId property);
   std::string typeName(TypeId type);
   std::string headerName(Header header);
-  std::string agentType(AgentType type);
+  //  std::string agentType(AgentType type);
 
   class StopWatch {
   public:

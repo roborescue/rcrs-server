@@ -43,7 +43,7 @@ namespace Rescue {
 
 	virtual void sense(INT_32 time, const IdSet& changed);
 
-	virtual AgentType getAgentType() const;
+	virtual TypeId getAgentType() const;
   };
 }
 

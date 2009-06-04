@@ -21,7 +21,7 @@
 #include "error.h"
 
 namespace Librescue {
-  AgentConnect::AgentConnect(AgentType type, Id tempId, INT_32 version) : m_type(type), m_tempId(tempId), m_version(version) {
+  AgentConnect::AgentConnect(TypeId type, Id tempId, INT_32 version) : m_type(type), m_tempId(tempId), m_version(version) {
   }
 
   AgentConnect::AgentConnect(InputBuffer& in) {
@@ -37,23 +37,28 @@ namespace Librescue {
 
   void AgentConnect::encode(OutputBuffer& out) const {
 	Command::encode(out);
-	out.writeInt32(m_tempId);
 	out.writeInt32(m_version);
+	out.writeInt32(m_tempId);
+        out.writeInt32(1);
 	out.writeInt32(m_type);
   }
 
   void AgentConnect::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_tempId = in.readInt32();
 	m_version = in.readInt32();
-	m_type = (AgentType)in.readInt32();
+	m_tempId = in.readInt32();
+        int count = in.readInt32();
+	m_type = (TypeId)in.readInt32();
+        for (int i=1; i<count; ++i) {
+          LOG_INFO("Ignoring AgentConnect TypeId: %d", in.readInt32());
+        }
   }
 
   Command* AgentConnect::clone() const {
 	return new AgentConnect(m_type,m_tempId,m_version);
   }
 
-  AgentType AgentConnect::getAgentType() const {
+  TypeId AgentConnect::getAgentType() const {
 	return m_type;
   }
 
@@ -97,19 +102,12 @@ namespace Librescue {
 	return m_id;
   }
 
-  AgentConnectOK::AgentConnectOK(Id tempId, Id id, const ObjectSet& staticObjects, RescueObject& self) : m_tempId(tempId), m_id(id) {
-	/*
-	for (ObjectSet::const_iterator it = staticObjects.begin();it!=staticObjects.end();++it) {
-	  m_objects.insert((*it)->clone());
-	}
-	m_self = self.clone();
-	*/
+  AgentConnectOK::AgentConnectOK(Id requestId, Id agentId, const ObjectSet& staticObjects) : m_requestId(requestId), m_agentId(agentId) {
 	m_objects.insert(staticObjects.begin(),staticObjects.end());
-	m_self = &self;
 	m_delete = false;
   }
 
-  AgentConnectOK::AgentConnectOK(InputBuffer& in) : m_self(0) {
+  AgentConnectOK::AgentConnectOK(InputBuffer& in) {
 	m_delete = false;	
 	decode(in);
   }
@@ -124,11 +122,9 @@ namespace Librescue {
 	  for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
 		delete *it;
 	  }
-	  delete m_self;
 	  m_delete = false;
 	}
 	m_objects.clear();
-	m_self = 0;
   }
 
   Header AgentConnectOK::getType() const {
@@ -137,18 +133,16 @@ namespace Librescue {
 
   void AgentConnectOK::encode(OutputBuffer& out) const {
 	Command::encode(out);
-	out.writeInt32(m_tempId);
-	out.writeInt32(m_id);
-	out.writeObject(m_self);
+	out.writeInt32(m_requestId);
+	out.writeInt32(m_agentId);
 	out.writeObjects(m_objects);
   }
 
   void AgentConnectOK::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_tempId = in.readInt32();
-	m_id = in.readInt32();
+	m_requestId = in.readInt32();
+	m_agentId = in.readInt32();
 	deleteObjects();
-	m_self = in.readObject(0);
 	in.readObjects(0,m_objects);
 	m_delete = true;
   }
@@ -160,28 +154,24 @@ namespace Librescue {
 	  for (ObjectSet::const_iterator it = m_objects.begin();it!=m_objects.end();++it) {
 		clonedObjects.insert((*it)->clone());
 	  }
-	  AgentConnectOK* result = new AgentConnectOK(m_tempId,m_id,clonedObjects,*m_self->clone());
+	  AgentConnectOK* result = new AgentConnectOK(m_requestId,m_agentId,clonedObjects);
 	  result->m_delete = true;
 	  return result;
 	}
-	else return new AgentConnectOK(m_tempId,m_id,m_objects,*m_self);
+	else return new AgentConnectOK(m_requestId,m_agentId,m_objects);
   }
 
-  Id AgentConnectOK::getTempId() const {
-	return m_tempId;
+  Id AgentConnectOK::getRequestId() const {
+	return m_requestId;
   }
 
-  Id AgentConnectOK::getId() const {
-	return m_id;
+  Id AgentConnectOK::getAgentId() const {
+	return m_agentId;
   }
 
   const ObjectSet& AgentConnectOK::getObjects() const {
 	return m_objects;
   }
-
-  RescueObject* AgentConnectOK::getSelf() const {
-	return m_self;
-  }  
 
   AgentConnectError::AgentConnectError(Id id, std::string reason) : m_id(id), m_reason(reason) {
   }

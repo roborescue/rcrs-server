@@ -39,10 +39,13 @@ namespace Librescue {
 
   int Agent::connected(const AgentConnectOK& connect) {
 	m_pool.update(connect.getObjects());
-	RescueObject* self = connect.getSelf();
-	m_pool.addObject(self->clone());
-	m_id = connect.getId();
-	LOG_DEBUG("Connected. My id is %d, type is %d",m_id,self->type());
+	m_id = connect.getAgentId();
+        RescueObject* object = m_pool.getObject(m_id);
+        if (!object) {
+          LOG_ERROR("WARNING: Controlled entity %d could not be found!", m_id);
+          return -1;
+        }
+	LOG_DEBUG("Connected. My id is %d, type is %d.",m_id,object->type());
 	return 0;
   }
 

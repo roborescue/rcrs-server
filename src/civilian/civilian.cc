@@ -74,9 +74,8 @@ namespace Rescue {
 	sendMove(m_path);
   }
 
-  AgentType CivilianAgent::getAgentType() const {
-	return AGENT_TYPE_CIVILIAN;
-	//	return AGENT_TYPE_CIVILIAN | AGENT_TYPE_FIRE_BRIGADE | AGENT_TYPE_FIRE_STATION | AGENT_TYPE_POLICE_FORCE | AGENT_TYPE_POLICE_OFFICE | AGENT_TYPE_AMBULANCE_TEAM | AGENT_TYPE_AMBULANCE_CENTER;
+  TypeId CivilianAgent::getAgentType() const {
+	return TYPE_CIVILIAN;
   }
 
   void CivilianAgent::planPathToRefuge(RescueObject* start) {

@@ -196,6 +196,7 @@ namespace Librescue {
   	CHANNEL_RADIO = 2
   };
 
+  /*
   typedef int AgentType;
   const AgentType AGENT_TYPE_CIVILIAN = 0x01;
   const AgentType AGENT_TYPE_FIRE_BRIGADE = 0x02;
@@ -204,6 +205,7 @@ namespace Librescue {
   const AgentType AGENT_TYPE_AMBULANCE_CENTER = 0x10;
   const AgentType AGENT_TYPE_POLICE_FORCE = 0x20;
   const AgentType AGENT_TYPE_POLICE_OFFICE = 0x40;
+  */
 
   const INT_32 FIERYNESS_NONE = 0;
   const INT_32 FIERYNESS_LOW = 1;

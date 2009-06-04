@@ -347,6 +347,7 @@ namespace Librescue {
 	return "Unrecognised header";
   }
 
+  /*
   std::string agentType(AgentType type) {
 	std::string result;
 	if (type & AGENT_TYPE_CIVILIAN) {
@@ -379,6 +380,7 @@ namespace Librescue {
 	if (result.empty()) return "No agent type";
 	return result;
   }
+  */
 
   StopWatch::StopWatch() : m_start(clock()) {
   }

@@ -51,8 +51,12 @@ namespace Librescue {
   }
 
   const RescueObject* ObjectPool::getObject(Id id) const {
-    ObjectPool* nonconstThis = const_cast<ObjectPool*>(this);
-    return nonconstThis->getObject(id);
+    IdToRescueObject::const_iterator it = data.find(id);
+    if (it == data.end()) {
+      return 0;
+    }
+    RescueObject* result = (*it).second;
+    return result;
   }
 
   ObjectSet ObjectPool::getNeighbours(Id id) {
@@ -286,12 +290,12 @@ namespace Librescue {
       RescueObject* existing = getObject(next->id());
       if (existing) {
 	// Yes. Merge the new one into the old one.
-	//		LOG_DEBUG("Merging object %d",next->id());
+        //        LOG_DEBUG("Merging object %d",next->id());
 	existing->merge(next);
       }
       else {
 	// No. Add a clone.
-	//		LOG_DEBUG("Cloning object %d",next->id());
+        //        LOG_DEBUG("Cloning object %d",next->id());
 	addObject(next->clone());
       }
     }

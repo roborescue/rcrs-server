@@ -67,7 +67,7 @@ namespace Librescue {
 	virtual void sense(INT_32 time, const IdSet& changed);
 	virtual void hear(Header type, Id from, const Bytes& bytes);
 
-	virtual AgentType getAgentType() const = 0;
+	virtual TypeId getAgentType() const = 0;
 
 	void update(INT_32 time, const ObjectSet& changed);
 

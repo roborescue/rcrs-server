@@ -53,12 +53,12 @@ namespace Librescue {
 
   class AgentConnect : public Command {
   private:
-	AgentType m_type;
+	TypeId m_type;
 	Id m_tempId;
 	INT_32 m_version;
 
   public:
-	AgentConnect(AgentType type, Id tempId, INT_32 version);
+	AgentConnect(TypeId type, Id tempId, INT_32 version);
 	AgentConnect(InputBuffer& in);
 	virtual ~AgentConnect();
 
@@ -68,7 +68,7 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
-	AgentType getAgentType() const;
+	TypeId getAgentType() const;
 	Id getTempId() const;
 	INT_32 getVersion() const;
   };
@@ -93,16 +93,15 @@ namespace Librescue {
 
   class AgentConnectOK : public Command {
   private:
-	Id m_tempId;
-	Id m_id;
+	Id m_requestId;
+	Id m_agentId;
 	ObjectSet m_objects;
-	RescueObject* m_self;
 
 	bool m_delete;
 	void deleteObjects();
 
   public:
-	AgentConnectOK(Id tempId, Id id, const ObjectSet& staticObjects, RescueObject& self);
+	AgentConnectOK(Id requestId, Id agentId, const ObjectSet& staticObjects);
 	AgentConnectOK(InputBuffer& in);
 	virtual ~AgentConnectOK();
 
@@ -112,10 +111,9 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
-	Id getTempId() const;
-	Id getId() const;
+	Id getRequestId() const;
+	Id getAgentId() const;
 	const ObjectSet& getObjects() const;
-	RescueObject* getSelf() const;
   };
 
   class AgentConnectError : public Command {
