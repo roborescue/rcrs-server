@@ -25,6 +25,7 @@ public class Kernel {
     private Collection<Simulator> sims;
     private Collection<Viewer> viewers;
     private int time;
+    private int freezeTime;
     private Collection<Command> agentCommandsLastTimestep;
 
     /**
@@ -47,6 +48,7 @@ public class Kernel {
         sims = new HashSet<Simulator>();
         viewers = new HashSet<Viewer>();
         time = 0;
+        freezeTime = config.getIntValue("steps_agents_frozen", 0);
         agentCommandsLastTimestep = new HashSet<Command>();
     }
 
@@ -228,8 +230,10 @@ public class Kernel {
             now = System.currentTimeMillis();
         }
         Collection<Command> result = new HashSet<Command>();
-        for (Agent next : agents) {
-            result.addAll(next.getAgentCommands(timestep));
+        if (timestep >= freezeTime) {
+            for (Agent next : agents) {
+                result.addAll(next.getAgentCommands(timestep));
+            }
         }
         return result;
     }

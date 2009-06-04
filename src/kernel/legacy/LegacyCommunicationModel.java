@@ -12,6 +12,7 @@ import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
+import rescuecore2.version0.entities.RescueWorldModel;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.FireBrigade;
 import rescuecore2.version0.entities.FireStation;
@@ -28,7 +29,7 @@ import rescuecore2.version0.messages.KAHearTell;
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
  */
 public class LegacyCommunicationModel implements CommunicationModel {
-    private IndexedWorldModel world;
+    private RescueWorldModel world;
     private int sayDistance;
 
     /**
@@ -36,7 +37,7 @@ public class LegacyCommunicationModel implements CommunicationModel {
        @param config The kernel configuration.
        @param world The world model.
      */
-    public LegacyCommunicationModel(Config config, IndexedWorldModel world) {
+    public LegacyCommunicationModel(Config config, RescueWorldModel world) {
         this.world = world;
         sayDistance = config.getIntValue("voice");
     }

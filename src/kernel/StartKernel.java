@@ -15,13 +15,13 @@ import rescuecore2.messages.MessageRegistry;
 import rescuecore2.worldmodel.EntityRegistry;
 
 import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.version0.entities.RescueWorldModel;
 import rescuecore2.version0.messages.Version0MessageFactory;
 
 import kernel.legacy.LegacyWorldModelCreator;
 import kernel.legacy.LegacyComponentManager;
 import kernel.legacy.LegacyPerception;
 import kernel.legacy.LegacyCommunicationModel;
-import kernel.legacy.IndexedWorldModel;
 import kernel.ui.KernelGUI;
 
 /**
@@ -127,7 +127,7 @@ public final class StartKernel {
             MessageRegistry.register(Version0MessageFactory.INSTANCE);
             EntityRegistry.register(RescueEntityFactory.INSTANCE);
             // Get the world model
-            IndexedWorldModel worldModel = new LegacyWorldModelCreator().buildWorldModel(config);
+            RescueWorldModel worldModel = new LegacyWorldModelCreator().buildWorldModel(config);
             LegacyPerception perception = new LegacyPerception(config, worldModel);
             LegacyCommunicationModel comms = new LegacyCommunicationModel(config, worldModel);
             return new Kernel(config, perception, comms, worldModel);
@@ -135,7 +135,7 @@ public final class StartKernel {
 
         @Override
         public void initialiseKernel(Kernel kernel, Config config) throws KernelException {
-            IndexedWorldModel worldModel = (IndexedWorldModel)kernel.getWorldModel();
+            RescueWorldModel worldModel = (RescueWorldModel)kernel.getWorldModel();
             final LegacyComponentManager manager = new LegacyComponentManager(kernel, worldModel, config);
 
             // Start the connection manager

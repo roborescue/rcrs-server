@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
 
 import kernel.Kernel;
+import kernel.Agent;
 import kernel.Viewer;
+import kernel.Simulator;
 import kernel.DefaultViewer;
 
 import rescuecore2.config.Config;
@@ -24,9 +28,16 @@ import rescuecore2.messages.control.KVConnectOK;
 import rescuecore2.messages.control.SKConnect;
 import rescuecore2.messages.control.SKAcknowledge;
 import rescuecore2.messages.control.KSConnectOK;
+import rescuecore2.messages.control.AKConnect;
+import rescuecore2.messages.control.AKAcknowledge;
+import rescuecore2.messages.control.KAConnectError;
+import rescuecore2.messages.control.KAConnectOK;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
 
+import rescuecore2.version0.entities.RescueWorldModel;
 import rescuecore2.version0.entities.RescueEntity;
+import rescuecore2.version0.entities.RescueEntityType;
 import rescuecore2.version0.entities.Civilian;
 import rescuecore2.version0.entities.FireBrigade;
 import rescuecore2.version0.entities.FireStation;
@@ -38,10 +49,6 @@ import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Node;
 import rescuecore2.version0.entities.Building;
 import rescuecore2.version0.entities.RescuePropertyType;
-import rescuecore2.version0.messages.AKConnect;
-import rescuecore2.version0.messages.AKAcknowledge;
-import rescuecore2.version0.messages.KAConnectError;
-import rescuecore2.version0.messages.KAConnectOK;
 
 /**
    Class that manages connecting legacy components.
@@ -51,17 +58,21 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
     private Kernel kernel;
 
-    // Entities that have no controller yet
-    private Queue<Civilian> civ;
-    private Queue<FireBrigade> fb;
-    private Queue<FireStation> fs;
-    private Queue<AmbulanceTeam> at;
-    private Queue<AmbulanceCentre> ac;
-    private Queue<PoliceForce> pf;
-    private Queue<PoliceOffice> po;
+    // Entities that have no controller yet. Map from type to list of entities.
+    private Map<Integer, Queue<Entity>> uncontrolledEntities;
+
+    /*
+      private Queue<Civilian> civ;
+      private Queue<FireBrigade> fb;
+      private Queue<FireStation> fs;
+      private Queue<AmbulanceTeam> at;
+      private Queue<AmbulanceCentre> ac;
+      private Queue<PoliceForce> pf;
+      private Queue<PoliceOffice> po;
+    */
 
     // Connected agents
-    private Set<LegacyAgent> agentsToAcknowledge;
+    private Set<AgentAck> agentsToAcknowledge;
 
     // Connected simulators
     private Set<LegacySimulator> simsToAcknowledge;
@@ -71,9 +82,8 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     private Set<Viewer> viewersToAcknowledge;
 
     // World information
-    private IndexedWorldModel world;
+    private RescueWorldModel world;
     private Set<RescueEntity> initialEntities;
-    private int freezeTime;
 
     /** Lock object agent stuff. */
     private final Object agentLock = new Object();
@@ -86,44 +96,60 @@ public class LegacyComponentManager implements ConnectionManagerListener {
        @param world The world model.
        @param config The kernel configuration.
     */
-    public LegacyComponentManager(Kernel kernel, IndexedWorldModel world, Config config) {
+    public LegacyComponentManager(Kernel kernel, RescueWorldModel world, Config config) {
         this.kernel = kernel;
         this.world = world;
-        civ = new LinkedList<Civilian>();
-        fb = new LinkedList<FireBrigade>();
-        fs = new LinkedList<FireStation>();
-        at = new LinkedList<AmbulanceTeam>();
-        ac = new LinkedList<AmbulanceCentre>();
-        pf = new LinkedList<PoliceForce>();
-        po = new LinkedList<PoliceOffice>();
+        uncontrolledEntities = new HashMap<Integer, Queue<Entity>>();
+        Queue<Entity> civ = new LinkedList<Entity>();
+        Queue<Entity> fb = new LinkedList<Entity>();
+        Queue<Entity> fs = new LinkedList<Entity>();
+        Queue<Entity> at = new LinkedList<Entity>();
+        Queue<Entity> ac = new LinkedList<Entity>();
+        Queue<Entity> pf = new LinkedList<Entity>();
+        Queue<Entity> po = new LinkedList<Entity>();
+        uncontrolledEntities.put(RescueEntityType.CIVILIAN.getID(), civ);
+        uncontrolledEntities.put(RescueEntityType.FIRE_BRIGADE.getID(), fb);
+        uncontrolledEntities.put(RescueEntityType.FIRE_STATION.getID(), fs);
+        uncontrolledEntities.put(RescueEntityType.AMBULANCE_TEAM.getID(), at);
+        uncontrolledEntities.put(RescueEntityType.AMBULANCE_CENTRE.getID(), ac);
+        uncontrolledEntities.put(RescueEntityType.POLICE_FORCE.getID(), pf);
+        uncontrolledEntities.put(RescueEntityType.POLICE_OFFICE.getID(), po);
+        /*
+          civ = new LinkedList<Civilian>();
+          fb = new LinkedList<FireBrigade>();
+          fs = new LinkedList<FireStation>();
+          at = new LinkedList<AmbulanceTeam>();
+          ac = new LinkedList<AmbulanceCentre>();
+          pf = new LinkedList<PoliceForce>();
+          po = new LinkedList<PoliceOffice>();
+        */
         initialEntities = new HashSet<RescueEntity>();
-        freezeTime = config.getIntValue("steps_agents_frozen", 0);
-        for (RescueEntity e : world.getAllEntities()) {
+        for (Entity e : world.getAllEntities()) {
             if (e instanceof Civilian) {
-                civ.add((Civilian)e);
+                civ.add(e);
             }
             else if (e instanceof FireBrigade) {
-                fb.add((FireBrigade)e);
+                fb.add(e);
             }
             else if (e instanceof FireStation) {
-                fs.add((FireStation)e);
+                fs.add(e);
             }
             else if (e instanceof AmbulanceTeam) {
-                at.add((AmbulanceTeam)e);
+                at.add(e);
             }
             else if (e instanceof AmbulanceCentre) {
-                ac.add((AmbulanceCentre)e);
+                ac.add(e);
             }
             else if (e instanceof PoliceForce) {
-                pf.add((PoliceForce)e);
+                pf.add(e);
             }
             else if (e instanceof PoliceOffice) {
-                po.add((PoliceOffice)e);
+                po.add(e);
             }
             maybeAddInitialEntity(e);
         }
 
-        agentsToAcknowledge = new HashSet<LegacyAgent>();
+        agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<LegacySimulator>();
         viewersToAcknowledge = new HashSet<Viewer>();
         nextSimulatorID = 1;
@@ -135,24 +161,23 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     */
     public void waitForAllAgents() throws InterruptedException {
         synchronized (agentLock) {
-            while (!civ.isEmpty()
-                   || !fb.isEmpty()
-                   || !fs.isEmpty()
-                   || !at.isEmpty()
-                   || !ac.isEmpty()
-                   || !pf.isEmpty()
-                   || !po.isEmpty()
-                   || !agentsToAcknowledge.isEmpty()) {
-                agentLock.wait(WAIT_TIME);
-                System.out.println("Waiting for " + civ.size() + " civilians, "
-                                   + fb.size() + " fire brigades, "
-                                   + fs.size() + " fire stations, "
-                                   + at.size() + " ambulance teams, "
-                                   + ac.size() + " ambulance centres, "
-                                   + pf.size() + " police forces, "
-                                   + po.size() + " police offices, "
-                                   + agentsToAcknowledge.size() + " to acknowledge, ");
-            }
+            boolean done = false;
+            do {
+                done = true;
+                for (Map.Entry<Integer, Queue<Entity>> next : uncontrolledEntities.entrySet()) {
+                    if (!next.getValue().isEmpty()) {
+                        done = false;
+                        System.out.println("Waiting for " + next.getValue().size() + " entities of type " + next.getKey());
+                    }
+                }
+                if (!agentsToAcknowledge.isEmpty()) {
+                    done = false;
+                    System.out.println("Waiting for " + agentsToAcknowledge.size() + " agents to acknowledge");
+                }
+                if (!done) {
+                    agentLock.wait(WAIT_TIME);
+                }
+            } while (!done);
         }
     }
 
@@ -187,12 +212,12 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         c.addConnectionListener(new LegacyConnectionListener());
     }
 
-    private boolean agentAcknowledge(int id, Connection c) {
+    private boolean agentAcknowledge(int requestID, Connection c) {
         synchronized (agentLock) {
-            for (LegacyAgent next : agentsToAcknowledge) {
-                if (next.getControlledEntity().getID().getValue() == id && next.getConnection() == c) {
+            for (AgentAck next : agentsToAcknowledge) {
+                if (next.requestID == requestID && next.connection == c) {
                     agentsToAcknowledge.remove(next);
-                    kernel.addAgent(next);
+                    kernel.addAgent(next.agent);
                     agentLock.notifyAll();
                     return true;
                 }
@@ -235,7 +260,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private void maybeAddInitialEntity(RescueEntity e) {
+    private void maybeAddInitialEntity(Entity e) {
         if (e instanceof Road) {
             Road r = (Road)e.copy();
             filterRoadProperties(r);
@@ -316,33 +341,14 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private RescueEntity findEntityToControl(int mask) {
-        List<Queue<? extends RescueEntity>> toTry = new ArrayList<Queue<? extends RescueEntity>>();
-        if ((mask & Constants.AGENT_TYPE_CIVILIAN) == Constants.AGENT_TYPE_CIVILIAN) {
-            toTry.add(civ);
-        }
-        if ((mask & Constants.AGENT_TYPE_FIRE_BRIGADE) == Constants.AGENT_TYPE_FIRE_BRIGADE) {
-            toTry.add(fb);
-        }
-        if ((mask & Constants.AGENT_TYPE_FIRE_STATION) == Constants.AGENT_TYPE_FIRE_STATION) {
-            toTry.add(fs);
-        }
-        if ((mask & Constants.AGENT_TYPE_AMBULANCE_TEAM) == Constants.AGENT_TYPE_AMBULANCE_TEAM) {
-            toTry.add(at);
-        }
-        if ((mask & Constants.AGENT_TYPE_AMBULANCE_CENTRE) == Constants.AGENT_TYPE_AMBULANCE_CENTRE) {
-            toTry.add(ac);
-        }
-        if ((mask & Constants.AGENT_TYPE_POLICE_FORCE) == Constants.AGENT_TYPE_POLICE_FORCE) {
-            toTry.add(pf);
-        }
-        if ((mask & Constants.AGENT_TYPE_POLICE_OFFICE) == Constants.AGENT_TYPE_POLICE_OFFICE) {
-            toTry.add(po);
-        }
-        for (Queue<? extends RescueEntity> next : toTry) {
-            RescueEntity e = next.poll();
-            if (e != null) {
-                return e;
+    private Entity findEntityToControl(List<Integer> types) {
+        for (int next : types) {
+            Queue<Entity> q = uncontrolledEntities.get(next);
+            if (q != null) {
+                Entity e = q.poll();
+                if (e != null) {
+                    return e;
+                }
             }
         }
         return null;
@@ -372,23 +378,29 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
 
         private void handleAKConnect(AKConnect connect, Connection connection) {
-            // Pull out the temp ID and agent type mask
-            int tempID = connect.getTemporaryID();
-            int mask = connect.getAgentTypeMask();
+            // Pull out the request ID and requested entity type list
+            int requestID = connect.getRequestID();
+            List<Integer> types = connect.getRequestedEntityTypes();
             // See if we can find an entity for this agent to control.
+            Message reply = null;
             synchronized (agentLock) {
-                RescueEntity entity = findEntityToControl(mask);
+                Entity entity = findEntityToControl(types);
+                if (entity == null) {
+                    // Send an error
+                    reply = new KAConnectError(requestID, "No more agents");
+                }
+                else {
+                    Agent agent = new LegacyAgent(entity, connection);
+                    agentsToAcknowledge.add(new AgentAck(agent, requestID, connection));
+                    // Send an OK
+                    Set<Entity> allEntities = new HashSet<Entity>(initialEntities);
+                    allEntities.add(entity);
+                    reply = new KAConnectOK(requestID, entity.getID(), allEntities);
+                }
+            }
+            if (reply != null) {
                 try {
-                    if (entity == null) {
-                        // Send an error
-                        connection.sendMessage(new KAConnectError(tempID, "No more agents"));
-                    }
-                    else {
-                        LegacyAgent agent = new LegacyAgent(entity, connection, freezeTime);
-                        agentsToAcknowledge.add(agent);
-                        // Send an OK
-                        agent.send(Collections.singleton(new KAConnectOK(tempID, agent.getControlledEntity().getID().getValue(), (RescueEntity)agent.getControlledEntity(), initialEntities)));
-                    }
+                    connection.sendMessage(reply);
                 }
                 catch (ConnectionException e) {
                     e.printStackTrace();
@@ -397,7 +409,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
 
         private void handleAKAcknowledge(AKAcknowledge msg, Connection connection) {
-            int id = msg.getAgentID();
+            int id = msg.getRequestID();
             if (agentAcknowledge(id, connection)) {
                 System.out.println("Agent " + id + " acknowledged");
             }
@@ -444,6 +456,18 @@ public class LegacyComponentManager implements ConnectionManagerListener {
             else {
                 System.out.println("Unexpected viewer acknowledge");
             }
+        }
+    }
+
+    private static class AgentAck {
+        Agent agent;
+        int requestID;
+        Connection connection;
+
+        public AgentAck(Agent agent, int requestID, Connection c) {
+            this.agent = agent;
+            this.requestID = requestID;
+            this.connection = c;
         }
     }
 }

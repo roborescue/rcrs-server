@@ -21,17 +21,13 @@ import rescuecore2.version0.messages.AKTell;
    Legacy agent implementation.
  */
 public class LegacyAgent extends AbstractAgent {
-    private int freezeTime;
-
     /**
        Construct a legacy agent.
        @param e The entity controlled by the agent.
        @param c The connection to the agent.
-       @param freezeTime The number of timesteps before which movement commands will be ignored. Say and tell commands will work at all times.
      */
-    public LegacyAgent(RescueEntity e, Connection c, int freezeTime) {
+    public LegacyAgent(Entity e, Connection c) {
         super(e, c);
-        this.freezeTime = freezeTime;
     }
 
     @Override
@@ -57,12 +53,6 @@ public class LegacyAgent extends AbstractAgent {
             // If the message is not a version0 AgentCommand then remove it
             if (!(next instanceof AgentCommand)) {
                 it.remove();
-            }
-            else {
-                // Only allow say and tell commands if it's too early
-                if (timestep < freezeTime && !(next instanceof AKSay || next instanceof AKTell)) {
-                    it.remove();
-                }
             }
         }
         return result;

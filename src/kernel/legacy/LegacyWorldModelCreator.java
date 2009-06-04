@@ -20,20 +20,21 @@ import rescuecore2.messages.control.KGAcknowledge;
 import rescuecore2.worldmodel.Entity;
 
 import rescuecore2.version0.entities.RescueEntity;
+import rescuecore2.version0.entities.RescueWorldModel;
 
 /**
    A WorldModelCreator that talks to the GIS to build RescueEntities.
  */
 public class LegacyWorldModelCreator {
     /**
-       Create a new IndexedWorldModel.
+       Create a new RescueWorldModel.
        @param config The config to use.
        @return A new world model.
        @throws KernelException If there is a problem building the world model.
     */
-    public IndexedWorldModel buildWorldModel(Config config) throws KernelException {
+    public RescueWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
-        IndexedWorldModel world = new IndexedWorldModel(config.getIntValue("vision"));
+        RescueWorldModel world = new RescueWorldModel(config.getIntValue("vision"));
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue("gis_port");
         Connection conn;
@@ -66,9 +67,9 @@ public class LegacyWorldModelCreator {
     */
     private static class GISConnectionListener implements ConnectionListener {
         private CountDownLatch latch;
-        private IndexedWorldModel model;
+        private RescueWorldModel model;
 
-        public GISConnectionListener(CountDownLatch latch, IndexedWorldModel model) {
+        public GISConnectionListener(CountDownLatch latch, RescueWorldModel model) {
             this.latch = latch;
             this.model = model;
         }
@@ -78,14 +79,7 @@ public class LegacyWorldModelCreator {
                 try {
                     // Update the internal world model
                     model.removeAllEntities();
-                    Collection<Entity> response = ((GKConnectOK)m).getEntities();
-                    Collection<RescueEntity> all = new ArrayList<RescueEntity>(response.size());
-                    for (Entity next : response) {
-                        if (next instanceof RescueEntity) {
-                            all.add((RescueEntity)next);
-                        }
-                    }
-                    model.addEntities(all);
+                    model.addEntities(((GKConnectOK)m).getEntities());
                     // Send an acknowledgement
                     c.sendMessage(new KGAcknowledge());
                     System.out.println("GIS connected OK");

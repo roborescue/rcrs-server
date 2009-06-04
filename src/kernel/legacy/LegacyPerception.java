@@ -15,6 +15,7 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
+import rescuecore2.version0.entities.RescueWorldModel;
 import rescuecore2.version0.entities.RescueEntity;
 import rescuecore2.version0.entities.Road;
 import rescuecore2.version0.entities.Building;
@@ -30,7 +31,7 @@ public class LegacyPerception implements Perception {
 
     private int viewDistance;
     private int farFireDistance;
-    private IndexedWorldModel world;
+    private RescueWorldModel world;
     private int time;
     private Set<Building> unburntBuildings;
     private Map<Building, Integer> ignitionTimes;
@@ -40,7 +41,7 @@ public class LegacyPerception implements Perception {
        @param config The configuration of the kernel.
        @param world The world model.
      */
-    public LegacyPerception(Config config, IndexedWorldModel world) {
+    public LegacyPerception(Config config, RescueWorldModel world) {
         this.world = world;
         this.viewDistance = config.getIntValue("vision");
         this.farFireDistance = config.getIntValue("fire_cognition_spreading_speed");
