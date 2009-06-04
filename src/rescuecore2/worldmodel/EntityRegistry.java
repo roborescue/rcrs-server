@@ -33,6 +33,10 @@ public final class EntityRegistry {
      */
     public static void register(int id, EntityFactory factory) {
         synchronized (factories) {
+            EntityFactory old = factories.get(id);
+            if (old != null && old != factory) {
+                System.out.println("WARNING: Entity ID " + id + " is being clobbered by " + factory + ". Old factory: " + old);
+            }
             factories.put(id, factory);
         }
     }

@@ -39,6 +39,10 @@ public final class MessageRegistry {
      */
     public static void register(int id, MessageFactory factory) {
         synchronized (factories) {
+            MessageFactory old = factories.get(id);
+            if (old != null && old != factory) {
+                System.out.println("WARNING: Message ID " + id + " is being clobbered by " + factory + ". Old factory: " + old);
+            }
             factories.put(id, factory);
         }
     }
