@@ -1,8 +1,6 @@
 package rescuecore2.messages.control;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
 
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;

@@ -12,9 +12,6 @@ import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.Pair;
 
-import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.Human;
-
 /**
    A wrapper around a WorldModel that indexes Entities by location.
  */

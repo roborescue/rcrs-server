@@ -5,7 +5,6 @@ import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.IntListComponent;
 
 import java.util.List;
-import java.util.Arrays;
 
 /**
    A message for connecting an agent to the kernel.
