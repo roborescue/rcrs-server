@@ -29,9 +29,10 @@ public class AKExtinguish extends AgentCommand {
        @param agent The ID of the agent issuing the command.
        @param target The id of the entity to extinguish.
        @param water The amount of water to use.
+       @param time The time the command was issued.
      */
-    public AKExtinguish(EntityID agent, EntityID target, int water) {
-        super("AK_EXTINGUISH", MessageConstants.AK_EXTINGUISH, agent);
+    public AKExtinguish(EntityID agent, EntityID target, int water, int time) {
+        super("AK_EXTINGUISH", MessageConstants.AK_EXTINGUISH, agent, time);
         init();
         this.target = target;
         this.water = water;

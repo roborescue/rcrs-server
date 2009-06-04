@@ -16,8 +16,9 @@ public class AKUnload extends AgentCommand {
     /**
        Construct an unload command.
        @param agentID The ID of the agent issuing the command.
+       @param time The time the command was issued.
      */
-    public AKUnload(EntityID agentID) {
-        super("AK_UNLOAD", MessageConstants.AK_UNLOAD, agentID);
+    public AKUnload(EntityID agentID, int time) {
+        super("AK_UNLOAD", MessageConstants.AK_UNLOAD, agentID, time);
     }
 }

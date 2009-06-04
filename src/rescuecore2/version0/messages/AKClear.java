@@ -21,9 +21,10 @@ public class AKClear extends AgentCommand {
        Construct an AKClear command.
        @param agent The ID of the agent issuing the command.
        @param target The id of the entity to clear.
+       @param time The time the command was issued.
      */
-    public AKClear(EntityID agent, EntityID target) {
-        super("AK_CLEAR", MessageConstants.AK_CLEAR, agent);
+    public AKClear(EntityID agent, EntityID target, int time) {
+        super("AK_CLEAR", MessageConstants.AK_CLEAR, agent, time);
         init();
         this.target.setValue(target);
     }

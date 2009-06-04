@@ -11,4 +11,10 @@ public interface Command extends Message {
        @return The id of the agent.
      */
     EntityID getAgentID();
+
+    /**
+       Get the timestep this command is intended for.
+       @return The timestep.
+     */
+    int getTime();
 }

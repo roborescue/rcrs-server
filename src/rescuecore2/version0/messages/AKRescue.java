@@ -21,9 +21,10 @@ public class AKRescue extends AgentCommand {
        Construct an AKRescue command.
        @param agent The ID of the agent issuing the command.
        @param target The id of the entity to rescue.
+       @param time The time the command was issued.
      */
-    public AKRescue(EntityID agent, EntityID target) {
-        super("AK_RESCUE", MessageConstants.AK_RESCUE, agent);
+    public AKRescue(EntityID agent, EntityID target, int time) {
+        super("AK_RESCUE", MessageConstants.AK_RESCUE, agent, time);
         init();
         this.target.setValue(target);
     }

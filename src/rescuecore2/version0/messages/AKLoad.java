@@ -21,9 +21,10 @@ public class AKLoad extends AgentCommand {
        Construct an AKLoad command.
        @param agent The ID of the agent issuing the command.
        @param target The id of the entity to load.
+       @param time The time the command was issued.
      */
-    public AKLoad(EntityID agent, EntityID target) {
-        super("AK_LOAD", MessageConstants.AK_LOAD, agent);
+    public AKLoad(EntityID agent, EntityID target, int time) {
+        super("AK_LOAD", MessageConstants.AK_LOAD, agent, time);
         init();
         this.target.setValue(target);
     }

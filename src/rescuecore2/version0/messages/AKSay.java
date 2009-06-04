@@ -21,9 +21,10 @@ public class AKSay extends AgentCommand {
        Construct a say command.
        @param agent The ID of the agent issuing the command.
        @param data The content of the command.
+       @param time The time the command was issued.
      */
-    public AKSay(EntityID agent, byte[] data) {
-        super("AK_SAY", MessageConstants.AK_SAY, agent);
+    public AKSay(EntityID agent, byte[] data, int time) {
+        super("AK_SAY", MessageConstants.AK_SAY, agent, time);
         init();
         this.data.setData(data);
     }

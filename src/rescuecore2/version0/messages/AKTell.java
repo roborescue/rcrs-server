@@ -23,9 +23,10 @@ public class AKTell extends AgentCommand {
        Construct a tell command.
        @param agent The ID of the agent issuing the command.
        @param data The content of the command.
+       @param time The time the command was issued.
      */
-    public AKTell(EntityID agent, byte[] data) {
-        super("AK_TELL", MessageConstants.AK_TELL, agent);
+    public AKTell(EntityID agent, byte[] data, int time) {
+        super("AK_TELL", MessageConstants.AK_TELL, agent, time);
         init();
         this.data.setData(data);
     }

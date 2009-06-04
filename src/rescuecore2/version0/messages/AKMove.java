@@ -23,9 +23,10 @@ public class AKMove extends AgentCommand {
        Construct a move command.
        @param agent The ID of the agent issuing the command.
        @param path The path to move.
+       @param time The time the command was issued.
      */
-    public AKMove(EntityID agent, List<EntityID> path) {
-        super("AK_MOVE", MessageConstants.AK_MOVE, agent);
+    public AKMove(EntityID agent, List<EntityID> path, int time) {
+        super("AK_MOVE", MessageConstants.AK_MOVE, agent, time);
         init();
         this.path.setIDs(path);
     }
