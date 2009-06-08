@@ -55,6 +55,7 @@
 
   <path id="path.junit">
     <pathelement location="${lib.dir}/junit-4.5.jar"/>
+    <pathelement location="${lib.dir}/ant-junit.jar"/>
     <path refid="path.cobertura.instrumented"/>
     <path refid="path.jars"/>
     <path refid="path.lib"/>
@@ -83,6 +84,8 @@
 
   <!-- Cobertura task definition -->
   <taskdef classpathref="path.cobertura" resource="tasks.properties"/>
+
+  
 
   <!-- Stuff to do before a build -->
   <target name="_init">
