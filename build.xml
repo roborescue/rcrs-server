@@ -85,7 +85,11 @@
   <!-- Cobertura task definition -->
   <taskdef classpathref="path.cobertura" resource="tasks.properties"/>
 
-  
+  <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+    <classpath>
+      <pathelement location="${ant.home}/lib/optional.jar"/>
+    </classpath>
+  </taskdef>
 
   <!-- Stuff to do before a build -->
   <target name="_init">
