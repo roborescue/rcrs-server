@@ -54,8 +54,6 @@
   </path>
 
   <path id="path.junit">
-    <pathelement location="${lib.dir}/junit-4.5.jar"/>
-    <pathelement location="${lib.dir}/ant-junit.jar"/>
     <path refid="path.cobertura.instrumented"/>
     <path refid="path.jars"/>
     <path refid="path.lib"/>
@@ -87,7 +85,8 @@
 
   <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
     <classpath>
-      <pathelement location="${ant.home}/lib/optional.jar"/>
+      <pathelement location="${lib.dir}/ant-junit.jar"/>
+      <pathelement location="${lib.dir}/junit-4.5.jar"/>
     </classpath>
   </taskdef>
 
