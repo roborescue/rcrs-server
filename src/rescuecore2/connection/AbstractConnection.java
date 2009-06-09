@@ -165,8 +165,8 @@ public abstract class AbstractConnection implements Connection {
         catch (IOException e) {
             // Log and ignore
             // FIXME: Log it!
-            System.err.println(e);
             e.printStackTrace();
+            ByteLogger.log(b);
         }
     }
 
