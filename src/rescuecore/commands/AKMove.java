@@ -21,47 +21,40 @@ import rescuecore.RescueConstants;
 import rescuecore.Handy;
 
 public class AKMove extends AgentCommand {
-	private int[] path;
+    private int[] path;
 
-	public AKMove(int senderID, int[] path) {
-		super(RescueConstants.AK_MOVE,senderID);
-		this.path = new int[path.length];
-		System.arraycopy(path,0,this.path,0,path.length);
-	}
+    public AKMove(int senderID, int time, int[] path) {
+        super(RescueConstants.AK_MOVE,senderID, time);
+        this.path = new int[path.length];
+        System.arraycopy(path,0,this.path,0,path.length);
+    }
 
-	public AKMove(InputBuffer in) {
-		super(RescueConstants.AK_MOVE,0);
-		read(in);
-	}
+    public AKMove(InputBuffer in) {
+        super(RescueConstants.AK_MOVE,0,0);
+        read(in);
+    }
 
-	/*
-	public AKMove(int senderID, byte[] data) {
-		super(AK_MOVE,senderID);
-		decodePath(data,0);
-	}
-	*/
+    public void read(InputBuffer in) {
+        super.read(in);
+        path = new int[in.readInt()];
+        //		System.out.println("Reading AK_MOVE of length "+path.length);
+        for (int i=0;i<path.length;++i) {
+            path[i] = in.readInt();
+            //			System.out.println(path[i]);
+        }
+    }
 
-	public void read(InputBuffer in) {
-		super.read(in);
-		path = new int[in.readInt()];
-		//		System.out.println("Reading AK_MOVE of length "+path.length);
-		for (int i=0;i<path.length;++i) {
-			path[i] = in.readInt();
-			//			System.out.println(path[i]);
-		}
-	}
+    public void write(OutputBuffer out) {
+        super.write(out);
+        out.writeInt(path.length);
+        for (int i=0;i<path.length;++i) out.writeInt(path[i]);
+    }
 
-	public void write(OutputBuffer out) {
-		super.write(out);
-		out.writeInt(path.length);
-		for (int i=0;i<path.length;++i) out.writeInt(path[i]);
-	}
+    public int[] getPath() {
+        return path;
+    }
 
-	public int[] getPath() {
-		return path;
-	}
-
-	public String toString() {
-		return "AK_MOVE ("+Handy.arrayAsString(path)+")";
-	}
+    public String toString() {
+        return "AK_MOVE ("+Handy.arrayAsString(path)+")";
+    }
 }

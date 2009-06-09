@@ -187,10 +187,11 @@ namespace Librescue {
 
   class AgentCommand : public Command {
   protected:
-	AgentCommand(Id agent);
+        AgentCommand(Id agent, INT_32 time);
 	AgentCommand(InputBuffer& in);
 
 	Id m_agentId;
+        INT_32 m_time;
 
   public:
 	virtual ~AgentCommand();
@@ -199,6 +200,7 @@ namespace Librescue {
 	virtual void decode(InputBuffer& in);
 
 	Id getAgentId() const;
+        INT_32 getTime() const;
   };
 
   class VoiceCommand : public AgentCommand {
@@ -206,8 +208,8 @@ namespace Librescue {
 	Bytes m_data;
 	Byte m_channel;
 
-	VoiceCommand(Id agent, const Byte* message, int size, const Byte channel = CHANNEL_NONE);
-	VoiceCommand(Id agent, const Bytes& message, const Byte channel = CHANNEL_NONE);
+	VoiceCommand(Id agent, INT_32 time, const Byte* message, int size, const Byte channel = CHANNEL_NONE);
+	VoiceCommand(Id agent, INT_32 time, const Bytes& message, const Byte channel = CHANNEL_NONE);
 	VoiceCommand(InputBuffer& in);
 
   public:
@@ -222,8 +224,8 @@ namespace Librescue {
 
   class SayCommand : public VoiceCommand {
   public:
-	SayCommand(Id agent, const Byte* message, int size);
-	SayCommand(Id agent, const Bytes& message);
+	SayCommand(Id agent, INT_32 time, const Byte* message, int size);
+	SayCommand(Id agent, INT_32 time, const Bytes& message);
 	SayCommand(InputBuffer& in);
 	virtual ~SayCommand();
 
@@ -234,8 +236,8 @@ namespace Librescue {
 
   class TellCommand : public VoiceCommand {
   public:
-	TellCommand(Id agent, const Byte* message, int size, const Byte channel = CHANNEL_NONE);
-	TellCommand(Id agent, const Bytes& message, const Byte channel = CHANNEL_NONE);
+	TellCommand(Id agent, INT_32 time, const Byte* message, int size, const Byte channel = CHANNEL_NONE);
+	TellCommand(Id agent, INT_32 time, const Bytes& message, const Byte channel = CHANNEL_NONE);
 	TellCommand(InputBuffer& in);
 	virtual ~TellCommand();
 
@@ -250,8 +252,8 @@ namespace Librescue {
 	  Bytes m_channels;
 
   public:
-	  ChannelCommand (Id agent);
-	  ChannelCommand (Id agent, const Bytes& channels);
+	  ChannelCommand (Id agent, INT_32 time);
+	  ChannelCommand (Id agent, INT_32 time, const Bytes& channels);
 	  ChannelCommand (InputBuffer& in);
 	  virtual ~ChannelCommand();
 
@@ -269,8 +271,8 @@ namespace Librescue {
 	IdList m_path;
 
   public:
-	MoveCommand(Id agent);
-	MoveCommand(Id agent, const IdList& path);
+	MoveCommand(Id agent, INT_32 time);
+	MoveCommand(Id agent, INT_32 time, const IdList& path);
 	MoveCommand(InputBuffer& in);
 	virtual ~MoveCommand();
 
@@ -302,8 +304,8 @@ namespace Librescue {
 	Nozzles m_nozzles;
 
   public:
-	ExtinguishCommand(Id agent);
-	ExtinguishCommand(Id agent, Id target, INT_32 direction, INT_32 x, INT_32 y, INT_32 amount);
+	ExtinguishCommand(Id agent, INT_32 time);
+	ExtinguishCommand(Id agent, INT_32 time, Id target, INT_32 direction, INT_32 x, INT_32 y, INT_32 amount);
 	ExtinguishCommand(InputBuffer& in);
 	virtual ~ExtinguishCommand();
 
@@ -321,7 +323,7 @@ namespace Librescue {
   class TargetCommand : public AgentCommand {
   protected:
 	Id m_target;
-	TargetCommand(Id agent, Id target);
+	TargetCommand(Id agent, INT_32 time, Id target);
 	TargetCommand(InputBuffer& in);
 
   public:
@@ -335,7 +337,7 @@ namespace Librescue {
 
   class LoadCommand : public TargetCommand {
   public:
-	LoadCommand(Id agent, Id target);
+	LoadCommand(Id agent, INT_32 time, Id target);
 	LoadCommand(InputBuffer& in);
 	virtual ~LoadCommand();
 
@@ -346,7 +348,7 @@ namespace Librescue {
 
   class UnloadCommand : public AgentCommand {
   public:
-	UnloadCommand(Id agent);
+	UnloadCommand(Id agent, INT_32 time);
 	UnloadCommand(InputBuffer& in);
 	virtual ~UnloadCommand();
 
@@ -357,7 +359,7 @@ namespace Librescue {
 
   class RestCommand : public AgentCommand {
   public:
-	RestCommand(Id agent);
+	RestCommand(Id agent, INT_32 time);
 	RestCommand(InputBuffer& in);
 	virtual ~RestCommand();
 
@@ -368,7 +370,7 @@ namespace Librescue {
 
   class RescueCommand : public TargetCommand {
   public:
-	RescueCommand(Id agent, Id target);
+	RescueCommand(Id agent, INT_32 time, Id target);
 	RescueCommand(InputBuffer& in);
 	virtual ~RescueCommand();
 
@@ -379,7 +381,7 @@ namespace Librescue {
 
   class ClearCommand : public TargetCommand {
   public:
-	ClearCommand(Id agent, Id target);
+	ClearCommand(Id agent, INT_32 time, Id target);
 	ClearCommand(InputBuffer& in);
 	virtual ~ClearCommand();
 
@@ -390,7 +392,7 @@ namespace Librescue {
 
   class RepairCommand : public TargetCommand {
   public:
-	RepairCommand(Id agent, Id target);
+	RepairCommand(Id agent, INT_32 time, Id target);
 	RepairCommand(InputBuffer& in);
 	virtual ~RepairCommand();
 

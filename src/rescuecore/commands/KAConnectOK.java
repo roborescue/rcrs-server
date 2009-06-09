@@ -22,16 +22,14 @@ import rescuecore.RescueConstants;
 
 public class KAConnectOK extends Command {
 	private RescueObject[] knowledge;
-	private RescueObject self;
-	private int replyID;
-	private int id;
+	private int requestID;
+	private int agentID;
 
-	public KAConnectOK(int replyID, int id, RescueObject self, RescueObject[] knowledge) {
+	public KAConnectOK(int requestID, int agentID, RescueObject[] knowledge) {
 		super(RescueConstants.KA_CONNECT_OK);
 		this.knowledge = knowledge;
-		this.self = self;
-		this.replyID = replyID;
-		this.id = id;
+		this.requestID = requestID;
+		this.agentID = agentID;
 	}
 
 	public KAConnectOK(InputBuffer in) {
@@ -40,32 +38,26 @@ public class KAConnectOK extends Command {
 	}
 
 	public void read(InputBuffer in) {
-		replyID = in.readInt();
-		id = in.readInt();
-		self = in.readObject(0,RescueConstants.SOURCE_INITIAL);
+		requestID = in.readInt();
+		agentID = in.readInt();
 		knowledge = in.readObjects(0,RescueConstants.SOURCE_INITIAL);
 	}
 
 	public void write(OutputBuffer out) {
-		out.writeInt(replyID);
-		out.writeInt(id);
-		out.writeObject(self);
+		out.writeInt(requestID);
+		out.writeInt(agentID);
 		out.writeObjects(knowledge);
 	}
 
-	public int getReplyID() {
-		return replyID;
+	public int getRequestID() {
+		return requestID;
 	}
 
-	public int getID() {
-		return id;
+	public int getAgentID() {
+		return agentID;
 	}
 
 	public RescueObject[] getKnowledge() {
 		return knowledge;
-	}
-
-	public RescueObject getSelf() {
-		return self;
 	}
 }

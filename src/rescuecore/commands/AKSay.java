@@ -22,14 +22,14 @@ import rescuecore.RescueConstants;
 public class AKSay extends AgentCommand {
 	private byte[] msg;
 
-	public AKSay(int senderID, byte[] msg, int length) {
-		super(RescueConstants.AK_SAY,senderID);
+    public AKSay(int senderID, int time, byte[] msg, int length) {
+        super(RescueConstants.AK_SAY,senderID,time);
 		this.msg = new byte[length];
 		System.arraycopy(msg,0,this.msg,0,length);
 	}
 
 	public AKSay(InputBuffer in) {
-		super(RescueConstants.AK_SAY,0);
+            super(RescueConstants.AK_SAY,0,0);
 		read(in);
 	}
 

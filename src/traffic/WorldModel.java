@@ -308,6 +308,7 @@ public class WorldModel implements Constants {
     private void parseAK_MOVE(InputBuffer in) {
 		//		int size = in.readInt();
         int senderID = in.readInt();
+        int time = in.readInt();
 		int length = in.readInt();
 		int[] path = new int[length];
 		for (int i=0;i<length;++i) path[i] = in.readInt();
@@ -341,6 +342,7 @@ public class WorldModel implements Constants {
     private void parseAK_LOAD(InputBuffer in) {
 		//        int size = in.readInt();
         int senderID = in.readInt();
+        int time = in.readInt();
 		int targetID = in.readInt();
         RealObject sender = get(senderID);
         if (!(sender instanceof AmbulanceTeam)) {
@@ -388,6 +390,7 @@ public class WorldModel implements Constants {
     private void parseAK_UNLOAD(InputBuffer in) {
 		//        int size = in.readInt();
         int senderID = in.readInt();
+        int time = in.readInt();
         RealObject sender = get(senderID);
         if (!(sender instanceof AmbulanceTeam)) {
             printError(sender, "Wrong sender for unloading: " + senderID);

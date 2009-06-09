@@ -17,7 +17,7 @@ package rescuecore;
 
 public class DummyAgent extends Agent {
     public DummyAgent() {
-		super(RescueConstants.AGENT_TYPE_FIRE_BRIGADE | RescueConstants.AGENT_TYPE_AMBULANCE_TEAM | RescueConstants.AGENT_TYPE_POLICE_FORCE | RescueConstants.AGENT_TYPE_FIRE_STATION | RescueConstants.AGENT_TYPE_AMBULANCE_CENTER | RescueConstants.AGENT_TYPE_POLICE_OFFICE);
+        super(RescueConstants.TYPE_FIRE_BRIGADE, RescueConstants.TYPE_AMBULANCE_TEAM, RescueConstants.TYPE_POLICE_FORCE, RescueConstants.TYPE_FIRE_STATION, RescueConstants.TYPE_AMBULANCE_CENTER, RescueConstants.TYPE_POLICE_OFFICE);
     }
 
     protected void sense() {}

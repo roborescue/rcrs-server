@@ -286,7 +286,8 @@ public class WorldModel implements Constants {
 			int size = dis.readInt();
 			if (size != 0) {
 				int senderId = dis.readInt();
-				byte[] content = new byte[size-RescueConstants.INT_SIZE];
+                                int commandTime = dis.readInt();
+				byte[] content = new byte[size-RescueConstants.INT_SIZE-RescueConstants.INT_SIZE];
 				dis.readBytes(content);
 				RealObject sender = get(senderId);
 				//				if (sender instanceof Civilian) _debugFile.print(rescuecore.Handy.getCommandTypeName(command)+" ("+senderId+")");

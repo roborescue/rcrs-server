@@ -339,7 +339,7 @@ namespace Librescue {
 	return m_data;
   }
 
-  AgentCommand::AgentCommand(Id agent) : m_agentId(agent) {
+  AgentCommand::AgentCommand(Id agent, INT_32 time) : m_agentId(agent), m_time(time) {
   }
 
   AgentCommand::AgentCommand(InputBuffer& in) {
@@ -351,30 +351,36 @@ namespace Librescue {
   void AgentCommand::encode(OutputBuffer& out) const {
 	Command::encode(out);
 	out.writeInt32(m_agentId);
+        out.writeInt32(m_time);
   }
 
   void AgentCommand::decode(InputBuffer& in) {
 	Command::decode(in);
 	m_agentId = in.readInt32();
+        m_time = in.readInt32();
   }
 
   Id AgentCommand::getAgentId() const {
 	return m_agentId;
   }
 
-  VoiceCommand::VoiceCommand(Id agent, const Byte* msg, int size, const Byte channel) : AgentCommand(agent) {
+  INT_32 AgentCommand::getTime() const {
+    return m_time;
+  }
+
+  VoiceCommand::VoiceCommand(Id agent, INT_32 time, const Byte* msg, int size, const Byte channel) : AgentCommand(agent, time) {
   	m_channel=channel;
 	m_data.reserve(size);
 	for (int i=0;i<size;++i) m_data.push_back(msg[i]);
   }
 
-  VoiceCommand::VoiceCommand(Id agent, const Bytes& msg, const Byte channel) : AgentCommand(agent) {
+  VoiceCommand::VoiceCommand(Id agent, INT_32 time, const Bytes& msg, const Byte channel) : AgentCommand(agent, time) {
   	m_channel=channel;
 	m_data.reserve(msg.size());
 	m_data.insert(m_data.end(),msg.begin(),msg.end());
   }
 
-  VoiceCommand::VoiceCommand(InputBuffer& in) : AgentCommand(0) {
+  VoiceCommand::VoiceCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -405,11 +411,11 @@ namespace Librescue {
 	in.read(size,m_data);
   }
 
-  SayCommand::SayCommand(Id agent, const Byte* msg, int size) : VoiceCommand(agent,msg,size, 0) {}
+  SayCommand::SayCommand(Id agent, INT_32 time, const Byte* msg, int size) : VoiceCommand(agent, time,msg,size, 0) {}
 
-  SayCommand::SayCommand(Id agent, const Bytes& msg) : VoiceCommand(agent,msg, 0) {}
+  SayCommand::SayCommand(Id agent, INT_32 time, const Bytes& msg) : VoiceCommand(agent,time,msg, 0) {}
 
-  SayCommand::SayCommand(InputBuffer& in) : VoiceCommand(0,0,0) {
+  SayCommand::SayCommand(InputBuffer& in) : VoiceCommand(0,0,0,0) {
 	decode(in);
   }
 
@@ -420,14 +426,14 @@ namespace Librescue {
   }
 
   Command* SayCommand::clone() const {
-	return new SayCommand(m_agentId,m_data);
+    return new SayCommand(m_agentId,m_time,m_data);
   }
 
-  TellCommand::TellCommand(Id agent, const Byte* msg, int size, const Byte channel) : VoiceCommand(agent,msg,size,channel) {}
+  TellCommand::TellCommand(Id agent, INT_32 time, const Byte* msg, int size, const Byte channel) : VoiceCommand(agent,time,msg,size,channel) {}
 
-  TellCommand::TellCommand(Id agent, const Bytes& msg, const Byte channel) : VoiceCommand(agent,msg,channel) {}
+  TellCommand::TellCommand(Id agent, INT_32 time, const Bytes& msg, const Byte channel) : VoiceCommand(agent,time,msg,channel) {}
 
-  TellCommand::TellCommand(InputBuffer& in) : VoiceCommand(0,0,0) {
+  TellCommand::TellCommand(InputBuffer& in) : VoiceCommand(0,0,0,0) {
 	decode(in);
   }
 
@@ -439,19 +445,19 @@ namespace Librescue {
   }
 
   Command* TellCommand::clone() const {
-	return new TellCommand(m_agentId,m_data);
+    return new TellCommand(m_agentId,m_time,m_data);
   }
   
-  ChannelCommand::ChannelCommand (Id agent, const Bytes& channels) : AgentCommand (agent)
+  ChannelCommand::ChannelCommand (Id agent, INT_32 time, const Bytes& channels) : AgentCommand (agent, time)
   {
 	  m_channels.reserve (channels.size());
 	  m_channels.insert (m_channels.end(), channels.begin(), channels.end());
   }
 
-  ChannelCommand::ChannelCommand(Id agent) : AgentCommand(agent) {
+  ChannelCommand::ChannelCommand(Id agent, INT_32 time) : AgentCommand(agent, time) {
   }
 
-  ChannelCommand::ChannelCommand(InputBuffer& in) : AgentCommand(0) {
+  ChannelCommand::ChannelCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -483,22 +489,22 @@ namespace Librescue {
   }
 
   Command* ChannelCommand::clone() const {
-	return new ChannelCommand(m_agentId,m_channels);
+	return new ChannelCommand(m_agentId,m_time,m_channels);
   }
 
   const Bytes& ChannelCommand::getChannels() const {
 	return m_channels;
   }
 
-  MoveCommand::MoveCommand(Id agent, const IdList& path) : AgentCommand(agent) {
+  MoveCommand::MoveCommand(Id agent, INT_32 time, const IdList& path) : AgentCommand(agent, time) {
 	m_path.reserve(path.size());
 	m_path.insert(m_path.end(),path.begin(),path.end());
   }
 
-  MoveCommand::MoveCommand(Id agent) : AgentCommand(agent) {
+  MoveCommand::MoveCommand(Id agent, INT_32 time) : AgentCommand(agent, time) {
   }
 
-  MoveCommand::MoveCommand(InputBuffer& in) : AgentCommand(0) {
+  MoveCommand::MoveCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -533,21 +539,21 @@ namespace Librescue {
   }
 
   Command* MoveCommand::clone() const {
-	return new MoveCommand(m_agentId,m_path);
+	return new MoveCommand(m_agentId,m_time,m_path);
   }
 
   const IdList& MoveCommand::getPath() const {
 	return m_path;
   }
 
-  ExtinguishCommand::ExtinguishCommand(Id agent) : AgentCommand(agent) {}
+  ExtinguishCommand::ExtinguishCommand(Id agent, INT_32 time) : AgentCommand(agent, time) {}
 
 
-  ExtinguishCommand::ExtinguishCommand(Id agent, Id target, INT_32 direction, INT_32 x, INT_32 y, INT_32 amount) : AgentCommand(agent) {
+  ExtinguishCommand::ExtinguishCommand(Id agent, INT_32 time, Id target, INT_32 direction, INT_32 x, INT_32 y, INT_32 amount) : AgentCommand(agent, time) {
 	addNozzle(target,direction,x,y,amount);
   }
 
-  ExtinguishCommand::ExtinguishCommand(InputBuffer& in) : AgentCommand(0) {
+  ExtinguishCommand::ExtinguishCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -594,7 +600,7 @@ namespace Librescue {
   }
 
   Command* ExtinguishCommand::clone() const {
-	ExtinguishCommand* result = new ExtinguishCommand(m_agentId);
+    ExtinguishCommand* result = new ExtinguishCommand(m_agentId, m_time);
 	for (Nozzles::const_iterator it = m_nozzles.begin();it!=m_nozzles.end();++it) {
 	  const Nozzle next = *it;
 	  result->addNozzle(next.target,next.direction,next.x,next.y,next.amount);
@@ -606,9 +612,9 @@ namespace Librescue {
 	return m_nozzles;
   }
 
-  TargetCommand::TargetCommand(Id agent, Id target) : AgentCommand(agent), m_target(target) {}
+  TargetCommand::TargetCommand(Id agent, INT_32 time, Id target) : AgentCommand(agent, time), m_target(target) {}
 
-  TargetCommand::TargetCommand(InputBuffer& in) : AgentCommand(0) {
+  TargetCommand::TargetCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -628,9 +634,9 @@ namespace Librescue {
 	return m_target;
   }
 
-  LoadCommand::LoadCommand(Id agent, Id target) : TargetCommand(agent,target) {}
+  LoadCommand::LoadCommand(Id agent, INT_32 time, Id target) : TargetCommand(agent,time,target) {}
 
-  LoadCommand::LoadCommand(InputBuffer& in) : TargetCommand(0,0) {
+  LoadCommand::LoadCommand(InputBuffer& in) : TargetCommand(0,0,0) {
 	decode(in);
   }
 
@@ -641,14 +647,14 @@ namespace Librescue {
   }
 
   Command* LoadCommand::clone() const {
-	return new LoadCommand(m_agentId,m_target);
+	return new LoadCommand(m_agentId,m_time,m_target);
   }
 
   //  RescueCommand::RescueCommand(Id agent) : TargetCommand(agent) {}
 
-  RescueCommand::RescueCommand(Id agent, Id target) : TargetCommand(agent,target) {}
+  RescueCommand::RescueCommand(Id agent, INT_32 time, Id target) : TargetCommand(agent,time,target) {}
 
-  RescueCommand::RescueCommand(InputBuffer& in) : TargetCommand(0,0) {
+  RescueCommand::RescueCommand(InputBuffer& in) : TargetCommand(0,0,0) {
 	decode(in);
   }
 
@@ -659,14 +665,14 @@ namespace Librescue {
   }
 
   Command* RescueCommand::clone() const {
-	return new RescueCommand(m_agentId,m_target);
+	return new RescueCommand(m_agentId,m_time,m_target);
   }
 
   //  ClearCommand::ClearCommand(Id agent) : TargetCommand(agent) {}
 
-  ClearCommand::ClearCommand(Id agent, Id target) : TargetCommand(agent,target) {}
+  ClearCommand::ClearCommand(Id agent, INT_32 time, Id target) : TargetCommand(agent,time,target) {}
 
-  ClearCommand::ClearCommand(InputBuffer& in) : TargetCommand(0,0) {
+  ClearCommand::ClearCommand(InputBuffer& in) : TargetCommand(0,0,0) {
 	decode(in);
   }
 
@@ -677,12 +683,12 @@ namespace Librescue {
   }
 
   Command* ClearCommand::clone() const {
-	return new ClearCommand(m_agentId,m_target);
+	return new ClearCommand(m_agentId,m_time,m_target);
   }
 
-  RepairCommand::RepairCommand(Id agent, Id target) : TargetCommand(agent,target) {}
+  RepairCommand::RepairCommand(Id agent, INT_32 time, Id target) : TargetCommand(agent,time,target) {}
 
-  RepairCommand::RepairCommand(InputBuffer& in) : TargetCommand(0,0) {
+  RepairCommand::RepairCommand(InputBuffer& in) : TargetCommand(0,0,0) {
 	decode(in);
   }
 
@@ -693,12 +699,12 @@ namespace Librescue {
   }
 
   Command* RepairCommand::clone() const {
-	return new RepairCommand(m_agentId,m_target);
+	return new RepairCommand(m_agentId,m_time,m_target);
   }
 
-  UnloadCommand::UnloadCommand(Id agent) : AgentCommand(agent) {}
+  UnloadCommand::UnloadCommand(Id agent, INT_32 time) : AgentCommand(agent, time) {}
 
-  UnloadCommand::UnloadCommand(InputBuffer& in) : AgentCommand(0) {
+  UnloadCommand::UnloadCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -709,12 +715,12 @@ namespace Librescue {
   }
 
   Command* UnloadCommand::clone() const {
-	return new UnloadCommand(m_agentId);
+	return new UnloadCommand(m_agentId,m_time);
   }
 
-  RestCommand::RestCommand(Id agent) : AgentCommand(agent) {}
+  RestCommand::RestCommand(Id agent, INT_32 time) : AgentCommand(agent, time) {}
 
-  RestCommand::RestCommand(InputBuffer& in) : AgentCommand(0) {
+  RestCommand::RestCommand(InputBuffer& in) : AgentCommand(0,0) {
 	decode(in);
   }
 
@@ -725,6 +731,6 @@ namespace Librescue {
   }
 
   Command* RestCommand::clone() const {
-	return new RestCommand(m_agentId);
+	return new RestCommand(m_agentId,m_time);
   }
 };

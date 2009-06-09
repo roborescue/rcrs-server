@@ -29,8 +29,8 @@ public class SampleCenter extends CenterAgent {
        Construct a new SampleCenter
     */
     public SampleCenter() {
-		super(RescueConstants.AGENT_TYPE_ANY_BUILDING); // We need to specify that we can be any type of building agent (Police Office, Fire Station, Ambulance Center)
-		agentChannel = 0;
+        super(RescueConstants.TYPE_FIRE_STATION, RescueConstants.TYPE_AMBULANCE_CENTER, RescueConstants.TYPE_POLICE_OFFICE);
+        agentChannel = 0;
     }
 
     /**
@@ -41,8 +41,8 @@ public class SampleCenter extends CenterAgent {
 		return (Building)memory.lookup(id);
     }
 
-    public void initialise(RescueObject[] knowledge, RescueObject self) {
-		super.initialise(knowledge,self);
+    public void initialise(RescueObject[] knowledge) {
+		super.initialise(knowledge);
 		switch (type) {
 		case RescueConstants.TYPE_FIRE_STATION:
 			agentChannel = 1;
@@ -65,7 +65,7 @@ public class SampleCenter extends CenterAgent {
 			// All centers listen on channel 4
 			channels[0] = 4;
 			channels[1] = agentChannel;
-			appendCommand(new AKChannel(id,channels));
+			appendCommand(new AKChannel(id,timeStep,channels));
 		}
     }
 

@@ -535,12 +535,14 @@ public class World implements WorldConstants {
 		setTime(data[2]); // Set the time
 		int cmd;
 		int id;
+                int time;
 		while((cmd=data[++c])!=TYPE_NULL){
 			int size=data[++c]/4;
 			switch(cmd){
 			case AK_EXTINGUISH:
 				System.out.println("EXTINGUISH");
 				id=data[++c];
+                                time = data[++c];
 				System.out.println("fb.id="+id);					
 				//					System.out.println("Command length: "+size);
 				FireBrigade source=(FireBrigade)getObject(id);

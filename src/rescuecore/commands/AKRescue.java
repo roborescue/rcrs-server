@@ -22,13 +22,13 @@ import rescuecore.RescueConstants;
 public class AKRescue extends AgentCommand {
 	private int target;
 
-	public AKRescue(int senderID, int target) {
-		super(RescueConstants.AK_RESCUE,senderID);
+    public AKRescue(int senderID, int time, int target) {
+        super(RescueConstants.AK_RESCUE,senderID,time);
 		this.target = target;
 	}
 
 	public AKRescue(InputBuffer in) {
-		super(RescueConstants.AK_RESCUE,0);
+            super(RescueConstants.AK_RESCUE,0,0);
 		read(in);
 	}
 

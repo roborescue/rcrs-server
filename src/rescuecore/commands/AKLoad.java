@@ -20,36 +20,36 @@ import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
 
 public class AKLoad extends AgentCommand {
-	private int target;
+    private int target;
 
-	public AKLoad(int senderID, int target) {
-		super(RescueConstants.AK_LOAD,senderID);
-		this.target = target;
-	}
+    public AKLoad(int senderID, int time, int target) {
+        super(RescueConstants.AK_LOAD,senderID,time);
+        this.target = target;
+    }
 
-	public AKLoad(InputBuffer in) {
-		super(RescueConstants.AK_LOAD,0);
-		read(in);
-	}
+    public AKLoad(InputBuffer in) {
+        super(RescueConstants.AK_LOAD,0,0);
+        read(in);
+    }
 
-	/*
-	public AKLoad(int senderID, byte[] data) {
-		super(AK_LOAD,senderID);
-		target = Handy.decodeInt(data,0);
-	}
-	*/
+    /*
+      public AKLoad(int senderID, byte[] data) {
+      super(AK_LOAD,senderID);
+      target = Handy.decodeInt(data,0);
+      }
+    */
 
-	public void write(OutputBuffer out) {
-		super.write(out);
-		out.writeInt(target);
-	}
+    public void write(OutputBuffer out) {
+        super.write(out);
+        out.writeInt(target);
+    }
 
-	public void read(InputBuffer in) {
-		super.read(in);
-		target = in.readInt();
-	}
+    public void read(InputBuffer in) {
+        super.read(in);
+        target = in.readInt();
+    }
 
-	public int getTarget() {
-		return target;
-	}
+    public int getTarget() {
+        return target;
+    }
 }

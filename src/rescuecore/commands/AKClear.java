@@ -22,13 +22,13 @@ import rescuecore.RescueConstants;
 public class AKClear extends AgentCommand {
 	private int target;
 
-	public AKClear(int senderID, int target) {
-		super(RescueConstants.AK_CLEAR,senderID);
+    public AKClear(int senderID, int time, int target) {
+        super(RescueConstants.AK_CLEAR,senderID,time);
 		this.target = target;
 	}
 
 	public AKClear(InputBuffer in) {
-		super(RescueConstants.AK_CLEAR,0);
+            super(RescueConstants.AK_CLEAR,0,0);
 		read(in);
 	}
 

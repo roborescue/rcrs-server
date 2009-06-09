@@ -23,8 +23,9 @@ public abstract class IO implements Runnable, Constants {
 		System.out.print("connecting ... ");
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.VK_CONNECT);
-		out.writeInt(RescueConstants.INT_SIZE);
+		out.writeInt(RescueConstants.INT_SIZE * 2);
 		out.writeInt(0); // Version
+		out.writeInt(0); // RequestID
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 		byte[] data = receive();
@@ -34,16 +35,28 @@ public abstract class IO implements Runnable, Constants {
 		int size;
 		int header = in.readInt();
 		byte[] body;
+                int requestID;
 		switch (header) {
 		case RescueConstants.KV_CONNECT_OK:
 			size = in.readInt();
 			System.out.print("initializing ... ");
 			body = new byte[size];
+                        requestID = in.readInt();
+                        // request ID should be 0 - that's the request ID we sent
+                        if (requestID != 0) {
+                            System.err.println("Unexpected request ID from kernel: " + requestID);
+                            System.exit(-3);
+                        }
 			in.readBytes(body);
 			storeData(updateDataList, body, 0);
 			break;
 		case RescueConstants.KV_CONNECT_ERROR:
 			size = in.readInt();
+                        requestID = in.readInt();
+                        // request ID should be 0 - that's the request ID we sent
+                        if (requestID != 0) {
+                            System.err.println("Unexpected request ID from kernel: " + requestID);
+                        }
 			System.out.println("Error connecting to kernel: "+in.readString());
 			System.exit(-1);
 			break;
@@ -65,7 +78,8 @@ public abstract class IO implements Runnable, Constants {
 
 		out = new OutputBuffer();
 		out.writeInt(RescueConstants.VK_ACKNOWLEDGE);
-		out.writeInt(0); // Size
+		out.writeInt(RescueConstants.INT_SIZE); // Size
+		out.writeInt(0); // Request ID
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 

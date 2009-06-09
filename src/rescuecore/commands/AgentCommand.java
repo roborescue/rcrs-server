@@ -30,25 +30,33 @@ import rescuecore.OutputBuffer;
  */
 public abstract class AgentCommand extends Command {
 	protected int senderID;
+    protected int time;
 
-    protected AgentCommand(int type, int senderID) {
+    protected AgentCommand(int type, int senderID, int time) {
 		super(type);
 		this.senderID = senderID;
+                this.time = time;
     }
 
 	public final int getSender() {
 		return senderID;
 	}
 
+    public final int getTime() {
+        return time;
+    }
+
     public void write(OutputBuffer out) {
 		out.writeInt(senderID);
+                out.writeInt(time);
 	}
 
 	public void read(InputBuffer in) {
 		senderID = in.readInt();
+                time = in.readInt();
 	}
 
     public String toString() {
-		return Handy.getCommandTypeName(type)+" from agent "+senderID;
+		return Handy.getCommandTypeName(type)+" from agent "+senderID+" at time " + time;
     }
 }

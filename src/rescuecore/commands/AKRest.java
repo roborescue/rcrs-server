@@ -17,12 +17,12 @@ import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
 
 public class AKRest extends AgentCommand {
-	public AKRest(int senderID) {
-		super(RescueConstants.AK_REST,senderID);
+    public AKRest(int senderID, int time) {
+        super(RescueConstants.AK_REST,senderID,time);
 	}
 
 	public AKRest(InputBuffer in) {
-		super(RescueConstants.AK_REST,0);
+            super(RescueConstants.AK_REST,0,0);
 		read(in);
 	}
 

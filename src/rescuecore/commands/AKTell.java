@@ -23,15 +23,15 @@ public class AKTell extends AgentCommand {
 	private byte[] msg;
 	private byte channel;
 
-	public AKTell(int senderID, byte[] msg, int length, byte channel) {
-		super(RescueConstants.AK_TELL,senderID);
+    public AKTell(int senderID, int time, byte[] msg, int length, byte channel) {
+        super(RescueConstants.AK_TELL,senderID,time);
 		this.msg = new byte[length];
 		System.arraycopy(msg,0,this.msg,0,length);
 		this.channel = channel;
 	}
 
 	public AKTell(InputBuffer in) {
-		super(RescueConstants.AK_TELL,0);
+            super(RescueConstants.AK_TELL,0,0);
 		read(in);
 	}
 

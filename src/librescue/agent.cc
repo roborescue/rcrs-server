@@ -65,50 +65,50 @@ namespace Librescue {
   }
 
   void Agent::sendMove(const IdList& path) const {
-	MoveCommand move(m_id,path);
+    MoveCommand move(m_id,m_time,path);
 	sendAgentCommand(&move);
   }
 
   void Agent::sendRest() const {
-	RestCommand rest(m_id);
+	RestCommand rest(m_id,m_time);
 	sendAgentCommand(&rest);
   }
 
   void Agent::sendLoad(Id target) const {
-	LoadCommand load(m_id,target);
+	LoadCommand load(m_id,m_time,target);
 	sendAgentCommand(&load);
   }
 
   void Agent::sendUnload() const {
-	UnloadCommand unload(m_id);
+	UnloadCommand unload(m_id,m_time);
 	sendAgentCommand(&unload);
   }
 
   void Agent::sendRescue(Id target) const {
-	RescueCommand rescue(m_id,target);
+	RescueCommand rescue(m_id,m_time,target);
 	sendAgentCommand(&rescue);
   }
 
   void Agent::sendClear(Id target) const {
-	ClearCommand clear(m_id,target);
+	ClearCommand clear(m_id,m_time,target);
 	sendAgentCommand(&clear);
   }
 
   void Agent::sendExtinguish(Id target, int amount) const {
 	int x,y;
 	if (m_pool.locate(m_id,&x,&y)) {
-	  ExtinguishCommand ex(m_id,target,0,x,y,amount);
+	  ExtinguishCommand ex(m_id,m_time,target,0,x,y,amount);
 	  sendAgentCommand(&ex);
 	}
   }
 
   void Agent::sendSay(const Bytes& data) const {
-	SayCommand say(m_id,data);
+	SayCommand say(m_id,m_time,data);
 	sendAgentCommand(&say);
   }
 
   void Agent::sendTell(const Bytes& data, Byte channel) const {
-	TellCommand tell(m_id,data, channel);
+	TellCommand tell(m_id,m_time,data, channel);
 	sendAgentCommand(&tell);
   }
 

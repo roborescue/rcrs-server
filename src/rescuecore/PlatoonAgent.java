@@ -22,8 +22,8 @@ import rescuecore.commands.Command;
    An abstract superclass for platoon agents (i.e fire brigade, police force, ambulance team).
  */
 public abstract class PlatoonAgent extends Agent {
-    protected PlatoonAgent(int type) {
-		super(type);
+    protected PlatoonAgent(int... types) {
+		super(types);
     }
 
     private Humanoid me() {
@@ -60,7 +60,7 @@ public abstract class PlatoonAgent extends Agent {
 	*/
     protected void move(int[] ids) {
 		if (ids==null || ids.length==0) return;
-		appendCommand(Command.MOVE(id,ids));
+		appendCommand(Command.MOVE(id,timeStep,ids));
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class PlatoonAgent extends Agent {
     protected void extinguish(Building target) {
 		try {
 			int[] xy = memory.getXY(me());
-			appendCommand(Command.EXTINGUISH(id,target.getID()));
+			appendCommand(Command.EXTINGUISH(id,timeStep,target.getID()));
 		}
 		catch (CannotFindLocationException e) {
 			System.err.println(e);
@@ -85,7 +85,7 @@ public abstract class PlatoonAgent extends Agent {
     protected void extinguish(Building target, int power) {
 		try {
 			int[] xy = memory.getXY(me());
-			appendCommand(Command.EXTINGUISH(id,target.getID(),memory.getAngle(me(),target),xy[0],xy[1],power));
+			appendCommand(Command.EXTINGUISH(id,timeStep,target.getID(),memory.getAngle(me(),target),xy[0],xy[1],power));
 		}
 		catch (CannotFindLocationException e) {
 			System.err.println(e);
@@ -97,7 +97,7 @@ public abstract class PlatoonAgent extends Agent {
        @param target The road to clear
 	*/
     protected void clear(Road target) {
-		appendCommand(Command.CLEAR(id,target.getID()));
+		appendCommand(Command.CLEAR(id,timeStep,target.getID()));
     }
 
     /**
@@ -105,7 +105,7 @@ public abstract class PlatoonAgent extends Agent {
        @param target The humanoid to rescue
 	*/
     protected void rescue(Humanoid target) {
-		appendCommand(Command.RESCUE(id,target.getID()));
+		appendCommand(Command.RESCUE(id,timeStep,target.getID()));
     }
 
     /**
@@ -113,13 +113,13 @@ public abstract class PlatoonAgent extends Agent {
        @param target The humanoid to load
 	*/
     protected void load(Humanoid target) {
-		appendCommand(Command.LOAD(id,target.getID()));
+		appendCommand(Command.LOAD(id,timeStep,target.getID()));
     }
 
     /**
        Append an unload command
 	*/
     protected void unload() {
-		appendCommand(Command.UNLOAD(id));
+		appendCommand(Command.UNLOAD(id,timeStep));
     }
 }

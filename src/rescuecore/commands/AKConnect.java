@@ -21,14 +21,14 @@ import rescuecore.RescueConstants;
 
 public class AKConnect extends Command {
 	private int version;
-	private int agentType;
-	private int tempID;
+	private int[] agentTypes;
+	private int requestID;
 
-	public AKConnect(int tempID, int a, int version) {
+    public AKConnect(int version, int requestID, int... types) {
 		super(RescueConstants.AK_CONNECT);
-		this.agentType = a;
+		this.agentTypes = types;
 		this.version = version;
-		this.tempID = tempID;
+		this.requestID = requestID;
 	}
 
 	public AKConnect(InputBuffer in) {
@@ -37,25 +37,31 @@ public class AKConnect extends Command {
 	}
 
 	public void write(OutputBuffer out) {
-		out.writeInt(tempID);
 		out.writeInt(version);
-		out.writeInt(agentType);
+		out.writeInt(requestID);
+                out.writeInt(agentTypes.length);
+                for (int next : agentTypes) {
+                    out.writeInt(next);
+                }
 	}
 
 	public void read(InputBuffer in) {
-		tempID = in.readInt();
 		version = in.readInt();
-		agentType = in.readInt();
+		requestID = in.readInt();
+		agentTypes = new int[in.readInt()];
+                for (int i = 0; i < agentTypes.length; ++i) {
+                    agentTypes[i] = in.readInt();
+                }
 	}
 	public int getVersion() {
 		return version;
 	}
 
-	public int getAgentType() {
-		return agentType;
+	public int[] getAgentTypes() {
+		return agentTypes;
 	}
 
-	public int getTempID() {
-		return tempID;
+	public int getRequestID() {
+		return requestID;
 	}
 }

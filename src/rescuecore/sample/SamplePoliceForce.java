@@ -36,7 +36,7 @@ public class SamplePoliceForce extends PlatoonAgent {
        Construct a new SamplePoliceForce
     */
     public SamplePoliceForce() {
-		super(RescueConstants.AGENT_TYPE_POLICE_FORCE); // We need to specify that we can only be a police force
+		super(RescueConstants.TYPE_POLICE_FORCE); // We need to specify that we can only be a police force
 		targets = new ArrayList();
     }
 
@@ -48,9 +48,9 @@ public class SamplePoliceForce extends PlatoonAgent {
 		return (PoliceForce)memory.lookup(id);
     }
 
-    public void initialise(RescueObject[] knowledge, RescueObject self) {
+    public void initialise(RescueObject[] knowledge) {
 		// Add a memory listener so that we get informed about changes to the roads
-		super.initialise(knowledge,self);
+		super.initialise(knowledge);
 		memory.addMemoryListener(new MemoryListener() {
 				public void objectAdded(ObjectAddedEvent event) {
 					RescueObject o = event.getObject();
@@ -73,7 +73,7 @@ public class SamplePoliceForce extends PlatoonAgent {
 		// Is this the first timestep?
 		if (timeStep==1) {
 			// Listen on the right channel
-			appendCommand(new AKChannel(id,CHANNEL));
+			appendCommand(new AKChannel(id,timeStep,CHANNEL));
 		}
 		//		log("Sense"); // Log a debugging message
 		// Am I on a blocked road?

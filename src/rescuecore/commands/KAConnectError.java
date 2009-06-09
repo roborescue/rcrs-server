@@ -20,12 +20,12 @@ import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
 
 public class KAConnectError extends Command {
-	private int replyID;
+	private int requestID;
 	private String reason;
 
-	public KAConnectError(int replyID, String reason) {
+	public KAConnectError(int requestID, String reason) {
 		super(RescueConstants.KA_CONNECT_ERROR);
-		this.replyID = replyID;
+		this.requestID = requestID;
 		this.reason = reason;
 	}
 
@@ -35,17 +35,17 @@ public class KAConnectError extends Command {
 	}
 
 	public void read(InputBuffer in) {
-		replyID = in.readInt();
+		requestID = in.readInt();
 		reason = in.readString();
 	}
 
 	public void write(OutputBuffer out) {
-		out.writeInt(replyID);
+		out.writeInt(requestID);
 		out.writeString(reason);
 	}
 
-	public int getReplyID() {
-		return replyID;
+	public int getRequestID() {
+		return requestID;
 	}
 
 	public String getReason() {

@@ -20,18 +20,12 @@ import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
 
 public class AKUnload extends AgentCommand {
-	public AKUnload(int senderID) {
-		super(RescueConstants.AK_UNLOAD,senderID);
-	}
+    public AKUnload(int senderID, int time) {
+        super(RescueConstants.AK_UNLOAD,senderID,time);
+    }
 
-	public AKUnload(InputBuffer in) {
-		super(RescueConstants.AK_UNLOAD,0);
-		read(in);
-	}
-
-	/*
-	public AKUnload(int senderID, byte[] data) {
-		super(AK_UNLOAD,senderID);
-	}
-	*/
+    public AKUnload(InputBuffer in) {
+        super(RescueConstants.AK_UNLOAD,0,0);
+        read(in);
+    }
 }

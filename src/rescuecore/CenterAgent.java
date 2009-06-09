@@ -21,8 +21,8 @@ import rescuecore.objects.*;
    An abstract superclass for center agents (i.e fire station, police office, ambulance center).
  */
 public abstract class CenterAgent extends Agent {
-    protected CenterAgent(int type) {
-		super(type);
+    protected CenterAgent(int... types) {
+		super(types);
     }
 
     private Building me() {

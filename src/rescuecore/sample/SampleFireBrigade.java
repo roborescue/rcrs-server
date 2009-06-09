@@ -25,9 +25,9 @@ import java.util.*;
    This is a sample implementation of a fire brigade. This agent will attempt to extinguish the closest fire it knows about. If it doesn't know anything then it moves randomly.
 */
 public class SampleFireBrigade extends PlatoonAgent {
-	private final static byte CHANNEL = 1;
+    private final static byte CHANNEL = 1;
 
-	private boolean enableDebug;
+    private boolean enableDebug;
 
     /**
        A list of known targets
@@ -38,155 +38,155 @@ public class SampleFireBrigade extends PlatoonAgent {
        Construct a new SampleFireBrigade
     */
     public SampleFireBrigade() {
-		super(RescueConstants.AGENT_TYPE_FIRE_BRIGADE); // We need to specify that we can only be a fire brigade
-		targets = new ArrayList();
-		enableDebug = false;
+        super(RescueConstants.TYPE_FIRE_BRIGADE);
+        targets = new ArrayList();
+        enableDebug = false;
     }
 
-	public SampleFireBrigade(String[] args) {
-		this();
-		for (String next : args) {
-			if (next.equalsIgnoreCase("debug")) {
-				enableDebug = true;
-			}
-		}
-	}
+    public SampleFireBrigade(String[] args) {
+        this();
+        for (String next : args) {
+            if (next.equalsIgnoreCase("debug")) {
+                enableDebug = true;
+            }
+        }
+    }
 
     /**
        Get a reference to the FireBrigade controlled by this agent
        @return the FireBrigade controlled by this agent
     */
     private FireBrigade me() {
-		return (FireBrigade)memory.lookup(id);
+        return (FireBrigade)memory.lookup(id);
     }
 
-    public void initialise(RescueObject[] knowledge, RescueObject self) {
-		if (enableDebug) {
-			try {
-				enableDebug("debug.log");
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		super.initialise(knowledge,self);
-		// Add a memory listener so that we get informed about changes to the buildings
-		memory.addMemoryListener(new MemoryListener() {
-				public void objectAdded(ObjectAddedEvent event) {
-					RescueObject o = event.getObject();
-					if (o.isBuilding()) {
-						if (((Building)o).isOnFire()) targets.add(o); // Add to target list if it is on fire
-					}
-				}
-				public void objectChanged(ObjectChangedEvent event) {
-					RescueObject o = event.getObject();
-					if (o.isBuilding() && event.getProperty()==RescueConstants.PROPERTY_FIERYNESS) { // We only care about the fieryness of the building - we can ignore all other updates
-						if (((Building)o).isOnFire()) targets.add(o); // Add to target list if it is on fire
-						else targets.remove(o); // Otherwise remove it from the target list
-					}
-				}
-			});
-		//		log("Initialised"); // Log a debugging message
+    public void initialise(RescueObject[] knowledge) {
+        if (enableDebug) {
+            try {
+                enableDebug("debug.log");
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        super.initialise(knowledge);
+        // Add a memory listener so that we get informed about changes to the buildings
+        memory.addMemoryListener(new MemoryListener() {
+                public void objectAdded(ObjectAddedEvent event) {
+                    RescueObject o = event.getObject();
+                    if (o.isBuilding()) {
+                        if (((Building)o).isOnFire()) targets.add(o); // Add to target list if it is on fire
+                    }
+                }
+                public void objectChanged(ObjectChangedEvent event) {
+                    RescueObject o = event.getObject();
+                    if (o.isBuilding() && event.getProperty()==RescueConstants.PROPERTY_FIERYNESS) { // We only care about the fieryness of the building - we can ignore all other updates
+                        if (((Building)o).isOnFire()) targets.add(o); // Add to target list if it is on fire
+                        else targets.remove(o); // Otherwise remove it from the target list
+                    }
+                }
+            });
+        //		log("Initialised"); // Log a debugging message
     }
 
     public void sense() {
-		// Is this the first timestep?
-		if (timeStep==1) {
-			// Listen on the right channel
-			appendCommand(new AKChannel(id,CHANNEL));
-		}
+        // Is this the first timestep?
+        if (timeStep==1) {
+            // Listen on the right channel
+            appendCommand(new AKChannel(id,timeStep,CHANNEL));
+        }
 
-		//		System.out.println("Fire brigade "+id+" water quantity: "+me().getWaterQuantity());
-		//		log("Sense"); // Log a debugging message
-		// Am I at a refuge?
-		if (getLocation().isRefuge() && me().getWaterQuantity()<RescueConstants.MAX_WATER) {
-			//			log("Filling at "+getLocation());
-			return;
-		}
-		// Am I out of water?
-		if (me().getWaterQuantity()==0) {
-			// Find the closest refuge
-			moveToClosestRefuge();
-			return;
-		}
-		// Sort the targets by distance from me
-		//		log("Sorting targets");
-		SampleSearch.sortByDistance(targets,me(),memory);
-		// Find a valid target
-		for (Iterator it = targets.iterator();it.hasNext();) {
-			// Try to plan a path to the next best target
-			Building next = (Building)it.next();
-			if (!next.isOnFire()) {
-				// If the next target is not on fire then remove it from our target list
-				it.remove();
-				continue;
-			}
-			try {
-				if (memory.getDistance(me(),next) < RescueConstants.MAX_EXTINGUISH_DISTANCE) {
-					//					System.out.println("Extinguishing "+next);
-					extinguish(next);
-					tell(("Extinguishing "+next.getID()).getBytes(),CHANNEL);
-					return;
-				}
-			}
-			catch (CannotFindLocationException e) {
-				System.err.println("PANIC! I don't know where I am!");
-				System.err.println(e);
-			}
-			Node entrance = (Node)memory.lookup(next.getEntrances()[0]); // Drive to the first entrance of the building
-			//			log("Trying to plan path to "+next+" (entrance "+entrance+")");
-			int[] path = SampleSearch.breadthFirstSearch(getLocation(),entrance,memory); // Find a path from my current location to the target
-			if (path!=null) {
-				// We've found a path. Hooray!
-				// Send a move command and we're finished
-				//				log("Moving to "+next);
-				move(path);
-				return;
-			}
-			//			log("No path");
-		}
-		// We couldn't find a good target. Pick a random road and try moving there instead
-		//		log("No good targets - picking a Road at random");
-		Collection<RescueObject> allRoads = memory.getObjectsOfType(RescueConstants.TYPE_ROAD); // Find all roads
-		Road[] roads = new Road[allRoads.size()];
-		allRoads.toArray(roads);
-		Road target = (Road)roads[(int)(Math.random()*roads.length)]; // Pick one at random
-		//		log("Random target: "+target+". Planning path");
-		// Plan a path
-		int[] path = SampleSearch.breadthFirstSearch(getLocation(),target,memory);
-		if (path!=null) {
-			//			log("Moving to "+target);
-			move(path); // Move if the path is valid
-		}
-		else {
-			// If we couldn't move randomly then just give up
-			//			log("I give up");
-		}
+        //		System.out.println("Fire brigade "+id+" water quantity: "+me().getWaterQuantity());
+        //		log("Sense"); // Log a debugging message
+        // Am I at a refuge?
+        if (getLocation().isRefuge() && me().getWaterQuantity()<RescueConstants.MAX_WATER) {
+            //			log("Filling at "+getLocation());
+            return;
+        }
+        // Am I out of water?
+        if (me().getWaterQuantity()==0) {
+            // Find the closest refuge
+            moveToClosestRefuge();
+            return;
+        }
+        // Sort the targets by distance from me
+        //		log("Sorting targets");
+        SampleSearch.sortByDistance(targets,me(),memory);
+        // Find a valid target
+        for (Iterator it = targets.iterator();it.hasNext();) {
+            // Try to plan a path to the next best target
+            Building next = (Building)it.next();
+            if (!next.isOnFire()) {
+                // If the next target is not on fire then remove it from our target list
+                it.remove();
+                continue;
+            }
+            try {
+                if (memory.getDistance(me(),next) < RescueConstants.MAX_EXTINGUISH_DISTANCE) {
+                    //					System.out.println("Extinguishing "+next);
+                    extinguish(next);
+                    tell(("Extinguishing "+next.getID()).getBytes(),CHANNEL);
+                    return;
+                }
+            }
+            catch (CannotFindLocationException e) {
+                System.err.println("PANIC! I don't know where I am!");
+                System.err.println(e);
+            }
+            Node entrance = (Node)memory.lookup(next.getEntrances()[0]); // Drive to the first entrance of the building
+            //			log("Trying to plan path to "+next+" (entrance "+entrance+")");
+            int[] path = SampleSearch.breadthFirstSearch(getLocation(),entrance,memory); // Find a path from my current location to the target
+            if (path!=null) {
+                // We've found a path. Hooray!
+                // Send a move command and we're finished
+                //				log("Moving to "+next);
+                move(path);
+                return;
+            }
+            //			log("No path");
+        }
+        // We couldn't find a good target. Pick a random road and try moving there instead
+        //		log("No good targets - picking a Road at random");
+        Collection<RescueObject> allRoads = memory.getObjectsOfType(RescueConstants.TYPE_ROAD); // Find all roads
+        Road[] roads = new Road[allRoads.size()];
+        allRoads.toArray(roads);
+        Road target = (Road)roads[(int)(Math.random()*roads.length)]; // Pick one at random
+        //		log("Random target: "+target+". Planning path");
+        // Plan a path
+        int[] path = SampleSearch.breadthFirstSearch(getLocation(),target,memory);
+        if (path!=null) {
+            //			log("Moving to "+target);
+            move(path); // Move if the path is valid
+        }
+        else {
+            // If we couldn't move randomly then just give up
+            //			log("I give up");
+        }
     }
 
     protected void hear(int from, byte[] msg, byte channel) {
-		//		System.out.println("Received message from "+from+": "+String.valueOf(msg));
+        //		System.out.println("Received message from "+from+": "+String.valueOf(msg));
     }
 
     private void moveToClosestRefuge() {
-		//		log("Moving to closest refuge");
-		Collection<RescueObject> allRefuges = memory.getObjectsOfType(RescueConstants.TYPE_REFUGE);
-		Refuge[] refuges = new Refuge[allRefuges.size()];
-		allRefuges.toArray(refuges);
-		SampleSearch.sortByDistance(refuges,me(),memory);
-		for (int i=0;i<refuges.length;++i) {
-			Refuge next = refuges[i];
-			//			log("Trying to plan path to "+next);
-			int[] path = SampleSearch.breadthFirstSearch(getLocation(),next,memory); // Find a path from my current location to the target
-			if (path!=null) {
-				// We've found a path. Hooray!
-				// Send a move command and we're finished
-				//				log("Moving to "+next);
-				move(path);
-				return;
-			}
-			//			log("No path");
-		}
-		//		log("Couldn't move to refuge");
+        //		log("Moving to closest refuge");
+        Collection<RescueObject> allRefuges = memory.getObjectsOfType(RescueConstants.TYPE_REFUGE);
+        Refuge[] refuges = new Refuge[allRefuges.size()];
+        allRefuges.toArray(refuges);
+        SampleSearch.sortByDistance(refuges,me(),memory);
+        for (int i=0;i<refuges.length;++i) {
+            Refuge next = refuges[i];
+            //			log("Trying to plan path to "+next);
+            int[] path = SampleSearch.breadthFirstSearch(getLocation(),next,memory); // Find a path from my current location to the target
+            if (path!=null) {
+                // We've found a path. Hooray!
+                // Send a move command and we're finished
+                //				log("Moving to "+next);
+                move(path);
+                return;
+            }
+            //			log("No path");
+        }
+        //		log("Couldn't move to refuge");
     }
 }

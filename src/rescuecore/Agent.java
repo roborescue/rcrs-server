@@ -31,7 +31,7 @@ import rescuecore.commands.*;
    For example, assuming we have the three constructors mentioned above, if the command line provides two arguments then the AgentSystem will use the MyAgent(String arg1, String arg2) constructor. If only one argument is provided then the MyAgent(String[] args) constructor is used.
  */
 public abstract class Agent extends RescueComponent {
-	private int agentType;
+	private int[] agentTypes;
     protected int type;
     protected int id;
 	protected int timeStep;
@@ -52,21 +52,10 @@ public abstract class Agent extends RescueComponent {
 
     /**
        Create a new agent of a particular type.
-       @param type The type of this agent - this value should be the logical OR of all types that this agent can be. For example, an Agent implementation that can be either a Police Force or an Ambulance Team should specify its type as AGENT_TYPE_POLICE_FORCE | AGENT_TYPE_AMBULANCE_TEAM.
-       @see RescueConstants#AGENT_TYPE_CIVILIAN
-       @see RescueConstants#AGENT_TYPE_FIRE_BRIGADE
-       @see RescueConstants#AGENT_TYPE_FIRE_STATION
-       @see RescueConstants#AGENT_TYPE_POLICE_FORCE
-       @see RescueConstants#AGENT_TYPE_POLICE_OFFICE
-       @see RescueConstants#AGENT_TYPE_AMBULANCE_TEAM
-       @see RescueConstants#AGENT_TYPE_AMBULANCE_CENTER
-       @see RescueConstants#AGENT_TYPE_ANY_MOBILE
-       @see RescueConstants#AGENT_TYPE_ANY_BUILDING
-       @see RescueConstants#AGENT_TYPE_ANY_AGENT
-       @see RescueConstants#AGENT_TYPE_ANY
-	*/
-    protected Agent(int type) {
-		this.agentType = type;
+       @param types The entity types this agent wants.
+    */
+    protected Agent(int... types) {
+		this.agentTypes = types;
 		id = -1;
 		timeStep = -1;
 		this.type = -1;
@@ -81,8 +70,7 @@ public abstract class Agent extends RescueComponent {
 	}
 
 	public final Command generateConnectCommand() {
-		return new AKConnect(tempID,agentType,0);
-		//		return Command.AK_CONNECT(tempID,agentType,0);
+            return new AKConnect(0,tempID,agentTypes);
 	}
 	
 	protected void appendCommand(Command c){
@@ -93,19 +81,17 @@ public abstract class Agent extends RescueComponent {
 
 	public final boolean handleConnectOK(Command c) {
 		KAConnectOK ok = (KAConnectOK)c;
-		int replyID = ok.getReplyID();
-		if (replyID==tempID) {
-			id = ok.getID();
+		int requestID = ok.getRequestID();
+		if (requestID==tempID) {
+			id = ok.getAgentID();
 			System.out.println("Connect succeeded for "+tempID+". Kernel assigned id:"+id);
 			try {
 				RescueObject[] knowledge = ok.getKnowledge();
-				RescueObject self = ok.getSelf();
-				type = self.getType();
 				// Initialise
-				initialise(knowledge,self);
+				initialise(knowledge);
 				// Send AK_ACKNOWLEDGE
 				RescueMessage ack = new RescueMessage();
-				ack.append(new AKAcknowledge(id));
+				ack.append(new AKAcknowledge(requestID));
 				sendMessage(ack);
 			}
 			catch (Exception e) {
@@ -117,19 +103,19 @@ public abstract class Agent extends RescueComponent {
 			return true;
 		}
 		else {
-			System.out.println("Received a KA_CONNECT_OK for agent "+replyID+", but I'm listening for a reply for "+tempID);
+			System.out.println("Received a KA_CONNECT_OK for agent "+requestID+", but I'm listening for a reply for "+tempID);
 		}
 		return false;
 	}
 
 	public final String handleConnectError(Command c) {
 		KAConnectError error = (KAConnectError)c;
-		int replyID = error.getReplyID();
+		int requestID = error.getRequestID();
 		String reason = error.getReason();
-		if (replyID==tempID)
+		if (requestID==tempID)
 			return reason;
 		else
-			System.out.println("Received a KA_CONNECT_ERROR ("+reason+") for agent "+replyID+", but I'm listening for a reply for "+tempID);
+			System.out.println("Received a KA_CONNECT_ERROR ("+reason+") for agent "+requestID+", but I'm listening for a reply for "+tempID);
 		return null;
 	}
 
@@ -156,14 +142,14 @@ public abstract class Agent extends RescueComponent {
 			if (running) {
 				// Someone obviously didn't get our AK_ACKNOWLEDGE
 				KAConnectOK ok = (KAConnectOK)c;
-				int replyID = ok.getReplyID();
-				System.out.println(this+" just received a KA_CONNECT_OK to "+replyID+" - my tempID is "+tempID);
-				if (replyID==tempID) {
-					int newID = ok.getID();
+				int requestID = ok.getRequestID();
+				System.out.println(this+" just received a KA_CONNECT_OK to "+requestID+" - my tempID is "+tempID);
+				if (requestID==tempID) {
+					int newID = ok.getAgentID();
 					System.out.println("Old ID: "+id+", new ID: "+newID);
 					id = newID;
 					RescueMessage ack = new RescueMessage();
-					ack.append(new AKAcknowledge(id));
+					ack.append(new AKAcknowledge(requestID));
 					sendMessage(ack);
 				}
 			}
@@ -312,38 +298,13 @@ public abstract class Agent extends RescueComponent {
        @param knowledge This agent's knowledge of the world
        @param self The RescueObject describing this agent
 	*/
-    protected void initialise(RescueObject[] knowledge, RescueObject self) {
+    protected void initialise(RescueObject[] knowledge) {
 		memory = generateMemory();
-		memory.add(self,0,RescueConstants.SOURCE_INITIAL);
 		for (int i=0;i<knowledge.length;++i) {
 			memory.add(knowledge[i],0,RescueConstants.SOURCE_INITIAL);
 		}
-		/*
-		type=me().getType();
-		//		log = WorldLog.getLog(memory,id,type);
-		switch (type) {
-		case RescueConstants.TYPE_FIRE_BRIGADE:
-		case RescueConstants.TYPE_POLICE_FORCE:
-		case RescueConstants.TYPE_AMBULANCE_TEAM:
-			sendMax = 4;
-			receiveMax = 4;
-			break;
-		case RescueConstants.TYPE_FIRE_STATION:
-			sendMax = receiveMax = memory.getObjectsOfType(RescueConstants.TYPE_FIRE_BRIGADE).size()*2;
-			break;
-		case RescueConstants.TYPE_POLICE_OFFICE:
-			sendMax = receiveMax = memory.getObjectsOfType(RescueConstants.TYPE_POLICE_FORCE).size()*2;
-			break;
-		case RescueConstants.TYPE_AMBULANCE_CENTER:
-			sendMax = receiveMax = memory.getObjectsOfType(RescueConstants.TYPE_AMBULANCE_TEAM).size()*2;
-			break;
-		default:
-			sendMax = receiveMax = 0;
-		}
-		*/
+                type = me().getType();
 		if(debug){
-			//			logWriter = LogWriter.getWriter(this,logFile);
-			//			memory.addMemoryListener(new LogMemoryListener(logWriter,id));
 			DebugWriter.logInitialObjects(this,memory.getAllObjects());
 			memory.addMemoryListener(new DebugMemoryListener(this));
 		}
@@ -397,7 +358,7 @@ public abstract class Agent extends RescueComponent {
 	*/
     protected final void say(byte[] message) {
 		//		if (numSent < sendMax) {
-		appendCommand(Command.SAY(id,message,message.length));
+		appendCommand(Command.SAY(id,timeStep,message,message.length));
 		//			++numSent;
 		//		}
     }
@@ -408,7 +369,7 @@ public abstract class Agent extends RescueComponent {
 	*/
     protected final void tell(byte[] message, byte channel) {
 		//		if (numSent < sendMax) {
-		appendCommand(Command.TELL(id,message,message.length,channel));
+		appendCommand(Command.TELL(id,timeStep,message,message.length,channel));
 		//			++numSent;
 		//		}
     }
