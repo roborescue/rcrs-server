@@ -4,16 +4,6 @@ package rescuecore2.version0.messages;
    Constants defining message IDs.
  */
 public final class MessageConstants {
-    /** Agent-Kernel connect. */
-    public static final int AK_CONNECT = 0x40;
-    /** Agent-Kernel acknowledge. */
-    public static final int AK_ACKNOWLEDGE = 0x41;
-    /** Kernel-Agent OK. */
-    public static final int KA_CONNECT_OK = 0x42;
-    /** Kernel-Agent error. */
-    public static final int KA_CONNECT_ERROR = 0x43;
-    /** Kernel-Agent perception update. */
-    public static final int KA_SENSE = 0x44;
     /** Kernel-Agent hear (say). */
     public static final int KA_HEAR_SAY = 0x46;
     /** Kernel-Agent hear (tell). */
