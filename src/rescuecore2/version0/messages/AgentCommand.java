@@ -61,4 +61,12 @@ public abstract class AgentCommand extends AbstractMessage implements Command {
     protected void setAgentID(EntityID agentID) {
         this.agentID.setValue(agentID);
     }
+
+    /**
+       Set the time of the command.
+       @param time The new time.
+     */
+    protected void setTime(int time) {
+        this.time.setValue(time);
+    }
 }

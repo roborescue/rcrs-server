@@ -57,6 +57,7 @@ public class AKExtinguish extends AgentCommand {
     @Override
     public void write(OutputStream out) throws IOException {
         writeInt32(getAgentID().getValue(), out);
+        writeInt32(getTime(), out);
         writeInt32(target.getValue(), out);
         writeInt32(0, out); // Direction
         writeInt32(0, out); // X
@@ -68,6 +69,7 @@ public class AKExtinguish extends AgentCommand {
     @Override
     public void read(InputStream in) throws IOException {
         setAgentID(new EntityID(readInt32(in)));
+        setTime(readInt32(in));
         target = new EntityID(readInt32(in));
         readInt32(in); // Direction
         readInt32(in); // X
