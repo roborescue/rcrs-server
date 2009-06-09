@@ -78,7 +78,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     private int nextSimulatorID;
 
     // Connected viewers
-    private Set<Viewer> viewersToAcknowledge;
+    private Set<ViewerAck> viewersToAcknowledge;
 
     // World information
     private RescueWorldModel world;
@@ -150,7 +150,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<LegacySimulator>();
-        viewersToAcknowledge = new HashSet<Viewer>();
+        viewersToAcknowledge = new HashSet<ViewerAck>();
         nextSimulatorID = 1;
     }
 
@@ -239,12 +239,12 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private boolean viewerAcknowledge(Connection c) {
+    private boolean viewerAcknowledge(int requestID, Connection c) {
         synchronized (viewerLock) {
-            for (Viewer next : viewersToAcknowledge) {
-                if (next.getConnection() == c) {
+            for (ViewerAck next : viewersToAcknowledge) {
+                if (next.requestID == requestID && next.connection == c) {
                     viewersToAcknowledge.remove(next);
-                    kernel.addViewer(next);
+                    kernel.addViewer(next.viewer);
                     viewerLock.notifyAll();
                     return true;
                 }
@@ -410,10 +410,10 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         private void handleAKAcknowledge(AKAcknowledge msg, Connection connection) {
             int id = msg.getRequestID();
             if (agentAcknowledge(id, connection)) {
-                System.out.println("Agent " + id + " acknowledged");
+                System.out.println("Agent " + connection + " / " + id + " acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from agent " + id);
+                System.out.println("Unexpected acknowledge from agent " + connection + " / " + id);
             }
         }
 
@@ -441,19 +441,21 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         private void handleVKConnect(VKConnect msg, Connection connection) {
             System.out.println("Viewer connected");
             Viewer viewer = new DefaultViewer(connection);
+            int id = msg.getRequestID();
             synchronized (viewerLock) {
-                viewersToAcknowledge.add(viewer);
+                viewersToAcknowledge.add(new ViewerAck(viewer, id, connection));
             }
             // Send an OK
-            viewer.send(Collections.singleton(new KVConnectOK(world.getAllEntities())));
+            viewer.send(Collections.singleton(new KVConnectOK(id, world.getAllEntities())));
         }
 
         private void handleVKAcknowledge(VKAcknowledge msg, Connection connection) {
-            if (viewerAcknowledge(connection)) {
-                System.out.println("Viewer acknowledged");
+            int id = msg.getRequestID();
+            if (viewerAcknowledge(id, connection)) {
+                System.out.println("Viewer " + connection + " / " + id + " acknowledged");
             }
             else {
-                System.out.println("Unexpected viewer acknowledge");
+                System.out.println("Unexpected acknowledge from viewer " + connection + " / " + id);
             }
         }
     }
@@ -465,6 +467,18 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
         public AgentAck(Agent agent, int requestID, Connection c) {
             this.agent = agent;
+            this.requestID = requestID;
+            this.connection = c;
+        }
+    }
+
+    private static class ViewerAck {
+        Viewer viewer;
+        int requestID;
+        Connection connection;
+
+        public ViewerAck(Viewer viewer, int requestID, Connection c) {
+            this.viewer = viewer;
             this.requestID = requestID;
             this.connection = c;
         }
