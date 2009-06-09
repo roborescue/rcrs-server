@@ -2,6 +2,7 @@ package rescuecore2.messages.control;
 
 import java.util.Collection;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityIDComponent;
@@ -12,7 +13,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
    A message for signalling a successful connection to the kernel.
  */
-public class KAConnectOK extends AbstractMessage {
+public class KAConnectOK extends AbstractMessage implements Control {
     private IntComponent requestID;
     private EntityIDComponent agentID;
     private EntityListComponent world;

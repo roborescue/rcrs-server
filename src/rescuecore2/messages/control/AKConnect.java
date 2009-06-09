@@ -1,5 +1,6 @@
 package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.IntListComponent;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
    A message for connecting an agent to the kernel.
  */
-public class AKConnect extends AbstractMessage {
+public class AKConnect extends AbstractMessage implements Control {
     private IntComponent version;
     private IntComponent requestID;
     private IntListComponent requestedEntityTypes;

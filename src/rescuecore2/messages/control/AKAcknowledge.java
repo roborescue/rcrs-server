@@ -1,12 +1,13 @@
 package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
 /**
    A message for acknowleding a connection to the kernel.
  */
-public class AKAcknowledge extends AbstractMessage {
+public class AKAcknowledge extends AbstractMessage implements Control {
     private IntComponent requestID;
 
     /**

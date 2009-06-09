@@ -1,5 +1,6 @@
 package rescuecore2.messages.control;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.StringComponent;
@@ -7,7 +8,7 @@ import rescuecore2.messages.StringComponent;
 /**
    A message for signalling an unsuccessful connection to the kernel.
  */
-public class KAConnectError extends AbstractMessage {
+public class KAConnectError extends AbstractMessage implements Control {
     private IntComponent requestID;
     private StringComponent reason;
 

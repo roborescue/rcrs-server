@@ -3,6 +3,7 @@ package rescuecore2.messages.control;
 import java.util.Collection;
 import java.util.List;
 
+import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityIDComponent;
@@ -13,7 +14,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
    A message for signalling a perception update for an agent.
  */
-public class KASense extends AbstractMessage {
+public class KASense extends AbstractMessage implements Control {
     private EntityIDComponent agentID;
     private IntComponent time;
     private EntityListComponent updates;
