@@ -9,14 +9,28 @@ import rescuecore2.messages.IntComponent;
  */
 public class VKConnect extends AbstractMessage implements Control {
     private IntComponent version;
+    private IntComponent requestID;
 
     /**
-       An VKConnect with version 0.
+       A VKConnect with no version number or request ID.
      */
     public VKConnect() {
         super("VK_CONNECT", ControlMessageConstants.VK_CONNECT);
-        version = new IntComponent("Version", 0);
+        version = new IntComponent("Version");
+        requestID = new IntComponent("Request ID");
         addMessageComponent(version);
+        addMessageComponent(requestID);
+    }
+
+    /**
+       A VKConnect with a given version and request ID.
+       @param version The version number.
+       @param requestID The request ID.
+    */
+    public VKConnect(int version, int requestID) {
+        this();
+        this.version.setValue(version);
+        this.requestID.setValue(requestID);
     }
 
     /**
@@ -25,5 +39,13 @@ public class VKConnect extends AbstractMessage implements Control {
      */
     public int getVersion() {
         return version.getValue();
+    }
+
+    /**
+       Get the request ID.
+       @return The request ID.
+     */
+    public int getRequestID() {
+        return requestID.getValue();
     }
 }
