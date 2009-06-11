@@ -1,4 +1,4 @@
-package kernel.legacy;
+package kernel.standard;
 
 import kernel.KernelException;
 
@@ -16,21 +16,21 @@ import rescuecore2.messages.control.GKConnectError;
 import rescuecore2.messages.control.KGConnect;
 import rescuecore2.messages.control.KGAcknowledge;
 
-import rescuecore2.version0.entities.RescueWorldModel;
+import rescuecore2.standard.entities.StandardWorldModel;
 
 /**
-   A WorldModelCreator that talks to the GIS to build RescueEntities.
+   A WorldModelCreator that talks to the GIS to build StandardEntities.
  */
-public class LegacyWorldModelCreator {
+public class StandardWorldModelCreator {
     /**
-       Create a new RescueWorldModel.
+       Create a new StandardWorldModel.
        @param config The config to use.
        @return A new world model.
        @throws KernelException If there is a problem building the world model.
     */
-    public RescueWorldModel buildWorldModel(Config config) throws KernelException {
+    public StandardWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
-        RescueWorldModel world = new RescueWorldModel(config.getIntValue("vision"));
+        StandardWorldModel world = new StandardWorldModel(config.getIntValue("vision"));
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue("gis_port");
         Connection conn;
@@ -63,9 +63,9 @@ public class LegacyWorldModelCreator {
     */
     private static class GISConnectionListener implements ConnectionListener {
         private CountDownLatch latch;
-        private RescueWorldModel model;
+        private StandardWorldModel model;
 
-        public GISConnectionListener(CountDownLatch latch, RescueWorldModel model) {
+        public GISConnectionListener(CountDownLatch latch, StandardWorldModel model) {
             this.latch = latch;
             this.model = model;
         }

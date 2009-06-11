@@ -1,4 +1,4 @@
-package kernel.legacy;
+package kernel.standard;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -37,20 +37,20 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 
-import rescuecore2.version0.entities.RescueWorldModel;
-import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.RescueEntityType;
-import rescuecore2.version0.entities.Civilian;
-import rescuecore2.version0.entities.FireBrigade;
-import rescuecore2.version0.entities.FireStation;
-import rescuecore2.version0.entities.AmbulanceTeam;
-import rescuecore2.version0.entities.AmbulanceCentre;
-import rescuecore2.version0.entities.PoliceForce;
-import rescuecore2.version0.entities.PoliceOffice;
-import rescuecore2.version0.entities.Road;
-import rescuecore2.version0.entities.Node;
-import rescuecore2.version0.entities.Building;
-import rescuecore2.version0.entities.RescuePropertyType;
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.FireBrigade;
+import rescuecore2.standard.entities.FireStation;
+import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.entities.AmbulanceCentre;
+import rescuecore2.standard.entities.PoliceForce;
+import rescuecore2.standard.entities.PoliceOffice;
+import rescuecore2.standard.entities.Road;
+import rescuecore2.standard.entities.Node;
+import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.StandardPropertyType;
 
 /**
    Class that manages connecting legacy components.
@@ -75,8 +75,8 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     private int nextViewerID;
 
     // World information
-    private RescueWorldModel world;
-    private Set<RescueEntity> initialEntities;
+    private StandardWorldModel world;
+    private Set<StandardEntity> initialEntities;
 
     /** Lock object agent stuff. */
     private final Object agentLock = new Object();
@@ -89,7 +89,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
        @param world The world model.
        @param config The kernel configuration.
     */
-    public LegacyComponentManager(Kernel kernel, RescueWorldModel world, Config config) {
+    public LegacyComponentManager(Kernel kernel, StandardWorldModel world, Config config) {
         this.kernel = kernel;
         this.world = world;
         uncontrolledEntities = new HashMap<Integer, Queue<Entity>>();
@@ -100,14 +100,14 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         Queue<Entity> ac = new LinkedList<Entity>();
         Queue<Entity> pf = new LinkedList<Entity>();
         Queue<Entity> po = new LinkedList<Entity>();
-        uncontrolledEntities.put(RescueEntityType.CIVILIAN.getID(), civ);
-        uncontrolledEntities.put(RescueEntityType.FIRE_BRIGADE.getID(), fb);
-        uncontrolledEntities.put(RescueEntityType.FIRE_STATION.getID(), fs);
-        uncontrolledEntities.put(RescueEntityType.AMBULANCE_TEAM.getID(), at);
-        uncontrolledEntities.put(RescueEntityType.AMBULANCE_CENTRE.getID(), ac);
-        uncontrolledEntities.put(RescueEntityType.POLICE_FORCE.getID(), pf);
-        uncontrolledEntities.put(RescueEntityType.POLICE_OFFICE.getID(), po);
-        initialEntities = new HashSet<RescueEntity>();
+        uncontrolledEntities.put(StandardEntityType.CIVILIAN.getID(), civ);
+        uncontrolledEntities.put(StandardEntityType.FIRE_BRIGADE.getID(), fb);
+        uncontrolledEntities.put(StandardEntityType.FIRE_STATION.getID(), fs);
+        uncontrolledEntities.put(StandardEntityType.AMBULANCE_TEAM.getID(), at);
+        uncontrolledEntities.put(StandardEntityType.AMBULANCE_CENTRE.getID(), ac);
+        uncontrolledEntities.put(StandardEntityType.POLICE_FORCE.getID(), pf);
+        uncontrolledEntities.put(StandardEntityType.POLICE_OFFICE.getID(), po);
+        initialEntities = new HashSet<StandardEntity>();
         for (Entity e : world.getAllEntities()) {
             if (e instanceof Civilian) {
                 civ.add(e);
@@ -274,7 +274,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
             // Road properties: ROAD_KIND, WIDTH, MEDIAN_STRIP, LINES_TO_HEAD, LINES_TO_TAIL and WIDTH_FOR_WALKERS
             // Edge properties: HEAD, TAIL, LENGTH
             // Everything else should be undefined
-            switch ((RescuePropertyType)next.getType()) {
+            switch ((StandardPropertyType)next.getType()) {
             case ROAD_KIND:
             case WIDTH:
             case MEDIAN_STRIP:
@@ -296,7 +296,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
             // Node properties: SIGNAL, SHORTCUT_TO_TURN, POCKET_TO_TURN_ACROSS, SIGNAL_TIMING
             // Vertex properties: X, Y, EDGES
             // Everything else should be undefined
-            switch ((RescuePropertyType)next.getType()) {
+            switch ((StandardPropertyType)next.getType()) {
             case SIGNAL:
             case SHORTCUT_TO_TURN:
             case POCKET_TO_TURN_ACROSS:
@@ -315,7 +315,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         for (Property next : b.getProperties()) {
             // Building properties: X, Y, FLOORS, BUILDING_CODE, BUILDING_ATTRIBUTES, BUILDING_AREA_GROUND, BUILDING_AREA_TOTAL, IMPORTANCE, ENTRANCES
             // Everything else should be undefined
-            switch ((RescuePropertyType)next.getType()) {
+            switch ((StandardPropertyType)next.getType()) {
             case X:
             case Y:
             case FLOORS:

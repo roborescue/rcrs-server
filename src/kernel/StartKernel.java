@@ -14,14 +14,14 @@ import rescuecore2.config.ConfigException;
 import rescuecore2.messages.MessageRegistry;
 import rescuecore2.worldmodel.EntityRegistry;
 
-import rescuecore2.version0.entities.RescueEntityFactory;
-import rescuecore2.version0.entities.RescueWorldModel;
-import rescuecore2.version0.messages.Version0MessageFactory;
+import rescuecore2.standard.entities.StandardEntityFactory;
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.messages.StandardMessageFactory;
 
-import kernel.legacy.LegacyWorldModelCreator;
-import kernel.legacy.LegacyComponentManager;
-import kernel.legacy.LegacyPerception;
-import kernel.legacy.LegacyCommunicationModel;
+import kernel.standard.LegacyComponentManager;
+import kernel.standard.StandardWorldModelCreator;
+import kernel.standard.StandardPerception;
+import kernel.standard.StandardCommunicationModel;
 import kernel.ui.KernelGUI;
 
 /**
@@ -124,18 +124,18 @@ public final class StartKernel {
         @Override
         public Kernel createKernel(Config config) throws KernelException {
             // Register legacy messages and entities
-            MessageRegistry.register(Version0MessageFactory.INSTANCE);
-            EntityRegistry.register(RescueEntityFactory.INSTANCE);
+            MessageRegistry.register(StandardMessageFactory.INSTANCE);
+            EntityRegistry.register(StandardEntityFactory.INSTANCE);
             // Get the world model
-            RescueWorldModel worldModel = new LegacyWorldModelCreator().buildWorldModel(config);
-            LegacyPerception perception = new LegacyPerception(config, worldModel);
-            LegacyCommunicationModel comms = new LegacyCommunicationModel(config, worldModel);
+            StandardWorldModel worldModel = new StandardWorldModelCreator().buildWorldModel(config);
+            StandardPerception perception = new StandardPerception(config, worldModel);
+            StandardCommunicationModel comms = new StandardCommunicationModel(config, worldModel);
             return new Kernel(config, perception, comms, worldModel);
         }
 
         @Override
         public void initialiseKernel(Kernel kernel, Config config) throws KernelException {
-            RescueWorldModel worldModel = (RescueWorldModel)kernel.getWorldModel();
+            StandardWorldModel worldModel = (StandardWorldModel)kernel.getWorldModel();
             final LegacyComponentManager manager = new LegacyComponentManager(kernel, worldModel, config);
 
             // Start the connection manager
