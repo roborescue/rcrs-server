@@ -6,31 +6,31 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.EntityID;
 
-import rescuecore2.version0.entities.RescueEntity;
-import rescuecore2.version0.entities.RescueEntityType;
+import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityType;
 
 /**
    A no-op agent.
  */
-public class DummyAgent extends AbstractAgent<RescueEntity> {
+public class DummyAgent extends AbstractAgent<StandardEntity> {
     @Override
     protected void think(int time, List<EntityID> changed) {
     }
 
     @Override
-    protected WorldModel<RescueEntity> createWorldModel() {
-        return new DefaultWorldModel<RescueEntity>(RescueEntity.class);
+    protected WorldModel<StandardEntity> createWorldModel() {
+        return new DefaultWorldModel<StandardEntity>(StandardEntity.class);
     }
 
     @Override
     protected int[] getRequestedEntityIDs() {
-        return new int[] {RescueEntityType.CIVILIAN.getID(),
-                                  RescueEntityType.FIRE_BRIGADE.getID(),
-                                  RescueEntityType.FIRE_STATION.getID(),
-                                  RescueEntityType.AMBULANCE_TEAM.getID(),
-                                  RescueEntityType.AMBULANCE_CENTRE.getID(),
-                                  RescueEntityType.POLICE_FORCE.getID(),
-                                  RescueEntityType.POLICE_OFFICE.getID()
+        return new int[] {StandardEntityType.CIVILIAN.getID(),
+                                  StandardEntityType.FIRE_BRIGADE.getID(),
+                                  StandardEntityType.FIRE_STATION.getID(),
+                                  StandardEntityType.AMBULANCE_TEAM.getID(),
+                                  StandardEntityType.AMBULANCE_CENTRE.getID(),
+                                  StandardEntityType.POLICE_FORCE.getID(),
+                                  StandardEntityType.POLICE_OFFICE.getID()
         };
     }
 }

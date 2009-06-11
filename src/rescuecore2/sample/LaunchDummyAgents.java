@@ -7,7 +7,7 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.worldmodel.EntityRegistry;
 
-import rescuecore2.version0.entities.RescueEntityFactory;
+import rescuecore2.standard.entities.StandardEntityFactory;
 
 /**
    Launcher for dummy agents.
@@ -22,7 +22,7 @@ public final class LaunchDummyAgents {
        @param args The first argument will be interpreted as the number of agents to launch. -1 means launch as many as possible.
      */
     public static void main(String[] args) {
-        EntityRegistry.register(RescueEntityFactory.INSTANCE);
+        EntityRegistry.register(StandardEntityFactory.INSTANCE);
         int count = -1; // Launch as many as possible by default
         if (args.length != 0) {
             count = Integer.parseInt(args[0]);
