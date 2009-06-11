@@ -8,18 +8,18 @@ import rescuecore2.messages.IntComponent;
    A message for connecting a viewer to the kernel.
  */
 public class VKConnect extends AbstractMessage implements Control {
-    private IntComponent version;
     private IntComponent requestID;
+    private IntComponent version;
 
     /**
        A VKConnect with no version number or request ID.
      */
     public VKConnect() {
         super("VK_CONNECT", ControlMessageConstants.VK_CONNECT);
-        version = new IntComponent("Version");
         requestID = new IntComponent("Request ID");
-        addMessageComponent(version);
+        version = new IntComponent("Version");
         addMessageComponent(requestID);
+        addMessageComponent(version);
     }
 
     /**
@@ -27,10 +27,10 @@ public class VKConnect extends AbstractMessage implements Control {
        @param version The version number.
        @param requestID The request ID.
     */
-    public VKConnect(int version, int requestID) {
+    public VKConnect(int requestID, int version) {
         this();
-        this.version.setValue(version);
         this.requestID.setValue(requestID);
+        this.version.setValue(version);
     }
 
     /**

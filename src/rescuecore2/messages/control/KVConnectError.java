@@ -13,8 +13,8 @@ public class KVConnectError extends AbstractMessage implements Control {
     private StringComponent reason;
 
     /**
-       A KVConnectError with no reason.
-     */
+       A KVConnectError with no reason or request ID.
+    */
     public KVConnectError() {
         super("KV_CONNECT_ERROR", ControlMessageConstants.KV_CONNECT_ERROR);
         requestID = new IntComponent("Request ID");
@@ -27,7 +27,7 @@ public class KVConnectError extends AbstractMessage implements Control {
        A KVConnectError with specified request ID and reason.
        @param requestID The request ID.
        @param message The reason for the error.
-     */
+    */
     public KVConnectError(int requestID, String message) {
         this();
         this.requestID.setValue(requestID);
@@ -37,7 +37,7 @@ public class KVConnectError extends AbstractMessage implements Control {
     /**
        Get the reason for the error.
        @return The reason for the error.
-     */
+    */
     public String getReason() {
         return reason.getValue();
     }
@@ -45,7 +45,7 @@ public class KVConnectError extends AbstractMessage implements Control {
     /**
        Get the request ID.
        @return The request ID.
-     */
+    */
     public int getRequestID() {
         return requestID.getValue();
     }

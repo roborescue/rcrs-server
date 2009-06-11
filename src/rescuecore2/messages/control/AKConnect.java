@@ -11,8 +11,8 @@ import java.util.List;
    A message for connecting an agent to the kernel.
  */
 public class AKConnect extends AbstractMessage implements Control {
-    private IntComponent version;
     private IntComponent requestID;
+    private IntComponent version;
     private IntListComponent requestedEntityTypes;
 
     /**
@@ -20,11 +20,11 @@ public class AKConnect extends AbstractMessage implements Control {
      */
     public AKConnect() {
         super("AK_CONNECT", ControlMessageConstants.AK_CONNECT);
-        version = new IntComponent("Version");
         requestID = new IntComponent("Request ID");
+        version = new IntComponent("Version");
         requestedEntityTypes = new IntListComponent("Requested entity types");
-        addMessageComponent(version);
         addMessageComponent(requestID);
+        addMessageComponent(version);
         addMessageComponent(requestedEntityTypes);
     }
 
@@ -34,10 +34,10 @@ public class AKConnect extends AbstractMessage implements Control {
        @param requestID The request ID.
        @param requestedEntityTypes The set of requested entity types.
      */
-    public AKConnect(int version, int requestID, int... requestedEntityTypes) {
+    public AKConnect(int requestID, int version, int... requestedEntityTypes) {
         this();
-        this.version.setValue(version);
         this.requestID.setValue(requestID);
+        this.version.setValue(version);
         this.requestedEntityTypes.setValues(requestedEntityTypes);
     }
 

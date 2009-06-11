@@ -134,7 +134,7 @@ public abstract class AbstractAgent<T extends Entity> {
         entityID = ok.getAgentID();
         // Send an acknowledge
         try {
-            connection.sendMessage(new AKAcknowledge(ok.getRequestID()));
+            connection.sendMessage(new AKAcknowledge(ok.getRequestID(), entityID));
             synchronized (connectLock) {
                 connectionState = State.CONNECTED;
                 connectLock.notifyAll();

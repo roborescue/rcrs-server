@@ -3,36 +3,50 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.StringComponent;
+import rescuecore2.messages.IntComponent;
 
 /**
    A message for signalling an unsuccessful connection to the kernel.
  */
 public class KSConnectError extends AbstractMessage implements Control {
+    private IntComponent requestID;
     private StringComponent reason;
 
     /**
-       A KSConnectError with no reason.
-     */
+       A KSConnectError with no reason or request ID.
+    */
     public KSConnectError() {
         super("KS_CONNECT_ERROR", ControlMessageConstants.KS_CONNECT_ERROR);
+        requestID = new IntComponent("Request ID");
         reason = new StringComponent("Reason");
+        addMessageComponent(requestID);
         addMessageComponent(reason);
     }
 
     /**
-       A KSConnectError with specified reason.
+       A KSConnectError with specified request ID and reason.
+       @param requestID The request ID.
        @param message The reason for the error.
-     */
-    public KSConnectError(String message) {
+    */
+    public KSConnectError(int requestID, String message) {
         this();
+        this.requestID.setValue(requestID);
         reason.setValue(message);
     }
 
     /**
        Get the reason for the error.
        @return The reason for the error.
-     */
+    */
     public String getReason() {
         return reason.getValue();
+    }
+
+    /**
+       Get the request ID.
+       @return The request ID.
+    */
+    public int getRequestID() {
+        return requestID.getValue();
     }
 }
