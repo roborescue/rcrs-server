@@ -19,7 +19,7 @@
 #include "error.h"
 
 namespace Librescue {
-  SimulatorConnect::SimulatorConnect(INT_32 version) : m_version(version) {}
+  SimulatorConnect::SimulatorConnect(Id requestId, INT_32 version) : m_requestId(requestId), m_version(version) {}
 
   SimulatorConnect::SimulatorConnect(InputBuffer& in) {
 	decode(in);
@@ -33,26 +33,29 @@ namespace Librescue {
 
   void SimulatorConnect::encode(OutputBuffer& out) const {
 	Command::encode(out);
+        out.writeInt32(m_requestId);
 	out.writeInt32(m_version);
   }
 
   void SimulatorConnect::decode(InputBuffer& in) {
 	Command::decode(in);
+        m_requestId = in.readInt32();
 	m_version = in.readInt32();
   }
 
   Command* SimulatorConnect::clone() const {
-	return new SimulatorConnect(m_version);
+    return new SimulatorConnect(m_requestId, m_version);
+  }
+
+  Id SimulatorConnect::getRequestId() const {
+    return m_requestId;
   }
 
   INT_32 SimulatorConnect::getVersion() const {
 	return m_version;
   }
 
-  SimulatorConnectOK::SimulatorConnectOK(Id id, const ObjectSet& objects) : m_id(id) {
-	//	for (ObjectSet::const_iterator it = objects.begin();it!=objects.end();++it) {
-	//	  m_objects.insert((*it)->clone());
-	//	}
+  SimulatorConnectOK::SimulatorConnectOK(Id requestId, Id simulatorId, const ObjectSet& objects) : m_requestId(requestId), m_simulatorId(simulatorId) {
 	m_objects.insert(objects.begin(),objects.end());
 	m_delete = false;	
   }
@@ -64,10 +67,6 @@ namespace Librescue {
   
   SimulatorConnectOK::~SimulatorConnectOK() {
 	deleteObjects();
-	// Delete all the objects
-	//	for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
-	//	  delete *it;
-	//	}
   }
 
   void SimulatorConnectOK::deleteObjects() {
@@ -87,21 +86,20 @@ namespace Librescue {
 
   void SimulatorConnectOK::encode(OutputBuffer& out) const {
 	Command::encode(out);
-	out.writeInt32(m_id);
+	out.writeInt32(m_requestId);
+	out.writeInt32(m_simulatorId);
 	out.writeObjects(m_objects);
   }
 
   void SimulatorConnectOK::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_id = in.readInt32();
+	m_requestId = in.readInt32();
+	m_simulatorId = in.readInt32();
 	// Delete any old objects
-	//	for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
-	//	  delete *it;
-	//	}
-	//	m_objects.clear();
 	deleteObjects();
 	in.readObjects(0,m_objects);
 	m_delete = true;
+        LOG_DEBUG("Decoded simulator connect OK. RequestId = %d, simulatorId = %d", m_requestId, m_simulatorId);
   }
 
   Command* SimulatorConnectOK::clone() const {
@@ -111,22 +109,26 @@ namespace Librescue {
 	  for (ObjectSet::const_iterator it = m_objects.begin();it!=m_objects.end();++it) {
 		clonedObjects.insert((*it)->clone());
 	  }
-	  SimulatorConnectOK* result = new SimulatorConnectOK(m_id,clonedObjects);
+	  SimulatorConnectOK* result = new SimulatorConnectOK(m_requestId, m_simulatorId, clonedObjects);
 	  result->m_delete = true;
 	  return result;
 	}
-	return new SimulatorConnectOK(m_id,m_objects);
+	return new SimulatorConnectOK(m_requestId, m_simulatorId, m_objects);
   }
 
   const ObjectSet& SimulatorConnectOK::getObjects() const {
 	return m_objects;
   }
 
-  Id SimulatorConnectOK::getId() const {
-	return m_id;
+  Id SimulatorConnectOK::getRequestId() const {
+	return m_requestId;
   }
 
-  SimulatorConnectError::SimulatorConnectError(std::string reason) : m_reason(reason) {}
+  Id SimulatorConnectOK::getSimulatorId() const {
+	return m_simulatorId;
+  }
+
+  SimulatorConnectError::SimulatorConnectError(Id requestId, std::string reason) : m_requestId(requestId), m_reason(reason) {}
 
   SimulatorConnectError::SimulatorConnectError(InputBuffer& in) {
 	decode(in);
@@ -140,23 +142,29 @@ namespace Librescue {
 
   void SimulatorConnectError::encode(OutputBuffer& out) const {
 	Command::encode(out);
+	out.writeInt32(m_requestId);
 	out.writeString(m_reason);
   }
 
   void SimulatorConnectError::decode(InputBuffer& in) {
 	Command::decode(in);
+        m_requestId = in.readInt32();
 	m_reason = in.readString();
   }
 
   Command* SimulatorConnectError::clone() const {
-	return new SimulatorConnectError(m_reason);
+    return new SimulatorConnectError(m_requestId, m_reason);
+  }
+
+  Id SimulatorConnectError::getRequestId() const {
+	return m_requestId;
   }
 
   const std::string& SimulatorConnectError::getReason() const {
 	return m_reason;
   }
 
-  SimulatorAcknowledge::SimulatorAcknowledge(Id id) : m_id(id) {}
+  SimulatorAcknowledge::SimulatorAcknowledge(Id requestId, Id simulatorId) : m_requestId(requestId), m_simulatorId(simulatorId) {}
 
   SimulatorAcknowledge::SimulatorAcknowledge(InputBuffer& in) {
 	decode(in);
@@ -170,26 +178,29 @@ namespace Librescue {
 
   void SimulatorAcknowledge::encode(OutputBuffer& out) const {
 	Command::encode(out);
-	out.writeInt32(m_id);
+	out.writeInt32(m_requestId);
+	out.writeInt32(m_simulatorId);
   }
 
   void SimulatorAcknowledge::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_id = in.readInt32();
+        m_requestId = in.readInt32();
+	m_simulatorId = in.readInt32();
   }
 
   Command* SimulatorAcknowledge::clone() const {
-	return new SimulatorAcknowledge(m_id);
+    return new SimulatorAcknowledge(m_requestId, m_simulatorId);
   }
 
-  Id SimulatorAcknowledge::getId() const {
-	return m_id;
+  Id SimulatorAcknowledge::getRequestId() const {
+	return m_requestId;
+  }
+
+  Id SimulatorAcknowledge::getSimulatorId() const {
+	return m_requestId;
   }
 
   Commands::Commands(INT_32 time, const AgentCommandList& commands) : m_time(time) {
-	//	for (AgentCommandList::const_iterator it = commands.begin();it!=commands.end();++it) {
-	//	  m_commands.push_back(dynamic_cast<AgentCommand*>((*it)->clone()));
-	//	}
 	m_commands.reserve(commands.size());
 	m_commands.insert(m_commands.end(),commands.begin(),commands.end());
 	m_delete = false;	
@@ -202,10 +213,6 @@ namespace Librescue {
 
   Commands::~Commands() {
 	deleteObjects();
-	// Delete all the commands
-	//	for (AgentCommandList::iterator it = m_commands.begin();it!=m_commands.end();++it) {
-	//	  delete *it;
-	//	}
   }
 
   void Commands::deleteObjects() {
@@ -230,12 +237,9 @@ namespace Librescue {
 	for (AgentCommandList::const_iterator it = m_commands.begin();it!=m_commands.end();++it) {
 	  const AgentCommand* next = *it;
 	  out.writeInt32(next->getType());
-	  //	  Cursor typeBase = out.writeInt32(0);
-	  //	  out.writeInt32(1); // Only 1 command at a time for now
 	  Cursor base = out.writeInt32(0);
 	  next->encode(out);
 	  out.writeSize(base);
-	  //	  out.writeSize(typeBase);
 	}
 	out.writeInt32(HEADER_NULL);
   }
@@ -244,10 +248,6 @@ namespace Librescue {
 	Command::decode(in);
 	m_time = in.readInt32();
 	// Delete any old objects
-	//	for (AgentCommandList::iterator it = m_commands.begin();it!=m_commands.end();++it) {
-	//	  delete *it;
-	//	}
-	//	m_commands.clear();
 	deleteObjects();
 	Header header = (Header)in.readInt32();
 	while (header!=HEADER_NULL) {
@@ -290,9 +290,6 @@ namespace Librescue {
   }
 
   Update::Update(INT_32 time, const ObjectSet& objects) : m_time(time) {
-	//	for (ObjectSet::const_iterator it = objects.begin();it!=objects.end();++it) {
-	//	  m_objects.insert((*it)->clone());
-	//	}
 	m_objects.insert(objects.begin(),objects.end());
 	m_delete = false;	
   }
@@ -305,9 +302,6 @@ namespace Librescue {
   Update::~Update() {
 	deleteObjects();
 	// Delete all the objects
-	//	for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
-	//	  delete *it;
-	//	}
   }
 
   void Update::deleteObjects() {
@@ -335,10 +329,6 @@ namespace Librescue {
   void Update::decode(InputBuffer& in) {
 	Command::decode(in);
 	// Delete any old objects
-	//	for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
-	//	  delete *it;
-	//	}
-	//	m_objects.clear();
 	deleteObjects();
 	m_time = in.readInt32();
 	in.readObjects(m_time,m_objects);
@@ -368,9 +358,6 @@ namespace Librescue {
   }
 
   KernelUpdate::KernelUpdate(Id id, INT_32 time, const ObjectSet& objects) : m_id(id), m_time(time) {
-	//	for (ObjectSet::const_iterator it = objects.begin();it!=objects.end();++it) {
-	//	  m_objects.insert((*it)->clone());
-	//	}
 	m_objects.insert(objects.begin(),objects.end());
 	m_delete = false;	
   }
@@ -383,9 +370,6 @@ namespace Librescue {
   KernelUpdate::~KernelUpdate() {
 	deleteObjects();
 	// Delete all the objects
-	//	for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
-	//	  delete *it;
-	//	}
   }
 
   void KernelUpdate::deleteObjects() {
@@ -413,10 +397,6 @@ namespace Librescue {
   void KernelUpdate::decode(InputBuffer& in) {
 	Command::decode(in);
 	// Delete any old objects
-	//	for (ObjectSet::iterator it = m_objects.begin();it!=m_objects.end();++it) {
-	//	  delete *it;
-	//	}
-	//	m_objects.clear();
 	deleteObjects();
 	m_id = in.readInt32();
 	m_time = in.readInt32();

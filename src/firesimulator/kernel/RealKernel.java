@@ -39,7 +39,8 @@ public class RealKernel implements Kernel{
 		}
 		rio =new RIO(ad,port);
 		int[] data=rio.connect(world);
-		id = data[2];
+		id = data[3];
+                System.out.println("Connected to kernel. Simulator ID is " + id);
 		if(Configuration.isActive("store")){
 			System.out.println("storing initial data in "+Configuration.getValue("store"));
 			FileOutputStream fos;

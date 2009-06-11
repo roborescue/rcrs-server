@@ -21,7 +21,7 @@
 #include "error.h"
 
 namespace Librescue {
-  AgentConnect::AgentConnect(TypeId type, Id tempId, INT_32 version) : m_type(type), m_tempId(tempId), m_version(version) {
+  AgentConnect::AgentConnect(Id requestId, INT_32 version, TypeId type) : m_requestId(requestId), m_version(version), m_type(type) {
   }
 
   AgentConnect::AgentConnect(InputBuffer& in) {
@@ -37,16 +37,16 @@ namespace Librescue {
 
   void AgentConnect::encode(OutputBuffer& out) const {
 	Command::encode(out);
+	out.writeInt32(m_requestId);
 	out.writeInt32(m_version);
-	out.writeInt32(m_tempId);
         out.writeInt32(1);
 	out.writeInt32(m_type);
   }
 
   void AgentConnect::decode(InputBuffer& in) {
 	Command::decode(in);
+	m_requestId = in.readInt32();
 	m_version = in.readInt32();
-	m_tempId = in.readInt32();
         int count = in.readInt32();
 	m_type = (TypeId)in.readInt32();
         for (int i=1; i<count; ++i) {
@@ -55,22 +55,22 @@ namespace Librescue {
   }
 
   Command* AgentConnect::clone() const {
-	return new AgentConnect(m_type,m_tempId,m_version);
+    return new AgentConnect(m_requestId,m_version,m_type);
   }
 
   TypeId AgentConnect::getAgentType() const {
 	return m_type;
   }
 
-  Id AgentConnect::getTempId() const {
-	return m_tempId;
+  Id AgentConnect::getRequestId() const {
+	return m_requestId;
   }
 
   INT_32 AgentConnect::getVersion() const {
 	return m_version;
   }
 
-  AgentAcknowledge::AgentAcknowledge(Id id) : m_id(id) {
+  AgentAcknowledge::AgentAcknowledge(Id requestId, Id agentId) : m_requestId(requestId), m_agentId(agentId) {
   }
 
   AgentAcknowledge::AgentAcknowledge(InputBuffer& in) {
@@ -86,20 +86,26 @@ namespace Librescue {
 
   void AgentAcknowledge::encode(OutputBuffer& out) const {
 	Command::encode(out);
-	out.writeInt32(m_id);
+	out.writeInt32(m_requestId);
+	out.writeInt32(m_agentId);
   }
 
   void AgentAcknowledge::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_id = in.readInt32();
+	m_requestId = in.readInt32();
+	m_agentId = in.readInt32();
   }
 
   Command* AgentAcknowledge::clone() const {
-	return new AgentAcknowledge(m_id);
+    return new AgentAcknowledge(m_requestId, m_agentId);
   }
 
-  Id AgentAcknowledge::getId() const {
-	return m_id;
+  Id AgentAcknowledge::getRequestId() const {
+	return m_requestId;
+  }
+
+  Id AgentAcknowledge::getAgentId() const {
+	return m_agentId;
   }
 
   AgentConnectOK::AgentConnectOK(Id requestId, Id agentId, const ObjectSet& staticObjects) : m_requestId(requestId), m_agentId(agentId) {
@@ -173,7 +179,7 @@ namespace Librescue {
 	return m_objects;
   }
 
-  AgentConnectError::AgentConnectError(Id id, std::string reason) : m_id(id), m_reason(reason) {
+  AgentConnectError::AgentConnectError(Id requestId, std::string reason) : m_requestId(requestId), m_reason(reason) {
   }
 
   AgentConnectError::AgentConnectError(InputBuffer& in) {
@@ -189,18 +195,22 @@ namespace Librescue {
 
   void AgentConnectError::encode(OutputBuffer& out) const {
 	Command::encode(out);
-	out.writeInt32(m_id);
+	out.writeInt32(m_requestId);
 	out.writeString(m_reason);
   }
 
   void AgentConnectError::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_id = in.readInt32();
+	m_requestId = in.readInt32();
 	m_reason = in.readString();
   }
 
   Command* AgentConnectError::clone() const {
-	return new AgentConnectError(m_id,m_reason);
+	return new AgentConnectError(m_requestId,m_reason);
+  }
+
+  Id AgentConnectError::getRequestId() const {
+    return m_requestId;
   }
 
   const std::string& AgentConnectError::getReason() const {

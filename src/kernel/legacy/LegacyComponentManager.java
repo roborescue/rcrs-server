@@ -12,8 +12,10 @@ import java.util.HashMap;
 import kernel.Kernel;
 import kernel.Agent;
 import kernel.Viewer;
-//import kernel.Simulator;
+import kernel.Simulator;
+import kernel.DefaultSimulator;
 import kernel.DefaultViewer;
+import kernel.DefaultAgent;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -32,6 +34,7 @@ import rescuecore2.messages.control.AKAcknowledge;
 import rescuecore2.messages.control.KAConnectError;
 import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 
 import rescuecore2.version0.entities.RescueWorldModel;
@@ -60,25 +63,16 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     // Entities that have no controller yet. Map from type to list of entities.
     private Map<Integer, Queue<Entity>> uncontrolledEntities;
 
-    /*
-      private Queue<Civilian> civ;
-      private Queue<FireBrigade> fb;
-      private Queue<FireStation> fs;
-      private Queue<AmbulanceTeam> at;
-      private Queue<AmbulanceCentre> ac;
-      private Queue<PoliceForce> pf;
-      private Queue<PoliceOffice> po;
-    */
-
     // Connected agents
     private Set<AgentAck> agentsToAcknowledge;
 
     // Connected simulators
-    private Set<LegacySimulator> simsToAcknowledge;
+    private Set<SimulatorAck> simsToAcknowledge;
     private int nextSimulatorID;
 
     // Connected viewers
     private Set<ViewerAck> viewersToAcknowledge;
+    private int nextViewerID;
 
     // World information
     private RescueWorldModel world;
@@ -113,15 +107,6 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         uncontrolledEntities.put(RescueEntityType.AMBULANCE_CENTRE.getID(), ac);
         uncontrolledEntities.put(RescueEntityType.POLICE_FORCE.getID(), pf);
         uncontrolledEntities.put(RescueEntityType.POLICE_OFFICE.getID(), po);
-        /*
-          civ = new LinkedList<Civilian>();
-          fb = new LinkedList<FireBrigade>();
-          fs = new LinkedList<FireStation>();
-          at = new LinkedList<AmbulanceTeam>();
-          ac = new LinkedList<AmbulanceCentre>();
-          pf = new LinkedList<PoliceForce>();
-          po = new LinkedList<PoliceOffice>();
-        */
         initialEntities = new HashSet<RescueEntity>();
         for (Entity e : world.getAllEntities()) {
             if (e instanceof Civilian) {
@@ -149,9 +134,10 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
 
         agentsToAcknowledge = new HashSet<AgentAck>();
-        simsToAcknowledge = new HashSet<LegacySimulator>();
+        simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
         nextSimulatorID = 1;
+        nextViewerID = 1;
     }
 
     /**
@@ -211,10 +197,10 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         c.addConnectionListener(new LegacyConnectionListener());
     }
 
-    private boolean agentAcknowledge(int requestID, Connection c) {
+    private boolean agentAcknowledge(int requestID, EntityID agentID, Connection c) {
         synchronized (agentLock) {
             for (AgentAck next : agentsToAcknowledge) {
-                if (next.requestID == requestID && next.connection == c) {
+                if (next.requestID == requestID && next.agentID.equals(agentID) && next.connection == c) {
                     agentsToAcknowledge.remove(next);
                     kernel.addAgent(next.agent);
                     agentLock.notifyAll();
@@ -225,12 +211,12 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private boolean simAcknowledge(int id, Connection c) {
+    private boolean simAcknowledge(int requestID, int simulatorID, Connection c) {
         synchronized (simLock) {
-            for (LegacySimulator next : simsToAcknowledge) {
-                if (next.getID() == id && next.getConnection() == c) {
+            for (SimulatorAck next : simsToAcknowledge) {
+                if (next.requestID == requestID && next.simulatorID == simulatorID && next.connection == c) {
                     simsToAcknowledge.remove(next);
-                    kernel.addSimulator(next);
+                    kernel.addSimulator(next.sim);
                     simLock.notifyAll();
                     return true;
                 }
@@ -239,10 +225,10 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private boolean viewerAcknowledge(int requestID, Connection c) {
+    private boolean viewerAcknowledge(int requestID, int viewerID, Connection c) {
         synchronized (viewerLock) {
             for (ViewerAck next : viewersToAcknowledge) {
-                if (next.requestID == requestID && next.connection == c) {
+                if (next.requestID == requestID && next.viewerID == viewerID && next.connection == c) {
                     viewersToAcknowledge.remove(next);
                     kernel.addViewer(next.viewer);
                     viewerLock.notifyAll();
@@ -253,9 +239,15 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private int getNextID() {
+    private int getNextSimulatorID() {
         synchronized (simLock) {
             return nextSimulatorID++;
+        }
+    }
+
+    private int getNextViewerID() {
+        synchronized (viewerLock) {
+            return nextViewerID++;
         }
     }
 
@@ -389,8 +381,8 @@ public class LegacyComponentManager implements ConnectionManagerListener {
                     reply = new KAConnectError(requestID, "No more agents");
                 }
                 else {
-                    Agent agent = new LegacyAgent(entity, connection);
-                    agentsToAcknowledge.add(new AgentAck(agent, requestID, connection));
+                    Agent agent = new DefaultAgent(entity, connection);
+                    agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
                     // Send an OK
                     Set<Entity> allEntities = new HashSet<Entity>(initialEntities);
                     allEntities.add(entity);
@@ -408,65 +400,86 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
 
         private void handleAKAcknowledge(AKAcknowledge msg, Connection connection) {
-            int id = msg.getRequestID();
-            if (agentAcknowledge(id, connection)) {
-                System.out.println("Agent " + connection + " / " + id + " acknowledged");
+            int requestID = msg.getRequestID();
+            EntityID agentID = msg.getAgentID();
+            if (agentAcknowledge(requestID, agentID, connection)) {
+                System.out.println("Agent " + agentID + " (request ID " + requestID + ") acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from agent " + connection + " / " + id);
+                System.out.println("Unexpected acknowledge from agent " + agentID + " (request ID " + requestID + ")");
             }
         }
 
         private void handleSKConnect(SKConnect msg, Connection connection) {
-            int id = getNextID();
-            System.out.println("Simulator " + id + " connected");
-            LegacySimulator sim = new LegacySimulator(connection, id);
+            int simID = getNextSimulatorID();
+            int requestID = msg.getRequestID();
+            System.out.println("Simulator " + simID + " (request ID " + requestID + ") connected");
+            Simulator sim = new DefaultSimulator(connection);
             synchronized (simLock) {
-                simsToAcknowledge.add(sim);
+                simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
             // Send an OK
-            sim.send(Collections.singleton(new KSConnectOK(id, world.getAllEntities())));
+            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, world.getAllEntities())));
         }
 
         private void handleSKAcknowledge(SKAcknowledge msg, Connection connection) {
-            int id = msg.getSimulatorID();
-            if (simAcknowledge(id, connection)) {
-                System.out.println("Simulator " + id + " acknowledged");
+            int requestID = msg.getRequestID();
+            int simID = msg.getSimulatorID();
+            if (simAcknowledge(requestID, simID, connection)) {
+                System.out.println("Simulator " + simID + " (request ID " + requestID + ") acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from simulator " + id);
+                System.out.println("Unexpected acknowledge from simulator " + simID + " (request ID " + requestID + ")");
             }
         }
 
         private void handleVKConnect(VKConnect msg, Connection connection) {
-            System.out.println("Viewer connected");
+            int requestID = msg.getRequestID();
+            int viewerID = getNextViewerID();
+            System.out.println("Viewer " + viewerID + " (request ID " + requestID + ") connected");
             Viewer viewer = new DefaultViewer(connection);
-            int id = msg.getRequestID();
             synchronized (viewerLock) {
-                viewersToAcknowledge.add(new ViewerAck(viewer, id, connection));
+                viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
             // Send an OK
-            viewer.send(Collections.singleton(new KVConnectOK(id, world.getAllEntities())));
+            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, world.getAllEntities())));
         }
 
         private void handleVKAcknowledge(VKAcknowledge msg, Connection connection) {
-            int id = msg.getRequestID();
-            if (viewerAcknowledge(id, connection)) {
-                System.out.println("Viewer " + connection + " / " + id + " acknowledged");
+            int requestID = msg.getRequestID();
+            int viewerID = msg.getViewerID();
+            if (viewerAcknowledge(requestID, viewerID, connection)) {
+                System.out.println("Viewer " + viewerID + " (" + requestID + ") acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from viewer " + connection + " / " + id);
+                System.out.println("Unexpected acknowledge from viewer " + viewerID + " (" + requestID + ")");
             }
         }
     }
 
     private static class AgentAck {
         Agent agent;
+        EntityID agentID;
         int requestID;
         Connection connection;
 
-        public AgentAck(Agent agent, int requestID, Connection c) {
+        public AgentAck(Agent agent, EntityID agentID, int requestID, Connection c) {
             this.agent = agent;
+            this.agentID = agentID;
+            this.requestID = requestID;
+            this.connection = c;
+        }
+    }
+
+    private static class SimulatorAck {
+        Simulator sim;
+        int simulatorID;
+        int requestID;
+        Connection connection;
+
+        public SimulatorAck(Simulator sim, int simID, int requestID, Connection c) {
+            this.sim = sim;
+            this.simulatorID = simID;
             this.requestID = requestID;
             this.connection = c;
         }
@@ -474,11 +487,13 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
     private static class ViewerAck {
         Viewer viewer;
+        int viewerID;
         int requestID;
         Connection connection;
 
-        public ViewerAck(Viewer viewer, int requestID, Connection c) {
+        public ViewerAck(Viewer viewer, int viewerID, int requestID, Connection c) {
             this.viewer = viewer;
+            this.viewerID = viewerID;
             this.requestID = requestID;
             this.connection = c;
         }

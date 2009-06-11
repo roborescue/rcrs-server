@@ -9,6 +9,8 @@ import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
 
 public abstract class IO implements Runnable, Constants {
+    private final static int REQUEST_ID = 34;
+
 	protected abstract byte[] receive();
 	protected abstract void send(byte[] body);
 
@@ -24,8 +26,8 @@ public abstract class IO implements Runnable, Constants {
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.VK_CONNECT);
 		out.writeInt(RescueConstants.INT_SIZE * 2);
+		out.writeInt(REQUEST_ID);
 		out.writeInt(0); // Version
-		out.writeInt(0); // RequestID
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 		byte[] data = receive();
@@ -35,37 +37,31 @@ public abstract class IO implements Runnable, Constants {
 		int size;
 		int header = in.readInt();
 		byte[] body;
-                int requestID;
+                int requestID = 0;
+                int viewerID = 0;
 		switch (header) {
 		case RescueConstants.KV_CONNECT_OK:
 			size = in.readInt();
 			System.out.print("initializing ... ");
-			body = new byte[size];
                         requestID = in.readInt();
-                        // request ID should be 0 - that's the request ID we sent
-                        if (requestID != 0) {
+                        viewerID = in.readInt();
+                        System.out.print("id " + viewerID + " ... ");
+                        if (requestID != REQUEST_ID) {
                             System.err.println("Unexpected request ID from kernel: " + requestID);
                             System.exit(-3);
                         }
+			body = new byte[size - (RescueConstants.INT_SIZE * 2)];
 			in.readBytes(body);
 			storeData(updateDataList, body, 0);
 			break;
 		case RescueConstants.KV_CONNECT_ERROR:
 			size = in.readInt();
                         requestID = in.readInt();
-                        // request ID should be 0 - that's the request ID we sent
-                        if (requestID != 0) {
+                        if (requestID != REQUEST_ID) {
                             System.err.println("Unexpected request ID from kernel: " + requestID);
                         }
 			System.out.println("Error connecting to kernel: "+in.readString());
 			System.exit(-1);
-			break;
-		case RescueConstants.UPDATE:
-			size = in.readInt();
-			int time = in.readInt();
-			body = new byte[size-RescueConstants.INT_SIZE];
-			in.readBytes(body);
-			storeData(updateDataList,body,time);
 			break;
 		default:
 			System.err.println("Unexpected reply from kernel: "+header);
@@ -78,8 +74,9 @@ public abstract class IO implements Runnable, Constants {
 
 		out = new OutputBuffer();
 		out.writeInt(RescueConstants.VK_ACKNOWLEDGE);
-		out.writeInt(RescueConstants.INT_SIZE); // Size
-		out.writeInt(0); // Request ID
+		out.writeInt(RescueConstants.INT_SIZE * 2); // Size
+		out.writeInt(REQUEST_ID);
+		out.writeInt(viewerID);
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 
@@ -120,7 +117,7 @@ public abstract class IO implements Runnable, Constants {
 				case RescueConstants.UPDATE:
 					InputBuffer in = new InputBuffer(content);
 					int time = in.readInt();
-					Util.myassert(time == lastTime + 1, "received a Long UDP packet having wrong simulation time");
+					Util.myassert(time == lastTime + 1, "received an update with the wrong simulation time: expected " + (lastTime + 1) + ", got " + time);
 					lastTime = time;
 					storeData(updateDataList, content, time);
 					// VIEWER.timeSlider.setMaximum(time);

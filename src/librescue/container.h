@@ -38,7 +38,8 @@ namespace Librescue {
 
 	Agents m_agents;
 	IdToAgent m_idToAgent;
-	Id m_nextTempId;
+
+	Id m_nextRequestId;
 
 	ConnectionManager m_connection;
 	Config m_config;
@@ -49,13 +50,13 @@ namespace Librescue {
 
 	ArgList m_args;
 
-	bool connectSimulator(Simulator* simulator);
+	bool connectSimulator(Simulator* simulator, Id requestId);
 	void handleCommands(Commands* commands);
 	void handleUpdate(Update* update);
 	void handleSimulatorConnectOK(Simulator* sim, SimulatorConnectOK* ok);
 	void handleSimulatorConnectError(SimulatorConnectError* ok);
 
-	bool connectAgent(Agent* agent, Id tempId);
+	bool connectAgent(Agent* agent, Id requestId);
 	void handleAgentSense(AgentSense* sense);
 	void handleAgentHear(AgentHear* hear);
 	void handleAgentConnectOK(Agent* agent, AgentConnectOK* ok);

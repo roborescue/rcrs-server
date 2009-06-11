@@ -37,8 +37,8 @@ public class AKConnect extends Command {
 	}
 
 	public void write(OutputBuffer out) {
-		out.writeInt(version);
 		out.writeInt(requestID);
+		out.writeInt(version);
                 out.writeInt(agentTypes.length);
                 for (int next : agentTypes) {
                     out.writeInt(next);
@@ -46,8 +46,8 @@ public class AKConnect extends Command {
 	}
 
 	public void read(InputBuffer in) {
-		version = in.readInt();
 		requestID = in.readInt();
+		version = in.readInt();
 		agentTypes = new int[in.readInt()];
                 for (int i = 0; i < agentTypes.length; ++i) {
                     agentTypes[i] = in.readInt();

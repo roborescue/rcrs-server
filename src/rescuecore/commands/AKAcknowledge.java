@@ -20,29 +20,27 @@ import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
 
 public class AKAcknowledge extends Command {
-	private int requestID;
+    private int requestID;
+    private int agentID;
 
-	public AKAcknowledge(int requestID) {
-		super(RescueConstants.AK_ACKNOWLEDGE);
-		this.requestID = requestID;
-	}
+    public AKAcknowledge(int requestID, int agentID) {
+        super(RescueConstants.AK_ACKNOWLEDGE);
+        this.requestID = requestID;
+        this.agentID = agentID;
+    }
 
-	public AKAcknowledge(InputBuffer in) {
-		super(RescueConstants.AK_ACKNOWLEDGE);
-		read(in);
-	}
+    public AKAcknowledge(InputBuffer in) {
+        super(RescueConstants.AK_ACKNOWLEDGE);
+        read(in);
+    }
 
-	/*
-	public AKAcknowledge(int id, byte[] data) {
-		super(AK_ACKNOWLEDGE,id);
-	}
-	*/
+    public void write(OutputBuffer out) {
+        out.writeInt(requestID);
+        out.writeInt(agentID);
+    }
 
-	public void write(OutputBuffer out) {
-		out.writeInt(requestID);
-	}
-
-	public void read(InputBuffer in) {
-		requestID = in.readInt();
-	}
+    public void read(InputBuffer in) {
+        requestID = in.readInt();
+        agentID = in.readInt();
+    }
 }

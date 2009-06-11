@@ -91,7 +91,7 @@ public abstract class Agent extends RescueComponent {
 				initialise(knowledge);
 				// Send AK_ACKNOWLEDGE
 				RescueMessage ack = new RescueMessage();
-				ack.append(new AKAcknowledge(requestID));
+				ack.append(new AKAcknowledge(requestID, id));
 				sendMessage(ack);
 			}
 			catch (Exception e) {
@@ -149,7 +149,7 @@ public abstract class Agent extends RescueComponent {
 					System.out.println("Old ID: "+id+", new ID: "+newID);
 					id = newID;
 					RescueMessage ack = new RescueMessage();
-					ack.append(new AKAcknowledge(requestID));
+					ack.append(new AKAcknowledge(requestID, id));
 					sendMessage(ack);
 				}
 			}

@@ -26,7 +26,7 @@ namespace Librescue {
   Container::Container(int argc, char** argv) {
 	m_host = "localhost";
 	m_port = 7000;
-	m_nextTempId = 1;
+	m_nextRequestId = 1;
 
 	m_args = generateArgList(argc,argv);
 	m_config.init(m_args);
@@ -72,7 +72,7 @@ namespace Librescue {
   }
 
   bool Container::addSimulator(Simulator* simulator) {
-	if (connectSimulator(simulator)) {
+    if (connectSimulator(simulator, m_nextRequestId++)) {
 	  m_simulators.push_back(simulator);
 	  simulator->init(&m_config,m_args);
 	  return true;
@@ -81,7 +81,7 @@ namespace Librescue {
   }
 
   bool Container::addAgent(Agent* agent) {
-	if (connectAgent(agent,m_nextTempId++)) {
+	if (connectAgent(agent,m_nextRequestId++)) {
 	  m_agents.push_back(agent);
 	  agent->init(&m_config,m_args);
 	  return true;
@@ -185,10 +185,10 @@ namespace Librescue {
 	}
   }
 
-  bool Container::connectSimulator(Simulator* simulator) {
+  bool Container::connectSimulator(Simulator* simulator, Id requestId) {
 	OutputBuffer out;
 	// Send an SK_CONNECT
-	SimulatorConnect connect(0);
+	SimulatorConnect connect(requestId, 0);
 	out.writeCommand(&connect);
 	out.writeInt32(HEADER_NULL);
 	if (m_connection.send(out.buffer(),m_kernelAddress)) {
@@ -238,26 +238,29 @@ namespace Librescue {
   }
 
   void Container::handleSimulatorConnectOK(Simulator* sim, SimulatorConnectOK* ok) {
-	sim->update(0,ok->getObjects());
-	m_simulatorToId[sim] = ok->getId();
-	// Send an acknowledgement
-	SimulatorAcknowledge ack(ok->getId());
-	OutputBuffer out;
-	out.writeCommand(&ack);
-	out.writeInt32(HEADER_NULL);
-	if (!m_connection.send(out.buffer(),m_kernelAddress)) {
-	  LOG_WARNING("WARNING: Error sending simulator acknowledge");
-	}
+    Id requestId = ok->getRequestId();
+    Id simId = ok->getSimulatorId();
+    sim->update(0,ok->getObjects());
+    m_simulatorToId[sim] = simId;
+    // Send an acknowledgement
+    LOG_DEBUG("Acknowledging connection for simulator %d (request ID %d)", simId, requestId);
+    SimulatorAcknowledge ack(requestId, simId);
+    OutputBuffer out;
+    out.writeCommand(&ack);
+    out.writeInt32(HEADER_NULL);
+    if (!m_connection.send(out.buffer(),m_kernelAddress)) {
+      LOG_WARNING("WARNING: Error sending simulator acknowledge");
+    }
   }
 
   void Container::handleSimulatorConnectError(SimulatorConnectError* error) {
 	LOG_WARNING("Error connecting simulator: %s",error->getReason().c_str());
   }
 
-  bool Container::connectAgent(Agent* agent, Id tempId) {
+  bool Container::connectAgent(Agent* agent, Id requestId) {
 	OutputBuffer out;
 	// Send an AK_CONNECT
-	AgentConnect connect(agent->getAgentType(),tempId,0);
+	AgentConnect connect(requestId,0,agent->getAgentType());
 	out.writeCommand(&connect);
 	out.writeInt32(HEADER_NULL);
 	if (m_connection.send(out.buffer(),m_kernelAddress)) {
@@ -311,17 +314,19 @@ namespace Librescue {
   }
 
   void Container::handleAgentConnectOK(Agent* agent, AgentConnectOK* ok) {
-	agent->connected(*ok);
-	m_idToAgent[agent->getId()] = agent;
-	// Send an acknowledgement
-	AgentAcknowledge ack(ok->getRequestId());
-	OutputBuffer out;
-	out.writeCommand(&ack);
-	out.writeInt32(HEADER_NULL);
-	LOG_DEBUG("Sending AK_ACKNOWLEDGE for id %d",ok->getRequestId());
-	if (!m_connection.send(out.buffer(),m_kernelAddress)) {
-	  LOG_WARNING("WARNING: Error sending agent acknowledge");
-	}
+    Id requestId = ok->getRequestId();
+    Id agentId = ok->getAgentId();
+    agent->connected(*ok);
+    m_idToAgent[agentId] = agent;
+    // Send an acknowledgement
+    AgentAcknowledge ack(requestId, agentId);
+    OutputBuffer out;
+    out.writeCommand(&ack);
+    out.writeInt32(HEADER_NULL);
+    LOG_DEBUG("Sending AK_ACKNOWLEDGE for request id %d (agent %d)",requestId, agentId);
+    if (!m_connection.send(out.buffer(),m_kernelAddress)) {
+      LOG_WARNING("WARNING: Error sending agent acknowledge");
+    }
   }
 
   void Container::handleAgentConnectError(AgentConnectError* error) {

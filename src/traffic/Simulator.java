@@ -11,6 +11,7 @@ public class Simulator implements Constants {
         io = new TCPIO(kernelAddress, kernelPort);
         io.sendConnect();
         id = io.receiveConnectOk();
+        System.out.println("Connected. Simulator ID is " + id);
         io.sendAcknowledge(id);
         setInitialPosition();
     }

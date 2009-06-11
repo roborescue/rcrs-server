@@ -53,12 +53,12 @@ namespace Librescue {
 
   class AgentConnect : public Command {
   private:
-	TypeId m_type;
-	Id m_tempId;
+	Id m_requestId;
 	INT_32 m_version;
+	TypeId m_type;
 
   public:
-	AgentConnect(TypeId type, Id tempId, INT_32 version);
+	AgentConnect(Id requestId, INT_32 version, TypeId type);
 	AgentConnect(InputBuffer& in);
 	virtual ~AgentConnect();
 
@@ -68,17 +68,18 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+	Id getRequestId() const;
 	TypeId getAgentType() const;
-	Id getTempId() const;
 	INT_32 getVersion() const;
   };
 
   class AgentAcknowledge : public Command {
   private:
-	Id m_id;
+	Id m_requestId;
+	Id m_agentId;
 
   public:
-	AgentAcknowledge(Id id);
+	AgentAcknowledge(Id requestId, Id agentId);
 	AgentAcknowledge(InputBuffer& in);
 	virtual ~AgentAcknowledge();
 
@@ -88,7 +89,8 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
-	Id getId() const;
+	Id getRequestId() const;
+	Id getAgentId() const;
   };
 
   class AgentConnectOK : public Command {
@@ -118,11 +120,11 @@ namespace Librescue {
 
   class AgentConnectError : public Command {
   private:
-	Id m_id;
+	Id m_requestId;
 	std::string m_reason;
 
   public:
-	AgentConnectError(Id id, std::string reason);
+	AgentConnectError(Id requestId, std::string reason);
 	AgentConnectError(InputBuffer& in);
 	virtual ~AgentConnectError();
 
@@ -132,6 +134,7 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+        Id getRequestId() const;
 	const std::string& getReason() const;
   };
 
@@ -403,10 +406,11 @@ namespace Librescue {
 
   class SimulatorConnect : public Command {
   private:
+    Id m_requestId;
 	INT_32 m_version;
 	
   public:
-	SimulatorConnect(INT_32 version);
+	SimulatorConnect(Id requestId, INT_32 version);
 	SimulatorConnect(InputBuffer& in);
 	virtual ~SimulatorConnect();
 
@@ -416,19 +420,21 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+        Id getRequestId() const;
 	INT_32 getVersion() const;
   };
 
   class SimulatorConnectOK : public Command {
   private:
-	Id m_id;
+	Id m_requestId;
+	Id m_simulatorId;
 	ObjectSet m_objects;
 
 	bool m_delete;
 	void deleteObjects();
 	
   public:
-	SimulatorConnectOK(Id id, const ObjectSet& objects);
+	SimulatorConnectOK(Id requestId, Id simulatorId, const ObjectSet& objects);
 	SimulatorConnectOK(InputBuffer& in);
 	virtual ~SimulatorConnectOK();
 
@@ -438,16 +444,18 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
-	Id getId() const;
+	Id getRequestId() const;
+	Id getSimulatorId() const;
 	const ObjectSet& getObjects() const;
   };
 
   class SimulatorConnectError : public Command {
   private:
+    Id m_requestId;
 	std::string m_reason;
 	
   public:
-	SimulatorConnectError(std::string reason);
+	SimulatorConnectError(Id requestId, std::string reason);
 	SimulatorConnectError(InputBuffer& in);
 	virtual ~SimulatorConnectError();
 
@@ -457,15 +465,17 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+	Id getRequestId() const;
 	const std::string& getReason() const;
   };
 
   class SimulatorAcknowledge : public Command {
   private:
-	Id m_id;
+	Id m_requestId;
+	Id m_simulatorId;
 	
   public:
-	SimulatorAcknowledge(Id id);
+	SimulatorAcknowledge(Id requestId, Id simulatorId);
 	SimulatorAcknowledge(InputBuffer& in);
 	virtual ~SimulatorAcknowledge();
 
@@ -475,7 +485,8 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
-	Id getId() const;
+	Id getRequestId() const;
+	Id getSimulatorId() const;
   };
 
   class Commands : public Command {
@@ -551,10 +562,11 @@ namespace Librescue {
 
   class ViewerConnect : public Command {
   private:
+    Id m_requestId;
 	INT_32 m_version;
 	
   public:
-	ViewerConnect(INT_32 version);
+	ViewerConnect(Id requestId, INT_32 version);
 	ViewerConnect(InputBuffer& in);
 	virtual ~ViewerConnect();
 
@@ -564,18 +576,21 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+        Id getRequestId() const;
 	INT_32 getVersion() const;
   };
 
   class ViewerConnectOK : public Command {
   private:
+    Id m_requestId;
+    Id m_viewerId;
 	ObjectSet m_objects;
 	
 	bool m_delete;
 	void deleteObjects();
 
   public:
-	ViewerConnectOK(const ObjectSet& objects);
+	ViewerConnectOK(Id requestId, Id viewerId, const ObjectSet& objects);
 	ViewerConnectOK(InputBuffer& in);
 	virtual ~ViewerConnectOK();
 
@@ -585,15 +600,18 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+        Id getRequestId() const;
+        Id getViewerId() const;
 	const ObjectSet& getObjects() const;
   };
 
   class ViewerConnectError : public Command {
   private:
+    Id m_requestId;
 	std::string m_reason;
 	
   public:
-	ViewerConnectError(std::string reason);
+	ViewerConnectError(Id requestId, std::string reason);
 	ViewerConnectError(InputBuffer& in);
 	virtual ~ViewerConnectError();
 
@@ -603,14 +621,17 @@ namespace Librescue {
 
 	virtual Command* clone() const;
 
+	Id getRequestId() const;
 	const std::string& getReason() const;
   };
 
   class ViewerAcknowledge : public Command {
   private:
+    Id m_requestId;
+    Id m_viewerId;
 	
   public:
-	ViewerAcknowledge();
+    ViewerAcknowledge(Id requestId, Id viewerId);
 	ViewerAcknowledge(InputBuffer& in);
 	virtual ~ViewerAcknowledge();
 
@@ -619,6 +640,9 @@ namespace Librescue {
 	virtual void decode(InputBuffer& in);
 
 	virtual Command* clone() const;
+
+        Id getRequestId() const;
+        Id getViewerId() const;
   };
 
   class GISConnect : public Command {

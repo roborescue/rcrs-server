@@ -41,20 +41,24 @@ public class RIO implements IOConstans{
 	
 	public void sendReadyness(int id){
 		System.out.print("sending SK_ACKNOWLEDGE..");
-		sendAcknowledge(id);
+		sendAcknowledge(0, id);
 		System.out.println("ok");
 	}
 	
 	public void sendConnect(){
-		send(SK_CONNECT,new byte[]{0,0,0,0});
+            send(SK_CONNECT,new byte[]{0,0,0,0,0,0,0,0}); // 2 4-byte integers, both zero.
 	}
 	
-	public void sendAcknowledge(int id){
-		byte[] b = new byte[4];
-		b[0] = (byte)((id>>24)&0xFF);
-		b[1] = (byte)((id>>16)&0xFF);
-		b[2] = (byte)((id>>8)&0xFF);
-		b[3] = (byte)(id&0xFF);
+    public void sendAcknowledge(int requestId, int simId){
+		byte[] b = new byte[8];
+		b[0] = (byte)((requestId>>24)&0xFF);
+		b[1] = (byte)((requestId>>16)&0xFF);
+		b[2] = (byte)((requestId>>8)&0xFF);
+		b[3] = (byte)(requestId&0xFF);
+		b[4] = (byte)((simId>>24)&0xFF);
+		b[5] = (byte)((simId>>16)&0xFF);
+		b[6] = (byte)((simId>>8)&0xFF);
+		b[7] = (byte)(simId&0xFF);
 		send(SK_ACKNOWLEDGE,b);
 	}
 	
@@ -73,7 +77,7 @@ public class RIO implements IOConstans{
 		if(data[0]!=KS_CONNECT_OK){
 			System.out.println("warning: received not an KS_CONNECT_OK");
 		}
-		world.processUpdate(data,3,INIT_TIME); // Skip the header, size and simulator id
+		world.processUpdate(data,4,INIT_TIME); // Skip the header, size, requestId and simulator id
 		return data;
 	}
 	

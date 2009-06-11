@@ -9,6 +9,9 @@ import rescuecore.InputBuffer;
 import rescuecore.OutputBuffer;
 
 public abstract class IO implements Constants {
+    private final static int REQUEST_ID = 1000;
+    private final static int VERSION = 0;
+
 	protected InetAddress m_address;
 	protected int m_port;
 
@@ -30,8 +33,9 @@ public abstract class IO implements Constants {
 		System.out.println("connecting");
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.SK_CONNECT);
-		out.writeInt(RescueConstants.INT_SIZE); // Size
-		out.writeInt(0); // Version
+		out.writeInt(RescueConstants.INT_SIZE * 2); // Size
+		out.writeInt(REQUEST_ID);
+		out.writeInt(VERSION);
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 	}
@@ -48,10 +52,15 @@ public abstract class IO implements Constants {
 				switch (header) {
 				case RescueConstants.KS_CONNECT_OK:
 					System.out.println("initializing");
-					int id = in.readInt();
+					int requestId = in.readInt();
+                                        int simId = in.readInt();
+                                        if (requestId != REQUEST_ID) {
+                                            System.out.println("Received unexpected connect ok: expecting request ID of " + REQUEST_ID + " but got " + requestId);
+                                            System.exit(-3);
+                                        }
 					WORLD.update(in, INITIALIZING_TIME);
 					WORLD.initialize();
-					return id;
+					return simId;
 				case RescueConstants.KS_CONNECT_ERROR:
 					System.out.println("KS_CONNECT_ERROR: "+in.readString());
 					System.exit(-1);
@@ -69,11 +78,12 @@ public abstract class IO implements Constants {
 		return 0;
 	}
 
-	public void sendAcknowledge(int id) {
+    public void sendAcknowledge(int simId) {
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.SK_ACKNOWLEDGE);
-		out.writeInt(RescueConstants.INT_SIZE); // Size
-		out.writeInt(id);
+		out.writeInt(RescueConstants.INT_SIZE * 2); // Size
+		out.writeInt(REQUEST_ID);
+		out.writeInt(simId);
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 	}
