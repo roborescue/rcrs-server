@@ -1,21 +1,14 @@
-package kernel.standard;
+package kernel;
 
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
-
-import kernel.Kernel;
-import kernel.Agent;
-import kernel.Viewer;
-import kernel.Simulator;
-import kernel.DefaultSimulator;
-import kernel.DefaultViewer;
-import kernel.DefaultAgent;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
@@ -35,27 +28,12 @@ import rescuecore2.messages.control.KAConnectError;
 import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.Property;
-
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
-import rescuecore2.standard.entities.Civilian;
-import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.FireStation;
-import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.AmbulanceCentre;
-import rescuecore2.standard.entities.PoliceForce;
-import rescuecore2.standard.entities.PoliceOffice;
-import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Node;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.StandardPropertyType;
+import rescuecore2.worldmodel.WorldModel;
 
 /**
-   Class that manages connecting legacy components.
+   Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
-public class LegacyComponentManager implements ConnectionManagerListener {
+public abstract class ComponentManager implements ConnectionManagerListener {
     private static final int WAIT_TIME = 10000;
 
     private Kernel kernel;
@@ -75,69 +53,43 @@ public class LegacyComponentManager implements ConnectionManagerListener {
     private int nextViewerID;
 
     // World information
-    private StandardWorldModel world;
-    private Set<StandardEntity> initialEntities;
+    private WorldModel<? extends Entity> world;
 
-    /** Lock object agent stuff. */
+    /** Lock objects. */
     private final Object agentLock = new Object();
     private final Object simLock = new Object();
     private final Object viewerLock = new Object();
 
     /**
-       Create a LegacyComponentManager.
+       Create a ComponentManager.
        @param kernel The kernel.
        @param world The world model.
        @param config The kernel configuration.
     */
-    public LegacyComponentManager(Kernel kernel, StandardWorldModel world, Config config) {
+    public ComponentManager(Kernel kernel, WorldModel<? extends Entity> world, Config config) {
         this.kernel = kernel;
         this.world = world;
         uncontrolledEntities = new HashMap<Integer, Queue<Entity>>();
-        Queue<Entity> civ = new LinkedList<Entity>();
-        Queue<Entity> fb = new LinkedList<Entity>();
-        Queue<Entity> fs = new LinkedList<Entity>();
-        Queue<Entity> at = new LinkedList<Entity>();
-        Queue<Entity> ac = new LinkedList<Entity>();
-        Queue<Entity> pf = new LinkedList<Entity>();
-        Queue<Entity> po = new LinkedList<Entity>();
-        uncontrolledEntities.put(StandardEntityType.CIVILIAN.getID(), civ);
-        uncontrolledEntities.put(StandardEntityType.FIRE_BRIGADE.getID(), fb);
-        uncontrolledEntities.put(StandardEntityType.FIRE_STATION.getID(), fs);
-        uncontrolledEntities.put(StandardEntityType.AMBULANCE_TEAM.getID(), at);
-        uncontrolledEntities.put(StandardEntityType.AMBULANCE_CENTRE.getID(), ac);
-        uncontrolledEntities.put(StandardEntityType.POLICE_FORCE.getID(), pf);
-        uncontrolledEntities.put(StandardEntityType.POLICE_OFFICE.getID(), po);
-        initialEntities = new HashSet<StandardEntity>();
-        for (Entity e : world.getAllEntities()) {
-            if (e instanceof Civilian) {
-                civ.add(e);
-            }
-            else if (e instanceof FireBrigade) {
-                fb.add(e);
-            }
-            else if (e instanceof FireStation) {
-                fs.add(e);
-            }
-            else if (e instanceof AmbulanceTeam) {
-                at.add(e);
-            }
-            else if (e instanceof AmbulanceCentre) {
-                ac.add(e);
-            }
-            else if (e instanceof PoliceForce) {
-                pf.add(e);
-            }
-            else if (e instanceof PoliceOffice) {
-                po.add(e);
-            }
-            maybeAddInitialEntity(e);
-        }
-
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
         nextSimulatorID = 1;
         nextViewerID = 1;
+    }
+
+    /**
+       Register an agent-controlled entity.
+       @param entity The entity that is agent-controlled.
+     */
+    public void registerAgentControlledEntity(Entity entity) {
+        synchronized (agentLock) {
+            Queue<Entity> q = uncontrolledEntities.get(entity.getType().getID());
+            if (q == null) {
+                q = new LinkedList<Entity>();
+                uncontrolledEntities.put(entity.getType().getID(), q);
+            }
+            q.add(entity);
+        }
     }
 
     /**
@@ -194,7 +146,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
 
     @Override
     public void newConnection(Connection c) {
-        c.addConnectionListener(new LegacyConnectionListener());
+        c.addConnectionListener(new ComponentConnectionListener());
     }
 
     private boolean agentAcknowledge(int requestID, EntityID agentID, Connection c) {
@@ -251,87 +203,6 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private void maybeAddInitialEntity(Entity e) {
-        if (e instanceof Road) {
-            Road r = (Road)e.copy();
-            filterRoadProperties(r);
-            initialEntities.add(r);
-        }
-        if (e instanceof Node) {
-            Node n = (Node)e.copy();
-            filterNodeProperties(n);
-            initialEntities.add(n);
-        }
-        if (e instanceof Building) {
-            Building b = (Building)e.copy();
-            filterBuildingProperties(b);
-            initialEntities.add(b);
-        }
-    }
-
-    private void filterRoadProperties(Road r) {
-        for (Property next : r.getProperties()) {
-            // Road properties: ROAD_KIND, WIDTH, MEDIAN_STRIP, LINES_TO_HEAD, LINES_TO_TAIL and WIDTH_FOR_WALKERS
-            // Edge properties: HEAD, TAIL, LENGTH
-            // Everything else should be undefined
-            switch ((StandardPropertyType)next.getType()) {
-            case ROAD_KIND:
-            case WIDTH:
-            case MEDIAN_STRIP:
-            case LINES_TO_HEAD:
-            case LINES_TO_TAIL:
-            case WIDTH_FOR_WALKERS:
-            case HEAD:
-            case TAIL:
-            case LENGTH:
-                break;
-            default:
-                next.undefine();
-            }
-        }
-    }
-
-    private void filterNodeProperties(Node n) {
-        for (Property next : n.getProperties()) {
-            // Node properties: SIGNAL, SHORTCUT_TO_TURN, POCKET_TO_TURN_ACROSS, SIGNAL_TIMING
-            // Vertex properties: X, Y, EDGES
-            // Everything else should be undefined
-            switch ((StandardPropertyType)next.getType()) {
-            case SIGNAL:
-            case SHORTCUT_TO_TURN:
-            case POCKET_TO_TURN_ACROSS:
-            case SIGNAL_TIMING:
-            case X:
-            case Y:
-            case EDGES:
-                break;
-            default:
-                next.undefine();
-            }
-        }
-    }
-
-    private void filterBuildingProperties(Building b) {
-        for (Property next : b.getProperties()) {
-            // Building properties: X, Y, FLOORS, BUILDING_CODE, BUILDING_ATTRIBUTES, BUILDING_AREA_GROUND, BUILDING_AREA_TOTAL, IMPORTANCE, ENTRANCES
-            // Everything else should be undefined
-            switch ((StandardPropertyType)next.getType()) {
-            case X:
-            case Y:
-            case FLOORS:
-            case BUILDING_CODE:
-            case BUILDING_ATTRIBUTES:
-            case BUILDING_AREA_GROUND:
-            case BUILDING_AREA_TOTAL:
-            case IMPORTANCE:
-            case ENTRANCES:
-                break;
-            default:
-                next.undefine();
-            }
-        }
-    }
-
     private Entity findEntityToControl(List<Integer> types) {
         for (int next : types) {
             Queue<Entity> q = uncontrolledEntities.get(next);
@@ -345,7 +216,34 @@ public class LegacyComponentManager implements ConnectionManagerListener {
         return null;
     }
 
-    private class LegacyConnectionListener implements ConnectionListener {
+    /**
+       Get the set of entities that an agent can see on connection. The default implementation returns the entire world model.
+       @param agent The agent that has just connected.
+       @return The set of Entities that the agent can see on connection.
+     */
+    protected Collection<Entity> getInitialEntitiesForAgent(Agent agent) {
+        return new HashSet<Entity>(world.getAllEntities());
+    }
+
+    /**
+       Get the set of entities that a simulator can see on connection. The default implementation returns the entire world model.
+       @param simulator The simulator that has just connected.
+       @return The set of Entities that the simulator can see on connection.
+     */
+    protected Collection<Entity> getInitialEntitiesForSimulator(Simulator simulator) {
+        return new HashSet<Entity>(world.getAllEntities());
+    }
+
+    /**
+       Get the set of entities that a viewer can see on connection. The default implementation returns the entire world model.
+       @param viewer The viewer that has just connected.
+       @return The set of Entities that the viewer can see on connection.
+     */
+    protected Collection<Entity> getInitialEntitiesForViewer(Viewer viewer) {
+        return new HashSet<Entity>(world.getAllEntities());
+    }
+
+    private class ComponentConnectionListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof AKConnect) {
@@ -384,9 +282,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
                     Agent agent = new DefaultAgent(entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
                     // Send an OK
-                    Set<Entity> allEntities = new HashSet<Entity>(initialEntities);
-                    allEntities.add(entity);
-                    reply = new KAConnectOK(requestID, entity.getID(), allEntities);
+                    reply = new KAConnectOK(requestID, entity.getID(), getInitialEntitiesForAgent(agent));
                 }
             }
             if (reply != null) {
@@ -419,7 +315,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
             // Send an OK
-            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, world.getAllEntities())));
+            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, getInitialEntitiesForSimulator(sim))));
         }
 
         private void handleSKAcknowledge(SKAcknowledge msg, Connection connection) {
@@ -442,7 +338,7 @@ public class LegacyComponentManager implements ConnectionManagerListener {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
             // Send an OK
-            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, world.getAllEntities())));
+            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, getInitialEntitiesForViewer(viewer))));
         }
 
         private void handleVKAcknowledge(VKAcknowledge msg, Connection connection) {
