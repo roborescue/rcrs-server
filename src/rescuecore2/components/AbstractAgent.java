@@ -1,4 +1,4 @@
-package rescuecore2.sample;
+package rescuecore2.components;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
    Abstract base class for agent implementations.
    @param <T> The subclass of Entity that this agent understands.
  */
-public abstract class AbstractAgent<T extends Entity> {
+public abstract class AbstractAgent<T extends Entity> implements Agent {
     private static final int TIMEOUT = 10000;
 
     /**
@@ -49,14 +49,7 @@ public abstract class AbstractAgent<T extends Entity> {
         connectionState = State.NOT_CONNECTED;
     }
 
-    /**
-       Connect this agent to the kernel.
-       @param c The Connection to use to talk to the kernel.
-       @param uniqueID A unique ID to use for making the connection.
-       @return True iff the connection was successful.
-       @throws InterruptedException If this thread is interrupted while connecting.
-       @throws ConnectionException If there is a communication error.
-     */
+    @Override
     public final boolean connect(Connection c, int uniqueID) throws InterruptedException, ConnectionException {
         synchronized (connectLock) {
             if (connectionState == State.NOT_CONNECTED) {

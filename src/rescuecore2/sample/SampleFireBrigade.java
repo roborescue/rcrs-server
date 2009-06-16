@@ -11,9 +11,9 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityType;
 
 /**
-   A no-op agent.
+   A sample fire brigade agent.
  */
-public class DummyAgent extends AbstractAgent<StandardEntity> {
+public class SampleFireBrigade extends AbstractAgent<StandardEntity> {
     @Override
     protected void think(int time, List<EntityID> changed) {
     }
@@ -25,13 +25,7 @@ public class DummyAgent extends AbstractAgent<StandardEntity> {
 
     @Override
     protected int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.CIVILIAN.getID(),
-                          StandardEntityType.FIRE_BRIGADE.getID(),
-                          StandardEntityType.FIRE_STATION.getID(),
-                          StandardEntityType.AMBULANCE_TEAM.getID(),
-                          StandardEntityType.AMBULANCE_CENTRE.getID(),
-                          StandardEntityType.POLICE_FORCE.getID(),
-                          StandardEntityType.POLICE_OFFICE.getID()
+        return new int[] {StandardEntityType.FIRE_BRIGADE.getID()
         };
     }
 }
