@@ -95,6 +95,7 @@ public class ConnectionManager {
                 TCPConnection conn = new TCPConnection(s);
                 if (ConnectionManager.this.isAlive()) {
                     callback.newConnection(conn);
+                    conn.startup();
                 }
             }
             // CHECKSTYLE:OFF:EmptyBlock OK here
