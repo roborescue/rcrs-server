@@ -26,5 +26,14 @@ public final class MessageConstants {
     /** Clear command. */
     public static final int AK_CLEAR = 0x89;
 
+    /** Channel subscribe command. */
+    public static final int AK_SUBSCRIBE = 0x90;
+
+    /** Channel speak command. */
+    public static final int AK_SPEAK = 0x91;
+
+    /** Channel hear command. */
+    public static final int KA_HEAR_CHANNEL = 0x92;
+
     private MessageConstants() {}
 }

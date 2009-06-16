@@ -29,7 +29,10 @@ public final class StandardMessageFactory implements MessageFactory {
                           MessageConstants.AK_TELL,
                           MessageConstants.AK_RESCUE,
                           MessageConstants.AK_CLEAR,
-                          MessageConstants.AK_EXTINGUISH
+                          MessageConstants.AK_EXTINGUISH,
+                          MessageConstants.AK_SUBSCRIBE,
+                          MessageConstants.AK_SPEAK,
+                          MessageConstants.KA_HEAR_CHANNEL
         };
     }
 
@@ -66,6 +69,15 @@ public final class StandardMessageFactory implements MessageFactory {
             break;
         case MessageConstants.AK_CLEAR:
             result = new AKClear();
+            break;
+        case MessageConstants.AK_SUBSCRIBE:
+            result = new AKSubscribe();
+            break;
+        case MessageConstants.AK_SPEAK:
+            result = new AKSpeak();
+            break;
+        case MessageConstants.KA_HEAR_CHANNEL:
+            result = new KAHearChannel();
             break;
         default:
             System.out.println("Unrecognised message ID: " + id);
