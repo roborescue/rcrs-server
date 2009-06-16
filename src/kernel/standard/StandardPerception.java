@@ -62,6 +62,11 @@ public class StandardPerception implements Perception {
     }
 
     @Override
+    public String toString() {
+        return "Standard perception";
+    }
+
+    @Override
     public void setTime(int timestep) {
         // Look for buildings that caught fire last timestep
         for (Iterator<Building> it = unburntBuildings.iterator(); it.hasNext();) {

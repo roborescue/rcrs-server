@@ -43,6 +43,11 @@ public class StandardCommunicationModel implements CommunicationModel {
     }
 
     @Override
+    public String toString() {
+        return "Standard communication model";
+    }
+
+    @Override
     public Collection<Message> process(Agent agent, Collection<Command> agentCommands) {
         //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
         Collection<Message> result = new HashSet<Message>();
