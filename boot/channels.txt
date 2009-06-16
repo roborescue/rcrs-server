@@ -1,0 +1,19 @@
+channel_count: 4
+channel_1_type: voice
+channel_1_range: 30000
+# Maximum size of a voice message
+channel_1_max_size: 256
+# Maximum number of voice messages each agent can utter each timestep
+channel_1_max_messages: 1
+
+channel_2_type: radio
+channel_2_bandwidth: 1024
+
+channel_3_type: radio
+channel_3_bandwidth: 1024
+
+channel_4_type: radio
+channel_4_bandwidth: 1024
+
+agent_max_channels: 1
+centre_max_channels: 2

@@ -298,6 +298,8 @@
     <java classname="kernel.StartKernel" classpathref="path.all" fork="yes">
       <arg value="-c"/>
       <arg value="boot/config.txt"/>
+      <arg value="-c"/>
+      <arg value="boot/channels.txt"/>
     </java>
   </target>
 </project>
