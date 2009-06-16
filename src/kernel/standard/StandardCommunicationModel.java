@@ -2,6 +2,8 @@ package kernel.standard;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 import kernel.Agent;
 import kernel.CommunicationModel;
@@ -36,7 +38,7 @@ public class StandardCommunicationModel implements CommunicationModel {
        Construct a StandardCommunicationModel.
        @param config The kernel configuration.
        @param world The world model.
-     */
+    */
     public StandardCommunicationModel(Config config, StandardWorldModel world) {
         this.world = world;
         sayDistance = config.getIntValue("voice");
@@ -48,33 +50,41 @@ public class StandardCommunicationModel implements CommunicationModel {
     }
 
     @Override
-    public Collection<Message> process(Agent agent, Collection<Command> agentCommands) {
-        //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
-        Collection<Message> result = new HashSet<Message>();
-        // Look for SAY messages from entities within range
-        // Look for TELL messages from appropriate entities
-        for (Command next : agentCommands) {
-            if (next instanceof AKSay) {
-                AKSay say = (AKSay)next;
-                EntityID senderID = say.getAgentID();
-                StandardEntity sender = world.getEntity(senderID);
-                int distance = world.getDistance((StandardEntity)agent.getControlledEntity(), sender);
-                if (distance <= sayDistance) {
-                    //                    System.out.println(agent + " hears say from " + sender);
-                    result.add(new KAHearSay(senderID, say.getContent()));
+    public Map<Agent, Collection<Message>> process(Collection<Agent> agents, Collection<Command> agentCommands) {
+        Map<Agent, Collection<Message>> all = new HashMap<Agent, Collection<Message>>();
+        for (Agent agent : agents) {
+            //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
+            Collection<Message> result = new HashSet<Message>();
+            // Look for SAY messages from entities within range
+            // Look for TELL messages from appropriate entities
+            for (Command next : agentCommands) {
+                if (next instanceof AKSay) {
+                    AKSay say = (AKSay)next;
+                    EntityID senderID = say.getAgentID();
+                    StandardEntity sender = world.getEntity(senderID);
+                    int distance = world.getDistance((StandardEntity)agent.getControlledEntity(), sender);
+                    if (distance <= sayDistance) {
+                        //                    System.out.println(agent + " hears say from " + sender);
+                        result.add(new KAHearSay(senderID, say.getContent()));
+                    }
+                }
+                if (next instanceof AKTell) {
+                    AKTell tell = (AKTell)next;
+                    EntityID senderID = tell.getAgentID();
+                    StandardEntity sender = world.getEntity(senderID);
+                    if (canHear(agent.getControlledEntity(), sender)) {
+                        //                    System.out.println(agent + " hears tell from " + sender);
+                        result.add(new KAHearTell(senderID, tell.getContent()));
+                    }
                 }
             }
-            if (next instanceof AKTell) {
-                AKTell tell = (AKTell)next;
-                EntityID senderID = tell.getAgentID();
-                StandardEntity sender = world.getEntity(senderID);
-                if (canHear(agent.getControlledEntity(), sender)) {
-                    //                    System.out.println(agent + " hears tell from " + sender);
-                    result.add(new KAHearTell(senderID, tell.getContent()));
-                }
-            }
+            all.put(agent, result);
         }
-        return result;
+        return all;
+    }
+
+    @Override
+    public void setTime(int timestep) {
     }
 
     private boolean canHear(Entity receiver, StandardEntity sender) {
@@ -83,27 +93,27 @@ public class StandardCommunicationModel implements CommunicationModel {
         }
         if (receiver instanceof FireStation) {
             return sender instanceof FireBrigade
-            || sender instanceof FireStation
-            || sender instanceof PoliceOffice
-            || sender instanceof AmbulanceCentre;
+                || sender instanceof FireStation
+                || sender instanceof PoliceOffice
+                || sender instanceof AmbulanceCentre;
         }
         if (receiver instanceof PoliceForce) {
             return sender instanceof PoliceForce || sender instanceof PoliceOffice;
         }
         if (receiver instanceof PoliceOffice) {
             return sender instanceof PoliceForce
-            || sender instanceof FireStation
-            || sender instanceof PoliceOffice
-            || sender instanceof AmbulanceCentre;
+                || sender instanceof FireStation
+                || sender instanceof PoliceOffice
+                || sender instanceof AmbulanceCentre;
         }
         if (receiver instanceof AmbulanceTeam) {
             return sender instanceof AmbulanceTeam || sender instanceof AmbulanceCentre;
         }
         if (receiver instanceof AmbulanceCentre) {
             return sender instanceof AmbulanceTeam
-            || sender instanceof FireStation
-            || sender instanceof PoliceOffice
-            || sender instanceof AmbulanceCentre;
+                || sender instanceof FireStation
+                || sender instanceof PoliceOffice
+                || sender instanceof AmbulanceCentre;
         }
         return false;
     }

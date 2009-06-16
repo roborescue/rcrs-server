@@ -3,6 +3,7 @@ package kernel;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
@@ -212,13 +213,14 @@ public class Kernel {
 
     private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException {
         perception.setTime(timestep);
+        communicationModel.setTime(timestep);
+        Map<Agent, Collection<Message>> comms = communicationModel.process(agents, commandsLastTimestep);
         for (Agent next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
             Collection<Entity> visible = perception.getVisibleEntities(next);
-            Collection<Message> comms = communicationModel.process(next, commandsLastTimestep);
-            next.sendPerceptionUpdate(timestep, visible, comms);
+            next.sendPerceptionUpdate(timestep, visible, comms.get(next));
         }
     }
 

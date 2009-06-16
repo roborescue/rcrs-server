@@ -33,6 +33,7 @@ import kernel.standard.StandardWorldModelCreator;
 import kernel.standard.StandardPerception;
 import kernel.standard.TunableStandardPerception;
 import kernel.standard.StandardCommunicationModel;
+import kernel.standard.ChannelCommunicationModel;
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
 
@@ -160,7 +161,7 @@ public final class StartKernel {
             StandardWorldModel worldModel = new StandardWorldModelCreator().buildWorldModel(config);
             // Show the chooser GUI
             Perception[] perceptionChoices = new Perception[] {new StandardPerception(config, worldModel), new TunableStandardPerception(config, worldModel)};
-            CommunicationModel[] commsChoices = new CommunicationModel[] {new StandardCommunicationModel(config, worldModel)};
+            CommunicationModel[] commsChoices = new CommunicationModel[] {new StandardCommunicationModel(config, worldModel), new ChannelCommunicationModel(config, worldModel)};
             KernelChooserDialog dialog = new KernelChooserDialog(perceptionChoices, commsChoices);
             dialog.setVisible(true);
             Perception perception = dialog.getPerception();
