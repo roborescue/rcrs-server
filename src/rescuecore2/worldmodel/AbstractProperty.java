@@ -1,9 +1,5 @@
 package rescuecore2.worldmodel;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collection;
-
 /**
    Abstract base class for Property implementations.
 */
