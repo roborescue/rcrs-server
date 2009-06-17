@@ -387,4 +387,16 @@ public abstract class Human extends StandardEntity {
     public void undefineBuriedness() {
         buriedness.undefine();
     }
+
+    /**
+       Get the entity represented by the position property. The result will be null if the position property has not been set or if the entity reference is invalid.
+       @param model The WorldModel to look up entity references.
+       @return The entity represented by the position property.
+     */
+    public StandardEntity getPosition(WorldModel<? extends StandardEntity> model) {
+        if (!position.isDefined()) {
+            return null;
+        }
+        return model.getEntity(position.getValue());
+    }
 }

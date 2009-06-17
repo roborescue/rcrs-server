@@ -119,6 +119,22 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     }
 
     /**
+       Get objects within a certain range of an entity.
+       @param entity The entity to centre the search on.
+       @param range The range to look up.
+       @return A collection of StandardEntitys that are within range.
+     */
+    public Collection<StandardEntity> getObjectsInRange(StandardEntity entity, int range) {
+        Pair<Integer, Integer> location = entity.getLocation(this);
+        //        System.out.println("Looking for objects within " + range + " of " + entity);
+        if (location == null) {
+            //            System.out.println("Couldn't locate entity");
+            return new HashSet<StandardEntity>();
+        }
+        return getObjectsInRange(location.first(), location.second(), range);
+    }
+
+    /**
        Get objects within a certain range of a location.
        @param x The x coordinate of the location.
        @param y The y coordinate of the location.
@@ -126,6 +142,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @return A collection of StandardEntitys that are within range.
      */
     public Collection<StandardEntity> getObjectsInRange(int x, int y, int range) {
+        //        System.out.println("Looking for objects within " + range + " of " + x + ", " + y);
         Collection<StandardEntity> result = new HashSet<StandardEntity>();
         int cellX = getXCell(x);
         int cellY = getYCell(y);
@@ -134,11 +151,13 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             for (int j = Math.max(0, cellY - cellRange); j <= Math.min(gridHeight - 1, cellY + cellRange); ++j) {
                 Collection<StandardEntity> cell = getCell(i, j);
                 for (StandardEntity next : cell) {
+                    //                    System.out.println("Next candidate: " + next);
                     Pair<Integer, Integer> location = next.getLocation(this);
                     if (location != null) {
                         int targetX = location.first().intValue();
                         int targetY = location.second().intValue();
                         int distance = distance(x, y, targetX, targetY);
+                        //                        System.out.println("Range: " + distance);
                         if (distance <= range) {
                             result.add(next);
                         }
