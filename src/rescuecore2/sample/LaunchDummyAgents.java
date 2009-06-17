@@ -48,7 +48,7 @@ public final class LaunchDummyAgents {
         while (count-- != 0) {
             System.out.println("Connecting agent " + i);
             DummyAgent agent = new DummyAgent();
-            if (!agent.connect(c, i++)) {
+            if (agent.connect(c, i++) != null) {
                 return;
             }
         }

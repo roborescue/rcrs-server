@@ -11,9 +11,9 @@ public interface Component {
        Connect this component to the kernel.
        @param c The Connection to use to talk to the kernel.
        @param uniqueID A unique ID to use for making the connection.
-       @return True iff the connection was successful.
+       @return A reason for failure if the connection failed, or null if the connection succeeded.
        @throws InterruptedException If this thread is interrupted while connecting.
        @throws ConnectionException If there is a communication error.
      */
-    boolean connect(Connection c, int uniqueID) throws InterruptedException, ConnectionException;
+    String connect(Connection c, int uniqueID) throws InterruptedException, ConnectionException;
 }
