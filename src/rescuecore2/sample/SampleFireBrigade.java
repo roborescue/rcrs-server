@@ -22,7 +22,6 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     private static final int MAX_WATER = 15000;
     private static final int EXTINGUISH_DISTANCE = 30000;
     private static final int EXTINGUISH_POWER = 1000;
-    private static final int RANDOM_WALK_LENGTH = 50;
 
     @Override
     protected void postConnect() {
@@ -49,14 +48,13 @@ public class SampleFireBrigade extends AbstractSampleAgent {
                 return;
             }
             else {
-                System.out.println("Couldn't plan a path to a refuge.");
-                send(new AKMove(entityID, randomWalk(RANDOM_WALK_LENGTH), time));
+                System.out.println(me() + " couldn't plan a path to a refuge.");
+                send(new AKMove(entityID, randomWalk(), time));
             }
         }
         // Find all buildings that are on fire
         Collection<Building> all = getBurningBuildings();
         // Can we extinguish any right now?
-        System.out.println("Looking for target: " + all.size() + " burning buildings");
         for (Building next : all) {
             if (world.getDistance(me, next) <= EXTINGUISH_DISTANCE) {
                 AKExtinguish ex = new AKExtinguish(entityID, next.getID(), EXTINGUISH_POWER, time);
@@ -75,8 +73,8 @@ public class SampleFireBrigade extends AbstractSampleAgent {
                 return;
             }
         }
-        System.out.println("Couldn't plan a path to a fire.");
-        send(new AKMove(entityID, randomWalk(RANDOM_WALK_LENGTH), time));
+        System.out.println(me() + " couldn't plan a path to a fire.");
+        send(new AKMove(entityID, randomWalk(), time));
     }
 
     @Override
@@ -115,10 +113,8 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     private List<EntityID> planPathToFire(Building target) {
-        System.out.println("Looking for entities near " + target);
         // Try to get to anything within EXTINGUISH_DISTANCE of the target
         Collection<StandardEntity> targets = world.getObjectsInRange(target, EXTINGUISH_DISTANCE);
-        System.out.println("Found " + targets.size() + " possibilities");
         if (targets.isEmpty()) {
             return null;
         }

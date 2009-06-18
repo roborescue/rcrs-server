@@ -18,17 +18,23 @@ public final class LaunchSampleAgents {
 
     private static final String PORT_FLAG = "-p";
     private static final String HOST_FLAG = "-h";
+    private static final String FIRE_BRIGADE_FLAG = "-fb";
+    private static final String POLICE_FORCE_FLAG = "-pf";
+    private static final String AMBULANCE_TEAM_FLAG = "-at";
 
     private LaunchSampleAgents() {}
 
     /**
        Launch 'em!
-       @param args The following arguments are understood: -p <port>, -h <hostname>.
+       @param args The following arguments are understood: -p <port>, -h <hostname>, -fb <fire brigades>, -pf <police forces>, -at <ambulance teams>
      */
     public static void main(String[] args) {
         EntityRegistry.register(StandardEntityFactory.INSTANCE);
         int port = DEFAULT_KERNEL_PORT;
         String host = DEFAULT_KERNEL_HOST;
+        int fb = -1;
+        int pf = -1;
+        int at = -1;
         // CHECKSTYLE:OFF:ModifiedControlVariable
         for (int i = 0; i < args.length; ++i) {
             if (args[i].equals(PORT_FLAG)) {
@@ -36,6 +42,15 @@ public final class LaunchSampleAgents {
             }
             else if (args[i].equals(HOST_FLAG)) {
                 host = args[++i];
+            }
+            else if (args[i].equals(FIRE_BRIGADE_FLAG)) {
+                fb = Integer.parseInt(args[++i]);
+            }
+            else if (args[i].equals(POLICE_FORCE_FLAG)) {
+                pf = Integer.parseInt(args[++i]);
+            }
+            else if (args[i].equals(AMBULANCE_TEAM_FLAG)) {
+                at = Integer.parseInt(args[++i]);
             }
             else {
                 System.err.println("Unrecognised option: " + args[i]);
@@ -45,7 +60,7 @@ public final class LaunchSampleAgents {
         try {
             Connection c = new TCPConnection(host, port);
             c.startup();
-            connect(c);
+            connect(c, fb, pf, at);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -58,10 +73,10 @@ public final class LaunchSampleAgents {
         }
     }
 
-    private static void connect(Connection c) throws InterruptedException, ConnectionException {
+    private static void connect(Connection c, int fb, int pf, int at) throws InterruptedException, ConnectionException {
         int i = 0;
         String reason = null;
-        while (reason == null) {
+        while (reason == null && fb-- != 0) {
             System.out.print("Connecting fire brigade " + i + "...");
             reason = new SampleFireBrigade().connect(c, i++);
             if (reason == null) {
@@ -72,7 +87,7 @@ public final class LaunchSampleAgents {
             }
         }
         reason = null;
-        while (reason == null) {
+        while (reason == null && pf-- != 0) {
             System.out.print("Connecting police force " + i + "...");
             reason = new SamplePoliceForce().connect(c, i++);
             if (reason == null) {
@@ -83,7 +98,7 @@ public final class LaunchSampleAgents {
             }
         }
         reason = null;
-        while (reason == null) {
+        while (reason == null && at-- != 0) {
             System.out.print("Connecting ambulance team " + i + "...");
             reason = new SampleAmbulanceTeam().connect(c, i++);
             if (reason == null) {
@@ -97,6 +112,17 @@ public final class LaunchSampleAgents {
         while (reason == null) {
             System.out.print("Connecting centre " + i + "...");
             reason = new SampleCentre().connect(c, i++);
+            if (reason == null) {
+                System.out.println("success");
+            }
+            else {
+                System.out.println("failed: " + reason);
+            }
+        }
+        reason = null;
+        while (reason == null) {
+            System.out.print("Connecting dummy agent " + i + "...");
+            reason = new DummyAgent().connect(c, i++);
             if (reason == null) {
                 System.out.println("success");
             }

@@ -28,6 +28,7 @@ import rescuecore2.standard.entities.Human;
  */
 public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> {
     private static final int MESH_SIZE = 10000;
+    private static final int RANDOM_WALK_LENGTH = 50;
 
     /**
        The world model referenced as a StandardWorldModel. Note that this will reference the same object as {@link AbstractAgent#model}.
@@ -128,14 +129,13 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
 
     /**
        Construct a random walk starting from this agent's current location. Buildings will only be entered at the end of the walk.
-       @param length The length of the path.
        @return A random walk.
      */
-    protected List<EntityID> randomWalk(int length) {
-        List<EntityID> result = new ArrayList<EntityID>(length);
+    protected List<EntityID> randomWalk() {
+        List<EntityID> result = new ArrayList<EntityID>(RANDOM_WALK_LENGTH);
         Set<StandardEntity> seen = new HashSet<StandardEntity>();
         StandardEntity current = location();
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < RANDOM_WALK_LENGTH; ++i) {
             result.add(current.getID());
             seen.add(current);
             List<StandardEntity> neighbours = new ArrayList<StandardEntity>(findNeighbours(current));
@@ -145,7 +145,7 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
                 if (seen.contains(next)) {
                     continue;
                 }
-                if (next instanceof Building && i < length - 1) {
+                if (next instanceof Building && i < RANDOM_WALK_LENGTH - 1) {
                     continue;
                 }
                 current = next;
@@ -170,7 +170,7 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
         if (e instanceof Node) {
             for (EntityID next : ((Node)e).getEdges()) {
                 StandardEntity edge = world.getEntity(next);
-                if (!ignoreBlockedRoads && edge instanceof Road) {
+                if (ignoreBlockedRoads && edge instanceof Road) {
                     // If it's blocked then ignore it
                     Road r = (Road)edge;
                     int lanes;
@@ -227,7 +227,7 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
         public int compare(StandardEntity a, StandardEntity b) {
             int d1 = world.getDistance(reference, a);
             int d2 = world.getDistance(reference, b);
-            return d2 - d1;
+            return d1 - d2;
         }
     }
 }
