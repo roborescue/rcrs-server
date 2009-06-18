@@ -66,7 +66,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        Re-index the world model.
     */
     public void index() {
-        System.out.println("Re-indexing world model");
+        //        System.out.println("Re-indexing world model");
         mobileEntities.clear();
         staticEntities.clear();
         unindexedEntities.clear();
@@ -96,11 +96,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         // Now divide the world into a grid
         int width = maxX - minX;
         int height = maxY - minY;
-        System.out.println("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
+        //        System.out.println("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
         gridWidth = (int)Math.ceil(width / (double)meshSize);
         gridHeight = (int)Math.ceil(height / (double)meshSize);
         grid = new ArrayList<List<Collection<StandardEntity>>>(gridWidth);
-        System.out.println("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
+        //        System.out.println("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
         for (int i = 0; i < gridWidth; ++i) {
             List<Collection<StandardEntity>> list = new ArrayList<Collection<StandardEntity>>(gridHeight);
             grid.add(list);
@@ -121,7 +121,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 biggest = Math.max(biggest, getCell(i, j).size());
             }
         }
-        System.out.println("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
+        //        System.out.println("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
     }
 
     /**
