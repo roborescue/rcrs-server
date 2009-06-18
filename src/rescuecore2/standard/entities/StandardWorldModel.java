@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
+import rescuecore2.worldmodel.WorldModelListener;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.Pair;
@@ -19,6 +21,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private Map<EntityType, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;
     private Collection<StandardEntity> staticEntities;
+    private Collection<StandardEntity> unindexedEntities;
 
     private int meshSize;
     private int minX;
@@ -32,19 +35,21 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     /**
        Create an StandardWorldModel.
        @param meshSize The size of the mesh to create.
-     */
+    */
     public StandardWorldModel(int meshSize) {
         super(StandardEntity.class);
         this.meshSize = meshSize;
         storedTypes = new HashMap<EntityType, Collection<StandardEntity>>();
         mobileEntities = new HashSet<StandardEntity>();
         staticEntities = new HashSet<StandardEntity>();
+        unindexedEntities = new HashSet<StandardEntity>();
+        addWorldModelListener(new AddRemoveListener());
     }
 
     /**
        Tell this index to remember a certain class of entities.
        @param types The EntityTypes to remember.
-     */
+    */
     public void indexClass(EntityType... types) {
         for (EntityType type : types) {
             Collection<StandardEntity> bucket = new HashSet<StandardEntity>();
@@ -59,11 +64,12 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /**
        Re-index the world model.
-     */
+    */
     public void index() {
         System.out.println("Re-indexing world model");
         mobileEntities.clear();
         staticEntities.clear();
+        unindexedEntities.clear();
         // Find the bounds of the world first
         minX = Integer.MAX_VALUE;
         maxX = Integer.MIN_VALUE;
@@ -123,7 +129,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @param entity The entity to centre the search on.
        @param range The range to look up.
        @return A collection of StandardEntitys that are within range.
-     */
+    */
     public Collection<StandardEntity> getObjectsInRange(StandardEntity entity, int range) {
         Pair<Integer, Integer> location = entity.getLocation(this);
         //        System.out.println("Looking for objects within " + range + " of " + entity);
@@ -140,7 +146,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @param y The y coordinate of the location.
        @param range The range to look up.
        @return A collection of StandardEntitys that are within range.
-     */
+    */
     public Collection<StandardEntity> getObjectsInRange(int x, int y, int range) {
         //        System.out.println("Looking for objects within " + range + " of " + x + ", " + y);
         Collection<StandardEntity> result = new HashSet<StandardEntity>();
@@ -165,8 +171,19 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 }
             }
         }
-        // Now do mobile entities
+        // Now do mobile and unindexed entities
         for (StandardEntity next : mobileEntities) {
+            Pair<Integer, Integer> location = next.getLocation(this);
+            if (location != null) {
+                int targetX = location.first().intValue();
+                int targetY = location.second().intValue();
+                int distance = distance(x, y, targetX, targetY);
+                if (distance <= range) {
+                    result.add(next);
+                }
+            }
+        }
+        for (StandardEntity next : unindexedEntities) {
             Pair<Integer, Integer> location = next.getLocation(this);
             if (location != null) {
                 int targetX = location.first().intValue();
@@ -184,7 +201,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        Get all entities of a particular type.
        @param type The type to look up.
        @return A new Collection of entities of the specified type.
-     */
+    */
     public Collection<StandardEntity> getEntitiesOfType(EntityType type) {
         if (storedTypes.containsKey(type)) {
             return storedTypes.get(type);
@@ -194,6 +211,20 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             if (next.getType().equals(type)) {
                 result.add(next);
             }
+        }
+        storedTypes.put(type, result);
+        return result;
+    }
+
+    /**
+       Get all entities of a set of types.
+       @param types The types to look up.
+       @return A new Collection of entities of the specified types.
+    */
+    public Collection<StandardEntity> getEntitiesOfType(EntityType... types) {
+        Collection<StandardEntity> result = new HashSet<StandardEntity>();
+        for (EntityType type : types) {
+            result.addAll(getEntitiesOfType(type));
         }
         return result;
     }
@@ -248,5 +279,27 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         double dx = x1 - x2;
         double dy = y1 - y2;
         return (int)Math.sqrt((dx * dx) + (dy * dy));
+    }
+
+    private class AddRemoveListener implements WorldModelListener<StandardEntity> {
+        @Override
+        public void entityAdded(WorldModel<? extends StandardEntity> model, StandardEntity e) {
+            EntityType type = e.getType();
+            if (storedTypes.containsKey(type)) {
+                Collection<StandardEntity> bucket = storedTypes.get(type);
+                bucket.add(e);
+            }
+            unindexedEntities.add(e);
+        }
+
+        @Override
+        public void entityRemoved(WorldModel<? extends StandardEntity> model, StandardEntity e) {
+            EntityType type = e.getType();
+            if (storedTypes.containsKey(type)) {
+                Collection<StandardEntity> bucket = storedTypes.get(type);
+                bucket.remove(e);
+            }
+            unindexedEntities.remove(e);
+        }
     }
 }
