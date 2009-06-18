@@ -47,6 +47,11 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
         }
     }
 
+    @Override
+    public final void removeEntity(T e) {
+        removeEntity(e.getID());
+    }
+
     /**
        Subclasses should provide their implementation of addEntity here.
        @param t The entity to add.

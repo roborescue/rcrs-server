@@ -43,13 +43,6 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
     }
 
     @Override
-    public final void removeEntity(T e) {
-        if (entities.remove(e.getID()) != null) {
-            fireEntityRemoved(e);
-        }
-    }
-
-    @Override
     public final void removeEntity(EntityID id) {
         T removed = entities.remove(id);
         if (removed != null) {
