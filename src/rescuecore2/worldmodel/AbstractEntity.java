@@ -171,14 +171,4 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
             next.propertyChanged(this, p);
         }
     }
-
-    /**
-       A class for forwarding property change events to entity listeners.
-    */
-    private class InternalPropertyListener implements PropertyListener {
-        @Override
-        public void propertyChanged(Property p) {
-            firePropertyChanged(p);
-        }
-    }
 }
