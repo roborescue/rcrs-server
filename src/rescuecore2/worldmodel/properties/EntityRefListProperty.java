@@ -58,7 +58,6 @@ public class EntityRefListProperty extends AbstractProperty {
         ids.clear();
         ids.addAll(newIDs);
         setDefined();
-        firePropertyChanged();
     }
 
     @Override

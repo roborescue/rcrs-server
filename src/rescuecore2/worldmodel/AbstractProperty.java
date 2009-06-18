@@ -6,7 +6,6 @@ package rescuecore2.worldmodel;
 public abstract class AbstractProperty implements Property {
     private boolean defined;
     private final PropertyType type;
-    private final Set<PropertyListener> listeners;
 
     /**
        Construct a property with a given type and assume that the value of this property is initially undefined.
@@ -24,7 +23,6 @@ public abstract class AbstractProperty implements Property {
     protected AbstractProperty(PropertyType type, boolean defined) {
         this.type = type;
         this.defined = defined;
-        listeners = new HashSet<PropertyListener>();
     }
 
     /**
@@ -42,7 +40,6 @@ public abstract class AbstractProperty implements Property {
     @Override
     public void undefine() {
         defined = false;
-        firePropertyChanged();
     }
 
     @Override
@@ -58,32 +55,5 @@ public abstract class AbstractProperty implements Property {
     @Override
     public String getName() {
         return type.getName();
-    }
-
-    @Override
-    public void addPropertyListener(PropertyListener l) {
-        synchronized (listeners) {
-            listeners.add(l);
-        }
-    }
-
-    @Override
-    public void removePropertyListener(PropertyListener l) {
-        synchronized (listeners) {
-            listeners.remove(l);
-        }
-    }
-
-    /**
-       Notify all listeners that this property has changed.
-    */
-    protected void firePropertyChanged() {
-        Collection<PropertyListener> copy;
-        synchronized (listeners) {
-            copy = new HashSet<PropertyListener>(listeners);
-        }
-        for (PropertyListener next : copy) {
-            next.propertyChanged(this);
-        }
     }
 }

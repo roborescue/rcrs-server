@@ -68,7 +68,6 @@ public class IntArrayProperty extends AbstractProperty {
             data.add(next);
         }
         setDefined();
-        firePropertyChanged();
     }
 
     /**
@@ -78,7 +77,6 @@ public class IntArrayProperty extends AbstractProperty {
     public void push(int i) {
         setDefined();
         data.add(i);
-        firePropertyChanged();
     }
 
     @Override

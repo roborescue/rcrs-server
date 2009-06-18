@@ -27,7 +27,6 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
     private final EntityID id;
     private final T type;
     private final Set<EntityListener> listeners;
-    private final InternalPropertyListener propListener;
 
     /**
        Construct an AbstractEntity with a set of properties.
@@ -37,7 +36,6 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
     protected AbstractEntity(EntityID id, T type) {
         this.id = id;
         this.type = type;
-        propListener = new InternalPropertyListener();
         properties = new HashMap<Integer, Property>();
         listeners = new HashSet<EntityListener>();
     }
@@ -49,7 +47,6 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
     protected void addProperties(Property... props) {
         for (Property next : props) {
             properties.put(next.getType().getID(), next);
-            next.addPropertyListener(propListener);
         }
     }
 

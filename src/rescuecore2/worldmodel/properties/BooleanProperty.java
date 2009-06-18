@@ -51,7 +51,6 @@ public class BooleanProperty extends AbstractProperty {
     public void setValue(boolean value) {
         this.value = value;
         setDefined();
-        firePropertyChanged();
     }
 
     @Override

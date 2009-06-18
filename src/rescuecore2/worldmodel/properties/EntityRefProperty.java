@@ -52,7 +52,6 @@ public class EntityRefProperty extends AbstractProperty {
     public void setValue(EntityID value) {
         this.value = value;
         setDefined();
-        firePropertyChanged();
     }
 
     @Override
