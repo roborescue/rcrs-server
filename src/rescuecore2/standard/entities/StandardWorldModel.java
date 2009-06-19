@@ -259,6 +259,16 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         return distance(a, b);
     }
 
+    /**
+       Get the world bounds.
+       @return A pair of coordinates for the top left and bottom right corners.
+     */
+    public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> getWorldBounds() {
+        Pair<Integer, Integer> topLeft = new Pair<Integer, Integer>(minX, minY);
+        Pair<Integer, Integer> bottomRight = new Pair<Integer, Integer>(maxX, maxY);
+        return new Pair<Pair<Integer, Integer>, Pair<Integer, Integer>>(topLeft, bottomRight);
+    }
+
     private int getXCell(int x) {
         return (x - minX) / meshSize;
     }
