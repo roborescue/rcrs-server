@@ -33,12 +33,10 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private int gridHeight;
 
     /**
-       Create an StandardWorldModel.
-       @param meshSize The size of the mesh to create.
+       Create a StandardWorldModel.
     */
-    public StandardWorldModel(int meshSize) {
+    public StandardWorldModel() {
         super(StandardEntity.class);
-        this.meshSize = meshSize;
         storedTypes = new HashMap<EntityType, Collection<StandardEntity>>();
         mobileEntities = new HashSet<StandardEntity>();
         staticEntities = new HashSet<StandardEntity>();
@@ -64,8 +62,10 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /**
        Re-index the world model.
+       @param newMeshSize The size of the mesh to create.
     */
-    public void index() {
+    public void index(int newMeshSize) {
+        this.meshSize = newMeshSize;
         //        System.out.println("Re-indexing world model");
         mobileEntities.clear();
         staticEntities.clear();

@@ -49,13 +49,13 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
 
     @Override
     protected WorldModel<StandardEntity> createWorldModel() {
-        world = new StandardWorldModel(MESH_SIZE);
+        world = new StandardWorldModel();
         return world;
     }
 
     @Override
     protected void postConnect() {
-        world.index();
+        world.index(MESH_SIZE);
     }
 
     /**
