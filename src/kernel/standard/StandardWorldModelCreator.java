@@ -30,7 +30,7 @@ public class StandardWorldModelCreator {
     */
     public StandardWorldModel buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
-        StandardWorldModel world = new StandardWorldModel(config.getIntValue("vision"));
+        StandardWorldModel world = new StandardWorldModel();
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue("gis_port");
         Connection conn;
@@ -54,7 +54,7 @@ public class StandardWorldModelCreator {
             throw new KernelException("Interrupted while connecting to GIS", e);
         }
         conn.shutdown();
-        world.index();
+        world.index(config.getIntValue("vision"));
         return world;
     }
 

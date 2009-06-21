@@ -29,7 +29,8 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.messages.StandardMessageFactory;
 
 import kernel.standard.StandardComponentManager;
-import kernel.standard.StandardWorldModelCreator;
+//import kernel.standard.StandardWorldModelCreator;
+import kernel.standard.InlineWorldModelCreator;
 import kernel.standard.StandardPerception;
 import kernel.standard.TunableStandardPerception;
 import kernel.standard.StandardCommunicationModel;
@@ -158,7 +159,8 @@ public final class StartKernel {
             MessageRegistry.register(StandardMessageFactory.INSTANCE);
             EntityRegistry.register(StandardEntityFactory.INSTANCE);
             // Get the world model
-            StandardWorldModel worldModel = new StandardWorldModelCreator().buildWorldModel(config);
+            //            StandardWorldModel worldModel = new StandardWorldModelCreator().buildWorldModel(config);
+            StandardWorldModel worldModel = new InlineWorldModelCreator().buildWorldModel(config);
             // Show the chooser GUI
             Perception[] perceptionChoices = new Perception[] {new StandardPerception(config, worldModel), new TunableStandardPerception(config, worldModel)};
             CommunicationModel[] commsChoices = new CommunicationModel[] {new StandardCommunicationModel(config, worldModel), new ChannelCommunicationModel(config, worldModel)};

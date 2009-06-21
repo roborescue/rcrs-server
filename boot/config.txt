@@ -1,3 +1,9 @@
+map.basedir : maps/Kobe/
+
+
+
+
+
 channel_say_count : 1
 channel_radio_count : 10
 max_platoon_message_count : 4
