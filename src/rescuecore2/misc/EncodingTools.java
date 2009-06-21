@@ -80,6 +80,33 @@ public final class EncodingTools {
     }
 
     /**
+       Read a 32-bit integer from an input stream, little-endian style.
+       @param in The InputStream to read from.
+       @return The next little-endian, 32-bit integer in the stream.
+       @throws IOException If the InputStream blows up.
+       @throws EOFException If the end of the stream is reached.
+     */
+    public static int readInt32LE(InputStream in) throws IOException {
+        int first = in.read();
+        if (first == -1) {
+            throw new EOFException("Broken input pipe. Read 0 bytes of 4.");
+        }
+        int second = in.read();
+        if (second == -1) {
+            throw new EOFException("Broken input pipe. Read 1 bytes of 4.");
+        }
+        int third = in.read();
+        if (third == -1) {
+            throw new EOFException("Broken input pipe. Read 2 bytes of 4.");
+        }
+        int fourth = in.read();
+        if (fourth == -1) {
+            throw new EOFException("Broken input pipe. Read 3 bytes of 4.");
+        }
+        return (fourth << 24) | (third << 16) | (second << 8) | first;
+    }
+
+    /**
        Read a 32-bit integer from a byte array, big-endian style.
        @param in The buffer to read from.
        @param offset Where to begin reading.
@@ -273,6 +300,23 @@ public final class EncodingTools {
      */
     public static double readDouble(byte[] in) {
         return readDouble(in, 0);
+    }
+
+    /**
+       Call InputStream.skip until exactly <code>count</code> bytes have been skipped. If InputStream.skip ever returns a negative number then an EOFException is thrown.
+       @param in The InputStream to skip.
+       @param count The number of bytes to skip.
+       @throws IOException If the bytes cannot be skipped for some reason.
+     */
+    public static void reallySkip(InputStream in, long count) throws IOException {
+        long done = 0;
+        while (done < count) {
+            long next = in.skip(count - done);
+            if (next < 0) {
+                throw new EOFException();
+            }
+            done += next;
+        }
     }
 
     /** CHECKSTYLE:ON:MagicNumber */
