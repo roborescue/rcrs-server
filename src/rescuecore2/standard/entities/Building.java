@@ -16,6 +16,18 @@ import java.util.ArrayList;
    The Building object.
  */
 public class Building extends StandardEntity {
+    public enum Fieryness {
+        UNBURNT,
+        HEATING,
+        BURNING,
+        INFERNO,
+        WATER_DAMAGE,
+        MINOR_DAMAGE,
+        MODERATE_DAMAGE,
+        SEVERE_DAMAGE,
+        BURNT_OUT;
+    }
+
     private IntProperty x;
     private IntProperty y;
     private IntProperty floors;
@@ -243,6 +255,14 @@ public class Building extends StandardEntity {
      */
     public int getFieryness() {
         return fieryness.getValue();
+    }
+
+    /**
+       Get the fieryness of this building as an enum constant.
+       @return The fieryness property value.
+     */
+    public Fieryness getFierynessEnum() {
+        return Fieryness.values()[fieryness.getValue()];
     }
 
     /**

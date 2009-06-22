@@ -2,10 +2,13 @@ package kernel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +19,7 @@ import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.WindowConstants;
 
 import rescuecore2.connection.ConnectionManager;
@@ -23,10 +27,12 @@ import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.messages.MessageRegistry;
 import rescuecore2.worldmodel.EntityRegistry;
+import rescuecore2.view.WorldModelViewer;
 
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.messages.StandardMessageFactory;
+import rescuecore2.standard.view.StandardViewLayer;
 
 import kernel.standard.StandardComponentManager;
 //import kernel.standard.StandardWorldModelCreator;
@@ -79,11 +85,8 @@ public final class StartKernel {
             final KernelInfo kernelInfo = builder.createKernel(config);
             if (showGUI) {
                 KernelGUI gui = new KernelGUI(kernelInfo.kernel, config, !justRun);
-                if (kernelInfo.perception instanceof KernelGUIComponent) {
-                    gui.addKernelGUIComponent((KernelGUIComponent)kernelInfo.perception);
-                }
-                if (kernelInfo.comms instanceof KernelGUIComponent) {
-                    gui.addKernelGUIComponent((KernelGUIComponent)kernelInfo.comms);
+                for (KernelGUIComponent next : kernelInfo.guiComponents) {
+                    gui.addKernelGUIComponent(next);
                 }
                 JFrame frame = new JFrame("Kernel GUI");
                 frame.getContentPane().add(gui);
@@ -170,7 +173,7 @@ public final class StartKernel {
             CommunicationModel comms = dialog.getCommunicationModel();
             Kernel kernel = new Kernel(config, perception, comms, worldModel);
             ComponentManager componentManager = new StandardComponentManager(kernel, worldModel, config);
-            return new KernelInfo(kernel, perception, comms, componentManager);
+            return new KernelInfo(kernel, perception, comms, componentManager, new StandardWorldModelViewerComponent(worldModel));
         }
     }
 
@@ -216,12 +219,44 @@ public final class StartKernel {
         Perception perception;
         CommunicationModel comms;
         ComponentManager componentManager;
+        List<KernelGUIComponent> guiComponents;
 
-        public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager) {
+        public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager, KernelGUIComponent... otherComponents) {
             this.kernel = kernel;
             this.perception = perception;
             this.comms = comms;
             this.componentManager = componentManager;
+            guiComponents = new ArrayList<KernelGUIComponent>();
+            if (perception instanceof KernelGUIComponent) {
+                guiComponents.add((KernelGUIComponent)perception);
+            }
+            if (comms instanceof KernelGUIComponent) {
+                guiComponents.add((KernelGUIComponent)comms);
+            }
+            for (KernelGUIComponent next : otherComponents) {
+                guiComponents.add(next);
+            }
+        }
+    }
+
+    private static class StandardWorldModelViewerComponent implements KernelGUIComponent {
+        private StandardWorldModel world;
+
+        public StandardWorldModelViewerComponent(StandardWorldModel world) {
+            this.world = world;
+        }
+
+        @Override
+        public JComponent getGUIComponent() {
+            WorldModelViewer viewer = new WorldModelViewer();
+            viewer.setPreferredSize(new Dimension(500, 500));
+            viewer.addLayer(new StandardViewLayer(world));
+            return viewer;
+        }
+
+        @Override
+        public String getGUIComponentName() {
+            return "World view";
         }
     }
 }
