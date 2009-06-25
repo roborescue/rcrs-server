@@ -247,10 +247,16 @@ public final class StartKernel {
         }
 
         @Override
-        public JComponent getGUIComponent() {
-            WorldModelViewer viewer = new WorldModelViewer();
+        public JComponent getGUIComponent(Kernel kernel) {
+            final WorldModelViewer viewer = new WorldModelViewer();
             viewer.setPreferredSize(new Dimension(500, 500));
             viewer.addLayer(new StandardViewLayer(world));
+            kernel.addKernelListener(new KernelListenerAdapter() {
+                    @Override
+                    public void timestepCompleted(int time) {
+                        viewer.repaint();
+                    }
+                });
             return viewer;
         }
 

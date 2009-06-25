@@ -1,6 +1,7 @@
 package kernel.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -12,6 +13,7 @@ import rescuecore2.config.Config;
    A GUI for the kernel.
  */
 public class KernelGUI extends JPanel {
+    private Kernel kernel;
     private KernelStatus status;
     private KernelControlPanel control;
     private JTabbedPane tabs;
@@ -24,10 +26,12 @@ public class KernelGUI extends JPanel {
     */
     public KernelGUI(Kernel kernel, Config config, boolean allowControl) {
         super(new BorderLayout());
+        this.kernel = kernel;
         status = new KernelStatus(kernel);
-        add(status, BorderLayout.CENTER);
+        status.setPreferredSize(new Dimension(300,300));
+        add(status, BorderLayout.EAST);
         tabs = new JTabbedPane();
-        add(tabs, BorderLayout.EAST);
+        add(tabs, BorderLayout.CENTER);
         if (allowControl) {
             control = new KernelControlPanel(kernel, config);
             add(control, BorderLayout.WEST);
@@ -40,6 +44,6 @@ public class KernelGUI extends JPanel {
        @param c The GUI component to add.
      */
     public void addKernelGUIComponent(KernelGUIComponent c) {
-        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent());
+        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent(kernel));
     }
 }

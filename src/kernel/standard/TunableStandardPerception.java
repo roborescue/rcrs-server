@@ -11,6 +11,7 @@ import java.util.Dictionary;
 
 import kernel.Perception;
 import kernel.Agent;
+import kernel.Kernel;
 import kernel.ui.KernelGUIComponent;
 
 import rescuecore2.worldmodel.Entity;
@@ -100,7 +101,7 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     }
 
     @Override
-    public JComponent getGUIComponent() {
+    public JComponent getGUIComponent(Kernel kernel) {
         return new TunePanel();
     }
 
