@@ -11,11 +11,18 @@ import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
 
+/**
+   A class that knows how to render roads.
+ */
 public class RoadRenderer extends AbstractEntityRenderer {
     private static final int LANE_WIDTH = 2;
 
     private StandardWorldModel model;
 
+    /**
+       Construct a road renderer.
+       @param model The world model.
+     */
     public RoadRenderer(StandardWorldModel model) {
         super(Road.class);
         this.model = model;
@@ -31,10 +38,12 @@ public class RoadRenderer extends AbstractEntityRenderer {
         int tailX = t.scaleX(tail.getX());
         int tailY = t.scaleY(tail.getY());
         int lanes = r.getLinesToHead() + r.getLinesToTail();
-        int block = r.getBlock();
-        int width = r.getWidth();
-        int laneWidth = width / lanes;
+        double block = r.getBlock();
+        double width = r.getWidth();
+        double laneWidth = width / lanes;
+        // CHECKSTYLE:OFF:MagicNumber
         int lanesBlocked = ((int)Math.floor(((block / 2) / laneWidth) + 0.5)) * 2;
+        // CHECKSTYLE:ON:MagicNumber
         if (lanesBlocked == 0) {
             g.setColor(Color.LIGHT_GRAY);
         }

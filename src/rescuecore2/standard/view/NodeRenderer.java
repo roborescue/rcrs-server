@@ -8,9 +8,15 @@ import java.awt.geom.Ellipse2D;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.standard.entities.Node;
 
+/**
+   A class that knows how to render nodes.
+ */
 public class NodeRenderer extends AbstractEntityRenderer {
     private static final int SIZE = 5;
 
+    /**
+       Construct a node renderer.
+     */
     public NodeRenderer() {
         super(Node.class);
     }

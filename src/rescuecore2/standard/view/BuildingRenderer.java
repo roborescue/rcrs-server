@@ -15,9 +15,20 @@ import rescuecore2.standard.entities.PoliceOffice;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
 
+/**
+   A class that knows how to render buildings.
+ */
 public class BuildingRenderer extends AbstractEntityRenderer {
+    private static final int SLIGHTLY_BROKEN = 25;
+    private static final int QUITE_BROKEN = 50;
+    private static final int VERY_BROKEN = 75;
+
     private StandardWorldModel model;
 
+    /**
+       Construct a building renderer.
+       @param model The world model.
+     */
     public BuildingRenderer(StandardWorldModel model) {
         super(Building.class);
         this.model = model;
@@ -75,15 +86,17 @@ public class BuildingRenderer extends AbstractEntityRenderer {
         case BURNT_OUT:
             g.setColor(Color.BLACK);
             break;
+        default:
+            throw new IllegalArgumentException("Don't know how to render fieryness " + b.getFierynessEnum());
         }
         int brokenness = b.getBrokenness();
-        if (brokenness > 25) {
+        if (brokenness > SLIGHTLY_BROKEN) {
             g.setColor(g.getColor().darker());
         }
-        if (brokenness > 50) {
+        if (brokenness > QUITE_BROKEN) {
             g.setColor(g.getColor().darker());
         }
-        if (brokenness > 75) {
+        if (brokenness > VERY_BROKEN) {
             g.setColor(g.getColor().darker());
         }
         g.fill(shape);

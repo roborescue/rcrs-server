@@ -16,15 +16,27 @@ import java.util.ArrayList;
    The Building object.
  */
 public class Building extends StandardEntity {
+    /**
+       Enum defining different levels of fieryness.
+     */
     public enum Fieryness {
+        /** Not burnt at all. */
         UNBURNT,
+        /** On fire a bit. */
         HEATING,
+        /** On fire a bit more. */
         BURNING,
+        /** On fire a lot. */
         INFERNO,
+        /** Not burnt at all, but has water damage. */
         WATER_DAMAGE,
+        /** Extinguished but minor damage. */
         MINOR_DAMAGE,
+        /** Extinguished but moderate damage. */
         MODERATE_DAMAGE,
+        /** Extinguished but major damage. */
         SEVERE_DAMAGE,
+        /** Completely burnt out. */
         BURNT_OUT;
     }
 

@@ -14,6 +14,9 @@ import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.StandardWorldModel;
 
+/**
+   A class that knows how to render humans.
+ */
 public class HumanRenderer extends AbstractEntityRenderer {
     private static final int SIZE = 10;
 
@@ -23,6 +26,10 @@ public class HumanRenderer extends AbstractEntityRenderer {
 
     private StandardWorldModel model;
 
+    /**
+       Construct a human renderer.
+       @param model The world model.
+     */
     public HumanRenderer(StandardWorldModel model) {
         super(Human.class);
         this.model = model;
@@ -32,8 +39,8 @@ public class HumanRenderer extends AbstractEntityRenderer {
     public Shape render(Entity e, Graphics2D g, ScreenTransform t) {
         Human h = (Human)e;
         Pair<Integer, Integer> location = h.getLocation(model);
-        int x = t.scaleX(location.first());
-        int y = t.scaleY(location.second());
+        int x = t.scaleX(location.first()) - SIZE / 2;
+        int y = t.scaleY(location.second()) - SIZE / 2;
         Shape shape = new Ellipse2D.Double(x, y, SIZE, SIZE);
         Color c = null;
         if (h instanceof Civilian) {

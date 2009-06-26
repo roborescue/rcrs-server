@@ -2,7 +2,6 @@ package rescuecore2.standard.view;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Color;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,13 +14,19 @@ import rescuecore2.view.RenderedObject;
 import rescuecore2.misc.Pair;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.Node;
 
+/**
+   A layer that can view standard robocup rescue entities.
+ */
 public class StandardViewLayer implements ViewLayer {
     private StandardWorldModel world;
     private List<EntityRenderer> renderers;
     private Map<Class<?>, EntityRenderer> rendererCache;
 
+    /**
+       Construct a standard view layer.
+       @param world The world model to render.
+     */
     public StandardViewLayer(StandardWorldModel world) {
         this.world = world;
         renderers = new ArrayList<EntityRenderer>();
@@ -48,20 +53,35 @@ public class StandardViewLayer implements ViewLayer {
         return result;
     }
 
+    /**
+       Add a renderer.
+       @param r The renderer to add.
+     */
     public void addRenderer(EntityRenderer r) {
         renderers.add(r);
     }
 
+    /**
+       Remove a renderer.
+       @param r The renderer to remove.
+     */
     public void removeRenderer(EntityRenderer r) {
         renderers.remove(r);
         rendererCache.clear();
     }
 
+    /**
+       Remove all installed renderers.
+     */
     public void removeAllRenderers() {
         renderers.clear();
         rendererCache.clear();
     }
 
+    /**
+       Add the default renderer set, i.e. nodes, roads, buildings and humans.
+       @param model The world model.
+     */
     public void addDefaultRenderers(StandardWorldModel model) {
         addRenderer(new NodeRenderer());
         addRenderer(new RoadRenderer(model));

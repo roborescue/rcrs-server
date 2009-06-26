@@ -10,25 +10,36 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
-
+/**
+   A JComponent that shows a view of a world model.
+ */
 public class WorldModelViewer extends JComponent {
     private static final Color BACKGROUND = new Color(0x1B898D);
 
     private List<ViewLayer> layers;
     private List<RenderedObject> objects;
 
+    /**
+       Construct a new WorldModelViewer.
+     */
     public WorldModelViewer() {
         layers = new ArrayList<ViewLayer>();
         objects = new ArrayList<RenderedObject>();
         addMouseListener(new ViewerMouseListener());
     }
 
+    /**
+       Add a view layer.
+       @param layer The layer to add.
+     */
     public void addLayer(ViewLayer layer) {
         layers.add(layer);
     }
 
+    /**
+       Remove a view layer.
+       @param layer The layer to remove.
+     */
     public void removeLayer(ViewLayer layer) {
         layers.remove(layer);
     }
