@@ -216,15 +216,11 @@ public final class StartKernel {
 
     private static class KernelInfo {
         Kernel kernel;
-        Perception perception;
-        CommunicationModel comms;
         ComponentManager componentManager;
         List<KernelGUIComponent> guiComponents;
 
         public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager, KernelGUIComponent... otherComponents) {
             this.kernel = kernel;
-            this.perception = perception;
-            this.comms = comms;
             this.componentManager = componentManager;
             guiComponents = new ArrayList<KernelGUIComponent>();
             if (perception instanceof KernelGUIComponent) {
@@ -249,7 +245,9 @@ public final class StartKernel {
         @Override
         public JComponent getGUIComponent(Kernel kernel) {
             final WorldModelViewer viewer = new WorldModelViewer();
+            // CHECKSTYLE:OFF:MagicNumber
             viewer.setPreferredSize(new Dimension(500, 500));
+            // CHECKSTYLE:ON:MagicNumber
             viewer.addLayer(new StandardViewLayer(world));
             kernel.addKernelListener(new KernelListenerAdapter() {
                     @Override

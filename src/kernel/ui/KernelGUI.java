@@ -13,6 +13,8 @@ import rescuecore2.config.Config;
    A GUI for the kernel.
  */
 public class KernelGUI extends JPanel {
+    private static final int STATUS_SIZE = 300;
+
     private Kernel kernel;
     private KernelStatus status;
     private KernelControlPanel control;
@@ -28,7 +30,7 @@ public class KernelGUI extends JPanel {
         super(new BorderLayout());
         this.kernel = kernel;
         status = new KernelStatus(kernel);
-        status.setPreferredSize(new Dimension(300,300));
+        status.setPreferredSize(new Dimension(STATUS_SIZE, STATUS_SIZE));
         add(status, BorderLayout.EAST);
         tabs = new JTabbedPane();
         add(tabs, BorderLayout.CENTER);
