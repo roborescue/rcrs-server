@@ -37,13 +37,8 @@ public class RoadRenderer extends AbstractEntityRenderer {
         int headY = t.scaleY(head.getY());
         int tailX = t.scaleX(tail.getX());
         int tailY = t.scaleY(tail.getY());
-        int lanes = r.getLinesToHead() + r.getLinesToTail();
-        double block = r.getBlock();
-        double width = r.getWidth();
-        double laneWidth = width / lanes;
-        // CHECKSTYLE:OFF:MagicNumber
-        int lanesBlocked = ((int)Math.floor(((block / 2) / laneWidth) + 0.5)) * 2;
-        // CHECKSTYLE:ON:MagicNumber
+        int lanes = r.getLinesToHead(); // Assume symmetric road
+        int lanesBlocked = r.countBlockedLanes();
         if (lanesBlocked == 0) {
             g.setColor(Color.LIGHT_GRAY);
         }

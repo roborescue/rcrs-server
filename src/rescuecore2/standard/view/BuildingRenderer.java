@@ -62,6 +62,8 @@ public class BuildingRenderer extends AbstractEntityRenderer {
             g.setColor(Color.GRAY);
         }
         switch (b.getFierynessEnum()) {
+        case UNBURNT:
+            break;
         case HEATING:
             g.setColor(Color.YELLOW);
             break;
@@ -89,6 +91,7 @@ public class BuildingRenderer extends AbstractEntityRenderer {
         default:
             throw new IllegalArgumentException("Don't know how to render fieryness " + b.getFierynessEnum());
         }
+        /*
         int brokenness = b.getBrokenness();
         if (brokenness > SLIGHTLY_BROKEN) {
             g.setColor(g.getColor().darker());
@@ -99,6 +102,7 @@ public class BuildingRenderer extends AbstractEntityRenderer {
         if (brokenness > VERY_BROKEN) {
             g.setColor(g.getColor().darker());
         }
+        */
         g.fill(shape);
         g.setColor(Color.BLACK);
         g.draw(shape);
