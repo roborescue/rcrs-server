@@ -84,7 +84,7 @@ public final class StartKernel {
             KernelBuilder builder = new StandardKernelBuilder();
             final KernelInfo kernelInfo = builder.createKernel(config);
             if (showGUI) {
-                KernelGUI gui = new KernelGUI(kernelInfo.kernel, config, !justRun);
+                KernelGUI gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun);
                 for (KernelGUIComponent next : kernelInfo.guiComponents) {
                     gui.addKernelGUIComponent(next);
                 }

@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import kernel.Kernel;
+import kernel.ComponentManager;
 
 import rescuecore2.config.Config;
 
@@ -23,10 +24,11 @@ public class KernelGUI extends JPanel {
     /**
        Construct a KernelGUI component.
        @param kernel The kernel to watch.
+       @param componentManager The kernel component manager.
        @param config The kernel configuration.
        @param allowControl Whether to allow the control buttons or not.
     */
-    public KernelGUI(Kernel kernel, Config config, boolean allowControl) {
+    public KernelGUI(Kernel kernel, ComponentManager componentManager, Config config, boolean allowControl) {
         super(new BorderLayout());
         this.kernel = kernel;
         status = new KernelStatus(kernel);
@@ -35,7 +37,7 @@ public class KernelGUI extends JPanel {
         tabs = new JTabbedPane();
         add(tabs, BorderLayout.CENTER);
         if (allowControl) {
-            control = new KernelControlPanel(kernel, config);
+            control = new KernelControlPanel(kernel, config, componentManager);
             add(control, BorderLayout.WEST);
             control.activate();
         }

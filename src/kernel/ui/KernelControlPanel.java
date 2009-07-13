@@ -7,14 +7,23 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 
 import java.util.Collection;
 import java.util.ArrayList;
 
 import kernel.Kernel;
+import kernel.ComponentManager;
+import kernel.standard.TestViewer;
+import kernel.standard.ControlledAgentGUI;
 
 import rescuecore2.misc.WorkerThread;
+import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
+import rescuecore2.connection.Connection;
+import rescuecore2.connection.StreamConnection;
+import rescuecore2.connection.ConnectionException;
+import rescuecore2.components.Component;
 
 /**
    A JComponent containing various controls for the kernel GUI.
@@ -22,6 +31,7 @@ import rescuecore2.config.Config;
 public class KernelControlPanel extends JPanel {
     private Kernel kernel;
     private Config config;
+    private ComponentManager componentManager;
     private Collection<JButton> controlButtons;
     private JButton stepButton;
     private JButton runButton;
@@ -36,11 +46,13 @@ public class KernelControlPanel extends JPanel {
        Create a KernelControlPanel component.
        @param kernel The kernel to control.
        @param config The kernel configuration.
+       @param componentManager The kernel component manager.
     */
-    public KernelControlPanel(Kernel kernel, Config config) {
+    public KernelControlPanel(Kernel kernel, Config config, ComponentManager componentManager) {
         super(new GridLayout(0, 1));
         this.kernel = kernel;
         this.config = config;
+        this.componentManager = componentManager;
         controlButtons = new ArrayList<JButton>();
         JButton addAgent = new JButton("Add agent");
         JButton removeAgent = new JButton("Remove agent");
@@ -123,8 +135,34 @@ public class KernelControlPanel extends JPanel {
     }
     private void removeSim() {
     }
+
     private void addViewer() {
+        Component[] vs = {new TestViewer(), new ControlledAgentGUI()};
+        Component v = (Component)JOptionPane.showInputDialog(this, "Choose a viewer", "Choose a viewer", JOptionPane.QUESTION_MESSAGE, null, vs, vs[0]);
+        if (v == null) {
+            return;
+        }
+        Pair<Connection, Connection> connections = createConnectionPair();
+        componentManager.newConnection(connections.first());
+        try {
+            String result = v.connect(connections.second(), 0);
+            if (result != null) {
+                System.out.println("Adding viewer failed: " + result);
+                JOptionPane.showMessageDialog(this, "Adding viewer failed: " + result);
+            }
+            else {
+                System.out.println("Viewer added OK");
+            }
+        }
+        catch (ConnectionException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Adding viewer failed: " + e);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
     private void removeViewer() {
     }
 
@@ -201,6 +239,10 @@ public class KernelControlPanel extends JPanel {
         synchronized (runLock) {
             return running || step;
         }
+    }
+
+    private Pair<Connection, Connection> createConnectionPair() {
+        return StreamConnection.createConnectionPair();
     }
 
     private class RunThread extends WorkerThread {
