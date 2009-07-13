@@ -40,7 +40,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         // Are we out of water?
         if (me.getWater() == 0) {
             // Head for a refuge
-            List<EntityID> path = breadthFirstSearch(location(), getRefuges());
+            List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
                 AKMove move = new AKMove(entityID, path, time);
                 System.out.println(me() + " moving to refuge: " + move);
@@ -108,7 +108,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
             }
         }
         // Sort by distance
-        Collections.sort(result, new DistanceSorter(location()));
+        Collections.sort(result, new DistanceSorter(location(), world));
         return result;
     }
 
@@ -118,6 +118,6 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         if (targets.isEmpty()) {
             return null;
         }
-        return breadthFirstSearch(location(), targets);
+        return search.breadthFirstSearch(location(), targets);
     }
 }

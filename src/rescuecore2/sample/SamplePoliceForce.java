@@ -16,17 +16,11 @@ import rescuecore2.standard.messages.AKClear;
    A sample police force agent.
  */
 public class SamplePoliceForce extends AbstractSampleAgent {
-    /**
-       Default constructor.
-    */
-    public SamplePoliceForce() {
-        ignoreBlockedRoads = false;
-    }
-
     @Override
     protected void postConnect() {
         super.postConnect();
         world.indexClass(StandardEntityType.ROAD);
+        search.setIgnoreBlockedRoads(false);
     }
 
     @Override
@@ -40,7 +34,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
             return;
         }
         // Plan a path to a blocked road
-        List<EntityID> path = breadthFirstSearch(location(), getBlockedRoads());
+        List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
             AKMove move = new AKMove(entityID, path, time);
             System.out.println(me() + " moving to road: " + move);

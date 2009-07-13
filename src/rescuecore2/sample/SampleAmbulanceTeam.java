@@ -43,7 +43,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
             }
             else {
                 // Move to a refuge
-                List<EntityID> path = breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
+                List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
                 if (path != null) {
                     AKMove move = new AKMove(entityID, path, time);
                     System.out.println(me() + " moving to refuge: " + move);
@@ -77,7 +77,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
             }
             else {
                 // Try to move to the target
-                List<EntityID> path = breadthFirstSearch(location(), next.getPosition(world));
+                List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(world));
                 if (path != null) {
                     System.out.println(me() + " moving to target " + next);
                     send(new AKMove(entityID, path, time));
@@ -86,7 +86,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
             }
         }
         // Nothing to do
-        List<EntityID> path = breadthFirstSearch(location(), unexploredBuildings);
+        List<EntityID> path = search.breadthFirstSearch(location(), unexploredBuildings);
         if (path != null) {
             AKMove move = new AKMove(entityID, path, time);
             System.out.println(me() + " exploring building: " + move);
@@ -120,7 +120,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 targets.add(h);
             }
         }
-        Collections.sort(targets, new DistanceSorter(location()));
+        Collections.sort(targets, new DistanceSorter(location(), world));
         return targets;
     }
 
