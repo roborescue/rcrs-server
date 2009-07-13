@@ -18,6 +18,7 @@ public class WorldModelViewer extends JComponent {
 
     private List<ViewLayer> layers;
     private List<RenderedObject> objects;
+    private List<ViewListener> listeners;
 
     /**
        Construct a new WorldModelViewer.
@@ -25,7 +26,28 @@ public class WorldModelViewer extends JComponent {
     public WorldModelViewer() {
         layers = new ArrayList<ViewLayer>();
         objects = new ArrayList<RenderedObject>();
+        listeners = new ArrayList<ViewListener>();
         addMouseListener(new ViewerMouseListener());
+    }
+
+    /**
+       Add a view listener.
+       @param l The listener to add.
+     */
+    public void addViewListener(ViewListener l) {
+        synchronized (listeners) {
+            listeners.add(l);
+        }
+    }
+
+    /**
+       Remove a view listener.
+       @param l The listener to remove.
+     */
+    public void removeViewListener(ViewListener l) {
+        synchronized (listeners) {
+            listeners.remove(l);
+        }
     }
 
     /**
@@ -66,6 +88,16 @@ public class WorldModelViewer extends JComponent {
         return result;
     }
 
+    private void fireObjectsClicked(List<RenderedObject> clicked) {
+        List<ViewListener> all = new ArrayList<ViewListener>();
+        synchronized (listeners) {
+            all.addAll(listeners);
+        }
+        for (ViewListener next : all) {
+            next.objectsClicked(this, clicked);
+        }
+    }
+
     private class ViewerMouseListener implements MouseListener {
         @Override
         public void mousePressed(MouseEvent e) {}
@@ -75,9 +107,11 @@ public class WorldModelViewer extends JComponent {
         public void mouseClicked(MouseEvent e) {
             Point p = e.getPoint();
             System.out.println("Click at " + p);
-            for (RenderedObject next : getObjectsAtPoint(p.x, p.y)) {
+            List<RenderedObject> clicked = getObjectsAtPoint(p.x, p.y);
+            for (RenderedObject next : clicked) {
                 System.out.println(next.getObject());
             }
+            fireObjectsClicked(clicked);
         }
         @Override
         public void mouseEntered(MouseEvent e) {}
