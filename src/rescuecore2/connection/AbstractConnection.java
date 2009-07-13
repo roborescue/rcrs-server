@@ -6,9 +6,11 @@ import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageRegistry;
+import rescuecore2.misc.WorkerThread;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -22,7 +24,11 @@ import java.io.IOException;
    Abstract base class for Connection implementations.
  */
 public abstract class AbstractConnection implements Connection {
+    private static final int BROADCAST_WAIT = 10000;
+
     private List<ConnectionListener> listeners;
+    private List<Message> toSend;
+    private MessageBroadcastThread broadcast;
 
     private boolean logBytes;
 
@@ -35,8 +41,10 @@ public abstract class AbstractConnection implements Connection {
     */
     protected AbstractConnection() {
         listeners = new ArrayList<ConnectionListener>();
+        toSend = new LinkedList<Message>();
         logBytes = false;
         state = State.NOT_STARTED;
+        broadcast = new MessageBroadcastThread();
     }
 
     @Override
@@ -48,6 +56,7 @@ public abstract class AbstractConnection implements Connection {
     public final void startup() {
         synchronized (stateLock) {
             if (state == State.NOT_STARTED) {
+                broadcast.start();
                 startupImpl();
                 state = State.STARTED;
             }
@@ -58,6 +67,14 @@ public abstract class AbstractConnection implements Connection {
     public final void shutdown() {
         synchronized (stateLock) {
             if (state == State.STARTED) {
+                try {
+                    broadcast.kill();
+                }
+                catch (InterruptedException e) {
+                    // Log and ignore
+                    // FIXME: Log it!
+                    e.printStackTrace();
+                }
                 shutdownImpl();
                 state = State.SHUTDOWN;
             }
@@ -175,13 +192,9 @@ public abstract class AbstractConnection implements Connection {
        @param m The message that was received.
     */
     protected void fireMessageReceived(Message m) {
-        ConnectionListener[] l;
-        synchronized (listeners) {
-            l = new ConnectionListener[listeners.size()];
-            listeners.toArray(l);
-        }
-        for (ConnectionListener next : l) {
-            next.messageReceived(this, m);
+        synchronized (toSend) {
+            toSend.add(m);
+            toSend.notifyAll();
         }
     }
 
@@ -214,8 +227,39 @@ public abstract class AbstractConnection implements Connection {
     protected enum State {
         /** CHECKSTYLE:OFF:JavadocVariableCheck. */
         NOT_STARTED,
-            STARTED,
-            SHUTDOWN;
+        STARTED,
+        SHUTDOWN;
         /** CHECKSTYLE:ON:JavadocVariableCheck. */
+    }
+
+    /**
+       Worker thread that broadcasts messages to listeners.
+    */
+    private class MessageBroadcastThread extends WorkerThread {
+        @Override
+        protected boolean work() throws InterruptedException {
+            Message m = null;
+            synchronized (toSend) {
+                if (toSend.isEmpty()) {
+                    toSend.wait(BROADCAST_WAIT);
+                    return true;
+                }
+                else {
+                    m = toSend.remove(0);
+                }
+            }
+            if (m == null) {
+                return true;
+            }
+            ConnectionListener[] l;
+            synchronized (listeners) {
+                l = new ConnectionListener[listeners.size()];
+                listeners.toArray(l);
+            }
+            for (ConnectionListener next : l) {
+                next.messageReceived(AbstractConnection.this, m);
+            }
+            return true;
+        }
     }
 }

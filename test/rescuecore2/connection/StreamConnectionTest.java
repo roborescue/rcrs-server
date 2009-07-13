@@ -54,12 +54,15 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     }
 
     @Test
-    public void testSendBytes() throws IOException {
+    public void testSendBytes() throws IOException, InterruptedException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         TestInputStream in = new TestInputStream();
         TestOutputStream out = new TestOutputStream(bout);
         StreamConnection c = new StreamConnection(in, out);
+        c.startup();
         c.sendBytes(TEST_DATA);
+        // Wait for a bit
+        Thread.sleep(DELAY);
         assertArrayEquals(EXPECTED_TEST_OUTPUT, bout.toByteArray());
     }
 
