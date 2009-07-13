@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 import java.util.Set;
 
@@ -18,24 +21,26 @@ public class ConfigTest {
     private Config config;
     private File baseDir;
 
-    private final static String BASIC_CONFIG = "rescuecore2/config/basic.cfg";
-    private final static String INCLUDE_CONFIG = "rescuecore2/config/include.cfg";
-    private final static String INCLUDE_CONFIG_2 = "rescuecore2/config/include2.cfg";
-    private final static String MORE_CONFIG = "rescuecore2/config/more.cfg";
-    private final static String WHITESPACE_CONFIG = "rescuecore2/config/whitespace.cfg";
-    private final static String CONFIG_DIR = "rescuecore2/config/configdir";
-    private final static String CONFIG_TREE = "rescuecore2/config/configtree";
-    private final static String CONFIG_INCLUDE_SUBDIR_FILE = "rescuecore2/config/include_subdir_file.cfg";
-    private final static String CONFIG_INCLUDE_SUBDIR = "rescuecore2/config/include_subdir.cfg";
-    private final static String NONEXISTANT_INCLUDE = "rescuecore2/config/nonexistant_include.cfg";
-    private final static String EMPTY_INCLUDE = "rescuecore2/config/empty_include.cfg";
-    private final static String MALFORMED_1 = "rescuecore2/config/malformed1.cfg";
-    private final static String MALFORMED_2 = "rescuecore2/config/malformed2.cfg";
-    private final static String MALFORMED_3 = "rescuecore2/config/malformed3.cfg";
-    private final static String MALFORMED_4 = "rescuecore2/config/malformed4.cfg";
-    private final static String MALFORMED_5 = "rescuecore2/config/malformed5.cfg";
-    private final static String MALFORMED_6 = "rescuecore2/config/malformed6.cfg";
-    private final static String BOOLEAN_CONFIG = "rescuecore2/config/boolean.cfg";
+    private final static String BASIC_CONFIG = "supportfiles/config/basic.cfg";
+    private final static String INCLUDE_CONFIG = "supportfiles/config/include.cfg";
+    private final static String INCLUDE_CONFIG_2 = "supportfiles/config/include2.cfg";
+    private final static String MORE_CONFIG = "supportfiles/config/more.cfg";
+    private final static String WHITESPACE_CONFIG = "supportfiles/config/whitespace.cfg";
+    private final static String CONFIG_DIR = "supportfiles/config/configdir";
+    private final static String CONFIG_TREE = "supportfiles/config/configtree";
+    private final static String CONFIG_INCLUDE_SUBDIR_FILE = "supportfiles/config/include_subdir_file.cfg";
+    private final static String CONFIG_INCLUDE_SUBDIR = "supportfiles/config/include_subdir.cfg";
+    private final static String NONEXISTANT_INCLUDE = "supportfiles/config/nonexistant_include.cfg";
+    private final static String EMPTY_INCLUDE = "supportfiles/config/empty_include.cfg";
+    private final static String MALFORMED_1 = "supportfiles/config/malformed1.cfg";
+    private final static String MALFORMED_2 = "supportfiles/config/malformed2.cfg";
+    private final static String MALFORMED_3 = "supportfiles/config/malformed3.cfg";
+    private final static String MALFORMED_4 = "supportfiles/config/malformed4.cfg";
+    private final static String MALFORMED_5 = "supportfiles/config/malformed5.cfg";
+    private final static String MALFORMED_6 = "supportfiles/config/malformed6.cfg";
+    private final static String BOOLEAN_CONFIG = "supportfiles/config/boolean.cfg";
+
+    private final static String RESOURCE_CONFIG = "rescuecore2/config/resource.cfg";
 
     @Before
     public void setup() {
@@ -57,6 +62,31 @@ public class ConfigTest {
         assertEquals("5", config.getValue("int"));
         assertEquals("3.4", config.getValue("float"));
         assertEquals("true", config.getValue("boolean"));
+    }
+
+    @Test
+    public void testReadReader() throws IOException, ConfigException {
+        config.read(new BufferedReader(new FileReader(new File(baseDir, BASIC_CONFIG))), BASIC_CONFIG);
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals("value", config.getValue("key"));
+        assertEquals("5", config.getValue("int"));
+        assertEquals("3.4", config.getValue("float"));
+        assertEquals("true", config.getValue("boolean"));
+    }
+
+    @Test(expected=ConfigException.class)
+    public void testReadReaderWithInclude() throws IOException, ConfigException {
+        config.read(new BufferedReader(new FileReader(new File(baseDir, INCLUDE_CONFIG))), INCLUDE_CONFIG);
+    }
+
+    @Test
+    public void testReadResource() throws IOException, ConfigException {
+        config.read(RESOURCE_CONFIG);
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals("something", config.getValue("resourcekey"));
+        assertEquals("-9", config.getValue("resourceint"));
+        assertEquals("27.4", config.getValue("resourcefloat"));
+        assertEquals("false", config.getValue("resourceboolean"));
     }
 
     @Test(expected=NoSuchConfigOptionException.class)
@@ -419,16 +449,26 @@ public class ConfigTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testReadNullFile() throws IOException, ConfigException {
-        config.read(null);
+        config.read((File)null);
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testReadNullString() throws IOException, ConfigException {
+        config.read((String)null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadNullReader() throws IOException, ConfigException {
+        config.read((Reader)null, "null");
+    }
+
+    @Test(expected = ConfigException.class)
     public void testReadNonexistantFile() throws IOException, ConfigException {
         File f = new File(baseDir, "I-do-not-exist");
         config.read(f);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ConfigException.class)
     public void testNonExistantInclude() throws IOException, ConfigException {
         read(NONEXISTANT_INCLUDE);
     }

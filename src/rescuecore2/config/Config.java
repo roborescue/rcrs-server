@@ -1,7 +1,10 @@
 package rescuecore2.config;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.FileReader;
+import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.File;
@@ -37,51 +40,62 @@ public class Config {
     /**
        Create a config that reads from a given file. Additional config files can be read later with the {@link read(String)} method.
        @param file The config file to read. Must not be null.
-       @throws IOException If there is an error reading the file.
        @throws ConfigException If there is an error parsing the config file or one of its descendants.
     */
-    public Config(File file) throws IOException, ConfigException {
+    public Config(File file) throws ConfigException {
         this();
         read(file);
     }
 
     /**
-       Read a config file and add its contents. Existing entries with the same name will be overwritten.
-       @param file The config file to read. Must not be null. If this is a directory then all files in the directory will be read.
-       @throws IOException If there is an error reading the file.
+       Read a config file from a resource that this class' classloader can find.
+       @param resource The name of the resource.
        @throws ConfigException If there is an error parsing the config file or one of its descendants.
     */
-    public void read(File file) throws IOException, ConfigException {
+    public void read(String resource) throws ConfigException {
+        if (resource == null) {
+            throw new IllegalArgumentException("Resource cannot be null");
+        }
+        new ResourceContext(resource).process(this);
+    }
+
+    /**
+       Read a config file and add its contents. Existing entries with the same name will be overwritten.
+       @param file The config file to read. Must not be null. If this is a directory then all files in the directory tree will be read.
+       @throws ConfigException If there is an error parsing the config file or one of its descendants.
+    */
+    public void read(File file) throws ConfigException {
         if (file == null) {
             throw new IllegalArgumentException("File cannot be null");
         }
-        if (!file.exists()) {
-            throw new IllegalArgumentException("File " + file.getAbsolutePath() + " does not exist");
-        }
-        if (file.isDirectory()) {
-            for (File next : file.listFiles()) {
-                read(next);
-            }
-        }
-        else {
-            readConfigFile(file);
-        }
+        new FileContext(file).process(this);
     }
 
     /**
        Read config information from a Reader and add its contents. Existing entries with the same name will be overwritten.
-       @param in The Reader to read from. Must not be null.
-       @throws IOException If there is an error reading the file.
+       @param reader The Reader to read from. Must not be null.
+       @param name The name of the reader being read. This is used when reporting errors in the file.
        @throws ConfigException If there is an error parsing the config file or one of its descendants.
     */
-    private void readConfigFile(File in) throws IOException, ConfigException {
-        BufferedReader reader = new BufferedReader(new FileReader(in));
-        String name = in.getAbsolutePath();
+    public void read(Reader reader, String name) throws ConfigException {
+        if (reader == null) {
+            throw new IllegalArgumentException("Reader cannot be null");
+        }
+        new ReaderContext(reader, name).process(this);
+    }
+
+    private void readWithContext(BufferedReader reader, Context context) throws ConfigException {
         String line = "";
         int lineNumber = 0;
+        String name = context.getName();
         try {
             while (line != null) {
-                line = reader.readLine();
+                try {
+                    line = reader.readLine();
+                }
+                catch (IOException e) {
+                    throw new ConfigException(name, e);
+                }
                 ++lineNumber;
                 if (line != null) {
                     line = line.trim();
@@ -100,7 +114,8 @@ public class Config {
                         }
                         String includeName = line.substring(INCLUDE.length() + 1).trim();
                         // includeName cannot be the empty string because the line was trimmed when it was read from the stream.
-                        read(new File(in.getParentFile(), includeName));
+                        Context newContext = context.include(includeName);
+                        newContext.process(this);
                     }
                     else {
                         int index = line.indexOf(':');
@@ -124,7 +139,13 @@ public class Config {
             }
         }
         finally {
-            reader.close();
+            try {
+                reader.close();
+            }
+            catch (IOException e) {
+                // FIXME: Log it!
+                e.printStackTrace();
+            }
         }
     }
 
@@ -413,5 +434,125 @@ public class Config {
         intData.clear();
         floatData.clear();
         booleanData.clear();
+    }
+
+    private interface Context {
+        /**
+           Get the name of this context for error logging.
+           @return The name of this context.
+        */
+        String getName();
+
+        /**
+           Read the context and update a config.
+           @param config The config to update.
+           @throws ConfigException If there is a problem processing the context.
+        */
+        void process(Config config) throws ConfigException;
+
+        /**
+           Get a new context for reading an included file.
+           @param path The path to include.
+           @return A new context object.
+           @throws ConfigException If there is a problem creating the include context.
+        */
+        Context include(String path) throws ConfigException;
+    }
+
+    private static class FileContext implements Context {
+        private File file;
+
+        public FileContext(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public String getName() {
+            return file.getAbsolutePath();
+        }
+
+        @Override
+        public void process(Config config) throws ConfigException {
+            if (!file.exists()) {
+                throw new ConfigException(getName(), "File does not exist");
+            }
+            if (file.isDirectory()) {
+                for (File next : file.listFiles()) {
+                    new FileContext(next).process(config);
+                }
+                return;
+            }
+            else {
+                try {
+                    config.readWithContext(new BufferedReader(new FileReader(file)), this);
+                }
+                catch (IOException e) {
+                    throw new ConfigException(getName(), e);
+                }
+            }
+        }
+
+        @Override
+        public Context include(String path) throws ConfigException {
+            File newFile = new File(file.getParentFile(), path);
+            return new FileContext(newFile);
+        }
+    }
+
+    private static class ReaderContext implements Context {
+        private BufferedReader reader;
+        private String name;
+
+        public ReaderContext(Reader r, String name) {
+            this.name = name;
+            if (r instanceof BufferedReader) {
+                reader = (BufferedReader)r;
+            }
+            else {
+                reader = new BufferedReader(r);
+            }
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void process(Config config) throws ConfigException {
+            config.readWithContext(reader, this);
+        }
+
+        @Override
+        public Context include(String path) throws ConfigException {
+            throw new ConfigException(name, "Cannot process include directives when reading raw data streams");
+        }
+    }
+
+    private static class ResourceContext implements Context {
+        private String name;
+
+        public ResourceContext(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void process(Config config) throws ConfigException {
+            InputStream in = getClass().getClassLoader().getResourceAsStream(name);
+            if (in == null) {
+                throw new ConfigException(name, "Resource not found");
+            }
+            config.readWithContext(new BufferedReader(new InputStreamReader(in)), this);
+        }
+
+        @Override
+        public Context include(String path) throws ConfigException {
+            return new ResourceContext(path);
+        }
     }
 }
