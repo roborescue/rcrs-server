@@ -29,7 +29,9 @@ public final class ControlMessageFactory implements MessageFactory {
                           ControlMessageConstants.AK_ACKNOWLEDGE,
                           ControlMessageConstants.KA_CONNECT_OK,
                           ControlMessageConstants.KA_CONNECT_ERROR,
-                          ControlMessageConstants.KA_SENSE
+                          ControlMessageConstants.KA_SENSE,
+                          ControlMessageConstants.COMMANDS,
+                          ControlMessageConstants.UPDATE
         };
     }
 
@@ -90,6 +92,12 @@ public final class ControlMessageFactory implements MessageFactory {
             break;
         case ControlMessageConstants.KA_SENSE:
             result = new KASense();
+            break;
+        case ControlMessageConstants.COMMANDS:
+            result = new Commands();
+            break;
+        case ControlMessageConstants.UPDATE:
+            result = new Update();
             break;
             /*
               case MessageConstants.KA_HEAR_SAY:
