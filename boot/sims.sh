@@ -25,10 +25,10 @@ COLLAPSE=$!
 
 sleep 2
 
-xterm -T civilian -e "$LD_COMMAND; $DIR/8civilian.sh $OPTIONS 2>&1 | tee civilian.log" &
-CIVILIAN=$!
-xterm -T agents -e "$DIR/sampleagent.sh 2>&1 | tee agents.log" &
-AGENTS=$!
+#xterm -T civilian -e "$LD_COMMAND; $DIR/8civilian.sh $OPTIONS 2>&1 | tee civilian.log" &
+#CIVILIAN=$!
+#xterm -T agents -e "$DIR/sampleagent.sh 2>&1 | tee agents.log" &
+#AGENTS=$!
 
 read INPUT
 
