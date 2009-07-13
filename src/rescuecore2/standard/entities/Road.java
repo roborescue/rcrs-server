@@ -515,4 +515,22 @@ public class Road extends Edge {
     public void undefineWidthForWalkers() {
         widthForWalkers.undefine();
     }
+
+    /**
+       Find out how many lanes are blocked.
+       @return The number of blocked lanes in each direction. If any of the block, width, linesToHead or linesToTail properties are undefined then return 0.
+    */
+    public int countBlockedLanes() {
+        if (!linesToHead.isDefined() || !linesToTail.isDefined() || !block.isDefined() || !width.isDefined()) {
+            return 0;
+        }
+        int lanes = getLinesToHead() + getLinesToTail();
+        double blockValue = getBlock();
+        double widthValue = getWidth();
+        double laneWidth = widthValue / lanes;
+        // CHECKSTYLE:OFF:MagicNumber
+        int lanesBlocked = ((int)Math.floor(((blockValue / 2) / laneWidth) + 0.5));
+        // CHECKSTYLE:ON:MagicNumber
+        return lanesBlocked;
+    }
 }
