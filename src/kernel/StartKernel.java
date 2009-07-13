@@ -108,10 +108,6 @@ public final class StartKernel {
                 kernelInfo.kernel.shutdown();
             }
         }
-        catch (IOException e) {
-            System.err.println("Couldn't start kernel");
-            e.printStackTrace();
-        }
         catch (ConfigException e) {
             System.err.println("Couldn't start kernel");
             e.printStackTrace();
