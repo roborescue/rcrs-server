@@ -18,6 +18,8 @@ import rescuecore2.misc.Pair;
    A wrapper around a WorldModel that indexes Entities by location.
  */
 public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
+    private static final int DEFAULT_MESH_SIZE = 10000;
+
     private Map<EntityType, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;
     private Collection<StandardEntity> staticEntities;
@@ -58,6 +60,13 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             }
             storedTypes.put(type, bucket);
         }
+    }
+
+    /**
+       Re-index the world model with a default mesh size.
+    */
+    public void index() {
+        index(DEFAULT_MESH_SIZE);
     }
 
     /**
