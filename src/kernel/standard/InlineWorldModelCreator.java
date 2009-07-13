@@ -175,7 +175,7 @@ public class InlineWorldModelCreator {
             line = in.readLine();
             if (line != null) {
                 line = line.trim().toLowerCase();
-                if (line.startsWith("#")) {
+                if ("".equals(line) || line.startsWith("#")) {
                     continue;
                 }
                 boolean found = false;
