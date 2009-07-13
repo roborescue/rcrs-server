@@ -246,6 +246,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
     private class ComponentConnectionListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection connection, Message msg) {
+            //            System.out.println("Received " + msg);
             if (msg instanceof AKConnect) {
                 handleAKConnect((AKConnect)msg, connection);
             }
