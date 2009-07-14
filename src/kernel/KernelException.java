@@ -1,7 +1,7 @@
 package kernel;
 
 /**
-   Root or kernel exception heirarchy.
+   Root of the kernel exception heirarchy.
  */
 public class KernelException extends Exception {
     /**

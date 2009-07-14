@@ -11,6 +11,9 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 
+import kernel.log.LogWriter;
+import kernel.log.FileLogWriter;
+
 /**
    The Robocup Rescue kernel.
  */
@@ -19,6 +22,7 @@ public class Kernel {
     private Perception perception;
     private CommunicationModel communicationModel;
     private WorldModel<? extends Entity> worldModel;
+    private LogWriter log;
 
     private Set<KernelListener> listeners;
 
@@ -35,11 +39,12 @@ public class Kernel {
        @param perception A perception calculator.
        @param communicationModel A communication model.
        @param worldModel The world model.
+       @throws KernelException If there is a problem constructing the kernel.
     */
     public Kernel(Config config,
                   Perception perception,
                   CommunicationModel communicationModel,
-                  WorldModel<? extends Entity> worldModel) {
+                  WorldModel<? extends Entity> worldModel) throws KernelException {
         this.config = config;
         this.perception = perception;
         this.communicationModel = communicationModel;
@@ -51,6 +56,8 @@ public class Kernel {
         time = 0;
         freezeTime = config.getIntValue("steps_agents_frozen", 0);
         agentCommandsLastTimestep = new HashSet<Command>();
+        log = new FileLogWriter(config);
+        log.logInitialConditions(worldModel);
     }
 
     /**
@@ -142,8 +149,9 @@ public class Kernel {
     /**
        Run a single timestep.
        @throws InterruptedException If this thread is interrupted during the timestep.
+       @throws KernelException If there is a problem executing the timestep.
     */
-    public void timestep() throws InterruptedException {
+    public void timestep() throws InterruptedException, KernelException {
         synchronized (this) {
             ++time;
             // Work out what the agents can see and hear (using the commands from the previous timestep).
@@ -157,9 +165,11 @@ public class Kernel {
             long perceptionTime = System.currentTimeMillis();
             System.out.println("Waiting for commands");
             agentCommandsLastTimestep = waitForCommands(time);
+            log.logCommands(time, agentCommandsLastTimestep);
             long commandsTime = System.currentTimeMillis();
             System.out.println("Broadcasting commands");
             Collection<Entity> updates = sendCommandsToViewersAndSimulators(time, agentCommandsLastTimestep);
+            log.logUpdates(time, updates);
             long updatesTime = System.currentTimeMillis();
             // Merge updates into world model
             System.out.println("Broadcasting updates");
@@ -209,9 +219,10 @@ public class Kernel {
         for (Viewer next : viewers) {
             next.shutdown();
         }
+        log.close();
     }
 
-    private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException {
+    private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException {
         perception.setTime(timestep);
         communicationModel.setTime(timestep);
         Map<Agent, Collection<Message>> comms = communicationModel.process(agents, commandsLastTimestep);
@@ -220,6 +231,7 @@ public class Kernel {
                 throw new InterruptedException();
             }
             Collection<Entity> visible = perception.getVisibleEntities(next);
+            log.logPerception(timestep, next.getControlledEntity().getID(), visible, comms.get(next));
             next.sendPerceptionUpdate(timestep, visible, comms.get(next));
         }
     }
