@@ -2,7 +2,8 @@ package rescuecore2.connection;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readBytes;
+import static rescuecore2.misc.EncodingTools.readMessage;
+import static rescuecore2.misc.EncodingTools.writeMessage;
 
 import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageRegistry;
@@ -131,7 +132,7 @@ public abstract class AbstractConnection implements Connection {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             for (Message next : messages) {
-                encodeMessage(next, out);
+                writeMessage(next, out);
             }
             // Add a zero to indicate no more messages
             writeInt32(0, out);
@@ -172,7 +173,7 @@ public abstract class AbstractConnection implements Connection {
         Message m = null;
         try {
             do {
-                m = decodeMessage(decode);
+                m = readMessage(decode);
                 if (m != null) {
                     //                    System.out.println("Received: " + m);
                     fireMessageReceived(m);
@@ -196,29 +197,6 @@ public abstract class AbstractConnection implements Connection {
             toSend.add(m);
             toSend.notifyAll();
         }
-    }
-
-    private void encodeMessage(Message msg, OutputStream out) throws IOException {
-        //        System.out.println(this + ": Sending message: " + msg);
-        // Turn the message into bytes
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        msg.write(bytes);
-        // Write the header then the message body
-        writeInt32(msg.getMessageTypeID(), out);
-        writeInt32(bytes.size(), out);
-        out.write(bytes.toByteArray());
-    }
-
-    private Message decodeMessage(InputStream in) throws IOException {
-        int id = readInt32(in);
-        if (id == 0) {
-            return null;
-        }
-        int size = readInt32(in);
-        byte[] data = readBytes(size, in);
-        InputStream input = new ByteArrayInputStream(data);
-        Message result = MessageRegistry.createMessage(id, input);
-        return result;
     }
 
     /**

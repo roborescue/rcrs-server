@@ -4,7 +4,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.EOFException;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
+
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.EntityRegistry;
+import rescuecore2.messages.Message;
+import rescuecore2.messages.MessageRegistry;
 
 /**
    A bunch of useful tools for encoding and decoding things like integers.
@@ -317,6 +325,83 @@ public final class EncodingTools {
             }
             done += next;
         }
+    }
+
+    /**
+       Write an entity to a stream.
+       @param e The entity to write.
+       @param out The OutputStream to write to.
+       @throws IOException If there is a problem writing to the stream.
+    */
+    public static void writeEntity(Entity e, OutputStream out) throws IOException {
+        // TypeID, entityID, size, content
+        // Gather the content first
+        ByteArrayOutputStream gather = new ByteArrayOutputStream();
+        writeInt32(e.getID().getValue(), gather);
+        e.write(gather);
+        byte[] bytes = gather.toByteArray();
+
+        // TypeID
+        writeInt32(e.getType().getID(), out);
+        // EntityID
+        writeInt32(e.getID().getValue(), out);
+        // Size
+        writeInt32(bytes.length, out);
+        // Content
+        out.write(bytes);
+    }
+
+    /**
+       Read an entity from a stream. This will use the EntityRegistry class to look up entity type IDs.
+       @param in The InputStream to read from.
+       @return A new Entity, or null if the entity type ID is not recognised.
+       @throws IOException If there is a problem reading from the stream.
+    */
+    public static Entity readEntity(InputStream in) throws IOException {
+        int typeID = readInt32(in);
+        int entityID = readInt32(in);
+        int size = readInt32(in);
+        byte[] content = readBytes(size, in);
+        Entity result = EntityRegistry.createEntity(typeID, new EntityID(entityID));
+        if (result != null) {
+            result.read(new ByteArrayInputStream(content));
+        }
+        return result;
+    }
+
+    /**
+       Write a message to a stream.
+       @param m The message to write.
+       @param out The OutputStream to write to.
+       @throws IOException If there is a problem writing to the stream.
+    */
+    public static void writeMessage(Message m, OutputStream out) throws IOException {
+        // TypeID, size, content
+        // Gather the content first
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        m.write(bytes);
+        byte[] content = bytes.toByteArray();
+        
+        // TypeID
+        writeInt32(m.getMessageTypeID(), out);
+        // Size
+        writeInt32(content.length, out);
+        // Content
+        out.write(content);
+    }
+
+    /**
+       Read a message from a stream. This will use the MessageRegistry class to look up message type IDs.
+       @param in The InputStream to read from.
+       @return A new Message, or null if the message type ID is not recognised.
+       @throws IOException If there is a problem reading from the stream.
+    */
+    public static Message readMessage(InputStream in) throws IOException {
+        int typeID = readInt32(in);
+        int size = readInt32(in);
+        byte[] content = readBytes(size, in);
+        Message result = MessageRegistry.createMessage(typeID, new ByteArrayInputStream(content));
+        return result;
     }
 
     /** CHECKSTYLE:ON:MagicNumber */

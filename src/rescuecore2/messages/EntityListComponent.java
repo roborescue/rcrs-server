@@ -2,7 +2,8 @@ package rescuecore2.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readBytes;
+import static rescuecore2.misc.EncodingTools.readEntity;
+import static rescuecore2.misc.EncodingTools.writeEntity;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -61,39 +62,22 @@ public class EntityListComponent extends AbstractMessageComponent {
 
     @Override
     public void write(OutputStream out) throws IOException {
+        writeInt32(entities.size(), out);
         for (Entity next : entities) {
-            ByteArrayOutputStream gather = new ByteArrayOutputStream();
-            writeInt32(next.getID().getValue(), gather);
-            next.write(gather);
-            // Type
-            writeInt32(next.getType().getID(), out);
-            // Size
-            byte[] bytes = gather.toByteArray();
-            writeInt32(bytes.length, out);
-            out.write(bytes);
+            writeEntity(next, out);
         }
-        // End-of-list marker
-        writeInt32(0, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
         entities.clear();
-        int typeID;
-        do {
-            typeID = readInt32(in);
-            if (typeID != 0) {
-                int size = readInt32(in);
-                byte[] data = readBytes(size, in);
-                ByteArrayInputStream eIn = new ByteArrayInputStream(data);
-                EntityID id = new EntityID(readInt32(eIn));
-                Entity e = EntityRegistry.createEntity(typeID, id);
-                if (e != null) {
-                    e.read(eIn);
-                    entities.add(e);
-                }
+        int size = readInt32(in);
+        for (int i = 0; i < size; ++i) {
+            Entity e = readEntity(in);
+            if (e != null) {
+                entities.add(e);
             }
-        } while (typeID != 0);
+        }
     }
 
     @Override

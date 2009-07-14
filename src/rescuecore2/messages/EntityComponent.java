@@ -1,9 +1,7 @@
 package rescuecore2.messages;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readBytes;
-import static rescuecore2.misc.EncodingTools.INT_32_SIZE;
+import static rescuecore2.misc.EncodingTools.readEntity;
+import static rescuecore2.misc.EncodingTools.writeEntity;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -58,25 +56,12 @@ public class EntityComponent extends AbstractMessageComponent {
 
     @Override
     public void write(OutputStream out) throws IOException {
-        ByteArrayOutputStream gather = new ByteArrayOutputStream();
-        writeInt32(entity.getID().getValue(), gather);
-        entity.write(gather);
-        // Type
-        writeInt32(entity.getType().getID(), out);
-        // Size
-        byte[] bytes = gather.toByteArray();
-        writeInt32(bytes.length, out);
-        out.write(bytes);
+        writeEntity(entity, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        int typeID = readInt32(in);
-        int size = readInt32(in);
-        byte[] data = readBytes(size, in);
-        EntityID id = new EntityID(readInt32(data));
-        entity = EntityRegistry.createEntity(typeID, id);
-        entity.read(new ByteArrayInputStream(data, INT_32_SIZE, data.length - INT_32_SIZE));
+        entity = readEntity(in);
     }
 
     @Override
