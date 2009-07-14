@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
+import java.io.IOException;
 
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
@@ -33,6 +34,8 @@ public class Kernel {
     private int freezeTime;
     private Collection<Command> agentCommandsLastTimestep;
 
+    private int agentTime;
+
     /**
        Construct a kernel.
        @param config The configuration to use.
@@ -55,8 +58,16 @@ public class Kernel {
         viewers = new HashSet<Viewer>();
         time = 0;
         freezeTime = config.getIntValue("steps_agents_frozen", 0);
+        agentTime = config.getIntValue("step");
         agentCommandsLastTimestep = new HashSet<Command>();
-        log = new FileLogWriter(config);
+        try {
+            String logName = config.getValue("kernel.logname");
+            System.out.println("Logging to " + logName);
+            log = new FileLogWriter(logName);
+        }
+        catch (IOException e) {
+            throw new KernelException("Couldn't open log file for writing", e);
+        }
         log.logInitialConditions(worldModel);
     }
 
@@ -191,7 +202,7 @@ public class Kernel {
     /**
        Get the current time.
        @return The current time.
-     */
+    */
     public int getTime() {
         synchronized (this) {
             return time;
@@ -208,18 +219,30 @@ public class Kernel {
 
     /**
        Shut down the kernel. This method will notify all agents/simulators/viewers of the shutdown.
-     */
+    */
     public void shutdown() {
-        for (Agent next : agents) {
-            next.shutdown();
+        synchronized (this) {
+            for (Agent next : agents) {
+                next.shutdown();
+            }
+            for (Simulator next : sims) {
+                next.shutdown();
+            }
+            for (Viewer next : viewers) {
+                next.shutdown();
+            }
+            log.close();
         }
-        for (Simulator next : sims) {
-            next.shutdown();
+    }
+
+    /**
+       Set the amount of time the kernel will wait for agent commands, in milliseconds.
+       @param The new wait time.
+    */
+    public void setAgentWaitTime(int time) {
+        synchronized (this) {
+            agentTime = time;
         }
-        for (Viewer next : viewers) {
-            next.shutdown();
-        }
-        log.close();
     }
 
     private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException {
@@ -238,7 +261,7 @@ public class Kernel {
 
     private Collection<Command> waitForCommands(int timestep) throws InterruptedException {
         long now = System.currentTimeMillis();
-        long end = now + config.getIntValue("step");
+        long end = now + agentTime;
         while (now < end) {
             Thread.sleep(end - now);
             now = System.currentTimeMillis();

@@ -30,6 +30,11 @@ public class StreamLogReader implements LogReader {
     private Map<Integer, Collection<Entity>> updates;
     private Map<Integer, WorldModel<? extends Entity>> worldModels;
 
+    /**
+       Construct a StreamLogReader.
+       @param in The InputStream to read.
+       @throws KernelLogException If there is a problem reading the log.
+     */
     public StreamLogReader(InputStream in) throws KernelLogException {
         commands = new HashMap<Integer, Collection<Command>>();
         updates = new HashMap<Integer, Collection<Entity>>();
@@ -50,7 +55,11 @@ public class StreamLogReader implements LogReader {
     @Override
     public WorldModel<? extends Entity> getWorldModel(int time) throws KernelLogException {
         checkTime(time);
-        return worldModels.get(time);
+        WorldModel<? extends Entity> result = worldModels.get(time);
+        if (result == null) {
+            result = new DefaultWorldModel<Entity>(Entity.class);
+        }
+        return result;
     }
 
     @Override
@@ -68,13 +77,21 @@ public class StreamLogReader implements LogReader {
     @Override
     public Collection<Command> getCommands(int time) throws KernelLogException {
         checkTime(time);
-        return commands.get(time);
+        Collection<Command> result = commands.get(time);
+        if (result == null) {
+            result = new HashSet<Command>();
+        }
+        return result;
     }
 
     @Override
     public Collection<Entity> getUpdates(int time) throws KernelLogException {
         checkTime(time);
-        return updates.get(time);
+        Collection<Entity> result = updates.get(time);
+        if (result == null) {
+            result = new HashSet<Entity>();
+        }
+        return result;
     }
 
     private void checkTime(int time) {
@@ -140,6 +157,7 @@ public class StreamLogReader implements LogReader {
         int commsSize = readInt32(in);
         Set<Message> messages = readMessages(commsSize, in);
         System.out.println("done. Saw " + visibleSize + " entities and heard " + commsSize + " messages.");
+        maxTime = Math.max(time, maxTime);
     }
 
     private void readCommands(InputStream in) throws IOException, KernelLogException {
@@ -149,6 +167,7 @@ public class StreamLogReader implements LogReader {
         Set<Command> c = readCommands(size, in);
         commands.put(time, c);
         System.out.println("done");
+        maxTime = Math.max(time, maxTime);
     }
 
     private void readUpdates(InputStream in) throws IOException, KernelLogException {
@@ -166,9 +185,10 @@ public class StreamLogReader implements LogReader {
         }
         newWorld.merge(u);
         worldModels.put(time, newWorld);
+        maxTime = Math.max(time, maxTime);
     }
 
-    private Set<Entity> readEntities(int size, InputStream in) {
+    private Set<Entity> readEntities(int size, InputStream in) throws IOException, KernelLogException {
         Set<Entity> result = new HashSet<Entity>(size);
         for (int i = 0; i < size; ++i) {
             Entity e = readEntity(in);
@@ -180,7 +200,7 @@ public class StreamLogReader implements LogReader {
         return result;
     }
 
-    private Set<Message> readMessages(int size, InputStream in) {
+    private Set<Message> readMessages(int size, InputStream in) throws IOException, KernelLogException {
         Set<Message> result = new HashSet<Message>(size);
         for (int i = 0; i < size; ++i) {
             Message m = readMessage(in);
@@ -192,7 +212,7 @@ public class StreamLogReader implements LogReader {
         return result;
     }
 
-    private Set<Command> readCommands(int size, InputStream in) {
+    private Set<Command> readCommands(int size, InputStream in) throws IOException, KernelLogException {
         Set<Command> result = new HashSet<Command>(size);
         for (int i = 0; i < size; ++i) {
             Message m = readMessage(in);

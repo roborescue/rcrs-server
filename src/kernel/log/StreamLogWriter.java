@@ -107,7 +107,13 @@ public class StreamLogWriter implements LogWriter {
 
     @Override
     public void close() {
-        writeInt32(RecordType.END_OF_LOG.getID(), out);
+        try {
+            writeInt32(RecordType.END_OF_LOG.getID(), out);
+        }
+        catch (IOException e) {
+            // FIXME: Log and ignore
+            e.printStackTrace();
+        }
         try {
             out.flush();
         }
