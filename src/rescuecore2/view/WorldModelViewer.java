@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
+
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 
 /**
    A JComponent that shows a view of a world model.
@@ -19,6 +23,7 @@ public class WorldModelViewer extends JComponent {
     private List<ViewLayer> layers;
     private List<RenderedObject> objects;
     private List<ViewListener> listeners;
+    private WorldModel<? extends Entity> world;
 
     /**
        Construct a new WorldModelViewer.
@@ -28,6 +33,7 @@ public class WorldModelViewer extends JComponent {
         objects = new ArrayList<RenderedObject>();
         listeners = new ArrayList<ViewListener>();
         addMouseListener(new ViewerMouseListener());
+        setBackground(BACKGROUND);
     }
 
     /**
@@ -56,6 +62,7 @@ public class WorldModelViewer extends JComponent {
      */
     public void addLayer(ViewLayer layer) {
         layers.add(layer);
+        layer.setWorldModel(world);
     }
 
     /**
@@ -73,15 +80,29 @@ public class WorldModelViewer extends JComponent {
         layers.clear();
     }
 
+    /**
+       Set the world model that is to be viewed.
+       @param world The new world model.
+     */
+    public void setWorldModel(WorldModel<? extends Entity> world) {
+        this.world = world;
+        for (ViewLayer next : layers) {
+            next.setWorldModel(world);
+        }
+    }
+
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         int width = getWidth();
         int height = getHeight();
+        Insets insets = getInsets();
+        width -= insets.left + insets.right;
+        height -= insets.top + insets.bottom;
         objects.clear();
-        g.setColor(BACKGROUND);
-        g.fillRect(0, 0, width, height);
         for (ViewLayer next : layers) {
-            objects.addAll(next.render(g, width, height));
+            Graphics copy = g.create(insets.left, insets.top, width, height);
+            objects.addAll(next.render(copy, width, height));
         }
     }
 

@@ -6,6 +6,8 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Node;
 
 /**
@@ -22,7 +24,7 @@ public class NodeRenderer extends AbstractEntityRenderer {
     }
 
     @Override
-    public Shape render(Entity e, Graphics2D g, ScreenTransform t) {
+    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel world) {
         Node n = (Node)e;
         int x = t.scaleX(n.getX()) - (SIZE / 2);
         int y = t.scaleY(n.getY()) - (SIZE / 2);

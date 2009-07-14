@@ -12,6 +12,8 @@ import java.util.Collection;
 import rescuecore2.view.ViewLayer;
 import rescuecore2.view.RenderedObject;
 import rescuecore2.misc.Pair;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 
@@ -25,13 +27,25 @@ public class StandardViewLayer implements ViewLayer {
 
     /**
        Construct a standard view layer.
-       @param world The world model to render.
      */
-    public StandardViewLayer(StandardWorldModel world) {
-        this.world = world;
+    public StandardViewLayer() {
         renderers = new ArrayList<EntityRenderer>();
         rendererCache = new HashMap<Class<?>, EntityRenderer>();
-        addDefaultRenderers(world);
+        addDefaultRenderers();
+    }
+
+    @Override
+    public void setWorldModel(WorldModel<? extends Entity> model) {
+        if (model instanceof StandardWorldModel) {
+            world = (StandardWorldModel)model;
+        }
+        else {
+            world = new StandardWorldModel();
+            if (model != null) {
+                world.addEntities(model.getAllEntities());
+            }
+            world.index();
+        }
     }
 
     @Override
@@ -47,7 +61,7 @@ public class StandardViewLayer implements ViewLayer {
         for (StandardEntity next : world) {
             EntityRenderer renderer = getRenderer(next);
             if (renderer != null) {
-                result.add(new RenderedObject(next, renderer.render(next, copy, transform)));
+                result.add(new RenderedObject(next, renderer.render(next, copy, transform, world)));
             }
         }
         return result;
@@ -80,18 +94,17 @@ public class StandardViewLayer implements ViewLayer {
 
     /**
        Add the default renderer set, i.e. nodes, roads, buildings and humans.
-       @param model The world model.
      */
-    public void addDefaultRenderers(StandardWorldModel model) {
+    public void addDefaultRenderers() {
         addRenderer(new NodeRenderer());
-        addRenderer(new RoadRenderer(model));
-        addRenderer(new BuildingRenderer(model));
-        addRenderer(new HumanRenderer(model));
+        addRenderer(new RoadRenderer());
+        addRenderer(new BuildingRenderer());
+        addRenderer(new HumanRenderer());
     }
 
     private EntityRenderer getRenderer(StandardEntity entity) {
         // Find a renderer that will accept this class.
-        Class<?> clazz = entity.getClass();
+        Class<? extends StandardEntity> clazz = entity.getClass();
         if (rendererCache.containsKey(clazz)) {
             return rendererCache.get(clazz);
         }

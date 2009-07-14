@@ -10,6 +10,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.StandardEntity;
 
 /**
    A class that knows how to render roads.
@@ -17,19 +18,15 @@ import rescuecore2.standard.entities.StandardWorldModel;
 public class RoadRenderer extends AbstractEntityRenderer {
     private static final int LANE_WIDTH = 2;
 
-    private StandardWorldModel model;
-
     /**
        Construct a road renderer.
-       @param model The world model.
      */
-    public RoadRenderer(StandardWorldModel model) {
+    public RoadRenderer() {
         super(Road.class);
-        this.model = model;
     }
 
     @Override
-    public Shape render(Entity e, Graphics2D g, ScreenTransform t) {
+    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
         Road r = (Road)e;
         Node head = (Node)r.getHead(model);
         Node tail = (Node)r.getTail(model);

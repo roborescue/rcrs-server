@@ -13,6 +13,7 @@ import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.StandardEntity;
 
 /**
    A class that knows how to render humans.
@@ -24,19 +25,15 @@ public class HumanRenderer extends AbstractEntityRenderer {
     private static final int HP_MEDIUM = 5000;
     private static final int HP_CRITICAL = 1000;
 
-    private StandardWorldModel model;
-
     /**
        Construct a human renderer.
-       @param model The world model.
      */
-    public HumanRenderer(StandardWorldModel model) {
+    public HumanRenderer() {
         super(Human.class);
-        this.model = model;
     }
 
     @Override
-    public Shape render(Entity e, Graphics2D g, ScreenTransform t) {
+    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
         Human h = (Human)e;
         Pair<Integer, Integer> location = h.getLocation(model);
         int x = t.scaleX(location.first()) - SIZE / 2;

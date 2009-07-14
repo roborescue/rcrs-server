@@ -33,6 +33,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private List<List<Collection<StandardEntity>>> grid;
     private int gridWidth;
     private int gridHeight;
+    private boolean indexed;
 
     /**
        Create a StandardWorldModel.
@@ -44,6 +45,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         staticEntities = new HashSet<StandardEntity>();
         unindexedEntities = new HashSet<StandardEntity>();
         addWorldModelListener(new AddRemoveListener());
+        meshSize = DEFAULT_MESH_SIZE;
+        indexed = false;
     }
 
     /**
@@ -71,9 +74,16 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /**
        Re-index the world model.
-       @param newMeshSize The size of the mesh to create.
+       @param newMeshSize The size of the mesh to create. A zero or negative value will result in a default mesh size being used.
     */
     public void index(int newMeshSize) {
+        if (newMeshSize <= 0) {
+            newMeshSize = DEFAULT_MESH_SIZE;
+        }
+        if (indexed && unindexedEntities.isEmpty() && meshSize == newMeshSize) {
+            System.out.println("Not bothering with reindex: new mesh size is same as old and no entities are currently unindexed");
+            return;
+        }
         this.meshSize = newMeshSize;
         //        System.out.println("Re-indexing world model");
         mobileEntities.clear();
@@ -100,6 +110,21 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 maxX = Math.max(maxX, x);
                 minY = Math.min(minY, y);
                 maxY = Math.max(maxY, y);
+            }
+            if (next instanceof Building) {
+                // Include apexes in the bounds
+                Building b = (Building)next;
+                if (b.isApexesDefined()) {
+                    int[] apexes = b.getApexes();
+                    for (int i = 0; i < apexes.length; i += 2) {
+                        minX = Math.min(minX, apexes[i]);
+                        maxX = Math.max(maxX, apexes[i]);
+                    }
+                    for (int i = 1; i < apexes.length; i += 2) {
+                        minY = Math.min(minY, apexes[i]);
+                        maxY = Math.max(maxY, apexes[i]);
+                    }
+                }
             }
         }
         // Now divide the world into a grid
@@ -131,6 +156,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             }
         }
         //        System.out.println("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
+        indexed = true;
     }
 
     /**
@@ -273,6 +299,9 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @return A pair of coordinates for the top left and bottom right corners.
      */
     public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> getWorldBounds() {
+        if (!indexed) {
+            index();
+        }
         Pair<Integer, Integer> topLeft = new Pair<Integer, Integer>(minX, minY);
         Pair<Integer, Integer> bottomRight = new Pair<Integer, Integer>(maxX, maxY);
         return new Pair<Pair<Integer, Integer>, Pair<Integer, Integer>>(topLeft, bottomRight);
