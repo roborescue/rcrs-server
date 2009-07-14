@@ -61,14 +61,15 @@ public class OutputBuffer {
 
 	public void writeObject(RescueObject o) {
 		writeInt(o.getType());
+                writeInt(o.getID());
 		int base = markBlock();
 		o.write(this);
 		writeBlockSize(base);
 	}
 
 	public void writeObjects(RescueObject[] objects) {
-		for (int i=0;i<objects.length;++i) writeObject(objects[i]);
-		writeInt(RescueConstants.TYPE_NULL);
+            writeInt(objects.length);
+            for (int i=0;i<objects.length;++i) writeObject(objects[i]);
 	}
 
 	public void writeCommand(Command c) {
@@ -79,8 +80,8 @@ public class OutputBuffer {
 	}
 
 	public void writeCommands(Command[] c) {
-		for (int i=0;i<c.length;++i) writeCommand(c[i]);
-		writeInt(RescueConstants.HEADER_NULL);
+            writeInt(c.length);
+            for (int i=0;i<c.length;++i) writeCommand(c[i]);
 	}
 
 	public int markBlock() {

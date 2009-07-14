@@ -78,8 +78,8 @@ public class FireBrigade extends MovingObject {
 	public void encode(DataOutputStream dos){
 		try {
 			dos.writeInt(getType());
-			dos.writeInt(20); // Size of firebrigade data
 			dos.writeInt(getID());
+			dos.writeInt(16); // Size of firebrigade data
 			dos.writeInt(PROPERTY_WATER_QUANTITY);
 			dos.writeInt(4); // Size of WATER_QUANTITY
 			dos.writeInt(getWaterQuantity());

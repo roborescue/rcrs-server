@@ -129,12 +129,13 @@ namespace Librescue {
   RescueObject* InputBuffer::readObject(int time) {
 	TypeId type = (TypeId)readInt32("Reading object type");
 	if (type==TYPE_NULL) return 0;
+        INT_32 id = readInt32("Reading object id");
 	INT_32 size = readInt32("Reading object size");
 	RescueObject* result = newRescueObject(type);
 	if (result) {
 	  if (size>0) {
 		//		result->read(*this,time);
-		result->setId(readInt32("Reading object ID"));
+		result->setId(id);
 		PropertyId next;
 		while ((next = (PropertyId)readInt32("Reading property type"))!=PROPERTY_NULL) {
 		  int propSize = readInt32("Reading property size");
@@ -150,11 +151,12 @@ namespace Librescue {
 
   void InputBuffer::readObjects(int time, ObjectSet& result) {
 	RescueObject* next = 0;
-	do {
+        INT_32 count = readInt32("Reading object count");
+        for (INT_32 i = 0; i < count; ++i) {
 	  next = readObject(time);
 	  if (next) {
 		result.insert(next);
 	  }
-	} while (next);
+	}
   }
 }

@@ -64,11 +64,12 @@ public class WorldModel implements Constants {
 
 	public void update(InputBuffer in, int time) {
 		m_time = time;
-		//		System.out.println("Updating world model");
-		int type = in.readInt();
-		while (type != RescueConstants.TYPE_NULL) {
-			int size = in.readInt();
-			int id = in.readInt();
+                int count = in.readInt();
+                System.out.println("Updating world model: " + count + " objects to read");
+                for (int i = 0; i < count; ++i) {
+                    int type = in.readInt();
+                    int id = in.readInt();
+                    int size = in.readInt();
 			RescueObject obj = get(id);
 			if (obj == null) {
 				obj = newRescueObject(type, id);
@@ -80,7 +81,6 @@ public class WorldModel implements Constants {
 				obj.input(propType, getProperty(propType, in));
 				propType = in.readInt();
 			}
-			type = in.readInt();
 		}
 
 		if (time == 0) {
@@ -231,10 +231,11 @@ public class WorldModel implements Constants {
 		if (!io().hasUpdateData(m_time + 1))
 			return;
 		InputBuffer dis = io().updateData(m_time + 1);
-		int type = dis.readInt();
-		while (type != RescueConstants.TYPE_NULL) {
-			int size = dis.readInt();
+                int count = dis.readInt();
+                for (int i = 0; i < count; ++i) {
+                    int type = dis.readInt();
 			int id = dis.readInt();
+			int size = dis.readInt();
 			RescueObject obj = get(id);
 			int pos = 0, posEx = 0, route[] = new int[0];
 			MovingObject mv = null;
@@ -256,7 +257,6 @@ public class WorldModel implements Constants {
 			}
 			if (obj instanceof MovingObject)
 				mv.prepareForAnimation(pos, posEx, route);
-			type = dis.readInt();
 		}
 	}
 
@@ -281,8 +281,9 @@ public class WorldModel implements Constants {
 		//END DEBUG
 		//		rescuecore.Handy.printBytes(dis);
 		int time = dis.readInt();
-		int command = dis.readInt();
-		while (command != RescueConstants.HEADER_NULL) {
+                int count = dis.readInt();
+                for (int i = 0; i < count; ++i) {
+                        int command = dis.readInt();
 			int size = dis.readInt();
 			if (size != 0) {
 				int senderId = dis.readInt();
@@ -308,7 +309,6 @@ public class WorldModel implements Constants {
 					break;
 				}
 			}
-			command = dis.readInt();
 		}
 	}
 

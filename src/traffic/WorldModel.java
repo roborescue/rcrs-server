@@ -80,21 +80,22 @@ public class WorldModel implements Constants {
 
     public void update(InputBuffer in, int time) {
         m_time = time;
-		while (true) {
+        int count = in.readInt();
+        for (int i = 0; i < count; ++i) {
             int type = in.readInt();
-			if (type==RescueConstants.TYPE_NULL) return;
-			int size = in.readInt();
+            if (type==RescueConstants.TYPE_NULL) return;
             int id = in.readInt();
+            int size = in.readInt();
             RescueObject obj = get(id);
             if (obj == null) {
                 obj = newRescueObject(type, id);
                 if (obj instanceof RealObject)
                     add((RealObject) obj);
             }
-			int prop;
+            int prop;
             while ((prop = in.readInt()) != RescueConstants.PROPERTY_NULL) {
                 setProperty(prop, in, obj);
-			}
+            }
         }
     }
 
@@ -276,8 +277,9 @@ public class WorldModel implements Constants {
 
     public void parseCommands(InputBuffer in) {
         m_time = in.readInt();
-		int command = in.readInt();
-        while (command != RescueConstants.HEADER_NULL) {
+        int count = in.readInt();
+        for (int i = 0;i < count; ++i) {
+            int command = in.readInt();
             int size = in.readInt();
 			switch (command) {
 			case RescueConstants.AK_MOVE:
@@ -293,7 +295,6 @@ public class WorldModel implements Constants {
 				in.skip(size);
 				break;
 			}
-			command = in.readInt();
         }
     }
 

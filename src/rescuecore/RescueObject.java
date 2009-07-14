@@ -427,7 +427,6 @@ public abstract class RescueObject implements java.io.Serializable {
 	   @param source The source of the change
     */
     public final void read(InputBuffer in, int timestamp, Object source) {
-		id = in.readInt();
 		int prop;
 		do {
 			prop = in.readInt();
@@ -465,7 +464,6 @@ public abstract class RescueObject implements java.io.Serializable {
 	   @param out The OutputBuffer to write to
 	*/
 	public void write(OutputBuffer out) {
-		out.writeInt(id);
 		int[] props = getKnownPropertyTypes();
 		for (int i=0;i<props.length;++i) {
 			Property p = getProperty(props[i]);

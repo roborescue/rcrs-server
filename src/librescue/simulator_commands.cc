@@ -234,6 +234,7 @@ namespace Librescue {
 	Command::encode(out);
 	out.writeInt32(m_time);
 	// Write all commands of each type
+        out.writeInt32(m_commands.size());
 	for (AgentCommandList::const_iterator it = m_commands.begin();it!=m_commands.end();++it) {
 	  const AgentCommand* next = *it;
 	  out.writeInt32(next->getType());
@@ -241,7 +242,6 @@ namespace Librescue {
 	  next->encode(out);
 	  out.writeSize(base);
 	}
-	out.writeInt32(HEADER_NULL);
   }
 
   void Commands::decode(InputBuffer& in) {
@@ -249,11 +249,11 @@ namespace Librescue {
 	m_time = in.readInt32();
 	// Delete any old objects
 	deleteObjects();
-	Header header = (Header)in.readInt32();
-	while (header!=HEADER_NULL) {
-	  //	  in.readInt32(); // Skip the overall size
-	  //	  int count = in.readInt32(); // Number of commands of this type
-	  //	  for (int i=0;i<count;++i) {
+        INT_32 count = in.readInt32();
+        //        LOG_DEBUG("Reading %d commands", count);
+        for (INT_32 i = 0; i < count; ++i) {
+          Header header = (Header)in.readInt32();
+          //          LOG_DEBUG("Command %d is %d", i, header);
 	  int size = in.readInt32();
 	  Command* next = decodeCommand(header,size,in);
 	  if (next) {
@@ -261,8 +261,6 @@ namespace Librescue {
 		if (a) m_commands.push_back(a);
 		else delete next;
 	  }
-	  //	  }
-	  header = (Header)in.readInt32();
 	}
 	m_delete = true;
   }

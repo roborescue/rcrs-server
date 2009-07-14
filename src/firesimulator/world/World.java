@@ -317,34 +317,37 @@ public class World implements WorldConstants {
 	}
 	
 	public void processUpdate(int[] data, int offset, int time){
-		//		System.out.println("processing update...");
 		//		for(int j=0;j<data.length;j++)System.out.println("data["+j+"]="+data[j]);
 		setTime(time);
-		for (int i = offset;  data[i] != TYPE_NULL;  i ++){
-			int type = data[i++];
-			if (type==TYPE_NULL) break;
-			int size = data[i++];
-			int id   = data[i++];
-			//			System.out.println("Update for object "+id+" (type="+type+", size="+size);
-			RescueObject obj = getObject(id);
-			if (obj == null) {
-				obj = createObject(type,id);
-			   	if (obj != null){
-					putObject(obj);
-			   	}else System.out.println("warning: unknown object (type:"+type+")");
-			}
-			if(obj!=null){
-				while (data[i] != PROPERTY_NULL){
-					i += setProperty(data, i, obj);
-				}				
-			}
+                int count = data[offset++];
+                //                System.out.println("processing update (" + count + " items)...");
+                for (int i = 0; i < count; ++i) {
+                    int type = data[offset++];
+                    //                    System.out.println("Object " + i + " type: " + type);
+                    if (type==TYPE_NULL) break;
+                    int id   = data[offset++];
+                    int size = data[offset++];
+                    //                    System.out.println("Update for object "+id+" (type="+type+", size="+size+")");
+                    RescueObject obj = getObject(id);
+                    if (obj == null) {
+                        obj = createObject(type,id);
+                        if (obj != null){
+                            putObject(obj);
+                        }else System.out.println("warning: unknown object (type:"+type+")");
+                    }
+                    if(obj!=null){
+                        while (data[offset] != PROPERTY_NULL){
+                            offset += setProperty(data, offset, obj);
+                        }				
+                        ++offset;
+                    }
 		}
 	}
 	
 	private int setProperty(int[] data, int index, RescueObject obj) {
 		int property = data[index++];
 		int size = data[index++]/4;
-		//		System.out.println("Property="+property+", size="+size);
+                //                System.out.println("Property="+property+", size="+size);
 		int[] val;
 		switch (property) {
 		case PROPERTY_WIDTH:
@@ -533,13 +536,14 @@ public class World implements WorldConstants {
 		//		for(int j=0;j<data.length;j++)System.out.println("data["+j+"]="+data[j]);
 		int c=2; // Skip the header and size
 		setTime(data[2]); // Set the time
-		int cmd;
 		int id;
                 int time;
-		while((cmd=data[++c])!=TYPE_NULL){
-			int size=data[++c]/4;
-			switch(cmd){
-			case AK_EXTINGUISH:
+                int count = data[++c];
+                for (int i = 0; i < count; ++i) {
+                    int cmd = data[++c];
+                    int size = data[++c]/4;
+                    switch(cmd){
+                    case AK_EXTINGUISH:
 				System.out.println("EXTINGUISH");
 				id=data[++c];
                                 time = data[++c];

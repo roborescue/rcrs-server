@@ -112,18 +112,18 @@ namespace Librescue {
   }
 
   Cursor OutputBuffer::writeCommands(const CommandList* commands) {
+    writeInt32(commands->size());
 	for (CommandList::const_iterator it = commands->begin();it!=commands->end();++it) {
 	  writeCommand(*it);
 	}
-	writeInt32(HEADER_NULL);
 	return m_index;
   }
 
   Cursor OutputBuffer::writeObject(const RescueObject* object) {
 	writeInt32(object->type());
+	writeInt32(object->id());
 	Cursor base = writeInt32(0);
 	// Write the object data
-	writeInt32(object->id());
 	for (int i=PROPERTY_MIN;i<=PROPERTY_MAX;++i) {
 	  const Property* prop = object->getProperty((PropertyId)i);
 	  if (prop) {
@@ -136,11 +136,11 @@ namespace Librescue {
   }
 
   Cursor OutputBuffer::writeObjects(const ObjectSet& objects) {
+    writeInt32(objects.size());
 	for (ObjectSet::const_iterator it = objects.begin();it!=objects.end();++it) {
 	  const RescueObject* next = *it;
 	  writeObject(next);
 	}
-	writeInt32(TYPE_NULL);
 	return m_index;
   }
 

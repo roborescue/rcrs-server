@@ -87,12 +87,14 @@ public class InputBuffer {
     public RescueObject readObject(int timestamp, Object source) {
 		int type = readInt();
 		if (type==RescueConstants.TYPE_NULL) return null;
+                int id = readInt();
 		int size = readInt();
 		RescueObject result = RescueObject.newObject(type);
 		if (result==null) skip(size);
 		else if (size>0) {
 			result.read(this,timestamp,source);
 		}
+                result.setID(id);
 		return result;
     }
 
@@ -104,16 +106,14 @@ public class InputBuffer {
     */
     public RescueObject[] readObjects(int timestamp, Object source) {
 		List<RescueObject> result = new ArrayList<RescueObject>();
-		RescueObject next = null;
-		do {
-			next = readObject(timestamp,source);
-			if (next!=null) {
-				result.add(next);
-			}
-		} while (next!=null);
+                int count = readInt();
+                for (int i = 0; i < count; ++i) {
+                    RescueObject next = readObject(timestamp, source);
+                    result.add(next);
+		};
 		return (RescueObject[])result.toArray(new RescueObject[0]);
     }
-
+    
 	public Command readCommand() {
 		int type = readInt();
 		if (type==RescueConstants.HEADER_NULL) return null;

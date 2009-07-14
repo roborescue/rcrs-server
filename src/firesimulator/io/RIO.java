@@ -91,11 +91,11 @@ public class RIO implements IOConstans{
 		try {
 			dos.writeInt(id);
 			dos.writeInt(time);
+                        dos.writeInt(objects.size());
 			for(Iterator i=objects.iterator();i.hasNext();){
 				RescueObject o=(RescueObject)i.next();
 				o.encode(dos);		
 			}
-			dos.writeInt(TYPE_NULL);
 		  	dos.close();
 		  	send(SK_UPDATE, baos.toByteArray());
 		  	baos.close();

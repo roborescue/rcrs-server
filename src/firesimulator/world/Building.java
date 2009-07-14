@@ -370,8 +370,8 @@ public class Building extends StationaryObject {
 	public void encode(DataOutputStream dos){
 		try {
 			dos.writeInt(getType());
-			dos.writeInt(20); // Size of building data
 			dos.writeInt(getID());
+			dos.writeInt(16); // Size of building data
 			dos.writeInt(PROPERTY_FIERYNESS);
 			dos.writeInt(4); // Size of FIERYNESS
 			dos.writeInt(getFieryness());

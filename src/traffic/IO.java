@@ -110,10 +110,16 @@ public abstract class IO implements Constants {
 		temp.writeInt(id);
 		temp.writeInt(WORLD.time());
 		MovingObject[] objects = WORLD.movingObjectArray();
-		for (int i=0;i<objects.length;++i) {
-			objects[i].output(temp);
+                List<MovingObject> toUpdate = new ArrayList<MovingObject>(objects.length);
+                for (MovingObject next : objects) {
+                    if (next.needsUpdate()) {
+                        toUpdate.add(next);
+                    }
+                }
+                temp.writeInt(toUpdate.size());
+		for (MovingObject next : toUpdate) {
+			next.output(temp);
 		}
-		temp.writeInt(RescueConstants.TYPE_NULL);
 
 		byte[] body = temp.getBytes();
 		out.writeInt(body.length); // Size

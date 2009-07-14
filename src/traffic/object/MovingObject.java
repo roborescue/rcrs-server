@@ -156,12 +156,14 @@ public abstract class MovingObject extends RealObject implements Obstruction {
     int m_submitedPos;
     int m_submitedPosEx;
 
+    public boolean needsUpdate() {
+        return !(lastMovingTime() < WORLD.time() - 1 && m_lastLoadedOrUnloadedTime != WORLD.time());
+    }
+
     public void output(OutputBuffer out) {
-        if (lastMovingTime() < WORLD.time() - 1 && m_lastLoadedOrUnloadedTime != WORLD.time())
-            return;
 		out.writeInt(type());
+		out.writeInt(id);
 		OutputBuffer temp = new OutputBuffer();
-		temp.writeInt(id);
 		if (lastMovingTime() == WORLD.time() || m_lastLoadedOrUnloadedTime == WORLD.time()) {
 			m_submitedPos = m_position;
 			m_submitedPosEx = roundedPositionExtra();
