@@ -1,5 +1,7 @@
 map.basedir : maps/Kobe/
 
+kernel.logname			: rescue.log
+
 
 
 
@@ -100,7 +102,6 @@ send_udp_wait		: 1
 
 mesh_size		: 1000
 
-logname			: rescue.log
 
 #textlogname_kernel_publicsock		: kernel.publicsock.log.txt
 #textlogname_kernel_gissock		: kernel.gissock.log.txt
