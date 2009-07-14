@@ -66,6 +66,13 @@ public class WorldModelViewer extends JComponent {
         layers.remove(layer);
     }
 
+    /**
+       Remove all view layers.
+     */
+    public void removeAllLayers() {
+        layers.clear();
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         int width = getWidth();
