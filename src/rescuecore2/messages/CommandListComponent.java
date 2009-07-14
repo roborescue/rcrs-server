@@ -2,7 +2,8 @@ package rescuecore2.messages;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readBytes;
+import static rescuecore2.misc.EncodingTools.readMessage;
+import static rescuecore2.misc.EncodingTools.writeMessage;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -57,39 +58,25 @@ public class CommandListComponent extends AbstractMessageComponent {
 
     @Override
     public void write(OutputStream out) throws IOException {
+        writeInt32(commands.size(), out);
         for (Command next : commands) {
-            ByteArrayOutputStream gather = new ByteArrayOutputStream();
-            next.write(gather);
-            // Type
-            writeInt32(next.getMessageTypeID(), out);
-            // Size
-            byte[] bytes = gather.toByteArray();
-            writeInt32(bytes.length, out);
-            out.write(bytes);
+            writeMessage(next, out);
         }
-        // End-of-list marker
-        writeInt32(0, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
         commands.clear();
-        int typeID;
-        do {
-            typeID = readInt32(in);
-            if (typeID != 0) {
-                int size = readInt32(in);
-                byte[] data = readBytes(size, in);
-                ByteArrayInputStream dataIn = new ByteArrayInputStream(data);
-                Message next = MessageRegistry.createMessage(typeID, dataIn);
-                if (next instanceof Command) {
-                    commands.add((Command)next);
-                }
-                else {
-                    System.err.println("Command list stream contained a non-command message: " + next + " (" + next.getClass().getName() + ")");
-                }
+        int size = readInt32(in);
+        for (int i = 0; i < size; ++i) {
+            Message m = readMessage(in);
+            if (m instanceof Command) {
+                commands.add((Command)m);
             }
-        } while (typeID != 0);
+            else {
+                System.err.println("Command list stream contained a non-command message: " + m + " (" + m.getClass().getName() + ")");
+            }
+        }
     }
 
     @Override

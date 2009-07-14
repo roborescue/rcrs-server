@@ -337,7 +337,6 @@ public final class EncodingTools {
         // TypeID, entityID, size, content
         // Gather the content first
         ByteArrayOutputStream gather = new ByteArrayOutputStream();
-        writeInt32(e.getID().getValue(), gather);
         e.write(gather);
         byte[] bytes = gather.toByteArray();
 
@@ -359,6 +358,9 @@ public final class EncodingTools {
     */
     public static Entity readEntity(InputStream in) throws IOException {
         int typeID = readInt32(in);
+        if (typeID == 0) {
+            return null;
+        }
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
@@ -398,6 +400,9 @@ public final class EncodingTools {
     */
     public static Message readMessage(InputStream in) throws IOException {
         int typeID = readInt32(in);
+        if (typeID == 0) {
+            return null;
+        }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
         Message result = MessageRegistry.createMessage(typeID, new ByteArrayInputStream(content));
