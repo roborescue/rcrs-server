@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import kernel.Kernel;
+import kernel.KernelException;
 import kernel.ComponentManager;
 import kernel.standard.TestViewer;
 import kernel.standard.ControlledAgentGUI;
@@ -255,8 +256,16 @@ public class KernelControlPanel extends JPanel {
         @Override
         public boolean work() throws InterruptedException {
             if (shouldStep()) {
-                if (kernel.getTime() <= maxTime) {
-                    kernel.timestep();
+                if (kernel.getTime() < maxTime) {
+                    try {
+                        kernel.timestep();
+                    }
+                    catch (KernelException e) {
+                        e.printStackTrace();
+                        kernel.shutdown();
+                        disableAllButtons();
+                        return false;
+                    }
                     synchronized (runLock) {
                         if (step) {
                             endStep();

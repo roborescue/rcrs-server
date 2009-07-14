@@ -62,10 +62,11 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
         world.index();
         JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + world.getAllEntities().size() + " entities)");
         viewer = new WorldModelViewer();
+        viewer.setWorldModel(world);
         // CHECKSTYLE:OFF:MagicNumber
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
-        viewer.addLayer(new StandardViewLayer(world));
+        viewer.addLayer(new StandardViewLayer());
         fbs = new ArrayList<ControlledFireBrigade>();
         fbListModel = new ListListModel(fbs);
         fbList = new JList(fbListModel);

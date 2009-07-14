@@ -244,7 +244,8 @@ public final class StartKernel {
             // CHECKSTYLE:OFF:MagicNumber
             viewer.setPreferredSize(new Dimension(500, 500));
             // CHECKSTYLE:ON:MagicNumber
-            viewer.addLayer(new StandardViewLayer(world));
+            viewer.addLayer(new StandardViewLayer());
+            viewer.setWorldModel(world);
             kernel.addKernelListener(new KernelListenerAdapter() {
                     @Override
                     public void timestepCompleted(int time) {

@@ -31,10 +31,11 @@ public class TestViewer extends AbstractViewer<StandardEntity> {
         world.index();
         JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + world.getAllEntities().size() + " entities)");
         viewer = new WorldModelViewer();
+        viewer.setWorldModel(world);
         // CHECKSTYLE:OFF:MagicNumber
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
-        viewer.addLayer(new StandardViewLayer(world));
+        viewer.addLayer(new StandardViewLayer());
         frame.add(viewer);
         frame.pack();
         frame.setVisible(true);
