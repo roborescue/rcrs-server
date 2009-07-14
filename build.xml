@@ -302,4 +302,10 @@
       <arg value="boot/channels.txt"/>
     </java>
   </target>
+
+  <target name="log-viewer" depends="kernel-jar" description="Start the log viewer">
+    <java classname="kernel.ui.LogViewer" classpathref="path.all" fork="yes">
+      <arg value="rescue.log"/>
+    </java>
+  </target>
 </project>
