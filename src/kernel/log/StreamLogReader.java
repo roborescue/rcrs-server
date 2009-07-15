@@ -29,6 +29,7 @@ public class StreamLogReader implements LogReader {
     private Map<Integer, Collection<Command>> commands;
     private Map<Integer, Collection<Entity>> updates;
     private Map<Integer, WorldModel<? extends Entity>> worldModels;
+    private Map<Integer, Map<EntityID, Pair<Collection<Entity>, Collection<Message>>>> perception;
 
     /**
        Construct a StreamLogReader.
@@ -39,6 +40,7 @@ public class StreamLogReader implements LogReader {
         commands = new HashMap<Integer, Collection<Command>>();
         updates = new HashMap<Integer, Collection<Entity>>();
         worldModels = new HashMap<Integer, WorldModel<? extends Entity>>();
+        perception = new HashMap<Integer, Map<EntityID, Pair<Collection<Entity>, Collection<Message>>>>();
         try {
             readLog(in);
         }
@@ -65,13 +67,27 @@ public class StreamLogReader implements LogReader {
     @Override
     public Set<EntityID> getEntitiesWithUpdates(int time) throws KernelLogException {
         checkTime(time);
-        return new HashSet<EntityID>();
+        Map<EntityID, Pair<Collection<Entity>, Collection<Message>>> agentData = perception.get(time);
+        Set<EntityID> result = new HashSet<EntityID>();
+        if (agentData == null) {
+            return result;
+        }
+        result.addAll(agentData.keySet());
+        return result;
     }
 
     @Override
     public Pair<Collection<Entity>, Collection<Message>> getEntityUpdates(int time, EntityID entity) throws KernelLogException {
         checkTime(time);
-        return new Pair<Collection<Entity>, Collection<Message>>(new HashSet<Entity>(), new HashSet<Message>());
+        Map<EntityID, Pair<Collection<Entity>, Collection<Message>>> agentData = perception.get(time);
+        if (agentData == null) {
+            return new Pair<Collection<Entity>, Collection<Message>>(new HashSet<Entity>(), new HashSet<Message>());
+        }
+        Pair<Collection<Entity>, Collection<Message>> result = agentData.get(entity);
+        if (result == null) {
+            return new Pair<Collection<Entity>, Collection<Message>>(new HashSet<Entity>(), new HashSet<Message>());
+        }
+        return result;
     }
 
     @Override
@@ -131,6 +147,8 @@ public class StreamLogReader implements LogReader {
             break;
         case END_OF_LOG:
             return;
+        default:
+            throw new KernelLogException("Unexpected record type: " + type);
         }
     }
 
@@ -158,6 +176,13 @@ public class StreamLogReader implements LogReader {
         Set<Message> messages = readMessages(commsSize, in);
         System.out.println("done. Saw " + visibleSize + " entities and heard " + commsSize + " messages.");
         maxTime = Math.max(time, maxTime);
+        Pair<Collection<Entity>, Collection<Message>> data = new Pair<Collection<Entity>, Collection<Message>>(visible, messages);
+        Map<EntityID, Pair<Collection<Entity>, Collection<Message>>> agentData = perception.get(time);
+        if (agentData == null) {
+            agentData = new HashMap<EntityID, Pair<Collection<Entity>, Collection<Message>>>();
+            perception.put(time, agentData);
+        }
+        agentData.put(new EntityID(agentID), data);
     }
 
     private void readCommands(InputStream in) throws IOException, KernelLogException {
