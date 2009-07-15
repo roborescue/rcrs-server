@@ -1,12 +1,10 @@
 package rescuecore2.connection;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readMessage;
 import static rescuecore2.misc.EncodingTools.writeMessage;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageRegistry;
 import rescuecore2.misc.WorkerThread;
 
 import java.util.List;
@@ -15,8 +13,6 @@ import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
