@@ -3,6 +3,7 @@ package kernel.standard;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.AbstractViewer;
 import rescuecore2.components.Agent;
+import rescuecore2.components.ComponentLauncher;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.view.WorldModelViewer;
 import rescuecore2.view.ViewListener;
@@ -214,25 +215,21 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
     private class AgentConnector extends Thread {
         @Override
         public void run() {
-            int id = 1;
-            id += connectAgents(new FireBrigadeAgentType(), fbs, fbListModel, id);
-            id += connectAgents(new PoliceForceAgentType(), pfs, pfListModel, id);
-            id += connectAgents(new AmbulanceTeamAgentType(), ats, atListModel, id);
+            connectAgents(new FireBrigadeAgentType(), fbs, fbListModel);
+            connectAgents(new PoliceForceAgentType(), pfs, pfListModel);
+            connectAgents(new AmbulanceTeamAgentType(), ats, atListModel);
         }
 
-        /**
-           @return The number of agents that attempted to connect. The number of successes will be this number minus 1.
-        */
-        private <T extends Agent> int connectAgents(AgentType<T> type, List<? super T> list, ListListModel model, int firstID) {
+        private <T extends Agent> void connectAgents(AgentType<T> type, List<? super T> list, ListListModel model) {
+            ComponentLauncher launcher = new ComponentLauncher(connection);
             String reason = null;
             int count = 0;
-            int id = firstID;
             do {
                 ++count;
                 T agent = type.createAgent();
                 System.out.print("Connecting " + type + " " + count + "...");
                 try {
-                    reason = agent.connect(connection, id++);
+                    reason = launcher.connect(agent);
                 }
                 catch (InterruptedException e) {
                     reason = "interrupted";
@@ -249,7 +246,6 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
                 }
             } while (reason == null);
             model.refresh();
-            return count;
         }
     }
 

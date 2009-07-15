@@ -25,6 +25,7 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.StreamConnection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.Component;
+import rescuecore2.components.ComponentLauncher;
 
 /**
    A JComponent containing various controls for the kernel GUI.
@@ -33,6 +34,7 @@ public class KernelControlPanel extends JPanel {
     private Kernel kernel;
     private Config config;
     private ComponentManager componentManager;
+    private ComponentLauncher launcher;
     private Collection<JButton> controlButtons;
     private JButton stepButton;
     private JButton runButton;
@@ -126,10 +128,16 @@ public class KernelControlPanel extends JPanel {
     */
     public void activate() {
         runThread.start();
+        Pair<Connection, Connection> connections = createConnectionPair();
+        componentManager.newConnection(connections.first());
+        launcher = new ComponentLauncher(connections.second());
     }
 
     private void addAgent() {
+        //        Component[] as = {new SampleAgentConnector()};
+        //        addComponent(as, "agent");
     }
+
     private void removeAgent() {
     }
     private void addSim() {
@@ -139,32 +147,34 @@ public class KernelControlPanel extends JPanel {
 
     private void addViewer() {
         Component[] vs = {new TestViewer(), new ControlledAgentGUI()};
-        Component v = (Component)JOptionPane.showInputDialog(this, "Choose a viewer", "Choose a viewer", JOptionPane.QUESTION_MESSAGE, null, vs, vs[0]);
-        if (v == null) {
+        addComponent(vs, "viewer");
+    }
+
+    private void removeViewer() {
+    }
+
+    private void addComponent(Component[] options, String type) {
+        Component c = (Component)JOptionPane.showInputDialog(this, "Choose a " + type, "Choose a " + type, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (c == null) {
             return;
         }
-        Pair<Connection, Connection> connections = createConnectionPair();
-        componentManager.newConnection(connections.first());
         try {
-            String result = v.connect(connections.second(), 0);
+            String result = launcher.connect(c);
             if (result != null) {
-                System.out.println("Adding viewer failed: " + result);
-                JOptionPane.showMessageDialog(this, "Adding viewer failed: " + result);
+                System.out.println("Adding " + type + " failed: " + result);
+                JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + result);
             }
             else {
-                System.out.println("Viewer added OK");
+                System.out.println(type + " added OK");
             }
         }
         catch (ConnectionException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Adding viewer failed: " + e);
+            JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
         }
         catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    private void removeViewer() {
     }
 
     private void stepButtonPressed() {
