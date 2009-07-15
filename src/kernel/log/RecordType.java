@@ -4,11 +4,17 @@ package kernel.log;
    Enumeration of possible record types in a kernel log.
  */
 public enum RecordType {
+    /** Start of log marker. */
     START_OF_LOG(0xE542D585),
+    /** End of log marker. */
     END_OF_LOG(0x00),
+    /** Initial conditions record. */
     INITIAL_CONDITIONS(0x01),
+    /** Agent perception record. */
     PERCEPTION(0x02),
+    /** Commands record. */
     COMMANDS(0x03),
+    /** Updates record. */
     UPDATES(0x04);
 
     private int id;

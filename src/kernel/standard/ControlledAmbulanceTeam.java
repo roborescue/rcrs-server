@@ -100,7 +100,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.AMBULANCE_TEAM.getID()};
     }
 

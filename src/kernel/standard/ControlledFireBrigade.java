@@ -91,7 +91,7 @@ public class ControlledFireBrigade extends AbstractAgent {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.FIRE_BRIGADE.getID()};
     }
 

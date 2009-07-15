@@ -35,6 +35,8 @@ import javax.swing.BorderFactory;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+import java.io.IOException;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -64,40 +66,10 @@ public class LogViewer extends JPanel {
     private int maxTime;
 
     /**
-       Launch a new LogViewer.
-       @param args Command line arguments. Accepts only one argument: the name of a log file.
-    */
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            printUsage();
-            return;
-        }
-        String name = args[0];
-        try {
-            MessageRegistry.register(StandardMessageFactory.INSTANCE);
-            EntityRegistry.register(StandardEntityFactory.INSTANCE);
-            LogReader reader = new FileLogReader(name);
-            LogViewer viewer = new LogViewer(reader);
-            viewer.setPreferredSize(new Dimension(VIEWER_SIZE, VIEWER_SIZE));
-            JFrame frame = new JFrame("Log viewer: " + name);
-            frame.getContentPane().add(viewer, BorderLayout.CENTER);
-            frame.pack();
-            frame.addWindowListener(new WindowAdapter() {
-                    public void windowClosing(WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-            frame.setVisible(true);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void printUsage() {
-        System.out.println("Usage: LogViewer <filename>");
-    }
-
+       Construct a LogViewer.
+       @param reader The LogReader to read.
+       @throws KernelLogException If there is a problem reading the log.
+     */
     public LogViewer(LogReader reader) throws KernelLogException {
         super(new BorderLayout());
         this.log = reader;
@@ -118,7 +90,7 @@ public class LogViewer extends JPanel {
         slider.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    selectTimestep(slider.getValue());
+                    showTimestep(slider.getValue());
                 }
             });
         down.addActionListener(new ActionListener() {
@@ -167,7 +139,11 @@ public class LogViewer extends JPanel {
         slider.setValue(0);
     }
 
-    public void selectTimestep(int time) {
+    /**
+       Show a particular timestep in the viewer.
+       @param time The timestep to show. If this value is out of range then this method will silently return.
+     */
+    public void showTimestep(int time) {
         try {
             if (time < 0 || time > maxTime) {
                 return;
@@ -186,5 +162,43 @@ public class LogViewer extends JPanel {
         catch (KernelLogException e) {
             JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+       Launch a new LogViewer.
+       @param args Command line arguments. Accepts only one argument: the name of a log file.
+    */
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            printUsage();
+            return;
+        }
+        String name = args[0];
+        try {
+            MessageRegistry.register(StandardMessageFactory.INSTANCE);
+            EntityRegistry.register(StandardEntityFactory.INSTANCE);
+            LogReader reader = new FileLogReader(name);
+            LogViewer viewer = new LogViewer(reader);
+            viewer.setPreferredSize(new Dimension(VIEWER_SIZE, VIEWER_SIZE));
+            JFrame frame = new JFrame("Log viewer: " + name);
+            frame.getContentPane().add(viewer, BorderLayout.CENTER);
+            frame.pack();
+            frame.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+            frame.setVisible(true);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (KernelLogException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void printUsage() {
+        System.out.println("Usage: LogViewer <filename>");
     }
 }

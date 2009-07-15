@@ -1,8 +1,5 @@
 package kernel.log;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
-
-import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,7 +21,7 @@ public class FileLogWriter extends StreamLogWriter {
 
     /**
        Create a file log writer and open it for writing.
-       @param name The file to write to.
+       @param file The file to write to.
        @throws IOException If the log file cannot be opened.
        @throws KernelLogException If the log cannot be written.
     */

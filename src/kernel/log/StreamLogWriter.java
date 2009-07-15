@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.util.Collection;
 
-import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -24,6 +23,7 @@ public class StreamLogWriter implements LogWriter {
     /**
        Create a stream log writer.
        @param stream The stream to write to.
+       @throws KernelLogException If there is a problem writing the log header.
     */
     public StreamLogWriter(OutputStream stream) throws KernelLogException {
         this.out = stream;

@@ -75,7 +75,7 @@ public class ControlledPoliceForce extends AbstractAgent {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.POLICE_FORCE.getID()};
     }
 

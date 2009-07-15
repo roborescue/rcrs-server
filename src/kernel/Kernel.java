@@ -19,7 +19,7 @@ import kernel.log.FileLogWriter;
    The Robocup Rescue kernel.
  */
 public class Kernel {
-    private Config config;
+    //    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
     private WorldModel<? extends Entity> worldModel;
@@ -48,7 +48,7 @@ public class Kernel {
                   Perception perception,
                   CommunicationModel communicationModel,
                   WorldModel<? extends Entity> worldModel) throws KernelException {
-        this.config = config;
+        //        this.config = config;
         this.perception = perception;
         this.communicationModel = communicationModel;
         this.worldModel = worldModel;
@@ -237,11 +237,11 @@ public class Kernel {
 
     /**
        Set the amount of time the kernel will wait for agent commands, in milliseconds.
-       @param The new wait time.
+       @param newWaitTime The new wait time.
     */
-    public void setAgentWaitTime(int time) {
+    public void setAgentWaitTime(int newWaitTime) {
         synchronized (this) {
-            agentTime = time;
+            agentTime = newWaitTime;
         }
     }
 
