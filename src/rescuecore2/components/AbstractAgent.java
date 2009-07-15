@@ -1,19 +1,15 @@
 package rescuecore2.components;
 
 import rescuecore2.connection.Connection;
-import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.control.AKConnect;
-import rescuecore2.messages.control.AKAcknowledge;
-import rescuecore2.messages.control.KAConnectOK;
-import rescuecore2.messages.control.KAConnectError;
 import rescuecore2.messages.control.KASense;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
    Abstract base class for agent implementations.
@@ -32,13 +28,11 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     }
 
     @Override
-    protected Message createConnectMessage(int uniqueID) {
-        return new AKConnect(uniqueID, 0, getRequestedEntityIDs());
-    }
-
-    @Override
-    protected ConnectionListener createConnectionListener() {
-        return new AgentConnectionListener();
+    public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities) {
+        super.postConnect(c, entities);
+        this.entityID = agentID;
+        c.addConnectionListener(new AgentListener());
+        postConnect();
     }
 
     /**
@@ -49,18 +43,18 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     protected abstract void think(int time, List<EntityID> changed);
 
     /**
-       Get the list of entity IDs that this agent is willing to control.
-       @return An array of entity IDs.
-    */
-    protected abstract int[] getRequestedEntityIDs();
+       Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
+     */
+    protected void postConnect() {
+    }
 
     /**
-       Process an incoming sense message. This will be called after the world model has been updated. The default implementation calls {@link #think}. Subclasses should generally not override this method but instead implement the {@link #think} method.
+       Process an incoming sense message. The default implementation updates the world model and calls {@link #think}. Subclasses should generally not override this method but instead implement the {@link #think} method.
        @param sense The sense message.
      */
     protected void processSense(KASense sense) {
+        model.merge(sense.getUpdates());
         List<Entity> updates = sense.getUpdates();
-        //        System.out.println("Agent " + entityID + " received " + updates.size() + " updates");
         List<EntityID> changed = new ArrayList<EntityID>(updates.size());
         for (Entity next : updates) {
             changed.add(next.getID());
@@ -79,53 +73,15 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
         return model.getEntity(entityID);
     }
 
-    private void handleSense(KASense sense) {
-        if (!entityID.equals(sense.getAgentID())) {
-            return;
-        }
-        //        System.out.println("Agent " + me() + " received " + sense);
-        model.merge(sense.getUpdates());
-        processSense(sense);
-    }
-
-    private void handleConnectOK(KAConnectOK ok) {
-        if (!checkRequestID(ok.getRequestID())) {
-            return;
-        }
-        //        System.out.println("Agent connected OK: " + ok);
-        model.removeAllEntities();
-        model.merge(ok.getEntities());
-        entityID = ok.getAgentID();
-        // Send an acknowledge
-        try {
-            connection.sendMessage(new AKAcknowledge(ok.getRequestID(), entityID));
-            connectionSucceeded();
-        }
-        catch (ConnectionException e) {
-            e.printStackTrace();
-            connectionFailed(e.toString());
-        }
-    }
-
-    private void handleConnectError(KAConnectError error) {
-        if (!checkRequestID(error.getRequestID())) {
-            return;
-        }
-        //        System.out.println("Error connecting agent: " + error);
-        connectionFailed(error.getReason());
-    }
-
-    private class AgentConnectionListener implements ConnectionListener {
+    private class AgentListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection c, Message msg) {
             if (msg instanceof KASense) {
-                handleSense((KASense)msg);
-            }
-            if (msg instanceof KAConnectOK) {
-                handleConnectOK((KAConnectOK)msg);
-            }
-            if (msg instanceof KAConnectError) {
-                handleConnectError((KAConnectError)msg);
+                KASense sense = (KASense)msg;
+                if (!entityID.equals(sense.getAgentID())) {
+                    return;
+                }
+                processSense(sense);
             }
         }
     }

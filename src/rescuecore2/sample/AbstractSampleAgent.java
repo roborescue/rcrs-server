@@ -55,8 +55,12 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
        @return The location of the entity controlled by this agent.
      */
     protected StandardEntity location() {
-        Human me = (Human)me();
-        return me.getPosition(world);
+        return me().getPosition(world);
+    }
+
+    @Override
+    protected Human me() {
+        return (Human)super.me();
     }
 
     /**

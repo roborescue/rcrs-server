@@ -78,7 +78,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.FIRE_BRIGADE.getID()
         };
     }

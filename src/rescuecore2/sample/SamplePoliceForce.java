@@ -46,7 +46,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.POLICE_FORCE.getID()
         };
     }

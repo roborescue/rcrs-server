@@ -98,7 +98,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.AMBULANCE_TEAM.getID()
         };
     }

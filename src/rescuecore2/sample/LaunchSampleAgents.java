@@ -2,6 +2,7 @@ package rescuecore2.sample;
 
 import java.io.IOException;
 
+import rescuecore2.components.ComponentLauncher;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
@@ -74,11 +75,12 @@ public final class LaunchSampleAgents {
     }
 
     private static void connect(Connection c, int fb, int pf, int at) throws InterruptedException, ConnectionException {
+        ComponentLauncher launcher = new ComponentLauncher(c);
         int i = 0;
         String reason = null;
         while (reason == null && fb-- != 0) {
-            System.out.print("Connecting fire brigade " + i + "...");
-            reason = new SampleFireBrigade().connect(c, i++);
+            System.out.print("Connecting fire brigade " + (i++) + "...");
+            reason = launcher.connect(new SampleFireBrigade());
             if (reason == null) {
                 System.out.println("success");
             }
@@ -88,8 +90,8 @@ public final class LaunchSampleAgents {
         }
         reason = null;
         while (reason == null && pf-- != 0) {
-            System.out.print("Connecting police force " + i + "...");
-            reason = new SamplePoliceForce().connect(c, i++);
+            System.out.print("Connecting police force " + (i++) + "...");
+            reason = launcher.connect(new SamplePoliceForce());
             if (reason == null) {
                 System.out.println("success");
             }
@@ -99,8 +101,8 @@ public final class LaunchSampleAgents {
         }
         reason = null;
         while (reason == null && at-- != 0) {
-            System.out.print("Connecting ambulance team " + i + "...");
-            reason = new SampleAmbulanceTeam().connect(c, i++);
+            System.out.print("Connecting ambulance team " + (i++) + "...");
+            reason = launcher.connect(new SampleAmbulanceTeam());
             if (reason == null) {
                 System.out.println("success");
             }
@@ -110,8 +112,8 @@ public final class LaunchSampleAgents {
         }
         reason = null;
         while (reason == null) {
-            System.out.print("Connecting centre " + i + "...");
-            reason = new SampleCentre().connect(c, i++);
+            System.out.print("Connecting centre " + (i++) + "...");
+            reason = launcher.connect(new SampleCentre());
             if (reason == null) {
                 System.out.println("success");
             }
@@ -121,8 +123,8 @@ public final class LaunchSampleAgents {
         }
         reason = null;
         while (reason == null) {
-            System.out.print("Connecting dummy agent " + i + "...");
-            reason = new DummyAgent().connect(c, i++);
+            System.out.print("Connecting dummy agent " + (i++) + "...");
+            reason = launcher.connect(new DummyAgent());
             if (reason == null) {
                 System.out.println("success");
             }

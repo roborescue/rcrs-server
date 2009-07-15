@@ -10,34 +10,34 @@ import rescuecore2.worldmodel.Entity;
 import java.util.Collection;
 
 /**
-   Abstract base class for viewer implementations.
-   @param <T> The subclass of Entity that this viewer understands.
+   Abstract base class for simulator implementations.
+   @param <T> The subclass of Entity that this simulator understands.
  */
-public abstract class AbstractViewer<T extends Entity> extends AbstractComponent<T> implements Viewer {
+public abstract class AbstractSimulator<T extends Entity> extends AbstractComponent<T> implements Simulator {
     /**
-       The ID of this viewer.
+       The ID of this simulator.
     */
-    protected int viewerID;
+    protected int simulatorID;
 
     /**
-       Create a new AbstractViewer.
+       Create a new AbstractSimulator.
      */
-    protected AbstractViewer() {
+    protected AbstractSimulator() {
     }
 
     /**
-       Get this viewer's ID.
-       @return The viewer ID.
+       Get this simulator's ID.
+       @return The simulator ID.
      */
-    public final int getViewerID() {
-        return viewerID;
+    public final int getSimulatorID() {
+        return simulatorID;
     }
 
     @Override
     public void postConnect(Connection c, int id, Collection<Entity> entities) {
         super.postConnect(c, entities);
-        this.viewerID = id;
-        c.addConnectionListener(new ViewerListener());
+        this.simulatorID = id;
+        c.addConnectionListener(new SimulatorListener());
         postConnect();
     }
 
@@ -61,7 +61,7 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
     protected void handleCommands(Commands c) {
     }
 
-    private class ViewerListener implements ConnectionListener {
+    private class SimulatorListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection c, Message msg) {
             if (msg instanceof Update) {

@@ -24,7 +24,7 @@ public class SampleCentre extends AbstractAgent<StandardEntity> {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.FIRE_STATION.getID(),
                           StandardEntityType.POLICE_OFFICE.getID(),
                           StandardEntityType.AMBULANCE_CENTRE.getID()

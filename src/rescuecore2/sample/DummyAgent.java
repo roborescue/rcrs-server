@@ -24,7 +24,7 @@ public class DummyAgent extends AbstractAgent<StandardEntity> {
     }
 
     @Override
-    protected int[] getRequestedEntityIDs() {
+    public int[] getRequestedEntityIDs() {
         return new int[] {StandardEntityType.FIRE_BRIGADE.getID(),
                           StandardEntityType.FIRE_STATION.getID(),
                           StandardEntityType.AMBULANCE_TEAM.getID(),
