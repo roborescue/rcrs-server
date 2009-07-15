@@ -7,7 +7,6 @@ import rescuecore2.messages.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
    A broadcast update from the kernel.
@@ -50,7 +49,7 @@ public class Update extends AbstractMessage implements Control {
        Get the list of updated entities.
        @return The updated entities.
      */
-    public List<Entity> getUpdatedEntities() {
+    public Collection<Entity> getUpdatedEntities() {
         return updates.getEntities();
     }
 }

@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
    A message component made up of a list of agent commands.

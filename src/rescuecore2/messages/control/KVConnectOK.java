@@ -1,7 +1,6 @@
 package rescuecore2.messages.control;
 
 import java.util.Collection;
-import java.util.List;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
@@ -63,7 +62,7 @@ public class KVConnectOK extends AbstractMessage implements Control {
        Get the entity list.
        @return All entities in the world.
      */
-    public List<Entity> getEntities() {
+    public Collection<Entity> getEntities() {
         return world.getEntities();
     }
 }
