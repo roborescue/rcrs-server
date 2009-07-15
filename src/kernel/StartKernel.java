@@ -101,6 +101,7 @@ public final class StartKernel {
             }
             initialiseKernel(kernelInfo, config);
             if (!showGUI || justRun) {
+                waitForComponentManager(kernelInfo);
                 int maxTime = config.getIntValue("timesteps");
                 while (kernelInfo.kernel.getTime() <= maxTime) {
                     kernelInfo.kernel.timestep();
@@ -130,6 +131,9 @@ public final class StartKernel {
         catch (IOException e) {
             throw new KernelException("Couldn't open kernel port", e);
         }
+    }
+
+    private static void waitForComponentManager(KernelInfo kernel) throws KernelException {
         // Wait for all connections
         try {
             kernel.componentManager.waitForAllAgents();
