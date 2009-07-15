@@ -3,8 +3,6 @@ package rescuecore2.standard.view;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 
-import rescuecore2.worldmodel.Entity;
-
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 

@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Polygon;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;

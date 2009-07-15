@@ -6,7 +6,6 @@ import java.awt.Shape;
 import java.awt.BasicStroke;
 import java.awt.geom.Line2D;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;

@@ -12,7 +12,7 @@ import rescuecore2.worldmodel.Entity;
 public interface ViewLayer {
     /**
        Set the world model that is being viewed.
-       @param The new world model.
+       @param world The new world model.
      */
     void setWorldModel(WorldModel<? extends Entity> world);
 

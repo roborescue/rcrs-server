@@ -82,10 +82,10 @@ public class WorldModelViewer extends JComponent {
 
     /**
        Set the world model that is to be viewed.
-       @param world The new world model.
+       @param newModel The new world model.
      */
-    public void setWorldModel(WorldModel<? extends Entity> world) {
-        this.world = world;
+    public void setWorldModel(WorldModel<? extends Entity> newModel) {
+        this.world = newModel;
         for (ViewLayer next : layers) {
             next.setWorldModel(world);
         }

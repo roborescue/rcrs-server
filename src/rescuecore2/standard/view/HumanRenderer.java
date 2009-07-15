@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.Pair;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Civilian;
