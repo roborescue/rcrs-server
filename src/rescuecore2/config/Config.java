@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+
+import rescuecore2.misc.Pair;
 
 /**
    This class represents a config file and any other config files that might have been included with a !include directive. Config files must be defined relative to a base directory so that includes can be resolved.
@@ -20,12 +24,13 @@ public class Config {
     private static final String INCLUDE = "!include";
 
     /**
-       The raw data and caches of int/float/boolean interpretations.
+       The raw data and caches of int/float/boolean/array interpretations.
     */
     private Map<String, String> data;
     private Map<String, Integer> intData;
     private Map<String, Double> floatData;
     private Map<String, Boolean> booleanData;
+    private Map<String, Pair<String, List<String>>> arrayData;
 
     /**
        Create an empty config.
@@ -35,6 +40,7 @@ public class Config {
         intData = new HashMap<String, Integer>();
         floatData = new HashMap<String, Double>();
         booleanData = new HashMap<String, Boolean>();
+        arrayData = new HashMap<String, Pair<String, List<String>>>();
     }
 
     /**
@@ -118,9 +124,20 @@ public class Config {
                         newContext.process(this);
                     }
                     else {
-                        int index = line.indexOf(':');
-                        if (index == -1) {
-                            throw new ConfigException(name, "Line " + lineNumber + ": No ':' found");
+                        int index1 = line.indexOf(':');
+                        int index2 = line.indexOf('=');
+                        if (index1 == -1 && index2 == -1) {
+                            throw new ConfigException(name, "Line " + lineNumber + ": No ':' or '=' found");
+                        }
+                        int index;
+                        if (index1 == -1) {
+                            index = index2;
+                        }
+                        else if (index2 == -1) {
+                            index = index1;
+                        }
+                        else {
+                            index = Math.min(index1, index2);
                         }
                         if (index == line.length() - 1) {
                             throw new ConfigException(name, "Line " + lineNumber + ": No value found");
@@ -196,13 +213,12 @@ public class Config {
        @return The value associated with that key, or the default value of the key has no value.
     */
     public String getValue(String key, String defaultValue) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
+        try {
+            return getValue(key);
         }
-        if (!data.containsKey(key)) {
+        catch (NoSuchConfigOptionException e) {
             return defaultValue;
         }
-        return data.get(key);
     }
 
     /**
@@ -232,16 +248,8 @@ public class Config {
        @throws NumberFormatException If the value of the key cannot be interpreted as an integer.
     */
     public int getIntValue(String key, int defaultValue) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-        if (intData.containsKey(key)) {
-            return intData.get(key);
-        }
         try {
-            int result = Integer.parseInt(getValue(key));
-            intData.put(key, result);
-            return result;
+            return getIntValue(key);
         }
         catch (NoSuchConfigOptionException e) {
             return defaultValue;
@@ -275,16 +283,8 @@ public class Config {
        @throws NumberFormatException If the value of the key cannot be interpreted as a floating point number.
     */
     public double getFloatValue(String key, double defaultValue) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-        if (floatData.containsKey(key)) {
-            return floatData.get(key);
-        }
         try {
-            double result = Double.parseDouble(getValue(key));
-            floatData.put(key, result);
-            return result;
+            return getFloatValue(key);
         }
         catch (NoSuchConfigOptionException e) {
             return defaultValue;
@@ -324,28 +324,58 @@ public class Config {
        @return The value associated with that key interpreted as a boolean, or the default value of the key has no value.
     */
     public boolean getBooleanValue(String key, boolean defaultValue) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-        if (booleanData.containsKey(key)) {
-            return booleanData.get(key);
-        }
         try {
-            boolean result = false;
-            String value = getValue(key);
-            if ("true".equalsIgnoreCase(value)
-                || "t".equalsIgnoreCase(value)
-                || "yes".equalsIgnoreCase(value)
-                || "y".equalsIgnoreCase(value)
-                || "1".equalsIgnoreCase(value)) {
-                result = true;
-            }
-            booleanData.put(key, result);
-            return result;
+            return getBooleanValue(key);
         }
         catch (NoSuchConfigOptionException e) {
             return defaultValue;
         }
+    }
+
+    /**
+       Get the value of a key as an array of strings. The value will be split on space and comma characters and the resulting list of tokens is returned.
+       @param key The key to look up. Must not be null.
+       @return The value associated with that key interpreted as an array of space-and-comma-separated tokens.
+       @throws NoSuchConfigOptionException If the key is not defined.
+    */
+    public List<String> getArrayValue(String key) {
+        return getArrayValue(key, " |,");
+    }
+
+    /**
+       Get the value of a key as an array of strings. The value will be split using the given regex and the resulting list of tokens is returned.
+       @param key The key to look up. Must not be null.
+       @param regex The regular expression to split the value on. This is passed to {@link String#split(String)} directly. Must not be null or the empty string.
+       @return The value associated with that key interpreted as an array of regex-separated tokens.
+       @throws NoSuchConfigOptionException If the key is not defined.
+    */
+    public List<String> getArrayValue(String key, String regex) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (regex == null) {
+            throw new IllegalArgumentException("Regex cannot be null");
+        }
+        if ("".equals(regex)) {
+            throw new IllegalArgumentException("Regex cannot be the empty string");
+        }
+        if (arrayData.containsKey(key)) {
+            Pair<String, List<String>> entry = arrayData.get(key);
+            if (entry.first().equals(regex)) {
+                return entry.second();
+            }
+        }
+        String value = getValue(key);
+        List<String> result = new ArrayList<String>();
+        String[] s = value.split(regex);
+        for (String next : s) {
+            if (!"".equals(next)) {
+                result.add(next);
+            }
+        }
+        Pair<String, List<String>> entry = new Pair<String, List<String>>(regex, result);
+        arrayData.put(key, entry);
+        return result;
     }
 
     /**
@@ -361,10 +391,8 @@ public class Config {
             removeKey(key);
             return;
         }
+        clearCache(key);
         data.put(key, value);
-        intData.remove(key);
-        floatData.remove(key);
-        booleanData.remove(key);
     }
 
     /**
@@ -376,10 +404,9 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
+        clearCache(key);
         data.put(key, Integer.valueOf(value).toString());
         intData.put(key, value);
-        floatData.remove(key);
-        booleanData.remove(key);
     }
 
     /**
@@ -391,10 +418,9 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
+        clearCache(key);
         data.put(key, Double.valueOf(value).toString());
-        intData.remove(key);
         floatData.put(key, value);
-        booleanData.remove(key);
     }
 
     /**
@@ -406,9 +432,8 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
+        clearCache(key);
         data.put(key, value ? "true" : "false");
-        intData.remove(key);
-        floatData.remove(key);
         booleanData.put(key, value);
     }
 
@@ -420,10 +445,8 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
+        clearCache(key);
         data.remove(key);
-        intData.remove(key);
-        floatData.remove(key);
-        booleanData.remove(key);
     }
 
     /**
@@ -434,6 +457,14 @@ public class Config {
         intData.clear();
         floatData.clear();
         booleanData.clear();
+        arrayData.clear();
+    }
+
+    private void clearCache(String key) {
+        intData.remove(key);
+        floatData.remove(key);
+        booleanData.remove(key);
+        arrayData.remove(key);
     }
 
     private interface Context {

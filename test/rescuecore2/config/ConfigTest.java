@@ -39,6 +39,7 @@ public class ConfigTest {
     private final static String MALFORMED_5 = "supportfiles/config/malformed5.cfg";
     private final static String MALFORMED_6 = "supportfiles/config/malformed6.cfg";
     private final static String BOOLEAN_CONFIG = "supportfiles/config/boolean.cfg";
+    private final static String ARRAY_CONFIG = "supportfiles/config/array.cfg";
 
     private final static String RESOURCE_CONFIG = "rescuecore2/config/resource.cfg";
 
@@ -209,6 +210,13 @@ public class ConfigTest {
         assertEquals("value8", config.getValue("key8"));
         assertEquals("value9", config.getValue("key9"));
         assertEquals("value10", config.getValue("key10"));
+    }
+
+    @Test(expected=NoSuchConfigOptionException.class)
+    public void testGetCaseSensitive() throws IOException, ConfigException {
+        read(BASIC_CONFIG);
+        assertEquals("value", config.getValue("key"));
+        config.getValue("KEY");
     }
 
     @Test
@@ -385,6 +393,25 @@ public class ConfigTest {
     }
 
     @Test
+    public void testArrays() throws IOException, ConfigException {
+        read(ARRAY_CONFIG);
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals(1, config.getArrayValue("key1").size());
+        assertEquals(2, config.getArrayValue("key2").size());
+        assertEquals(2, config.getArrayValue("key3").size());
+        assertEquals(1, config.getArrayValue("key4").size());
+        assertTrue(config.getArrayValue("key1").contains("value"));
+        assertTrue(config.getArrayValue("key2").contains("value1"));
+        assertTrue(config.getArrayValue("key2").contains("value2"));
+        assertTrue(config.getArrayValue("key3").contains("value1"));
+        assertTrue(config.getArrayValue("key3").contains("value2"));
+        assertTrue(config.getArrayValue("key4").contains("value1|value2"));
+        assertEquals(2, config.getArrayValue("key4","\\|").size());
+        assertTrue(config.getArrayValue("key4","\\|").contains("value1"));
+        assertTrue(config.getArrayValue("key4","\\|").contains("value2"));
+    }
+
+    @Test
     public void testRemoveKey() throws IOException, ConfigException {
         read(BASIC_CONFIG);
         Set<String> keys = config.getAllKeys();
@@ -502,7 +529,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No ':' found"));
+            assertTrue(e.getMessage().contains("No ':' or '=' found"));
         }
         try {
             read(MALFORMED_4);
@@ -510,7 +537,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No ':' found"));
+            assertTrue(e.getMessage().contains("No ':' or '=' found"));
         }
         try {
             read(MALFORMED_5);
