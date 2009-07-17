@@ -119,7 +119,7 @@ public class KernelControlPanel extends JPanel {
                     runButtonPressed();
                 }
             });
-        runThread = new RunThread(config.getIntValue("timesteps"));
+        runThread = new RunThread(config.getIntValue(Kernel.TIMESTEPS_KEY));
         running = false;
     }
 

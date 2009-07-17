@@ -51,15 +51,15 @@ public class InlineWorldModelCreator {
     */
     public StandardWorldModel buildWorldModel(Config config) throws KernelException {
         StandardWorldModel world = new StandardWorldModel();
-        initialWater = config.getIntValue("tank_quantity_maximum");
+        initialWater = config.getIntValue("fire.tank.maximum");
         try {
-            File baseDir = new File(config.getValue("map.basedir"));
+            File baseDir = new File(config.getValue("gis.map.dir"));
             int maxID = readRoads(baseDir, world);
             maxID = Math.max(maxID, readNodes(baseDir, world));
             maxID = Math.max(maxID, readBuildings(baseDir, world));
             nextAgentID = maxID + 1;
             readGISIni(baseDir, world);
-            world.index(config.getIntValue("vision"));
+            world.index(config.getIntValue("gis.map.meshsize"));
             return world;
         }
         catch (IOException e) {

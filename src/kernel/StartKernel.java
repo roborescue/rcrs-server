@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.BorderLayout;
@@ -26,21 +28,17 @@ import rescuecore2.connection.ConnectionManager;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.messages.MessageRegistry;
+import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.EntityRegistry;
+import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.view.WorldModelViewer;
 
-import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.messages.StandardMessageFactory;
 import rescuecore2.standard.view.StandardViewLayer;
 
 import kernel.standard.StandardComponentManager;
 //import kernel.standard.StandardWorldModelCreator;
 import kernel.standard.InlineWorldModelCreator;
-import kernel.standard.StandardPerception;
-import kernel.standard.TunableStandardPerception;
-import kernel.standard.StandardCommunicationModel;
-import kernel.standard.ChannelCommunicationModel;
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
 
@@ -52,6 +50,15 @@ public final class StartKernel {
     private static final String CONFIG_LONG_FLAG = "--config";
     private static final String NO_GUI = "--nogui";
     private static final String JUST_RUN = "--just-run";
+
+    private static final String KERNEL_PORT_KEY = "kernel.io.port";
+    private static final String MESSAGE_FACTORIES_KEY = "kernel.messages.factories";
+    private static final String ENTITY_FACTORIES_KEY = "kernel.entities.factories";
+
+    private static final String PERCEPTION_KEY_PREFIX = "startup.perception";
+    private static final String COMMUNICATION_KEY_PREFIX = "startup.communication";
+    private static final String OPTIONS_KEY_SUFFIX = ".options";
+    private static final String AUTOSTART_KEY_SUFFIX = ".auto";
 
     /** Utility class: private constructor. */
     private StartKernel() {}
@@ -81,6 +88,19 @@ public final class StartKernel {
                 }
                 ++i;
             }
+            // Register messages and entities
+            for (String next : config.getArrayValue(MESSAGE_FACTORIES_KEY)) {
+                MessageFactory factory = instantiateFactory(next, MessageFactory.class);
+                if (factory != null) {
+                    MessageRegistry.register(factory);
+                }
+            }
+            for (String next : config.getArrayValue(ENTITY_FACTORIES_KEY)) {
+                EntityFactory factory = instantiateFactory(next, EntityFactory.class);
+                if (factory != null) {
+                    EntityRegistry.register(factory);
+                }
+            }
             KernelBuilder builder = new StandardKernelBuilder();
             final KernelInfo kernelInfo = builder.createKernel(config);
             if (showGUI) {
@@ -103,7 +123,7 @@ public final class StartKernel {
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo);
                 int maxTime = config.getIntValue("timesteps");
-                while (kernelInfo.kernel.getTime() <= maxTime) {
+                while (kernelInfo.kernel.getTime() < maxTime) {
                     kernelInfo.kernel.timestep();
                 }
                 kernelInfo.kernel.shutdown();
@@ -126,7 +146,7 @@ public final class StartKernel {
         // Start the connection manager
         ConnectionManager connectionManager = new ConnectionManager();
         try {
-            connectionManager.listen(config.getIntValue("kernel_port"), kernel.componentManager);
+            connectionManager.listen(config.getIntValue(KERNEL_PORT_KEY), kernel.componentManager);
         }
         catch (IOException e) {
             throw new KernelException("Couldn't open kernel port", e);
@@ -145,6 +165,66 @@ public final class StartKernel {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static <T> T instantiateFactory(String classname, Class<T> superclazz) {
+        Class<T> clazz;
+        try {
+            clazz = (Class<T>)Class.forName(classname);
+        }
+        catch (ClassNotFoundException e) {
+            System.err.println("Could not find class " + classname + ": " + e);
+            return null;
+        }
+        // Is there a singleton instance called INSTANCE?
+        try {
+            Field field = clazz.getField("INSTANCE");
+            if (Modifier.isStatic(field.getModifiers())) {
+                try {
+                    return (T)field.get(null);
+                }
+                catch (IllegalAccessException e) {
+                    System.err.println("Could not access INSTANCE field in class " + classname + ": trying constructor.");
+                }
+            }
+        }
+        catch (NoSuchFieldException e) {
+            System.out.println(e);
+            // No singleton instance. Try instantiating it.
+        }
+        catch (ClassCastException e) {
+            System.out.println(e);
+            // The INSTANCE field is not the right type. Try using the default constructor.
+        }
+        try {
+            return clazz.newInstance();
+        }
+        catch (IllegalAccessException e) {
+            System.err.println("Could not instantiate class " + classname + ": " + e);
+        }
+        catch (InstantiationException e) {
+            System.err.println("Could not instantiate class " + classname + ": " + e);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T instantiate(String classname, Class<T> superclazz) {
+        try {
+            Class<T> clazz = (Class<T>)Class.forName(classname);
+            return clazz.newInstance();
+        }
+        catch (ClassNotFoundException e) {
+            System.err.println("Could not find class " + classname + ": " + e);
+        }
+        catch (IllegalAccessException e) {
+            System.err.println("Could not instantiate class " + classname + ": " + e);
+        }
+        catch (InstantiationException e) {
+            System.err.println("Could not instantiate class " + classname + ": " + e);
+        }
+        return null;
+    }
+
     private static interface KernelBuilder {
         /**
            Create a new KernelInfo object.
@@ -158,22 +238,47 @@ public final class StartKernel {
     private static class StandardKernelBuilder implements KernelBuilder {
         @Override
         public KernelInfo createKernel(Config config) throws KernelException {
-            // Register standard messages and entities
-            MessageRegistry.register(StandardMessageFactory.INSTANCE);
-            EntityRegistry.register(StandardEntityFactory.INSTANCE);
             // Get the world model
             //            StandardWorldModel worldModel = new StandardWorldModelCreator().buildWorldModel(config);
             StandardWorldModel worldModel = new InlineWorldModelCreator().buildWorldModel(config);
             // Show the chooser GUI
-            Perception[] perceptionChoices = new Perception[] {new StandardPerception(config, worldModel), new TunableStandardPerception(config, worldModel)};
-            CommunicationModel[] commsChoices = new CommunicationModel[] {new StandardCommunicationModel(config, worldModel), new ChannelCommunicationModel(config, worldModel)};
-            KernelChooserDialog dialog = new KernelChooserDialog(perceptionChoices, commsChoices);
-            dialog.setVisible(true);
+            List<Perception> perceptionChoices = createChoices(config, PERCEPTION_KEY_PREFIX, Perception.class);
+            List<CommunicationModel> commsChoices = createChoices(config, COMMUNICATION_KEY_PREFIX, CommunicationModel.class);
+            KernelChooserDialog dialog = new KernelChooserDialog(perceptionChoices.toArray(new Perception[0]), commsChoices.toArray(new CommunicationModel[0]));
+            if (perceptionChoices.size() > 1 || commsChoices.size() > 1) {
+                dialog.setVisible(true);
+            }
             Perception perception = dialog.getPerception();
             CommunicationModel comms = dialog.getCommunicationModel();
+            perception.initialise(config, worldModel);
+            comms.initialise(config, worldModel);
             Kernel kernel = new Kernel(config, perception, comms, worldModel);
             ComponentManager componentManager = new StandardComponentManager(kernel, worldModel, config);
             return new KernelInfo(kernel, perception, comms, componentManager, new StandardWorldModelViewerComponent(worldModel));
+        }
+
+        private <T> List<T> createChoices(Config config, String keyPrefix, Class<T> expectedClass) {
+            List<T> instances = new ArrayList<T>();
+            String auto = config.getValue(keyPrefix + AUTOSTART_KEY_SUFFIX, null);
+            if (auto != null) {
+                System.out.println("Attempting to auto-start " + keyPrefix + ": '" + auto + "'");
+                T t = instantiate(auto, expectedClass);
+                if (t != null) {
+                    instances.add(t);
+                    return instances;
+                }
+                System.out.println("Auto-start '" + auto + "' failed. Falling back to option list.");
+            }
+            System.out.println("Loading options: " + keyPrefix);
+            List<String> classNames = config.getArrayValue(keyPrefix + OPTIONS_KEY_SUFFIX);
+            for (String next : classNames) {
+                System.out.println("Option found: '" + next + "'");
+                T t = instantiate(next, expectedClass);
+                if (t != null) {
+                    instances.add(t);
+                }
+            }
+            return instances;
         }
     }
 
@@ -202,10 +307,11 @@ public final class StartKernel {
             setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             pack();
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            perceptionChooser.setEnabled(perceptionChoices.length > 1);
+            commsChooser.setEnabled(commsChoices.length > 1);
         }
 
         public Perception getPerception() {
-            System.out.println("Selected index :" + perceptionChooser.getSelectedIndex() + " -> " + perceptionChooser.getSelectedItem());
             return (Perception)perceptionChooser.getSelectedItem();
         }
 

@@ -13,6 +13,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -36,12 +37,14 @@ public class StandardCommunicationModel implements CommunicationModel {
 
     /**
        Construct a StandardCommunicationModel.
-       @param config The kernel configuration.
-       @param world The world model.
     */
-    public StandardCommunicationModel(Config config, StandardWorldModel world) {
-        this.world = world;
-        sayDistance = config.getIntValue("voice");
+    public StandardCommunicationModel() {
+    }
+
+    @Override
+    public void initialise(Config config, WorldModel<? extends Entity> model) {
+        world = StandardWorldModel.createStandardWorldModel(model);
+        sayDistance = config.getIntValue("standard.say.range");
     }
 
     @Override

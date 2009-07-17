@@ -3,13 +3,23 @@ package kernel;
 import java.util.Collection;
 import java.util.Map;
 
+import rescuecore2.config.Config;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 
 /**
    A model of communication. Implementers are responsible for determining what communications are received by each agent in the world.
  */
 public interface CommunicationModel {
+    /**
+       Initialise this perception object.
+       @param config The kernel configuration.
+       @param world The world model.
+    */
+    void initialise(Config config, WorldModel<? extends Entity> world);
+
     /**
        Process a set of agent commands and work out what communications each agent can hear.
        @param agents The set of agents in the system.

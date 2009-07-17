@@ -12,6 +12,7 @@ import kernel.Agent;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
@@ -26,11 +27,20 @@ import rescuecore2.standard.entities.StandardPropertyType;
    Legacy implementation of perception.
  */
 public class StandardPerception implements Perception {
-    private static final int HP_PRECISION = 1000;
-    private static final int DAMAGE_PRECISION = 100;
+    private static final String VIEW_DISTANCE_KEY = "perception.standard.view-distance";
+    private static final String FAR_FIRE_DISTANCE_KEY = "perception.standard.far-fire-distance";
+    private static final String USE_FAR_FIRES_KEY = "perception.standard.use-far-fires";
+    private static final String HP_PRECISION_KEY = "perception.standard.hp-precision";
+    private static final String DAMAGE_PRECISION_KEY = "perception.standard.damage-precision";
+
+    private static final int DEFAULT_HP_PRECISION = 1000;
+    private static final int DEFAULT_DAMAGE_PRECISION = 100;
 
     private int viewDistance;
     private int farFireDistance;
+    private boolean useFarFires;
+    private int hpPrecision;
+    private int damagePrecision;
     private StandardWorldModel world;
     private int time;
     private Set<Building> unburntBuildings;
@@ -38,13 +48,18 @@ public class StandardPerception implements Perception {
 
     /**
        Create a StandardPerception object.
-       @param config The configuration of the kernel.
-       @param world The world model.
-     */
-    public StandardPerception(Config config, StandardWorldModel world) {
-        this.world = world;
-        this.viewDistance = config.getIntValue("vision");
-        this.farFireDistance = config.getIntValue("fire_cognition_spreading_speed");
+    */
+    public StandardPerception() {
+    }
+
+    @Override
+    public void initialise(Config config, WorldModel<? extends Entity> model) {
+        world = StandardWorldModel.createStandardWorldModel(model);
+        viewDistance = config.getIntValue(VIEW_DISTANCE_KEY);
+        farFireDistance = config.getIntValue(FAR_FIRE_DISTANCE_KEY, 0);
+        useFarFires = config.getBooleanValue(USE_FAR_FIRES_KEY, true);
+        hpPrecision = config.getIntValue(HP_PRECISION_KEY, DEFAULT_HP_PRECISION);
+        damagePrecision = config.getIntValue(DAMAGE_PRECISION_KEY, DEFAULT_DAMAGE_PRECISION);
         ignitionTimes = new HashMap<Building, Integer>();
         unburntBuildings = new HashSet<Building>();
         time = 0;
@@ -75,7 +90,7 @@ public class StandardPerception implements Perception {
             // Fieryness 1, 2 and 3 mean on fire
             // CHECKSTYLE:OFF:MagicNumber
             if (fieryness > 0 && fieryness < 4) {
-            // CHECKSTYLE:ON:MagicNumber
+                // CHECKSTYLE:ON:MagicNumber
                 ignitionTimes.put(next, time);
                 it.remove();
             }
@@ -128,16 +143,18 @@ public class StandardPerception implements Perception {
                 }
             }
             // Now look for far fires
-            for (Map.Entry<Building, Integer> next : ignitionTimes.entrySet()) {
-                Building b = next.getKey();
-                int ignitionTime = next.getValue();
-                int timeDelta = time - ignitionTime;
-                int visibleRange = timeDelta * farFireDistance;
-                int range = world.getDistance(agentEntity, b);
-                if (range <= visibleRange) {
-                    Building copy = (Building)b.copy();
-                    filterFarBuildingProperties(copy);
-                    result.add(copy);
+            if (useFarFires) {
+                for (Map.Entry<Building, Integer> next : ignitionTimes.entrySet()) {
+                    Building b = next.getKey();
+                    int ignitionTime = next.getValue();
+                    int timeDelta = time - ignitionTime;
+                    int visibleRange = timeDelta * farFireDistance;
+                    int range = world.getDistance(agentEntity, b);
+                    if (range <= visibleRange) {
+                        Building copy = (Building)b.copy();
+                        filterFarBuildingProperties(copy);
+                        result.add(copy);
+                    }
                 }
             }
         }
@@ -193,10 +210,10 @@ public class StandardPerception implements Perception {
             case BURIEDNESS:
                 break;
             case HP:
-                roundProperty((IntProperty)next, HP_PRECISION);
+                roundProperty((IntProperty)next, hpPrecision);
                 break;
             case DAMAGE:
-                roundProperty((IntProperty)next, DAMAGE_PRECISION);
+                roundProperty((IntProperty)next, damagePrecision);
                 break;
             default:
                 next.undefine();
@@ -205,7 +222,9 @@ public class StandardPerception implements Perception {
     }
 
     private void roundProperty(IntProperty p, int precision) {
-        p.setValue(round(p.getValue(), precision));
+        if (precision != 1) {
+            p.setValue(round(p.getValue(), precision));
+        }
     }
 
     private int round(int value, int precision) {

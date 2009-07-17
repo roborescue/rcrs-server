@@ -16,6 +16,7 @@ import kernel.ui.KernelGUIComponent;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
@@ -45,8 +46,15 @@ import javax.swing.event.ChangeEvent;
    Legacy implementation of perception with a GUI.
  */
 public class TunableStandardPerception implements Perception, KernelGUIComponent {
+    private static final boolean DEFAULT_USE_FAR_FIRES = true;
     private static final int DEFAULT_HP_PRECISION = 1000;
     private static final int DEFAULT_DAMAGE_PRECISION = 100;
+
+    private static final String VIEW_DISTANCE_KEY = "perception.tunable.view-distance";
+    private static final String FAR_FIRE_DISTANCE_KEY = "perception.tunable.far-fire-distance";
+    private static final String USE_FAR_FIRES_KEY = "perception.tunable.use-far-fires";
+    private static final String HP_PRECISION_KEY = "perception.tunable.hp-precision";
+    private static final String DAMAGE_PRECISION_KEY = "perception.tunable.damage-precision";
 
     private static final int PRECISION_STEP_SIZE = 1000;
     private static final int PRECISION_MAX = 10000;
@@ -63,22 +71,26 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     private int time;
     private Set<Building> unburntBuildings;
     private Map<Building, Integer> ignitionTimes;
+    private Config config;
 
     // Lock object for updating via the GUI.
     private final Object lock = new Object();
 
     /**
        Create a TunableStandardPerception object.
-       @param config The configuration of the kernel.
-       @param world The world model.
     */
-    public TunableStandardPerception(Config config, StandardWorldModel world) {
-        this.world = world;
-        this.viewDistance = config.getIntValue("vision");
-        this.farFireDistance = config.getIntValue("fire_cognition_spreading_speed");
-        useFarFires = true;
-        hpPrecision = DEFAULT_HP_PRECISION;
-        damagePrecision = DEFAULT_DAMAGE_PRECISION;
+    public TunableStandardPerception() {
+    }
+
+    @Override
+    public void initialise(Config newConfig, WorldModel<? extends Entity> model) {
+        world = StandardWorldModel.createStandardWorldModel(model);
+        this.config = newConfig;
+        viewDistance = config.getIntValue(VIEW_DISTANCE_KEY);
+        farFireDistance = config.getIntValue(FAR_FIRE_DISTANCE_KEY);
+        useFarFires = config.getBooleanValue(USE_FAR_FIRES_KEY, DEFAULT_USE_FAR_FIRES);
+        hpPrecision = config.getIntValue(HP_PRECISION_KEY, DEFAULT_HP_PRECISION);
+        damagePrecision = config.getIntValue(DAMAGE_PRECISION_KEY, DEFAULT_DAMAGE_PRECISION);
         ignitionTimes = new HashMap<Building, Integer>();
         unburntBuildings = new HashSet<Building>();
         time = 0;
@@ -125,6 +137,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
             }
         }
         time = timestep;
+        // Look for scripting elements in the config file
+        checkForScript();
     }
 
     @Override
@@ -291,6 +305,14 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
         }
     }
 
+    private void checkForScript() {
+        viewDistance = config.getIntValue(VIEW_DISTANCE_KEY + ".script." + time, viewDistance);
+        farFireDistance = config.getIntValue(FAR_FIRE_DISTANCE_KEY + ".script." + time, farFireDistance);
+        useFarFires = config.getBooleanValue(USE_FAR_FIRES_KEY + ".script." + time, useFarFires);
+        hpPrecision = config.getIntValue(HP_PRECISION_KEY + ".script." + time, hpPrecision);
+        damagePrecision = config.getIntValue(DAMAGE_PRECISION_KEY + ".script." + time, damagePrecision);
+    }
+
     private class TunePanel extends JPanel {
         private JSlider viewDistanceSlider;
         private JSlider hpPrecisionSlider;
@@ -309,40 +331,6 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
             add(new SliderComponent(hpPrecisionSlider, "HP precision"));
             add(new SliderComponent(damagePrecisionSlider, "Damage precision"));
             add(farFiresBox);
-
-
-            /*
-            GridBagLayout layout = new GridBagLayout();
-            GridBagConstraints c = new GridBagConstraints();
-            setLayout(layout);
-            c.gridwidth = 1;
-            c.gridheight = 1;
-            c.gridx = 0;
-            c.gridy = 0;
-            c.weightx = 1;
-            c.weighty = 0;
-            c.fill = GridBagConstraints.BOTH;
-            c.anchor = GridBagConstraints.CENTER;
-
-
-            addLabel("View distance", layout, c, 0);
-            addLabel("HP precision", layout, c, 1);
-            addLabel("Damage precision", layout, c, 2);
-            c.weighty = 1;
-            c.gridx = 0;
-            c.gridy = 1;
-            layout.setConstraints(viewDistanceSlider, c);
-            add(viewDistanceSlider);
-            c.gridx = 1;
-            layout.setConstraints(hpPrecisionSlider, c);
-            add(hpPrecisionSlider);
-            c.gridx = 2;
-            layout.setConstraints(damagePrecisionSlider, c);
-            add(damagePrecisionSlider);
-            c.gridx = 3;
-            layout.setConstraints(farFiresBox, c);
-            add(farFiresBox);
-            */
             viewDistanceSlider.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {

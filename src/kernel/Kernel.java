@@ -19,6 +19,16 @@ import kernel.log.FileLogWriter;
    The Robocup Rescue kernel.
  */
 public class Kernel {
+    /**
+       The config key describing the number of timesteps to run.
+     */
+    public static final String TIMESTEPS_KEY = "kernel.timesteps";
+
+    /**
+       The config key describing the number of timesteps to ignore agent commands.
+     */
+    public static final String IGNORE_AGENT_COMMANDS_KEY = "kernel.agents.ignoreuntil";
+
     //    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
@@ -57,8 +67,8 @@ public class Kernel {
         sims = new HashSet<Simulator>();
         viewers = new HashSet<Viewer>();
         time = 0;
-        freezeTime = config.getIntValue("steps_agents_frozen", 0);
-        agentTime = config.getIntValue("step");
+        freezeTime = config.getIntValue(IGNORE_AGENT_COMMANDS_KEY, 0);
+        agentTime = config.getIntValue(TIMESTEPS_KEY);
         agentCommandsLastTimestep = new HashSet<Command>();
         try {
             String logName = config.getValue("kernel.logname");

@@ -15,6 +15,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -39,11 +40,13 @@ public class ChannelCommunicationModel implements CommunicationModel {
 
     /**
        Construct a ChannelCommunicationModel.
-       @param config The kernel configuration.
-       @param world The world model.
     */
-    public ChannelCommunicationModel(Config config, StandardWorldModel world) {
-        this.world = world;
+    public ChannelCommunicationModel() {
+    }
+
+    @Override
+    public void initialise(Config config, WorldModel<? extends Entity> model) {
+        world = StandardWorldModel.createStandardWorldModel(model);
         // Read the channel information
         channels = new HashMap<Integer, Channel>();
         int count = config.getIntValue("channel_count");
