@@ -12,6 +12,7 @@ import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.WorldModelListener;
 import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.Pair;
 
 /**
@@ -297,7 +298,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     /**
        Get the world bounds.
        @return A pair of coordinates for the top left and bottom right corners.
-     */
+    */
     public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> getWorldBounds() {
         if (!indexed) {
             index();
@@ -305,6 +306,37 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         Pair<Integer, Integer> topLeft = new Pair<Integer, Integer>(minX, minY);
         Pair<Integer, Integer> bottomRight = new Pair<Integer, Integer>(maxX, maxY);
         return new Pair<Pair<Integer, Integer>, Pair<Integer, Integer>>(topLeft, bottomRight);
+    }
+
+    /**
+       Create a StandardWorldModel that wraps an existing world model. If the existing model is already a StandardWorldModel then it will be returned directly, otherwise a new StandardWorldModel will be created that contains all the entities in the existing model that are instances of StandardEntity. Changes to the existing world model will be reflected in the returned StandardWorldModel.
+       @param existing The existing world model to wrap. This may be null.
+       @return The existing world model if it is an instance of StandardWorldModel; a new model otherwise.
+    */
+    public static StandardWorldModel createStandardWorldModel(WorldModel<? extends Entity> existing) {
+        if (existing instanceof StandardWorldModel) {
+            return (StandardWorldModel)existing;
+        }
+        else {
+            final StandardWorldModel result = new StandardWorldModel();
+            if (existing != null) {
+                result.addEntities(existing.getAllEntities());
+                existing.addWorldModelListener(new WorldModelListener<Entity>() {
+                        @Override
+                        public void entityAdded(WorldModel<? extends Entity> model, Entity e) {
+                            result.addEntity(e);
+                        }
+
+                        @Override
+                        public void entityRemoved(WorldModel<? extends Entity> model, Entity e) {
+                            if (e instanceof StandardEntity) {
+                                result.removeEntity((StandardEntity)e);
+                            }
+                        }
+                    });
+            }
+            return result;
+        }
     }
 
     private int getXCell(int x) {
