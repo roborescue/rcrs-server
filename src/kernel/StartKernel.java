@@ -60,6 +60,8 @@ public final class StartKernel {
     private static final String OPTIONS_KEY_SUFFIX = ".options";
     private static final String AUTOSTART_KEY_SUFFIX = ".auto";
 
+    private static final String COMMAND_FILTERS_KEY = "startup.commandfilters";
+
     /** Utility class: private constructor. */
     private StartKernel() {}
 
@@ -250,9 +252,10 @@ public final class StartKernel {
             }
             Perception perception = dialog.getPerception();
             CommunicationModel comms = dialog.getCommunicationModel();
+            CommandFilter filter = makeCommandFilter(config);
             perception.initialise(config, worldModel);
             comms.initialise(config, worldModel);
-            Kernel kernel = new Kernel(config, perception, comms, worldModel);
+            Kernel kernel = new Kernel(config, perception, comms, worldModel, filter);
             ComponentManager componentManager = new StandardComponentManager(kernel, worldModel, config);
             return new KernelInfo(kernel, perception, comms, componentManager, new StandardWorldModelViewerComponent(worldModel));
         }
@@ -279,6 +282,19 @@ public final class StartKernel {
                 }
             }
             return instances;
+        }
+
+        private CommandFilter makeCommandFilter(Config config) {
+            ChainedCommandFilter result = new ChainedCommandFilter();
+            List<String> classNames = config.getArrayValue(COMMAND_FILTERS_KEY);
+            for (String next : classNames) {
+                System.out.println("Command filter found: '" + next + "'");
+                CommandFilter f = instantiate(next, CommandFilter.class);
+                if (f != null) {
+                    result.addFilter(f);
+                }
+            }
+            return result;
         }
     }
 

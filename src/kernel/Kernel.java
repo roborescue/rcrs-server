@@ -24,11 +24,6 @@ public class Kernel {
      */
     public static final String TIMESTEPS_KEY = "kernel.timesteps";
 
-    /**
-       The config key describing the number of timesteps to ignore agent commands.
-     */
-    public static final String IGNORE_AGENT_COMMANDS_KEY = "kernel.agents.ignoreuntil";
-
     //    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
@@ -41,8 +36,9 @@ public class Kernel {
     private Collection<Simulator> sims;
     private Collection<Viewer> viewers;
     private int time;
-    private int freezeTime;
     private Collection<Command> agentCommandsLastTimestep;
+
+    private CommandFilter commandFilter;
 
     private int agentTime;
 
@@ -52,22 +48,24 @@ public class Kernel {
        @param perception A perception calculator.
        @param communicationModel A communication model.
        @param worldModel The world model.
+       @param commandFilter An optional command filter. This may be null.
        @throws KernelException If there is a problem constructing the kernel.
     */
     public Kernel(Config config,
                   Perception perception,
                   CommunicationModel communicationModel,
-                  WorldModel<? extends Entity> worldModel) throws KernelException {
+                  WorldModel<? extends Entity> worldModel,
+                  CommandFilter commandFilter) throws KernelException {
         //        this.config = config;
         this.perception = perception;
         this.communicationModel = communicationModel;
         this.worldModel = worldModel;
+        this.commandFilter = commandFilter;
         listeners = new HashSet<KernelListener>();
         agents = new HashSet<Agent>();
         sims = new HashSet<Simulator>();
         viewers = new HashSet<Viewer>();
         time = 0;
-        freezeTime = config.getIntValue(IGNORE_AGENT_COMMANDS_KEY, 0);
         agentTime = config.getIntValue(TIMESTEPS_KEY);
         agentCommandsLastTimestep = new HashSet<Command>();
         try {
@@ -223,7 +221,7 @@ public class Kernel {
        Get the world model.
        @return The world model.
     */
-    public WorldModel getWorldModel() {
+    public WorldModel<? extends Entity> getWorldModel() {
         return worldModel;
     }
 
@@ -277,10 +275,12 @@ public class Kernel {
             now = System.currentTimeMillis();
         }
         Collection<Command> result = new HashSet<Command>();
-        if (timestep >= freezeTime) {
-            for (Agent next : agents) {
-                result.addAll(next.getAgentCommands(timestep));
+        for (Agent next : agents) {
+            Collection<Command> commands = next.getAgentCommands(timestep);
+            if (commandFilter != null) {
+                commandFilter.filter(commands, next);
             }
+            result.addAll(commands);
         }
         return result;
     }
