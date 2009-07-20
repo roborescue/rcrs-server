@@ -12,6 +12,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -20,6 +24,7 @@ import kernel.KernelException;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Building;
@@ -59,6 +64,9 @@ public class InlineWorldModelCreator {
             maxID = Math.max(maxID, readBuildings(baseDir, world));
             nextAgentID = maxID + 1;
             readGISIni(baseDir, world);
+            System.out.print("Validating map...");
+            validate(world);
+            System.out.println("done");
             world.index(config.getIntValue("gis.map.meshsize"));
             return world;
         }
@@ -210,7 +218,7 @@ public class InlineWorldModelCreator {
        Get the next agent ID.
        @return The next agent ID.
      */
-    int nextAgentID() {
+    private int nextAgentID() {
         return nextAgentID++;
     }
 
@@ -218,8 +226,145 @@ public class InlineWorldModelCreator {
        Get the initial water quantity for fire brigades.
        @return The initial water quantity.
      */
-    int initialWater() {
+    private int initialWater() {
         return initialWater;
+    }
+
+    private void validate(StandardWorldModel world) throws KernelException {
+        Set<StandardEntity> toVisit = new HashSet<StandardEntity>();
+        System.out.print("validating objects...");
+        for (StandardEntity next : world) {
+            if (next instanceof Building) {
+                validateBuilding((Building)next, world);
+                toVisit.add(next);
+            }
+            if (next instanceof Road) {
+                validateRoad((Road)next, world);
+                toVisit.add(next);
+            }
+            if (next instanceof Node) {
+                validateNode((Node)next, world);
+                toVisit.add(next);
+            }
+        }
+        System.out.print("validating connectivity...");
+        validateConnectivity(toVisit, world);
+    }
+
+    private void validateBuilding(Building b, StandardWorldModel world) throws KernelException {
+        List<EntityID> entrances = b.getEntrances();
+        for (EntityID next : entrances) {
+            // Check that the entrance is a node
+            StandardEntity e = world.getEntity(next);
+            if (!(e instanceof Node)) {
+                throw new KernelException("Map is invalid: building " + b + " has " + e + " as an entrance.");
+            }
+            // Check that the node knows about the building
+            Node n = (Node)e;
+            List<EntityID> edges = n.getEdges();
+            if (!edges.contains(b.getID())) {
+                throw new KernelException("Map is invalid: building " + b + " has " + e + " as an entrance but the node does not have the building as an edge.");
+            }
+        }
+    }
+
+    private void validateRoad(Road r, StandardWorldModel world) throws KernelException {
+        StandardEntity head = r.getHead(world);
+        StandardEntity tail = r.getTail(world);
+        if (!(head instanceof Node)) {
+            throw new KernelException("Map is invalid: road " + r + " has " + head + " as head.");
+        }
+        if (!(tail instanceof Node)) {
+            throw new KernelException("Map is invalid: road " + r + " has " + tail + " as tail.");
+        }
+        // Check that the head and tail know about the road
+        Node n = (Node)head;
+        List<EntityID> edges = n.getEdges();
+        if (!edges.contains(r.getID())) {
+            throw new KernelException("Map is invalid: road " + r + " has " + n + " as a head but the node does not have the road as an edge.");
+        }
+        n = (Node)tail;
+        edges = n.getEdges();
+        if (!edges.contains(r.getID())) {
+            throw new KernelException("Map is invalid: road " + r + " has " + n + " as a tail but the node does not have the road as an edge.");
+        }
+        if (r.getLinesToHead() < 1) {
+            throw new KernelException("Map is invalid: road " + r + " has " + r.getLinesToHead() + " lines to head.");
+        }
+        if (r.getLinesToTail() < 1) {
+            throw new KernelException("Map is invalid: road " + r + " has " + r.getLinesToTail() + " lines to tail.");
+        }
+        if (r.getLinesToHead() != r.getLinesToTail()) {
+            throw new KernelException("Map is invalid: road " + r + " has " + r.getLinesToHead() + " lines to head and " + r.getLinesToTail() + " lines to tail.");
+        }
+    }
+
+    private void validateNode(Node n, StandardWorldModel world) throws KernelException {
+        // Check that all edges know about the node
+        EntityID nodeID = n.getID();
+        for (EntityID next : n.getEdges()) {
+            StandardEntity e = world.getEntity(next);
+            if (e instanceof Road) {
+                EntityID head = ((Road)e).getHead();
+                EntityID tail = ((Road)e).getTail();
+                if (!nodeID.equals(head) && !nodeID.equals(tail)) {
+                    throw new KernelException("Map is invalid: node " + n + " has " + e + " as an edge but is neither the head nor tail of that road.");
+                }
+            }
+            else if (e instanceof Building) {
+                if (!((Building)e).getEntrances().contains(nodeID)) {
+                    throw new KernelException("Map is invalid: node " + n + " has " + e + " as an edge but is not an entrance to that building.");
+                }
+            }
+            else {
+                throw new KernelException("Map is invalid: node " + n + " has " + e + " as an edge.");
+            }
+        }
+        // Check that shortcut/timing/pocketToTurn are the right lengths
+        int count = n.getEdges().size();
+        if (n.getShortcutToTurn().length != count) {
+            throw new KernelException("Map is invalid: node " + n + " has " + count + " edges but shortcutToTurn has " + n.getShortcutToTurn().length + " entries");
+        }
+        if (n.getPocketToTurnAcross().length != (count * 2)) {
+            throw new KernelException("Map is invalid: node " + n + " has " + count + " edges but pocketToTurnAcross has " + n.getPocketToTurnAcross().length + " entries");
+        }
+        // CHECKSTYLE:OFF:MagicNumber
+        if (n.getSignalTiming().length != (count * 3)) {
+        // CHECKSTYLE:ON:MagicNumber
+            throw new KernelException("Map is invalid: node " + n + " has " + count + " edges but signalTiming has " + n.getSignalTiming().length + " entries");
+        }
+    }
+
+    private void validateConnectivity(Collection<StandardEntity> entities, StandardWorldModel world) throws KernelException {
+        Set<StandardEntity> visited = new HashSet<StandardEntity>(entities.size());
+        List<StandardEntity> open = new LinkedList<StandardEntity>();
+        open.add(entities.iterator().next());
+        while (!open.isEmpty()) {
+            StandardEntity next = open.remove(0);
+            if (visited.contains(next)) {
+                continue;
+            }
+            visited.add(next);
+            entities.remove(next);
+            if (next instanceof Road) {
+                open.add(((Road)next).getHead(world));
+                open.add(((Road)next).getTail(world));
+            }
+            if (next instanceof Building) {
+                for (EntityID entrance : ((Building)next).getEntrances()) {
+                    open.add(world.getEntity(entrance));
+                }
+            }
+            if (next instanceof Node) {
+                for (EntityID edge : ((Node)next).getEdges()) {
+                    open.add(world.getEntity(edge));
+                }
+            }
+        }
+        if (!entities.isEmpty()) {
+            throw new KernelException("Map is invalid: connectivity test failed. Visited " + visited.size() + " entities; missed " + entities.size() + " entities.");
+        }
+        System.out.print("connectivity ok (" + visited.size() + " entities)...");
     }
 
     private enum Entry {
