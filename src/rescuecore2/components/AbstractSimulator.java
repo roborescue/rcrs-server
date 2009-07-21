@@ -5,9 +5,11 @@ import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
+import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.worldmodel.Entity;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
    Abstract base class for simulator implementations.
@@ -18,6 +20,8 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
        The ID of this simulator.
     */
     protected int simulatorID;
+
+    private int lastUpdateTime;
 
     /**
        Create a new AbstractSimulator.
@@ -38,6 +42,7 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
         super.postConnect(c, entities);
         this.simulatorID = id;
         c.addConnectionListener(new SimulatorListener());
+        lastUpdateTime = 0;
         postConnect();
     }
 
@@ -48,17 +53,25 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
     }
 
     /**
-       Handle an Update object from the server. The default implementation does nothing.
+       Handle an Update object from the server. The default implementation just updates the world model.
        @param u The Update object.
      */
     protected void handleUpdate(Update u) {
+        Collection<Entity> entities = u.getUpdatedEntities();
+        int time = u.getTime();
+        if (time != lastUpdateTime + 1) {
+            System.out.println("WARNING: Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
+        }
+        lastUpdateTime = time;
+        model.merge(entities);
     }
 
     /**
-       Handle a Commands object from the server. The default implementation does nothing.
+       Handle a Commands object from the server. The default implementation tells the kernel that nothing has changed.
        @param c The Commands object.
      */
     protected void handleCommands(Commands c) {
+        send(new SKUpdate(simulatorID, c.getTime(), new HashSet<Entity>()));
     }
 
     private class SimulatorListener implements ConnectionListener {

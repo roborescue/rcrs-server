@@ -33,11 +33,13 @@ public class SKUpdate extends AbstractMessage implements Control {
     /**
        SKUpdate message with a specific ID and data component.
        @param id The id of the simulator sending the update.
+       @param time The timestep this update refers to.
        @param data The updated objects.
      */
-    public SKUpdate(int id, Collection<? extends Entity> data) {
+    public SKUpdate(int id, int time, Collection<? extends Entity> data) {
         this();
         this.id.setValue(id);
+        this.time.setValue(time);
         this.update.setEntities(data);
     }
 
