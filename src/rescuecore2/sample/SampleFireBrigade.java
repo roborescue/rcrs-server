@@ -24,6 +24,11 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     private static final int EXTINGUISH_POWER = 1000;
 
     @Override
+    public String toString() {
+        return "Sample fire brigade";
+    }
+
+    @Override
     protected void postConnect() {
         super.postConnect();
         world.indexClass(StandardEntityType.BUILDING, StandardEntityType.REFUGE);

@@ -15,6 +15,11 @@ import rescuecore2.standard.entities.StandardEntityType;
  */
 public class SampleCentre extends AbstractAgent<StandardEntity> {
     @Override
+    public String toString() {
+        return "Sample centre";
+    }
+
+    @Override
     protected void think(int time, List<EntityID> changed) {
     }
 

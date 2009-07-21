@@ -23,6 +23,11 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     private Collection<StandardEntity> unexploredBuildings;
 
     @Override
+    public String toString() {
+        return "Sample ambulance team";
+    }
+
+    @Override
     protected void postConnect() {
         super.postConnect();
         world.indexClass(StandardEntityType.CIVILIAN, StandardEntityType.FIRE_BRIGADE, StandardEntityType.POLICE_FORCE, StandardEntityType.AMBULANCE_TEAM, StandardEntityType.REFUGE, StandardEntityType.BUILDING);

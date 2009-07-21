@@ -17,6 +17,11 @@ import rescuecore2.standard.messages.AKClear;
  */
 public class SamplePoliceForce extends AbstractSampleAgent {
     @Override
+    public String toString() {
+        return "Sample police force";
+    }
+
+    @Override
     protected void postConnect() {
         super.postConnect();
         world.indexClass(StandardEntityType.ROAD);
