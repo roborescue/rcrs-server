@@ -1,9 +1,13 @@
 <project default="jars" name="Robocup rescue simulation software">
   <!-- Common properties: source, build, jar and lib directories -->
+  <!-- Source code for all modules -->
   <property name="src.dir" value="${basedir}/src"/>
-  <property name="build.dir" value="${basedir}/build"/>
-  <property name="jar.dir" value="${basedir}/jars"/>
+  <!-- 3rd party libraries used by modules -->
   <property name="lib.dir" value="${basedir}/lib"/>
+  <!-- Output directory - classes, unit test results etc -->
+  <property name="build.dir" value="${basedir}/build"/>
+  <!-- Output directory - jar'd class files for all modules -->
+  <property name="jar.dir" value="${basedir}/jars"/>
 
   <!-- Compiled classes go here -->
   <property name="classes.dir" value="${build.dir}/classes"/>
@@ -19,8 +23,8 @@
   <property name="cobertura.coveragefile" value="${cobertura.output.dir}/cobertura.ser"/>
   <property name="cobertura.instrument.dir" value="${build.dir}/jars-instrumented"/>
 
-  <!-- Supplementary stuff like the checkstyle definition file -->
-  <property name="supplement.dir" value="${basedir}/supplement"/>
+  <!-- Build tools directory -->
+  <property name="buildtools.dir" value="${basedir}/build-tools"/>
 
   <!-- The type of output for findbugs and cobertura. Can be HTML or XML -->
   <property name="findbugs.output.format" value="html"/>
@@ -33,11 +37,11 @@
   <property name="javac.flags" value="-Xlint:unchecked"/>
 
   <!-- Findbugs and cobertura home directories -->
-  <property name="findbugs.home" value="${lib.dir}/findbugs-1.3.8"/>
-  <property name="cobertura.home" value="${lib.dir}/cobertura-1.9.1"/>
+  <property name="findbugs.home" value="${buildtools.dir}/findbugs"/>
+  <property name="cobertura.home" value="${buildtools.dir}/cobertura"/>
 
   <!-- Kernel startup arguments. -->
-  <property name="kernel.startup.config.files.default" value="boot/kernel.cfg boot/gis.cfg boot/startup.cfg boot/comms.cfg boot/perception.cfg boot/fire.cfg"/>
+  <property name="kernel.startup.config.files.default" value="boot/kernel.cfg boot/gis.cfg boot/startup.cfg boot/comms.cfg boot/perception.cfg boot/fire.cfg boot/ui.cfg"/>
   <property name="kernel.startup.config.files.user" value=""/>
   <property name="kernel.startup.config" value=""/>
   <property name="kernel.startup.args" value=""/>
@@ -64,6 +68,9 @@
     <path refid="path.jars"/>
     <path refid="path.lib"/>
     <path refid="path.cobertura"/>
+    <fileset dir="${test.dir}">
+      <include name="junit.jar"/>
+    </fileset>
     <pathelement location="${test.dir}"/>
   </path>
 
@@ -81,7 +88,7 @@
   </path>
 
   <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/checkstyle-all-5.0-beta2.jar"/>
+  <taskdef resource="checkstyletask.properties" classpath="${buildtools.dir}/checkstyle.jar"/>
 
   <!-- Findbugs task definition -->
   <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
@@ -91,8 +98,8 @@
 
   <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
     <classpath>
-      <pathelement location="${lib.dir}/ant-junit.jar"/>
-      <pathelement location="${lib.dir}/junit-4.5.jar"/>
+      <pathelement location="${buildtools.dir}/ant-junit.jar"/>
+      <pathelement location="${test.dir}/junit.jar"/>
     </classpath>
   </taskdef>
 
@@ -251,14 +258,14 @@
 
   <!-- Useful tools: checkstyle, findbugs, cobertura -->
   <target name="checkstyle" depends="compile" description="Run Checkstyle on all packages">
-    <checkstyle config="${supplement.dir}/checkstyle.xml" classpathref="path.all" failOnViolation="false">
+    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.all" failOnViolation="false">
       <fileset dir="${src.dir}">
         <include name="kernel/**/*.java"/>
         <include name="rescuecore2/**/*.java"/>
       </fileset>
       <formatter type="xml" toFile="${checkstyle.output.dir}/checkstyle_errors.xml"/>
     </checkstyle>
-    <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${supplement.dir}/checkstyle-noframes-sorted.xsl"/>
+    <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
   <target name="findbugs" depends="jars" description="Run Findbugs on all packages">

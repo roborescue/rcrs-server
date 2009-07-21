@@ -1,3 +1,14 @@
+version 1.9.2:
+	* Cobertura is now thread safe.
+	* Fix for FileLocker exception when writing coverage data 
+	  (java.lang.IllegalStateException: Shutdown in progress) that started
+	  to appear with Java 6 update 14. (Chris van Es)
+	* Fix for bug "Unix scripts behave oddly due to DOS format - ID: 2788621"
+
+version 1.9.1.1:
+	* Just a copy of 1.9.1 with a corrected Maven POM file (cobertura-runtime.pom).
+	  A new version has to be created to get it uploaded to the central Maven repo.
+
 version 1.9.1:
 	* Complexity calculation now works with Java 5 language
 	  features such as Annotations. (Tri Bao Ho)
