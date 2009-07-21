@@ -7,6 +7,9 @@
 # Ignore temporary files
 *~
 
+# Ignore log files
+*.log
+
 # Ignore the build and jars directories
 build/
 jars/
