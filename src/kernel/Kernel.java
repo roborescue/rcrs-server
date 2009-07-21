@@ -255,8 +255,7 @@ public class Kernel {
 
     private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException {
         perception.setTime(timestep);
-        communicationModel.setTime(timestep);
-        Map<Agent, Collection<Message>> comms = communicationModel.process(agents, commandsLastTimestep);
+        Map<Agent, Collection<Message>> comms = communicationModel.process(timestep, agents, commandsLastTimestep);
         for (Agent next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();

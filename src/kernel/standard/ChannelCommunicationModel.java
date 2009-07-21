@@ -72,8 +72,10 @@ public class ChannelCommunicationModel implements CommunicationModel {
     }
 
     @Override
-    public Map<Agent, Collection<Message>> process(Collection<Agent> agents, Collection<Command> agentCommands) {
+    public Map<Agent, Collection<Message>> process(int time, Collection<Agent> agents, Collection<Command> agentCommands) {
+        // Reset all channels
         for (Channel next : channels.values()) {
+            next.timestep();
             next.setAgents(agents);
         }
         // Look for subscription commands
@@ -106,13 +108,6 @@ public class ChannelCommunicationModel implements CommunicationModel {
             result.put(agent, msgs);
         }
         return result;
-    }
-
-    @Override
-    public void setTime(int timestep) {
-        for (Channel next : channels.values()) {
-            next.timestep();
-        }
     }
 
     private Agent findAgent(Collection<Agent> agents, Entity e) {

@@ -53,7 +53,7 @@ public class StandardCommunicationModel implements CommunicationModel {
     }
 
     @Override
-    public Map<Agent, Collection<Message>> process(Collection<Agent> agents, Collection<Command> agentCommands) {
+    public Map<Agent, Collection<Message>> process(int time, Collection<Agent> agents, Collection<Command> agentCommands) {
         Map<Agent, Collection<Message>> all = new HashMap<Agent, Collection<Message>>();
         for (Agent agent : agents) {
             //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
@@ -84,10 +84,6 @@ public class StandardCommunicationModel implements CommunicationModel {
             all.put(agent, result);
         }
         return all;
-    }
-
-    @Override
-    public void setTime(int timestep) {
     }
 
     private boolean canHear(Entity receiver, StandardEntity sender) {
