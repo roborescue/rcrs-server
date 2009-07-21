@@ -1,5 +1,7 @@
 package kernel;
 
+import static rescuecore2.misc.JavaTools.instantiate;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -199,24 +201,6 @@ public final class StartKernel {
         }
         try {
             return clazz.newInstance();
-        }
-        catch (IllegalAccessException e) {
-            System.err.println("Could not instantiate class " + classname + ": " + e);
-        }
-        catch (InstantiationException e) {
-            System.err.println("Could not instantiate class " + classname + ": " + e);
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T instantiate(String classname, Class<T> superclazz) {
-        try {
-            Class<T> clazz = (Class<T>)Class.forName(classname);
-            return clazz.newInstance();
-        }
-        catch (ClassNotFoundException e) {
-            System.err.println("Could not find class " + classname + ": " + e);
         }
         catch (IllegalAccessException e) {
             System.err.println("Could not instantiate class " + classname + ": " + e);

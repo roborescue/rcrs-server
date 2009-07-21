@@ -1,5 +1,7 @@
 package kernel.ui;
 
+import static rescuecore2.misc.JavaTools.instantiate;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -10,13 +12,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.ArrayList;
 
 import kernel.Kernel;
 import kernel.KernelException;
 import kernel.ComponentManager;
-import kernel.standard.TestViewer;
-import kernel.standard.ControlledAgentGUI;
 
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.misc.Pair;
@@ -134,19 +135,23 @@ public class KernelControlPanel extends JPanel {
     }
 
     private void addAgent() {
-        //        Component[] as = {new SampleAgentConnector()};
-        //        addComponent(as, "agent");
+        Component[] as = createComponents("agents");
+        addComponent(as, "agent");
     }
 
     private void removeAgent() {
     }
+
     private void addSim() {
+        Component[] ss = createComponents("simulators");
+        addComponent(ss, "simulator");
     }
+
     private void removeSim() {
     }
 
     private void addViewer() {
-        Component[] vs = {new TestViewer(), new ControlledAgentGUI()};
+        Component[] vs = createComponents("viewers");
         addComponent(vs, "viewer");
     }
 
@@ -254,6 +259,19 @@ public class KernelControlPanel extends JPanel {
 
     private Pair<Connection, Connection> createConnectionPair() {
         return StreamConnection.createConnectionPair();
+    }
+
+    private Component[] createComponents(String type) {
+        List<String> classNames = config.getArrayValue("kernel.ui." + type);
+        List<Component> instances = new ArrayList<Component>();
+        for (String next : classNames) {
+            System.out.println("Option found: '" + next + "'");
+            Component c = instantiate(next, Component.class);
+            if (c != null) {
+                instances.add(c);
+            }
+        }
+        return instances.toArray(new Component[0]);
     }
 
     private class RunThread extends WorkerThread {
