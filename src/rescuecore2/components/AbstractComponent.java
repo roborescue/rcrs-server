@@ -1,5 +1,6 @@
 package rescuecore2.components;
 
+import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.messages.Message;
@@ -60,5 +61,9 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
             // Ignore and log
             System.out.println(e);
         }
+    }
+
+    @Override
+    public void initialise(Config config) {
     }
 }
