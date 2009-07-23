@@ -77,6 +77,7 @@ public class Kernel {
             throw new KernelException("Couldn't open log file for writing", e);
         }
         log.logInitialConditions(worldModel);
+        commandFilter.initialise(config, this);
     }
 
     /**
