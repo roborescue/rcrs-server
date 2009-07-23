@@ -1,6 +1,7 @@
 package kernel.ui;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -14,6 +15,13 @@ import javax.swing.event.ListDataListener;
  */
 public class ListModelList<T> extends AbstractListModel implements List<T>, ListModel {
     private List<T> downstream;
+
+    /**
+       Construct a ListModelList backed by an ArrayList.
+     */
+    public ListModelList() {
+        this(new ArrayList<T>());
+    }
 
     /**
        Construct a ListModelList backed by a List.
@@ -39,7 +47,7 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
     public boolean add(T t) {
         boolean result = downstream.add(t);
         if (result) {
-            fireIntervalAdded(this, downstream.size() - 1, downstream.size() - 1);
+            fireIntervalAdded(this, Math.max(0, downstream.size() - 1), Math.max(0, downstream.size() - 1));
         }
         return result;
     }
@@ -47,21 +55,21 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
     @Override
     public void add(int index, T element) {
         downstream.add(index, element);
-        fireContentsChanged(this, index, downstream.size() - 1);
+        fireContentsChanged(this, index, Math.max(0, downstream.size() - 1));
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
         int oldSize = downstream.size();
         boolean result = downstream.addAll(c);
-        fireIntervalAdded(this, oldSize, downstream.size() - 1);
+        fireIntervalAdded(this, oldSize, Math.max(0, downstream.size() - 1));
         return result;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         boolean result = downstream.addAll(index, c);
-        fireContentsChanged(this, index, downstream.size() - 1);
+        fireContentsChanged(this, index, Math.max(0, downstream.size() - 1));
         return result;
     }
 
@@ -69,7 +77,7 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
     public void clear() {
         int size = downstream.size();
         downstream.clear();
-        fireIntervalRemoved(this, 0, size - 1);
+        fireIntervalRemoved(this, 0, Math.max(0, size - 1));
     }
 
     @Override
@@ -139,8 +147,8 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
         int oldSize = downstream.size();
         boolean result = downstream.removeAll(c);
         if (result) {
-            fireIntervalRemoved(this, downstream.size(), oldSize - 1);
-            fireContentsChanged(this, 0, downstream.size() - 1);
+            fireIntervalRemoved(this, downstream.size(), Math.max(0, oldSize - 1));
+            fireContentsChanged(this, 0, Math.max(0, downstream.size() - 1));
         }
         return result;
     }
@@ -150,8 +158,8 @@ public class ListModelList<T> extends AbstractListModel implements List<T>, List
         int oldSize = downstream.size();
         boolean result = downstream.retainAll(c);
         if (result) {
-            fireIntervalRemoved(this, downstream.size(), oldSize - 1);
-            fireContentsChanged(this, 0, downstream.size() - 1);
+            fireIntervalRemoved(this, downstream.size(), Math.max(0, oldSize - 1));
+            fireContentsChanged(this, 0, Math.max(0, downstream.size() - 1));
         }
         return result;
     }

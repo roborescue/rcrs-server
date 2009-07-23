@@ -55,10 +55,8 @@ public class LogViewer extends JPanel {
     private JSlider slider;
     private JList commandsList;
     private JList updatesList;
-    private ListModelList<Command> commandsModel;
-    private ListModelList<Entity> updatesModel;
-    private List<Command> commands;
-    private List<Entity> updates;
+    private ListModelList<Command> commands;
+    private ListModelList<Entity> updates;
     private WorldModel<? extends Entity> world;
     private WorldModelViewer worldViewer;
     private JButton down;
@@ -112,17 +110,17 @@ public class LogViewer extends JPanel {
                 }
             });
         JPanel lists = new JPanel(new GridLayout(0, 1));
-        commands = new ArrayList<Command>();
-        commandsModel = new ListModelList<Command>(commands);
-        commandsList = new JList(commandsModel);
-        updates = new ArrayList<Entity>();
-        updatesModel = new ListModelList<Entity>(updates);
-        updatesList = new JList(updatesModel);
+        commands = new ListModelList<Command>();
+        commandsList = new JList(commands);
+        updates = new ListModelList<Entity>();
+        updatesList = new JList(updates);
         JScrollPane s = new JScrollPane(commandsList);
         s.setBorder(BorderFactory.createTitledBorder("Commands"));
+        s.setPreferredSize(commandsList.getPreferredScrollableViewportSize());
         lists.add(s);
         s = new JScrollPane(updatesList);
         s.setBorder(BorderFactory.createTitledBorder("Updates"));
+        s.setPreferredSize(updatesList.getPreferredScrollableViewportSize());
         lists.add(s);
         timestep = new JLabel("Timestep: 0");
         worldViewer = new WorldModelViewer();
@@ -158,6 +156,9 @@ public class LogViewer extends JPanel {
             worldViewer.repaint();
             down.setEnabled(time != 0);
             up.setEnabled(time != maxTime);
+            System.out.println("Showing time " + time);
+            System.out.println(commands.size() + " commands");
+            System.out.println(updates.size() + " updates");
         }
         catch (KernelLogException e) {
             JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);

@@ -206,7 +206,11 @@ public class StreamLogReader implements LogReader {
         WorldModel<? extends Entity> newWorld = new DefaultWorldModel<Entity>(Entity.class);
         WorldModel<? extends Entity> oldWorld = getWorldModel(time - 1);
         if (oldWorld != null) {
-            newWorld.merge(oldWorld.getAllEntities());
+            Set<Entity> copy = new HashSet<Entity>();
+            for (Entity next : oldWorld) {
+                copy.add(next.copy());
+            }
+            newWorld.merge(copy);
         }
         newWorld.merge(u);
         worldModels.put(time, newWorld);
