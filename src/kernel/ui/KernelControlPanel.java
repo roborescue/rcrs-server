@@ -22,11 +22,13 @@ import kernel.ComponentManager;
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
+import rescuecore2.config.NoSuchConfigOptionException;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.StreamConnection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
+import rescuecore2.components.ComponentInitialisationException;
 
 /**
    A JComponent containing various controls for the kernel GUI.
@@ -268,7 +270,16 @@ public class KernelControlPanel extends JPanel {
             System.out.println("Option found: '" + next + "'");
             Component c = instantiate(next, Component.class);
             if (c != null) {
-                instances.add(c);
+                try {
+                    c.initialise(config);
+                    instances.add(c);
+                }
+                catch (NoSuchConfigOptionException e) {
+                    e.printStackTrace();
+                }
+                catch (ComponentInitialisationException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return instances.toArray(new Component[0]);

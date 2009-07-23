@@ -1,5 +1,6 @@
 package kernel.standard;
 
+import rescuecore2.config.Config;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.AbstractViewer;
 import rescuecore2.components.Agent;
@@ -46,6 +47,10 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
     private List<ControlledAmbulanceTeam> ats;
     private ListListModel atListModel;
     private JList atList;
+
+    @Override
+    public void initialise(Config config) {
+    }
 
     @Override
     public String toString() {
