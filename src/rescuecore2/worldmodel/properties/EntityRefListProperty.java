@@ -60,6 +60,22 @@ public class EntityRefListProperty extends AbstractProperty {
         setDefined();
     }
 
+    /**
+       Add a value to the list.
+       @param id The id to add.
+     */
+    public void addValue(EntityID id) {
+        ids.add(id);
+        setDefined();
+    }
+
+    /**
+       Remove all entries from this list but keep it defined.
+     */
+    public void clearValues() {
+        ids.clear();
+    }
+
     @Override
     public void takeValue(Property p) {
         if (p instanceof EntityRefListProperty) {
