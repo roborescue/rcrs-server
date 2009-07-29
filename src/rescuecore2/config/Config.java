@@ -105,12 +105,13 @@ public class Config {
                 ++lineNumber;
                 if (line != null) {
                     line = line.trim();
+                    // Strip off everything after a #
+                    int hashIndex = line.indexOf("#");
+                    if (hashIndex != -1) {
+                        line = line.substring(0, hashIndex).trim();
+                    }
                     // Ignore empty lines
                     if ("".equals(line)) {
-                        continue;
-                    }
-                    // Ignore lines that start with #
-                    if (line.startsWith("#")) {
                         continue;
                     }
                     // Look for a !include
