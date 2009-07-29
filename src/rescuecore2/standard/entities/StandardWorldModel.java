@@ -132,8 +132,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         int width = maxX - minX;
         int height = maxY - minY;
         //        System.out.println("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
-        gridWidth = (int)Math.ceil(width / (double)meshSize);
-        gridHeight = (int)Math.ceil(height / (double)meshSize);
+        gridWidth = 1 + (int)Math.ceil(width / (double)meshSize);
+        gridHeight = 1 + (int)Math.ceil(height / (double)meshSize);
         grid = new ArrayList<List<Collection<StandardEntity>>>(gridWidth);
         //        System.out.println("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
         for (int i = 0; i < gridWidth; ++i) {
