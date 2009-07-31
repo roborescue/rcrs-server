@@ -17,7 +17,7 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.view.StandardViewLayer;
+import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
    A viewer that also connects a bunch of human-controlled fire brigades, ambulance teams and police forces.
  */
 public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
-    private WorldModelViewer viewer;
+    private StandardWorldModelViewer viewer;
     private StandardWorldModel world;
     private List<ControlledFireBrigade> fbs;
     private ListListModel fbListModel;
@@ -67,12 +67,11 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
     protected void postConnect() {
         world.index();
         JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + world.getAllEntities().size() + " entities)");
-        viewer = new WorldModelViewer();
+        viewer = new StandardWorldModelViewer();
         viewer.setWorldModel(world);
         // CHECKSTYLE:OFF:MagicNumber
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
-        viewer.addLayer(new StandardViewLayer());
         fbs = new ArrayList<ControlledFireBrigade>();
         fbListModel = new ListListModel(fbs);
         fbList = new JList(fbListModel);

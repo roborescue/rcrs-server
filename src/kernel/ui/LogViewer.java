@@ -9,10 +9,11 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.MessageRegistry;
-import rescuecore2.view.WorldModelViewer;
 
-import rescuecore2.standard.view.StandardViewLayer;
+import rescuecore2.standard.view.StandardWorldModelViewer;
+import rescuecore2.standard.view.CommandLayer;
 import rescuecore2.standard.entities.StandardEntityFactory;
+import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.messages.StandardMessageFactory;
 
 import java.awt.BorderLayout;
@@ -39,8 +40,6 @@ import java.io.IOException;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
    A class for viewing log files.
@@ -58,7 +57,8 @@ public class LogViewer extends JPanel {
     private ListModelList<Command> commands;
     private ListModelList<Entity> updates;
     private WorldModel<? extends Entity> world;
-    private WorldModelViewer worldViewer;
+    private StandardWorldModelViewer worldViewer;
+    private CommandLayer commandLayer;
     private JButton down;
     private JButton up;
     private int maxTime;
@@ -123,8 +123,9 @@ public class LogViewer extends JPanel {
         s.setPreferredSize(updatesList.getPreferredScrollableViewportSize());
         lists.add(s);
         timestep = new JLabel("Timestep: 0");
-        worldViewer = new WorldModelViewer();
-        worldViewer.addLayer(new StandardViewLayer());
+        worldViewer = new StandardWorldModelViewer();
+        commandLayer = new CommandLayer();
+        worldViewer.addLayer(commandLayer);
         worldViewer.setBorder(BorderFactory.createTitledBorder("World model"));
         add(worldViewer, BorderLayout.CENTER);
         add(lists, BorderLayout.EAST);
@@ -152,7 +153,8 @@ public class LogViewer extends JPanel {
             commands.addAll(log.getCommands(time));
             updates.addAll(log.getUpdates(time));
             world = log.getWorldModel(time);
-            worldViewer.setWorldModel(world);
+            worldViewer.setWorldModel(StandardWorldModel.createStandardWorldModel(world));
+            commandLayer.setCommands(commands);
             worldViewer.repaint();
             down.setEnabled(time != 0);
             up.setEnabled(time != maxTime);

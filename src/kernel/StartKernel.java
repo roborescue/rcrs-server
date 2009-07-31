@@ -36,7 +36,7 @@ import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.view.WorldModelViewer;
 
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.view.StandardViewLayer;
+import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import kernel.standard.StandardComponentManager;
 //import kernel.standard.StandardWorldModelCreator;
@@ -350,11 +350,10 @@ public final class StartKernel {
 
         @Override
         public JComponent getGUIComponent(Kernel kernel) {
-            final WorldModelViewer viewer = new WorldModelViewer();
+            final WorldModelViewer<StandardWorldModel> viewer = new StandardWorldModelViewer();
             // CHECKSTYLE:OFF:MagicNumber
             viewer.setPreferredSize(new Dimension(500, 500));
             // CHECKSTYLE:ON:MagicNumber
-            viewer.addLayer(new StandardViewLayer());
             viewer.setWorldModel(world);
             kernel.addKernelListener(new KernelListenerAdapter() {
                     @Override
