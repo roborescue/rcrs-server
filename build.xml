@@ -333,7 +333,7 @@
   </target>
 
   <target name="log-viewer" depends="kernel-jar" description="Start the log viewer">
-    <java classname="kernel.ui.LogViewer" classpathref="path.all" fork="yes">
+    <java classname="kernel.ui.LogViewer" classpathref="path.all" fork="yes" maxmemory="4096m">
       <arg value="rescue.log"/>
     </java>
   </target>

@@ -13,26 +13,24 @@ import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.entities.PoliceOffice;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
 
 /**
-   A class that knows how to render buildings.
+   A view layer that renders buildings.
  */
-public class BuildingRenderer extends AbstractEntityRenderer {
+public class BuildingLayer extends StandardEntityViewLayer<Building> {
     private static final int SLIGHTLY_BROKEN = 25;
     private static final int QUITE_BROKEN = 50;
     private static final int VERY_BROKEN = 75;
 
     /**
-       Construct a building renderer.
+       Construct a building view layer.
      */
-    public BuildingRenderer() {
+    public BuildingLayer() {
         super(Building.class);
     }
 
     @Override
-    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
-        Building b = (Building)e;
+    public Shape render(Building b, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
         int[] apexes = b.getApexes();
         int count = apexes.length / 2;
         int[] xs = new int[count];

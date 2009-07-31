@@ -9,24 +9,22 @@ import java.awt.geom.Line2D;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
 
 /**
-   A class that knows how to render roads.
+   A view layer that renders roads.
  */
-public class RoadRenderer extends AbstractEntityRenderer {
+public class RoadLayer extends StandardEntityViewLayer<Road> {
     private static final int LANE_WIDTH = 2;
 
     /**
-       Construct a road renderer.
+       Construct a road rendering layer.
      */
-    public RoadRenderer() {
+    public RoadLayer() {
         super(Road.class);
     }
 
     @Override
-    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
-        Road r = (Road)e;
+    public Shape render(Road r, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
         Node head = (Node)r.getHead(model);
         Node tail = (Node)r.getTail(model);
         int headX = t.scaleX(head.getX());

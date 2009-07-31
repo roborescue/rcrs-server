@@ -6,25 +6,23 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Node;
 
 /**
-   A class that knows how to render nodes.
+   A view layer that renders nodes.
  */
-public class NodeRenderer extends AbstractEntityRenderer {
+public class NodeLayer extends StandardEntityViewLayer<Node> {
     private static final int SIZE = 5;
 
     /**
        Construct a node renderer.
      */
-    public NodeRenderer() {
+    public NodeLayer() {
         super(Node.class);
     }
 
     @Override
-    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel world) {
-        Node n = (Node)e;
+    public Shape render(Node n, Graphics2D g, ScreenTransform t, StandardWorldModel world) {
         int x = t.scaleX(n.getX()) - (SIZE / 2);
         int y = t.scaleY(n.getY()) - (SIZE / 2);
         g.setColor(Color.BLACK);

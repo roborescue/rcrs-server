@@ -2,8 +2,10 @@ package rescuecore2.view;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Insets;
@@ -12,24 +14,28 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
 
 /**
    A JComponent that shows a view of a world model.
+   @param <T> The subclass of WorldModel that this viewer understands.
  */
-public class WorldModelViewer extends JComponent {
+public abstract class WorldModelViewer<T extends WorldModel> extends JComponent {
     private static final Color BACKGROUND = new Color(0x1B898D);
 
-    private List<ViewLayer> layers;
+    /**
+       The world model.
+     */
+    protected T world;
+
+    private List<ViewLayer<? super T>> layers;
     private List<RenderedObject> objects;
     private List<ViewListener> listeners;
-    private WorldModel<? extends Entity> world;
 
     /**
        Construct a new WorldModelViewer.
      */
     public WorldModelViewer() {
-        layers = new ArrayList<ViewLayer>();
+        layers = new ArrayList<ViewLayer<? super T>>();
         objects = new ArrayList<RenderedObject>();
         listeners = new ArrayList<ViewListener>();
         addMouseListener(new ViewerMouseListener());
@@ -60,7 +66,7 @@ public class WorldModelViewer extends JComponent {
        Add a view layer.
        @param layer The layer to add.
      */
-    public void addLayer(ViewLayer layer) {
+    public void addLayer(ViewLayer<? super T> layer) {
         layers.add(layer);
         layer.setWorldModel(world);
     }
@@ -69,7 +75,7 @@ public class WorldModelViewer extends JComponent {
        Remove a view layer.
        @param layer The layer to remove.
      */
-    public void removeLayer(ViewLayer layer) {
+    public void removeLayer(ViewLayer<? super T> layer) {
         layers.remove(layer);
     }
 
@@ -84,9 +90,9 @@ public class WorldModelViewer extends JComponent {
        Set the world model that is to be viewed.
        @param newModel The new world model.
      */
-    public void setWorldModel(WorldModel<? extends Entity> newModel) {
+    public void setWorldModel(T newModel) {
         this.world = newModel;
-        for (ViewLayer next : layers) {
+        for (ViewLayer<? super T> next : layers) {
             next.setWorldModel(world);
         }
     }
@@ -100,13 +106,30 @@ public class WorldModelViewer extends JComponent {
         width -= insets.left + insets.right;
         height -= insets.top + insets.bottom;
         objects.clear();
-        for (ViewLayer next : layers) {
-            Graphics copy = g.create(insets.left, insets.top, width, height);
+        prepaint(layers);
+        for (ViewLayer<? super T> next : layers) {
+            Graphics2D copy = (Graphics2D)g.create(insets.left, insets.top, width, height);
             objects.addAll(next.render(copy, width, height));
         }
+        postpaint(layers);
+    }
+
+    /**
+       Do whatever needs doing before the layers are painted. The default implementation does nothing.
+       @param allLayers The active layers.
+     */
+    protected void prepaint(Collection<ViewLayer<? super T>> allLayers) {
+    }
+
+    /**
+       Do whatever needs doing after the layers are painted. The default implementation does nothing.
+       @param allLayers The active layers.
+     */
+    protected void postpaint(Collection<ViewLayer<? super T>> allLayers) {
     }
 
     private List<RenderedObject> getObjectsAtPoint(int x, int y) {
+        System.out.println("Getting objects at : " + x + ", " + y);
         List<RenderedObject> result = new ArrayList<RenderedObject>();
         for (RenderedObject next : objects) {
             if (next.getShape().contains(x, y)) {
@@ -135,7 +158,8 @@ public class WorldModelViewer extends JComponent {
         public void mouseClicked(MouseEvent e) {
             Point p = e.getPoint();
             System.out.println("Click at " + p);
-            List<RenderedObject> clicked = getObjectsAtPoint(p.x, p.y);
+            Insets insets = getInsets();
+            List<RenderedObject> clicked = getObjectsAtPoint(p.x - insets.left, p.y - insets.top);
             for (RenderedObject next : clicked) {
                 System.out.println(next.getObject());
             }

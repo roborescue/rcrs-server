@@ -12,12 +12,11 @@ import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
 
 /**
-   A class that knows how to render humans.
+   A view layer that renders humans.
  */
-public class HumanRenderer extends AbstractEntityRenderer {
+public class HumanLayer extends StandardEntityViewLayer<Human> {
     private static final int SIZE = 10;
 
     private static final int HP_MAX = 10000;
@@ -25,15 +24,14 @@ public class HumanRenderer extends AbstractEntityRenderer {
     private static final int HP_CRITICAL = 1000;
 
     /**
-       Construct a human renderer.
+       Construct a human view layer.
      */
-    public HumanRenderer() {
+    public HumanLayer() {
         super(Human.class);
     }
 
     @Override
-    public Shape render(StandardEntity e, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
-        Human h = (Human)e;
+    public Shape render(Human h, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
         Pair<Integer, Integer> location = h.getLocation(model);
         int x = t.scaleX(location.first()) - SIZE / 2;
         int y = t.scaleY(location.second()) - SIZE / 2;
