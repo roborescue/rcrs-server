@@ -7,16 +7,16 @@ import rescuecore2.connection.ConnectionException;
 import java.util.Collection;
 
 /**
-   Abstract base class for Viewer implementations.
+   Abstract base class for KernelComponent implementations.
  */
-public abstract class AbstractViewer implements Viewer {
+public abstract class AbstractComponent implements KernelComponent {
     private Connection connection;
 
     /**
-       Construct a new abstract viewer.
-       @param c The connection this viewer is using.
+       Construct a new abstract component.
+       @param c The connection this component is using.
      */
-    protected AbstractViewer(Connection c) {
+    protected AbstractComponent(Connection c) {
         this.connection = c;
     }
 
@@ -41,10 +41,5 @@ public abstract class AbstractViewer implements Viewer {
     @Override
     public void shutdown() {
         connection.shutdown();
-    }
-
-    @Override
-    public String toString() {
-        return "Viewer: " + connection.toString();
     }
 }

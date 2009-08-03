@@ -280,7 +280,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
                     reply = new KAConnectError(requestID, "No more agents");
                 }
                 else {
-                    Agent agent = new DefaultAgent(entity, connection);
+                    Agent agent = new Agent(entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
                     // Send an OK
                     reply = new KAConnectOK(requestID, entity.getID(), getInitialEntitiesForAgent(agent));
@@ -311,7 +311,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
             int simID = getNextSimulatorID();
             int requestID = msg.getRequestID();
             System.out.println("Simulator " + simID + " (request ID " + requestID + ") connected");
-            Simulator sim = new DefaultSimulator(connection);
+            Simulator sim = new Simulator(connection);
             synchronized (simLock) {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
@@ -334,7 +334,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
             int requestID = msg.getRequestID();
             int viewerID = getNextViewerID();
             System.out.println("Viewer " + viewerID + " (request ID " + requestID + ") connected");
-            Viewer viewer = new DefaultViewer(connection);
+            Viewer viewer = new Viewer(connection);
             synchronized (viewerLock) {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
