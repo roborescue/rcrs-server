@@ -9,10 +9,10 @@ import kernel.Agent;
 import kernel.ComponentManager;
 
 import rescuecore2.config.Config;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
 
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.FireStation;
@@ -37,7 +37,7 @@ public class StandardComponentManager extends ComponentManager {
        @param world The world model.
        @param config The kernel configuration.
     */
-    public StandardComponentManager(Kernel kernel, StandardWorldModel world, Config config) {
+    public StandardComponentManager(Kernel kernel, WorldModel<? extends Entity> world, Config config) {
         super(kernel, world, config);
         initialEntities = new HashSet<Entity>();
         for (Entity e : world.getAllEntities()) {

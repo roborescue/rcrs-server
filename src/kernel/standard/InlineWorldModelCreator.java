@@ -20,8 +20,11 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import kernel.KernelException;
+import kernel.WorldModelCreator;
 
 import rescuecore2.config.Config;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -40,7 +43,7 @@ import rescuecore2.standard.entities.Civilian;
 /**
    A WorldModelCreator that reads .bin files directly.
  */
-public class InlineWorldModelCreator {
+public class InlineWorldModelCreator implements WorldModelCreator {
     private static final int HEADER_SIZE = 12;
     private static final int STAMINA = 10000;
     private static final int HP = 10000;
@@ -48,13 +51,8 @@ public class InlineWorldModelCreator {
     private int nextAgentID;
     private int initialWater;
 
-    /**
-       Create a new StandardWorldModel.
-       @param config The config to use.
-       @return A new world model.
-       @throws KernelException If there is a problem building the world model.
-    */
-    public StandardWorldModel buildWorldModel(Config config) throws KernelException {
+    @Override
+    public WorldModel<? extends Entity> buildWorldModel(Config config) throws KernelException {
         StandardWorldModel world = new StandardWorldModel();
         initialWater = config.getIntValue("fire.tank.maximum");
         try {

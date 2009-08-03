@@ -31,6 +31,8 @@ import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.messages.MessageRegistry;
 import rescuecore2.messages.MessageFactory;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.view.WorldModelViewer;
@@ -40,7 +42,7 @@ import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import kernel.standard.StandardComponentManager;
 //import kernel.standard.StandardWorldModelCreator;
-import kernel.standard.InlineWorldModelCreator;
+//import kernel.standard.InlineWorldModelCreator;
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
 
@@ -57,6 +59,7 @@ public final class StartKernel {
     private static final String MESSAGE_FACTORIES_KEY = "kernel.messages.factories";
     private static final String ENTITY_FACTORIES_KEY = "kernel.entities.factories";
 
+    private static final String GIS_KEY_PREFIX = "startup.gis";
     private static final String PERCEPTION_KEY_PREFIX = "startup.perception";
     private static final String COMMUNICATION_KEY_PREFIX = "startup.communication";
     private static final String OPTIONS_KEY_SUFFIX = ".options";
@@ -226,17 +229,20 @@ public final class StartKernel {
         public KernelInfo createKernel(Config config) throws KernelException {
             // Get the world model
             //            StandardWorldModel worldModel = new StandardWorldModelCreator().buildWorldModel(config);
-            StandardWorldModel worldModel = new InlineWorldModelCreator().buildWorldModel(config);
+            //            StandardWorldModel worldModel = new InlineWorldModelCreator().buildWorldModel(config);
             // Show the chooser GUI
+            List<WorldModelCreator> gisChoices = createChoices(config, GIS_KEY_PREFIX, WorldModelCreator.class);
             List<Perception> perceptionChoices = createChoices(config, PERCEPTION_KEY_PREFIX, Perception.class);
             List<CommunicationModel> commsChoices = createChoices(config, COMMUNICATION_KEY_PREFIX, CommunicationModel.class);
-            KernelChooserDialog dialog = new KernelChooserDialog(perceptionChoices.toArray(new Perception[0]), commsChoices.toArray(new CommunicationModel[0]));
-            if (perceptionChoices.size() > 1 || commsChoices.size() > 1) {
+            KernelChooserDialog dialog = new KernelChooserDialog(gisChoices.toArray(new WorldModelCreator[0]), perceptionChoices.toArray(new Perception[0]), commsChoices.toArray(new CommunicationModel[0]));
+            if (gisChoices.size() > 1 || perceptionChoices.size() > 1 || commsChoices.size() > 1) {
                 dialog.setVisible(true);
             }
+            WorldModelCreator gis = dialog.getWorldModelCreator();
             Perception perception = dialog.getPerception();
             CommunicationModel comms = dialog.getCommunicationModel();
             CommandFilter filter = makeCommandFilter(config);
+            WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
             perception.initialise(config, worldModel);
             comms.initialise(config, worldModel);
             Kernel kernel = new Kernel(config, perception, comms, worldModel, filter);
@@ -283,14 +289,20 @@ public final class StartKernel {
     }
 
     private static class KernelChooserDialog extends JDialog {
+        private JComboBox gisChooser;
         private JComboBox perceptionChooser;
         private JComboBox commsChooser;
 
-        public KernelChooserDialog(Perception[] perceptionChoices, CommunicationModel[] commsChoices) {
+        public KernelChooserDialog(WorldModelCreator[] gisChoices, Perception[] perceptionChoices, CommunicationModel[] commsChoices) {
             super((Frame)null, "Choose kernel options");
+            gisChooser = new JComboBox(gisChoices);
             perceptionChooser = new JComboBox(perceptionChoices);
             commsChooser = new JComboBox(commsChoices);
-            JPanel main = new JPanel(new GridLayout(2, 2));
+            // CHECKSTYLE:OFF:MagicNumber
+            JPanel main = new JPanel(new GridLayout(3, 2));
+            // CHECKSTYLE:ON:MagicNumber
+            main.add(new JLabel("GIS: "));
+            main.add(gisChooser);
             main.add(new JLabel("Perception: "));
             main.add(perceptionChooser);
             main.add(new JLabel("Communication model: "));
@@ -307,8 +319,13 @@ public final class StartKernel {
             setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             pack();
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            gisChooser.setEnabled(gisChoices.length > 1);
             perceptionChooser.setEnabled(perceptionChoices.length > 1);
             commsChooser.setEnabled(commsChoices.length > 1);
+        }
+
+        public WorldModelCreator getWorldModelCreator() {
+            return (WorldModelCreator)gisChooser.getSelectedItem();
         }
 
         public Perception getPerception() {
@@ -344,8 +361,8 @@ public final class StartKernel {
     private static class StandardWorldModelViewerComponent implements KernelGUIComponent {
         private StandardWorldModel world;
 
-        public StandardWorldModelViewerComponent(StandardWorldModel world) {
-            this.world = world;
+        public StandardWorldModelViewerComponent(WorldModel<? extends Entity> world) {
+            this.world = StandardWorldModel.createStandardWorldModel(world);
         }
 
         @Override
