@@ -6,7 +6,7 @@ LOGDIR=""
 DIR=`dirname $0`
 MAP="Kobe"
 
-LD_COMMAND="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/../src/librescue"
+LD_COMMAND="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DIR/../oldsims/librescue"
 
 OPTIONS="--mapdir ../maps/$MAP --config $DIR/config.txt"
 

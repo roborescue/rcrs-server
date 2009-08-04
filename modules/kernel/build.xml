@@ -1,0 +1,16 @@
+<!-- This is a build file fragment that will be imported by the main build script -->
+<project>
+  <target name="start-kernel" depends="jars, _generate-kernel-config-args" description="Start the kernel">
+    <echo message="Starting kernel: ${kernel.startup.config} ${kernel.startup.args}"/>
+    <java classname="kernel.StartKernel" classpathref="path.common" fork="yes">
+      <arg line="${kernel.startup.config}"/>
+      <arg line="${kernel.startup.args}"/>
+    </java>
+  </target>
+
+  <target name="log-viewer" depends="jars" description="Start the log viewer">
+    <java classname="kernel.ui.LogViewer" classpathref="path.common" fork="yes" maxmemory="4096m">
+      <arg value="rescue.log"/>
+    </java>
+  </target>
+</project>

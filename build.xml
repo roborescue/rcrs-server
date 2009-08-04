@@ -1,19 +1,18 @@
 <project default="jars" name="Robocup rescue simulation software">
-  <!-- Common properties: source, build, jar and lib directories -->
-  <!-- Source code for all modules -->
-  <property name="src.dir" value="${basedir}/src"/>
-  <!-- 3rd party libraries used by modules -->
+  <!-- Modules directory -->
+  <property name="modules.dir" value="${basedir}/modules"/>
+
+  <property name="modules" value="rescuecore2,kernel"/>
+  <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
+  <import file="${modules.dir}/kernel/build.xml" optional="true"/>
+
+  <!-- Common properties: modules, lib, build and jar directories -->
+  <!-- 3rd party libraries used by all modules -->
   <property name="lib.dir" value="${basedir}/lib"/>
   <!-- Output directory - classes, unit test results etc -->
   <property name="build.dir" value="${basedir}/build"/>
-  <!-- Output directory - jar'd class files for all modules -->
+  <!-- Output directory - jar'd class files and resources for all modules -->
   <property name="jar.dir" value="${basedir}/jars"/>
-
-  <!-- Compiled classes go here -->
-  <property name="classes.dir" value="${build.dir}/classes"/>
-
-  <!-- Directory containing JUnit test classes -->
-  <property name="test.dir" value="${basedir}/test"/>
 
   <!-- Output directories for JUnit, Checkstyle, Findbugs and Cobertura -->
   <property name="junit.output.dir" value="${build.dir}/junit-results"/>
@@ -58,20 +57,15 @@
     </fileset>
   </path>
 
-  <path id="path.all">
+  <path id="path.common">
     <path refid="path.jars"/>
     <path refid="path.lib"/>
   </path>
 
   <path id="path.junit">
     <path refid="path.cobertura.instrumented"/>
-    <path refid="path.jars"/>
-    <path refid="path.lib"/>
     <path refid="path.cobertura"/>
-    <fileset dir="${test.dir}">
-      <include name="junit.jar"/>
-    </fileset>
-    <pathelement location="${test.dir}"/>
+    <path refid="path.common"/>
   </path>
 
   <path id="path.cobertura">
@@ -99,7 +93,6 @@
   <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
     <classpath>
       <pathelement location="${buildtools.dir}/ant-junit.jar"/>
-      <pathelement location="${test.dir}/junit.jar"/>
     </classpath>
   </taskdef>
 
@@ -120,10 +113,56 @@
     </script>
   </target>
 
-  <!-- Stuff to do before a build -->
+  <target name="_generate-module-lib-paths" unless="path.allmodules.lib">
+    <echo message="Generating module lib paths"/>
+    <script language="javascript">
+      <![CDATA[
+        importClass(org.apache.tools.ant.types.Path);
+        importClass(org.apache.tools.ant.types.FileSet);
+        importClass(java.lang.System);
+        importClass(java.io.File);
+        var modules = project.getProperty("modules").split(",");
+        var totalPath = new Path(project);
+        var totalFileset = new FileSet();
+        totalFileset.setDir(new File(project.getProperty("modules.dir")));
+        for (var i = 0; i < modules.length; ++i) {
+          var path = new Path(project);
+          var fileset = new FileSet();
+          var id = "path." + modules[i] + ".lib";
+          fileset.setDir(new File(project.getProperty("modules.dir") + "/" + modules[i] + "/lib"));
+          fileset.setIncludes("**/*.jar");
+          fileset.setErrorOnMissingDir(false);
+          totalFileset.setIncludes(modules[i] + "/lib/**/*.jar");
+          path.addFileset(fileset);
+          project.addReference(id, path);
+        }
+        totalPath.addFileset(totalFileset);
+        project.addReference("path.allmodules.lib", totalPath);
+      ]]>
+    </script>
+  </target>
+
+  <target name="_generate-checkstyle-fileset">
+    <script language="javascript">
+      <![CDATA[
+        importClass(org.apache.tools.ant.types.Path);
+        importClass(org.apache.tools.ant.types.FileSet);
+        importClass(java.lang.System);
+        importClass(java.io.File);
+        var modules = project.getProperty("modules").split(",");
+        var fileset = new FileSet();
+        fileset.setDir(new File(project.getProperty("modules.dir")));
+        for (var i = 0; i < modules.length; ++i) {
+          fileset.setIncludes(modules[i] + "/src/**/*.java");
+        }
+        project.addReference("checkstyle.files", fileset);
+      ]]>
+    </script>
+  </target>
+
+  <!-- Stuff to do before anything else -->
   <target name="_init">
     <mkdir dir="${build.dir}"/>
-    <mkdir dir="${classes.dir}"/>
     <mkdir dir="${jar.dir}"/>
     <mkdir dir="${junit.output.dir}"/>
     <mkdir dir="${checkstyle.output.dir}"/>
@@ -132,152 +171,120 @@
     <mkdir dir="${cobertura.instrument.dir}"/>
   </target>
 
-  <!-- General compile target -->
+  <!-- Call another target for all modules -->
+  <macrodef name="_call-for-all-modules">
+    <attribute name="target"/>
+    <sequential>
+      <script language="javascript">
+        <![CDATA[
+          importClass(org.apache.tools.ant.taskdefs.Property);
+          importClass(java.lang.System);
+          var target = @{target};
+          var modules = project.getProperty("modules").split(",");
+          for (var i = 0; i < modules.length; ++i) {
+            project.setProperty("module", modules[i]);
+            project.executeTarget(target);
+          }
+        ]]>
+      </script>
+    </sequential>
+  </macrodef>
+
+  <!-- General compile targets -->
+  <target name="_compile-modules" depends="_init, _generate-module-lib-paths">
+    <_call-for-all-modules target="_compile"/>
+  </target>
+
   <target name="_compile">
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="path.all" debug="${debug}">
-      <include name="${module}/**/*.java"/>
+    <echo message="Compiling module ${module}"/>
+    <mkdir dir="${build.dir}/${module}/classes"/>
+    <javac srcdir="${modules.dir}/${module}/src" destdir="${build.dir}/${module}/classes" debug="${debug}">
+      <classpath>
+        <path refid="path.common"/>
+        <path refid="path.${module}.lib"/>
+      </classpath>
+      <include name="**/*.java"/>
       <compilerarg value="${javac.flags}"/>
     </javac>
   </target>
 
-  <!-- General clean target -->
+  <!-- General clean targets -->
+  <target name="_clean-modules">
+    <_call-for-all-modules target="_clean"/>
+  </target>
+
   <target name="_clean">
-    <delete dir="${classes.dir}/${module}" failonerror="false"/>
+    <echo message="Cleaning module ${module}"/>
+    <delete dir="${build.dir}/${module}" failonerror="false"/>
     <delete dir="${junit.output.dir}/${module}" failonerror="false"/>
     <delete dir="${jar.dir}/${module}.jar" failonerror="false"/>
     <delete dir="${cobertura.instrument.dir}/${module}.jar" failonerror="false"/>
     <delete failonerror="false">
-      <fileset dir="${test.dir}/${module}">
+      <fileset dir="${module}/test">
         <include name="**/*.class"/>
       </fileset>
     </delete>
   </target>
 
-  <!-- General jar target -->
+  <!-- General jar targets -->
+  <target name="_jar-modules" depends="_compile-modules">
+    <_call-for-all-modules target="_jar"/>
+  </target>
+
   <target name="_jar">
-    <jar basedir="${classes.dir}" destfile="${jar.dir}/${module}.jar">
-      <include name="${module}/**/*.class"/>
+    <jar destfile="${jar.dir}/${module}.jar">
+      <fileset dir="${build.dir}/${module}/classes" includes="**/*.class"/>
+      <fileset dir="${modules.dir}/${module}/resources" erroronmissingdir="false"/>
     </jar>
   </target>
 
-  <!-- General junit target -->
+  <!-- General junit targets -->
+  <target name="_junit-modules" depends="_jar-modules">
+    <_call-for-all-modules target="_junit"/>
+  </target>
+
   <target name="_junit">
-    <javac srcdir="${test.dir}" destdir="${test.dir}" classpathref="path.all" debug="${debug}">
-      <include name="${module}/**/*.java"/>
+    <mkdir dir="${modules.dir}/${module}/test"/>
+    <javac srcdir="${modules.dir}/${module}/test" destdir="${modules.dir}/${module}/test" classpathref="path.common" debug="${debug}">
+      <include name="**/*.java"/>
     </javac>
     <junit fork="true">
-      <sysproperty key="tests.basedir" value="${test.dir}"/>
+      <sysproperty key="tests.basedir" value="${modules.dir}/${module}/test"/>
       <sysproperty key="net.sourceforge.cobertura.datafile" value="${cobertura.coveragefile}"/>
-      <classpath refid="path.junit"/>
+      <classpath>
+        <path refid="path.junit"/>
+        <pathelement location="${modules.dir}/${module}/test"/>
+      </classpath>
       <formatter type="xml"/>
       <batchtest todir="${junit.output.dir}">
-        <fileset dir="${test.dir}">
-          <include name="${module}/**/*Test.java"/>
+        <fileset dir="${modules.dir}/${module}/test">
+          <include name="**/*Test.java"/>
         </fileset>
       </batchtest>
     </junit>
   </target>
 
-
-  <!-- Rescuecore targets -->
-<!--
-  <target name="rescuecore-compile" depends="_init" description="Build the rescuecore package">
-    <antcall target="_compile">
-      <param name="module" value="rescuecore"/>
-    </antcall>
-  </target>
-
-  <target name="rescuecore-clean" description="Delete all classes and build artifacts in the rescuecore package">
-    <antcall target="_clean">
-      <param name="module" value="rescuecore"/>
-    </antcall>
-  </target>
-
-  <target name="rescuecore-jar" depends="rescuecore-compile" description="Build the rescuecore jar">
-    <antcall target="_jar">
-      <param name="module" value="rescuecore"/>
-    </antcall>
-  </target>
-
-  <target name="rescuecore-unit" depends="rescuecore-jar" description="Run the rescuecore unit tests">
-    <antcall target="_junit">
-      <param name="module" value="rescuecore"/>
-    </antcall>
-  </target>
--->
-
-  <!-- Rescuecore2 targets -->
-  <target name="rescuecore2-compile" depends="_init" description="Build the rescuecore2 package">
-    <antcall target="_compile">
-      <param name="module" value="rescuecore2"/>
-    </antcall>
-  </target>
-
-  <target name="rescuecore2-clean" description="Delete all classes and build artifacts in the rescuecore2 package">
-    <antcall target="_clean">
-      <param name="module" value="rescuecore2"/>
-    </antcall>
-  </target>
-
-  <target name="rescuecore2-jar" depends="rescuecore2-compile" description="Build the rescuecore2 jar">
-    <antcall target="_jar">
-      <param name="module" value="rescuecore2"/>
-    </antcall>
-  </target>
-
-  <target name="rescuecore2-unit" depends="rescuecore2-jar" description="Run the rescuecore2 unit tests">
-    <antcall target="_junit">
-      <param name="module" value="rescuecore2"/>
-    </antcall>
-  </target>
-
-  <!-- Kernel targets -->
-  <target name="kernel-compile" depends="_init,rescuecore2-jar" description="Build the kernel package">
-    <antcall target="_compile">
-      <param name="module" value="kernel"/>
-    </antcall>
-  </target>
-
-  <target name="kernel-clean" description="Delete all classes and build artifacts in the kernel package">
-    <antcall target="_clean">
-      <param name="module" value="kernel"/>
-    </antcall>
-  </target>
-
-  <target name="kernel-jar" depends="kernel-compile" description="Build the kernel jar">
-    <antcall target="_jar">
-      <param name="module" value="kernel"/>
-    </antcall>
-  </target>
-
-  <target name="kernel-unit" depends="kernel-jar" description="Run the kernel unit tests">
-    <antcall target="_junit">
-      <param name="module" value="kernel"/>
-    </antcall>
-  </target>
-
   <!-- Useful tools: checkstyle, findbugs, cobertura -->
-  <target name="checkstyle" depends="compile" description="Run Checkstyle on all packages">
-    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.all" failOnViolation="false">
-      <fileset dir="${src.dir}">
-        <include name="kernel/**/*.java"/>
-        <include name="rescuecore2/**/*.java"/>
-      </fileset>
+  <target name="checkstyle" depends="compile, _init, _generate-checkstyle-fileset" description="Run Checkstyle on all packages">
+    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false">
+      <fileset refid="checkstyle.files"/>
       <formatter type="xml" toFile="${checkstyle.output.dir}/checkstyle_errors.xml"/>
     </checkstyle>
     <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
-  <target name="findbugs" depends="jars" description="Run Findbugs on all packages">
+  <target name="findbugs" depends="jars, _init, _generate-module-lib-paths" description="Run Findbugs on all modules">
     <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}">
-      <sourcePath path="${src.dir}"/>
+<!--      <sourcePath path="${src.dir}"/>-->
       <class location="${jar.dir}/kernel.jar"/>
       <class location="${jar.dir}/rescuecore2.jar"/>
-      <auxClasspath refid="path.all"/>
+      <class location="${jar.dir}/testmodule.jar"/>
+      <auxClasspath refid="path.common"/>
+      <auxClasspath refid="path.allmodules.lib"/>
     </findbugs>
   </target>
 
-  <target name="junit" depends="cobertura-instrument,rescuecore2-unit,kernel-unit" description="Run the junit tests for all packages and generate a report">
+  <target name="junit" depends="_init, cobertura-instrument,_junit-modules" description="Run the junit tests for all packages and generate a report">
     <junitreport todir="${junit.output.dir}">
       <fileset dir="${junit.output.dir}">
         <include name="TEST-*.xml"/>
@@ -292,7 +299,7 @@
     </junitreport>
   </target>
 
-  <target name="cobertura-instrument" depends="jars">
+  <target name="cobertura-instrument" depends="jars, _init">
     <cobertura-instrument todir="${cobertura.instrument.dir}" datafile="${cobertura.coveragefile}">
       <fileset dir="${jar.dir}">
         <include name="rescuecore2.jar"/>
@@ -301,8 +308,8 @@
     </cobertura-instrument>
   </target>
 
-  <target name="cobertura" depends="junit" description="Generate the cobertura test coverage report for all packages">
-    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}" srcdir="${src.dir}"/>
+  <target name="cobertura" depends="junit, _init" description="Generate the cobertura test coverage report for all packages">
+    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}" srcdir="${modules.dir}"/>
   </target>
 
   <target name="build-clean">
@@ -310,31 +317,17 @@
   </target>
 
   <!-- Combined targets -->
-  <target name="compile" depends="rescuecore2-compile,kernel-compile" description="Compile all packages"/>
+  <target name="compile" depends="_init, _compile-modules" description="Compile all modules"/>
 
-  <target name="jars" depends="rescuecore2-jar,kernel-jar" description="Compile and jar all packages"/>
+  <target name="jars" depends="_init, _jar-modules" description="Compile and jar all modules"/>
 
-  <target name="clean" depends="rescuecore2-clean,kernel-clean,build-clean" description="Delete classes and build artifacts for all packages"/>
+  <target name="clean" depends="_clean-modules, build-clean" description="Delete classes and build artifacts for all modules"/>
 
-  <target name="test-static" depends="checkstyle,findbugs" description="Run the static tests (checkstyle and findbugs) for all packages"/>
+  <target name="test-static" depends="checkstyle, findbugs" description="Run the static tests (checkstyle and findbugs) for all modules"/>
 
-  <target name="test-unit" depends="junit,cobertura" description="Run the unit tests (junit and cobertura) for all packages"/>
+  <target name="test-unit" depends="junit, cobertura" description="Run the unit tests (junit and cobertura) for all modules"/>
 
-  <target name="test-all" depends="test-static,test-unit" description="Run the static and unit tests for all packages"/>
+  <target name="test-all" depends="test-static, test-unit" description="Run the static and unit tests for all modules"/>
 
   <target name="complete-build" depends="clean,compile,jars,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
-
-  <target name="start-kernel" depends="kernel-jar, _generate-kernel-config-args" description="Start the kernel">
-    <echo message="Starting kernel: ${kernel.startup.config} ${kernel.startup.args}"/>
-    <java classname="kernel.StartKernel" classpathref="path.all" fork="yes">
-      <arg line="${kernel.startup.config}"/>
-      <arg line="${kernel.startup.args}"/>
-    </java>
-  </target>
-
-  <target name="log-viewer" depends="kernel-jar" description="Start the log viewer">
-    <java classname="kernel.ui.LogViewer" classpathref="path.all" fork="yes" maxmemory="4096m">
-      <arg value="rescue.log"/>
-    </java>
-  </target>
 </project>
