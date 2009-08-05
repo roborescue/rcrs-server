@@ -3,6 +3,8 @@
   <property name="modules.dir" value="${basedir}/modules"/>
 
   <property name="modules" value="rescuecore2,kernel"/>
+  <property name="modules.kernel.depend" value="rescuecore2"/>
+
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
 
@@ -160,6 +162,24 @@
     </script>
   </target>
 
+  <target name="_generate-cobertura-fileset">
+    <script language="javascript">
+      <![CDATA[
+        importClass(org.apache.tools.ant.types.Path);
+        importClass(org.apache.tools.ant.types.FileSet);
+        importClass(java.lang.System);
+        importClass(java.io.File);
+        var modules = project.getProperty("modules").split(",");
+        var fileset = new FileSet();
+        fileset.setDir(new File(project.getProperty("jar.dir")));
+        for (var i = 0; i < modules.length; ++i) {
+          fileset.setIncludes(modules[i] + ".jar");
+        }
+        project.addReference("cobertura.files", fileset);
+      ]]>
+    </script>
+  </target>
+
   <!-- Stuff to do before anything else -->
   <target name="_init">
     <mkdir dir="${build.dir}"/>
@@ -171,101 +191,78 @@
     <mkdir dir="${cobertura.instrument.dir}"/>
   </target>
 
-  <!-- Call another target for all modules -->
-  <macrodef name="_call-for-all-modules">
-    <attribute name="target"/>
+  <!-- General compile target -->
+  <macrodef name="_compile">
+    <attribute name="module"/>
     <sequential>
-      <script language="javascript">
-        <![CDATA[
-          importClass(org.apache.tools.ant.taskdefs.Property);
-          importClass(java.lang.System);
-          var target = @{target};
-          var modules = project.getProperty("modules").split(",");
-          for (var i = 0; i < modules.length; ++i) {
-            project.setProperty("module", modules[i]);
-            project.executeTarget(target);
-          }
-        ]]>
-      </script>
+      <echo message="Compiling module @{module}"/>
+      <mkdir dir="${build.dir}/@{module}/classes"/>
+      <javac srcdir="${modules.dir}/@{module}/src" destdir="${build.dir}/@{module}/classes" debug="${debug}">
+        <classpath>
+          <path refid="path.common"/>
+          <path refid="path.@{module}.lib"/>
+        </classpath>
+        <include name="**/*.java"/>
+        <compilerarg value="${javac.flags}"/>
+      </javac>
     </sequential>
   </macrodef>
 
-  <!-- General compile targets -->
-  <target name="_compile-modules" depends="_init, _generate-module-lib-paths">
-    <_call-for-all-modules target="_compile"/>
-  </target>
-
-  <target name="_compile">
-    <echo message="Compiling module ${module}"/>
-    <mkdir dir="${build.dir}/${module}/classes"/>
-    <javac srcdir="${modules.dir}/${module}/src" destdir="${build.dir}/${module}/classes" debug="${debug}">
-      <classpath>
-        <path refid="path.common"/>
-        <path refid="path.${module}.lib"/>
-      </classpath>
-      <include name="**/*.java"/>
-      <compilerarg value="${javac.flags}"/>
-    </javac>
-  </target>
-
-  <!-- General clean targets -->
-  <target name="_clean-modules">
-    <_call-for-all-modules target="_clean"/>
-  </target>
-
-  <target name="_clean">
-    <echo message="Cleaning module ${module}"/>
-    <delete dir="${build.dir}/${module}" failonerror="false"/>
-    <delete dir="${junit.output.dir}/${module}" failonerror="false"/>
-    <delete dir="${jar.dir}/${module}.jar" failonerror="false"/>
-    <delete dir="${cobertura.instrument.dir}/${module}.jar" failonerror="false"/>
-    <delete failonerror="false">
-      <fileset dir="${module}/test">
-        <include name="**/*.class"/>
-      </fileset>
-    </delete>
-  </target>
-
-  <!-- General jar targets -->
-  <target name="_jar-modules" depends="_compile-modules">
-    <_call-for-all-modules target="_jar"/>
-  </target>
-
-  <target name="_jar">
-    <jar destfile="${jar.dir}/${module}.jar">
-      <fileset dir="${build.dir}/${module}/classes" includes="**/*.class"/>
-      <fileset dir="${modules.dir}/${module}/resources" erroronmissingdir="false"/>
-    </jar>
-  </target>
-
-  <!-- General junit targets -->
-  <target name="_junit-modules" depends="_jar-modules">
-    <_call-for-all-modules target="_junit"/>
-  </target>
-
-  <target name="_junit">
-    <mkdir dir="${modules.dir}/${module}/test"/>
-    <javac srcdir="${modules.dir}/${module}/test" destdir="${modules.dir}/${module}/test" classpathref="path.common" debug="${debug}">
-      <include name="**/*.java"/>
-    </javac>
-    <junit fork="true">
-      <sysproperty key="tests.basedir" value="${modules.dir}/${module}/test"/>
-      <sysproperty key="net.sourceforge.cobertura.datafile" value="${cobertura.coveragefile}"/>
-      <classpath>
-        <path refid="path.junit"/>
-        <pathelement location="${modules.dir}/${module}/test"/>
-      </classpath>
-      <formatter type="xml"/>
-      <batchtest todir="${junit.output.dir}">
-        <fileset dir="${modules.dir}/${module}/test">
-          <include name="**/*Test.java"/>
+  <!-- General clean target -->
+  <macrodef name="_clean">
+    <attribute name="module"/>
+    <sequential>
+      <echo message="Cleaning module @{module}"/>
+      <delete dir="${build.dir}/@{module}" failonerror="false"/>
+      <delete dir="${junit.output.dir}/@{module}" failonerror="false"/>
+      <delete dir="${jar.dir}/@{module}.jar" failonerror="false"/>
+      <delete dir="${cobertura.instrument.dir}/@{module}.jar" failonerror="false"/>
+      <delete failonerror="false">
+        <fileset dir="@{module}/test">
+          <include name="**/*.class"/>
         </fileset>
-      </batchtest>
-    </junit>
-  </target>
+      </delete>
+    </sequential>
+  </macrodef>
+
+  <!-- General jar target -->
+  <macrodef name="_jar">
+    <attribute name="module"/>
+    <sequential>
+      <jar destfile="${jar.dir}/@{module}.jar">
+        <fileset dir="${build.dir}/@{module}/classes" includes="**/*.class"/>
+        <fileset dir="${modules.dir}/@{module}/resources" erroronmissingdir="false"/>
+      </jar>
+    </sequential>
+  </macrodef>
+
+  <!-- General junit target -->
+  <macrodef name="_junit">
+    <attribute name="module"/>
+    <sequential>
+      <mkdir dir="${modules.dir}/@{module}/test"/>
+      <javac srcdir="${modules.dir}/@{module}/test" destdir="${modules.dir}/@{module}/test" classpathref="path.common" debug="${debug}">
+        <include name="**/*.java"/>
+      </javac>
+      <junit fork="true">
+        <sysproperty key="tests.basedir" value="${modules.dir}/@{module}/test"/>
+        <sysproperty key="net.sourceforge.cobertura.datafile" value="${cobertura.coveragefile}"/>
+        <classpath>
+          <path refid="path.junit"/>
+          <pathelement location="${modules.dir}/@{module}/test"/>
+        </classpath>
+        <formatter type="xml"/>
+        <batchtest todir="${junit.output.dir}">
+          <fileset dir="${modules.dir}/@{module}/test">
+            <include name="**/*Test.java"/>
+          </fileset>
+        </batchtest>
+      </junit>
+    </sequential>
+  </macrodef>
 
   <!-- Useful tools: checkstyle, findbugs, cobertura -->
-  <target name="checkstyle" depends="compile, _init, _generate-checkstyle-fileset" description="Run Checkstyle on all packages">
+  <target name="checkstyle" depends="compile, _generate-checkstyle-fileset" description="Run Checkstyle on all packages">
     <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false">
       <fileset refid="checkstyle.files"/>
       <formatter type="xml" toFile="${checkstyle.output.dir}/checkstyle_errors.xml"/>
@@ -273,18 +270,16 @@
     <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
-  <target name="findbugs" depends="jars, _init, _generate-module-lib-paths" description="Run Findbugs on all modules">
+  <target name="findbugs" depends="jars, _generate-module-lib-paths" description="Run Findbugs on all modules">
     <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}">
-<!--      <sourcePath path="${src.dir}"/>-->
       <class location="${jar.dir}/kernel.jar"/>
       <class location="${jar.dir}/rescuecore2.jar"/>
-      <class location="${jar.dir}/testmodule.jar"/>
       <auxClasspath refid="path.common"/>
       <auxClasspath refid="path.allmodules.lib"/>
     </findbugs>
   </target>
 
-  <target name="junit" depends="_init, cobertura-instrument,_junit-modules" description="Run the junit tests for all packages and generate a report">
+  <target name="junit-report" depends="_init, cobertura-instrument, junit" description="Run the junit tests for all packages and generate a report">
     <junitreport todir="${junit.output.dir}">
       <fileset dir="${junit.output.dir}">
         <include name="TEST-*.xml"/>
@@ -299,35 +294,123 @@
     </junitreport>
   </target>
 
-  <target name="cobertura-instrument" depends="jars, _init">
+  <target name="cobertura-instrument" depends="jars, _generate-cobertura-fileset">
     <cobertura-instrument todir="${cobertura.instrument.dir}" datafile="${cobertura.coveragefile}">
-      <fileset dir="${jar.dir}">
-        <include name="rescuecore2.jar"/>
-        <include name="kernel.jar"/>
-      </fileset>
+      <fileset refid="cobertura.files"/>
     </cobertura-instrument>
   </target>
 
-  <target name="cobertura" depends="junit, _init" description="Generate the cobertura test coverage report for all packages">
+  <target name="cobertura-report" depends="cobertura-instrument, junit" description="Generate the cobertura test coverage report for all packages">
     <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}" srcdir="${modules.dir}"/>
   </target>
 
   <target name="build-clean">
     <delete dir="${build.dir}"/>
+    <delete dir="${jar.dir}"/>
+    <delete dir="${cobertura.instrument.dir}"/>
   </target>
 
   <!-- Combined targets -->
-  <target name="compile" depends="_init, _compile-modules" description="Compile all modules"/>
-
-  <target name="jars" depends="_init, _jar-modules" description="Compile and jar all modules"/>
-
-  <target name="clean" depends="_clean-modules, build-clean" description="Delete classes and build artifacts for all modules"/>
-
   <target name="test-static" depends="checkstyle, findbugs" description="Run the static tests (checkstyle and findbugs) for all modules"/>
 
-  <target name="test-unit" depends="junit, cobertura" description="Run the unit tests (junit and cobertura) for all modules"/>
+  <target name="test-unit" depends="junit-report, cobertura-report" description="Run the unit tests (junit and cobertura) for all modules"/>
 
   <target name="test-all" depends="test-static, test-unit" description="Run the static and unit tests for all modules"/>
 
   <target name="complete-build" depends="clean,compile,jars,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
+
+  <!-- Generate module compile/jar/test/clean targets and the overall module targets-->
+  <script language="javascript">
+    <![CDATA[
+      importClass(org.apache.tools.ant.Target);
+      importClass(java.lang.System);
+      var modules = project.getProperty("modules").split(",");
+      System.out.println("Creating compile/jar/test/clean tasks for modules");
+      for (var i = 0; i < modules.length; ++i) {
+        // Create new targets for compile, jar, test and clean
+        var compile = new Target();
+        compile.setName(modules[i] + "-compile");
+        compile.setDescription("Compile the " + modules[i] + " module");
+        var compileTask = project.createTask("_compile");
+        compileTask.setDynamicAttribute("module", modules[i]);
+        compile.addTask(compileTask);
+        compile.addDependency("_init");
+        compile.addDependency("_generate-module-lib-paths");
+        // Does this module depend on any others?
+        var depend = project.getProperty("modules." + modules[i] + ".depend");
+        if (depend !== null && depend !== "") {
+          var depends = depend.split(",");
+          for (var j = 0; j < depends.length; ++j) {
+            compile.addDependency(depends[j] + "-jar");
+            System.out.println(modules[i] + "-compile depends on " + depends[j] + "-jar");
+          }
+        }
+        project.addTarget(compile);
+        System.out.println("Added compile target for " + modules[i] + ": " + compile);
+
+        var jar = new Target();
+        jar.setName(modules[i] + "-jar");
+        jar.setDescription("Jar the " + modules[i] + " module");
+        var jarTask = project.createTask("_jar");
+        jarTask.setDynamicAttribute("module", modules[i]);
+        jar.addTask(jarTask);
+        jar.addDependency(modules[i] + "-compile");
+        project.addTarget(jar);
+        System.out.println("Added jar target for " + modules[i] + ": " + jar);
+
+        var junit = new Target();
+        junit.setName(modules[i] + "-junit");
+        junit.setDescription("Junit the " + modules[i] + " module");
+        var junitTask = project.createTask("_junit");
+        junitTask.setDynamicAttribute("module", modules[i]);
+        junit.addTask(junitTask);
+        junit.addDependency(modules[i] + "-jar");
+        project.addTarget(junit);
+        System.out.println("Added junit target for " + modules[i] + ": " + junit);
+
+        var clean = new Target();
+        clean.setName(modules[i] + "-clean");
+        clean.setDescription("Clean the " + modules[i] + " module");
+        var cleanTask = project.createTask("_clean");
+        cleanTask.setDynamicAttribute("module", modules[i]);
+        clean.addTask(cleanTask);
+        project.addTarget(clean);
+        System.out.println("Added clean target for " + modules[i] + ": " + clean);
+      }
+
+      // Now generate the umbrella targets
+      var compileAll = new Target();
+      compileAll.setName("compile");
+      compileAll.setDescription("Compile all modules");
+      for (var i = 0; i < modules.length; ++i) {
+        compileAll.addDependency(modules[i] + "-compile");
+      }
+      project.addTarget(compileAll);
+
+      var jarAll = new Target();
+      jarAll.setName("jars");
+      jarAll.setDescription("Jar all modules");
+      for (var i = 0; i < modules.length; ++i) {
+        jarAll.addDependency(modules[i] + "-jar");
+      }
+      project.addTarget(jarAll);
+
+      var junitAll = new Target();
+      junitAll.setName("junit");
+      junitAll.setDescription("Run Junit on all modules");
+      for (var i = 0; i < modules.length; ++i) {
+        junitAll.addDependency(modules[i] + "-junit");
+      }
+      project.addTarget(junitAll);
+
+      var cleanAll = new Target();
+      cleanAll.setName("clean");
+      cleanAll.setDescription("Clean all modules");
+      for (var i = 0; i < modules.length; ++i) {
+        cleanAll.addDependency(modules[i] + "-clean");
+      }
+      cleanAll.addDependency("build-clean");
+      project.addTarget(cleanAll);
+    ]]>
+  </script>
 </project>
