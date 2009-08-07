@@ -1,6 +1,7 @@
 package kernel.standard;
 
 import kernel.KernelException;
+import kernel.WorldModelCreator;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -10,6 +11,8 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.control.GKConnectOK;
 import rescuecore2.messages.control.GKConnectError;
@@ -21,18 +24,20 @@ import rescuecore2.standard.entities.StandardWorldModel;
 /**
    A WorldModelCreator that talks to the GIS to build StandardEntities.
  */
-public class StandardWorldModelCreator {
+public class StandardWorldModelCreator implements WorldModelCreator {
+    private static final String PORT_KEY = "gis.port";
+
     /**
        Create a new StandardWorldModel.
        @param config The config to use.
        @return A new world model.
        @throws KernelException If there is a problem building the world model.
     */
-    public StandardWorldModel buildWorldModel(Config config) throws KernelException {
+    public WorldModel<? extends Entity> buildWorldModel(Config config) throws KernelException {
         System.out.println("Connecting to GIS...");
         StandardWorldModel world = new StandardWorldModel();
         CountDownLatch latch = new CountDownLatch(1);
-        int gisPort = config.getIntValue("gis_port");
+        int gisPort = config.getIntValue(PORT_KEY);
         Connection conn;
         try {
             conn = new TCPConnection(gisPort);
