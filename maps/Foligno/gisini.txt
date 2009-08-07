@@ -108,7 +108,11 @@ PoliceForce=3899
 PoliceForce=3189
 # Fires
 FirePoint=2312
+FirePoint=2311
 FirePoint=1573
+FirePoint=1574
 FirePoint=2154
+FirePoint=2155
 FirePoint=1800
+FirePoint=1801
 # Important buildings
