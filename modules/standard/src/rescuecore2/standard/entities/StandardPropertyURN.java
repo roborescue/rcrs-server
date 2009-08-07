@@ -37,6 +37,13 @@ public enum StandardPropertyURN {
     Y,
     EDGES,
 
+    AREA,
+    AREA_TYPE,
+    NEXT_AREA,
+    BLOCKADE_LIST,
+    TRAVEL_DISTANCE,
+    AREA_APEXES,
+
     FLOORS,
     BUILDING_ATTRIBUTES,
     IGNITION,

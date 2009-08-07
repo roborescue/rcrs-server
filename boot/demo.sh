@@ -7,6 +7,7 @@ processArgs $*
 # Delete old logs
 rm -f $LOGDIR/*.log
 
+startGIS
 startKernel
 startSims
 

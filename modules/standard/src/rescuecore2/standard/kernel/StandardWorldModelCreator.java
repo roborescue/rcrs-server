@@ -25,6 +25,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
+import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.FireStation;
 import rescuecore2.standard.entities.FireBrigade;
@@ -158,21 +159,27 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             int id = readInt32LE(in);
             max = Math.max(max, id);
             Building building = new Building(new EntityID(id));
-            building.setX(readInt32LE(in));
-            building.setY(readInt32LE(in));
+            //building.setX(readInt32LE(in));
+            //building.setY(readInt32LE(in));
+            readInt32LE(in);
+            readInt32LE(in);
+
             building.setFloors(readInt32LE(in));
             building.setBuildingAttributes(readInt32LE(in));
             building.setIgnition(readInt32LE(in) != 0);
             building.setFieryness(readInt32LE(in));
             building.setBrokenness(readInt32LE(in));
             int entranceCount = readInt32LE(in);
-            building.setEntrances(readIDs(entranceCount, in));
-            readInt32LE(in); // Skip shape ID
+            //building.setEntrances(readIDs(entranceCount, in));
+	    readIDs(entranceCount, in);
+	    
+	    readInt32LE(in); // Skip shape ID
             building.setGroundArea(readInt32LE(in));
             building.setTotalArea(readInt32LE(in));
             building.setBuildingCode(readInt32LE(in));
             int apexCount = readInt32LE(in);
-            building.setApexes(readInts(apexCount * 2, in));
+            //building.setApexes(readInts(apexCount * 2, in));
+            readInts(apexCount * 2, in);
             world.addEntity(building);
         }
         LOG.info("Finished reading buildings");
@@ -233,6 +240,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
     private int initialWater() {
         return initialWater;
     }
+
 
     private enum Entry {
         FIRE_STATION(Pattern.compile("^firestation\\s*=\\s*(\\d+)$")) {
@@ -300,7 +308,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
                 fb.setStamina(STAMINA);
                 fb.setHP(HP);
                 if (m.group(2) != null) {
-                    fb.setPositionExtra(Integer.parseInt(m.group(2)));
+                    //fb.setPositionExtra(Integer.parseInt(m.group(2)));
                 }
                 model.addEntity(fb);
             }
@@ -313,7 +321,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
                 pf.setStamina(STAMINA);
                 pf.setHP(HP);
                 if (m.group(2) != null) {
-                    pf.setPositionExtra(Integer.parseInt(m.group(2)));
+                    //pf.setPositionExtra(Integer.parseInt(m.group(2)));
                 }
                 model.addEntity(pf);
             }
@@ -326,7 +334,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
                 at.setStamina(STAMINA);
                 at.setHP(HP);
                 if (m.group(2) != null) {
-                    at.setPositionExtra(Integer.parseInt(m.group(2)));
+                    //at.setPositionExtra(Integer.parseInt(m.group(2)));
                 }
                 model.addEntity(at);
             }
@@ -339,7 +347,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
                 civ.setStamina(STAMINA);
                 civ.setHP(HP);
                 if (m.group(2) != null) {
-                    civ.setPositionExtra(Integer.parseInt(m.group(2)));
+                    //civ.setPositionExtra(Integer.parseInt(m.group(2)));
                 }
                 model.addEntity(civ);
             }

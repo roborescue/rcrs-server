@@ -53,8 +53,6 @@ public class Building extends StandardEntity {
     */
     protected Building(EntityID id, StandardEntityURN urn) {
         super(id, urn);
-        x = new IntProperty(StandardPropertyURN.X);
-        y = new IntProperty(StandardPropertyURN.Y);
         floors = new IntProperty(StandardPropertyURN.FLOORS);
         ignition = new BooleanProperty(StandardPropertyURN.IGNITION);
         fieryness = new IntProperty(StandardPropertyURN.FIERYNESS);
@@ -65,9 +63,7 @@ public class Building extends StandardEntity {
         totalArea = new IntProperty(StandardPropertyURN.BUILDING_AREA_TOTAL);
         temperature = new IntProperty(StandardPropertyURN.TEMPERATURE);
         importance = new IntProperty(StandardPropertyURN.IMPORTANCE);
-        apexes = new IntArrayProperty(StandardPropertyURN.BUILDING_APEXES);
-        entrances = new EntityRefListProperty(StandardPropertyURN.ENTRANCES);
-        registerProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
+        registerProperties(floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance);
     }
 
     /**
@@ -88,9 +84,7 @@ public class Building extends StandardEntity {
         totalArea = new IntProperty(other.totalArea);
         temperature = new IntProperty(other.temperature);
         importance = new IntProperty(other.importance);
-        apexes = new IntArrayProperty(other.apexes);
-        entrances = new EntityRefListProperty(other.entrances);
-        registerProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
+        registerProperties(floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance);
     }
 
     @Override
@@ -108,10 +102,6 @@ public class Building extends StandardEntity {
             return super.getProperty(urn);
         }
         switch (type) {
-        case X:
-            return x;
-        case Y:
-            return y;
         case FLOORS:
             return floors;
         case IGNITION:
@@ -132,10 +122,6 @@ public class Building extends StandardEntity {
             return temperature;
         case IMPORTANCE:
             return importance;
-        case BUILDING_APEXES:
-            return apexes;
-        case ENTRANCES:
-            return entrances;
         default:
             return super.getProperty(urn);
         }

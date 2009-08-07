@@ -29,6 +29,7 @@ public final class LaunchSampleAgents {
     private static final String FIRE_BRIGADE_FLAG = "-fb";
     private static final String POLICE_FORCE_FLAG = "-pf";
     private static final String AMBULANCE_TEAM_FLAG = "-at";
+    private static final String CIVILIAN_FLAG = "-cv";
 
     private LaunchSampleAgents() {}
 

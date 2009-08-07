@@ -80,6 +80,8 @@ public final class StandardPropertyFactory extends AbstractPropertyFactory<Stand
         case EDGES:
         case ENTRANCES:
         case POSITION_HISTORY:
+        case NEXT_AREA:
+        case BLOCKADE_LIST:
             return new EntityRefListProperty(urn);
         default:
             throw new IllegalArgumentException("Unrecognised property urn: " + urn);

@@ -9,6 +9,8 @@ public enum StandardEntityURN {
     WORLD,
     ROAD,
     NODE,
+    AREA,
+    BLOCKADE,
     BUILDING,
     REFUGE,
     FIRE_STATION,

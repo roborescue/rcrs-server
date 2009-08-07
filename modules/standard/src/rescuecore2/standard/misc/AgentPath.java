@@ -32,22 +32,26 @@ public abstract class AgentPath {
         if (human == null) {
             throw new IllegalArgumentException("Agent must not be null");
         }
+        /*
         if (!human.isPositionDefined() || !human.isPositionExtraDefined()) {
             throw new IllegalArgumentException("Agent has an undefined position");
         }
+        */
         if (move == null) {
             throw new IllegalArgumentException("Move command must not be null");
         }
         List<EntityID> path = move.getPath();
         Iterator<EntityID> it = path.iterator();
         EntityID position = human.getPosition();
+        int positionExtra = 0;
+        /*
         int positionExtra = human.getPositionExtra();
         if (position.equals(startPosition) && positionExtra == startPositionExtra) {
             // Didn't move
             return null;
         }
-        if (position.equals(startPosition) && Math.abs(positionExtra - startPositionExtra) == 1) {
-            // Didn't really move - traffic simulator sometimes adjusts positionExtra by 1.
+        */
+        if (position.equals(startPosition)) {
             return null;
         }
         EntityID previous = it.next();

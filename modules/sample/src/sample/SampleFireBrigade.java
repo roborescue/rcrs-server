@@ -8,6 +8,7 @@ import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
+import rescuecore2.standard.messages.AKMove;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -32,6 +33,8 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
     private int maxDistance;
     private int maxPower;
 
+    private List<EntityID> last_path;
+
     @Override
     public String toString() {
         return "Sample fire brigade";
@@ -54,7 +57,8 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         }
         FireBrigade me = me();
         // Are we currently filling with water?
-        if (me.getWater() < maxWater && location() instanceof Refuge) {
+        if (me.isWaterDefined() && me.getWater() < maxWater && location() instanceof Refuge) {
+            LOG.debug(me() + " filling with water at " + location());
             sendRest(time);
             return;
         }
@@ -67,7 +71,13 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
                 return;
             }
             else {
-                sendMove(time, randomWalk());
+                System.out.println(me() + " couldn't plan a path to a refuge.");
+		if(last_path!=null && last_path.size()>1 && last_path.indexOf(location().getID())!=-1)
+		    for(path=last_path; !path.get(0).equals(location().getID()); ) path.remove(0);
+		else
+		    path = randomWalk();
+		send(new AKMove(getID(), time, path));
+		last_path = path;
             }
         }
         // Find all buildings that are on fire
@@ -87,7 +97,14 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
                 return;
             }
         }
-        sendMove(time, randomWalk());
+	List<EntityID> path = null;
+        System.out.println(me() + " couldn't plan a path to a fire.");
+	if(last_path!=null && last_path.size()>1 && last_path.indexOf(location().getID())!=-1)
+	    for(path=last_path; !path.get(0).equals(location().getID()); ) path.remove(0);
+	else
+	    path = randomWalk();
+	send(new AKMove(getID(), time, path));
+	last_path = path;
     }
 
     @Override

@@ -1,0 +1,47 @@
+<default-menubar>
+  <menu-item type="list" name="File">
+    <menu-item type="action" name="Import" class="traffic3.manager.gui.action.ImportAction"/>
+    <menu-item type="action" name="Import from old version" class="traffic3.manager.gui.action.ImportAction2"/>
+    <menu-item type="action" name="Export" class="traffic3.manager.gui.action.ExportAction"/>
+    <menu-item type="separator"/>
+    <menu-item type="action" class="traffic3.manager.gui.action.ExitAction"/>
+  </menu-item>
+  <menu-item type="list" name="View">
+    <menu-item type="action" class="traffic3.manager.gui.action.FitViewAction"/>
+    <menu-item type="action" class="traffic3.manager.gui.action.ShowAllAsTextAction"/>
+    <menu-item type="action" class="traffic3.manager.gui.action.ShowTargetsAsTextAction"/>
+    <menu-item type="separator"/>
+    <menu-item type="list" name="show">
+      <menu-item type="check" value="antiariasing" init="false"/>
+      <menu-item type="check" value="showArea" init="true"/>
+      <menu-item type="check" value="showAreaEdge" init="true"/>
+      <menu-item type="check" value="showAreaNode" init="false"/>
+      <menu-item type="check" value="showAreaConnector" init="false"/>
+      <menu-item type="check" value="showAreaNodeID" init="false"/>
+    </menu-item>
+  </menu-item>
+  <menu-item type="list" name="Edit">
+    <menu-item type="list" name="delete">
+      <menu-item type="action" class="traffic3.manager.gui.action.ClearAllAction"/>
+      <menu-item type="action" class="traffic3.manager.gui.action.ClearAllAgentsAction"/>
+      <menu-item type="action" class="traffic3.manager.gui.action.DeleteSelectionAction"/>
+    </menu-item>
+    <menu-item type="list" name="select">    
+      <menu-item type="action" class="traffic3.manager.gui.action.SelectAllAction"/>
+      <menu-item type="action" class="traffic3.manager.gui.action.SelectAllAgentsAction"/>
+      <menu-item type="action" class="traffic3.manager.gui.action.SelectByIdAction"/>
+      <menu-item type="action" class="traffic3.manager.gui.action.SelectAgentGroupAction"/>
+    </menu-item>
+    <menu-item type="list" name="validate">
+      <menu-item type="action" class="traffic3.manager.gui.action.ValidateMapAction"/>
+    </menu-item>
+  </menu-item>
+  <menu-item type="list" name="Devel">
+    <menu-item type="action" class="traffic3.manager.gui.action.RecAction"/>
+    <menu-item type="action" class="traffic3.manager.gui.action.RecAction2"/>
+    <menu-item type="action" class="traffic3.manager.gui.action.ShowLogAction"/>
+    <menu-item type="action" class="traffic3.manager.gui.action.ShowVersionAction"/>
+    <menu-item type="separator"/>
+    <menu-item type="check" value="simulating" init="false"/>
+  </menu-item>
+</default-menubar>

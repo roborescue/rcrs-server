@@ -2,6 +2,7 @@ package rescuecore2.standard.kernel;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collection;
 
 import kernel.AgentRegistrar;
 import kernel.ComponentManager;
@@ -22,10 +23,13 @@ import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
+import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.Blockade;
+import rescuecore2.standard.entities.Civilian;
 
 import rescuecore2.standard.StandardConstants;
 
@@ -93,6 +97,15 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             filterNodeProperties(n);
             initialEntities.add(n);
         }
+	if (e instanceof Area) {
+	    Area a = (Area)e.copy();
+	    filterAreaProperties(a);
+	    initialEntities.add(a);	
+}
+	if (e instanceof Blockade) {
+	    Blockade b = (Blockade)e;
+	    initialEntities.add(b);
+	}
         if (e instanceof Building) {
             Building b = (Building)e.copy();
             filterBuildingProperties(b);
@@ -159,6 +172,10 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             switch (urn) {
             case X:
             case Y:
+            case AREA_TYPE:
+            case AREA_APEXES:
+	    case NEXT_AREA:
+	    case BLOCKADE_LIST:
             case FLOORS:
             case BUILDING_CODE:
             case BUILDING_ATTRIBUTES:
@@ -181,6 +198,25 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             switch (urn) {
             case POSITION:
             case POSITION_EXTRA:
+                break;
+            default:
+                next.undefine();
+            }
+        }
+    }
+
+    private void filterAreaProperties(Area a) {
+        for (Property next : a.getProperties()) {
+            // Building properties: 
+            // Everything else should be undefined
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
+            case X:
+            case Y:
+            case AREA_TYPE:
+            case AREA_APEXES:
+	    case NEXT_AREA:
+	    case BLOCKADE_LIST:
                 break;
             default:
                 next.undefine();

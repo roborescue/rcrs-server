@@ -8,6 +8,7 @@ import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
+import rescuecore2.standard.messages.AKMove;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;

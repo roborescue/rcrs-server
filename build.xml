@@ -8,8 +8,10 @@
 
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
-
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc,resq-fire,traffic-old,ignition"/>
+<!-- Network based simulator cannot be compiled.
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc,resq-fire,traffic-old,ignition,gis2,traffic3,blockade2"/>
+-->
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,ignition,traffic3,gis2,blockade2"/>
   <property name="modules.kernel.depend" value="rescuecore2,handy"/>
   <property name="modules.standard.depend" value="rescuecore2,kernel"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
@@ -18,8 +20,12 @@
   <property name="modules.blockade.depend" value="rescuecore2,standard"/>
   <property name="modules.misc.depend" value="rescuecore2,standard"/>
   <property name="modules.resq-fire.depend" value="rescuecore2,standard"/>
-  <property name="modules.traffic-old.depend" value="rescuecore2,standard"/>
   <property name="modules.ignition.depend" value="rescuecore2,standard"/>
+  <property name="modules.blockade2.depend" value="rescuecore2,traffic3"/>
+  <property name="modules.maps.depend" value="rescuecore2,standard"/>
+  <property name="modules.clear.depend" value="rescuecore2,standard"/>
+  <property name="modules.traffic3.depend" value="rescuecore2,standard"/>
+  <property name="modules.gis2.depend" value="rescuecore2,standard"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
@@ -33,6 +39,10 @@
   <import file="${modules.dir}/resq-fire/build.xml" optional="true"/>
   <import file="${modules.dir}/traffic-old/build.xml" optional="true"/>
   <import file="${modules.dir}/ignition/build.xml" optional="true"/>
+  <import file="${modules.dir}/maps/build.xml" optional="true"/>
+  <import file="${modules.dir}/clear/build.xml" optional="true"/>
+  <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
+  <import file="${modules.dir}/gis2/build.xml" optional="true"/>
 
   <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->
@@ -313,17 +323,6 @@
     </javac>
     <jar destfile="${lib.dir}/resq-fire.jar">
       <fileset dir="${basedir}/oldsims" includes="firesimulator/**/*.class"/>
-    </jar>
-    <javac srcdir="${basedir}/oldsims/" debug="${debug}">
-      <include name="traffic/**/*.java"/>
-      <classpath>
-        <fileset dir="${lib.dir}">
-          <include name="*.jar"/>
-        </fileset>
-      </classpath>
-    </javac>
-    <jar destfile="${lib.dir}/traffic-old.jar">
-      <fileset dir="${basedir}/oldsims" includes="traffic/**/*.class"/>
     </jar>
   </target>
 

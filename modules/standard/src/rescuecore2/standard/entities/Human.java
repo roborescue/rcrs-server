@@ -4,6 +4,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
+import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
@@ -31,7 +32,7 @@ public abstract class Human extends StandardEntity {
     protected Human(EntityID id, StandardEntityURN type) {
         super(id, type);
         position = new EntityRefProperty(StandardPropertyURN.POSITION);
-        positionExtra = new IntProperty(StandardPropertyURN.POSITION_EXTRA);
+        //positionExtra = new IntProperty(StandardPropertyURN.POSITION_EXTRA);
         positionHistory = new EntityRefListProperty(StandardPropertyURN.POSITION_HISTORY);
         direction = new IntProperty(StandardPropertyURN.DIRECTION);
         stamina = new IntProperty(StandardPropertyURN.STAMINA);
@@ -48,7 +49,7 @@ public abstract class Human extends StandardEntity {
     public Human(Human other) {
         super(other);
         position = new EntityRefProperty(other.position);
-        positionExtra = new IntProperty(other.positionExtra);
+        //positionExtra = new IntProperty(other.positionExtra);
         positionHistory = new EntityRefListProperty(other.positionHistory);
         direction = new IntProperty(other.direction);
         stamina = new IntProperty(other.stamina);
@@ -70,8 +71,8 @@ public abstract class Human extends StandardEntity {
         switch (type) {
         case POSITION:
             return position;
-        case POSITION_EXTRA:
-            return positionExtra;
+            //case POSITION_EXTRA:
+            //return positionExtra;
         case POSITION_HISTORY:
             return positionHistory;
         case DIRECTION:
@@ -80,6 +81,10 @@ public abstract class Human extends StandardEntity {
             return stamina;
         case HP:
             return hp;
+        case X:
+            return x;
+        case Y:
+            return y;
         case DAMAGE:
             return damage;
         case BURIEDNESS:

@@ -1,0 +1,12 @@
+<default-toolbar>
+  <menu-item type="action" class="traffic3.manager.gui.action.ShowTargetsAsTextAction"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.CreateAreaAction"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.SetAsConnectorAction"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.RecAction2"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.PutAgentsAction"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.PutAgentsAction2"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.SetDestinationAction"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.PutBlockadeAction"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.PutBlockadeAction2"/>
+  <menu-item type="action" class="traffic3.manager.gui.action.SetAreaTypeAction"/>
+</default-toolbar>

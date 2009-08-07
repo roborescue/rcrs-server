@@ -1,0 +1,703 @@
+<agent_list xmlns:rcrs="http://sakura.meijo-u.ac.jp/..">
+   <rcrs:Version>RCRSAgent[1.0.0]</rcrs:Version>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>522711.1051665887</x>
+         <y>489605.55140021764</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531497.5990749176</x>
+         <y>493233.6478524905</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>530152.995040123</x>
+         <y>506463.9452155354</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>523923.2793689752</x>
+         <y>488385.172569318</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>535981.9503805827</x>
+         <y>492834.5527831403</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>543117.5049296046</x>
+         <y>496749.6962006042</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>522353.6757944515</x>
+         <y>491439.3653481128</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>522424.94027225766</x>
+         <y>506193.2681079777</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>527235.540953358</x>
+         <y>489959.8979056062</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>528521.5485647917</x>
+         <y>508877.6520371712</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>532558.2723927374</x>
+         <y>496775.82303017686</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>528647.4575869034</x>
+         <y>487704.6670363436</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>539139.5337176932</x>
+         <y>488493.9544626424</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>519653.61566345807</x>
+         <y>494593.4364640896</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>529218.3911571489</x>
+         <y>490910.02637083933</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>538651.0427652207</x>
+         <y>506198.6568128034</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>539624.9168189067</x>
+         <y>495359.92409295595</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>538350.31670587</x>
+         <y>493037.4869086314</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>523426.353689161</x>
+         <y>494756.472856281</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>525505.4629919179</x>
+         <y>505746.5606028327</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>526516.8641753377</x>
+         <y>503829.90883240267</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>537374.1679573104</x>
+         <y>489773.895532333</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>525327.9585180593</x>
+         <y>512147.72491604585</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>523629.6813108194</x>
+         <y>510714.54627227935</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>517285.6279843008</x>
+         <y>494838.28922530095</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>524399.1952258439</x>
+         <y>486296.790245463</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>517439.7367062851</x>
+         <y>498001.4822958581</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531299.6974821298</x>
+         <y>500677.66769418586</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>533109.9945907531</x>
+         <y>487158.71009106445</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>522305.4444869077</x>
+         <y>501129.186606065</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>530959.1329552808</x>
+         <y>509295.8385243932</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>521584.2894531563</x>
+         <y>498486.4668146751</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>518693.0567659195</x>
+         <y>504860.87926720013</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531292.2690576192</x>
+         <y>511260.31247145426</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>533249.3974568676</x>
+         <y>500111.8158159053</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>536405.0771860715</x>
+         <y>496062.80110497324</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>541658.3533334574</x>
+         <y>501299.9616360209</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>537526.3561829905</x>
+         <y>502858.77577826695</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>534386.2322202418</x>
+         <y>502136.2678003702</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>524096.4832921601</x>
+         <y>499969.3520675336</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>541089.9348688489</x>
+         <y>505772.2222854495</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>526509.8175312164</x>
+         <y>494439.21694372816</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>519858.49133608723</x>
+         <y>491998.5397527006</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>542000.375124493</x>
+         <y>494070.1993304243</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>544530.9805202176</x>
+         <y>502983.3674529186</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>542397.5493260111</x>
+         <y>498821.74299981963</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531293.9164316604</x>
+         <y>486070.95703577274</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>541032.5096834628</x>
+         <y>489380.5528540415</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>541150.5281170676</x>
+         <y>491773.88505000906</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>522252.8343438011</x>
+         <y>509361.32519990666</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>519790.5309894403</x>
+         <y>506460.29399921384</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>535363.5490887607</x>
+         <y>489076.26622887916</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>520116.9435154046</x>
+         <y>508865.46641835396</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>536419.639653207</x>
+         <y>511540.7472884616</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>538765.3427686867</x>
+         <y>511398.74350618257</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>518260.2368607188</x>
+         <y>502884.59558094</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>545087.0455495819</x>
+         <y>495249.6654631319</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531159.7687536406</x>
+         <y>513949.9762663408</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>529698.6781869197</x>
+         <y>484685.1966944427</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>534693.6155089177</x>
+         <y>513068.988869058</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>516819.4192469031</x>
+         <y>500569.0208005911</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>545757.0720695372</x>
+         <y>498867.26073085127</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>539264.7879503886</x>
+         <y>508428.96960702294</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>528143.4253127195</x>
+         <y>513519.6345835507</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>527205.5501825501</x>
+         <y>510493.28346814157</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>541918.5324066845</x>
+         <y>509736.5316015002</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>526489.7499423356</x>
+         <y>487210.31934603537</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>520595.2660266275</x>
+         <y>496771.3962615683</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>543678.5977976024</x>
+         <y>491826.07454417774</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>534865.8779607783</x>
+         <y>485354.3907916154</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>536779.7768426393</x>
+         <y>486404.1143607018</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>533408.554134355</x>
+         <y>490264.45595326583</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>540486.7577918853</x>
+         <y>503102.57890319737</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>521870.04156667064</x>
+         <y>503144.94655709475</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>539014.8017095828</x>
+         <y>499734.9651839232</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531620.6508779002</x>
+         <y>504616.82718867535</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>536606.5509862275</x>
+         <y>508270.8334161373</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>528010.8475364811</x>
+         <y>505966.2736439749</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>533683.0442131746</x>
+         <y>493219.1207297831</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>531280.66363548</x>
+         <y>489485.75246312434</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>536813.5866639398</x>
+         <y>505342.75740355777</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>530550.1487643336</x>
+         <y>497851.6284779489</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>529690.2826764926</x>
+         <y>502479.5369350059</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>529203.2520259995</x>
+         <y>493672.13815885555</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>528846.7133334461</x>
+         <y>500235.01437791926</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>528561.7722009863</x>
+         <y>496317.5751413272</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>527385.9881975139</x>
+         <y>498642.23371780175</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>524752.7501050016</x>
+         <y>497495.12725625467</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>544179.7176039623</x>
+         <y>500578.7333323568</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>525419.8947002763</x>
+         <y>491871.1415206425</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>535840.8683464109</x>
+         <y>499642.05927801377</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>542713.3329032772</x>
+         <y>507684.32379300677</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>532402.0141258237</x>
+         <y>507687.56625340634</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>539038.8296678694</x>
+         <y>497650.51977788657</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>525472.0234163987</x>
+         <y>501991.63791366474</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>543589.0585667635</x>
+         <y>505101.78070297267</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>519602.0069599135</x>
+         <y>500677.83938298986</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>534448.1339962488</x>
+         <y>509484.3528748617</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>524393.2723425728</x>
+         <y>507345.36859561247</y>
+         <area>19768</area>
+      </location>
+   </agent>
+   <agent type="Civilian">
+      <location type="CoordinateAndArea">
+         <x>534636.3113481981</x>
+         <y>504503.5942327811</y>
+         <area>19768</area>
+      </location>
+   </agent>
+</agent_list>

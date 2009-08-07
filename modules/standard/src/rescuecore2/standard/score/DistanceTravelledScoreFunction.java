@@ -82,12 +82,14 @@ public class DistanceTravelledScoreFunction extends AbstractScoreFunction {
                 Human h = (Human)next;
                 if (h.isPositionDefined()) {
                     lastPosition.put(h.getID(), h.getPosition());
+                    /*
                     if (h.isPositionExtraDefined()) {
                         lastPositionExtra.put(h.getID(), h.getPositionExtra());
                     }
                     else {
                         lastPositionExtra.put(h.getID(), 0);
                     }
+                    */
                 }
             }
         }

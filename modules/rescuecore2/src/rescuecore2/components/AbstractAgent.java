@@ -151,6 +151,7 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
         public void messageReceived(Connection c, Message msg) {
             if (msg instanceof KASense) {
                 KASense sense = (KASense)msg;
+
                 if (!entityID.equals(sense.getAgentID())) {
                     return;
                 }

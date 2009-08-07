@@ -73,13 +73,16 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
             List<StandardEntity> neighbours = new ArrayList<StandardEntity>(search.findNeighbours(current));
             Collections.shuffle(neighbours, random);
             boolean found = false;
+
             for (StandardEntity next : neighbours) {
                 if (seen.contains(next)) {
                     continue;
                 }
+		/*
                 if (next instanceof Building && i < RANDOM_WALK_LENGTH - 1) {
                     continue;
                 }
+		*/
                 current = next;
                 found = true;
                 break;
