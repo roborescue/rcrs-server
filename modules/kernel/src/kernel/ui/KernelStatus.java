@@ -59,6 +59,9 @@ public class KernelStatus extends JPanel implements KernelListener {
         add(lists, BorderLayout.CENTER);
         timeLabel = new JLabel("Time: not started", JLabel.CENTER);
         add(timeLabel, BorderLayout.NORTH);
+        agents.addAll(kernel.getAllAgents());
+        simulators.addAll(kernel.getAllSimulators());
+        viewers.addAll(kernel.getAllViewers());
     }
 
     @Override

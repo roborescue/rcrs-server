@@ -26,9 +26,18 @@ import javax.swing.JLabel;
 import javax.swing.JComponent;
 import javax.swing.WindowConstants;
 
+import rescuecore2.connection.Connection;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionManager;
+import rescuecore2.connection.StreamConnection;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
+import rescuecore2.config.NoSuchConfigOptionException;
+import rescuecore2.components.ComponentLauncher;
+import rescuecore2.components.Component;
+import rescuecore2.components.Agent;
+import rescuecore2.components.Simulator;
+import rescuecore2.components.Viewer;
 import rescuecore2.messages.MessageRegistry;
 import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.WorldModel;
@@ -36,13 +45,12 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.view.WorldModelViewer;
+import rescuecore2.misc.Pair;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import kernel.standard.StandardComponentManager;
-//import kernel.standard.StandardWorldModelCreator;
-//import kernel.standard.InlineWorldModelCreator;
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
 
@@ -64,6 +72,10 @@ public final class StartKernel {
     private static final String COMMUNICATION_KEY_PREFIX = "startup.communication";
     private static final String OPTIONS_KEY_SUFFIX = ".options";
     private static final String AUTOSTART_KEY_SUFFIX = ".auto";
+
+    private static final String SIMULATORS_KEY = "kernel.simulators.autostart";
+    private static final String VIEWERS_KEY = "kernel.viewers.autostart";
+    private static final String AGENTS_KEY = "kernel.agents.autostart";
 
     private static final String COMMAND_FILTERS_KEY = "startup.commandfilters";
 
@@ -110,6 +122,7 @@ public final class StartKernel {
             }
             KernelBuilder builder = new StandardKernelBuilder();
             final KernelInfo kernelInfo = builder.createKernel(config);
+            autostartComponents(kernelInfo, config);
             if (showGUI) {
                 KernelGUI gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun);
                 for (KernelGUIComponent next : kernelInfo.guiComponents) {
@@ -212,6 +225,71 @@ public final class StartKernel {
             System.err.println("Could not instantiate class " + classname + ": " + e);
         }
         return null;
+    }
+
+    private static void autostartComponents(KernelInfo info, Config config) throws InterruptedException {
+        Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
+        info.componentManager.newConnection(connections.first());
+        ComponentLauncher launcher = new ComponentLauncher(connections.second());
+        // Simulators
+        try {
+            autostartComponents(Simulator.class, SIMULATORS_KEY, config, launcher);
+        }
+        catch (NoSuchConfigOptionException e) {
+            // Ignore
+            System.out.println("Not starting any simulators");
+        }
+        // Viewers
+        try {
+            autostartComponents(Viewer.class, VIEWERS_KEY, config, launcher);
+        }
+        catch (NoSuchConfigOptionException e) {
+            // Ignore
+            System.out.println("Not starting any viewers");
+        }
+        // Agents
+        try {
+            autostartComponents(Agent.class, AGENTS_KEY, config, launcher);
+        }
+        catch (NoSuchConfigOptionException e) {
+            // Ignore
+            System.out.println("Not starting any agents");
+        }
+    }
+
+    private static <T extends Component> void autostartComponents(Class<T> clazz, String key, Config config, ComponentLauncher launcher) throws InterruptedException {
+        for (String next : config.getArrayValue(key)) {
+            // Check if this class name has a multiplier
+            int index = next.indexOf("*");
+            int count = 1;
+            String className = next;
+            if (index != -1) {
+                count = Integer.parseInt(next.substring(index + 1));
+                className = next.substring(0, index);
+            }
+            System.out.println("Launching " + count + " instances of component '" + className + "'...");
+            for (int i = 0; i < count; ++i) {
+                Component c = instantiate(className, clazz);
+                if (c == null) {
+                    break;
+                }
+                System.out.println("Launching instance " + (i + 1) + "...");
+                try {
+                    String result = launcher.connect(c);
+                    if (result == null) {
+                        System.out.println("success");
+                    }
+                    else {
+                        System.out.println("failed: " + result);
+                        break;
+                    }
+                }
+                catch (ConnectionException e) {
+                    System.out.println("failed: " + e);
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private static interface KernelBuilder {

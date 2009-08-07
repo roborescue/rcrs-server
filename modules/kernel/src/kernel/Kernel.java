@@ -1,5 +1,6 @@
 package kernel;
 
+import java.util.Collections;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -123,6 +124,16 @@ public class Kernel {
     }
 
     /**
+       Get all agents in the system.
+       @return An unmodifiable view of all agents.
+    */
+    public Collection<Agent> getAllAgents() {
+        synchronized (this) {
+            return Collections.unmodifiableCollection(agents);
+        }
+    }
+
+    /**
        Add a simulator to the system.
        @param sim The simulator to add.
     */
@@ -145,6 +156,16 @@ public class Kernel {
     }
 
     /**
+       Get all simulators in the system.
+       @return An unmodifiable view of all simulators.
+    */
+    public Collection<Simulator> getAllSimulators() {
+        synchronized (this) {
+            return Collections.unmodifiableCollection(sims);
+        }
+    }
+
+    /**
        Add a viewer to the system.
        @param viewer The viewer to add.
     */
@@ -164,6 +185,16 @@ public class Kernel {
             viewers.remove(viewer);
         }
         fireViewerRemoved(viewer);
+    }
+
+    /**
+       Get all viewers in the system.
+       @return An unmodifiable view of all viewers.
+    */
+    public Collection<Viewer> getAllViewers() {
+        synchronized (this) {
+            return Collections.unmodifiableCollection(viewers);
+        }
     }
 
     /**
