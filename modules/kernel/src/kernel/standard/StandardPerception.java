@@ -21,6 +21,7 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.StandardEntityType;
 import rescuecore2.standard.entities.StandardPropertyType;
 
 /**
@@ -111,7 +112,7 @@ public class StandardPerception implements Perception {
             // Copy entities and set property values
             for (StandardEntity next : nearby) {
                 StandardEntity copy = null;
-                switch (next.getType()) {
+                switch ((StandardEntityType)next.getType()) {
                 case ROAD:
                     copy = (StandardEntity)next.copy();
                     filterRoadProperties((Road)copy);
