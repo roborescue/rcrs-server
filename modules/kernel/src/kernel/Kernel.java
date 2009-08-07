@@ -25,6 +25,8 @@ public class Kernel {
      */
     public static final String TIMESTEPS_KEY = "kernel.timesteps";
 
+    private static final String AGENT_TIME_KEY = "kernel.agents.think-time";
+
     //    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
@@ -67,7 +69,7 @@ public class Kernel {
         sims = new HashSet<Simulator>();
         viewers = new HashSet<Viewer>();
         time = 0;
-        agentTime = config.getIntValue(TIMESTEPS_KEY);
+        agentTime = config.getIntValue(AGENT_TIME_KEY);
         agentCommandsLastTimestep = new HashSet<Command>();
         try {
             String logName = config.getValue("kernel.logname");
