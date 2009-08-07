@@ -8,7 +8,7 @@ import rescuecore2.misc.Pair;
 /**
    Abstract base class for all standard entities.
  */
-public abstract class StandardEntity extends AbstractEntity<StandardEntityType> {
+public abstract class StandardEntity extends AbstractEntity {
     /**
        Construct a StandardEntity with entirely undefined property values.
        @param id The ID of this entity.

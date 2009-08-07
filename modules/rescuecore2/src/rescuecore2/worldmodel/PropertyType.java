@@ -1,7 +1,7 @@
 package rescuecore2.worldmodel;
 
 /**
-   Property types must have a name and an ID number.
+   Property types must have a name and an ID number. This is an interface so that a set of property types can be specified by an enum. For example, "enum MyType implements PropertyType" will do the trick.
  */
 public interface PropertyType {
     /**

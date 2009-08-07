@@ -19,13 +19,12 @@ import java.io.ByteArrayOutputStream;
 
 /**
    Abstract base class for concrete Entity implementations.
-   @param <T> A subclass of EntityType. This allows concrete implementations to guarantee that {@link #getType} will return this particular subclass.
  */
-public abstract class AbstractEntity<T extends EntityType> implements Entity {
+public abstract class AbstractEntity implements Entity {
     /** Map from id to Property. */
     private final Map<Integer, Property> properties;
     private final EntityID id;
-    private final T type;
+    private final EntityType type;
     private final Set<EntityListener> listeners;
 
     /**
@@ -33,7 +32,7 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
        @param id The ID of this entity.
        @param type The type of this entity.
     */
-    protected AbstractEntity(EntityID id, T type) {
+    protected AbstractEntity(EntityID id, EntityType type) {
         this.id = id;
         this.type = type;
         properties = new HashMap<Integer, Property>();
@@ -101,7 +100,7 @@ public abstract class AbstractEntity<T extends EntityType> implements Entity {
     }
 
     @Override
-    public T getType() {
+    public EntityType getType() {
         return type;
     }
 
