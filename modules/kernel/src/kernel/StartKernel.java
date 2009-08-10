@@ -102,6 +102,12 @@ public final class StartKernel {
                 else if (args[i].equalsIgnoreCase(JUST_RUN)) {
                     justRun = true;
                 }
+                else if (args[i].startsWith("--") && args[i].indexOf("=") != -1) {
+                    int index = args[i].indexOf("=");
+                    String key = args[i].substring(2, index);
+                    String value = args[i].substring(index + 1);
+                    config.setValue(key, value);
+                }
                 else {
                     System.out.println("Unrecognised option: " + args[i]);
                 }
