@@ -2,6 +2,8 @@ package rescuecore2.misc;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.ByteArrayOutputStream;
@@ -47,6 +49,17 @@ public final class EncodingTools {
     }
 
     /**
+       Write a 32-bit integer to a DataOutput, big-endian style.
+       @param i The integer to write.
+       @param out The DataOutput to write it to.
+       @throws IOException If the DataOutput blows up.
+     */
+    public static void writeInt32(int i, DataOutput out) throws IOException {
+        // DataOutput writes big-endian
+        out.write(i);
+    }
+
+    /**
        Write a 32-bit integer to a byte array, big-endian style.
        @param i The integer to write.
        @param out The buffer to write it to.
@@ -85,6 +98,17 @@ public final class EncodingTools {
             throw new EOFException("Broken input pipe. Read 3 bytes of 4.");
         }
         return (first << 24) | (second << 16) | (third << 8) | fourth;
+    }
+
+    /**
+       Read a 32-bit integer from a DataInput.
+       @param in The DataInput to read from.
+       @return The next big-endian, 32-bit integer in the stream.
+       @throws IOException If the DataInput blows up.
+       @throws EOFException If the end of the stream is reached.
+     */
+    public static int readInt32(DataInput in) throws IOException {
+        return in.readInt();
     }
 
     /**
@@ -146,6 +170,18 @@ public final class EncodingTools {
     }
 
     /**
+       Write a String to a DataOutput. Strings are always in UTF-8.
+       @param s The String to write.
+       @param out The DataOutput to write to.
+       @throws IOException If the DataOutput blows up.
+     */
+    public static void writeString(String s, DataOutput out) throws IOException {
+        byte[] bytes = s.getBytes(CHARSET);
+        writeInt32(bytes.length, out);
+        out.write(bytes);
+    }
+
+    /**
        Write a String to a byte array. Strings are always in UTF-8.
        @param s The String to write.
        @param out The byte array to write to. Make sure it's big enough!
@@ -174,6 +210,19 @@ public final class EncodingTools {
             }
             count += read;
         }
+        return new String(buffer, CHARSET);
+    }
+
+    /**
+       Read a String from a DataInput.
+       @param in The DataInput to read.
+       @throws IOException If the DataInput blows up.
+       @throws EOFException If the end of the stream is reached.
+    */
+    public static String readString(DataInput in) throws IOException {
+        int length = readInt32(in);
+        byte[] buffer = new byte[length];
+        in.readFully(buffer);
         return new String(buffer, CHARSET);
     }
 
@@ -218,6 +267,19 @@ public final class EncodingTools {
     }
 
     /**
+       Read a fixed number of bytes from a DataInput into an array.
+       @param size The number of bytes to read.
+       @param in The DataInput to read from.
+       @return A new byte array containing the bytes.
+       @throws IOException If the read operation fails.
+    */
+    public static byte[] readBytes(int size, DataInput in) throws IOException {
+        byte[] buffer = new byte[size];
+        in.readFully(buffer);
+        return buffer;
+    }
+
+    /**
        Write a double to an OutputStream.
        @param d The double to write.
        @param out The OutputStream to write it to.
@@ -233,6 +295,16 @@ public final class EncodingTools {
         out.write((byte) (bits >> 16) & 0xFF);
         out.write((byte) (bits >> 8) & 0xFF);
         out.write((byte) bits & 0xFF);
+    }
+
+    /**
+       Write a double to a DataOutput.
+       @param d The double to write.
+       @param out The DataOutput to write it to.
+       @throws IOException If the DataOutput blows up.
+     */
+    public static void writeDouble(double d, DataOutput out) throws IOException {
+        out.writeDouble(d);
     }
 
     /**
@@ -277,6 +349,17 @@ public final class EncodingTools {
             | data[6] << 8
             | data[7];
         return Double.longBitsToDouble(result);
+    }
+
+    /**
+       Read a double from a DataInput.
+       @param in The DataInput to read from.
+       @return The next double in the stream.
+       @throws IOException If the DataInput blows up.
+       @throws EOFException If the end of the stream is reached.
+     */
+    public static double readDouble(DataInput in) throws IOException {
+        return in.readDouble();
     }
 
     /**
@@ -351,12 +434,56 @@ public final class EncodingTools {
     }
 
     /**
+       Write an entity to a DataOutput.
+       @param e The entity to write.
+       @param out The DataOutput to write to.
+       @throws IOException If there is a problem writing to the stream.
+    */
+    public static void writeEntity(Entity e, DataOutput out) throws IOException {
+        // TypeID, entityID, size, content
+        // Gather the content first
+        ByteArrayOutputStream gather = new ByteArrayOutputStream();
+        e.write(gather);
+        byte[] bytes = gather.toByteArray();
+
+        // TypeID
+        writeInt32(e.getType().getID(), out);
+        // EntityID
+        writeInt32(e.getID().getValue(), out);
+        // Size
+        writeInt32(bytes.length, out);
+        // Content
+        out.write(bytes);
+    }
+
+    /**
        Read an entity from a stream. This will use the EntityRegistry class to look up entity type IDs.
        @param in The InputStream to read from.
        @return A new Entity, or null if the entity type ID is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
     public static Entity readEntity(InputStream in) throws IOException {
+        int typeID = readInt32(in);
+        if (typeID == 0) {
+            return null;
+        }
+        int entityID = readInt32(in);
+        int size = readInt32(in);
+        byte[] content = readBytes(size, in);
+        Entity result = EntityRegistry.createEntity(typeID, new EntityID(entityID));
+        if (result != null) {
+            result.read(new ByteArrayInputStream(content));
+        }
+        return result;
+    }
+
+    /**
+       Read an entity from a DataInput. This will use the EntityRegistry class to look up entity type IDs.
+       @param in The DataInput to read from.
+       @return A new Entity, or null if the entity type ID is not recognised.
+       @throws IOException If there is a problem reading from the stream.
+    */
+    public static Entity readEntity(DataInput in) throws IOException {
         int typeID = readInt32(in);
         if (typeID == 0) {
             return null;
@@ -393,12 +520,50 @@ public final class EncodingTools {
     }
 
     /**
+       Write a message to a DataOutput.
+       @param m The message to write.
+       @param out The DataOutput to write to.
+       @throws IOException If there is a problem writing to the stream.
+    */
+    public static void writeMessage(Message m, DataOutput out) throws IOException {
+        // TypeID, size, content
+        // Gather the content first
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        m.write(bytes);
+        byte[] content = bytes.toByteArray();
+        
+        // TypeID
+        writeInt32(m.getMessageTypeID(), out);
+        // Size
+        writeInt32(content.length, out);
+        // Content
+        out.write(content);
+    }
+
+    /**
        Read a message from a stream. This will use the MessageRegistry class to look up message type IDs.
        @param in The InputStream to read from.
        @return A new Message, or null if the message type ID is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(InputStream in) throws IOException {
+        int typeID = readInt32(in);
+        if (typeID == 0) {
+            return null;
+        }
+        int size = readInt32(in);
+        byte[] content = readBytes(size, in);
+        Message result = MessageRegistry.createMessage(typeID, new ByteArrayInputStream(content));
+        return result;
+    }
+
+    /**
+       Read a message from a DataInput. This will use the MessageRegistry class to look up message type IDs.
+       @param in The DataInput to read from.
+       @return A new Message, or null if the message type ID is not recognised.
+       @throws IOException If there is a problem reading from the stream.
+    */
+    public static Message readMessage(DataInput in) throws IOException {
         int typeID = readInt32(in);
         if (typeID == 0) {
             return null;
