@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.awt.Dialog;
@@ -65,6 +66,7 @@ public final class StartKernel {
     private static final String COMMUNICATION_KEY_PREFIX = "startup.communication";
     private static final String OPTIONS_KEY_SUFFIX = ".options";
     private static final String AUTOSTART_KEY_SUFFIX = ".auto";
+    private static final String KERNEL_STARTUP_TIME_KEY = "kernel.startup.connect-time";
 
     private static final String SIMULATORS_KEY = "kernel.simulators.autostart";
     private static final String VIEWERS_KEY = "kernel.viewers.autostart";
@@ -141,8 +143,8 @@ public final class StartKernel {
             }
             initialiseKernel(kernelInfo, config);
             if (!showGUI || justRun) {
-                waitForComponentManager(kernelInfo);
-                int maxTime = config.getIntValue("timesteps");
+                waitForComponentManager(kernelInfo, config);
+                int maxTime = config.getIntValue(Kernel.TIMESTEPS_KEY);
                 while (kernelInfo.kernel.getTime() < maxTime) {
                     kernelInfo.kernel.timestep();
                 }
@@ -173,15 +175,60 @@ public final class StartKernel {
         }
     }
 
-    private static void waitForComponentManager(KernelInfo kernel) throws KernelException {
+    private static void waitForComponentManager(final KernelInfo kernel, Config config) throws KernelException {
         // Wait for all connections
+        // Set up a CountDownLatch
+        final CountDownLatch latch = new CountDownLatch(1);
+        final long timeout = config.getIntValue(KERNEL_STARTUP_TIME_KEY, -1);
+        Thread timeoutThread = null;
+        if (timeout != -1) {
+            timeoutThread = new Thread() {
+                    public void run() {
+                        try {
+                            Thread.sleep(timeout);
+                            latch.countDown();
+                        }
+                        // CHECKSTYLE:OFF:EmptyStatement is OK here
+                        catch (InterruptedException e) {
+                            // Ignore
+                        }
+                        // CHECKSTYLE:ON:EmptyStatement
+                    }
+                };
+        }
+        Thread waitThread = new Thread() {
+                public void run() {
+                    try {
+                        kernel.componentManager.waitForAllAgents();
+                        kernel.componentManager.waitForAllSimulators();
+                        kernel.componentManager.waitForAllViewers();
+                    }
+                    // CHECKSTYLE:OFF:EmptyStatement is OK here
+                    catch (InterruptedException e) {
+                        // Ignore
+                    }
+                    // CHECKSTYLE:ON:EmptyStatement
+                    latch.countDown();
+                }
+            };
+        waitThread.start();
+        if (timeoutThread != null) {
+            timeoutThread.start();
+        }
+        // Wait at the latch until either everything is connected or the connection timeout expires
+        System.out.println("Waiting for all agents, simulators and viewers to connect.");
+        if (timeout > -1) {
+            System.out.println("Connection timeout is " + timeout + "ms");
+        }
         try {
-            kernel.componentManager.waitForAllAgents();
-            kernel.componentManager.waitForAllSimulators();
-            kernel.componentManager.waitForAllViewers();
+            latch.await();
         }
         catch (InterruptedException e) {
-            throw new KernelException(e);
+            waitThread.interrupt();
+            if (timeoutThread != null) {
+                timeoutThread.interrupt();
+            }
+            throw new KernelException("Interrupted");
         }
     }
 
