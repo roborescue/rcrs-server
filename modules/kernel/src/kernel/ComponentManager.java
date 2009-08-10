@@ -29,17 +29,18 @@ import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.misc.Pair;
 
 /**
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
-public abstract class ComponentManager implements ConnectionManagerListener {
+public class ComponentManager implements ConnectionManagerListener {
     private static final int WAIT_TIME = 10000;
 
     private Kernel kernel;
 
     // Entities that have no controller yet. Map from type to list of entities.
-    private Map<Integer, Queue<Entity>> uncontrolledEntities;
+    private Map<Integer, Queue<Pair<Entity, Collection<? extends Entity>>>> uncontrolledEntities;
 
     // Connected agents
     private Set<AgentAck> agentsToAcknowledge;
@@ -69,7 +70,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
     public ComponentManager(Kernel kernel, WorldModel<? extends Entity> world, Config config) {
         this.kernel = kernel;
         this.world = world;
-        uncontrolledEntities = new HashMap<Integer, Queue<Entity>>();
+        uncontrolledEntities = new HashMap<Integer, Queue<Pair<Entity, Collection<? extends Entity>>>>();
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
@@ -80,15 +81,19 @@ public abstract class ComponentManager implements ConnectionManagerListener {
     /**
        Register an agent-controlled entity.
        @param entity The entity that is agent-controlled.
+       @param visibleOnStartup The set of entities that the agent should be sent on startup. If this is null then all entities will be sent.
      */
-    public void registerAgentControlledEntity(Entity entity) {
+    public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup) {
         synchronized (agentLock) {
-            Queue<Entity> q = uncontrolledEntities.get(entity.getType().getID());
+            Queue<Pair<Entity, Collection<? extends Entity>>> q = uncontrolledEntities.get(entity.getType().getID());
             if (q == null) {
-                q = new LinkedList<Entity>();
+                q = new LinkedList<Pair<Entity, Collection<? extends Entity>>>();
                 uncontrolledEntities.put(entity.getType().getID(), q);
             }
-            q.add(entity);
+            if (visibleOnStartup == null) {
+                visibleOnStartup = world.getAllEntities();
+            }
+            q.add(new Pair<Entity, Collection<? extends Entity>>(entity, visibleOnStartup));
         }
     }
 
@@ -101,7 +106,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
             boolean done = false;
             do {
                 done = true;
-                for (Map.Entry<Integer, Queue<Entity>> next : uncontrolledEntities.entrySet()) {
+                for (Map.Entry<Integer, Queue<Pair<Entity, Collection<? extends Entity>>>> next : uncontrolledEntities.entrySet()) {
                     if (!next.getValue().isEmpty()) {
                         done = false;
                         System.out.println("Waiting for " + next.getValue().size() + " entities of type " + next.getKey());
@@ -203,44 +208,17 @@ public abstract class ComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private Entity findEntityToControl(List<Integer> types) {
+    private Pair<Entity, Collection<? extends Entity>> findEntityToControl(List<Integer> types) {
         for (int next : types) {
-            Queue<Entity> q = uncontrolledEntities.get(next);
+            Queue<Pair<Entity, Collection<? extends Entity>>> q = uncontrolledEntities.get(next);
             if (q != null) {
-                Entity e = q.poll();
-                if (e != null) {
-                    return e;
+                Pair<Entity, Collection<? extends Entity>> p = q.poll();
+                if (p != null) {
+                    return p;
                 }
             }
         }
         return null;
-    }
-
-    /**
-       Get the set of entities that an agent can see on connection. The default implementation returns the entire world model.
-       @param agent The agent that has just connected.
-       @return The set of Entities that the agent can see on connection.
-     */
-    protected Collection<Entity> getInitialEntitiesForAgent(Agent agent) {
-        return new HashSet<Entity>(world.getAllEntities());
-    }
-
-    /**
-       Get the set of entities that a simulator can see on connection. The default implementation returns the entire world model.
-       @param simulator The simulator that has just connected.
-       @return The set of Entities that the simulator can see on connection.
-     */
-    protected Collection<Entity> getInitialEntitiesForSimulator(Simulator simulator) {
-        return new HashSet<Entity>(world.getAllEntities());
-    }
-
-    /**
-       Get the set of entities that a viewer can see on connection. The default implementation returns the entire world model.
-       @param viewer The viewer that has just connected.
-       @return The set of Entities that the viewer can see on connection.
-     */
-    protected Collection<Entity> getInitialEntitiesForViewer(Viewer viewer) {
-        return new HashSet<Entity>(world.getAllEntities());
     }
 
     private class ComponentConnectionListener implements ConnectionListener {
@@ -274,16 +252,18 @@ public abstract class ComponentManager implements ConnectionManagerListener {
             // See if we can find an entity for this agent to control.
             Message reply = null;
             synchronized (agentLock) {
-                Entity entity = findEntityToControl(types);
-                if (entity == null) {
+                Pair<Entity, Collection<? extends Entity>> result = findEntityToControl(types);
+                if (result == null) {
                     // Send an error
                     reply = new KAConnectError(requestID, "No more agents");
                 }
                 else {
+                    Entity entity = result.first();
+                    Collection<? extends Entity> visible = result.second();
                     Agent agent = new Agent(entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
                     // Send an OK
-                    reply = new KAConnectOK(requestID, entity.getID(), getInitialEntitiesForAgent(agent));
+                    reply = new KAConnectOK(requestID, entity.getID(), visible);
                 }
             }
             if (reply != null) {
@@ -316,7 +296,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
             // Send an OK
-            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, getInitialEntitiesForSimulator(sim))));
+            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, world.getAllEntities())));
         }
 
         private void handleSKAcknowledge(SKAcknowledge msg, Connection connection) {
@@ -339,7 +319,7 @@ public abstract class ComponentManager implements ConnectionManagerListener {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
             // Send an OK
-            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, getInitialEntitiesForViewer(viewer))));
+            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, world.getAllEntities())));
         }
 
         private void handleVKAcknowledge(VKAcknowledge msg, Connection connection) {

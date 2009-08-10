@@ -2,13 +2,10 @@ package kernel.standard;
 
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Collection;
 
-import kernel.Kernel;
-import kernel.Agent;
+import kernel.AgentProcessor;
 import kernel.ComponentManager;
 
-import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
@@ -26,47 +23,29 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.StandardPropertyType;
 
 /**
-   Class that manages connecting standard components. This extends the basic ComponentManager by filtering the entities/properties that agents see on connection.
+   Class that manages standard agents.
  */
-public class StandardComponentManager extends ComponentManager {
-    private Set<Entity> initialEntities;
-
-    /**
-       Create a StandardComponentManager.
-       @param kernel The kernel.
-       @param world The world model.
-       @param config The kernel configuration.
-    */
-    public StandardComponentManager(Kernel kernel, WorldModel<? extends Entity> world, Config config) {
-        super(kernel, world, config);
-        initialEntities = new HashSet<Entity>();
-        for (Entity e : world.getAllEntities()) {
-            if (e instanceof Civilian) {
-                registerAgentControlledEntity(e);
+public class StandardAgentProcessor implements AgentProcessor {
+    @Override
+    public void process(ComponentManager manager, WorldModel<? extends Entity> world) {
+        Set<Entity> initialEntities = new HashSet<Entity>();
+        for (Entity e : world) {
+            maybeAddInitialEntity(e, initialEntities);
+        }
+        for (Entity e : world) {
+            if (e instanceof Civilian
+                || e instanceof FireBrigade
+                || e instanceof FireStation
+                || e instanceof AmbulanceTeam
+                || e instanceof AmbulanceCentre
+                || e instanceof PoliceForce
+                || e instanceof PoliceOffice) {
+                manager.registerAgentControlledEntity(e, initialEntities);
             }
-            else if (e instanceof FireBrigade) {
-                registerAgentControlledEntity(e);
-            }
-            else if (e instanceof FireStation) {
-                registerAgentControlledEntity(e);
-            }
-            else if (e instanceof AmbulanceTeam) {
-                registerAgentControlledEntity(e);
-            }
-            else if (e instanceof AmbulanceCentre) {
-                registerAgentControlledEntity(e);
-            }
-            else if (e instanceof PoliceForce) {
-                registerAgentControlledEntity(e);
-            }
-            else if (e instanceof PoliceOffice) {
-                registerAgentControlledEntity(e);
-            }
-            maybeAddInitialEntity(e);
         }
     }
 
-    private void maybeAddInitialEntity(Entity e) {
+    private void maybeAddInitialEntity(Entity e, Set<Entity> initialEntities) {
         if (e instanceof Road) {
             Road r = (Road)e.copy();
             filterRoadProperties(r);
@@ -145,12 +124,5 @@ public class StandardComponentManager extends ComponentManager {
                 next.undefine();
             }
         }
-    }
-
-    @Override
-    protected Collection<Entity> getInitialEntitiesForAgent(Agent agent) {
-        Collection<Entity> result = new HashSet<Entity>(initialEntities);
-        result.add(agent.getControlledEntity());
-        return result;
     }
 }
