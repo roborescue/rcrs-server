@@ -10,7 +10,6 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
 
-import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.FireStation;
 import rescuecore2.standard.entities.AmbulanceTeam;
@@ -33,8 +32,7 @@ public class StandardAgentProcessor implements AgentProcessor {
             maybeAddInitialEntity(e, initialEntities);
         }
         for (Entity e : world) {
-            if (e instanceof Civilian
-                || e instanceof FireBrigade
+            if (e instanceof FireBrigade
                 || e instanceof FireStation
                 || e instanceof AmbulanceTeam
                 || e instanceof AmbulanceCentre
