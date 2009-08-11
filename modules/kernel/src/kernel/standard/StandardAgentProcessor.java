@@ -33,12 +33,14 @@ public class StandardAgentProcessor implements AgentProcessor {
         }
         for (Entity e : world) {
             if (e instanceof FireBrigade
-                || e instanceof FireStation
-                || e instanceof AmbulanceTeam
-                || e instanceof AmbulanceCentre
-                || e instanceof PoliceForce
-                || e instanceof PoliceOffice) {
-                manager.registerAgentControlledEntity(e, initialEntities);
+                    || e instanceof FireStation
+                    || e instanceof AmbulanceTeam
+                    || e instanceof AmbulanceCentre
+                    || e instanceof PoliceForce
+                    || e instanceof PoliceOffice) {
+                Set<Entity> s = new HashSet<Entity>(initialEntities);
+                s.add(e);
+                manager.registerAgentControlledEntity(e, s);
             }
         }
     }
