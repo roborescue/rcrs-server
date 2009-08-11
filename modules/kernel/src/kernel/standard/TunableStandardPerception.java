@@ -29,7 +29,6 @@ import rescuecore2.standard.entities.StandardEntityType;
 import rescuecore2.standard.entities.StandardPropertyType;
 
 import java.awt.GridLayout;
-import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JComponent;
@@ -37,11 +36,12 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JCheckBox;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.BorderFactory;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+
+import handy.swing.SliderComponent;
 
 /**
    Legacy implementation of perception with a GUI.
@@ -62,6 +62,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     private static final int VIEW_DISTANCE_MAX = 1000000;
     private static final int VIEW_DISTANCE_MAJOR_TICK = 100000;
     private static final int VIEW_DISTANCE_MINOR_TICK = 10000;
+    private static final int PRECISION_MAJOR_TICK = 1000;
+    private static final int PRECISION_MINOR_TICK = 100;
 
     private int viewDistance;
     private int farFireDistance;
@@ -290,12 +292,18 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
 
     private void updateHPPrecision(int value) {
         synchronized (lock) {
+            if (value == 0) {
+                value = 1;
+            }
             hpPrecision = value;
         }
     }
 
     private void updateDamagePrecision(int value) {
         synchronized (lock) {
+            if (value == 0) {
+                value = 1;
+            }
             damagePrecision = value;
         }
     }
@@ -325,12 +333,18 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
             super(new GridLayout(1, 4));
             // CHECKSTYLE:ON:MagicNumber
             viewDistanceSlider = new JSlider(SwingConstants.VERTICAL, 0, VIEW_DISTANCE_MAX, viewDistance);
-            hpPrecisionSlider = new JSlider(SwingConstants.VERTICAL, 1, PRECISION_MAX, hpPrecision);
-            damagePrecisionSlider = new JSlider(SwingConstants.VERTICAL, 1, PRECISION_MAX, damagePrecision);
+            hpPrecisionSlider = new JSlider(SwingConstants.VERTICAL, 0, PRECISION_MAX, hpPrecision);
+            damagePrecisionSlider = new JSlider(SwingConstants.VERTICAL, 0, PRECISION_MAX, damagePrecision);
             farFiresBox = new JCheckBox("Use far fires?", useFarFires);
-            add(new SliderComponent(viewDistanceSlider, "View distance"));
-            add(new SliderComponent(hpPrecisionSlider, "HP precision"));
-            add(new SliderComponent(damagePrecisionSlider, "Damage precision"));
+            SliderComponent s = new SliderComponent(viewDistanceSlider);
+            s.setBorder(BorderFactory.createTitledBorder("View distance"));
+            add(s);
+            s = new SliderComponent(hpPrecisionSlider);
+            s.setBorder(BorderFactory.createTitledBorder("HP precision"));
+            add(s);
+            s = new SliderComponent(damagePrecisionSlider);
+            s.setBorder(BorderFactory.createTitledBorder("Damage precision"));
+            add(s);
             add(farFiresBox);
             viewDistanceSlider.addChangeListener(new ChangeListener() {
                     @Override
@@ -363,8 +377,12 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
             viewDistanceSlider.setMinorTickSpacing(VIEW_DISTANCE_MINOR_TICK);
             hpPrecisionSlider.setPaintLabels(true);
             hpPrecisionSlider.setPaintTicks(true);
+            hpPrecisionSlider.setMajorTickSpacing(PRECISION_MAJOR_TICK);
+            hpPrecisionSlider.setMinorTickSpacing(PRECISION_MINOR_TICK);
             damagePrecisionSlider.setPaintLabels(true);
             damagePrecisionSlider.setPaintTicks(true);
+            damagePrecisionSlider.setMajorTickSpacing(PRECISION_MAJOR_TICK);
+            damagePrecisionSlider.setMinorTickSpacing(PRECISION_MINOR_TICK);
 
             Dictionary<Integer, JComponent> labels = new Hashtable<Integer, JComponent>();
             labels.put(1, new JLabel("Accurate"));
@@ -373,35 +391,6 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
             }
             hpPrecisionSlider.setLabelTable(labels);
             damagePrecisionSlider.setLabelTable(labels);
-        }
-    }
-
-    private static class SliderComponent extends JPanel {
-        public SliderComponent(final JSlider slider, String name) {
-            super(new BorderLayout());
-            setBorder(BorderFactory.createTitledBorder(name));
-            add(slider, BorderLayout.CENTER);
-            final JTextField text = new JTextField(String.valueOf(slider.getValue()));
-            add(text, BorderLayout.SOUTH);
-            text.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            int i = Integer.parseInt(text.getText());
-                            slider.setValue(i);
-                        }
-                        catch (NumberFormatException ex) {
-                            // Ignore
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-            slider.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        text.setText(String.valueOf(slider.getValue()));
-                    }
-                });
         }
     }
 }
