@@ -9,6 +9,9 @@ import rescuecore2.worldmodel.Entity;
 import java.util.List;
 import java.util.Collection;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for sending updates from a simulator to the kernel.
  */
@@ -18,16 +21,13 @@ public class SKUpdate extends AbstractMessage implements Control {
     private EntityListComponent update;
 
     /**
-       SKUpdate message with a undefined data.
+       An SKUpdate message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public SKUpdate() {
-        super("SK_UPDATE", ControlMessageConstants.SK_UPDATE);
-        id = new IntComponent("ID");
-        time = new IntComponent("Time");
-        update = new EntityListComponent("Updated objects");
-        addMessageComponent(id);
-        addMessageComponent(time);
-        addMessageComponent(update);
+    public SKUpdate(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -41,6 +41,16 @@ public class SKUpdate extends AbstractMessage implements Control {
         this.id.setValue(id);
         this.time.setValue(time);
         this.update.setEntities(data);
+    }
+
+    private SKUpdate() {
+        super("SK_UPDATE", ControlMessageConstants.SK_UPDATE);
+        id = new IntComponent("ID");
+        time = new IntComponent("Time");
+        update = new EntityListComponent("Updated objects");
+        addMessageComponent(id);
+        addMessageComponent(time);
+        addMessageComponent(update);
     }
 
     /**

@@ -50,7 +50,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 // Move to a refuge
                 List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
                 if (path != null) {
-                    AKMove move = new AKMove(entityID, path, time);
+                    AKMove move = new AKMove(entityID, time, path);
                     System.out.println(me() + " moving to refuge: " + move);
                     send(move);
                     return;
@@ -67,14 +67,14 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 // Targets in the same place might need rescueing or loading
                 if (next.getBuriedness() == 0 && next.getDamage() > 0 && !(location() instanceof Refuge)) {
                     // Load
-                    AKLoad load = new AKLoad(entityID, next.getID(), time);
+                    AKLoad load = new AKLoad(entityID, time, next.getID());
                     System.out.println(me() + " loading target " + next);
                     send(load);
                     return;
                 }
                 if (next.getBuriedness() > 0) {
                     // Rescue
-                    AKRescue rescue = new AKRescue(entityID, next.getID(), time);
+                    AKRescue rescue = new AKRescue(entityID, time, next.getID());
                     System.out.println(me() + " rescueing target " + next);
                     send(rescue);
                     return;
@@ -85,7 +85,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(world));
                 if (path != null) {
                     System.out.println(me() + " moving to target " + next);
-                    send(new AKMove(entityID, path, time));
+                    send(new AKMove(entityID, time, path));
                     return;
                 }
             }
@@ -93,13 +93,13 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
         // Nothing to do
         List<EntityID> path = search.breadthFirstSearch(location(), unexploredBuildings);
         if (path != null) {
-            AKMove move = new AKMove(entityID, path, time);
+            AKMove move = new AKMove(entityID, time, path);
             System.out.println(me() + " exploring building: " + move);
             send(move);
             return;
         }
         System.out.println(me() + " has nothing to do");
-        send(new AKMove(entityID, randomWalk(), time));
+        send(new AKMove(entityID, time, randomWalk()));
     }
 
     @Override

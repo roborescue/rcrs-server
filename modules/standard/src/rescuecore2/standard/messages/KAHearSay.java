@@ -6,6 +6,9 @@ import rescuecore2.messages.EntityIDComponent;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.RawDataComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An kernel hear-say command.
  */
@@ -16,11 +19,13 @@ public class KAHearSay extends AbstractMessage {
     private RawDataComponent data;
 
     /**
-       Create an empty KAHearSay command.
+       A KAHearSay message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    KAHearSay() {
-        super("KA_HEAR_SAY", MessageConstants.KA_HEAR_SAY);
-        init();
+    public KAHearSay(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -29,10 +34,22 @@ public class KAHearSay extends AbstractMessage {
        @param data The content of the message.
     */
     public KAHearSay(EntityID agent, byte[] data) {
-        super("KA_HEAR_SAY", MessageConstants.KA_HEAR_SAY);
-        init();
+        this();
         this.sender.setValue(agent);
         this.data.setData(data);
+    }
+
+    private KAHearSay() {
+        super("KA_HEAR_SAY", MessageConstants.KA_HEAR_SAY);
+        sender = new EntityIDComponent("Sender");
+        recipient = new EntityIDComponent("Recipient");
+        data = new RawDataComponent("Message");
+        channel = new IntComponent("Channel");
+        recipient.setValue(new EntityID(0));
+        addMessageComponent(recipient);
+        addMessageComponent(sender);
+        addMessageComponent(channel);
+        addMessageComponent(data);
     }
 
     /**
@@ -49,17 +66,5 @@ public class KAHearSay extends AbstractMessage {
      */
     public byte[] getContent() {
         return data.getData();
-    }
-
-    private void init() {
-        sender = new EntityIDComponent("Sender");
-        recipient = new EntityIDComponent("Recipient");
-        data = new RawDataComponent("Message");
-        channel = new IntComponent("Channel");
-        recipient.setValue(new EntityID(0));
-        addMessageComponent(recipient);
-        addMessageComponent(sender);
-        addMessageComponent(channel);
-        addMessageComponent(data);
     }
 }

@@ -6,6 +6,9 @@ import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityIDComponent;
 import rescuecore2.worldmodel.EntityID;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for acknowleding a connection to the kernel.
  */
@@ -14,14 +17,13 @@ public class AKAcknowledge extends AbstractMessage implements Control {
     private EntityIDComponent agentID;
 
     /**
-       AKAcknowledge message with an undefined request ID component.
+       An AKAcknowledge message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public AKAcknowledge() {
-        super("AK_ACKNOWLEDGE", ControlMessageConstants.AK_ACKNOWLEDGE);
-        requestID = new IntComponent("Request ID");
-        agentID = new EntityIDComponent("Agent ID");
-        addMessageComponent(requestID);
-        addMessageComponent(agentID);
+    public AKAcknowledge(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -33,6 +35,14 @@ public class AKAcknowledge extends AbstractMessage implements Control {
         this();
         this.requestID.setValue(requestID);
         this.agentID.setValue(agentID);
+    }
+
+    private AKAcknowledge() {
+        super("AK_ACKNOWLEDGE", ControlMessageConstants.AK_ACKNOWLEDGE);
+        requestID = new IntComponent("Request ID");
+        agentID = new EntityIDComponent("Agent ID");
+        addMessageComponent(requestID);
+        addMessageComponent(agentID);
     }
 
     /**

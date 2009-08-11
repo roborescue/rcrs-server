@@ -8,6 +8,9 @@ import rescuecore2.worldmodel.Entity;
 
 import java.util.Collection;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A broadcast update from the kernel.
  */
@@ -16,14 +19,13 @@ public class Update extends AbstractMessage implements Control {
     private EntityListComponent updates;
 
     /**
-       An empty Update message.
+       An Update message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public Update() {
-        super("Update", ControlMessageConstants.UPDATE);
-        time = new IntComponent("Time");
-        updates = new EntityListComponent("Updates");
-        addMessageComponent(time);
-        addMessageComponent(updates);
+    public Update(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -35,6 +37,14 @@ public class Update extends AbstractMessage implements Control {
         this();
         this.time.setValue(time);
         this.updates.setEntities(updates);
+    }
+
+    private Update() {
+        super("Update", ControlMessageConstants.UPDATE);
+        time = new IntComponent("Time");
+        updates = new EntityListComponent("Updates");
+        addMessageComponent(time);
+        addMessageComponent(updates);
     }
 
     /**

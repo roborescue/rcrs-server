@@ -7,6 +7,9 @@ import rescuecore2.messages.IntListComponent;
 
 import java.util.List;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for connecting an agent to the kernel.
  */
@@ -16,16 +19,13 @@ public class AKConnect extends AbstractMessage implements Control {
     private IntListComponent requestedEntityTypes;
 
     /**
-       An AKConnect with undefined values.
+       An AKConnect message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public AKConnect() {
-        super("AK_CONNECT", ControlMessageConstants.AK_CONNECT);
-        requestID = new IntComponent("Request ID");
-        version = new IntComponent("Version");
-        requestedEntityTypes = new IntListComponent("Requested entity types");
-        addMessageComponent(requestID);
-        addMessageComponent(version);
-        addMessageComponent(requestedEntityTypes);
+    public AKConnect(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -39,6 +39,16 @@ public class AKConnect extends AbstractMessage implements Control {
         this.requestID.setValue(requestID);
         this.version.setValue(version);
         this.requestedEntityTypes.setValues(requestedEntityTypes);
+    }
+
+    private AKConnect() {
+        super("AK_CONNECT", ControlMessageConstants.AK_CONNECT);
+        requestID = new IntComponent("Request ID");
+        version = new IntComponent("Version");
+        requestedEntityTypes = new IntListComponent("Requested entity types");
+        addMessageComponent(requestID);
+        addMessageComponent(version);
+        addMessageComponent(requestedEntityTypes);
     }
 
     /**

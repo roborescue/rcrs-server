@@ -6,6 +6,9 @@ import rescuecore2.messages.AbstractCommand;
 
 import java.util.List;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An agent channel subscription command.
  */
@@ -13,11 +16,13 @@ public class AKSubscribe extends AbstractCommand {
     private IntListComponent channels;
 
     /**
-       Create an empty AKSubscribe command.
+       An AKSubscribe message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    AKSubscribe() {
-        super("AK_SUBSCRIBE", MessageConstants.AK_SUBSCRIBE);
-        init();
+    public AKSubscribe(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -27,9 +32,16 @@ public class AKSubscribe extends AbstractCommand {
        @param channels The IDs of the channels to speak on.
      */
     public AKSubscribe(EntityID agent, int time, int... channels) {
-        super("AK_SUBSCRIBE", MessageConstants.AK_SUBSCRIBE, agent, time);
-        init();
+        this();
+        setAgentID(agent);
+        setTime(time);
         this.channels.setValues(channels);
+    }
+
+    private AKSubscribe() {
+        super("AK_SUBSCRIBE", MessageConstants.AK_SUBSCRIBE);
+        channels = new IntListComponent("Channels");
+        addMessageComponent(channels);
     }
 
     /**
@@ -38,10 +50,5 @@ public class AKSubscribe extends AbstractCommand {
     */
     public List<Integer> getChannels() {
         return channels.getValues();
-    }
-
-    private void init() {
-        channels = new IntListComponent("Channels");
-        addMessageComponent(channels);
     }
 }

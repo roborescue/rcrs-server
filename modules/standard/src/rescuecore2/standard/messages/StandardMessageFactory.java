@@ -38,52 +38,36 @@ public final class StandardMessageFactory implements MessageFactory {
 
     @Override
     public Message createMessage(int id, InputStream data) throws IOException {
-        Message result = null;
         switch (id) {
         case MessageConstants.KA_HEAR_SAY:
-            result = new KAHearSay();
-            break;
+            return new KAHearSay(data);
         case MessageConstants.KA_HEAR_TELL:
-            result = new KAHearTell();
-            break;
+            return new KAHearTell(data);
         case MessageConstants.AK_MOVE:
-            result = new AKMove();
-            break;
+            return new AKMove(data);
         case MessageConstants.AK_LOAD:
-            result = new AKLoad();
-            break;
+            return new AKLoad(data);
         case MessageConstants.AK_UNLOAD:
-            result = new AKUnload();
-            break;
+            return new AKUnload(data);
         case MessageConstants.AK_SAY:
-            result = new AKSay();
-            break;
+            return new AKSay(data);
         case MessageConstants.AK_TELL:
-            result = new AKTell();
-            break;
+            return new AKTell(data);
         case MessageConstants.AK_EXTINGUISH:
-            result = new AKExtinguish();
-            break;
+            return new AKExtinguish(data);
         case MessageConstants.AK_RESCUE:
-            result = new AKRescue();
-            break;
+            return new AKRescue(data);
         case MessageConstants.AK_CLEAR:
-            result = new AKClear();
-            break;
+            return new AKClear(data);
         case MessageConstants.AK_SUBSCRIBE:
-            result = new AKSubscribe();
-            break;
+            return new AKSubscribe(data);
         case MessageConstants.AK_SPEAK:
-            result = new AKSpeak();
-            break;
+            return new AKSpeak(data);
         case MessageConstants.KA_HEAR_CHANNEL:
-            result = new KAHearChannel();
-            break;
+            return new KAHearChannel(data);
         default:
             System.out.println("Unrecognised message ID: " + id);
             return null;
         }
-        result.read(data);
-        return result;
     }
 }

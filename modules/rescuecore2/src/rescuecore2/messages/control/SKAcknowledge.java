@@ -4,6 +4,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for acknowleding a connection to the kernel.
  */
@@ -12,14 +15,13 @@ public class SKAcknowledge extends AbstractMessage implements Control {
     private IntComponent simulatorID;
 
     /**
-       SKAcknowledge message with a undefined request ID and simulator ID components.
+       An SKAcknowledge message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public SKAcknowledge() {
-        super("SK_ACKNOWLEDGE", ControlMessageConstants.SK_ACKNOWLEDGE);
-        requestID = new IntComponent("Request ID");
-        simulatorID = new IntComponent("Simulator ID");
-        addMessageComponent(requestID);
-        addMessageComponent(simulatorID);
+    public SKAcknowledge(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -31,6 +33,14 @@ public class SKAcknowledge extends AbstractMessage implements Control {
         this();
         this.requestID.setValue(requestID);
         this.simulatorID.setValue(simulatorID);
+    }
+
+    private SKAcknowledge() {
+        super("SK_ACKNOWLEDGE", ControlMessageConstants.SK_ACKNOWLEDGE);
+        requestID = new IntComponent("Request ID");
+        simulatorID = new IntComponent("Simulator ID");
+        addMessageComponent(requestID);
+        addMessageComponent(simulatorID);
     }
 
     /**

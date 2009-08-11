@@ -4,6 +4,9 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.EntityIDComponent;
 import rescuecore2.messages.AbstractCommand;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An agent Rescue command.
  */
@@ -11,23 +14,32 @@ public class AKRescue extends AbstractCommand {
     private EntityIDComponent target;
 
     /**
-       Create an empty AKRescue command.
+       An AKRescue message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    AKRescue() {
-        super("AK_RESCUE", MessageConstants.AK_RESCUE);
-        init();
+    public AKRescue(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
        Construct an AKRescue command.
        @param agent The ID of the agent issuing the command.
-       @param target The id of the entity to rescue.
        @param time The time the command was issued.
+       @param target The id of the entity to rescue.
      */
-    public AKRescue(EntityID agent, EntityID target, int time) {
-        super("AK_RESCUE", MessageConstants.AK_RESCUE, agent, time);
-        init();
+    public AKRescue(EntityID agent, int time, EntityID target) {
+        this();
+        setAgentID(agent);
+        setTime(time);
         this.target.setValue(target);
+    }
+
+    private AKRescue() {
+        super("AK_RESCUE", MessageConstants.AK_RESCUE);
+        target = new EntityIDComponent("Target");
+        addMessageComponent(target);
     }
 
     /**
@@ -36,10 +48,5 @@ public class AKRescue extends AbstractCommand {
      */
     public EntityID getTarget() {
         return target.getValue();
-    }
-
-    private void init() {
-        target = new EntityIDComponent("Target");
-        addMessageComponent(target);
     }
 }

@@ -3,15 +3,21 @@ package rescuecore2.standard.messages;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractCommand;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An agent Unload command.
  */
 public class AKUnload extends AbstractCommand {
     /**
-       Construct an empty unload command.
+       An AKUnload message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    AKUnload() {
-        super("AK_UNLOAD", MessageConstants.AK_UNLOAD);
+    public AKUnload(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -20,6 +26,13 @@ public class AKUnload extends AbstractCommand {
        @param time The time the command was issued.
      */
     public AKUnload(EntityID agentID, int time) {
-        super("AK_UNLOAD", MessageConstants.AK_UNLOAD, agentID, time);
+        this();
+        setAgentID(agentID);
+        setTime(time);
     }
+
+    private AKUnload() {
+        super("AK_UNLOAD", MessageConstants.AK_UNLOAD);
+    }
+
 }

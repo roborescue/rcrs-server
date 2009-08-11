@@ -4,6 +4,9 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.RawDataComponent;
 import rescuecore2.messages.AbstractCommand;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An agent say command.
  */
@@ -11,11 +14,13 @@ public class AKSay extends AbstractCommand {
     private RawDataComponent data;
 
     /**
-       Create an empty AKSay command.
+       An AKSay message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    AKSay() {
-        super("AK_SAY", MessageConstants.AK_SAY);
-        init();
+    public AKSay(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -24,10 +29,20 @@ public class AKSay extends AbstractCommand {
        @param data The content of the command.
        @param time The time the command was issued.
      */
-    public AKSay(EntityID agent, byte[] data, int time) {
-        super("AK_SAY", MessageConstants.AK_SAY, agent, time);
-        init();
+    public AKSay(EntityID agent, int time, byte[] data) {
+        this();
+        setAgentID(agent);
+        setTime(time);
         this.data.setData(data);
+    }
+
+    /**
+       Create an empty AKSay command.
+     */
+    private AKSay() {
+        super("AK_SAY", MessageConstants.AK_SAY);
+        data = new RawDataComponent("Message");
+        addMessageComponent(data);
     }
 
     /**
@@ -36,10 +51,5 @@ public class AKSay extends AbstractCommand {
      */
     public byte[] getContent() {
         return data.getData();
-    }
-
-    private void init() {
-        data = new RawDataComponent("Message");
-        addMessageComponent(data);
     }
 }

@@ -11,6 +11,9 @@ import rescuecore2.messages.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling a perception update for an agent.
  */
@@ -20,16 +23,13 @@ public class KASense extends AbstractMessage implements Control {
     private EntityListComponent updates;
 
     /**
-       An empty KASense message.
+       A KASense message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public KASense() {
-        super("KA_SENSE", ControlMessageConstants.KA_SENSE);
-        agentID = new EntityIDComponent("Agent ID");
-        time = new IntComponent("Time");
-        updates = new EntityListComponent("Updates");
-        addMessageComponent(agentID);
-        addMessageComponent(time);
-        addMessageComponent(updates);
+    public KASense(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -43,6 +43,16 @@ public class KASense extends AbstractMessage implements Control {
         this.agentID.setValue(agentID);
         this.time.setValue(time);
         this.updates.setEntities(updates);
+    }
+
+    private KASense() {
+        super("KA_SENSE", ControlMessageConstants.KA_SENSE);
+        agentID = new EntityIDComponent("Agent ID");
+        time = new IntComponent("Time");
+        updates = new EntityListComponent("Updates");
+        addMessageComponent(agentID);
+        addMessageComponent(time);
+        addMessageComponent(updates);
     }
 
     /**

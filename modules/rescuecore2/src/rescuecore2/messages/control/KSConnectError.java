@@ -5,6 +5,9 @@ import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.StringComponent;
 import rescuecore2.messages.IntComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling an unsuccessful connection to the kernel.
  */
@@ -13,14 +16,13 @@ public class KSConnectError extends AbstractMessage implements Control {
     private StringComponent reason;
 
     /**
-       A KSConnectError with no reason or request ID.
-    */
-    public KSConnectError() {
-        super("KS_CONNECT_ERROR", ControlMessageConstants.KS_CONNECT_ERROR);
-        requestID = new IntComponent("Request ID");
-        reason = new StringComponent("Reason");
-        addMessageComponent(requestID);
-        addMessageComponent(reason);
+       A KSConnectError message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
+     */
+    public KSConnectError(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -32,6 +34,14 @@ public class KSConnectError extends AbstractMessage implements Control {
         this();
         this.requestID.setValue(requestID);
         reason.setValue(message);
+    }
+
+    private KSConnectError() {
+        super("KS_CONNECT_ERROR", ControlMessageConstants.KS_CONNECT_ERROR);
+        requestID = new IntComponent("Request ID");
+        reason = new StringComponent("Reason");
+        addMessageComponent(requestID);
+        addMessageComponent(reason);
     }
 
     /**

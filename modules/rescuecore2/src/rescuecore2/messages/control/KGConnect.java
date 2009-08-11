@@ -4,6 +4,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for connecting to the GIS.
  */
@@ -11,12 +14,13 @@ public class KGConnect extends AbstractMessage implements Control {
     private IntComponent version;
 
     /**
-       A KGConnect message. The version number will be zero.
+       A KGConnect message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public KGConnect() {
-        super("KG_CONNECT", ControlMessageConstants.KG_CONNECT);
-        version = new IntComponent("Version", 0);
-        addMessageComponent(version);
+    public KGConnect(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -26,6 +30,12 @@ public class KGConnect extends AbstractMessage implements Control {
     public KGConnect(int version) {
         this();
         this.version.setValue(version);
+    }
+
+    private KGConnect() {
+        super("KG_CONNECT", ControlMessageConstants.KG_CONNECT);
+        version = new IntComponent("Version", 0);
+        addMessageComponent(version);
     }
 
     /**

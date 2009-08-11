@@ -33,7 +33,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
         // Am I on a blocked road?
         StandardEntity location = location();
         if (location instanceof Road && ((Road)location).getBlock() > 0) {
-            AKClear clear = new AKClear(entityID, location.getID(), time);
+            AKClear clear = new AKClear(entityID, time, location.getID());
             System.out.println(me() + " clearing road: " + clear);
             send(clear);
             return;
@@ -41,13 +41,13 @@ public class SamplePoliceForce extends AbstractSampleAgent {
         // Plan a path to a blocked road
         List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
-            AKMove move = new AKMove(entityID, path, time);
+            AKMove move = new AKMove(entityID, time, path);
             System.out.println(me() + " moving to road: " + move);
             send(move);
             return;
         }
         System.out.println(me() + " couldn't plan a path to a blocked road.");
-        send(new AKMove(entityID, randomWalk(), time));
+        send(new AKMove(entityID, time, randomWalk()));
     }
 
     @Override

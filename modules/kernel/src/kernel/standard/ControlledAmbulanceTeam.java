@@ -54,7 +54,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                 else {
                     List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
                     if (path != null) {
-                        AKMove move = new AKMove(entityID, path, time);
+                        AKMove move = new AKMove(entityID, time, path);
                         System.out.println(me() + " moving to refuge: " + move);
                         send(move);
                         return;
@@ -69,14 +69,14 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                 if (target.getPosition().equals(((Human)me()).getPosition())) {
                     // We're at the same location
                     if (target.getBuriedness() != 0) {
-                        AKRescue rescue = new AKRescue(entityID, target.getID(), time);
+                        AKRescue rescue = new AKRescue(entityID, time, target.getID());
                         System.out.println(me() + " rescueing target " + target);
                         send(rescue);
                         return;
                     }
                     else {
                         // Unburied: try to load
-                        AKLoad load = new AKLoad(entityID, target.getID(), time);
+                        AKLoad load = new AKLoad(entityID, time, target.getID());
                         System.out.println(me() + " loading target " + target);
                         send(load);
                         return;
@@ -86,7 +86,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                     // Plan a path
                     List<EntityID> path = search.breadthFirstSearch(location(), target);
                     if (path != null) {
-                        AKMove move = new AKMove(entityID, path, time);
+                        AKMove move = new AKMove(entityID, time, path);
                         System.out.println(me() + " moving to target: " + move);
                         send(move);
                         return;

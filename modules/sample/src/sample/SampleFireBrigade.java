@@ -47,14 +47,14 @@ public class SampleFireBrigade extends AbstractSampleAgent {
             // Head for a refuge
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
-                AKMove move = new AKMove(entityID, path, time);
+                AKMove move = new AKMove(entityID, time, path);
                 System.out.println(me() + " moving to refuge: " + move);
                 send(move);
                 return;
             }
             else {
                 System.out.println(me() + " couldn't plan a path to a refuge.");
-                send(new AKMove(entityID, randomWalk(), time));
+                send(new AKMove(entityID, time, randomWalk()));
             }
         }
         // Find all buildings that are on fire
@@ -62,7 +62,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         // Can we extinguish any right now?
         for (Building next : all) {
             if (world.getDistance(me, next) <= EXTINGUISH_DISTANCE) {
-                AKExtinguish ex = new AKExtinguish(entityID, next.getID(), EXTINGUISH_POWER, time);
+                AKExtinguish ex = new AKExtinguish(entityID, time, next.getID(), EXTINGUISH_POWER);
                 System.out.println(me() + " extinguishing " + next + ": " + ex);
                 send(ex);
                 return;
@@ -72,14 +72,14 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         for (Building next : all) {
             List<EntityID> path = planPathToFire(next);
             if (path != null) {
-                AKMove move = new AKMove(entityID, path, time);
+                AKMove move = new AKMove(entityID, time, path);
                 System.out.println(me() + " moving to fire: " + move);
                 send(move);
                 return;
             }
         }
         System.out.println(me() + " couldn't plan a path to a fire.");
-        send(new AKMove(entityID, randomWalk(), time));
+        send(new AKMove(entityID, time, randomWalk()));
     }
 
     @Override

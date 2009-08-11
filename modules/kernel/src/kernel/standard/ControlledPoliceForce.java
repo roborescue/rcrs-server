@@ -38,7 +38,7 @@ public class ControlledPoliceForce extends AbstractAgent {
             Road r = (Road)location();
             if (r.isLinesToHeadDefined() && (r.countBlockedLanes() == r.getLinesToHead())) {
                 System.out.println(me() + " clearing road " + r.getID());
-                AKClear clear = new AKClear(entityID, r.getID(), time);
+                AKClear clear = new AKClear(entityID, time, r.getID());
                 send(clear);
                 return;
             }
@@ -55,7 +55,7 @@ public class ControlledPoliceForce extends AbstractAgent {
             }
             else {
                 System.out.println(me() + " clearing target road " + target.getID());
-                AKClear clear = new AKClear(entityID, target.getID(), time);
+                AKClear clear = new AKClear(entityID, time, target.getID());
                 send(clear);
                 return;
             }
@@ -63,7 +63,7 @@ public class ControlledPoliceForce extends AbstractAgent {
         else {
             List<EntityID> path = search.breadthFirstSearch(location(), target);
             if (path != null) {
-                AKMove move = new AKMove(entityID, path, time);
+                AKMove move = new AKMove(entityID, time, path);
                 System.out.println(me() + " moving to target: " + move);
                 send(move);
                 return;

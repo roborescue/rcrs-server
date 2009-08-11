@@ -8,6 +8,9 @@ import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling a successful connection to the kernel.
  */
@@ -17,16 +20,13 @@ public class KVConnectOK extends AbstractMessage implements Control {
     private EntityListComponent world;
 
     /**
-       An empty KVConnectOK message.
+       A KVConnectOK message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public KVConnectOK() {
-        super("KV_CONNECT_OK", ControlMessageConstants.KV_CONNECT_OK);
-        viewerID = new IntComponent("Viewer ID");
-        requestID = new IntComponent("Request ID");
-        world = new EntityListComponent("Entities");
-        addMessageComponent(requestID);
-        addMessageComponent(viewerID);
-        addMessageComponent(world);
+    public KVConnectOK(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -40,6 +40,16 @@ public class KVConnectOK extends AbstractMessage implements Control {
         this.viewerID.setValue(viewerID);
         this.requestID.setValue(requestID);
         this.world.setEntities(allEntities);
+    }
+
+    private KVConnectOK() {
+        super("KV_CONNECT_OK", ControlMessageConstants.KV_CONNECT_OK);
+        viewerID = new IntComponent("Viewer ID");
+        requestID = new IntComponent("Request ID");
+        world = new EntityListComponent("Entities");
+        addMessageComponent(requestID);
+        addMessageComponent(viewerID);
+        addMessageComponent(world);
     }
 
     /**

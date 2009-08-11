@@ -4,6 +4,9 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.EntityIDComponent;
 import rescuecore2.messages.AbstractCommand;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An agent Load command.
  */
@@ -11,23 +14,32 @@ public class AKLoad extends AbstractCommand {
     private EntityIDComponent target;
 
     /**
-       Create an empty AKLoad command.
+       An AKLoad message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    AKLoad() {
-        super("AK_LOAD", MessageConstants.AK_LOAD);
-        init();
+    public AKLoad(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
        Construct an AKLoad command.
        @param agent The ID of the agent issuing the command.
-       @param target The id of the entity to load.
        @param time The time the command was issued.
+       @param target The id of the entity to load.
      */
-    public AKLoad(EntityID agent, EntityID target, int time) {
-        super("AK_LOAD", MessageConstants.AK_LOAD, agent, time);
-        init();
+    public AKLoad(EntityID agent, int time, EntityID target) {
+        this();
+        setAgentID(agent);
+        setTime(time);
         this.target.setValue(target);
+    }
+
+    private AKLoad() {
+        super("AK_LOAD", MessageConstants.AK_LOAD);
+        target = new EntityIDComponent("Target");
+        addMessageComponent(target);
     }
 
     /**
@@ -36,10 +48,5 @@ public class AKLoad extends AbstractCommand {
      */
     public EntityID getTarget() {
         return target.getValue();
-    }
-
-    private void init() {
-        target = new EntityIDComponent("Target");
-        addMessageComponent(target);
     }
 }

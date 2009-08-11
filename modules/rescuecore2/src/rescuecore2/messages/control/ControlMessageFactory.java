@@ -37,81 +37,50 @@ public final class ControlMessageFactory implements MessageFactory {
 
     @Override
     public Message createMessage(int id, InputStream data) throws IOException {
-        Message result = null;
         switch (id) {
         case ControlMessageConstants.KG_CONNECT:
-            result = new KGConnect();
-            break;
+            return new KGConnect(data);
         case ControlMessageConstants.KG_ACKNOWLEDGE:
-            result = new KGAcknowledge();
-            break;
+            return new KGAcknowledge(data);
         case ControlMessageConstants.GK_CONNECT_OK:
-            result = new GKConnectOK();
-            break;
+            return new GKConnectOK(data);
         case ControlMessageConstants.GK_CONNECT_ERROR:
-            result = new GKConnectError();
-            break;
+            return new GKConnectError(data);
         case ControlMessageConstants.SK_CONNECT:
-            result = new SKConnect();
-            break;
+            return new SKConnect(data);
         case ControlMessageConstants.SK_ACKNOWLEDGE:
-            result = new SKAcknowledge();
-            break;
+            return new SKAcknowledge(data);
         case ControlMessageConstants.SK_UPDATE:
-            result = new SKUpdate();
-            break;
+            return new SKUpdate(data);
         case ControlMessageConstants.KS_CONNECT_OK:
-            result = new KSConnectOK();
-            break;
+            return new KSConnectOK(data);
         case ControlMessageConstants.KS_CONNECT_ERROR:
-            result = new KSConnectError();
-            break;
+            return new KSConnectError(data);
         case ControlMessageConstants.VK_CONNECT:
-            result = new VKConnect();
-            break;
+            return new VKConnect(data);
         case ControlMessageConstants.VK_ACKNOWLEDGE:
-            result = new VKAcknowledge();
-            break;
+            return new VKAcknowledge(data);
         case ControlMessageConstants.KV_CONNECT_OK:
-            result = new KVConnectOK();
-            break;
+            return new KVConnectOK(data);
         case ControlMessageConstants.KV_CONNECT_ERROR:
-            result = new KVConnectError();
-            break;
+            return new KVConnectError(data);
         case ControlMessageConstants.AK_CONNECT:
-            result = new AKConnect();
-            break;
+            return new AKConnect(data);
         case ControlMessageConstants.AK_ACKNOWLEDGE:
-            result = new AKAcknowledge();
-            break;
+            return new AKAcknowledge(data);
         case ControlMessageConstants.KA_CONNECT_OK:
-            result = new KAConnectOK();
-            break;
+            return new KAConnectOK(data);
         case ControlMessageConstants.KA_CONNECT_ERROR:
-            result = new KAConnectError();
-            break;
+            return new KAConnectError(data);
         case ControlMessageConstants.KA_SENSE:
-            result = new KASense();
-            break;
+            return new KASense(data);
         case ControlMessageConstants.COMMANDS:
-            result = new Commands();
-            break;
+            return new Commands(data);
         case ControlMessageConstants.UPDATE:
-            result = new Update();
-            break;
-            /*
-              case MessageConstants.KA_HEAR_SAY:
-              result = new KAHearSay();
-              break;
-              case MessageConstants.KA_HEAR_TELL:
-              result = new KAHearTell();
-              break;
-            */
+            return new Update(data);
         default:
             System.out.println("Unrecognised message ID: " + id);
             return null;
         }
-        result.read(data);
-        return result;
     }
 }

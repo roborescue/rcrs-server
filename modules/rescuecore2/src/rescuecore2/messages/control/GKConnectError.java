@@ -4,6 +4,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.StringComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling an unsuccessful connection to the GIS.
  */
@@ -11,12 +14,13 @@ public class GKConnectError extends AbstractMessage implements Control {
     private StringComponent reason;
 
     /**
-       A GKConnectError with no reason.
+       A GKConnectError message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public GKConnectError() {
-        super("GK_CONNECT_ERROR", ControlMessageConstants.GK_CONNECT_ERROR);
-        reason = new StringComponent("Reason");
-        addMessageComponent(reason);
+    public GKConnectError(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -26,6 +30,12 @@ public class GKConnectError extends AbstractMessage implements Control {
     public GKConnectError(String reason) {
         this();
         this.reason.setValue(reason);
+    }
+
+    private GKConnectError() {
+        super("GK_CONNECT_ERROR", ControlMessageConstants.GK_CONNECT_ERROR);
+        reason = new StringComponent("Reason");
+        addMessageComponent(reason);
     }
 
     /**

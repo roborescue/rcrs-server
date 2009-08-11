@@ -6,6 +6,9 @@ import rescuecore2.messages.EntityIDComponent;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.RawDataComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    An kernel hear channel command.
  */
@@ -15,11 +18,13 @@ public class KAHearChannel extends AbstractMessage {
     private RawDataComponent data;
 
     /**
-       Create an empty KAHearChannel command.
+       A KAHearChannel message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    KAHearChannel() {
-        super("KA_HEAR_CHANNEL", MessageConstants.KA_HEAR_CHANNEL);
-        init();
+    public KAHearChannel(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -29,11 +34,20 @@ public class KAHearChannel extends AbstractMessage {
        @param data The content of the message.
     */
     public KAHearChannel(EntityID agent, int channel, byte[] data) {
-        super("KA_HEAR_CHANNEL", MessageConstants.KA_HEAR_CHANNEL);
-        init();
+        this();
         this.sender.setValue(agent);
         this.channel.setValue(channel);
         this.data.setData(data);
+    }
+
+    private KAHearChannel() {
+        super("KA_HEAR_CHANNEL", MessageConstants.KA_HEAR_CHANNEL);
+        sender = new EntityIDComponent("Sender");
+        channel = new IntComponent("Channel");
+        data = new RawDataComponent("Message");
+        addMessageComponent(sender);
+        addMessageComponent(channel);
+        addMessageComponent(data);
     }
 
     /**
@@ -58,14 +72,5 @@ public class KAHearChannel extends AbstractMessage {
      */
     public byte[] getContent() {
         return data.getData();
-    }
-
-    private void init() {
-        sender = new EntityIDComponent("Sender");
-        channel = new IntComponent("Channel");
-        data = new RawDataComponent("Message");
-        addMessageComponent(sender);
-        addMessageComponent(channel);
-        addMessageComponent(data);
     }
 }

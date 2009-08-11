@@ -43,7 +43,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             conn = new TCPConnection(gisPort);
             conn.addConnectionListener(new GISConnectionListener(latch, world));
             conn.startup();
-            conn.sendMessage(new KGConnect());
+            conn.sendMessage(new KGConnect(1));
         }
         catch (IOException e) {
             throw new KernelException("Couldn't connect to GIS", e);

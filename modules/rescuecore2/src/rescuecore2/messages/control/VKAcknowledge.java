@@ -4,6 +4,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for acknowleding a connection to the kernel.
  */
@@ -12,14 +15,13 @@ public class VKAcknowledge extends AbstractMessage implements Control {
     private IntComponent viewerID;
 
     /**
-       VKAcknowledge message with a undefined request ID and viewer ID components.
+       A VKAcknowledge message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public VKAcknowledge() {
-        super("VK_ACKNOWLEDGE", ControlMessageConstants.VK_ACKNOWLEDGE);
-        requestID = new IntComponent("Request ID");
-        viewerID = new IntComponent("Viewer ID");
-        addMessageComponent(requestID);
-        addMessageComponent(viewerID);
+    public VKAcknowledge(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -31,6 +33,14 @@ public class VKAcknowledge extends AbstractMessage implements Control {
         this();
         this.requestID.setValue(requestID);
         this.viewerID.setValue(viewerID);
+    }
+
+    private VKAcknowledge() {
+        super("VK_ACKNOWLEDGE", ControlMessageConstants.VK_ACKNOWLEDGE);
+        requestID = new IntComponent("Request ID");
+        viewerID = new IntComponent("Viewer ID");
+        addMessageComponent(requestID);
+        addMessageComponent(viewerID);
     }
 
     /**

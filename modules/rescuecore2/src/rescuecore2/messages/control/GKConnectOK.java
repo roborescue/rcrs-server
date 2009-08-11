@@ -8,6 +8,9 @@ import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling a successful connection to the GIS.
  */
@@ -15,12 +18,13 @@ public class GKConnectOK extends AbstractMessage implements Control {
     private EntityListComponent world;
 
     /**
-       A GKConnectOK with no entities.
+       A GKConnectOK message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public GKConnectOK() {
-        super("GK_CONNECT_OK", ControlMessageConstants.GK_CONNECT_OK);
-        world = new EntityListComponent("Entities");
-        addMessageComponent(world);
+    public GKConnectOK(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -30,6 +34,12 @@ public class GKConnectOK extends AbstractMessage implements Control {
     public GKConnectOK(Collection<? extends Entity> entities) {
         this();
         world.setEntities(entities);
+    }
+
+    private GKConnectOK() {
+        super("GK_CONNECT_OK", ControlMessageConstants.GK_CONNECT_OK);
+        world = new EntityListComponent("Entities");
+        addMessageComponent(world);
     }
 
     /**

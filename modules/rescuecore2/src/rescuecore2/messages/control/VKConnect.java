@@ -4,6 +4,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for connecting a viewer to the kernel.
  */
@@ -12,14 +15,13 @@ public class VKConnect extends AbstractMessage implements Control {
     private IntComponent version;
 
     /**
-       A VKConnect with no version number or request ID.
+       A VKConnect message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public VKConnect() {
-        super("VK_CONNECT", ControlMessageConstants.VK_CONNECT);
-        requestID = new IntComponent("Request ID");
-        version = new IntComponent("Version");
-        addMessageComponent(requestID);
-        addMessageComponent(version);
+    public VKConnect(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -31,6 +33,14 @@ public class VKConnect extends AbstractMessage implements Control {
         this();
         this.requestID.setValue(requestID);
         this.version.setValue(version);
+    }
+
+    private VKConnect() {
+        super("VK_CONNECT", ControlMessageConstants.VK_CONNECT);
+        requestID = new IntComponent("Request ID");
+        version = new IntComponent("Version");
+        addMessageComponent(requestID);
+        addMessageComponent(version);
     }
 
     /**

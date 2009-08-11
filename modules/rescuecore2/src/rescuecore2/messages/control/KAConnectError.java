@@ -5,6 +5,9 @@ import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.StringComponent;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling an unsuccessful connection to the kernel.
  */
@@ -13,14 +16,13 @@ public class KAConnectError extends AbstractMessage implements Control {
     private StringComponent reason;
 
     /**
-       A KAConnectError with no tempID or reason.
+       A KAConnectError message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public KAConnectError() {
-        super("KA_CONNECT_ERROR", ControlMessageConstants.KA_CONNECT_ERROR);
-        requestID = new IntComponent("Request ID");
-        reason = new StringComponent("Reason");
-        addMessageComponent(requestID);
-        addMessageComponent(reason);
+    public KAConnectError(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -32,6 +34,14 @@ public class KAConnectError extends AbstractMessage implements Control {
         this();
         requestID.setValue(id);
         reason.setValue(message);
+    }
+
+    private KAConnectError() {
+        super("KA_CONNECT_ERROR", ControlMessageConstants.KA_CONNECT_ERROR);
+        requestID = new IntComponent("Request ID");
+        reason = new StringComponent("Reason");
+        addMessageComponent(requestID);
+        addMessageComponent(reason);
     }
 
     /**

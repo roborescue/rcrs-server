@@ -18,23 +18,32 @@ public class AKExtinguish extends AbstractCommand {
     private int water;
 
     /**
-       Create an empty AKExtinguish command.
+       An AKExtinguish message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    AKExtinguish() {
-        super("AK_EXTINGUISH", MessageConstants.AK_EXTINGUISH);
+    public AKExtinguish(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
        Construct an AKExtinguish command.
        @param agent The ID of the agent issuing the command.
+       @param time The time the command was issued.
        @param target The id of the entity to extinguish.
        @param water The amount of water to use.
-       @param time The time the command was issued.
      */
-    public AKExtinguish(EntityID agent, EntityID target, int water, int time) {
-        super("AK_EXTINGUISH", MessageConstants.AK_EXTINGUISH, agent, time);
+    public AKExtinguish(EntityID agent, int time, EntityID target, int water) {
+        this();
+        setAgentID(agent);
+        setTime(time);
         this.target = target;
         this.water = water;
+    }
+
+    private AKExtinguish() {
+        super("AK_EXTINGUISH", MessageConstants.AK_EXTINGUISH);
     }
 
     /**

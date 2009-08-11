@@ -10,6 +10,9 @@ import rescuecore2.messages.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
    A message for signalling a successful connection to the kernel.
  */
@@ -19,16 +22,13 @@ public class KAConnectOK extends AbstractMessage implements Control {
     private EntityListComponent world;
 
     /**
-       An empty KAConnectOK message.
+       A KAConnectOK message that populates its data from a stream.
+       @param in The InputStream to read.
+       @throws IOException If there is a problem reading the stream.
      */
-    public KAConnectOK() {
-        super("KA_CONNECT_OK", ControlMessageConstants.KA_CONNECT_OK);
-        requestID = new IntComponent("Request ID");
-        agentID = new EntityIDComponent("Agent ID");
-        world = new EntityListComponent("Entities");
-        addMessageComponent(requestID);
-        addMessageComponent(agentID);
-        addMessageComponent(world);
+    public KAConnectOK(InputStream in) throws IOException {
+        this();
+        read(in);
     }
 
     /**
@@ -42,6 +42,16 @@ public class KAConnectOK extends AbstractMessage implements Control {
         this.requestID.setValue(requestID);
         this.agentID.setValue(agentID);
         this.world.setEntities(allEntities);
+    }
+
+    private KAConnectOK() {
+        super("KA_CONNECT_OK", ControlMessageConstants.KA_CONNECT_OK);
+        requestID = new IntComponent("Request ID");
+        agentID = new EntityIDComponent("Agent ID");
+        world = new EntityListComponent("Entities");
+        addMessageComponent(requestID);
+        addMessageComponent(agentID);
+        addMessageComponent(world);
     }
 
     /**

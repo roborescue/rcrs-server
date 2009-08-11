@@ -49,7 +49,7 @@ public class ControlledFireBrigade extends AbstractAgent {
             // Just go there
             List<EntityID> path = search.breadthFirstSearch(location(), target);
             if (path != null) {
-                AKMove move = new AKMove(entityID, path, time);
+                AKMove move = new AKMove(entityID, time, path);
                 System.out.println(me() + " moving to refuge: " + move);
                 send(move);
                 return;
@@ -61,7 +61,7 @@ public class ControlledFireBrigade extends AbstractAgent {
         // Are we close enough to extinguish?
         int distance = world.getDistance((StandardEntity)me(), target);
         if (distance < EXTINGUISH_DISTANCE) {
-            AKExtinguish ex = new AKExtinguish(entityID, target.getID(), EXTINGUISH_POWER, time);
+            AKExtinguish ex = new AKExtinguish(entityID, time, target.getID(), EXTINGUISH_POWER);
             System.out.println(me() + " extinguishing " + target + ": " + ex);
             send(ex);
             return;
@@ -70,7 +70,7 @@ public class ControlledFireBrigade extends AbstractAgent {
         if (!target.equals(location())) {
             List<EntityID> path = planPathToFire();
             if (path != null) {
-                AKMove move = new AKMove(entityID, path, time);
+                AKMove move = new AKMove(entityID, time, path);
                 System.out.println(me() + " moving to target: " + move);
                 send(move);
                 return;
