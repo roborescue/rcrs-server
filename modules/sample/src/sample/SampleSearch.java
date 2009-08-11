@@ -1,4 +1,4 @@
-package rescuecore2.sample;
+package sample;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.StandardWorldModel;

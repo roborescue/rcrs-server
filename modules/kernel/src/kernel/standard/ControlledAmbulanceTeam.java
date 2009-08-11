@@ -14,7 +14,7 @@ import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
 import rescuecore2.standard.messages.AKMove;
 
-import rescuecore2.sample.SampleSearch;
+import sample.SampleSearch;
 
 import java.util.List;
 

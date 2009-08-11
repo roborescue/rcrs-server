@@ -1,4 +1,4 @@
-package rescuecore2.sample;
+package sample;
 
 import java.util.List;
 
@@ -11,9 +11,14 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityType;
 
 /**
-   A no-op agent.
+   A sample centre agent.
  */
-public class DummyAgent extends AbstractAgent<StandardEntity> {
+public class SampleCentre extends AbstractAgent<StandardEntity> {
+    @Override
+    public String toString() {
+        return "Sample centre";
+    }
+
     @Override
     protected void think(int time, List<EntityID> changed) {
     }
@@ -25,12 +30,9 @@ public class DummyAgent extends AbstractAgent<StandardEntity> {
 
     @Override
     public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.FIRE_BRIGADE.getID(),
-                          StandardEntityType.FIRE_STATION.getID(),
-                          StandardEntityType.AMBULANCE_TEAM.getID(),
-                          StandardEntityType.AMBULANCE_CENTRE.getID(),
-                          StandardEntityType.POLICE_FORCE.getID(),
-                          StandardEntityType.POLICE_OFFICE.getID()
+        return new int[] {StandardEntityType.FIRE_STATION.getID(),
+                          StandardEntityType.POLICE_OFFICE.getID(),
+                          StandardEntityType.AMBULANCE_CENTRE.getID()
         };
     }
 }

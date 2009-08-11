@@ -37,10 +37,10 @@ public class KernelStatus extends JPanel implements KernelListener {
     public KernelStatus(Kernel kernel) {
         super(new BorderLayout());
         this.kernel = kernel;
-        kernel.addKernelListener(this);
         agents = new ListModelList<Agent>(new ArrayList<Agent>());
         simulators = new ListModelList<Simulator>(new ArrayList<Simulator>());
         viewers = new ListModelList<Viewer>(new ArrayList<Viewer>());
+        kernel.addKernelListener(this);
         agentsList = new JList(agents);
         simulatorsList = new JList(simulators);
         viewersList = new JList(viewers);

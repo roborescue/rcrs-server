@@ -14,7 +14,7 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.messages.AKMove;
 
-import rescuecore2.sample.SampleSearch;
+import sample.SampleSearch;
 
 import java.util.List;
 import java.util.Collection;

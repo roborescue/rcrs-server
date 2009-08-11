@@ -1,4 +1,4 @@
-package rescuecore2.sample;
+package sample;
 
 import java.util.Comparator;
 

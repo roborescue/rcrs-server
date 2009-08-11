@@ -1,4 +1,4 @@
-package rescuecore2.sample;
+package sample;
 
 import rescuecore2.components.AbstractViewer;
 import rescuecore2.worldmodel.WorldModel;
