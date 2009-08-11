@@ -23,4 +23,10 @@ public interface Agent extends Component {
        @param entities The set of Entities the kernel sent to this agent on connection.
      */
     void postConnect(Connection c, EntityID agentID, Collection<Entity> entities);
+
+    /**
+       Get the ID of the entity this agent controls. If the agent has not yet been connected to the kernel then null will be returned.
+       @return The entity ID or null if this agent is not yet connected.
+     */
+    EntityID getID();
 }

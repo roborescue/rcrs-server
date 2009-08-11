@@ -19,7 +19,7 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     /**
        The ID of the entity controlled by this agent.
      */
-    protected EntityID entityID;
+    private EntityID entityID;
 
     /**
        Create a new AbstractAgent.
@@ -31,8 +31,14 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities) {
         super.postConnect(c, entities);
         this.entityID = agentID;
+        System.out.println("postConnect: " + c + ", id = " + agentID + ", " + entities.size() + " entities, me = " + me());
         c.addConnectionListener(new AgentListener());
         postConnect();
+    }
+
+    @Override
+    public EntityID getID() {
+        return entityID;
     }
 
     /**
