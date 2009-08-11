@@ -1,4 +1,4 @@
-package kernel.standard;
+package human;
 
 import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
@@ -38,7 +38,7 @@ public class ControlledPoliceForce extends AbstractAgent {
             Road r = (Road)location();
             if (r.isLinesToHeadDefined() && (r.countBlockedLanes() == r.getLinesToHead())) {
                 System.out.println(me() + " clearing road " + r.getID());
-                AKClear clear = new AKClear(entityID, time, r.getID());
+                AKClear clear = new AKClear(getID(), time, r.getID());
                 send(clear);
                 return;
             }
@@ -55,7 +55,7 @@ public class ControlledPoliceForce extends AbstractAgent {
             }
             else {
                 System.out.println(me() + " clearing target road " + target.getID());
-                AKClear clear = new AKClear(entityID, time, target.getID());
+                AKClear clear = new AKClear(getID(), time, target.getID());
                 send(clear);
                 return;
             }
@@ -63,7 +63,7 @@ public class ControlledPoliceForce extends AbstractAgent {
         else {
             List<EntityID> path = search.breadthFirstSearch(location(), target);
             if (path != null) {
-                AKMove move = new AKMove(entityID, time, path);
+                AKMove move = new AKMove(getID(), time, path);
                 System.out.println(me() + " moving to target: " + move);
                 send(move);
                 return;
@@ -102,7 +102,7 @@ public class ControlledPoliceForce extends AbstractAgent {
 
     @Override
     public String toString() {
-        return "Police force " + entityID + (target == null ? " (no target)" : " target: road " + target.getID() + " block = " + (target.isBlockDefined() ? " unknown" : String.valueOf(target.getBlock())));
+        return "Police force " + getID() + (target == null ? " (no target)" : " target: road " + target.getID() + " block = " + (target.isBlockDefined() ? " unknown" : String.valueOf(target.getBlock())));
     }
 }
 

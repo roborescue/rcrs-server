@@ -1,4 +1,4 @@
-package kernel.standard;
+package human;
 
 import rescuecore2.config.Config;
 import rescuecore2.connection.ConnectionException;
@@ -54,7 +54,7 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
 
     @Override
     public String toString() {
-        return "Controlled agent demo";
+        return "Human controlled agents";
     }
 
     @Override
@@ -243,6 +243,7 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
                 }
                 if (reason == null) {
                     System.out.println("done.");
+                    System.out.println(agent);
                     list.add(agent);
                 }
                 else {

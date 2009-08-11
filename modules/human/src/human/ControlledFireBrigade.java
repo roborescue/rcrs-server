@@ -1,4 +1,4 @@
-package kernel.standard;
+package human;
 
 import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;

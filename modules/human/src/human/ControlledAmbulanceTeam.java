@@ -1,4 +1,4 @@
-package kernel.standard;
+package human;
 
 import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
@@ -42,11 +42,11 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
         }
         else {
             // Is the target on board?
-            if (target.getPosition().equals(entityID)) {
+            if (target.getPosition().equals(getID())) {
                 // Yes
                 // Are we at a  refuge?
                 if (location() instanceof Refuge) {
-                    AKUnload unload = new AKUnload(entityID, time);
+                    AKUnload unload = new AKUnload(getID(), time);
                     System.out.println(me() + " unloading");
                     send(unload);
                     return;
@@ -54,7 +54,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                 else {
                     List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
                     if (path != null) {
-                        AKMove move = new AKMove(entityID, time, path);
+                        AKMove move = new AKMove(getID(), time, path);
                         System.out.println(me() + " moving to refuge: " + move);
                         send(move);
                         return;
@@ -69,14 +69,14 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                 if (target.getPosition().equals(((Human)me()).getPosition())) {
                     // We're at the same location
                     if (target.getBuriedness() != 0) {
-                        AKRescue rescue = new AKRescue(entityID, time, target.getID());
+                        AKRescue rescue = new AKRescue(getID(), time, target.getID());
                         System.out.println(me() + " rescueing target " + target);
                         send(rescue);
                         return;
                     }
                     else {
                         // Unburied: try to load
-                        AKLoad load = new AKLoad(entityID, time, target.getID());
+                        AKLoad load = new AKLoad(getID(), time, target.getID());
                         System.out.println(me() + " loading target " + target);
                         send(load);
                         return;
@@ -86,7 +86,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                     // Plan a path
                     List<EntityID> path = search.breadthFirstSearch(location(), target);
                     if (path != null) {
-                        AKMove move = new AKMove(entityID, time, path);
+                        AKMove move = new AKMove(getID(), time, path);
                         System.out.println(me() + " moving to target: " + move);
                         send(move);
                         return;
@@ -129,7 +129,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("Ambulance team ");
-        result.append(entityID);
+        result.append(getID());
         result.append(" ");
         if (target == null) {
             result.append("(no target)");
@@ -137,7 +137,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
         else {
             result.append("target: human ");
             result.append(target.getID());
-            if (target.getPosition().equals(entityID)) {
+            if (target.getPosition().equals(getID())) {
                 result.append(" (loaded)");
             }
         }

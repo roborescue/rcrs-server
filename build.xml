@@ -2,15 +2,17 @@
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
 
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy"/>
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human"/>
   <property name="modules.kernel.depend" value="rescuecore2,standard,sample,handy"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
+  <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
   <import file="${modules.dir}/standard/build.xml" optional="true"/>
   <import file="${modules.dir}/sample/build.xml" optional="true"/>
   <import file="${modules.dir}/handy/build.xml" optional="true"/>
+  <import file="${modules.dir}/human/build.xml" optional="true"/>
 
   <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->
@@ -281,6 +283,7 @@
       <class location="${jar.dir}/standard.jar"/>
       <class location="${jar.dir}/sample.jar"/>
       <class location="${jar.dir}/handy.jar"/>
+      <class location="${jar.dir}/human.jar"/>
       <auxClasspath refid="path.common"/>
       <auxClasspath refid="path.allmodules.lib"/>
     </findbugs>
