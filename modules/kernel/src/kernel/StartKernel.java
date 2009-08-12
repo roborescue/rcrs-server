@@ -412,13 +412,18 @@ public final class StartKernel {
 
     private static List<KernelGUIComponent> makeKernelGUIComponents(Config config) {
         List<KernelGUIComponent> result = new ArrayList<KernelGUIComponent>();
-        List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY);
-        for (String next : classNames) {
-            System.out.println("GUI component found: '" + next + "'");
-            KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
-            if (c != null) {
-                result.add(c);
+        try {
+            List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY);
+            for (String next : classNames) {
+                System.out.println("GUI component found: '" + next + "'");
+                KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
+                if (c != null) {
+                    result.add(c);
+                }
             }
+        }
+        catch (NoSuchConfigOptionException e) {
+            System.out.println("No extra GUI components found");
         }
         return result;
     }
