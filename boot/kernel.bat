@@ -1,0 +1,1 @@
+java -cp ..\jars\kernel.jar;..\jars\rescuecore2.jar;..\jars\standard.jar;..\jars\handy.jar;..\jars\human.jar;..\jars\sample.jar kernel.StartKernel -c config --gis.map.dir=..\maps\Kobe --just-run
