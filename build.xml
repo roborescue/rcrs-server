@@ -1,4 +1,6 @@
 <project default="jars" name="Robocup rescue simulation software">
+  <property name="version" value="1.0-prealpha"/>
+
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
 
@@ -318,6 +320,53 @@
     <delete dir="${build.dir}"/>
     <delete dir="${jar.dir}"/>
     <delete dir="${cobertura.instrument.dir}"/>
+  </target>
+
+  <tarfileset dir="." prefix="rescue-${version}/" id="dist.noexec">
+    <exclude name="**/.gitignore"/>
+    <include name="jars/**/*.jar"/>
+    <include name="lib/**/*.jar"/>
+    <include name="boot/**/*"/>
+    <exclude name="boot/logs/"/>
+    <include name="docs/**/*"/>
+    <include name="maps/**/*"/>
+    <include name="oldsims/**/*"/>
+    <!-- These need executable permissions -->
+    <exclude name="boot/start.sh"/>
+    <exclude name="boot/demo.sh"/>
+    <exclude name="boot/sampleagent.sh"/>
+    <exclude name="boot/logviewer.sh"/>
+    <exclude name="oldsims/blockadessimulator/blockadessimulator"/>
+    <exclude name="oldsims/collapsesimulator/collapsesimulator"/>
+    <exclude name="oldsims/miscsimulator/miscsimulator"/>
+  </tarfileset>
+  <tarfileset dir="." prefix="rescue-${version}/" filemode="744" id="dist.exec">
+    <include name="boot/start.sh"/>
+    <include name="boot/demo.sh"/>
+    <include name="boot/sampleagent.sh"/>
+    <include name="boot/logviewer.sh"/>
+    <include name="oldsims/blockadessimulator/blockadessimulator"/>
+    <include name="oldsims/collapsesimulator/collapsesimulator"/>
+    <include name="oldsims/miscsimulator/miscsimulator"/>
+  </tarfileset>
+
+  <target name="dist-binary" depends="jars" description="Create a binary distribution">
+    <tar destfile="rescue-${version}.tgz" compression="gzip" longfile="gnu">
+      <tarfileset refid="dist.noexec"/>
+      <tarfileset refid="dist.exec"/>
+    </tar>
+  </target>
+
+  <target name="dist-src" depends="jars" description="Create a source distribution">
+    <tar destfile="rescue-${version}-src.tgz" compression="gzip"  longfile="gnu">
+      <tarfileset refid="dist.noexec"/>
+      <tarfileset refid="dist.exec"/>
+      <!-- Source code and build-tools -->
+      <tarfileset dir="." prefix="rescue-${version}/">
+        <include name="modules/**/*"/>
+        <include name="build-tools/**/*"/>
+      </tarfileset>
+    </tar>
   </target>
 
   <!-- Combined targets -->
