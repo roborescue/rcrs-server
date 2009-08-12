@@ -52,7 +52,7 @@ public final class EntityRegistry {
     }
 
     /**
-       Create an entity from a type ID. If the ID is not recognised then return null. This method will delegate to the {@link #register(int) previously registered} EntityFactory.
+       Create an entity from a type ID. If the ID is not recognised then return null. This method will delegate to the {@link #register(EntityFactory) previously registered} EntityFactory.
        @param type The type id of the entity type to create.
        @param id The EntityID of the Entity that will be created.
        @return A new Entity object, or null if the ID is not recognised.

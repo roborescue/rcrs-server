@@ -58,7 +58,7 @@ public final class MessageRegistry {
     }
 
     /**
-       Create a message based on its type ID and populate it with data from a stream. If the ID is not recognised then return null. This method will delegate to the {@link #register(int) previously registered} MessageFactory.
+       Create a message based on its type ID and populate it with data from a stream. If the ID is not recognised then return null. This method will delegate to the {@link #register(MessageFactory) previously registered} MessageFactory.
        @param id The id of the message type to create.
        @param data An InputStream to read message data from.
        @return A new Message object, or null if the ID is not recognised.

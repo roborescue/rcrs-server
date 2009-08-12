@@ -44,7 +44,7 @@ public class Config {
     }
 
     /**
-       Create a config that reads from a given file. Additional config files can be read later with the {@link read(String)} method.
+       Create a config that reads from a given file. Additional config files can be read later with the {@link #read(String)} method.
        @param file The config file to read. Must not be null.
        @throws ConfigException If there is an error parsing the config file or one of its descendants.
     */
