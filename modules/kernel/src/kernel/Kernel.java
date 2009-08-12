@@ -275,6 +275,7 @@ public class Kernel {
             }
             log.close();
         }
+        System.out.println("Kernel has shut down");
     }
 
     /**
