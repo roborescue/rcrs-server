@@ -23,6 +23,8 @@
   <property name="build.dir" value="${basedir}/build"/>
   <!-- Output directory - jar'd class files and resources for all modules -->
   <property name="jar.dir" value="${basedir}/jars"/>
+  <!-- Output directory - javadoc for all modules -->
+  <property name="javadoc.dir" value="${basedir}/docs/javadoc"/>
 
   <!-- Output directories for JUnit, Checkstyle, Findbugs and Cobertura -->
   <property name="junit.output.dir" value="${build.dir}/junit-results"/>
@@ -316,6 +318,18 @@
     <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}" srcdir="${modules.dir}"/>
   </target>
 
+  <target name="javadoc" description="Generate Javadoc for all modules">
+    <javadoc destdir="${javadoc.dir}">
+      <fileset dir="${modules.dir}">
+        <include name="**/src/**/*.java"/>
+      </fileset>
+    </javadoc>
+  </target>
+
+  <target name="javadoc-clean" description="Clean up old javadocs">
+    <delete dir="${javadoc.dir}"/>
+  </target>
+
   <target name="build-clean">
     <delete dir="${build.dir}"/>
     <delete dir="${jar.dir}"/>
@@ -376,7 +390,7 @@
 
   <target name="test-all" depends="test-static, test-unit" description="Run the static and unit tests for all modules"/>
 
-  <target name="complete-build" depends="clean,compile,jars,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
+  <target name="complete-build" depends="clean,compile,jars,javadoc,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
 
   <!-- Generate module compile/jar/test/clean targets and the overall module targets-->
   <script language="javascript">
@@ -464,11 +478,12 @@
 
       var cleanAll = new Target();
       cleanAll.setName("clean");
-      cleanAll.setDescription("Clean all modules");
+      cleanAll.setDescription("Clean all modules and build artefacts");
       for (var i = 0; i < modules.length; ++i) {
         cleanAll.addDependency(modules[i] + "-clean");
       }
       cleanAll.addDependency("build-clean");
+      cleanAll.addDependency("javadoc-clean");
       project.addTarget(cleanAll);
     ]]>
   </script>
