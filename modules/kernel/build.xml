@@ -1,6 +1,10 @@
 <!-- This is a build file fragment that will be imported by the main build script -->
 <project>
-  <target name="start-kernel" depends="jars, _generate-kernel-config-args" description="Start the kernel">
+  <!-- Kernel startup arguments. -->
+  <property name="kernel.startup.config" value="-c boot/config"/>
+  <property name="kernel.startup.args" value=""/>
+
+  <target name="start-kernel" depends="jars" description="Start the kernel">
     <echo message="Starting kernel: ${kernel.startup.config} ${kernel.startup.args}"/>
     <java classname="kernel.StartKernel" classpathref="path.common" fork="yes">
       <arg line="${kernel.startup.config}"/>

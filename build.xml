@@ -51,12 +51,6 @@
   <property name="findbugs.home" value="${buildtools.dir}/findbugs"/>
   <property name="cobertura.home" value="${buildtools.dir}/cobertura"/>
 
-  <!-- Kernel startup arguments. -->
-  <property name="kernel.startup.config.files.default" value="boot/kernel.cfg boot/gis.cfg boot/startup.cfg boot/comms.cfg boot/perception.cfg boot/fire.cfg boot/ui.cfg"/>
-  <property name="kernel.startup.config.files.user" value=""/>
-  <property name="kernel.startup.config" value=""/>
-  <property name="kernel.startup.args" value=""/>
-
   <path id="path.jars">
     <fileset dir="${jar.dir}">
       <include name="**/*.jar"/>
@@ -107,23 +101,6 @@
       <pathelement location="${buildtools.dir}/ant-junit.jar"/>
     </classpath>
   </taskdef>
-
-  <target name="_generate-kernel-config-args">
-    <script language="javascript">
-      <![CDATA[
-        var args = project.getProperty("kernel.startup.config.files.default") + " " + project.getProperty("kernel.startup.config.files.user");
-        var argArray = args.split(" ");
-        var result = [];
-        for (var i = 0; i < argArray.length; ++i) {
-          if (argArray[i] != "") {
-            result.push("-c");
-            result.push(argArray[i]);
-          }
-        }
-        project.setProperty("kernel.startup.config", result.join(" "));
-      ]]>
-    </script>
-  </target>
 
   <target name="_generate-module-lib-paths" unless="path.allmodules.lib">
     <echo message="Generating module lib paths"/>
