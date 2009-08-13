@@ -16,6 +16,7 @@ import java.io.IOException;
    A message containing a list of agent commands. This is sent from the kernel to all simulators and viewers.
  */
 public class Commands extends AbstractMessage implements Control {
+    private IntComponent id;
     private IntComponent time;
     private CommandListComponent commands;
 
@@ -31,21 +32,33 @@ public class Commands extends AbstractMessage implements Control {
 
     /**
        A populated Commands message.
+       @param id The id of the simulator or viewer receiving the update.
        @param time The timestep of the simulation.
        @param commands All AgentCommands.
      */
-    public Commands(int time, Collection<? extends Command> commands) {
+    public Commands(int id, int time, Collection<? extends Command> commands) {
         this();
+        this.id.setValue(id);
         this.time.setValue(time);
         this.commands.setCommands(commands);
     }
 
     private Commands() {
         super("Commands", ControlMessageConstants.COMMANDS);
+        id = new IntComponent("ID");
         time = new IntComponent("Time");
         commands = new CommandListComponent("Commands");
+        addMessageComponent(id);
         addMessageComponent(time);
         addMessageComponent(commands);
+    }
+
+    /**
+       Get the id of the component that this message is addressed to.
+       @return The ID of the target component.
+     */
+    public int getTargetID() {
+        return id.getValue();
     }
 
     /**

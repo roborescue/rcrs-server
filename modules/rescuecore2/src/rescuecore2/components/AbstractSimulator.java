@@ -78,10 +78,16 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
         @Override
         public void messageReceived(Connection c, Message msg) {
             if (msg instanceof Update) {
-                handleUpdate((Update)msg);
+                Update u = (Update)msg;
+                if (u.getTargetID() == simulatorID) {
+                    handleUpdate(u);
+                }
             }
             if (msg instanceof Commands) {
-                handleCommands((Commands)msg);
+                Commands commands = (Commands)msg;
+                if (commands.getTargetID() == simulatorID) {
+                    handleCommands(commands);
+                }
             }
         }
     }

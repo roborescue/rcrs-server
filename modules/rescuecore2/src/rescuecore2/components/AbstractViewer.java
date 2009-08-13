@@ -19,6 +19,8 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
     */
     protected int viewerID;
 
+    private int lastUpdateTime;
+
     /**
        Create a new AbstractViewer.
      */
@@ -38,6 +40,7 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
         super.postConnect(c, entities);
         this.viewerID = id;
         c.addConnectionListener(new ViewerListener());
+        lastUpdateTime = 0;
         postConnect();
     }
 
@@ -48,10 +51,17 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
     }
 
     /**
-       Handle an Update object from the server. The default implementation does nothing.
+       Handle an Update object from the server. The default implementation just updates the world model.
        @param u The Update object.
      */
     protected void handleUpdate(Update u) {
+        Collection<Entity> entities = u.getUpdatedEntities();
+        int time = u.getTime();
+        if (time != lastUpdateTime + 1) {
+            System.out.println("WARNING: Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
+        }
+        lastUpdateTime = time;
+        model.merge(entities);
     }
 
     /**
@@ -65,10 +75,16 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
         @Override
         public void messageReceived(Connection c, Message msg) {
             if (msg instanceof Update) {
-                handleUpdate((Update)msg);
+                Update u = (Update)msg;
+                if (u.getTargetID() == viewerID) {
+                    handleUpdate(u);
+                }
             }
             if (msg instanceof Commands) {
-                handleCommands((Commands)msg);
+                Commands commands = (Commands)msg;
+                if (commands.getTargetID() == viewerID) {
+                    handleCommands(commands);
+                }
             }
         }
     }
