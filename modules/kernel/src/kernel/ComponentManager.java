@@ -35,8 +35,8 @@ import rescuecore2.misc.Pair;
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
 public class ComponentManager implements ConnectionManagerListener {
-    private static final int SIMULATOR_ID_PREFIX = 0x0000;
-    private static final int VIEWER_ID_PREFIX = 0x8000;
+    private static final int STARTING_SIMULATOR_ID = 1;
+    private static final int STARTING_VIEWER_ID = 100000;
 
     private static final int WAIT_TIME = 10000;
 
@@ -77,8 +77,8 @@ public class ComponentManager implements ConnectionManagerListener {
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
-        nextSimulatorID = 1;
-        nextViewerID = 1;
+        nextSimulatorID = STARTING_SIMULATOR_ID;
+        nextViewerID = STARTING_VIEWER_ID;
     }
 
     /**
@@ -201,13 +201,13 @@ public class ComponentManager implements ConnectionManagerListener {
 
     private int getNextSimulatorID() {
         synchronized (simLock) {
-            return (nextSimulatorID++ | SIMULATOR_ID_PREFIX);
+            return nextSimulatorID++;
         }
     }
 
     private int getNextViewerID() {
         synchronized (viewerLock) {
-            return (nextViewerID++ | VIEWER_ID_PREFIX);
+            return nextViewerID++;
         }
     }
 
