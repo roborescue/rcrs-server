@@ -239,7 +239,9 @@
   <macrodef name="_jar">
     <attribute name="module"/>
     <sequential>
-      <jar destfile="${jar.dir}/@{module}.jar">
+      <manifest file="${modules.dir}/@{module}/manifest" mode="update">
+      </manifest>
+      <jar destfile="${jar.dir}/@{module}.jar" manifest="${modules.dir}/@{module}/manifest">
         <fileset dir="${build.dir}/@{module}/classes" includes="**/*.class"/>
         <fileset dir="${modules.dir}/@{module}/resources" erroronmissingdir="false"/>
       </jar>
