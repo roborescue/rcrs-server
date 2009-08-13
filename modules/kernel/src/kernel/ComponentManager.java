@@ -35,6 +35,9 @@ import rescuecore2.misc.Pair;
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
 public class ComponentManager implements ConnectionManagerListener {
+    private static final int SIMULATOR_ID_PREFIX = 0x0000;
+    private static final int VIEWER_ID_PREFIX = 0x8000;
+
     private static final int WAIT_TIME = 10000;
 
     private Kernel kernel;
@@ -198,13 +201,13 @@ public class ComponentManager implements ConnectionManagerListener {
 
     private int getNextSimulatorID() {
         synchronized (simLock) {
-            return nextSimulatorID++;
+            return (nextSimulatorID++ | SIMULATOR_ID_PREFIX);
         }
     }
 
     private int getNextViewerID() {
         synchronized (viewerLock) {
-            return nextViewerID++;
+            return (nextViewerID++ | VIEWER_ID_PREFIX);
         }
     }
 
@@ -291,7 +294,7 @@ public class ComponentManager implements ConnectionManagerListener {
             int simID = getNextSimulatorID();
             int requestID = msg.getRequestID();
             System.out.println("Simulator " + simID + " (request ID " + requestID + ") connected");
-            Simulator sim = new Simulator(connection);
+            Simulator sim = new Simulator(connection, simID);
             synchronized (simLock) {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
@@ -314,7 +317,7 @@ public class ComponentManager implements ConnectionManagerListener {
             int requestID = msg.getRequestID();
             int viewerID = getNextViewerID();
             System.out.println("Viewer " + viewerID + " (request ID " + requestID + ") connected");
-            Viewer viewer = new Viewer(connection);
+            Viewer viewer = new Viewer(connection, viewerID);
             synchronized (viewerLock) {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }

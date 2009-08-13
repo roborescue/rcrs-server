@@ -20,13 +20,16 @@ import java.util.HashSet;
  */
 public class Simulator extends AbstractComponent {
     private Map<Integer, Collection<Entity>> updates;
+    private int id;
 
     /**
        Construct a new simulator.
        @param c The connection this simulator is using.
+       @param id The ID of the simulator.
      */
-    public Simulator(Connection c) {
+    public Simulator(Connection c, int id) {
         super(c);
+        this.id = id;
         updates = new HashMap<Integer, Collection<Entity>>();
         c.addConnectionListener(new SimulatorConnectionListener());
     }
@@ -56,7 +59,7 @@ public class Simulator extends AbstractComponent {
        @param update The updated entities.
     */
     public void sendUpdate(int time, Collection<? extends Entity> update) {
-        send(Collections.singleton(new Update(time, update)));
+        send(Collections.singleton(new Update(id, time, update)));
     }
 
     /**
@@ -65,12 +68,12 @@ public class Simulator extends AbstractComponent {
        @param commands The agent commands to send.
      */
     public void sendAgentCommands(int time, Collection<? extends Command> commands) {
-        send(Collections.singleton(new Commands(time, commands)));
+        send(Collections.singleton(new Commands(id, time, commands)));
     }
 
     @Override
     public String toString() {
-        return "Simulator: " + getConnection().toString();
+        return "Simulator " + id + ": " + getConnection().toString();
     }
 
     /**
@@ -94,9 +97,11 @@ public class Simulator extends AbstractComponent {
         @Override
         public void messageReceived(Connection connection, Message msg) {
             if (msg instanceof SKUpdate) {
-                System.out.println("Received simulator update: " + msg);
                 SKUpdate update = (SKUpdate)msg;
-                updateReceived(update.getTime(), update.getUpdatedEntities());
+                if (update.getSimulatorID() == id) {
+                    System.out.println("Received simulator update: " + msg);
+                    updateReceived(update.getTime(), update.getUpdatedEntities());
+                }
             }
         }
     }

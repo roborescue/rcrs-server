@@ -34,6 +34,7 @@ import rescuecore2.config.ConfigException;
 import rescuecore2.config.NoSuchConfigOptionException;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.Component;
+import rescuecore2.components.ComponentInitialisationException;
 import rescuecore2.components.Agent;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
@@ -322,6 +323,7 @@ public final class StartKernel {
                 }
                 System.out.println("Launching instance " + (i + 1) + "...");
                 try {
+                    c.initialise(config);
                     String result = launcher.connect(c);
                     if (result == null) {
                         System.out.println("success");
@@ -330,6 +332,10 @@ public final class StartKernel {
                         System.out.println("failed: " + result);
                         break;
                     }
+                }
+                catch (ComponentInitialisationException e) {
+                    System.out.println("failed: " + e);
+                    e.printStackTrace();
                 }
                 catch (ConnectionException e) {
                     System.out.println("failed: " + e);
