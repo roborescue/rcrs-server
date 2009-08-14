@@ -36,7 +36,7 @@ public class RIO implements IOConstans{
 		if(data[0]!=UPDATE){
 			System.out.println("warning: received not an UPDATE");
 		}
-		world.processUpdate(data,3,data[2]); // Skip the header, size and time
+		world.processUpdate(data,4,data[3]); // Skip the header, size, id and time
 	}
 	
 	public void sendReadyness(int id){

@@ -280,6 +280,7 @@ public class WorldModel implements Constants {
 		//		_debugFile.println("************************");
 		//END DEBUG
 		//		rescuecore.Handy.printBytes(dis);
+                int id = dis.readInt();
 		int time = dis.readInt();
                 int count = dis.readInt();
                 for (int i = 0; i < count; ++i) {

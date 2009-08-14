@@ -17,6 +17,8 @@ public abstract class IO implements Runnable, Constants {
 	protected final ArrayList updateDataList   = new ArrayList();
 	protected final ArrayList commandsDataList = new ArrayList();
 
+    private int viewerID;
+
 	public IO() {
 		commandsDataList.add(null);  // Dummy, because KS_COMMANDS is not sent by kernel at time 0
 	}
@@ -38,7 +40,7 @@ public abstract class IO implements Runnable, Constants {
 		int header = in.readInt();
 		byte[] body;
                 int requestID = 0;
-                int viewerID = 0;
+                viewerID = 0;
 		switch (header) {
 		case RescueConstants.KV_CONNECT_OK:
 			size = in.readInt();
@@ -116,10 +118,13 @@ public abstract class IO implements Runnable, Constants {
 					break;
 				case RescueConstants.UPDATE:
 					InputBuffer in = new InputBuffer(content);
-					int time = in.readInt();
-					Util.myassert(time == lastTime + 1, "received an update with the wrong simulation time: expected " + (lastTime + 1) + ", got " + time);
-					lastTime = time;
-					storeData(updateDataList, content, time);
+                                        int id = in.readInt();
+                                        if (id == viewerID) {
+                                            int time = in.readInt();
+                                            Util.myassert(time == lastTime + 1, "received an update with the wrong simulation time: expected " + (lastTime + 1) + ", got " + time);
+                                            lastTime = time;
+                                            storeData(updateDataList, content, time);
+                                        }
 					// VIEWER.timeSlider.setMaximum(time);
 					break;
 				default: Util.myassert(false);
@@ -138,7 +143,7 @@ public abstract class IO implements Runnable, Constants {
 		}
 	}
 
-	public InputBuffer updateData(int time)   { return getData(time, updateDataList,  (time == 0) ? 0 : 1); }
+	public InputBuffer updateData(int time)   { return getData(time, updateDataList,  (time == 0) ? 0 : 2); }
 	public InputBuffer commandsData(int time) { return getData(time, commandsDataList, 0); }
 
 	private InputBuffer getData(int time, List list, int skip) {

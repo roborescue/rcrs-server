@@ -15,6 +15,8 @@ public abstract class IO implements Constants {
 	protected InetAddress m_address;
 	protected int m_port;
 
+    private int simID;
+
 	public final static long TIMEOUT = 60000; // 60 second connection timeout
 
 	public IO(InetAddress kernelAddress, int kernelPort) {
@@ -53,14 +55,14 @@ public abstract class IO implements Constants {
 				case RescueConstants.KS_CONNECT_OK:
 					System.out.println("initializing");
 					int requestId = in.readInt();
-                                        int simId = in.readInt();
+                                        simID = in.readInt();
                                         if (requestId != REQUEST_ID) {
                                             System.out.println("Received unexpected connect ok: expecting request ID of " + REQUEST_ID + " but got " + requestId);
                                             System.exit(-3);
                                         }
 					WORLD.update(in, INITIALIZING_TIME);
 					WORLD.initialize();
-					return simId;
+					return simID;
 				case RescueConstants.KS_CONNECT_ERROR:
 					System.out.println("KS_CONNECT_ERROR: "+in.readString());
 					System.exit(-1);
@@ -78,12 +80,12 @@ public abstract class IO implements Constants {
 		return 0;
 	}
 
-    public void sendAcknowledge(int simId) {
+    public void sendAcknowledge() {
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.SK_ACKNOWLEDGE);
 		out.writeInt(RescueConstants.INT_SIZE * 2); // Size
 		out.writeInt(REQUEST_ID);
-		out.writeInt(simId);
+		out.writeInt(simID);
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 	}
@@ -98,16 +100,21 @@ public abstract class IO implements Constants {
 			System.out.println("I don't know how to deal with "+type);
 			in.skip(size);
 		}
-		else WORLD.parseCommands(in);
+		else {
+                    int id = in.readInt();
+                    if (id == simID) {
+                        WORLD.parseCommands(in);
+                    }
+                }
 	}
 
-	public void sendUpdate(int id) {
+	public void sendUpdate() {
 		System.out.println("Sending update");
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.SK_UPDATE);
 
 		OutputBuffer temp = new OutputBuffer();
-		temp.writeInt(id);
+		temp.writeInt(simID);
 		temp.writeInt(WORLD.time());
 		MovingObject[] objects = WORLD.movingObjectArray();
                 List<MovingObject> toUpdate = new ArrayList<MovingObject>(objects.length);
@@ -140,7 +147,10 @@ public abstract class IO implements Constants {
 		}
 		else {
 			int time = in.readInt();
-			WORLD.update(in,time);
+                        int id = in.readInt();
+                        if (id == simID) {
+                            WORLD.update(in,time);
+                        }
 		}
 	}
 }

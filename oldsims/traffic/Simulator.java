@@ -12,7 +12,7 @@ public class Simulator implements Constants {
         io.sendConnect();
         id = io.receiveConnectOk();
         System.out.println("Connected. Simulator ID is " + id);
-        io.sendAcknowledge(id);
+        io.sendAcknowledge();
         setInitialPosition();
     }
 
@@ -76,7 +76,7 @@ public class Simulator implements Constants {
             System.out.println("time: " + WORLD.time());
             move();
             loadUnload();
-            io.sendUpdate(id);
+            io.sendUpdate();
             io.receiveUpdate();
         }
     }

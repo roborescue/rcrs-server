@@ -200,7 +200,7 @@ namespace Librescue {
 	return m_requestId;
   }
 
-  Commands::Commands(INT_32 time, const AgentCommandList& commands) : m_time(time) {
+  Commands::Commands(INT_32 id, INT_32 time, const AgentCommandList& commands) : m_id(id), m_time(time) {
 	m_commands.reserve(commands.size());
 	m_commands.insert(m_commands.end(),commands.begin(),commands.end());
 	m_delete = false;	
@@ -232,6 +232,7 @@ namespace Librescue {
   
   void Commands::encode(OutputBuffer& out) const {
 	Command::encode(out);
+        out.writeInt32(m_id);
 	out.writeInt32(m_time);
 	// Write all commands of each type
         out.writeInt32(m_commands.size());
@@ -246,6 +247,7 @@ namespace Librescue {
 
   void Commands::decode(InputBuffer& in) {
 	Command::decode(in);
+        m_id = in.readInt32();
 	m_time = in.readInt32();
 	// Delete any old objects
 	deleteObjects();
@@ -272,11 +274,15 @@ namespace Librescue {
 	  for (AgentCommandList::const_iterator it = m_commands.begin();it!=m_commands.end();++it) {
 		clonedObjects.push_back(dynamic_cast<AgentCommand*>((*it)->clone()));
 	  }
-	  Commands* result = new Commands(m_time,clonedObjects);
+	  Commands* result = new Commands(m_id,m_time,clonedObjects);
 	  result->m_delete = true;
 	  return result;
 	}
-	return new Commands(m_time,m_commands);
+	return new Commands(m_id,m_time,m_commands);
+  }
+
+  INT_32 Commands::getID() const {
+	return m_id;
   }
 
   INT_32 Commands::getTime() const {
@@ -287,7 +293,7 @@ namespace Librescue {
 	return m_commands;
   }
 
-  Update::Update(INT_32 time, const ObjectSet& objects) : m_time(time) {
+  Update::Update(INT_32 id, INT_32 time, const ObjectSet& objects) : m_id(id), m_time(time) {
 	m_objects.insert(objects.begin(),objects.end());
 	m_delete = false;	
   }
@@ -320,6 +326,7 @@ namespace Librescue {
   void Update::encode(OutputBuffer& out) const {
 	Command::encode(out);
 	//	LOG_DEBUG("Writing update for time %d",m_time);
+        out.writeInt32(m_id);
 	out.writeInt32(m_time);
 	out.writeObjects(m_objects);
   }
@@ -328,6 +335,7 @@ namespace Librescue {
 	Command::decode(in);
 	// Delete any old objects
 	deleteObjects();
+        m_id = in.readInt32();
 	m_time = in.readInt32();
 	in.readObjects(m_time,m_objects);
 	m_delete = true;
@@ -340,13 +348,17 @@ namespace Librescue {
 	  for (ObjectSet::const_iterator it = m_objects.begin();it!=m_objects.end();++it) {
 		clonedObjects.insert((*it)->clone());
 	  }
-	  Update* result = new Update(m_time,clonedObjects);
+	  Update* result = new Update(m_id,m_time,clonedObjects);
 	  result->m_delete = true;
 	  return result;
 	}
-	return new Update(m_time,m_objects);
+	return new Update(m_id,m_time,m_objects);
   }
 
+  INT_32 Update::getID() const {
+	return m_id;
+  }
+  
   INT_32 Update::getTime() const {
 	return m_time;
   }

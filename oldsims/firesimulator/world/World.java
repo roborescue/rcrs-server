@@ -534,8 +534,8 @@ public class World implements WorldConstants {
 	public void processCommands(int[] data) {								
 		System.out.println("processing commands...");
 		//		for(int j=0;j<data.length;j++)System.out.println("data["+j+"]="+data[j]);
-		int c=2; // Skip the header and size
-		setTime(data[2]); // Set the time
+		int c=3; // Skip the header, size and ID
+		setTime(data[c]); // Set the time
 		int id;
                 int time;
                 int count = data[++c];

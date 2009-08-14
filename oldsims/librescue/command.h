@@ -491,6 +491,7 @@ namespace Librescue {
 
   class Commands : public Command {
   private:
+        INT_32 m_id;
 	INT_32 m_time;
 	AgentCommandList m_commands;
 
@@ -498,7 +499,7 @@ namespace Librescue {
 	void deleteObjects();
 	
   public:
-	Commands(INT_32 time, const AgentCommandList& commands);
+	Commands(INT_32 id, INT_32 time, const AgentCommandList& commands);
 	Commands(InputBuffer& in);
 	virtual ~Commands();
 
@@ -506,6 +507,7 @@ namespace Librescue {
 	virtual void encode(OutputBuffer& out) const;
 	virtual void decode(InputBuffer& in);
 
+	INT_32 getID() const;
 	INT_32 getTime() const;
 	const AgentCommandList& getCommands() const;
 
@@ -514,6 +516,7 @@ namespace Librescue {
 
   class Update : public Command {
   private:
+        INT_32 m_id;
 	INT_32 m_time;
 	ObjectSet m_objects;
 
@@ -521,7 +524,7 @@ namespace Librescue {
 	void deleteObjects();
 	
   public:
-	Update(INT_32 time, const ObjectSet& objects);
+	Update(INT_32 id, INT_32 time, const ObjectSet& objects);
 	Update(InputBuffer& in);
 	virtual ~Update();
 
@@ -529,6 +532,7 @@ namespace Librescue {
 	virtual void encode(OutputBuffer& out) const;
 	virtual void decode(InputBuffer& in);
 
+	INT_32 getID() const;
 	INT_32 getTime() const;
 	const ObjectSet& getObjects() const;
 
