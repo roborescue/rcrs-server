@@ -302,6 +302,8 @@
       <fileset dir="${modules.dir}">
         <include name="**/src/**/*.java"/>
       </fileset>
+      <classpath refid="path.common"/>
+      <classpath refid="path.allmodules.lib"/>
     </javadoc>
   </target>
 
