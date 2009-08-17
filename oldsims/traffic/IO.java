@@ -146,8 +146,8 @@ public abstract class IO implements Constants {
 			in.skip(size);
 		}
 		else {
-			int time = in.readInt();
                         int id = in.readInt();
+			int time = in.readInt();
                         if (id == simID) {
                             WORLD.update(in,time);
                         }
