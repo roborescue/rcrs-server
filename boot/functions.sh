@@ -155,6 +155,6 @@ function startSims {
     BLOCKADES=$!
     xterm -T collapse -e "$LD_COMMAND && $BASEDIR/oldsims/collapsesimulator/collapsesimulator --mapdir $MAP --config $DIR/config/collapse.cfg 2>&1 | tee $LOGDIR/collapse.log" &
     COLLAPSE=$!
-    xterm -T civilian -e "$LD_COMMAND && $BASEDIR/oldsims/civilian/civilian 2>&1 | tee $LOGDIR/civilian.log" &
+    xterm -T civilian -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleCivilian*n 2>&1 | tee $LOGDIR/civilian.log" &
     CIVILIAN=$!
 }
