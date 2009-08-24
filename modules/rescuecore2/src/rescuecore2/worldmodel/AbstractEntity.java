@@ -40,6 +40,14 @@ public abstract class AbstractEntity implements Entity {
     }
 
     /**
+       AbstractEntity copy constructor.
+       @param other The AbstractEntity to copy.
+     */
+    protected AbstractEntity(AbstractEntity other) {
+        this(other.getID(), other.getType());
+    }
+
+    /**
        Add a set of properties to this entity. This should only be used by subclasses during construction.
        @param props The properties to add.
     */

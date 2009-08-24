@@ -42,6 +42,15 @@ public class EntityRefListProperty extends AbstractProperty {
     }
 
     /**
+       EntityRefListProperty copy constructor.
+       @param other The EntityRefListProperty to copy.
+     */
+    public EntityRefListProperty(EntityRefListProperty other) {
+        super(other);
+        this.ids = new ArrayList<EntityID>(other.ids);
+    }
+
+    /**
        Get the list of EntityIDs. If {@link #isDefined()} returns false then the result will be undefined.
        @return The value of this property, or an undefined result if the value has not been set.
        @see #isDefined()

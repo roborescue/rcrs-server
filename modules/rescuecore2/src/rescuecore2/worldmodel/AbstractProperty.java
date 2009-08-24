@@ -26,6 +26,14 @@ public abstract class AbstractProperty implements Property {
     }
 
     /**
+       AbstractProperty copy constructor.
+       @param other The AbstractProperty to copy.
+     */
+    protected AbstractProperty(AbstractProperty other) {
+        this(other.getType(), other.isDefined());
+    }
+
+    /**
        Set the property status to defined.
      */
     protected void setDefined() {

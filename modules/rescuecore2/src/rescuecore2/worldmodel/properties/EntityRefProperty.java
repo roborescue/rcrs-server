@@ -37,6 +37,15 @@ public class EntityRefProperty extends AbstractProperty {
     }
 
     /**
+       EntityRefProperty copy constructor.
+       @param other The EntityRefProperty to copy.
+     */
+    public EntityRefProperty(EntityRefProperty other) {
+        super(other);
+        this.value = other.value;
+    }
+
+    /**
        Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
        @return The value of this property, or an undefined result if the value has not been set.
        @see #isDefined()

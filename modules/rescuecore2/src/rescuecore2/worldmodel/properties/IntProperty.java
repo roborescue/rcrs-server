@@ -36,6 +36,15 @@ public class IntProperty extends AbstractProperty {
     }
 
     /**
+       IntProperty copy constructor.
+       @param other The IntProperty to copy.
+     */
+    public IntProperty(IntProperty other) {
+        super(other);
+        this.value = other.value;
+    }
+
+    /**
        Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
        @return The value of this property, or an undefined result if the value has not been set.
        @see #isDefined()
