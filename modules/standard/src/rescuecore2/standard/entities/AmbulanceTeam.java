@@ -15,6 +15,14 @@ public class AmbulanceTeam extends Human {
         super(id, StandardEntityType.AMBULANCE_TEAM);
     }
 
+    /**
+       AmbulanceTeam copy constructor.
+       @param other The AmbulanceTeam to copy.
+     */
+    public AmbulanceTeam(AmbulanceTeam other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new AmbulanceTeam(getID());

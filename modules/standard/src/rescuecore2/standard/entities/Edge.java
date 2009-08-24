@@ -28,6 +28,18 @@ public abstract class Edge extends StandardEntity {
         addProperties(head, tail, length);
     }
 
+    /**
+       Edge copy constructor.
+       @param other The Edge to copy.
+     */
+    public Edge(Edge other) {
+        super(other);
+        this.head = new EntityRefProperty(head);
+        this.tail = new EntityRefProperty(tail);
+        this.length = new IntProperty(length);
+        addProperties(head, tail, length);
+    }
+
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
         StandardEntity headEntity = world.getEntity(head.getValue());

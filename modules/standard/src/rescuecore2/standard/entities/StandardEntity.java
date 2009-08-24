@@ -19,6 +19,14 @@ public abstract class StandardEntity extends AbstractEntity {
     }
 
     /**
+       StandardEntity copy constructor.
+       @param other The StandardEntity to copy.
+     */
+    protected StandardEntity(StandardEntity other) {
+        super(other);
+    }
+
+    /**
        Get the location of this entity.
        @param world The world model to look up for entity references.
        @return The coordinates of this entity, or null if the location cannot be determined.

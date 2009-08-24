@@ -28,6 +28,20 @@ public class World extends StandardEntity {
         addProperties(startTime, longitude, latitude, windForce, windDirection);
     }
 
+    /**
+       World copy constructor.
+       @param other The World to copy.
+     */
+    public World(World other) {
+        super(other);
+        startTime = new IntProperty(other.startTime);
+        longitude = new IntProperty(other.longitude);
+        latitude = new IntProperty(other.latitude);
+        windForce = new IntProperty(other.windForce);
+        windDirection = new IntProperty(other.windDirection);
+        addProperties(startTime, longitude, latitude, windForce, windDirection);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new World(getID());

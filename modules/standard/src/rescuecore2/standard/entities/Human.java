@@ -40,6 +40,23 @@ public abstract class Human extends StandardEntity {
         addProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
     }
 
+    /**
+       Human copy constructor.
+       @param other The Human to copy.
+     */
+    public Human(Human other) {
+        super(other);
+        position = new EntityRefProperty(other.position);
+        positionExtra = new IntProperty(other.positionExtra);
+        positionHistory = new EntityRefListProperty(other.positionHistory);
+        direction = new IntProperty(other.direction);
+        stamina = new IntProperty(other.stamina);
+        hp = new IntProperty(other.hp);
+        damage = new IntProperty(other.damage);
+        buriedness = new IntProperty(other.buriedness);
+        addProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
+    }
+
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
         if (!position.isDefined()) {

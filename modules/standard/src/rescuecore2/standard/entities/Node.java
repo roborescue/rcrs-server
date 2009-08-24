@@ -27,6 +27,19 @@ public class Node extends Vertex {
         addProperties(signal, shortcut, pocket, timing);
     }
 
+    /**
+       Node copy constructor.
+       @param other The Node to copy.
+     */
+    public Node(Node other) {
+        super(other);
+        signal = new BooleanProperty(other.signal);
+        shortcut = new IntArrayProperty(other.shortcut);
+        pocket = new IntArrayProperty(other.pocket);
+        timing = new IntArrayProperty(other.timing);
+        addProperties(signal, shortcut, pocket, timing);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new Node(getID());

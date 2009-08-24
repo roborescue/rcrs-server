@@ -87,6 +87,29 @@ public class Building extends StandardEntity {
         addProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
     }
 
+    /**
+       Building copy constructor.
+       @param other The Building to copy.
+     */
+    public Building(Building other) {
+        super(other);
+        x = new IntProperty(other.x);
+        y = new IntProperty(other.y);
+        floors = new IntProperty(other.floors);
+        ignition = new BooleanProperty(other.ignition);
+        fieryness = new IntProperty(other.fieryness);
+        brokenness = new IntProperty(other.brokenness);
+        code = new IntProperty(other.code);
+        attributes = new IntProperty(other.attributes);
+        groundArea = new IntProperty(other.groundArea);
+        totalArea = new IntProperty(other.totalArea);
+        temperature = new IntProperty(other.temperature);
+        importance = new IntProperty(other.importance);
+        apexes = new IntArrayProperty(other.apexes);
+        entrances = new EntityRefListProperty(other.entrances);
+        addProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new Building(getID());

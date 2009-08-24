@@ -15,6 +15,14 @@ public class PoliceOffice extends Building {
         super(id, StandardEntityType.POLICE_OFFICE);
     }
 
+    /**
+       PoliceOffice copy constructor.
+       @param other The PoliceOffice to copy.
+     */
+    public PoliceOffice(PoliceOffice other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new PoliceOffice(getID());

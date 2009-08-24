@@ -15,6 +15,14 @@ public class PoliceForce extends Human {
         super(id, StandardEntityType.POLICE_FORCE);
     }
 
+    /**
+       PoliceForce copy constructor.
+       @param other The PoliceForce to copy.
+     */
+    public PoliceForce(PoliceForce other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new PoliceForce(getID());

@@ -15,6 +15,14 @@ public class AmbulanceCentre extends Building {
         super(id, StandardEntityType.AMBULANCE_CENTRE);
     }
 
+    /**
+       AmbulanceCentre copy constructor.
+       @param other The AmbulanceCentre to copy.
+     */
+    public AmbulanceCentre(AmbulanceCentre other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new AmbulanceCentre(getID());

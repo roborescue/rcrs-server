@@ -15,6 +15,14 @@ public class FireStation extends Building {
         super(id, StandardEntityType.FIRE_STATION);
     }
 
+    /**
+       FireStation copy constructor.
+       @param other The FireStation to copy.
+     */
+    public FireStation(FireStation other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new FireStation(getID());

@@ -15,6 +15,14 @@ public class Civilian extends Human {
         super(id, StandardEntityType.CIVILIAN);
     }
 
+    /**
+       Civilian copy constructor.
+       @param other The Civilian to copy.
+     */
+    public Civilian(Civilian other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new Civilian(getID());

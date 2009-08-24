@@ -43,6 +43,27 @@ public class Road extends Edge {
         addProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
     }
 
+    /**
+       Road copy constructor.
+       @param other The Road to copy.
+     */
+    public Road(Road other) {
+        super(other);
+        kind = new IntProperty(other.kind);
+        carsToHead = new IntProperty(other.carsToHead);
+        carsToTail = new IntProperty(other.carsToTail);
+        humansToHead = new IntProperty(other.humansToHead);
+        humansToTail = new IntProperty(other.humansToTail);
+        width = new IntProperty(other.width);
+        block = new IntProperty(other.block);
+        cost = new IntProperty(other.cost);
+        hasMedian = new BooleanProperty(other.hasMedian);
+        linesToHead = new IntProperty(other.linesToHead);
+        linesToTail = new IntProperty(other.linesToTail);
+        widthForWalkers = new IntProperty(other.widthForWalkers);
+        addProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
+}
+
     @Override
     protected Entity copyImpl() {
         return new Road(getID());

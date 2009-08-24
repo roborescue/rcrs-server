@@ -20,6 +20,16 @@ public class FireBrigade extends Human {
         addProperties(water);
     }
 
+    /**
+       FireBrigade copy constructor.
+       @param other The FireBrigade to copy.
+     */
+    public FireBrigade(FireBrigade other) {
+        super(other);
+        water = new IntProperty(other.water);
+        addProperties(water);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new FireBrigade(getID());

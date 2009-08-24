@@ -30,6 +30,18 @@ public abstract class Vertex extends StandardEntity {
         addProperties(x, y, edges);
     }
 
+    /**
+       Vertex copy constructor.
+       @param other The Vertex to copy.
+     */
+    public Vertex(Vertex other) {
+        super(other);
+        x = new IntProperty(other.x);
+        y = new IntProperty(other.y);
+        edges = new EntityRefListProperty(other.edges);
+        addProperties(x, y, edges);
+    }
+
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
         return new Pair<Integer, Integer>(x.getValue(), y.getValue());

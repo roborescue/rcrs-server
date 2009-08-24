@@ -15,6 +15,14 @@ public class Refuge extends Building {
         super(id, StandardEntityType.REFUGE);
     }
 
+    /**
+       Refuge copy constructor.
+       @param other The Refuge to copy.
+     */
+    public Refuge(Refuge other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new Refuge(getID());
