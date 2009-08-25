@@ -2,8 +2,9 @@ package rescuecore2.standard.view;
 
 import rescuecore2.messages.Command;
 import rescuecore2.view.RenderedObject;
-import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.misc.Pair;
+import rescuecore2.misc.gui.DrawingTools;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.messages.AKMove;
@@ -99,15 +100,11 @@ public class CommandLayer extends StandardViewLayer {
             int dy = nextY - startY;
             int headX = startX + (dx / 2);
             int headY = startY + (dy / 2);
-            double vectorX = ((Math.cos(ARROW_ANGLE) * dx) - (Math.sin(ARROW_ANGLE) * dy));
-            double vectorY = ((Math.sin(ARROW_ANGLE) * dx) + (Math.cos(ARROW_ANGLE) * dy));
-            double length = Math.hypot(vectorX, vectorY);
-            vectorX /= length;
-            vectorY /= length;
-            int leftX = headX + (int)(vectorX * ARROW_LENGTH);
-            int leftY = headY + (int)(vectorY * ARROW_LENGTH);
-            int rightX = headX - (int)(vectorY * ARROW_LENGTH);
-            int rightY = headY + (int)(vectorX * ARROW_LENGTH);
+            Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> barbs = DrawingTools.getArrowHeads(startX, startY, headX, headY, ARROW_ANGLE, ARROW_LENGTH);
+            int leftX = barbs.first().first();
+            int leftY = barbs.first().second();
+            int rightX = barbs.second().first();
+            int rightY = barbs.second().second();
             g.drawLine(leftX, leftY, headX, headY);
             g.drawLine(rightX, rightY, headX, headY);
             startX = nextX;
