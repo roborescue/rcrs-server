@@ -378,6 +378,7 @@
       <tarfileset dir="." prefix="rescue-${version}/">
         <include name="modules/**/*"/>
         <include name="build-tools/**/*"/>
+        <include name="build.xml"/>
       </tarfileset>
     </tar>
   </target>
