@@ -3,6 +3,7 @@ package sample;
 import java.io.IOException;
 
 import rescuecore2.components.ComponentLauncher;
+import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
@@ -77,60 +78,55 @@ public final class LaunchSampleAgents {
     private static void connect(Connection c, int fb, int pf, int at) throws InterruptedException, ConnectionException {
         ComponentLauncher launcher = new ComponentLauncher(c);
         int i = 0;
-        String reason = null;
-        while (reason == null && fb-- != 0) {
-            System.out.print("Connecting fire brigade " + (i++) + "...");
-            reason = launcher.connect(new SampleFireBrigade());
-            if (reason == null) {
+        try {
+            while (fb-- != 0) {
+                System.out.print("Connecting fire brigade " + (i++) + "...");
+                launcher.connect(new SampleFireBrigade());
                 System.out.println("success");
-            }
-            else {
-                System.out.println("failed: " + reason);
             }
         }
-        reason = null;
-        while (reason == null && pf-- != 0) {
-            System.out.print("Connecting police force " + (i++) + "...");
-            reason = launcher.connect(new SamplePoliceForce());
-            if (reason == null) {
+        catch (ComponentConnectionException e) {
+            System.out.println("failed: " + e.getMessage());
+        }
+        try {
+            while (pf-- != 0) {
+                System.out.print("Connecting police force " + (i++) + "...");
+                launcher.connect(new SamplePoliceForce());
                 System.out.println("success");
-            }
-            else {
-                System.out.println("failed: " + reason);
             }
         }
-        reason = null;
-        while (reason == null && at-- != 0) {
-            System.out.print("Connecting ambulance team " + (i++) + "...");
-            reason = launcher.connect(new SampleAmbulanceTeam());
-            if (reason == null) {
+        catch (ComponentConnectionException e) {
+            System.out.println("failed: " + e.getMessage());
+        }
+        try {
+            while (at-- != 0) {
+                System.out.print("Connecting ambulance team " + (i++) + "...");
+                launcher.connect(new SampleAmbulanceTeam());
                 System.out.println("success");
-            }
-            else {
-                System.out.println("failed: " + reason);
             }
         }
-        reason = null;
-        while (reason == null) {
-            System.out.print("Connecting centre " + (i++) + "...");
-            reason = launcher.connect(new SampleCentre());
-            if (reason == null) {
+        catch (ComponentConnectionException e) {
+            System.out.println("failed: " + e.getMessage());
+        }
+        try {
+            while (true) {
+                System.out.print("Connecting centre " + (i++) + "...");
+                launcher.connect(new SampleCentre());
                 System.out.println("success");
-            }
-            else {
-                System.out.println("failed: " + reason);
             }
         }
-        reason = null;
-        while (reason == null) {
-            System.out.print("Connecting dummy agent " + (i++) + "...");
-            reason = launcher.connect(new DummyAgent());
-            if (reason == null) {
+        catch (ComponentConnectionException e) {
+            System.out.println("failed: " + e.getMessage());
+        }
+        try {
+            while (true) {
+                System.out.print("Connecting dummy agent " + (i++) + "...");
+                launcher.connect(new DummyAgent());
                 System.out.println("success");
             }
-            else {
-                System.out.println("failed: " + reason);
-            }
+        }
+        catch (ComponentConnectionException e) {
+            System.out.println("failed: " + e.getMessage());
         }
     }
 }

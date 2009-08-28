@@ -40,13 +40,13 @@ public class ComponentLauncher {
     }
 
     /**
-       Connect a Component to the kernel and return the reason for failure if the connection fails.
+       Connect a Component to the kernel. Throws a ComponentConnectionException if the connection fails due to a kernel ConnectError message.
        @param c The component to connect.
-       @return Null if the connection succeeded, otherwise the reason for failure.
        @throws InterruptedException If the thread is interrupted before the connection attempt completes.
        @throws ConnectionException If there is a problem communicating with the kernel.
+       @throws ComponentConnectionException If the connection fails.
     */
-    public String connect(Component c) throws InterruptedException, ConnectionException {
+    public void connect(Component c) throws InterruptedException, ConnectionException, ComponentConnectionException {
         int requestID = getNextRequestID();
         BlockingQueue<String> q = new ArrayBlockingQueue<String>(1);
         if (c instanceof Agent) {
@@ -65,10 +65,9 @@ public class ComponentLauncher {
             throw new IllegalArgumentException("Don't know how to connect components of type " + c.getClass().getName());
         }
         String result = q.take();
-        if (SUCCESS_MESSAGE.equals(result)) {
-            return null;
+        if (!SUCCESS_MESSAGE.equals(result)) {
+            throw new ComponentConnectionException(result);
         }
-        return result;
     }
 
     private int getNextRequestID() {

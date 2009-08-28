@@ -5,6 +5,7 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.AbstractViewer;
 import rescuecore2.components.Agent;
 import rescuecore2.components.ComponentLauncher;
+import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.view.WorldModelViewer;
 import rescuecore2.view.ViewListener;
@@ -226,30 +227,29 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
 
         private <T extends Agent> void connectAgents(AgentType<T> type, List<? super T> list, ListListModel model) {
             ComponentLauncher launcher = new ComponentLauncher(connection);
-            String reason = null;
             int count = 0;
-            do {
+            while (true) {
                 ++count;
                 T agent = type.createAgent();
                 System.out.print("Connecting " + type + " " + count + "...");
                 try {
-                    reason = launcher.connect(agent);
-                }
-                catch (InterruptedException e) {
-                    reason = "interrupted";
-                }
-                catch (ConnectionException e) {
-                    reason = e.toString();
-                }
-                if (reason == null) {
+                    launcher.connect(agent);
                     System.out.println("done.");
-                    System.out.println(agent);
                     list.add(agent);
                 }
-                else {
-                    System.out.println("failed: " + reason);
+                catch (ComponentConnectionException e) {
+                    System.out.println("failed: " + e.getMessage());
+                    break;
                 }
-            } while (reason == null);
+                catch (InterruptedException e) {
+                    System.out.println("interrupted");
+                    break;
+                }
+                catch (ConnectionException e) {
+                    System.out.println("failed: " + e);
+                    break;
+                }
+            }
             model.refresh();
         }
     }

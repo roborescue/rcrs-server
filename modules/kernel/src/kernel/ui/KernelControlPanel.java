@@ -29,6 +29,7 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.ComponentInitialisationException;
+import rescuecore2.components.ComponentConnectionException;
 
 /**
    A JComponent containing various controls for the kernel GUI.
@@ -166,14 +167,21 @@ public class KernelControlPanel extends JPanel {
             return;
         }
         try {
-            String result = launcher.connect(c);
-            if (result != null) {
-                System.out.println("Adding " + type + " failed: " + result);
-                JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + result);
-            }
-            else {
-                System.out.println(type + " added OK");
-            }
+            c.initialise(config);
+            launcher.connect(c);
+            System.out.println(type + " added OK");
+        }
+        catch (NoSuchConfigOptionException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
+        }
+        catch (ComponentInitialisationException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
+        }
+        catch (ComponentConnectionException e) {
+            System.out.println("Adding " + type + " failed: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e.getMessage());
         }
         catch (ConnectionException e) {
             e.printStackTrace();
@@ -270,16 +278,7 @@ public class KernelControlPanel extends JPanel {
             System.out.println("Option found: '" + next + "'");
             Component c = instantiate(next, Component.class);
             if (c != null) {
-                try {
-                    c.initialise(config);
-                    instances.add(c);
-                }
-                catch (NoSuchConfigOptionException e) {
-                    e.printStackTrace();
-                }
-                catch (ComponentInitialisationException e) {
-                    e.printStackTrace();
-                }
+                instances.add(c);
             }
         }
         return instances.toArray(new Component[0]);
