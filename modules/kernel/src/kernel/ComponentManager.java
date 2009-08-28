@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,21 +30,26 @@ import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.misc.Pair;
+
+import kernel.ui.KernelGUIComponent;
+import kernel.ui.ComponentManagerGUI;
+
+import javax.swing.JComponent;
 
 /**
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
-public class ComponentManager implements ConnectionManagerListener {
+public class ComponentManager implements ConnectionManagerListener, KernelGUIComponent {
     private static final int STARTING_SIMULATOR_ID = 1;
     private static final int STARTING_VIEWER_ID = 100000;
 
     private static final int WAIT_TIME = 10000;
 
     private Kernel kernel;
+    private ComponentManagerGUI gui;
 
     // Entities that have no controller yet. Map from type to list of entities.
-    private Map<Integer, Queue<Pair<Entity, Collection<? extends Entity>>>> uncontrolledEntities;
+    private Map<Integer, Queue<ControlledEntityInfo>> uncontrolledEntities;
 
     // Connected agents
     private Set<AgentAck> agentsToAcknowledge;
@@ -73,12 +79,13 @@ public class ComponentManager implements ConnectionManagerListener {
     public ComponentManager(Kernel kernel, WorldModel<? extends Entity> world, Config config) {
         this.kernel = kernel;
         this.world = world;
-        uncontrolledEntities = new HashMap<Integer, Queue<Pair<Entity, Collection<? extends Entity>>>>();
+        uncontrolledEntities = new HashMap<Integer, Queue<ControlledEntityInfo>>();
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
         nextSimulatorID = STARTING_SIMULATOR_ID;
         nextViewerID = STARTING_VIEWER_ID;
+        gui = new ComponentManagerGUI();
     }
 
     /**
@@ -88,16 +95,17 @@ public class ComponentManager implements ConnectionManagerListener {
      */
     public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup) {
         synchronized (agentLock) {
-            Queue<Pair<Entity, Collection<? extends Entity>>> q = uncontrolledEntities.get(entity.getType().getID());
+            Queue<ControlledEntityInfo> q = uncontrolledEntities.get(entity.getType().getID());
             if (q == null) {
-                q = new LinkedList<Pair<Entity, Collection<? extends Entity>>>();
+                q = new LinkedList<ControlledEntityInfo>();
                 uncontrolledEntities.put(entity.getType().getID(), q);
             }
             if (visibleOnStartup == null) {
                 visibleOnStartup = world.getAllEntities();
             }
-            q.add(new Pair<Entity, Collection<? extends Entity>>(entity, visibleOnStartup));
+            q.add(new ControlledEntityInfo(entity, visibleOnStartup));
         }
+        updateGUIUncontrolledAgents();
     }
 
     /**
@@ -109,7 +117,7 @@ public class ComponentManager implements ConnectionManagerListener {
             boolean done = false;
             do {
                 done = true;
-                for (Map.Entry<Integer, Queue<Pair<Entity, Collection<? extends Entity>>>> next : uncontrolledEntities.entrySet()) {
+                for (Map.Entry<Integer, Queue<ControlledEntityInfo>> next : uncontrolledEntities.entrySet()) {
                     if (!next.getValue().isEmpty()) {
                         done = false;
                         System.out.println("Waiting for " + next.getValue().size() + " entities of type " + next.getKey());
@@ -155,6 +163,16 @@ public class ComponentManager implements ConnectionManagerListener {
     @Override
     public void newConnection(Connection c) {
         c.addConnectionListener(new ComponentConnectionListener());
+    }
+
+    @Override
+    public JComponent getGUIComponent(Kernel k) {
+        return gui;
+    }
+
+    @Override
+    public String getGUIComponentName() {
+        return "Component manager";
     }
 
     private boolean agentAcknowledge(int requestID, EntityID agentID, Connection c) {
@@ -211,17 +229,59 @@ public class ComponentManager implements ConnectionManagerListener {
         }
     }
 
-    private Pair<Entity, Collection<? extends Entity>> findEntityToControl(List<Integer> types) {
+    private ControlledEntityInfo findEntityToControl(List<Integer> types) {
         for (int next : types) {
-            Queue<Pair<Entity, Collection<? extends Entity>>> q = uncontrolledEntities.get(next);
+            Queue<ControlledEntityInfo> q = uncontrolledEntities.get(next);
             if (q != null) {
-                Pair<Entity, Collection<? extends Entity>> p = q.poll();
-                if (p != null) {
-                    return p;
+                ControlledEntityInfo info = q.poll();
+                if (info != null) {
+                    return info;
                 }
             }
         }
         return null;
+    }
+
+    private void updateGUIUncontrolledAgents() {
+        List<String> data = new ArrayList<String>();
+        synchronized (agentLock) {
+            for (Queue<ControlledEntityInfo> q : uncontrolledEntities.values()) {
+                for (ControlledEntityInfo info : q) {
+                    data.add(info.entity.getType() + " " + info.entity.getID());
+                }
+            }
+        }
+        gui.updateUncontrolledAgents(data);
+    }
+
+    private void updateGUIAgentAck() {
+        List<String> data = new ArrayList<String>();
+        synchronized (agentLock) {
+            for (AgentAck ack : agentsToAcknowledge) {
+                data.add(ack.toString());
+            }
+        }
+        gui.updateAgentAck(data);
+    }
+
+    private void updateGUISimulatorAck() {
+        List<String> data = new ArrayList<String>();
+        synchronized (simLock) {
+            for (SimulatorAck ack : simsToAcknowledge) {
+                data.add(ack.toString());
+            }
+        }
+        gui.updateSimulatorAck(data);
+    }
+
+    private void updateGUIViewerAck() {
+        List<String> data = new ArrayList<String>();
+        synchronized (viewerLock) {
+            for (ViewerAck ack : viewersToAcknowledge) {
+                data.add(ack.toString());
+            }
+        }
+        gui.updateViewerAck(data);
     }
 
     private class ComponentConnectionListener implements ConnectionListener {
@@ -255,14 +315,14 @@ public class ComponentManager implements ConnectionManagerListener {
             // See if we can find an entity for this agent to control.
             Message reply = null;
             synchronized (agentLock) {
-                Pair<Entity, Collection<? extends Entity>> result = findEntityToControl(types);
+                ControlledEntityInfo result = findEntityToControl(types);
                 if (result == null) {
                     // Send an error
                     reply = new KAConnectError(requestID, "No more agents");
                 }
                 else {
-                    Entity entity = result.first();
-                    Collection<? extends Entity> visible = result.second();
+                    Entity entity = result.entity;
+                    Collection<? extends Entity> visible = result.visibleSet;
                     Agent agent = new Agent(entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
                     // Send an OK
@@ -277,6 +337,8 @@ public class ComponentManager implements ConnectionManagerListener {
                     e.printStackTrace();
                 }
             }
+            updateGUIUncontrolledAgents();
+            updateGUIAgentAck();
         }
 
         private void handleAKAcknowledge(AKAcknowledge msg, Connection connection) {
@@ -288,6 +350,7 @@ public class ComponentManager implements ConnectionManagerListener {
             else {
                 System.out.println("Unexpected acknowledge from agent " + agentID + " (request ID " + requestID + ")");
             }
+            updateGUIAgentAck();
         }
 
         private void handleSKConnect(SKConnect msg, Connection connection) {
@@ -311,6 +374,7 @@ public class ComponentManager implements ConnectionManagerListener {
             else {
                 System.out.println("Unexpected acknowledge from simulator " + simID + " (request ID " + requestID + ")");
             }
+            updateGUISimulatorAck();
         }
 
         private void handleVKConnect(VKConnect msg, Connection connection) {
@@ -334,6 +398,7 @@ public class ComponentManager implements ConnectionManagerListener {
             else {
                 System.out.println("Unexpected acknowledge from viewer " + viewerID + " (" + requestID + ")");
             }
+            updateGUIViewerAck();
         }
     }
 
@@ -349,6 +414,11 @@ public class ComponentManager implements ConnectionManagerListener {
             this.requestID = requestID;
             this.connection = c;
         }
+
+        @Override
+        public String toString() {
+            return agent.getControlledEntity().getType() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
+        }
     }
 
     private static class SimulatorAck {
@@ -363,6 +433,11 @@ public class ComponentManager implements ConnectionManagerListener {
             this.requestID = requestID;
             this.connection = c;
         }
+
+        @Override
+        public String toString() {
+            return sim + " " + simulatorID + "(" + connection + " request ID " + requestID + ")";
+        }
     }
 
     private static class ViewerAck {
@@ -376,6 +451,21 @@ public class ComponentManager implements ConnectionManagerListener {
             this.viewerID = viewerID;
             this.requestID = requestID;
             this.connection = c;
+        }
+
+        @Override
+        public String toString() {
+            return viewer + " " + viewerID + "(" + connection + " request ID " + requestID + ")";
+        }
+    }
+
+    private static class ControlledEntityInfo {
+        Entity entity;
+        Collection<? extends Entity> visibleSet;
+
+        public ControlledEntityInfo(Entity entity, Collection<? extends Entity> visibleSet) {
+            this.entity = entity;
+            this.visibleSet = visibleSet;
         }
     }
 }

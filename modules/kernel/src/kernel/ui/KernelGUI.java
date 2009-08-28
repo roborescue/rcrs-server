@@ -41,6 +41,7 @@ public class KernelGUI extends JPanel {
             add(control, BorderLayout.WEST);
             control.activate();
         }
+        addKernelGUIComponent(componentManager);
     }
 
     /**
