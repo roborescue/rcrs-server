@@ -35,7 +35,7 @@ public class Agent extends AbstractComponent {
 
     @Override
     public String toString() {
-        return "Agent: " + getConnection().toString() + ": " + entity.toString();
+        return entity.getType() + " " + entity.getID();
     }
 
     /**
