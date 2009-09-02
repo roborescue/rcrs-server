@@ -35,6 +35,10 @@ public class GeometryTools2D {
         public Vector minus(Point p) {
             return new Vector(this.x - p.x, this.y - p.y);
         }
+
+        public Point plus(Vector v) {
+            return new Point(this.x + v.getX(), this.y + v.getY());
+        }
     }
 
     public static class Vector {
@@ -78,6 +82,10 @@ public class GeometryTools2D {
         public Vector normalised() {
             return scale(1.0 / getLength());
         }
+
+        public Vector getNormal() {
+            return new Vector(-dy, dx);
+        }
     }
 
     public static class Line {
@@ -99,6 +107,15 @@ public class GeometryTools2D {
 
         public Vector getDirection() {
             return direction;
+        }
+
+        /**
+           Find out how far along this line the intersection point with another line is.
+           @param other The other line.
+           @return How far along this line (in terms of this line's direction vector) the intersection point is, or NaN if the lines are parallel.
+         */
+        public double getIntersection(Line other) {
+            return Double.NaN;
         }
     }
 }

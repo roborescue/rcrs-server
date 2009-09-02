@@ -19,6 +19,8 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.CyclicBarrier;
 
 public class ShapeDebugFrame extends JFrame {
@@ -39,6 +41,15 @@ public class ShapeDebugFrame extends JFrame {
         viewer.setBorder(BorderFactory.createTitledBorder("Shapes"));
         step.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    try {
+                        setVisible(false);
+                        barrier.await();
+                    }
+                    catch (Exception ex) {}
+                }
+            });
+        addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
                     try {
                         barrier.await();
                     }
