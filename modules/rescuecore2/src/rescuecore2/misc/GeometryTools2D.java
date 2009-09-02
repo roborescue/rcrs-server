@@ -97,6 +97,10 @@ public class GeometryTools2D {
             this.direction = direction;
         }
 
+        public Line(double x, double y, double dx, double dy) {
+            this(new Point(x, y), new Vector(dx, dy));
+        }
+
         public Point getPoint(double t) {
             return origin.translate(t * direction.getX(), t * direction.getY());
         }
