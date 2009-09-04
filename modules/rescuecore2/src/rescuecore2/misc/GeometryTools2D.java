@@ -4,6 +4,8 @@ package rescuecore2.misc;
    A bunch of useful 2D geometry tools: finding line intersections, closest points and so on.
  */
 public class GeometryTools2D {
+    private static final double THRESHOLD = 0.00000000001;
+
     /**
        Find the intersection point of two lines.
      */
@@ -38,6 +40,11 @@ public class GeometryTools2D {
 
         public Point plus(Vector v) {
             return new Point(this.x + v.getX(), this.y + v.getY());
+        }
+
+        @Override
+        public String toString() {
+            return x + " , " + y;
         }
     }
 
@@ -86,6 +93,11 @@ public class GeometryTools2D {
         public Vector getNormal() {
             return new Vector(-dy, dx);
         }
+
+        @Override
+        public String toString() {
+            return dx + " -> " + dy;
+        }
     }
 
     public static class Line {
@@ -113,13 +125,30 @@ public class GeometryTools2D {
             return direction;
         }
 
+        @Override
+        public String toString() {
+            return "Line from " + origin + " towards " + origin.plus(direction) + " (direction = " + direction + ")";
+        }
+
         /**
            Find out how far along this line the intersection point with another line is.
            @param other The other line.
            @return How far along this line (in terms of this line's direction vector) the intersection point is, or NaN if the lines are parallel.
          */
         public double getIntersection(Line other) {
-            return Double.NaN;
+            double bxax = direction.getX();
+            double dycy = other.direction.getY();
+            double byay = direction.getY();
+            double dxcx = other.direction.getX();
+            double cxax = other.origin.getX() - origin.getX();
+            double cyay = other.origin.getY() - origin.getY();
+            double d = (bxax * dycy) - (byay * dxcx);
+            double t = (cxax * dycy) - (cyay * dxcx);
+            if (d > -THRESHOLD && d < THRESHOLD) {
+                // d is close to zero: lines are parallel so no intersection
+                return Double.NaN;
+            }
+            return t / d;
         }
     }
 }
