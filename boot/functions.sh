@@ -68,7 +68,7 @@ function processArgs {
     while [[ ! -z "$1" ]]; do
         case "$1" in
             -m | --map)
-                $MAP="$2"
+                MAP="$2"
                 shift 2
                 ;;
             -l | --log)
