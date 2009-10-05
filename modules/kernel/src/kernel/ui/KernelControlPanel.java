@@ -272,7 +272,7 @@ public class KernelControlPanel extends JPanel {
     }
 
     private Component[] createComponents(String type) {
-        List<String> classNames = config.getArrayValue("kernel.ui." + type);
+        List<String> classNames = config.getArrayValue("kernel." + type);
         List<Component> instances = new ArrayList<Component>();
         for (String next : classNames) {
             System.out.println("Option found: '" + next + "'");
