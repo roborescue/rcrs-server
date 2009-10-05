@@ -397,6 +397,38 @@ public class Config {
     }
 
     /**
+       Append a value to a key. If there is no value for the key then this is equivalent to {@link #setValue(String, String)}. This method calls {@link #setValue(String, String, String)} with a space character as the separator.
+       @param key The key to append.
+       @param value The value to append.
+     */
+    public void appendValue(String key, String value) {
+        appendValue(key, value, " ");
+    }
+
+    /**
+       Append a value to a key. If there is no value for the key then this is equivalent to {@link #setValue(String, String)}.
+       @param key The key to append.
+       @param value The value to append.
+       @param separator A string to add before the new value to separate it from the previous value.
+     */
+    public void appendValue(String key, String value, String separator) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
+        }
+        clearCache(key);
+        if (data.containsKey(key)) {
+            String old = data.get(key);
+            data.put(key, old + separator + value);
+        }
+        else {
+            data.put(key, value);
+        }
+    }
+
+    /**
        Set the value of a key as an integer.
        @param key The key to set. Must not be null.
        @param value The new value.
