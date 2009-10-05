@@ -10,6 +10,12 @@ import rescuecore2.messages.MessageFactory;
    A factory for control messages.
  */
 public final class ControlMessageFactory implements MessageFactory {
+    /** Singleton instance. */
+    public static final ControlMessageFactory INSTANCE = new ControlMessageFactory();
+
+    private ControlMessageFactory() {
+    }
+
     @Override
     public int[] getKnownMessageTypeIDs() {
         return new int[] {ControlMessageConstants.KG_CONNECT,

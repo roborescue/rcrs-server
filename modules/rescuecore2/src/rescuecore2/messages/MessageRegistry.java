@@ -19,7 +19,7 @@ public final class MessageRegistry {
     static {
         factories = new HashMap<Integer, MessageFactory>();
         // Automatically register control messages
-        register(new ControlMessageFactory());
+        register(ControlMessageFactory.INSTANCE);
     }
 
     /**
