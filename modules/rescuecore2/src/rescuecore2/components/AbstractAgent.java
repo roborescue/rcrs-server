@@ -6,6 +6,7 @@ import rescuecore2.messages.Message;
 import rescuecore2.messages.control.KASense;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.config.Config;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.Collection;
    @param <T> The subclass of Entity that this agent understands.
  */
 public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<T> implements Agent {
+    protected Config config;
+
     /**
        The ID of the entity controlled by this agent.
      */
@@ -25,14 +28,16 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
        Create a new AbstractAgent.
      */
     protected AbstractAgent() {
+        config = new Config();
     }
 
     @Override
-    public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities) {
+    public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities, Config config) {
         super.postConnect(c, entities);
         this.entityID = agentID;
-        System.out.println("postConnect: " + c + ", id = " + agentID + ", " + entities.size() + " entities, me = " + me());
+        //        System.out.println("postConnect: " + c + ", id = " + agentID + ", " + entities.size() + " entities, me = " + me());
         c.addConnectionListener(new AgentListener());
+        this.config.merge(config);
         postConnect();
     }
 

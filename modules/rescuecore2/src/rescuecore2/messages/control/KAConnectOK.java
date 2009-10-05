@@ -7,8 +7,10 @@ import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityIDComponent;
 import rescuecore2.messages.EntityListComponent;
+import rescuecore2.messages.ConfigComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.config.Config;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class KAConnectOK extends AbstractMessage implements Control {
     private IntComponent requestID;
     private EntityIDComponent agentID;
     private EntityListComponent world;
+    private ConfigComponent config;
 
     /**
        A KAConnectOK message that populates its data from a stream.
@@ -36,12 +39,14 @@ public class KAConnectOK extends AbstractMessage implements Control {
        @param requestID The request ID.
        @param agentID The ID of the Entity that the agent will be controlling.
        @param allEntities All Entities that the agent knows about, including the controlled object.
+       @param config The Config that the agent knows about.
      */
-    public KAConnectOK(int requestID, EntityID agentID, Collection<? extends Entity> allEntities) {
+    public KAConnectOK(int requestID, EntityID agentID, Collection<? extends Entity> allEntities, Config config) {
         this();
         this.requestID.setValue(requestID);
         this.agentID.setValue(agentID);
         this.world.setEntities(allEntities);
+        this.config.setConfig(config);
     }
 
     private KAConnectOK() {
@@ -49,9 +54,11 @@ public class KAConnectOK extends AbstractMessage implements Control {
         requestID = new IntComponent("Request ID");
         agentID = new EntityIDComponent("Agent ID");
         world = new EntityListComponent("Entities");
+        config = new ConfigComponent("Agent config");
         addMessageComponent(requestID);
         addMessageComponent(agentID);
         addMessageComponent(world);
+        addMessageComponent(config);
     }
 
     /**
@@ -76,5 +83,13 @@ public class KAConnectOK extends AbstractMessage implements Control {
      */
     public Collection<Entity> getEntities() {
         return world.getEntities();
+    }
+
+    /**
+       Get the Config.
+       @return The agent config.
+    */
+    public Config getConfig() {
+        return config.getConfig();
     }
 }

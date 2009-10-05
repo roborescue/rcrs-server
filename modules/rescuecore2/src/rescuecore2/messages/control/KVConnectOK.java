@@ -6,7 +6,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
+import rescuecore2.messages.ConfigComponent;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.config.Config;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -18,6 +20,7 @@ public class KVConnectOK extends AbstractMessage implements Control {
     private IntComponent viewerID;
     private IntComponent requestID;
     private EntityListComponent world;
+    private ConfigComponent config;
 
     /**
        A KVConnectOK message that populates its data from a stream.
@@ -34,12 +37,14 @@ public class KVConnectOK extends AbstractMessage implements Control {
        @param viewerID The viewer ID.
        @param requestID The request ID.
        @param allEntities All Entities in the world.
+       @param config The Config that the agent knows about.
      */
-    public KVConnectOK(int viewerID, int requestID, Collection<? extends Entity> allEntities) {
+    public KVConnectOK(int viewerID, int requestID, Collection<? extends Entity> allEntities, Config config) {
         this();
         this.viewerID.setValue(viewerID);
         this.requestID.setValue(requestID);
         this.world.setEntities(allEntities);
+        this.config.setConfig(config);
     }
 
     private KVConnectOK() {
@@ -47,9 +52,11 @@ public class KVConnectOK extends AbstractMessage implements Control {
         viewerID = new IntComponent("Viewer ID");
         requestID = new IntComponent("Request ID");
         world = new EntityListComponent("Entities");
+        config = new ConfigComponent("Agent config");
         addMessageComponent(requestID);
         addMessageComponent(viewerID);
         addMessageComponent(world);
+        addMessageComponent(config);
     }
 
     /**
@@ -74,5 +81,13 @@ public class KVConnectOK extends AbstractMessage implements Control {
      */
     public Collection<Entity> getEntities() {
         return world.getEntities();
+    }
+
+    /**
+       Get the Config.
+       @return The viewer config.
+    */
+    public Config getConfig() {
+        return config.getConfig();
     }
 }

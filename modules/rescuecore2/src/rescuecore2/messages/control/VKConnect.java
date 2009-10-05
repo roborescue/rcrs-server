@@ -3,6 +3,7 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.StringComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.io.IOException;
 public class VKConnect extends AbstractMessage implements Control {
     private IntComponent requestID;
     private IntComponent version;
+    private StringComponent viewerName;
 
     /**
        A VKConnect message that populates its data from a stream.
@@ -28,19 +30,23 @@ public class VKConnect extends AbstractMessage implements Control {
        A VKConnect with a given version and request ID.
        @param version The version number.
        @param requestID The request ID.
+       @param name The name of the simulator.
     */
-    public VKConnect(int requestID, int version) {
+    public VKConnect(int requestID, int version, String name) {
         this();
         this.requestID.setValue(requestID);
         this.version.setValue(version);
+        this.viewerName.setValue(name);
     }
 
     private VKConnect() {
         super("VK_CONNECT", ControlMessageConstants.VK_CONNECT);
         requestID = new IntComponent("Request ID");
         version = new IntComponent("Version");
+        viewerName = new StringComponent("Name");
         addMessageComponent(requestID);
         addMessageComponent(version);
+        addMessageComponent(viewerName);
     }
 
     /**
@@ -57,5 +63,13 @@ public class VKConnect extends AbstractMessage implements Control {
      */
     public int getRequestID() {
         return requestID.getValue();
+    }
+
+    /**
+       Get the viewer name.
+       @return The name of the viewer.
+    */
+    public String getViewerName() {
+        return viewerName.getValue();
     }
 }

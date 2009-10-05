@@ -3,6 +3,7 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.StringComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.io.IOException;
 public class SKConnect extends AbstractMessage implements Control {
     private IntComponent requestID;
     private IntComponent version;
+    private StringComponent simulatorName;
 
     /**
        An SKConnect message that populates its data from a stream.
@@ -26,21 +28,25 @@ public class SKConnect extends AbstractMessage implements Control {
 
     /**
        An SKConnect with a given version and request ID.
-       @param version The version number.
        @param requestID The request ID.
+       @param version The version number.
+       @param name The name of the simulator.
     */
-    public SKConnect(int requestID, int version) {
+    public SKConnect(int requestID, int version, String name) {
         this();
         this.requestID.setValue(requestID);
         this.version.setValue(version);
+        this.simulatorName.setValue(name);
     }
 
     private SKConnect() {
         super("SK_CONNECT", ControlMessageConstants.SK_CONNECT);
         requestID = new IntComponent("Request ID");
         version = new IntComponent("Version");
+        simulatorName = new StringComponent("Name");
         addMessageComponent(requestID);
         addMessageComponent(version);
+        addMessageComponent(simulatorName);
     }
 
     /**
@@ -57,5 +63,13 @@ public class SKConnect extends AbstractMessage implements Control {
      */
     public int getRequestID() {
         return requestID.getValue();
+    }
+
+    /**
+       Get the simulator name.
+       @return The name of the simulator.
+    */
+    public String getSimulatorName() {
+        return simulatorName.getValue();
     }
 }

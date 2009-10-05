@@ -6,7 +6,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.EntityListComponent;
+import rescuecore2.messages.ConfigComponent;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.config.Config;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -18,6 +20,7 @@ public class KSConnectOK extends AbstractMessage implements Control {
     private IntComponent simulatorID;
     private IntComponent requestID;
     private EntityListComponent world;
+    private ConfigComponent config;
 
     /**
        A KSConnectOK message that populates its data from a stream.
@@ -34,12 +37,14 @@ public class KSConnectOK extends AbstractMessage implements Control {
        @param simulatorID The ID of the simulator that has successfully connected.
        @param requestID The request ID.
        @param allEntities All Entities in the world.
+       @param config The Config that the simulator knows about.
     */
-    public KSConnectOK(int simulatorID, int requestID, Collection<? extends Entity> allEntities) {
+    public KSConnectOK(int simulatorID, int requestID, Collection<? extends Entity> allEntities, Config config) {
         this();
         this.simulatorID.setValue(simulatorID);
         this.requestID.setValue(requestID);
         this.world.setEntities(allEntities);
+        this.config.setConfig(config);
     }
 
     private KSConnectOK() {
@@ -47,9 +52,11 @@ public class KSConnectOK extends AbstractMessage implements Control {
         simulatorID = new IntComponent("Simulator ID");
         requestID = new IntComponent("Request ID");
         world = new EntityListComponent("Entities");
+        config = new ConfigComponent("Simulator config");
         addMessageComponent(requestID);
         addMessageComponent(simulatorID);
         addMessageComponent(world);
+        addMessageComponent(config);
     }
 
     /**
@@ -74,5 +81,13 @@ public class KSConnectOK extends AbstractMessage implements Control {
     */
     public Collection<Entity> getEntities() {
         return world.getEntities();
+    }
+
+    /**
+       Get the Config.
+       @return The simulator config.
+    */
+    public Config getConfig() {
+        return config.getConfig();
     }
 }

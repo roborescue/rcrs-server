@@ -77,15 +77,15 @@ public class ComponentLauncher {
     }
 
     private Message generateAgentConnect(Agent agent, int requestID) {
-        return new AKConnect(requestID, 1, agent.getRequestedEntityIDs());
+        return new AKConnect(requestID, 1, agent.getClass().getName(), agent.getRequestedEntityIDs());
     }
 
     private Message generateSimulatorConnect(Simulator simulator, int requestID) {
-        return new SKConnect(requestID, 1);
+        return new SKConnect(requestID, 1, simulator.getName());
     }
 
     private Message generateViewerConnect(Viewer viewer, int requestID) {
-        return new VKConnect(requestID, 1);
+        return new VKConnect(requestID, 1, viewer.getName());
     }
 
     private static class AgentConnectionListener implements ConnectionListener {
@@ -112,7 +112,7 @@ public class ComponentLauncher {
         private void handleConnectOK(Connection c, KAConnectOK ok) {
             if (ok.getRequestID() == requestID) {
                 c.removeConnectionListener(this);
-                agent.postConnect(c, ok.getAgentID(), ok.getEntities());
+                agent.postConnect(c, ok.getAgentID(), ok.getEntities(), ok.getConfig());
                 try {
                     c.sendMessage(new AKAcknowledge(requestID, ok.getAgentID()));
                     q.add(SUCCESS_MESSAGE);

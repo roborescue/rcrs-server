@@ -4,6 +4,7 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.IntComponent;
 import rescuecore2.messages.IntListComponent;
+import rescuecore2.messages.StringComponent;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 public class AKConnect extends AbstractMessage implements Control {
     private IntComponent requestID;
     private IntComponent version;
+    private StringComponent agentName;
     private IntListComponent requestedEntityTypes;
 
     /**
@@ -30,14 +32,16 @@ public class AKConnect extends AbstractMessage implements Control {
 
     /**
        An AKConnect with particular version, requestID and requested entity types.
-       @param version The version number.
        @param requestID The request ID.
+       @param version The version number.
+       @param agentName The name of the agent.
        @param requestedEntityTypes The set of requested entity types.
      */
-    public AKConnect(int requestID, int version, int... requestedEntityTypes) {
+    public AKConnect(int requestID, int version, String agentName, int... requestedEntityTypes) {
         this();
         this.requestID.setValue(requestID);
         this.version.setValue(version);
+        this.agentName.setValue(agentName);
         this.requestedEntityTypes.setValues(requestedEntityTypes);
     }
 
@@ -45,9 +49,11 @@ public class AKConnect extends AbstractMessage implements Control {
         super("AK_CONNECT", ControlMessageConstants.AK_CONNECT);
         requestID = new IntComponent("Request ID");
         version = new IntComponent("Version");
+        agentName = new StringComponent("Name");
         requestedEntityTypes = new IntListComponent("Requested entity types");
         addMessageComponent(requestID);
         addMessageComponent(version);
+        addMessageComponent(agentName);
         addMessageComponent(requestedEntityTypes);
     }
 
@@ -65,6 +71,14 @@ public class AKConnect extends AbstractMessage implements Control {
      */
     public int getRequestID() {
         return requestID.getValue();
+    }
+
+    /**
+       Get the name of the agent making this request.
+       @return The agent name.
+    */
+    public String getAgentName() {
+        return agentName.getValue();
     }
 
     /**
