@@ -19,9 +19,13 @@ import rescuecore2.standard.messages.AKExtinguish;
    A sample fire brigade agent.
  */
 public class SampleFireBrigade extends AbstractSampleAgent {
-    private static final int MAX_WATER = 15000;
-    private static final int EXTINGUISH_DISTANCE = 30000;
-    private static final int EXTINGUISH_POWER = 1000;
+    private static final String MAX_WATER_KEY = "fire.tank.maximum";
+    private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
+    private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
+
+    private int maxWater;
+    private int maxDistance;
+    private int maxPower;
 
     @Override
     public String toString() {
@@ -32,13 +36,17 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     protected void postConnect() {
         super.postConnect();
         world.indexClass(StandardEntityType.BUILDING, StandardEntityType.REFUGE);
+        maxWater = config.getIntValue(MAX_WATER_KEY);
+        maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
+        maxPower = config.getIntValue(MAX_POWER_KEY);
+        System.out.println("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
     }
 
     @Override
     protected void think(int time, List<EntityID> changed) {
         FireBrigade me = (FireBrigade)me();
         // Are we currently filling with water?
-        if (me.getWater() != MAX_WATER && location() instanceof Refuge) {
+        if (me.getWater() < maxWater && location() instanceof Refuge) {
             System.out.println(me() + " filling with water at " + location());
             return;
         }
@@ -61,8 +69,8 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         Collection<Building> all = getBurningBuildings();
         // Can we extinguish any right now?
         for (Building next : all) {
-            if (world.getDistance(me, next) <= EXTINGUISH_DISTANCE) {
-                AKExtinguish ex = new AKExtinguish(getID(), time, next.getID(), EXTINGUISH_POWER);
+            if (world.getDistance(me, next) <= maxDistance) {
+                AKExtinguish ex = new AKExtinguish(getID(), time, next.getID(), maxPower);
                 System.out.println(me() + " extinguishing " + next + ": " + ex);
                 send(ex);
                 return;
@@ -118,8 +126,8 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     private List<EntityID> planPathToFire(Building target) {
-        // Try to get to anything within EXTINGUISH_DISTANCE of the target
-        Collection<StandardEntity> targets = world.getObjectsInRange(target, EXTINGUISH_DISTANCE);
+        // Try to get to anything within maxDistance of the target
+        Collection<StandardEntity> targets = world.getObjectsInRange(target, maxDistance);
         if (targets.isEmpty()) {
             return null;
         }
