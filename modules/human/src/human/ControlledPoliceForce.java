@@ -102,7 +102,10 @@ public class ControlledPoliceForce extends AbstractAgent {
 
     @Override
     public String toString() {
-        return "Police force " + getID() + (target == null ? " (no target)" : " target: road " + target.getID() + " block = " + (target.isBlockDefined() ? " unknown" : String.valueOf(target.getBlock())));
+        if (me() == null) {
+            return "Human controlled police force";
+        }
+        return "Human controlled police force " + getID() + (target == null ? " (no target)" : " target: road " + target.getID() + " block = " + (target.isBlockDefined() ? " unknown" : String.valueOf(target.getBlock())));
     }
 }
 

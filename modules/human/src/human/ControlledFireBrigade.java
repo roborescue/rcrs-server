@@ -118,7 +118,10 @@ public class ControlledFireBrigade extends AbstractAgent {
 
     @Override
     public String toString() {
-        return "Fire brigade " + me().getID() + " (" + ((FireBrigade)me()).getWater() + " water)" + (target == null ? " (no target)" : " target: building " + target.getID());
+        if (me() == null) {
+            return "Human controlled fire brigade";
+        }
+        return "Human controlled fire brigade " + me().getID() + " (" + ((FireBrigade)me()).getWater() + " water)" + (target == null ? " (no target)" : " target: building " + target.getID());
     }
 }
 

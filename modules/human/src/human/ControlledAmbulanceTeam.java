@@ -127,8 +127,11 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
 
     @Override
     public String toString() {
+        if (me() == null) {
+            return "Human controlled ambulance team";
+        }
         StringBuilder result = new StringBuilder();
-        result.append("Ambulance team ");
+        result.append("Human controlled ambulance team ");
         result.append(getID());
         result.append(" ");
         if (target == null) {
