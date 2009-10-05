@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import rescuecore2.misc.Pair;
 
@@ -51,6 +52,15 @@ public class Config {
     public Config(File file) throws ConfigException {
         this();
         read(file);
+    }
+
+    /**
+       Copy constructor. The new Config will contain all keys and values that are currently in this config.
+       @param other The Config to copy.
+    */
+    public Config(Config other) {
+        this();
+        this.data.putAll(other.data);
     }
 
     /**
@@ -184,11 +194,29 @@ public class Config {
     }
 
     /**
+       Merge all keys and values from another Config into this one.
+       @param other The Config to merge from.
+     */
+    public void merge(Config other) {
+        clearCache();
+        this.data.putAll(other.data);
+    }
+
+    /**
        Get all keys in this config.
        @return An immutable view of all keys.
     */
     public Set<String> getAllKeys() {
         return Collections.unmodifiableSet(data.keySet());
+    }
+
+    /**
+       Find out if a key is defined.
+       @param key The key to test.
+       @return True if the key has a non-null value.
+    */
+    public boolean isDefined(String key) {
+        return data.containsKey(key);
     }
 
     /**
@@ -487,6 +515,21 @@ public class Config {
     */
     public void removeAllKeys() {
         data.clear();
+        intData.clear();
+        floatData.clear();
+        booleanData.clear();
+        arrayData.clear();
+    }
+
+    /**
+       Remove all except a set of keys.
+       @param exceptions The keys to keep.
+    */
+    public void removeExcept(Collection<String> exceptions) {
+        data.keySet().retainAll(exceptions);
+    }
+
+    private void clearCache() {
         intData.clear();
         floatData.clear();
         booleanData.clear();
