@@ -122,7 +122,7 @@ public final class StartKernel {
     private static final String KERNEL_STARTUP_TIME_KEY = "kernel.startup.connect-time";
 
     private static final String COMMAND_FILTERS_KEY = "kernel.commandfilters";
-    private static final String AGENT_PROCESSOR_KEY = "kernel.agents.processor";
+    private static final String AGENT_REGISTRAR_KEY = "kernel.agents.registrar";
     private static final String GUI_COMPONENTS_KEY = "kernel.ui.components";
 
 
@@ -427,11 +427,11 @@ public final class StartKernel {
     }
 
     private static void processInitialAgents(Config config, ComponentManager c, WorldModel<? extends Entity> model) throws KernelException {
-        AgentProcessor ap = instantiate(config.getValue(AGENT_PROCESSOR_KEY), AgentProcessor.class);
-        if (ap == null) {
-            throw new KernelException("Couldn't instantiate agent processor");
+        AgentRegistrar ar = instantiate(config.getValue(AGENT_REGISTRAR_KEY), AgentRegistrar.class);
+        if (ar == null) {
+            throw new KernelException("Couldn't instantiate agent registrar");
         }
-        ap.process(c, model);
+        ar.registerAgents(model, config, c);
     }
 
     private static <T> List<T> createChoices(Config config, String key, Class<T> expectedClass) {
@@ -612,12 +612,15 @@ public final class StartKernel {
             }
         }
 
+        @SuppressWarnings("unchecked")
         public void processJarEntry(JarEntry e, Config config) {
             Matcher m = regex.matcher(e.getName());
             if (m.matches()) {
                 try {
                     String className = m.group(1).replace("/", ".");
-                    System.out.println("Found likely class name for " + configKey + ": " + className);
+                    if (config.isDefined(configKey) && config.getArrayValue(configKey).contains(className)) {
+                        return;
+                    }
                     Class testClass = Class.forName(className);
                     if (clazz.isAssignableFrom(testClass) && !testClass.isInterface()) {
                         System.out.println("Adding " + className + " to " + configKey);

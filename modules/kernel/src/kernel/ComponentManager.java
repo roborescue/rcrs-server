@@ -92,8 +92,9 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
        Register an agent-controlled entity.
        @param entity The entity that is agent-controlled.
        @param visibleOnStartup The set of entities that the agent should be sent on startup. If this is null then all entities will be sent.
+       @param config A view of the system configuration that should be shared with the agent.
      */
-    public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup) {
+    public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup, Config config) {
         synchronized (agentLock) {
             Queue<ControlledEntityInfo> q = uncontrolledEntities.get(entity.getType().getID());
             if (q == null) {
@@ -103,7 +104,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
             if (visibleOnStartup == null) {
                 visibleOnStartup = world.getAllEntities();
             }
-            q.add(new ControlledEntityInfo(entity, visibleOnStartup));
+            q.add(new ControlledEntityInfo(entity, visibleOnStartup, config));
         }
         updateGUIUncontrolledAgents();
     }
@@ -322,11 +323,10 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
                 }
                 else {
                     Entity entity = result.entity;
-                    Collection<? extends Entity> visible = result.visibleSet;
                     Agent agent = new Agent(entity, connection);
-                    agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
+                    agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connect.getAgentName(), connection));
                     // Send an OK
-                    reply = new KAConnectOK(requestID, entity.getID(), visible);
+                    reply = new KAConnectOK(requestID, entity.getID(), result.visibleSet, result.config);
                 }
             }
             if (reply != null) {
@@ -406,18 +406,20 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         Agent agent;
         EntityID agentID;
         int requestID;
+        String name;
         Connection connection;
 
-        public AgentAck(Agent agent, EntityID agentID, int requestID, Connection c) {
+        public AgentAck(Agent agent, EntityID agentID, int requestID, String name, Connection c) {
             this.agent = agent;
             this.agentID = agentID;
             this.requestID = requestID;
+            this.name = name;
             this.connection = c;
         }
 
         @Override
         public String toString() {
-            return agent.getControlledEntity().getType() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
+            return name + ": " + agent.getControlledEntity().getType() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
         }
     }
 
@@ -462,10 +464,12 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     private static class ControlledEntityInfo {
         Entity entity;
         Collection<? extends Entity> visibleSet;
+        Config config;
 
-        public ControlledEntityInfo(Entity entity, Collection<? extends Entity> visibleSet) {
+        public ControlledEntityInfo(Entity entity, Collection<? extends Entity> visibleSet, Config config) {
             this.entity = entity;
             this.visibleSet = visibleSet;
+            this.config = config;
         }
     }
 }

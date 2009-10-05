@@ -3,9 +3,10 @@ package kernel.standard;
 import java.util.Set;
 import java.util.HashSet;
 
-import kernel.AgentProcessor;
+import kernel.AgentRegistrar;
 import kernel.ComponentManager;
 
+import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
@@ -16,17 +17,31 @@ import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.PoliceOffice;
+import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.StandardPropertyType;
 
 /**
-   Class that manages standard agents.
+   Class that registers standard agents.
  */
-public class StandardAgentProcessor implements AgentProcessor {
+public class StandardAgentRegistrar implements AgentRegistrar {
+    private static final Set<String> VISIBLE_CONFIG_OPTIONS = new HashSet<String>();
+
+    static {
+        VISIBLE_CONFIG_OPTIONS.add("kernel.agents.think-time");
+        VISIBLE_CONFIG_OPTIONS.add("kernel.startup.connect-time");
+        VISIBLE_CONFIG_OPTIONS.add("fire.tank.maximum");
+        VISIBLE_CONFIG_OPTIONS.add("fire.tank.refill-rate");
+        VISIBLE_CONFIG_OPTIONS.add("fire.extinguish.max-sum");
+        VISIBLE_CONFIG_OPTIONS.add("fire.extinguish.max-distance");
+    }
+
     @Override
-    public void process(ComponentManager manager, WorldModel<? extends Entity> world) {
+    public void registerAgents(WorldModel<? extends Entity> world, Config config, ComponentManager manager) {
+        Config agentConfig = new Config(config);
+        agentConfig.removeExcept(VISIBLE_CONFIG_OPTIONS);
         Set<Entity> initialEntities = new HashSet<Entity>();
         for (Entity e : world) {
             maybeAddInitialEntity(e, initialEntities);
@@ -37,10 +52,11 @@ public class StandardAgentProcessor implements AgentProcessor {
                     || e instanceof AmbulanceTeam
                     || e instanceof AmbulanceCentre
                     || e instanceof PoliceForce
-                    || e instanceof PoliceOffice) {
+                    || e instanceof PoliceOffice
+                    || e instanceof Civilian) {
                 Set<Entity> s = new HashSet<Entity>(initialEntities);
                 s.add(e);
-                manager.registerAgentControlledEntity(e, s);
+                manager.registerAgentControlledEntity(e, s, agentConfig);
             }
         }
     }
