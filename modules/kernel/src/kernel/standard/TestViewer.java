@@ -51,6 +51,6 @@ public class TestViewer extends AbstractViewer<StandardEntity> {
 
     @Override
     public String toString() {
-        return "Sample viewer";
+        return "Test viewer";
     }
 }
