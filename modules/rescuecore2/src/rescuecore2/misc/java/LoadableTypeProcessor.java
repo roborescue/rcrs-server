@@ -18,6 +18,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+/**
+   A utility class for processing loadable types from jar files.
+ */
 public class LoadableTypeProcessor {
     private List<LoadableTypeCallback> callbacks;
     private boolean deep;
@@ -50,10 +53,10 @@ public class LoadableTypeProcessor {
 
     /**
        Set whether to do a "deep" inspection or just inspect the manifest. If true then all entries will be tested to see if they match the target regex and class.
-       @param deep Whether to do a deep inspection or not.
+       @param newDeep Whether to do a deep inspection or not.
     */
-    public void setDeepInspection(boolean deep) {
-        this.deep = deep;
+    public void setDeepInspection(boolean newDeep) {
+        this.deep = newDeep;
     }
 
     /**
@@ -68,7 +71,7 @@ public class LoadableTypeProcessor {
 
     /**
        Process all jars in a directory.
-       @param dirName The directory.
+       @param baseDir The directory.
        @param types The LoadableTypes to process.
        @throws IOException If there is a problem reading the jar files.
      */
@@ -135,8 +138,8 @@ public class LoadableTypeProcessor {
         }
 
         @Override
-        public void classFound(LoadableType type, String className) {
-            if (this.type == type) {
+        public void classFound(LoadableType otherType, String className) {
+            if (this.type == otherType) {
                 if (config.isDefined(key)) {
                     List<String> existing = config.getArrayValue(key);
                     if (!existing.contains(className)) {
@@ -163,7 +166,7 @@ public class LoadableTypeProcessor {
                     System.out.println("Registered message factory: " + className);
                 }
             }
-        }        
+        }
     }
 
     /**
@@ -179,6 +182,6 @@ public class LoadableTypeProcessor {
                     System.out.println("Registered entity factory: " + className);
                 }
             }
-        }        
+        }
     }
 }

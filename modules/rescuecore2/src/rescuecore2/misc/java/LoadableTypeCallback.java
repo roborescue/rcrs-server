@@ -9,5 +9,5 @@ public interface LoadableTypeCallback {
        @param type The LoadableType that was found.
        @param className The class name.
     */
-    public void classFound(LoadableType type, String className);
+    void classFound(LoadableType type, String className);
 }

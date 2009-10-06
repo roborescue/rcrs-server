@@ -15,4 +15,5 @@ public final class Constants {
     /** Default location for looking up jar files. */
     public static final String DEFAULT_JAR_DIR = "../jars";
 
+    private Constants() {}
 }

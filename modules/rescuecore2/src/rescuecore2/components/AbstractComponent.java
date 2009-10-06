@@ -41,6 +41,7 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
        Notification that connection to the kernel succeeded.
        @param c The kernel connection.
        @param entities The entities that the kernel sent on startup.
+       @param kernelConfig The config that the kernel sent on startup.
      */
     protected final void postConnect(Connection c, Collection<Entity> entities, Config kernelConfig) {
         connection = c;
