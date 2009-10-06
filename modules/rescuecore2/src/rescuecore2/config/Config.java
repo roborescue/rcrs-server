@@ -425,7 +425,7 @@ public class Config {
     }
 
     /**
-       Append a value to a key. If there is no value for the key then this is equivalent to {@link #setValue(String, String)}. This method calls {@link #setValue(String, String, String)} with a space character as the separator.
+       Append a value to a key. If there is no value for the key then this is equivalent to {@link #setValue(String, String)}. This method calls {@link #appendValue(String, String, String)} with a space character as the separator.
        @param key The key to append.
        @param value The value to append.
      */
