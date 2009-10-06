@@ -40,8 +40,7 @@ import javax.swing.JComponent;
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
 public class ComponentManager implements ConnectionManagerListener, KernelGUIComponent {
-    private static final int STARTING_SIMULATOR_ID = 1;
-    private static final int STARTING_VIEWER_ID = 100000;
+    private static final int STARTING_ID = 1;
 
     private static final int WAIT_TIME = 10000;
 
@@ -56,11 +55,10 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
 
     // Connected simulators
     private Set<SimulatorAck> simsToAcknowledge;
-    private int nextSimulatorID;
+    private int nextID;
 
     // Connected viewers
     private Set<ViewerAck> viewersToAcknowledge;
-    private int nextViewerID;
 
     // World information
     private WorldModel<? extends Entity> world;
@@ -71,6 +69,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     private final Object agentLock = new Object();
     private final Object simLock = new Object();
     private final Object viewerLock = new Object();
+    private final Object idLock = new Object();
 
     /**
        Create a ComponentManager.
@@ -86,8 +85,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
-        nextSimulatorID = STARTING_SIMULATOR_ID;
-        nextViewerID = STARTING_VIEWER_ID;
+        nextID = STARTING_ID;
         gui = new ComponentManagerGUI();
     }
 
@@ -222,14 +220,14 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     }
 
     private int getNextSimulatorID() {
-        synchronized (simLock) {
-            return nextSimulatorID++;
+        synchronized (idLock) {
+            return nextID++;
         }
     }
 
     private int getNextViewerID() {
-        synchronized (viewerLock) {
-            return nextViewerID++;
+        synchronized (idLock) {
+            return nextID++;
         }
     }
 
