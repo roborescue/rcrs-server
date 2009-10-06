@@ -65,6 +65,8 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     // World information
     private WorldModel<? extends Entity> world;
 
+    private Config config;
+
     /** Lock objects. */
     private final Object agentLock = new Object();
     private final Object simLock = new Object();
@@ -79,6 +81,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     public ComponentManager(Kernel kernel, WorldModel<? extends Entity> world, Config config) {
         this.kernel = kernel;
         this.world = world;
+        this.config = config;
         uncontrolledEntities = new HashMap<Integer, Queue<ControlledEntityInfo>>();
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
@@ -92,9 +95,9 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
        Register an agent-controlled entity.
        @param entity The entity that is agent-controlled.
        @param visibleOnStartup The set of entities that the agent should be sent on startup. If this is null then all entities will be sent.
-       @param config A view of the system configuration that should be shared with the agent.
+       @param agentConfig A view of the system configuration that should be shared with the agent.
      */
-    public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup, Config config) {
+    public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup, Config agentConfig) {
         synchronized (agentLock) {
             Queue<ControlledEntityInfo> q = uncontrolledEntities.get(entity.getType().getID());
             if (q == null) {
@@ -104,7 +107,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
             if (visibleOnStartup == null) {
                 visibleOnStartup = world.getAllEntities();
             }
-            q.add(new ControlledEntityInfo(entity, visibleOnStartup, config));
+            q.add(new ControlledEntityInfo(entity, visibleOnStartup, agentConfig));
         }
         updateGUIUncontrolledAgents();
     }
@@ -362,7 +365,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
             // Send an OK
-            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, world.getAllEntities())));
+            sim.send(Collections.singleton(new KSConnectOK(simID, requestID, world.getAllEntities(), config)));
         }
 
         private void handleSKAcknowledge(SKAcknowledge msg, Connection connection) {
@@ -386,7 +389,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
             // Send an OK
-            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, world.getAllEntities())));
+            viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, world.getAllEntities(), config)));
         }
 
         private void handleVKAcknowledge(VKAcknowledge msg, Connection connection) {
