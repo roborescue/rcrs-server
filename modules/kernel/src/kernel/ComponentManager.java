@@ -409,7 +409,6 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         AgentProxy agent;
         EntityID agentID;
         int requestID;
-        String name;
         Connection connection;
 
         public AgentAck(AgentProxy agent, EntityID agentID, int requestID, Connection c) {
