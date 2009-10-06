@@ -1,6 +1,6 @@
 package kernel.ui;
 
-import static rescuecore2.misc.JavaTools.instantiate;
+import static rescuecore2.misc.java.JavaTools.instantiate;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
