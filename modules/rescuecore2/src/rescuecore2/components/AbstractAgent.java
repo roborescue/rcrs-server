@@ -17,6 +17,9 @@ import java.util.Collection;
    @param <T> The subclass of Entity that this agent understands.
  */
 public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<T> implements Agent {
+    /**
+       The configuration. This will be automatically updated by the postConnect method to include config information from the kernel.
+     */
     protected Config config;
 
     /**
@@ -32,12 +35,12 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     }
 
     @Override
-    public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities, Config config) {
+    public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities, Config kernelConfig) {
         super.postConnect(c, entities);
         this.entityID = agentID;
         //        System.out.println("postConnect: " + c + ", id = " + agentID + ", " + entities.size() + " entities, me = " + me());
         c.addConnectionListener(new AgentListener());
-        this.config.merge(config);
+        config.merge(kernelConfig);
         postConnect();
     }
 
