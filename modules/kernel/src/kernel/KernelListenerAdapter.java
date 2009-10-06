@@ -8,20 +8,20 @@ public class KernelListenerAdapter implements KernelListener {
     public void timestepCompleted(int time) {}
 
     @Override
-    public void agentAdded(Agent agent) {}
+    public void agentAdded(AgentProxy agent) {}
 
     @Override
-    public void agentRemoved(Agent agent) {}
+    public void agentRemoved(AgentProxy agent) {}
 
     @Override
-    public void simulatorAdded(Simulator simulator) {}
+    public void simulatorAdded(SimulatorProxy simulator) {}
 
     @Override
-    public void simulatorRemoved(Simulator simulator) {}
+    public void simulatorRemoved(SimulatorProxy simulator) {}
 
     @Override
-    public void viewerAdded(Viewer viewer) {}
+    public void viewerAdded(ViewerProxy viewer) {}
 
     @Override
-    public void viewerRemoved(Viewer viewer) {}
+    public void viewerRemoved(ViewerProxy viewer) {}
 }

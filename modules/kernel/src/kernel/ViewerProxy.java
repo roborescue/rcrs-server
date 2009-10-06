@@ -12,16 +12,17 @@ import java.util.Collections;
 /**
    This class is the kernel interface to a viewer.
  */
-public class Viewer extends AbstractComponent {
+public class ViewerProxy extends AbstractKernelComponent {
     private int id;
 
     /**
        Construct a viewer.
-       @param c The connection to the viewer.
+       @param name The name of the viewer.
        @param id The ID of the viewer.
+       @param c The connection to the viewer.
      */
-    public Viewer(Connection c, int id) {
-        super(c);
+    public ViewerProxy(String name, int id, Connection c) {
+        super(name, c);
         this.id = id;
     }
 
@@ -45,6 +46,6 @@ public class Viewer extends AbstractComponent {
 
     @Override
     public String toString() {
-        return "Viewer " + id + ": " + getConnection().toString();
+        return getName() + " (" + id + "): " + getConnection().toString();
     }
 }

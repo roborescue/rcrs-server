@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import java.util.Dictionary;
 
 import kernel.Perception;
-import kernel.Agent;
+import kernel.AgentProxy;
 import kernel.Kernel;
 import kernel.ui.KernelGUIComponent;
 
@@ -145,7 +145,7 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     }
 
     @Override
-    public Collection<Entity> getVisibleEntities(Agent agent) {
+    public Collection<Entity> getVisibleEntities(AgentProxy agent) {
         synchronized (lock) {
             StandardEntity agentEntity = (StandardEntity)agent.getControlledEntity();
             Collection<Entity> result = new HashSet<Entity>();

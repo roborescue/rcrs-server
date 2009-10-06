@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
-import kernel.Agent;
+import kernel.AgentProxy;
 import kernel.CommunicationModel;
 
 import rescuecore2.messages.Message;
@@ -72,7 +72,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
     }
 
     @Override
-    public Map<Agent, Collection<Message>> process(int time, Collection<Agent> agents, Collection<Command> agentCommands) {
+    public Map<AgentProxy, Collection<Message>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands) {
         // Reset all channels
         for (Channel next : channels.values()) {
             next.timestep();
@@ -99,8 +99,8 @@ public class ChannelCommunicationModel implements CommunicationModel {
             }
         }
         // And find out what each agent can hear
-        Map<Agent, Collection<Message>> result = new HashMap<Agent, Collection<Message>>();
-        for (Agent agent : agents) {
+        Map<AgentProxy, Collection<Message>> result = new HashMap<AgentProxy, Collection<Message>>();
+        for (AgentProxy agent : agents) {
             Collection<Message> msgs = new ArrayList<Message>();
             for (Channel next : channels.values()) {
                 msgs.addAll(next.getMessagesForAgent(agent));
@@ -110,8 +110,8 @@ public class ChannelCommunicationModel implements CommunicationModel {
         return result;
     }
 
-    private Agent findAgent(Collection<Agent> agents, Entity e) {
-        for (Agent next : agents) {
+    private AgentProxy findAgent(Collection<AgentProxy> agents, Entity e) {
+        for (AgentProxy next : agents) {
             if (next.getControlledEntity().equals(e)) {
                 return next;
             }
@@ -119,7 +119,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
         return null;
     }
 
-    private void processSubscribe(Collection<Agent> agents, AKSubscribe sub) {
+    private void processSubscribe(Collection<AgentProxy> agents, AKSubscribe sub) {
         List<Integer> requested = sub.getChannels();
         EntityID id = sub.getAgentID();
         Entity entity = world.getEntity(id);
@@ -127,7 +127,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
             System.out.println("Couldn't find entity " + id);
             return;
         }
-        Agent agent = findAgent(agents, entity);
+        AgentProxy agent = findAgent(agents, entity);
         if (agent == null) {
             System.out.println("Couldn't find agent controlling entity " + entity);
             return;
@@ -165,24 +165,24 @@ public class ChannelCommunicationModel implements CommunicationModel {
 
     private static interface Channel {
         void timestep();
-        void addSubscriber(Agent a);
-        void removeSubscriber(Agent a);
-        Collection<Agent> getSubscribers();
+        void addSubscriber(AgentProxy a);
+        void removeSubscriber(AgentProxy a);
+        Collection<AgentProxy> getSubscribers();
         void push(AKSpeak message);
-        Collection<Message> getMessagesForAgent(Agent agent);
-        void setAgents(Collection<Agent> agents);
+        Collection<Message> getMessagesForAgent(AgentProxy agent);
+        void setAgents(Collection<AgentProxy> agents);
     }
 
     private abstract static class AbstractChannel implements Channel {
-        protected Collection<Agent> subscribers;
+        protected Collection<AgentProxy> subscribers;
         protected int channelID;
-        protected Collection<Agent> allAgents;
-        private Map<Agent, Collection<KAHearChannel>> messagesForAgents;
+        protected Collection<AgentProxy> allAgents;
+        private Map<AgentProxy, Collection<KAHearChannel>> messagesForAgents;
 
         public AbstractChannel(int channelID) {
             this.channelID = channelID;
-            subscribers = new HashSet<Agent>();
-            messagesForAgents = new HashMap<Agent, Collection<KAHearChannel>>();
+            subscribers = new HashSet<AgentProxy>();
+            messagesForAgents = new HashMap<AgentProxy, Collection<KAHearChannel>>();
         }
 
         @Override
@@ -191,31 +191,31 @@ public class ChannelCommunicationModel implements CommunicationModel {
         }
 
         @Override
-        public void addSubscriber(Agent a) {
+        public void addSubscriber(AgentProxy a) {
             subscribers.add(a);
         }
 
         @Override
-        public void removeSubscriber(Agent a) {
+        public void removeSubscriber(AgentProxy a) {
             subscribers.remove(a);
         }
 
         @Override
-        public Collection<Agent> getSubscribers() {
+        public Collection<AgentProxy> getSubscribers() {
             return subscribers;
         }
 
         @Override
-        public Collection<Message> getMessagesForAgent(Agent agent) {
+        public Collection<Message> getMessagesForAgent(AgentProxy agent) {
             return new ArrayList<Message>(messagesForAgents.get(agent));
         }
 
         @Override
-        public void setAgents(Collection<Agent> agents) {
+        public void setAgents(Collection<AgentProxy> agents) {
             allAgents = agents;
         }
 
-        protected void addMessageForAgent(Agent a, KAHearChannel msg) {
+        protected void addMessageForAgent(AgentProxy a, KAHearChannel msg) {
             Collection<KAHearChannel> c = messagesForAgents.get(a);
             if (c == null) {
                 c = new ArrayList<KAHearChannel>();
@@ -263,7 +263,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
             uttered.put(id, count + 1);
             // Find out who can hear it
             StandardEntity sender = world.getEntity(id);
-            for (Agent agent : allAgents) {
+            for (AgentProxy agent : allAgents) {
                 StandardEntity target = (StandardEntity)agent.getControlledEntity();
                 if (world.getDistance(sender, target) <= range) {
                     addMessageForAgent(agent, new KAHearChannel(id, channelID, data));
@@ -293,7 +293,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
                 System.out.println("Discarding message on channel " + channelID + ": already used " + usedBandwidth + " of " + bandwidth + " bytes, new message is " + data.length + " bytes.");
                 return;
             }
-            for (Agent next : subscribers) {
+            for (AgentProxy next : subscribers) {
                 addMessageForAgent(next, new KAHearChannel(speak.getAgentID(), channelID, data));
             }
             usedBandwidth += data.length;

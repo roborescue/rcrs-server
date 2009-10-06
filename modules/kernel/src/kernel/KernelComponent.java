@@ -25,4 +25,10 @@ public interface KernelComponent {
        @return The connection to the component.
      */
     Connection getConnection();
+
+    /**
+       Get the name of this component.
+       @return The name of the component.
+     */
+    String getName();
 }

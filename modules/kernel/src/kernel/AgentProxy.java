@@ -17,17 +17,18 @@ import rescuecore2.worldmodel.EntityID;
 /**
    This class is the kernel interface to an agent.
  */
-public class Agent extends AbstractComponent {
+public class AgentProxy extends AbstractKernelComponent {
     private Entity entity;
     private Map<Integer, Collection<Command>> commands;
 
     /**
        Construct an agent.
+       @param name The name of the controlling agent.
        @param e The entity controlled by the agent.
        @param c The connection to the agent.
      */
-    public Agent(Entity e, Connection c) {
-        super(c);
+    public AgentProxy(String name, Entity e, Connection c) {
+        super(name, c);
         this.entity = e;
         commands = new HashMap<Integer, Collection<Command>>();
         c.addConnectionListener(new AgentConnectionListener());
@@ -35,7 +36,7 @@ public class Agent extends AbstractComponent {
 
     @Override
     public String toString() {
-        return entity.getType() + " " + entity.getID();
+        return getName() + ": " + entity.getType() + " " + entity.getID();
     }
 
     /**

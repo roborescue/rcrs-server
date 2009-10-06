@@ -9,14 +9,17 @@ import java.util.Collection;
 /**
    Abstract base class for KernelComponent implementations.
  */
-public abstract class AbstractComponent implements KernelComponent {
+public abstract class AbstractKernelComponent implements KernelComponent {
     private Connection connection;
+    private String name;
 
     /**
        Construct a new abstract component.
+       @param name The name of this component.
        @param c The connection this component is using.
      */
-    protected AbstractComponent(Connection c) {
+    protected AbstractKernelComponent(String name, Connection c) {
+        this.name = name;
         this.connection = c;
     }
 
@@ -41,5 +44,10 @@ public abstract class AbstractComponent implements KernelComponent {
     @Override
     public void shutdown() {
         connection.shutdown();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

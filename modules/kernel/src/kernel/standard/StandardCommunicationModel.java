@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 
-import kernel.Agent;
+import kernel.AgentProxy;
 import kernel.CommunicationModel;
 
 import rescuecore2.messages.Message;
@@ -53,9 +53,9 @@ public class StandardCommunicationModel implements CommunicationModel {
     }
 
     @Override
-    public Map<Agent, Collection<Message>> process(int time, Collection<Agent> agents, Collection<Command> agentCommands) {
-        Map<Agent, Collection<Message>> all = new HashMap<Agent, Collection<Message>>();
-        for (Agent agent : agents) {
+    public Map<AgentProxy, Collection<Message>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands) {
+        Map<AgentProxy, Collection<Message>> all = new HashMap<AgentProxy, Collection<Message>>();
+        for (AgentProxy agent : agents) {
             //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
             Collection<Message> result = new HashSet<Message>();
             // Look for SAY messages from entities within range

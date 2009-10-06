@@ -35,9 +35,9 @@ public class Kernel {
 
     private Set<KernelListener> listeners;
 
-    private Collection<Agent> agents;
-    private Collection<Simulator> sims;
-    private Collection<Viewer> viewers;
+    private Collection<AgentProxy> agents;
+    private Collection<SimulatorProxy> sims;
+    private Collection<ViewerProxy> viewers;
     private int time;
     private Collection<Command> agentCommandsLastTimestep;
 
@@ -65,9 +65,9 @@ public class Kernel {
         this.worldModel = worldModel;
         this.commandFilter = commandFilter;
         listeners = new HashSet<KernelListener>();
-        agents = new HashSet<Agent>();
-        sims = new HashSet<Simulator>();
-        viewers = new HashSet<Viewer>();
+        agents = new HashSet<AgentProxy>();
+        sims = new HashSet<SimulatorProxy>();
+        viewers = new HashSet<ViewerProxy>();
         time = 0;
         agentTime = config.getIntValue(AGENT_TIME_KEY);
         agentCommandsLastTimestep = new HashSet<Command>();
@@ -107,7 +107,7 @@ public class Kernel {
        Add an agent to the system.
        @param agent The agent to add.
     */
-    public void addAgent(Agent agent) {
+    public void addAgent(AgentProxy agent) {
         synchronized (this) {
             agents.add(agent);
         }
@@ -118,7 +118,7 @@ public class Kernel {
        Remove an agent from the system.
        @param agent The agent to remove.
     */
-    public void removeAgent(Agent agent) {
+    public void removeAgent(AgentProxy agent) {
         synchronized (this) {
             agents.remove(agent);
         }
@@ -129,7 +129,7 @@ public class Kernel {
        Get all agents in the system.
        @return An unmodifiable view of all agents.
     */
-    public Collection<Agent> getAllAgents() {
+    public Collection<AgentProxy> getAllAgents() {
         synchronized (this) {
             return Collections.unmodifiableCollection(agents);
         }
@@ -139,7 +139,7 @@ public class Kernel {
        Add a simulator to the system.
        @param sim The simulator to add.
     */
-    public void addSimulator(Simulator sim) {
+    public void addSimulator(SimulatorProxy sim) {
         synchronized (this) {
             sims.add(sim);
         }
@@ -150,7 +150,7 @@ public class Kernel {
        Remove a simulator from the system.
        @param sim The simulator to remove.
     */
-    public void removeSimulator(Simulator sim) {
+    public void removeSimulator(SimulatorProxy sim) {
         synchronized (this) {
             sims.remove(sim);
         }
@@ -161,7 +161,7 @@ public class Kernel {
        Get all simulators in the system.
        @return An unmodifiable view of all simulators.
     */
-    public Collection<Simulator> getAllSimulators() {
+    public Collection<SimulatorProxy> getAllSimulators() {
         synchronized (this) {
             return Collections.unmodifiableCollection(sims);
         }
@@ -171,7 +171,7 @@ public class Kernel {
        Add a viewer to the system.
        @param viewer The viewer to add.
     */
-    public void addViewer(Viewer viewer) {
+    public void addViewer(ViewerProxy viewer) {
         synchronized (this) {
             viewers.add(viewer);
         }
@@ -182,7 +182,7 @@ public class Kernel {
        Remove a viewer from the system.
        @param viewer The viewer to remove.
     */
-    public void removeViewer(Viewer viewer) {
+    public void removeViewer(ViewerProxy viewer) {
         synchronized (this) {
             viewers.remove(viewer);
         }
@@ -193,7 +193,7 @@ public class Kernel {
        Get all viewers in the system.
        @return An unmodifiable view of all viewers.
     */
-    public Collection<Viewer> getAllViewers() {
+    public Collection<ViewerProxy> getAllViewers() {
         synchronized (this) {
             return Collections.unmodifiableCollection(viewers);
         }
@@ -264,13 +264,13 @@ public class Kernel {
     */
     public void shutdown() {
         synchronized (this) {
-            for (Agent next : agents) {
+            for (AgentProxy next : agents) {
                 next.shutdown();
             }
-            for (Simulator next : sims) {
+            for (SimulatorProxy next : sims) {
                 next.shutdown();
             }
-            for (Viewer next : viewers) {
+            for (ViewerProxy next : viewers) {
                 next.shutdown();
             }
             log.close();
@@ -290,8 +290,8 @@ public class Kernel {
 
     private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException {
         perception.setTime(timestep);
-        Map<Agent, Collection<Message>> comms = communicationModel.process(timestep, agents, commandsLastTimestep);
-        for (Agent next : agents) {
+        Map<AgentProxy, Collection<Message>> comms = communicationModel.process(timestep, agents, commandsLastTimestep);
+        for (AgentProxy next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
@@ -309,7 +309,7 @@ public class Kernel {
             now = System.currentTimeMillis();
         }
         Collection<Command> result = new HashSet<Command>();
-        for (Agent next : agents) {
+        for (AgentProxy next : agents) {
             Collection<Command> commands = next.getAgentCommands(timestep);
             if (commandFilter != null) {
                 commandFilter.filter(commands, next);
@@ -323,25 +323,25 @@ public class Kernel {
        Send commands to all viewers and simulators and return which entities have been updated by the simulators.
     */
     private Collection<Entity> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
-        for (Simulator next : sims) {
+        for (SimulatorProxy next : sims) {
             next.sendAgentCommands(timestep, commands);
         }
-        for (Viewer next : viewers) {
+        for (ViewerProxy next : viewers) {
             next.sendAgentCommands(timestep, commands);
         }
         // Wait until all simulators have sent updates
         Collection<Entity> result = new HashSet<Entity>();
-        for (Simulator next : sims) {
+        for (SimulatorProxy next : sims) {
             result.addAll(next.getUpdates(timestep));
         }
         return result;
     }
 
     private void sendUpdatesToViewersAndSimulators(int timestep, Collection<Entity> updates) throws InterruptedException {
-        for (Simulator next : sims) {
+        for (SimulatorProxy next : sims) {
             next.sendUpdate(timestep, updates);
         }
-        for (Viewer next : viewers) {
+        for (ViewerProxy next : viewers) {
             next.sendUpdate(timestep, updates);
         }
     }
@@ -360,37 +360,37 @@ public class Kernel {
         }
     }
 
-    private void fireAgentAdded(Agent agent) {
+    private void fireAgentAdded(AgentProxy agent) {
         for (KernelListener next : getListeners()) {
             next.agentAdded(agent);
         }
     }
 
-    private void fireAgentRemoved(Agent agent) {
+    private void fireAgentRemoved(AgentProxy agent) {
         for (KernelListener next : getListeners()) {
             next.agentRemoved(agent);
         }
     }
 
-    private void fireSimulatorAdded(Simulator sim) {
+    private void fireSimulatorAdded(SimulatorProxy sim) {
         for (KernelListener next : getListeners()) {
             next.simulatorAdded(sim);
         }
     }
 
-    private void fireSimulatorRemoved(Simulator sim) {
+    private void fireSimulatorRemoved(SimulatorProxy sim) {
         for (KernelListener next : getListeners()) {
             next.simulatorRemoved(sim);
         }
     }
 
-    private void fireViewerAdded(Viewer viewer) {
+    private void fireViewerAdded(ViewerProxy viewer) {
         for (KernelListener next : getListeners()) {
             next.viewerAdded(viewer);
         }
     }
 
-    private void fireViewerRemoved(Viewer viewer) {
+    private void fireViewerRemoved(ViewerProxy viewer) {
         for (KernelListener next : getListeners()) {
             next.viewerRemoved(viewer);
         }

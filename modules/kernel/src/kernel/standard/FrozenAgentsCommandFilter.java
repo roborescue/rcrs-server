@@ -1,7 +1,7 @@
 package kernel.standard;
 
 import kernel.Kernel;
-import kernel.Agent;
+import kernel.AgentProxy;
 import kernel.CommandFilter;
 
 import rescuecore2.config.Config;
@@ -25,7 +25,7 @@ public class FrozenAgentsCommandFilter implements CommandFilter {
     }
 
     @Override
-    public void filter(Collection<Command> commands, Agent agent) {
+    public void filter(Collection<Command> commands, AgentProxy agent) {
         int time = kernel.getTime();
         if (time < freezeTime) {
             commands.clear();

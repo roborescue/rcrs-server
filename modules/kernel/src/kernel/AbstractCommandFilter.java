@@ -15,7 +15,7 @@ public abstract class AbstractCommandFilter implements CommandFilter {
     }
 
     @Override
-    public void filter(Collection<Command> commands, Agent agent) {
+    public void filter(Collection<Command> commands, AgentProxy agent) {
         for (Iterator<Command> it = commands.iterator(); it.hasNext();) {
             if (!allowed(it.next(), agent)) {
                 it.remove();
@@ -29,5 +29,5 @@ public abstract class AbstractCommandFilter implements CommandFilter {
        @param agent The agent.
        @return True iff the command is allowed.
      */
-    protected abstract boolean allowed(Command command, Agent agent);
+    protected abstract boolean allowed(Command command, AgentProxy agent);
 }

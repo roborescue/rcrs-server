@@ -25,7 +25,7 @@ public interface CommunicationModel {
        @param time The current time.
        @param agents The set of agents in the system.
        @param agentCommands The set of all agent commands last timestep.
-       @return A map from Agent to collection of communication update messages to be sent to the agent. If an agent can hear nothing then it need not be included in this map.
+       @return A map from AgentProxy to collection of communication update messages to be sent to the agent. If an agent can hear nothing then it need not be included in this map.
      */
-    Map<Agent, Collection<Message>> process(int time, Collection<Agent> agents, Collection<Command> agentCommands);
+    Map<AgentProxy, Collection<Message>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands);
 }

@@ -18,17 +18,18 @@ import java.util.HashSet;
 /**
    This class is the kernel interface to a simulator.
  */
-public class Simulator extends AbstractComponent {
+public class SimulatorProxy extends AbstractKernelComponent {
     private Map<Integer, Collection<Entity>> updates;
     private int id;
 
     /**
        Construct a new simulator.
-       @param c The connection this simulator is using.
+       @param name The name of the simulator.
        @param id The ID of the simulator.
+       @param c The connection this simulator is using.
      */
-    public Simulator(Connection c, int id) {
-        super(c);
+    public SimulatorProxy(String name, int id, Connection c) {
+        super(name, c);
         this.id = id;
         updates = new HashMap<Integer, Collection<Entity>>();
         c.addConnectionListener(new SimulatorConnectionListener());
@@ -73,7 +74,7 @@ public class Simulator extends AbstractComponent {
 
     @Override
     public String toString() {
-        return "Simulator " + id + ": " + getConnection().toString();
+        return getName() + " (" + id + "): " + getConnection().toString();
     }
 
     /**

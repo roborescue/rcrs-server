@@ -22,7 +22,7 @@ public interface Perception {
        @param agent The agent that is perceiving the world.
        @return A collection of entities that the agent can perceive.
      */
-    Collection<Entity> getVisibleEntities(Agent agent);
+    Collection<Entity> getVisibleEntities(AgentProxy agent);
 
     /**
        Notify this perception object of the current time.

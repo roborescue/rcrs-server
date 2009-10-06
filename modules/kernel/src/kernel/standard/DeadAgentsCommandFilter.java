@@ -1,7 +1,7 @@
 package kernel.standard;
 
 import kernel.Kernel;
-import kernel.Agent;
+import kernel.AgentProxy;
 import kernel.CommandFilter;
 
 import rescuecore2.config.Config;
@@ -20,7 +20,7 @@ public class DeadAgentsCommandFilter implements CommandFilter {
     }
 
     @Override
-    public void filter(Collection<Command> commands, Agent agent) {
+    public void filter(Collection<Command> commands, AgentProxy agent) {
         Entity e = agent.getControlledEntity();
         if ((e instanceof Human) && ((Human)e).getHP() <= 0) {
             System.out.println("Ignoring commands from dead agent " + e);

@@ -14,35 +14,35 @@ public interface KernelListener {
        Notification that an agent has been added.
        @param agent The agent that was added.
      */
-    void agentAdded(Agent agent);
+    void agentAdded(AgentProxy agent);
 
     /**
        Notification that an agent has been removed.
        @param agent The agent that was removed.
      */
-    void agentRemoved(Agent agent);
+    void agentRemoved(AgentProxy agent);
 
     /**
        Notification that a simulator has been added.
        @param simulator The simulator that was added.
      */
-    void simulatorAdded(Simulator simulator);
+    void simulatorAdded(SimulatorProxy simulator);
 
     /**
        Notification that a simulator has been removed.
        @param simulator The simulator that was removed.
      */
-    void simulatorRemoved(Simulator simulator);
+    void simulatorRemoved(SimulatorProxy simulator);
 
     /**
        Notification that a viewer has been added.
        @param viewer The viewer that was added.
      */
-    void viewerAdded(Viewer viewer);
+    void viewerAdded(ViewerProxy viewer);
 
     /**
        Notification that a viewer has been removed.
        @param viewer The viewer that was removed.
      */
-    void viewerRemoved(Viewer viewer);
+    void viewerRemoved(ViewerProxy viewer);
 }

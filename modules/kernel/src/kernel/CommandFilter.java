@@ -21,5 +21,5 @@ public interface CommandFilter {
        @param commands The commands to filter. This collection should be modified to remove any illegal commands.
        @param agent The agent that sent the commands.
      */
-    void filter(Collection<Command> commands, Agent agent);
+    void filter(Collection<Command> commands, AgentProxy agent);
 }

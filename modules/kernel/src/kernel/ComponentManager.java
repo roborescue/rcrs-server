@@ -323,8 +323,8 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
                 }
                 else {
                     Entity entity = result.entity;
-                    Agent agent = new Agent(entity, connection);
-                    agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connect.getAgentName(), connection));
+                    AgentProxy agent = new AgentProxy(connect.getAgentName(), entity, connection);
+                    agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
                     // Send an OK
                     reply = new KAConnectOK(requestID, entity.getID(), result.visibleSet, result.config);
                 }
@@ -357,7 +357,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
             int simID = getNextSimulatorID();
             int requestID = msg.getRequestID();
             System.out.println("Simulator " + simID + " (request ID " + requestID + ") connected");
-            Simulator sim = new Simulator(connection, simID);
+            SimulatorProxy sim = new SimulatorProxy(msg.getSimulatorName(), simID, connection);
             synchronized (simLock) {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
@@ -381,7 +381,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
             int requestID = msg.getRequestID();
             int viewerID = getNextViewerID();
             System.out.println("Viewer " + viewerID + " (request ID " + requestID + ") connected");
-            Viewer viewer = new Viewer(connection, viewerID);
+            ViewerProxy viewer = new ViewerProxy(msg.getViewerName(), viewerID, connection);
             synchronized (viewerLock) {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
@@ -403,33 +403,32 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     }
 
     private static class AgentAck {
-        Agent agent;
+        AgentProxy agent;
         EntityID agentID;
         int requestID;
         String name;
         Connection connection;
 
-        public AgentAck(Agent agent, EntityID agentID, int requestID, String name, Connection c) {
+        public AgentAck(AgentProxy agent, EntityID agentID, int requestID, Connection c) {
             this.agent = agent;
             this.agentID = agentID;
             this.requestID = requestID;
-            this.name = name;
             this.connection = c;
         }
 
         @Override
         public String toString() {
-            return name + ": " + agent.getControlledEntity().getType() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
+            return agent.getName() + ": " + agent.getControlledEntity().getType() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
         }
     }
 
     private static class SimulatorAck {
-        Simulator sim;
+        SimulatorProxy sim;
         int simulatorID;
         int requestID;
         Connection connection;
 
-        public SimulatorAck(Simulator sim, int simID, int requestID, Connection c) {
+        public SimulatorAck(SimulatorProxy sim, int simID, int requestID, Connection c) {
             this.sim = sim;
             this.simulatorID = simID;
             this.requestID = requestID;
@@ -443,12 +442,12 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     }
 
     private static class ViewerAck {
-        Viewer viewer;
+        ViewerProxy viewer;
         int viewerID;
         int requestID;
         Connection connection;
 
-        public ViewerAck(Viewer viewer, int viewerID, int requestID, Connection c) {
+        public ViewerAck(ViewerProxy viewer, int viewerID, int requestID, Connection c) {
             this.viewer = viewer;
             this.viewerID = viewerID;
             this.requestID = requestID;

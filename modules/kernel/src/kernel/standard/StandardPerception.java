@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import kernel.Perception;
-import kernel.Agent;
+import kernel.AgentProxy;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
@@ -100,7 +100,7 @@ public class StandardPerception implements Perception {
     }
 
     @Override
-    public Collection<Entity> getVisibleEntities(Agent agent) {
+    public Collection<Entity> getVisibleEntities(AgentProxy agent) {
         StandardEntity agentEntity = (StandardEntity)agent.getControlledEntity();
         Collection<Entity> result = new HashSet<Entity>();
         // Look for roads/nodes/buildings/humans within range

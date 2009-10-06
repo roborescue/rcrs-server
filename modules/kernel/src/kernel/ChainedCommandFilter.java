@@ -44,7 +44,7 @@ public class ChainedCommandFilter implements CommandFilter {
     }
 
     @Override
-    public void filter(Collection<Command> commands, Agent agent) {
+    public void filter(Collection<Command> commands, AgentProxy agent) {
         for (CommandFilter next : filters) {
             next.filter(commands, agent);
         }
