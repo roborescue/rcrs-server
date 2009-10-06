@@ -77,7 +77,7 @@ public class ComponentLauncher {
     }
 
     private Message generateAgentConnect(Agent agent, int requestID) {
-        return new AKConnect(requestID, 1, agent.getClass().getName(), agent.getRequestedEntityIDs());
+        return new AKConnect(requestID, 1, agent.getName(), agent.getRequestedEntityIDs());
     }
 
     private Message generateSimulatorConnect(Simulator simulator, int requestID) {

@@ -66,4 +66,9 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
     @Override
     public void initialise(Config config) {
     }
+
+    @Override
+    public String getName() {
+        return getClass().getName();
+    }
 }

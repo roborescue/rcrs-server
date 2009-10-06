@@ -12,4 +12,10 @@ public interface Component {
        @throws ComponentInitialisationException If there is a problem initialising the component.
      */
     void initialise(Config config) throws ComponentInitialisationException;
+
+    /**
+       Get the name of this component. This is useful for debugging. Often a class name will be sufficient.
+       @return A name.
+    */
+    String getName();
 }
