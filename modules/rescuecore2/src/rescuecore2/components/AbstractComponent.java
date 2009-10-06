@@ -22,6 +22,11 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
     protected Connection connection;
 
     /**
+       The configuration. This will be automatically updated by the postConnect method to include config information from the kernel.
+     */
+    protected Config config;
+
+    /**
        The world model.
     */
     protected WorldModel<T> model;
@@ -37,10 +42,11 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
        @param c The kernel connection.
        @param entities The entities that the kernel sent on startup.
      */
-    protected final void postConnect(Connection c, Collection<Entity> entities) {
+    protected final void postConnect(Connection c, Collection<Entity> entities, Config kernelConfig) {
         connection = c;
         model = createWorldModel();
         model.addEntities(entities);
+        config.merge(kernelConfig);
     }
 
     /**
@@ -64,7 +70,8 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
     }
 
     @Override
-    public void initialise(Config config) {
+    public void initialise(Config initialConfig) {
+        config = initialConfig;
     }
 
     @Override

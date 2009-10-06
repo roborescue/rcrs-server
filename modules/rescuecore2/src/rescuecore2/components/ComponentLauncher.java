@@ -155,7 +155,7 @@ public class ComponentLauncher {
         private void handleConnectOK(Connection c, KSConnectOK ok) {
             if (ok.getRequestID() == requestID) {
                 c.removeConnectionListener(this);
-                simulator.postConnect(c, ok.getSimulatorID(), ok.getEntities());
+                simulator.postConnect(c, ok.getSimulatorID(), ok.getEntities(), ok.getConfig());
                 try {
                     c.sendMessage(new SKAcknowledge(requestID, ok.getSimulatorID()));
                     q.add(SUCCESS_MESSAGE);
@@ -198,7 +198,7 @@ public class ComponentLauncher {
         private void handleConnectOK(Connection c, KVConnectOK ok) {
             if (ok.getRequestID() == requestID) {
                 c.removeConnectionListener(this);
-                viewer.postConnect(c, ok.getViewerID(), ok.getEntities());
+                viewer.postConnect(c, ok.getViewerID(), ok.getEntities(), ok.getConfig());
                 try {
                     c.sendMessage(new VKAcknowledge(requestID, ok.getViewerID()));
                     q.add(SUCCESS_MESSAGE);

@@ -6,6 +6,7 @@ import rescuecore2.messages.Message;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.config.Config;
 
 import java.util.Collection;
 
@@ -36,8 +37,8 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
     }
 
     @Override
-    public void postConnect(Connection c, int id, Collection<Entity> entities) {
-        super.postConnect(c, entities);
+    public void postConnect(Connection c, int id, Collection<Entity> entities, Config kernelConfig) {
+        super.postConnect(c, entities, kernelConfig);
         this.viewerID = id;
         c.addConnectionListener(new ViewerListener());
         lastUpdateTime = 0;
