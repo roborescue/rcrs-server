@@ -271,13 +271,19 @@
   </macrodef>
 
   <!-- Useful tools: checkstyle, findbugs, cobertura -->
-  <target name="checkstyle" depends="compile, _generate-checkstyle-fileset" description="Run Checkstyle on all packages">
-    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false">
+  <target name="_run-checkstyle" depends="compile, _generate-checkstyle-fileset">
+    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false" failureProperty="checkstyle.failure">
       <fileset refid="checkstyle.files"/>
       <formatter type="xml" toFile="${checkstyle.output.dir}/checkstyle_errors.xml"/>
     </checkstyle>
     <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
+
+  <target name="_checkstyle-warnings" if="checkstyle.failure">
+    <echo message="Checkstyle warnings found"/>
+  </target>
+
+  <target name="checkstyle" depends="_run-checkstyle, _checkstyle-warnings" description="Run Checkstyle on all packages"/>
 
   <target name="findbugs" depends="jars, _generate-module-lib-paths" description="Run Findbugs on all modules">
     <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}">
