@@ -52,6 +52,10 @@ int BlockadeSimulator::init(Config* config, ArgList& args) {
   return 0;
 }
 
+std::string BlockadeSimulator::getName() const {
+  return "Legacy blockade simulator";
+}
+
 int BlockadeSimulator::step(INT_32 time, const AgentCommandList& commands, ObjectSet& changed) {
   if (time==1) {
 	// Get a list of all roads, sorted by x then y

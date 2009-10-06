@@ -16,9 +16,10 @@
 
 #include "command.h"
 #include "objects.h"
+#include "error.h"
 
 namespace Librescue {
-  ViewerConnect::ViewerConnect(Id requestId, INT_32 version) : m_requestId(requestId), m_version(version) {}
+  ViewerConnect::ViewerConnect(Id requestId, INT_32 version, std::string name) : m_requestId(requestId), m_version(version), m_name(name) {}
 
   ViewerConnect::ViewerConnect(InputBuffer& in) {
 	decode(in);
@@ -34,16 +35,18 @@ namespace Librescue {
 	Command::encode(out);
         out.writeInt32(m_requestId);
 	out.writeInt32(m_version);
+        out.writeString(m_name);
   }
 
   void ViewerConnect::decode(InputBuffer& in) {
 	Command::decode(in);
         m_requestId = in.readInt32();
 	m_version = in.readInt32();
+        m_name = in.readString();
   }
 
   Command* ViewerConnect::clone() const {
-    return new ViewerConnect(m_requestId, m_version);
+    return new ViewerConnect(m_requestId, m_version, m_name);
   }
 
   Id ViewerConnect::getRequestId() const {
@@ -99,6 +102,11 @@ namespace Librescue {
 	deleteObjects();
 	in.readObjects(0,m_objects);
 	m_delete = true;
+        int count = in.readInt32();
+        LOG_INFO("Ignoring %d config items", count);
+        for (int i = 0; i < count; ++i) {
+          LOG_INFO("  Key: %s, value %s", in.readString().c_str(), in.readString().c_str());
+        }
   }
 
   Command* ViewerConnectOK::clone() const {

@@ -25,6 +25,7 @@
 #include "command.h"
 #include "args.h"
 #include <stdio.h>
+#include <string>
 
 namespace Librescue {
   class Simulator {
@@ -57,6 +58,8 @@ namespace Librescue {
 	// return: zero on success, non-zero on error.
 	virtual int step(INT_32 time, const AgentCommandList& commands, ObjectSet& changed) = 0;
 	virtual void update(INT_32 time, const ObjectSet& changed);
+
+        virtual std::string getName() const = 0;
   };
 }
 

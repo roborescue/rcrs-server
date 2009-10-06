@@ -77,6 +77,7 @@ namespace MiscSimulator {
 	virtual int init(Config* config, ArgList& args);
 	virtual void update(INT_32 time, const ObjectSet& changed);
 	virtual int step(INT_32 time, const AgentCommandList& commands, ObjectSet& changed);
+        virtual std::string getName() const;
 
   };
 }

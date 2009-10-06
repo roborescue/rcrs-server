@@ -35,7 +35,7 @@ public abstract class Simulator extends RescueComponent {
 	}
 
 	public final Command generateConnectCommand() {
-		return new SKConnect();
+            return new SKConnect(getClass().getName());
 	}
 
 	public final boolean handleConnectOK(Command c) {

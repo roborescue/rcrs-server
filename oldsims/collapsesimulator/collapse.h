@@ -69,6 +69,8 @@ class CollapseSimulator : public Simulator {
 
   virtual int init(Config* config, ArgList& args);
   virtual int step(INT_32 time, const AgentCommandList& commands, ObjectSet& changed);
+
+  virtual std::string getName() const;
 };
 
 #endif

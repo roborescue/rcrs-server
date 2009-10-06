@@ -21,7 +21,7 @@
 #include "error.h"
 
 namespace Librescue {
-  AgentConnect::AgentConnect(Id requestId, INT_32 version, TypeId type) : m_requestId(requestId), m_version(version), m_type(type) {
+  AgentConnect::AgentConnect(Id requestId, INT_32 version, std::string name, TypeId type) : m_requestId(requestId), m_version(version), m_name(name), m_type(type) {
   }
 
   AgentConnect::AgentConnect(InputBuffer& in) {
@@ -39,6 +39,7 @@ namespace Librescue {
 	Command::encode(out);
 	out.writeInt32(m_requestId);
 	out.writeInt32(m_version);
+        out.writeString(m_name);
         out.writeInt32(1);
 	out.writeInt32(m_type);
   }
@@ -48,6 +49,7 @@ namespace Librescue {
 	m_requestId = in.readInt32();
 	m_version = in.readInt32();
         int count = in.readInt32();
+        m_name = in.readString();
 	m_type = (TypeId)in.readInt32();
         for (int i=1; i<count; ++i) {
           LOG_INFO("Ignoring AgentConnect TypeId: %d", in.readInt32());
@@ -55,7 +57,7 @@ namespace Librescue {
   }
 
   Command* AgentConnect::clone() const {
-    return new AgentConnect(m_requestId,m_version,m_type);
+    return new AgentConnect(m_requestId,m_version,m_name,m_type);
   }
 
   TypeId AgentConnect::getAgentType() const {
@@ -151,6 +153,13 @@ namespace Librescue {
 	deleteObjects();
 	in.readObjects(0,m_objects);
 	m_delete = true;
+        int count = in.readInt32();
+        LOG_INFO("Ignoring %d config items", count);
+        for (int i = 0; i < count; ++i) {
+          std::string key = in.readString();
+          std::string value = in.readString();
+          LOG_INFO("  Key: %s, value %s", key.c_str(), value.c_str());
+        }
   }
 
   Command* AgentConnectOK::clone() const {

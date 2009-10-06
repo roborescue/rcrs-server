@@ -1,3 +1,4 @@
+
 /*
  * Last change: $Date: 2004/07/11 22:26:27 $
  * $Revision: 1.30 $
@@ -70,7 +71,7 @@ public abstract class Agent extends RescueComponent {
 	}
 
 	public final Command generateConnectCommand() {
-            return new AKConnect(0,tempID,agentTypes);
+            return new AKConnect(0,tempID,getClass().getName(),agentTypes);
 	}
 	
 	protected void appendCommand(Command c){

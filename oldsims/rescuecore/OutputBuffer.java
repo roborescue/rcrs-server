@@ -15,6 +15,8 @@
 
 package rescuecore;
 
+import java.io.UnsupportedEncodingException;
+
 import rescuecore.commands.Command;
 
 public class OutputBuffer {
@@ -54,9 +56,14 @@ public class OutputBuffer {
 	}
 
 	public void writeString(String s) {
-		byte[] bytes = s.getBytes();
+            try {
+		byte[] bytes = s.getBytes("UTF-8");
 		writeInt(bytes.length);
 		writeBytes(bytes);
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("UTF-8 encoding not found!", e);
+            }
 	}
 
 	public void writeObject(RescueObject o) {

@@ -27,6 +27,10 @@ namespace MiscSimulator {
 	return Simulator::init(config,args);
   }
 
+  std::string MiscSimulator::getName() const {
+    return "Legacy misc simulator";
+  }
+
   void MiscSimulator::update(INT_32 time, const ObjectSet& changed) {
 	Simulator::update(time,changed);
 	m_collapsed.clear();

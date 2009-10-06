@@ -29,6 +29,8 @@ class BlockadeSimulator : public Simulator {
  public:
   virtual int step(INT_32 time, const AgentCommandList& commands, ObjectSet& changed);
   virtual int init(Config* config, ArgList& args);
+
+  virtual std::string getName() const;
 };
 
 #endif

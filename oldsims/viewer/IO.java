@@ -10,6 +10,7 @@ import rescuecore.RescueConstants;
 
 public abstract class IO implements Runnable, Constants {
     private final static int REQUEST_ID = 34;
+    private final static String NAME = "Legacy viewer";
 
 	protected abstract byte[] receive();
 	protected abstract void send(byte[] body);
@@ -27,9 +28,10 @@ public abstract class IO implements Runnable, Constants {
 		System.out.print("connecting ... ");
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.VK_CONNECT);
-		out.writeInt(RescueConstants.INT_SIZE * 2);
+		out.writeInt((RescueConstants.INT_SIZE * 3) + NAME.length());
 		out.writeInt(REQUEST_ID);
 		out.writeInt(0); // Version
+		out.writeString(NAME);
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 		byte[] data = receive();

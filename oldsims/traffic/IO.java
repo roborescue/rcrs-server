@@ -11,6 +11,7 @@ import rescuecore.OutputBuffer;
 public abstract class IO implements Constants {
     private final static int REQUEST_ID = 1000;
     private final static int VERSION = 0;
+    private final static String NAME = "Legacy traffic simulator";
 
 	protected InetAddress m_address;
 	protected int m_port;
@@ -35,9 +36,10 @@ public abstract class IO implements Constants {
 		System.out.println("connecting");
 		OutputBuffer out = new OutputBuffer();
 		out.writeInt(RescueConstants.SK_CONNECT);
-		out.writeInt(RescueConstants.INT_SIZE * 2); // Size
+		out.writeInt((RescueConstants.INT_SIZE * 3) + NAME.length()); // Size
 		out.writeInt(REQUEST_ID);
 		out.writeInt(VERSION);
+		out.writeString(NAME);
 		out.writeInt(RescueConstants.HEADER_NULL);
 		send(out.getBytes());
 	}

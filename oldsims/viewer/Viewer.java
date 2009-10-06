@@ -70,7 +70,7 @@ public class Viewer extends JFrame implements Constants {
 
 
   private void addDoAnimateCheckBox(JPanel panel) {
-    final JCheckBox doAnimateCheckBox = new JCheckBox("Animaition", true);
+    final JCheckBox doAnimateCheckBox = new JCheckBox("Animation", true);
     panel.add(doAnimateCheckBox);
     doAnimateCheckBox.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {

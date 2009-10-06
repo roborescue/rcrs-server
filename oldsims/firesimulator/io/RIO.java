@@ -9,12 +9,16 @@ import java.util.Iterator;
 import firesimulator.world.RescueObject;
 import firesimulator.world.World;
 
+import rescuecore.OutputBuffer;
+
 /**
  * @author tn
  * Modified by Cameron Skinner
  *
  */
 public class RIO implements IOConstans{
+    private final static String NAME = "ResQ fire simulator";
+
 	private IO io;
 
 	public RIO(InetAddress kernelIP, int kernelPort){
@@ -46,7 +50,11 @@ public class RIO implements IOConstans{
 	}
 	
 	public void sendConnect(){
-            send(SK_CONNECT,new byte[]{0,0,0,0,0,0,0,0}); // 2 4-byte integers, both zero.
+		OutputBuffer out = new OutputBuffer();
+		out.writeInt(0); // Request ID
+		out.writeInt(0); // Version
+		out.writeString(NAME);
+		send(SK_CONNECT, out.getBytes());
 	}
 	
     public void sendAcknowledge(int requestId, int simId){

@@ -44,6 +44,8 @@ namespace Rescue {
 	virtual void sense(INT_32 time, const IdSet& changed);
 
 	virtual TypeId getAgentType() const;
+
+        virtual std::string getName() const;
   };
 }
 

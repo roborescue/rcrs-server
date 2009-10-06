@@ -19,7 +19,7 @@
 #include "error.h"
 
 namespace Librescue {
-  SimulatorConnect::SimulatorConnect(Id requestId, INT_32 version) : m_requestId(requestId), m_version(version) {}
+  SimulatorConnect::SimulatorConnect(Id requestId, INT_32 version, std::string name) : m_requestId(requestId), m_version(version), m_name(name) {}
 
   SimulatorConnect::SimulatorConnect(InputBuffer& in) {
 	decode(in);
@@ -35,16 +35,18 @@ namespace Librescue {
 	Command::encode(out);
         out.writeInt32(m_requestId);
 	out.writeInt32(m_version);
+        out.writeString(m_name);
   }
 
   void SimulatorConnect::decode(InputBuffer& in) {
 	Command::decode(in);
         m_requestId = in.readInt32();
 	m_version = in.readInt32();
+        m_name = in.readString();
   }
 
   Command* SimulatorConnect::clone() const {
-    return new SimulatorConnect(m_requestId, m_version);
+    return new SimulatorConnect(m_requestId, m_version, m_name);
   }
 
   Id SimulatorConnect::getRequestId() const {
@@ -99,7 +101,12 @@ namespace Librescue {
 	deleteObjects();
 	in.readObjects(0,m_objects);
 	m_delete = true;
-        LOG_DEBUG("Decoded simulator connect OK. RequestId = %d, simulatorId = %d", m_requestId, m_simulatorId);
+        int count = in.readInt32();
+        LOG_INFO("Ignoring %d config items", count);
+        for (int i = 0; i < count; ++i) {
+          in.readString();
+          in.readString();
+        }
   }
 
   Command* SimulatorConnectOK::clone() const {

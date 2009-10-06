@@ -23,6 +23,7 @@
 #include "common.h"
 #include "property_filter.h"
 #include <vector>
+#include <string>
 
 namespace Librescue {
   // Decode a Command. This will return a pointer to a new Command object.
@@ -55,10 +56,11 @@ namespace Librescue {
   private:
 	Id m_requestId;
 	INT_32 m_version;
+        std::string m_name;
 	TypeId m_type;
 
   public:
-	AgentConnect(Id requestId, INT_32 version, TypeId type);
+	AgentConnect(Id requestId, INT_32 version, std::string name, TypeId type);
 	AgentConnect(InputBuffer& in);
 	virtual ~AgentConnect();
 
@@ -407,10 +409,11 @@ namespace Librescue {
   class SimulatorConnect : public Command {
   private:
     Id m_requestId;
-	INT_32 m_version;
+    INT_32 m_version;
+    std::string m_name;
 	
   public:
-	SimulatorConnect(Id requestId, INT_32 version);
+    SimulatorConnect(Id requestId, INT_32 version, std::string name);
 	SimulatorConnect(InputBuffer& in);
 	virtual ~SimulatorConnect();
 
@@ -568,9 +571,10 @@ namespace Librescue {
   private:
     Id m_requestId;
 	INT_32 m_version;
+        std::string m_name;
 	
   public:
-	ViewerConnect(Id requestId, INT_32 version);
+	ViewerConnect(Id requestId, INT_32 version, std::string name);
 	ViewerConnect(InputBuffer& in);
 	virtual ~ViewerConnect();
 

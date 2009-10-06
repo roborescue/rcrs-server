@@ -23,6 +23,7 @@
 #include "args.h"
 #include "objectpool.h"
 #include <stdio.h>
+#include <string>
 
 namespace Librescue {
   class Container;
@@ -68,6 +69,8 @@ namespace Librescue {
 	virtual void hear(Header type, Id from, const Bytes& bytes);
 
 	virtual TypeId getAgentType() const = 0;
+
+        virtual std::string getName() const = 0;
 
 	void update(INT_32 time, const ObjectSet& changed);
 

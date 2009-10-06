@@ -23,6 +23,10 @@ int CollapseSimulator::init(Config* config, ArgList& args) {
   return 0;
 }
 
+std::string CollapseSimulator::getName() const {
+  return "Legacy collapse simulator";
+}
+
 int CollapseSimulator::step(INT_32 time, const AgentCommandList& commands, ObjectSet& changed) {
   if (time==1) {
 	Building* bPtr;

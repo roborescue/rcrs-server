@@ -188,7 +188,7 @@ namespace Librescue {
   bool Container::connectSimulator(Simulator* simulator, Id requestId) {
 	OutputBuffer out;
 	// Send an SK_CONNECT
-	SimulatorConnect connect(requestId, 0);
+	SimulatorConnect connect(requestId, 0, simulator->getName());
 	out.writeCommand(&connect);
 	out.writeInt32(HEADER_NULL);
 	if (m_connection.send(out.buffer(),m_kernelAddress)) {
@@ -260,7 +260,7 @@ namespace Librescue {
   bool Container::connectAgent(Agent* agent, Id requestId) {
 	OutputBuffer out;
 	// Send an AK_CONNECT
-	AgentConnect connect(requestId,0,agent->getAgentType());
+	AgentConnect connect(requestId,0,agent->getName(),agent->getAgentType());
 	out.writeCommand(&connect);
 	out.writeInt32(HEADER_NULL);
 	if (m_connection.send(out.buffer(),m_kernelAddress)) {

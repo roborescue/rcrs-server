@@ -25,6 +25,10 @@ namespace Rescue {
 
   CivilianAgent::~CivilianAgent() {}
 
+  std::string CivilianAgent::getName() const {
+    return "Legacy civilian agent";
+  }
+
   void CivilianAgent::sense(INT_32 time, const IdSet& changed) {
 	Agent::sense(time,changed);
 	//	LOG_DEBUG("CivilianAgent::sense. %d objects have changed.",sense.getObjects().size());
