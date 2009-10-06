@@ -1,6 +1,7 @@
 package kernel;
 
-import static rescuecore2.misc.JavaTools.instantiate;
+import static rescuecore2.misc.java.JavaTools.instantiate;
+import static rescuecore2.misc.java.JavaTools.instantiateFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,8 +16,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.util.concurrent.CountDownLatch;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.BorderLayout;
@@ -54,6 +53,9 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.misc.Pair;
+import rescuecore2.misc.java.LoadableTypeProcessor;
+import rescuecore2.misc.java.LoadableType;
+import rescuecore2.Constants;
 
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
@@ -67,54 +69,24 @@ public final class StartKernel {
     private static final String NO_GUI = "--nogui";
     private static final String JUST_RUN = "--just-run";
 
-    private static final String JAR_DIR_KEY = "jars.dir";
-    private static final String DEFAULT_JAR_DIR = "../jars";
-    private static final String INSPECT_JARS_KEY = "jars.inspect";
-
-    private static final String MESSAGE_FACTORY_MANIFEST_KEY = "MessageFactory";
-    private static final String ENTITY_FACTORY_MANIFEST_KEY = "EntityFactory";
     private static final String GIS_MANIFEST_KEY = "Gis";
     private static final String PERCEPTION_MANIFEST_KEY = "Perception";
     private static final String COMMUNICATION_MANIFEST_KEY = "CommunicationModel";
-    private static final String AGENT_MANIFEST_KEY = "Agent";
-    private static final String SIMULATOR_MANIFEST_KEY = "Simulator";
-    private static final String VIEWER_MANIFEST_KEY = "Viewer";
 
-    private static final String MESSAGE_FACTORY_KEY = "kernel.messages.factories";
-    private static final String ENTITY_FACTORY_KEY = "kernel.entities.factories";
     private static final String GIS_KEY = "kernel.gis";
     private static final String PERCEPTION_KEY = "kernel.perception";
     private static final String COMMUNICATION_KEY = "kernel.communication";
+    private static final String AGENT_KEY = "kernel.agents";
     private static final String SIMULATOR_KEY = "kernel.simulators";
     private static final String VIEWER_KEY = "kernel.viewers";
-    private static final String AGENT_KEY = "kernel.agents";
 
-    private static final String MESSAGE_FACTORY_REGEX = "(.+MessageFactory).class";
-    private static final String ENTITY_FACTORY_REGEX = "(.+EntityFactory).class";
     private static final String GIS_REGEX = "(.+WorldModelCreator).class";
     private static final String PERCEPTION_REGEX = "(.+Perception).class";
     private static final String COMMUNICATION_REGEX = "(.+CommunicationModel).class";
-    private static final String AGENT_REGEX = "(.+(?:FireBrigade|PoliceForce|AmbulanceTeam|Centre|Center)).class";
-    private static final String VIEWER_REGEX = "(.+Viewer).class";
-    private static final String SIMULATOR_REGEX = "(.+Simulator).class";
 
-    private static final LoadableType MESSAGE_FACTORY_LOADABLE_TYPE = new LoadableType(MESSAGE_FACTORY_MANIFEST_KEY, MESSAGE_FACTORY_KEY, MESSAGE_FACTORY_REGEX, MessageFactory.class);
-    private static final LoadableType ENTITY_FACTORY_LOADABLE_TYPE = new LoadableType(ENTITY_FACTORY_MANIFEST_KEY, ENTITY_FACTORY_KEY, ENTITY_FACTORY_REGEX, EntityFactory.class);
-    private static final LoadableType GIS_LOADABLE_TYPE = new LoadableType(GIS_MANIFEST_KEY, GIS_KEY, GIS_REGEX, WorldModelCreator.class);
-    private static final LoadableType PERCEPTION_LOADABLE_TYPE = new LoadableType(PERCEPTION_MANIFEST_KEY, PERCEPTION_KEY, PERCEPTION_REGEX, Perception.class);
-    private static final LoadableType COMMUNICATION_LOADABLE_TYPE = new LoadableType(COMMUNICATION_MANIFEST_KEY, COMMUNICATION_KEY, COMMUNICATION_REGEX, CommunicationModel.class);
-    private static final LoadableType AGENT_LOADABLE_TYPE = new LoadableType(AGENT_MANIFEST_KEY, AGENT_KEY, AGENT_REGEX, Agent.class);
-    private static final LoadableType SIMULATOR_LOADABLE_TYPE = new LoadableType(SIMULATOR_MANIFEST_KEY, SIMULATOR_KEY, SIMULATOR_REGEX, Simulator.class);
-    private static final LoadableType VIEWER_LOADABLE_TYPE = new LoadableType(VIEWER_MANIFEST_KEY, VIEWER_KEY, VIEWER_REGEX, Viewer.class);
-    private static final LoadableType[] LOADABLE_TYPES = {MESSAGE_FACTORY_LOADABLE_TYPE,
-                                                          ENTITY_FACTORY_LOADABLE_TYPE,
-                                                          GIS_LOADABLE_TYPE,
-                                                          PERCEPTION_LOADABLE_TYPE,
-                                                          COMMUNICATION_LOADABLE_TYPE,
-                                                          AGENT_LOADABLE_TYPE,
-                                                          SIMULATOR_LOADABLE_TYPE,
-                                                          VIEWER_LOADABLE_TYPE
-    };
+    private static final LoadableType GIS_LOADABLE_TYPE = new LoadableType(GIS_MANIFEST_KEY, GIS_REGEX, WorldModelCreator.class);
+    private static final LoadableType PERCEPTION_LOADABLE_TYPE = new LoadableType(PERCEPTION_MANIFEST_KEY, PERCEPTION_REGEX, Perception.class);
+    private static final LoadableType COMMUNICATION_LOADABLE_TYPE = new LoadableType(COMMUNICATION_MANIFEST_KEY, COMMUNICATION_REGEX, CommunicationModel.class);
 
     private static final String AUTOSTART_SUFFIX = ".auto";
 
@@ -124,7 +96,6 @@ public final class StartKernel {
     private static final String COMMAND_FILTERS_KEY = "kernel.commandfilters";
     private static final String AGENT_REGISTRAR_KEY = "kernel.agents.registrar";
     private static final String GUI_COMPONENTS_KEY = "kernel.ui.components";
-
 
     /** Utility class: private constructor. */
     private StartKernel() {}
@@ -161,16 +132,16 @@ public final class StartKernel {
                 ++i;
             }
             // Process jar files
-            processJarFiles(config.getValue(JAR_DIR_KEY, DEFAULT_JAR_DIR), config);
+            processJarFiles(config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR), config);
             // Register messages and entities
-            for (String next : config.getArrayValue(MESSAGE_FACTORY_KEY)) {
+            for (String next : config.getArrayValue(Constants.MESSAGE_FACTORY_KEY)) {
                 MessageFactory factory = instantiateFactory(next, MessageFactory.class);
                 if (factory != null) {
                     MessageRegistry.register(factory);
                     System.out.println("Registered message factory: " + next);
                 }
             }
-            for (String next : config.getArrayValue(ENTITY_FACTORY_KEY)) {
+            for (String next : config.getArrayValue(Constants.ENTITY_FACTORY_KEY)) {
                 EntityFactory factory = instantiateFactory(next, EntityFactory.class);
                 if (factory != null) {
                     EntityRegistry.register(factory);
@@ -290,48 +261,6 @@ public final class StartKernel {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T instantiateFactory(String classname, Class<T> superclazz) {
-        Class<T> clazz;
-        try {
-            clazz = (Class<T>)Class.forName(classname);
-        }
-        catch (ClassNotFoundException e) {
-            System.err.println("Could not find class " + classname + ": " + e);
-            return null;
-        }
-        // Is there a singleton instance called INSTANCE?
-        try {
-            Field field = clazz.getField("INSTANCE");
-            if (Modifier.isStatic(field.getModifiers())) {
-                try {
-                    return (T)field.get(null);
-                }
-                catch (IllegalAccessException e) {
-                    System.err.println("Could not access INSTANCE field in class " + classname + ": trying constructor.");
-                }
-            }
-        }
-        catch (NoSuchFieldException e) {
-            System.out.println(e);
-            // No singleton instance. Try instantiating it.
-        }
-        catch (ClassCastException e) {
-            System.out.println(e);
-            // The INSTANCE field is not the right type. Try using the default constructor.
-        }
-        try {
-            return clazz.newInstance();
-        }
-        catch (IllegalAccessException e) {
-            System.err.println("Could not instantiate class " + classname + ": " + e);
-        }
-        catch (InstantiationException e) {
-            System.err.println("Could not instantiate class " + classname + ": " + e);
-        }
-        return null;
-    }
-
     private static void autostartComponents(KernelInfo info, Config config) throws InterruptedException {
         Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
         info.componentManager.newConnection(connections.first());
@@ -422,11 +351,11 @@ public final class StartKernel {
         Kernel kernel = new Kernel(config, perception, comms, worldModel, filter);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
-        processInitialAgents(config, componentManager, worldModel);
+        registerInitialAgents(config, componentManager, worldModel);
         return new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config));
     }
 
-    private static void processInitialAgents(Config config, ComponentManager c, WorldModel<? extends Entity> model) throws KernelException {
+    private static void registerInitialAgents(Config config, ComponentManager c, WorldModel<? extends Entity> model) throws KernelException {
         AgentRegistrar ar = instantiate(config.getValue(AGENT_REGISTRAR_KEY), AgentRegistrar.class);
         if (ar == null) {
             throw new KernelException("Couldn't instantiate agent registrar");
@@ -490,38 +419,17 @@ public final class StartKernel {
     }
 
     private static void processJarFiles(String base, Config config) throws IOException {
-        File baseDir = new File(base);
-        File[] jarFiles = baseDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".jar");
-                }
-            });
-        for (File next : jarFiles) {
-            JarFile jar = new JarFile(next);
-            processJarFile(jar, config);
-        }
-    }
-
-    private static void processJarFile(JarFile jar, Config config) throws IOException {
-        System.out.println("Processing " + jar.getName());
-        Manifest mf = jar.getManifest();
-        if (mf != null) {
-            System.out.println("Inspecting manifest...");
-            for (LoadableType type : LOADABLE_TYPES) {
-                type.processManifest(mf, config);
-            }
-        }
-        if (config.getBooleanValue(INSPECT_JARS_KEY, true)) {
-            // Look for well-named classes
-            System.out.println("Looking for likely class names...");
-            for (Enumeration<JarEntry> e = jar.entries(); e.hasMoreElements();) {
-                JarEntry next = e.nextElement();
-                for (LoadableType type : LOADABLE_TYPES) {
-                    type.processJarEntry(next, config);
-                }
-            }
-        }
+        LoadableTypeProcessor processor = new LoadableTypeProcessor();
+        processor.setDeepInspection(config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, true));
+        processor.addConfigUpdater(LoadableType.MESSAGE_FACTORY, config, Constants.MESSAGE_FACTORY_KEY);
+        processor.addConfigUpdater(LoadableType.ENTITY_FACTORY, config, Constants.ENTITY_FACTORY_KEY);
+        processor.addConfigUpdater(LoadableType.AGENT, config, AGENT_KEY);
+        processor.addConfigUpdater(LoadableType.SIMULATOR, config, SIMULATOR_KEY);
+        processor.addConfigUpdater(LoadableType.VIEWER, config, VIEWER_KEY);
+        processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, GIS_KEY);
+        processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, PERCEPTION_KEY);
+        processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, COMMUNICATION_KEY);
+        processor.processJarDirectory(base, LoadableType.MESSAGE_FACTORY, LoadableType.ENTITY_FACTORY, LoadableType.AGENT, LoadableType.SIMULATOR, LoadableType.VIEWER, GIS_LOADABLE_TYPE, PERCEPTION_LOADABLE_TYPE, COMMUNICATION_LOADABLE_TYPE);
     }
 
     private static class KernelChooserDialog extends JDialog {
@@ -587,49 +495,6 @@ public final class StartKernel {
             }
             if (comms instanceof KernelGUIComponent) {
                 guiComponents.add((KernelGUIComponent)comms);
-            }
-        }
-    }
-
-    private static class LoadableType {
-        String manifestKey;
-        String configKey;
-        Pattern regex;
-        Class clazz;
-
-        public LoadableType(String m, String c, String r, Class cl) {
-            manifestKey = m;
-            configKey = c;
-            regex = Pattern.compile(r);
-            clazz = cl;
-        }
-
-        public void processManifest(Manifest mf, Config config) {
-            Attributes att = mf.getMainAttributes();
-            String value = att.getValue(manifestKey);
-            if (value != null) {
-                config.appendValue(configKey, value);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        public void processJarEntry(JarEntry e, Config config) {
-            Matcher m = regex.matcher(e.getName());
-            if (m.matches()) {
-                try {
-                    String className = m.group(1).replace("/", ".");
-                    if (config.isDefined(configKey) && config.getArrayValue(configKey).contains(className)) {
-                        return;
-                    }
-                    Class testClass = Class.forName(className);
-                    if (clazz.isAssignableFrom(testClass) && !testClass.isInterface()) {
-                        System.out.println("Adding " + className + " to " + configKey);
-                        config.appendValue(configKey, className);
-                    }
-                }
-                catch (ClassNotFoundException ex) {
-                    System.out.println("Class not found");
-                }
             }
         }
     }
