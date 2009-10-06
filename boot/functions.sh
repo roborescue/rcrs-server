@@ -155,4 +155,6 @@ function startSims {
     BLOCKADES=$!
     xterm -T collapse -e "$LD_COMMAND && $BASEDIR/oldsims/collapsesimulator/collapsesimulator --mapdir $MAP --config $DIR/config/collapse.cfg 2>&1 | tee $LOGDIR/collapse.log" &
     COLLAPSE=$!
+    xterm -T civilian -e "$LD_COMMAND && $BASEDIR/oldsims/civilian/civilian 2>&1 | tee $LOGDIR/civilian.log" &
+    CIVILIAN=$!
 }
