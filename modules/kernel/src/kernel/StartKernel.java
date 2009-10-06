@@ -4,17 +4,9 @@ import static rescuecore2.misc.java.JavaTools.instantiate;
 import static rescuecore2.misc.java.JavaTools.instantiateFactory;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
-import java.util.jar.Manifest;
-import java.util.jar.Attributes;
 import java.util.concurrent.CountDownLatch;
 import java.awt.Dialog;
 import java.awt.Frame;
