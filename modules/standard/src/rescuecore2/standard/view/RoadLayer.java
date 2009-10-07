@@ -9,6 +9,7 @@ import java.awt.geom.Line2D;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A view layer that renders roads.
@@ -27,10 +28,10 @@ public class RoadLayer extends StandardEntityViewLayer<Road> {
     public Shape render(Road r, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
         Node head = (Node)r.getHead(model);
         Node tail = (Node)r.getTail(model);
-        int headX = t.scaleX(head.getX());
-        int headY = t.scaleY(head.getY());
-        int tailX = t.scaleX(tail.getX());
-        int tailY = t.scaleY(tail.getY());
+        int headX = t.xToScreen(head.getX());
+        int headY = t.yToScreen(head.getY());
+        int tailX = t.xToScreen(tail.getX());
+        int tailY = t.yToScreen(tail.getY());
         int lanes = r.getLinesToHead(); // Assume symmetric road
         int lanesBlocked = r.countBlockedLanes();
         if (lanesBlocked == 0) {

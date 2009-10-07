@@ -87,13 +87,13 @@ public class CommandLayer extends StandardViewLayer {
         Iterator<EntityID> it = path.iterator();
         StandardEntity first = getWorld().getEntity(it.next());
         Pair<Integer, Integer> firstLocation = first.getLocation(getWorld());
-        int startX = transform.scaleX(firstLocation.first());
-        int startY = transform.scaleY(firstLocation.second());
+        int startX = transform.xToScreen(firstLocation.first());
+        int startY = transform.yToScreen(firstLocation.second());
         while (it.hasNext()) {
             StandardEntity next = getWorld().getEntity(it.next());
             Pair<Integer, Integer> nextLocation = next.getLocation(getWorld());
-            int nextX = transform.scaleX(nextLocation.first());
-            int nextY = transform.scaleY(nextLocation.second());
+            int nextX = transform.xToScreen(nextLocation.first());
+            int nextY = transform.yToScreen(nextLocation.second());
             g.drawLine(startX, startY, nextX, nextY);
             // Draw an arrow partway along the length
             int dx = nextX - startX;
@@ -117,10 +117,10 @@ public class CommandLayer extends StandardViewLayer {
         StandardEntity target = getWorld().getEntity(ex.getTarget());
         Pair<Integer, Integer> fbLocation = fb.getLocation(getWorld());
         Pair<Integer, Integer> targetLocation = target.getLocation(getWorld());
-        int fbX = transform.scaleX(fbLocation.first());
-        int fbY = transform.scaleY(fbLocation.second());
-        int bX = transform.scaleX(targetLocation.first());
-        int bY = transform.scaleY(targetLocation.second());
+        int fbX = transform.xToScreen(fbLocation.first());
+        int fbY = transform.yToScreen(fbLocation.second());
+        int bX = transform.xToScreen(targetLocation.first());
+        int bY = transform.yToScreen(targetLocation.second());
         g.setColor(Color.BLUE);
         g.drawLine(fbX, fbY, bX, bY);
     }
@@ -143,8 +143,8 @@ public class CommandLayer extends StandardViewLayer {
 
     private void renderHumanAction(StandardEntity entity, Color colour, Graphics2D g, String s) {
         Pair<Integer, Integer> location = entity.getLocation(getWorld());
-        int x = transform.scaleX(location.first()) - SIZE / 2;
-        int y = transform.scaleY(location.second()) - SIZE / 2;
+        int x = transform.xToScreen(location.first()) - SIZE / 2;
+        int y = transform.yToScreen(location.second()) - SIZE / 2;
         Shape shape = new Ellipse2D.Double(x, y, SIZE, SIZE);
         g.setColor(colour);
         g.fill(shape);
@@ -153,8 +153,8 @@ public class CommandLayer extends StandardViewLayer {
             FontMetrics metrics = g.getFontMetrics();
             int width = metrics.stringWidth(s);
             int height = metrics.getHeight();
-            x = transform.scaleX(location.first());
-            y = transform.scaleY(location.second());
+            x = transform.xToScreen(location.first());
+            y = transform.yToScreen(location.second());
             g.drawString(s, x - (width / 2), y + (height / 2));
         }
     }

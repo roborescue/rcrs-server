@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.misc.gui.ScreenTransform;
 
 import rescuecore2.view.RenderedObject;
 

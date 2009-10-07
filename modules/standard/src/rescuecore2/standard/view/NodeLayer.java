@@ -7,6 +7,7 @@ import java.awt.geom.Ellipse2D;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Node;
+import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A view layer that renders nodes.
@@ -23,8 +24,8 @@ public class NodeLayer extends StandardEntityViewLayer<Node> {
 
     @Override
     public Shape render(Node n, Graphics2D g, ScreenTransform t, StandardWorldModel world) {
-        int x = t.scaleX(n.getX()) - (SIZE / 2);
-        int y = t.scaleY(n.getY()) - (SIZE / 2);
+        int x = t.xToScreen(n.getX()) - (SIZE / 2);
+        int y = t.yToScreen(n.getY()) - (SIZE / 2);
         g.setColor(Color.BLACK);
         Shape shape = new Ellipse2D.Double(x, y, SIZE, SIZE);
         g.fill(shape);

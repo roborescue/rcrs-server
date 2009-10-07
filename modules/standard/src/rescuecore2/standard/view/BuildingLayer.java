@@ -13,6 +13,7 @@ import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.entities.PoliceOffice;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A view layer that renders buildings.
@@ -37,8 +38,8 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
         int[] xs = new int[count];
         int[] ys = new int[count];
         for (int i = 0; i < count; ++i) {
-            xs[i] = t.scaleX(apexes[i * 2]);
-            ys[i] = t.scaleY(apexes[(i * 2) + 1]);
+            xs[i] = t.xToScreen(apexes[i * 2]);
+            ys[i] = t.yToScreen(apexes[(i * 2) + 1]);
         }
         Polygon shape = new Polygon(xs, ys, count);
         if (b instanceof Refuge) {
@@ -103,13 +104,13 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
         g.setColor(Color.BLACK);
         g.draw(shape);
         // Draw a line to each entrance
-        int x = t.scaleX(b.getX());
-        int y = t.scaleY(b.getY());
+        int x = t.xToScreen(b.getX());
+        int y = t.yToScreen(b.getY());
         g.setColor(Color.LIGHT_GRAY);
         for (EntityID next : b.getEntrances()) {
             Node n = (Node)model.getEntity(next);
-            int nx = t.scaleX(n.getX());
-            int ny = t.scaleY(n.getY());
+            int nx = t.xToScreen(n.getX());
+            int ny = t.yToScreen(n.getY());
             g.drawLine(x, y, nx, ny);
         }
         return shape;
