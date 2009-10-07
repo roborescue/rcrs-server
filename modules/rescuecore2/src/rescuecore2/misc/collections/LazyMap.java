@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.Collection;
 
 /**
-   A LazyMap is a Map that generates default values for keys that do not yet have a value. This class delegates to a real Map implementation for all methods with the exception of {@link #get(K)}. If the downstream get returns a value then that value is returned to the caller. If the downstream get returns null then the {@link #createValue()} method will be called and the result of that is added to the downstream map and returned.
+   A LazyMap is a Map that generates default values for keys that do not yet have a value. This class delegates to a real Map implementation for all methods with the exception of {@link #get(Object)}. If the downstream get returns a value then that value is returned to the caller. If the downstream get returns null then the {@link #createValue()} method will be called and the result of that is added to the downstream map and returned.
    @param <K> The key type.
    @param <V> The value type.
  */
