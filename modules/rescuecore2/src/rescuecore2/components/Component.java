@@ -7,7 +7,7 @@ import rescuecore2.config.Config;
  */
 public interface Component {
     /**
-       Initialise this component before connection.
+       Initialise this component before connection. Subclasses should NOT perform config-specific initialisation at this point because the kernel may send new configuration information when the connection is made.
        @param config The system configuration.
        @throws ComponentInitialisationException If there is a problem initialising the component.
      */
