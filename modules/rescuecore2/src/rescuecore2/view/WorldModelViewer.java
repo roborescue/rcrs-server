@@ -3,6 +3,7 @@ package rescuecore2.view;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -112,6 +113,14 @@ public abstract class WorldModelViewer<T extends WorldModel> extends JComponent 
             objects.addAll(next.render(copy, width, height));
         }
         postpaint(layers);
+    }
+
+    /**
+       Get all installed layers.
+       @return All installed layers.
+    */
+    protected List<ViewLayer<? super T>> getLayers() {
+        return Collections.unmodifiableList(layers);
     }
 
     /**
