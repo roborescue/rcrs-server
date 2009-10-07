@@ -4,10 +4,11 @@
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
 
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human"/>
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse"/>
   <property name="modules.kernel.depend" value="rescuecore2,standard,sample,handy"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
+  <property name="modules.collapse.depend" value="rescuecore2,standard"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
