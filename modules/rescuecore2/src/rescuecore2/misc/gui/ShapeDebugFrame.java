@@ -205,9 +205,6 @@ public class ShapeDebugFrame extends JFrame {
         */
         public ShapeViewer() {
             panZoom = new PanZoomListener(this);
-            addMouseListener(panZoom);
-            addMouseMotionListener(panZoom);
-            addMouseWheelListener(panZoom);
         }
 
         @Override
