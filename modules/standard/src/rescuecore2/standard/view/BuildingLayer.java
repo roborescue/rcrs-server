@@ -21,6 +21,7 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     private static final int SLIGHTLY_BROKEN = 25;
     private static final int QUITE_BROKEN = 50;
     private static final int VERY_BROKEN = 75;
+    private static final int DESTROYED = 100;
 
     /**
        Construct a building view layer.
@@ -85,18 +86,19 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
         default:
             throw new IllegalArgumentException("Don't know how to render fieryness " + b.getFierynessEnum());
         }
-        /*
         int brokenness = b.getBrokenness();
-        if (brokenness > SLIGHTLY_BROKEN) {
+        if (brokenness >= SLIGHTLY_BROKEN) {
             g.setColor(g.getColor().darker());
         }
-        if (brokenness > QUITE_BROKEN) {
+        if (brokenness >= QUITE_BROKEN) {
             g.setColor(g.getColor().darker());
         }
-        if (brokenness > VERY_BROKEN) {
+        if (brokenness >= VERY_BROKEN) {
             g.setColor(g.getColor().darker());
         }
-        */
+        if (brokenness >= DESTROYED) {
+            g.setColor(g.getColor().darker());
+        }
         g.fill(shape);
         g.setColor(Color.BLACK);
         g.draw(shape);
