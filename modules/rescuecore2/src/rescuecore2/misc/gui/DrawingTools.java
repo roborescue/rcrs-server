@@ -13,6 +13,8 @@ public final class DrawingTools {
     /** A default length (in pixels) for arrow barbs. */
     public static final double DEFAULT_ARROW_LENGTH = 5;
 
+    private DrawingTools() {}
+
     /**
        Get the coordinates for arrow heads along a line.
        @param startX The start of the line (X).

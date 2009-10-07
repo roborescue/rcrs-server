@@ -55,17 +55,17 @@ public class ScreenTransform {
     }
 
     /**
-       Increase the zoom level by one.
+       Increase the zoom level by one step.
      */
     public void zoomIn() {
-        ++zoom;
+        zoom *= 2;
     }
 
     /**
-       Decrease the zoom level by one. If this reduces the zoom level to one then any fixed point coordinate will be cleared.
+       Decrease the zoom level by one step. If this reduces the zoom level to one then any fixed point coordinate will be cleared.
      */
     public void zoomOut() {
-        --zoom;
+        zoom /= 2;
         if (zoom <= 1) {
             zoom = 1;
             fixedX = minX;

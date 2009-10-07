@@ -18,6 +18,10 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
     private ScreenTransform transform;
     private JComponent component;
 
+    /**
+       Construct a PanZoomListener that listens for events on a JComponent.
+       @param component The component to listen for mouse events on.
+    */
     public PanZoomListener(JComponent component) {
         this.component = component;
         component.addMouseListener(this);

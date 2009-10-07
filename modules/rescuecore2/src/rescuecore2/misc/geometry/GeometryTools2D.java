@@ -3,8 +3,13 @@ package rescuecore2.misc.geometry;
 /**
    A bunch of useful 2D geometry tools: finding line intersections, closest points and so on.
  */
-public class GeometryTools2D {
+public final class GeometryTools2D {
+    /**
+       The threshold for equality testing in geometric operations. Lines will be considered parallel if the D factor is less than this; points will be considered equivalent if their position difference is less than this and so on.
+    */
     public static final double THRESHOLD = 0.0000000000001;
+
+    private GeometryTools2D() {}
 
     /**
        Find the intersection point of two lines.

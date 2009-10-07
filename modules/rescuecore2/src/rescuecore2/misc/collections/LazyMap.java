@@ -7,8 +7,8 @@ import java.util.Collection;
 
 /**
    A LazyMap is a Map that generates default values for keys that do not yet have a value. This class delegates to a real Map implementation for all methods with the exception of {@link #get(K)}. If the downstream get returns a value then that value is returned to the caller. If the downstream get returns null then the {@link #createValue()} method will be called and the result of that is added to the downstream map and returned.
-   @param K The key type.
-   @param V The value type.
+   @param <K> The key type.
+   @param <V> The value type.
  */
 public abstract class LazyMap<K, V> implements Map<K, V> {
     private Map<K, V> downstream;
@@ -30,6 +30,7 @@ public abstract class LazyMap<K, V> implements Map<K, V> {
 
     /**
        Construct a new value object for a key that does not yet have a value.
+       @return A new value object.
     */
     public abstract V createValue();
 
@@ -49,7 +50,7 @@ public abstract class LazyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public Set<Map.Entry<K,V>> entrySet() {
+    public Set<Map.Entry<K, V>> entrySet() {
         return downstream.entrySet();
     }
 
@@ -95,7 +96,7 @@ public abstract class LazyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public void putAll(Map<? extends K,? extends V> m) {
+    public void putAll(Map<? extends K, ? extends V> m) {
         downstream.putAll(m);
     }
 
