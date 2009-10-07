@@ -151,7 +151,7 @@ function startSims {
     TRAFFIC=$!
     xterm -T fire -e "cd $BASEDIR/oldsims/firesimulator; java -Xmx256m -cp $BASEDIR/oldsims/ firesimulator.Main -cstp ../../boot/config/fire.cfg -stp default.stp -p 7000 2>&1 | tee $LOGDIR/fire.log" &
     FIRE=$!
-    xterm -T blockades -e "$LD_COMMAND && $BASEDIR/oldsims/blockadessimulator/blockadessimulator --mapdir $MAP --config $DIR/config/blockades.cfg 2>&1 | tee $LOGDIR/blockades.log" &
+    xterm -T blockades -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/blockade.jar rescuecore2.LaunchComponents blockade.BlockadeSimulator 2>&1 | tee $LOGDIR/blockades.log" &
     BLOCKADES=$!
     xterm -T collapse -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar rescuecore2.LaunchComponents collapse.CollapseSimulator 2>&1 | tee $LOGDIR/collapse.log" &
     COLLAPSE=$!

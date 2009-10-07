@@ -7,7 +7,7 @@ processArgs $*
 # Delete old logs
 rm -f $LOGDIR/*.log
 
-startKernel --just-run
+startKernel
 startSims
 
 java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar sample.LaunchSampleAgents >& $LOGDIR/agents.log &
