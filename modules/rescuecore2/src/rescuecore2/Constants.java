@@ -24,5 +24,8 @@ public final class Constants {
     /** Default kernel port number. */
     public static final int DEFAULT_KERNEL_PORT_NUMBER = 7000;
 
+    /** The random seed key. */
+    public static final String RANDOM_SEED_KEY = "random.seed";
+
     private Constants() {}
 }
