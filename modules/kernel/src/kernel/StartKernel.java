@@ -3,7 +3,6 @@ package kernel;
 import static rescuecore2.misc.java.JavaTools.instantiate;
 import static rescuecore2.misc.java.JavaTools.instantiateFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
 import rescuecore2.misc.Pair;
+import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.java.LoadableType;
 import rescuecore2.Constants;
@@ -56,8 +56,6 @@ import kernel.ui.KernelGUIComponent;
    A class for launching the kernel.
  */
 public final class StartKernel {
-    private static final String CONFIG_FLAG = "-c";
-    private static final String CONFIG_LONG_FLAG = "--config";
     private static final String NO_GUI = "--nogui";
     private static final String JUST_RUN = "--just-run";
 
@@ -82,7 +80,6 @@ public final class StartKernel {
 
     private static final String AUTOSTART_SUFFIX = ".auto";
 
-    private static final String KERNEL_PORT_KEY = "kernel.io.port";
     private static final String KERNEL_STARTUP_TIME_KEY = "kernel.startup.connect-time";
 
     private static final String COMMAND_FILTERS_KEY = "kernel.commandfilters";
@@ -101,27 +98,18 @@ public final class StartKernel {
         boolean showGUI = true;
         boolean justRun = false;
         try {
+            args = CommandLineOptions.processArgs(args, config);
             int i = 0;
-            while (i < args.length) {
-                if (args[i].equalsIgnoreCase(CONFIG_FLAG) || args[i].equalsIgnoreCase(CONFIG_LONG_FLAG)) {
-                    config.read(new File(args[++i]));
-                }
-                else if (args[i].equalsIgnoreCase(NO_GUI)) {
+            for (String arg : args) {
+                if (arg.equalsIgnoreCase(NO_GUI)) {
                     showGUI = false;
                 }
-                else if (args[i].equalsIgnoreCase(JUST_RUN)) {
+                else if (arg.equalsIgnoreCase(JUST_RUN)) {
                     justRun = true;
                 }
-                else if (args[i].startsWith("--") && args[i].indexOf("=") != -1) {
-                    int index = args[i].indexOf("=");
-                    String key = args[i].substring(2, index);
-                    String value = args[i].substring(index + 1);
-                    config.setValue(key, value);
-                }
                 else {
-                    System.out.println("Unrecognised option: " + args[i]);
+                    System.out.println("Unrecognised option: " + arg);
                 }
-                ++i;
             }
             // Process jar files
             processJarFiles(config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR), config);
@@ -189,7 +177,7 @@ public final class StartKernel {
         // Start the connection manager
         ConnectionManager connectionManager = new ConnectionManager();
         try {
-            connectionManager.listen(config.getIntValue(KERNEL_PORT_KEY), kernel.componentManager);
+            connectionManager.listen(config.getIntValue(Constants.KERNEL_PORT_NUMBER), kernel.componentManager);
         }
         catch (IOException e) {
             throw new KernelException("Couldn't open kernel port", e);
