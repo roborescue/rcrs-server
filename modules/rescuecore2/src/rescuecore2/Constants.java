@@ -15,5 +15,14 @@ public final class Constants {
     /** Default location for looking up jar files. */
     public static final String DEFAULT_JAR_DIR = "../jars";
 
+    /** Config key for the kernel host name. */
+    public static final String KERNEL_HOST_NAME = "kernel.host";
+    /** Default kernel host name. */
+    public static final String DEFAULT_KERNEL_HOST_NAME = "localhost";
+    /** Config key for the kernel port number. */
+    public static final String KERNEL_PORT_NUMBER = "kernel.port";
+    /** Default kernel port number. */
+    public static final int DEFAULT_KERNEL_PORT_NUMBER = 7000;
+
     private Constants() {}
 }

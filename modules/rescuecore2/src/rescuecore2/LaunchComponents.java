@@ -3,9 +3,6 @@ package rescuecore2;
 import static rescuecore2.misc.java.JavaTools.instantiate;
 
 import java.io.IOException;
-import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
 
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
@@ -18,18 +15,12 @@ import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.java.LoadableType;
+import rescuecore2.misc.CommandLineOptions;
 
 /**
    General launcher for components.
  */
 public final class LaunchComponents {
-    private static final int DEFAULT_KERNEL_PORT = 7000;
-    private static final String DEFAULT_KERNEL_HOST = "localhost";
-
-    private static final String PORT_FLAG = "-p";
-    private static final String HOST_FLAG = "-h";
-    private static final String CONFIG_FLAG = "-c";
-
     private LaunchComponents() {}
 
     /**
@@ -37,42 +28,23 @@ public final class LaunchComponents {
        @param args The arguments should be thus: [-p <port>]? [-h <hostname>]? [-c <config file>]* (fully.qualified.classname[*multiplier])+
      */
     public static void main(String[] args) {
-        int port = DEFAULT_KERNEL_PORT;
-        String host = DEFAULT_KERNEL_HOST;
         Config config = new Config();
-        List<String> componentArgs = new ArrayList<String>();
-        // CHECKSTYLE:OFF:ModifiedControlVariable
-        for (int i = 0; i < args.length; ++i) {
-            if (args[i].equals(PORT_FLAG)) {
-                port = Integer.parseInt(args[++i]);
-            }
-            else if (args[i].equals(HOST_FLAG)) {
-                host = args[++i];
-            }
-            else if (args[i].equals(CONFIG_FLAG)) {
-                try {
-                    config.read(new File(args[++i]));
-                }
-                catch (ConfigException e) {
-                    System.err.println("Error reading config file " + args[i]);
-                    e.printStackTrace();
-                }
-            }
-            else {
-                componentArgs.add(args[i]);
-            }
-        }
-        // CHECKSTYLE:ON:ModifiedControlVariable
         try {
+            args = CommandLineOptions.processArgs(args, config);
+            int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER, Constants.DEFAULT_KERNEL_PORT_NUMBER);
+            String host = config.getValue(Constants.KERNEL_HOST_NAME, Constants.DEFAULT_KERNEL_HOST_NAME);
             processJarFiles(config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR), config);
             Connection c = new TCPConnection(host, port);
             c.startup();
             ComponentLauncher launcher = new ComponentLauncher(c);
-            for (String next : componentArgs) {
+            for (String next : args) {
                 connect(launcher, next, config);
             }
         }
         catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (ConfigException e) {
             e.printStackTrace();
         }
         catch (ConnectionException e) {
