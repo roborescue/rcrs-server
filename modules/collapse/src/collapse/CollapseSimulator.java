@@ -132,7 +132,7 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
         }
 
         int damage() {
-            double d = Math.random();
+            double d = random.nextDouble();
             if (d < destroyed) {
                 return DESTROYED;
             }
