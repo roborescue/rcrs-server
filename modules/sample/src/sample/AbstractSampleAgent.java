@@ -75,7 +75,7 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
             result.add(current.getID());
             seen.add(current);
             List<StandardEntity> neighbours = new ArrayList<StandardEntity>(search.findNeighbours(current));
-            Collections.shuffle(neighbours);
+            Collections.shuffle(neighbours, random);
             boolean found = false;
             for (StandardEntity next : neighbours) {
                 if (seen.contains(next)) {

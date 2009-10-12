@@ -57,10 +57,10 @@ public class SampleCivilian extends AbstractSampleAgent {
             // Unconscious (or dead): do nothing
             return;
         }
-        if (damage > 0 && Math.random() < ouchProbability) {
+        if (damage > 0 && random.nextDouble() < ouchProbability) {
             say(OUCH, time);
         }
-        if (buriedness > 0 && Math.random() < helpProbability) {
+        if (buriedness > 0 && random.nextDouble() < helpProbability) {
             say(HELP, time);
         }
         if (damage == 0 && buriedness == 0) {
