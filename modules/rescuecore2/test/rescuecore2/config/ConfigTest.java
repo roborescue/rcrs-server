@@ -49,6 +49,7 @@ public class ConfigTest {
     private final static String DOLLAR_CONFIG = "supportfiles/config/dollar.cfg";
     private final static String DOLLAR_CONFIG_2 = "supportfiles/config/dollar2.cfg";
     private final static String DOLLAR_CONFIG_BAD = "supportfiles/config/dollar-bad.cfg";
+    private final static String DOLLAR_CONFIG_DEFAULT = "supportfiles/config/dollar-default.cfg";
 
     @Before
     public void setup() {
@@ -923,6 +924,18 @@ public class ConfigTest {
         assertTrue(result.contains("key : value" + System.getProperty("line.separator")));
         assertTrue(result.contains("duplicate : ${key}" + System.getProperty("line.separator")));
         assertFalse(result.contains("duplicate : value"));
+    }
+
+    @Test
+    public void testReferenceWithDefault() throws IOException, ConfigException {
+        read(DOLLAR_CONFIG_DEFAULT);
+        assertEquals(2, config.getAllKeys().size());
+        assertEquals("apples", config.getValue("dollar.first"));
+        assertEquals("apples and oranges", config.getValue("dollar.second"));
+        config.setValue("nonexistant", "pears");
+        assertEquals("apples and pears", config.getValue("dollar.second"));
+        config.removeKey("nonexistant");
+        assertEquals("apples and oranges", config.getValue("dollar.second"));
     }
 
     private void read(String name) throws IOException, ConfigException {

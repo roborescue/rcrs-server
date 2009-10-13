@@ -560,15 +560,30 @@ public class Config {
         }
         noCache.add(key);
         int end = value.indexOf("}", index);
+        int colon = value.indexOf(":", index);
+        String reference = value.substring(index + 2, end);
+        String defaultValue = null;
+        if (colon > index && colon < end) {
+            reference = value.substring(index + 2, colon);
+            defaultValue = value.substring(colon + 1, end);
+        }
         StringBuilder result = new StringBuilder();
         result.append(value.substring(0, index));
-        result.append(resolveReferences(value.substring(index + 2, end)));
+        result.append(resolveReferences(reference, defaultValue));
         result.append(processDollarNotation(key, value.substring(end + 1)));
         return result.toString();
     }
 
-    private String resolveReferences(String s) {
-        return getValue(s);
+    private String resolveReferences(String s, String defaultValue) {
+        try {
+            return getValue(s);
+        }
+        catch (NoSuchConfigOptionException e) {
+            if (defaultValue != null) {
+                return defaultValue;
+            }
+            throw e;
+        }
     }
 
     private interface Context {
