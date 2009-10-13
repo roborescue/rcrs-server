@@ -3,6 +3,7 @@ package rescuecore2.config;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -20,6 +21,8 @@ import java.util.Set;
 public class ConfigTest {
     private Config config;
     private File baseDir;
+
+    private final static double TOLERANCE = 0.00001;
 
     private final static String BASIC_CONFIG = "supportfiles/config/basic.cfg";
     private final static String INCLUDE_CONFIG = "supportfiles/config/include.cfg";
@@ -42,6 +45,10 @@ public class ConfigTest {
     private final static String ARRAY_CONFIG = "supportfiles/config/array.cfg";
 
     private final static String RESOURCE_CONFIG = "rescuecore2/config/resource.cfg";
+
+    private final static String DOLLAR_CONFIG = "supportfiles/config/dollar.cfg";
+    private final static String DOLLAR_CONFIG_2 = "supportfiles/config/dollar2.cfg";
+    private final static String DOLLAR_CONFIG_BAD = "supportfiles/config/dollar-bad.cfg";
 
     @Before
     public void setup() {
@@ -313,9 +320,9 @@ public class ConfigTest {
             // Expected
         }
         assertEquals("value", config.getValue("key"));
-        assertEquals(5, config.getFloatValue("int"), 0.001);
+        assertEquals(5, config.getFloatValue("int"), TOLERANCE);
         assertEquals("5", config.getValue("int"));
-        assertEquals(3.4, config.getFloatValue("float"), 0.001);
+        assertEquals(3.4, config.getFloatValue("float"), TOLERANCE);
         assertEquals("3.4", config.getValue("float"));
         try {
             config.getFloatValue("boolean");
@@ -329,15 +336,15 @@ public class ConfigTest {
         config.setFloatValue("newkey", -9.3);
         assertEquals(5, config.getAllKeys().size());
         assertTrue(config.getAllKeys().contains("newkey"));
-        assertEquals(-9.3, config.getFloatValue("newkey"), 0.001);
+        assertEquals(-9.3, config.getFloatValue("newkey"), TOLERANCE);
         assertEquals("-9.3", config.getValue("newkey"));
-        assertEquals(3.4, config.getFloatValue("float"), 0.001);
+        assertEquals(3.4, config.getFloatValue("float"), TOLERANCE);
         assertEquals("3.4", config.getValue("float"));
         config.setFloatValue("float", 127.02);
         assertEquals(5, config.getAllKeys().size());
-        assertEquals(-9.3, config.getFloatValue("newkey"), 0.001);
+        assertEquals(-9.3, config.getFloatValue("newkey"), TOLERANCE);
         assertEquals("-9.3", config.getValue("newkey"));
-        assertEquals(127.02, config.getFloatValue("float"), 0.001);
+        assertEquals(127.02, config.getFloatValue("float"), TOLERANCE);
         assertEquals("127.02", config.getValue("float"));
     }
 
@@ -656,7 +663,7 @@ public class ConfigTest {
         // Same again for float values
         config.removeAllKeys();
         config.setFloatValue("key", 7.3);
-        assertEquals(7.3, config.getFloatValue("key"), 0.001);
+        assertEquals(7.3, config.getFloatValue("key"), TOLERANCE);
         assertEquals("7.3", config.getValue("key"));
         config.setValue("key", "orange");
         try {
@@ -683,7 +690,7 @@ public class ConfigTest {
         config.setIntValue("int", 5);
         assertEquals(5, config.getIntValue("int"));
         config.setFloatValue("float", 2.5);
-        assertEquals(2.5, config.getFloatValue("float"), 0.001);
+        assertEquals(2.5, config.getFloatValue("float"), TOLERANCE);
         config.setBooleanValue("boolean", true);
         assertTrue(config.getBooleanValue("boolean"));
         config.removeKey("int");
@@ -717,7 +724,7 @@ public class ConfigTest {
         config.setIntValue("int", 5);
         assertEquals(5, config.getIntValue("int"));
         config.setFloatValue("float", 2.5);
-        assertEquals(2.5, config.getFloatValue("float"), 0.001);
+        assertEquals(2.5, config.getFloatValue("float"), TOLERANCE);
         config.setBooleanValue("boolean", true);
         assertTrue(config.getBooleanValue("boolean"));
         config.removeAllKeys();
@@ -773,10 +780,10 @@ public class ConfigTest {
     @Test
     public void testGetFloatValueWithDefault() throws IOException, ConfigException {
         read(BASIC_CONFIG);
-        assertEquals(10.0, config.getFloatValue("newkey", 10.0), 0.001);
-        assertEquals(3.4, config.getFloatValue("float", 10.0), 0.001);
+        assertEquals(10.0, config.getFloatValue("newkey", 10.0), TOLERANCE);
+        assertEquals(3.4, config.getFloatValue("float", 10.0), TOLERANCE);
         // Look up a real key again to check that cached values are handled correctly
-        assertEquals(3.4, config.getFloatValue("float", 10.0), 0.001);
+        assertEquals(3.4, config.getFloatValue("float", 10.0), TOLERANCE);
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -810,6 +817,112 @@ public class ConfigTest {
     @Test(expected=IllegalArgumentException.class)
     public void testGetBooleanValueWithNullKeyAndDefault() throws ConfigException {
         config.getBooleanValue(null, false);
+    }
+
+    @Test
+    public void testDollarNotation() throws IOException, ConfigException {
+        read(DOLLAR_CONFIG);
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals("apples", config.getValue("dollar.first"));
+        assertEquals("apples", config.getValue("dollar.fourth"));
+        assertEquals("oranges and apples", config.getValue("dollar.second"));
+        assertEquals("apples and oranges", config.getValue("dollar.third"));
+    }
+
+    @Test(expected=NoSuchConfigOptionException.class)
+    public void testBrokenDollarNotation() throws IOException, ConfigException {
+        read(DOLLAR_CONFIG_BAD);
+        assertEquals(2, config.getAllKeys().size());
+        assertEquals("bananas", config.getValue("dollar.first"));
+        // This should throw an exception
+        config.getValue("dollar.second");
+    }
+
+    @Test
+    public void testDollarNotationSetValue() throws IOException, ConfigException {
+        read(DOLLAR_CONFIG);
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals("apples", config.getValue("dollar.first"));
+        assertEquals("oranges and apples", config.getValue("dollar.second"));
+        assertEquals("apples and oranges", config.getValue("dollar.third"));
+        config.setValue("dollar.first", "pears");
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals("pears", config.getValue("dollar.first"));
+        assertEquals("pears", config.getValue("dollar.fourth"));
+        assertEquals("oranges and pears", config.getValue("dollar.second"));
+        assertEquals("pears and oranges", config.getValue("dollar.third"));
+    }
+
+
+    @Test
+    public void testDollarNotationCache() throws IOException, ConfigException {
+        read(DOLLAR_CONFIG);
+        assertEquals(4, config.getAllKeys().size());
+        assertEquals("apples", config.getValue("dollar.first"));
+        assertEquals("apples", config.getValue("dollar.fourth"));
+        assertEquals("oranges and apples", config.getValue("dollar.second"));
+        assertEquals("apples and oranges", config.getValue("dollar.third"));
+        config.setValue("dollar.first", "10");
+        assertEquals(10, config.getIntValue("dollar.first"));
+        assertEquals(10, config.getIntValue("dollar.fourth"));
+        // Now check that dollar.fourth is not cached
+        config.setValue("dollar.first", "20");
+        assertEquals(20, config.getIntValue("dollar.first"));
+        assertEquals(20, config.getIntValue("dollar.fourth"));
+
+        // Same again for floats
+        config.setValue("dollar.first", "10.0");
+        assertEquals(10.0, config.getFloatValue("dollar.first"), TOLERANCE);
+        assertEquals(10.0, config.getFloatValue("dollar.fourth"), TOLERANCE);
+        config.setValue("dollar.first", "20.0");
+        assertEquals(20.0, config.getFloatValue("dollar.first"), TOLERANCE);
+        assertEquals(20.0, config.getFloatValue("dollar.fourth"), TOLERANCE);
+
+        // Again for booleans
+        config.setValue("dollar.first", "false");
+        assertFalse(config.getBooleanValue("dollar.first"));
+        assertFalse(config.getBooleanValue("dollar.fourth"));
+        config.setValue("dollar.first", "true");
+        assertTrue(config.getBooleanValue("dollar.first"));
+        assertTrue(config.getBooleanValue("dollar.fourth"));
+
+        // And again for arrays
+        config.setValue("dollar.first", "foo bar");
+        assertArrayEquals(new String[] {"foo", "bar"}, config.getArrayValue("dollar.first").toArray());
+        assertArrayEquals(new String[] {"foo", "bar"}, config.getArrayValue("dollar.fourth").toArray());
+        config.setValue("dollar.first", "foo bar baz");
+        assertArrayEquals(new String[] {"foo", "bar", "baz"}, config.getArrayValue("dollar.first").toArray());
+        assertArrayEquals(new String[] {"foo", "bar", "baz"}, config.getArrayValue("dollar.fourth").toArray());
+    }
+
+    @Test
+    public void testDollarNotationTypes() throws IOException, ConfigException {
+        read(DOLLAR_CONFIG_2);
+        assertEquals(9, config.getAllKeys().size());
+        assertEquals(10, config.getIntValue("int.first"));
+        assertEquals(10, config.getIntValue("int.second"));
+        assertEquals(0.4, config.getFloatValue("float.first"), TOLERANCE);
+        assertEquals(0.4, config.getFloatValue("float.second"), TOLERANCE);
+        assertFalse(config.getBooleanValue("boolean.first"));
+        assertFalse(config.getBooleanValue("boolean.second"));
+        assertArrayEquals(new String[] {"foo", "bar"}, config.getArrayValue("array.first").toArray());
+        assertArrayEquals(new String[] {"foo", "bar"}, config.getArrayValue("array.second").toArray());
+        assertArrayEquals(new String[] {"foo", "bar", "baz"}, config.getArrayValue("array.third").toArray());
+    }
+
+    @Test
+    public void testWriteWithReferences() throws IOException {
+        config.setValue("key", "value");
+        config.setValue("duplicate", "${key}");
+        assertEquals("value", config.getValue("duplicate"));
+        StringWriter out = new StringWriter();
+        PrintWriter pw = new PrintWriter(out);
+        config.write(pw);
+        pw.flush();
+        String result = out.toString();
+        assertTrue(result.contains("key : value" + System.getProperty("line.separator")));
+        assertTrue(result.contains("duplicate : ${key}" + System.getProperty("line.separator")));
+        assertFalse(result.contains("duplicate : value"));
     }
 
     private void read(String name) throws IOException, ConfigException {

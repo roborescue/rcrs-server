@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,8 @@ public class Config {
        The raw data and caches of int/float/boolean/array interpretations.
     */
     private Map<String, String> data;
+    // Entries that should not be cached
+    private Set<String> noCache;
     private Map<String, Integer> intData;
     private Map<String, Double> floatData;
     private Map<String, Boolean> booleanData;
@@ -38,6 +41,7 @@ public class Config {
     */
     public Config() {
         data = new HashMap<String, String>();
+        noCache = new HashSet<String>();
         intData = new HashMap<String, Integer>();
         floatData = new HashMap<String, Double>();
         booleanData = new HashMap<String, Boolean>();
@@ -159,9 +163,8 @@ public class Config {
                         String key = line.substring(0, index).trim();
                         String value = line.substring(index + 1).trim();
                         data.put(key, value);
-                        intData.remove(key);
-                        floatData.remove(key);
-                        booleanData.remove(key);
+                        noCache.remove(key);
+                        clearCache(key);
                     }
                 }
             }
@@ -232,7 +235,7 @@ public class Config {
         if (!data.containsKey(key)) {
             throw new NoSuchConfigOptionException(key);
         }
-        return data.get(key);
+        return processDollarNotation(key, data.get(key));
     }
 
     /**
@@ -261,7 +264,7 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
-        if (intData.containsKey(key)) {
+        if (!noCache.contains(key) && intData.containsKey(key)) {
             return intData.get(key);
         }
         int result = Integer.parseInt(getValue(key));
@@ -296,7 +299,7 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
-        if (floatData.containsKey(key)) {
+        if (!noCache.contains(key) && floatData.containsKey(key)) {
             return floatData.get(key);
         }
         double result = Double.parseDouble(getValue(key));
@@ -330,7 +333,7 @@ public class Config {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
-        if (booleanData.containsKey(key)) {
+        if (!noCache.contains(key) && booleanData.containsKey(key)) {
             return booleanData.get(key);
         }
         boolean result = false;
@@ -388,7 +391,7 @@ public class Config {
         if ("".equals(regex)) {
             throw new IllegalArgumentException("Regex cannot be the empty string");
         }
-        if (arrayData.containsKey(key)) {
+        if (!noCache.contains(key) && arrayData.containsKey(key)) {
             Pair<String, List<String>> entry = arrayData.get(key);
             if (entry.first().equals(regex)) {
                 return entry.second();
@@ -421,6 +424,7 @@ public class Config {
             return;
         }
         clearCache(key);
+        noCache.remove(key);
         data.put(key, value);
     }
 
@@ -466,6 +470,7 @@ public class Config {
             throw new IllegalArgumentException("Key cannot be null");
         }
         clearCache(key);
+        noCache.remove(key);
         data.put(key, Integer.valueOf(value).toString());
         intData.put(key, value);
     }
@@ -480,6 +485,7 @@ public class Config {
             throw new IllegalArgumentException("Key cannot be null");
         }
         clearCache(key);
+        noCache.remove(key);
         data.put(key, Double.valueOf(value).toString());
         floatData.put(key, value);
     }
@@ -494,6 +500,7 @@ public class Config {
             throw new IllegalArgumentException("Key cannot be null");
         }
         clearCache(key);
+        noCache.remove(key);
         data.put(key, value ? "true" : "false");
         booleanData.put(key, value);
     }
@@ -507,6 +514,7 @@ public class Config {
             throw new IllegalArgumentException("Key cannot be null");
         }
         clearCache(key);
+        noCache.remove(key);
         data.remove(key);
     }
 
@@ -515,6 +523,7 @@ public class Config {
     */
     public void removeAllKeys() {
         data.clear();
+        noCache.clear();
         intData.clear();
         floatData.clear();
         booleanData.clear();
@@ -527,6 +536,7 @@ public class Config {
     */
     public void removeExcept(Collection<String> exceptions) {
         data.keySet().retainAll(exceptions);
+        noCache.retainAll(exceptions);
     }
 
     private void clearCache() {
@@ -541,6 +551,24 @@ public class Config {
         floatData.remove(key);
         booleanData.remove(key);
         arrayData.remove(key);
+    }
+
+    private String processDollarNotation(String key, String value) {
+        int index = value.indexOf("${");
+        if (index == -1) {
+            return value;
+        }
+        noCache.add(key);
+        int end = value.indexOf("}", index);
+        StringBuilder result = new StringBuilder();
+        result.append(value.substring(0, index));
+        result.append(resolveReferences(value.substring(index + 2, end)));
+        result.append(processDollarNotation(key, value.substring(end + 1)));
+        return result.toString();
+    }
+
+    private String resolveReferences(String s) {
+        return getValue(s);
     }
 
     private interface Context {
