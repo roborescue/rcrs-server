@@ -47,7 +47,7 @@
   <property name="debug" value="true"/>
 
   <!-- General javac flags -->
-  <property name="javac.flags" value="-Xlint:unchecked"/>
+  <property name="javac.flags" value="-Xlint:unchecked,deprecation"/>
 
   <!-- Findbugs and cobertura home directories -->
   <property name="findbugs.home" value="${buildtools.dir}/findbugs"/>
