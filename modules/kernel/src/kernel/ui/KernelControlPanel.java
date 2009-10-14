@@ -123,7 +123,7 @@ public class KernelControlPanel extends JPanel {
                     runButtonPressed();
                 }
             });
-        runThread = new RunThread(config.getIntValue(Kernel.TIMESTEPS_KEY));
+        runThread = new RunThread();
         running = false;
     }
 
@@ -285,16 +285,10 @@ public class KernelControlPanel extends JPanel {
     }
 
     private class RunThread extends WorkerThread {
-        private int maxTime;
-
-        public RunThread(int max) {
-            maxTime = max;
-        }
-
         @Override
         public boolean work() throws InterruptedException {
             if (shouldStep()) {
-                if (kernel.getTime() < maxTime) {
+                if (!kernel.hasTerminated()) {
                     try {
                         kernel.timestep();
                     }

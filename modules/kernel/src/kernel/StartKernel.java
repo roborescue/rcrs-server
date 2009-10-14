@@ -69,6 +69,7 @@ public final class StartKernel {
     private static final String AGENT_KEY = "kernel.agents";
     private static final String SIMULATOR_KEY = "kernel.simulators";
     private static final String VIEWER_KEY = "kernel.viewers";
+    private static final String TERMINATION_KEY = "kernel.viewers";
 
     private static final String GIS_REGEX = "(.+WorldModelCreator).class";
     private static final String PERCEPTION_REGEX = "(.+Perception).class";
@@ -149,8 +150,7 @@ public final class StartKernel {
             initialiseKernel(kernelInfo, config);
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo, config);
-                int maxTime = config.getIntValue(Kernel.TIMESTEPS_KEY);
-                while (kernelInfo.kernel.getTime() < maxTime) {
+                while (!kernelInfo.kernel.hasTerminated()) {
                     kernelInfo.kernel.timestep();
                 }
                 kernelInfo.kernel.shutdown();
@@ -322,13 +322,14 @@ public final class StartKernel {
         Perception perception = dialog.getPerception();
         CommunicationModel comms = dialog.getCommunicationModel();
         CommandFilter filter = makeCommandFilter(config);
+        TerminationCondition termination = makeTerminationCondition(config);
         // Get the world model
         WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
         // Initialise
         perception.initialise(config, worldModel);
         comms.initialise(config, worldModel);
         // Create the kernel
-        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter);
+        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);
@@ -378,6 +379,17 @@ public final class StartKernel {
             }
         }
         return result;
+    }
+
+    private static TerminationCondition makeTerminationCondition(Config config) {
+        List<TerminationCondition> result = new ArrayList<TerminationCondition>();
+        for (String next : config.getArrayValue(TERMINATION_KEY)) {
+            TerminationCondition t = instantiate(next, TerminationCondition.class);
+            if (t != null) {
+                result.add(t);
+            }
+        }
+        return new OrTerminationCondition(result);
     }
 
     private static List<KernelGUIComponent> makeKernelGUIComponents(Config config) {

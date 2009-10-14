@@ -20,11 +20,6 @@ import kernel.log.FileLogWriter;
    The Robocup Rescue kernel.
  */
 public class Kernel {
-    /**
-       The config key describing the number of timesteps to run.
-     */
-    public static final String TIMESTEPS_KEY = "kernel.timesteps";
-
     private static final String AGENT_TIME_KEY = "kernel.agents.think-time";
 
     //    private Config config;
@@ -43,6 +38,8 @@ public class Kernel {
 
     private CommandFilter commandFilter;
 
+    private TerminationCondition termination;
+
     private int agentTime;
 
     /**
@@ -52,13 +49,15 @@ public class Kernel {
        @param communicationModel A communication model.
        @param worldModel The world model.
        @param commandFilter An optional command filter. This may be null.
+       @param termination The termination condition.
        @throws KernelException If there is a problem constructing the kernel.
     */
     public Kernel(Config config,
                   Perception perception,
                   CommunicationModel communicationModel,
                   WorldModel<? extends Entity> worldModel,
-                  CommandFilter commandFilter) throws KernelException {
+                  CommandFilter commandFilter,
+                  TerminationCondition termination) throws KernelException {
         //        this.config = config;
         this.perception = perception;
         this.communicationModel = communicationModel;
@@ -81,6 +80,7 @@ public class Kernel {
         }
         log.logInitialConditions(worldModel);
         commandFilter.initialise(config, this);
+        this.termination = termination;
     }
 
     /**
@@ -285,6 +285,16 @@ public class Kernel {
     public void setAgentWaitTime(int newWaitTime) {
         synchronized (this) {
             agentTime = newWaitTime;
+        }
+    }
+
+    /**
+       Find out if the kernel has terminated.
+       @return True if the kernel has terminated, false otherwise.
+    */
+    public boolean hasTerminated() {
+        synchronized (this) {
+            return termination.shouldStop(this);
         }
     }
 
