@@ -34,7 +34,7 @@ import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 
 /**
-   A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a {@link #show(ShapeInfo...)} method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and enabled. The "continue" button will hide and {@link #disable} the frame so that further calls to show will return immediately.
+   A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a {@link #show(ShapeInfo...)} method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and activated. The "continue" button will hide and {@link #deactivate} the frame so that further calls to show will return immediately.
  */
 public class ShapeDebugFrame extends JFrame {
     private static final int DISPLAY_WIDTH = 500;
@@ -85,7 +85,7 @@ public class ShapeDebugFrame extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         //                        setVisible(false);
-                        disable();
+                        deactivate();
                         barrier.await();
                     }
                     catch (InterruptedException ex) {
@@ -181,16 +181,16 @@ public class ShapeDebugFrame extends JFrame {
     }
 
     /**
-       Enable this frame. Future calls to show will block until the user clicks a button.
+       Activate this frame. Future calls to show will block until the user clicks a button.
      */
-    public void enable() {
+    public void activate() {
         enabled = true;
     }
 
     /**
-       Disable and hides this frame. Future calls to show will return immediately.
+       Deactivate and hides this frame. Future calls to show will return immediately.
      */
-    public void disable() {
+    public void deactivate() {
         enabled = false;
         setVisible(false);
     }
