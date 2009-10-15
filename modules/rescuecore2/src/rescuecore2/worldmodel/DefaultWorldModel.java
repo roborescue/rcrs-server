@@ -26,6 +26,13 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
         allowedClasses.add(clazz);
     }
 
+    /**
+       Construct an empty world model.
+    */
+    public static DefaultWorldModel<Entity> create() {
+        return new DefaultWorldModel<Entity>(Entity.class);
+    }
+
     @Override
     public final Collection<Class<? extends T>> getAllowedClasses() {
         return allowedClasses;
