@@ -1,20 +1,19 @@
-package kernel.ui;
-
-import kernel.log.KernelLogException;
-import kernel.log.LogReader;
-import kernel.log.FileLogReader;
+package rescuecore2.log;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.MessageRegistry;
+import rescuecore2.misc.gui.ListModelList;
 
+/*
 import rescuecore2.standard.view.StandardWorldModelViewer;
 import rescuecore2.standard.view.CommandLayer;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.messages.StandardMessageFactory;
+*/
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -57,8 +56,8 @@ public class LogViewer extends JPanel {
     private ListModelList<Command> commands;
     private ListModelList<Entity> updates;
     private WorldModel<? extends Entity> world;
-    private StandardWorldModelViewer worldViewer;
-    private CommandLayer commandLayer;
+    //    private StandardWorldModelViewer worldViewer;
+    //    private CommandLayer commandLayer;
     private JButton down;
     private JButton up;
     private int maxTime;
@@ -66,9 +65,9 @@ public class LogViewer extends JPanel {
     /**
        Construct a LogViewer.
        @param reader The LogReader to read.
-       @throws KernelLogException If there is a problem reading the log.
+       @throws LogException If there is a problem reading the log.
      */
-    public LogViewer(LogReader reader) throws KernelLogException {
+    public LogViewer(LogReader reader) throws LogException {
         super(new BorderLayout());
         this.log = reader;
         maxTime = log.getMaxTimestep();
@@ -123,11 +122,13 @@ public class LogViewer extends JPanel {
         s.setPreferredSize(updatesList.getPreferredScrollableViewportSize());
         lists.add(s);
         timestep = new JLabel("Timestep: 0");
+        /*
         worldViewer = new StandardWorldModelViewer();
         commandLayer = new CommandLayer();
         worldViewer.addLayer(commandLayer);
         worldViewer.setBorder(BorderFactory.createTitledBorder("World model"));
         add(worldViewer, BorderLayout.CENTER);
+        */
         add(lists, BorderLayout.EAST);
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(down, BorderLayout.WEST);
@@ -150,19 +151,22 @@ public class LogViewer extends JPanel {
             timestep.setText("Timestep: " + time);
             commands.clear();
             updates.clear();
+            CommandsRecord commandsRecord = log.getCommands(time);
+            /*
             commands.addAll(log.getCommands(time));
             updates.addAll(log.getUpdates(time));
             world = log.getWorldModel(time);
             worldViewer.setWorldModel(StandardWorldModel.createStandardWorldModel(world));
             commandLayer.setCommands(commands);
             worldViewer.repaint();
+            */
             down.setEnabled(time != 0);
             up.setEnabled(time != maxTime);
             System.out.println("Showing time " + time);
             System.out.println(commands.size() + " commands");
             System.out.println(updates.size() + " updates");
         }
-        catch (KernelLogException e) {
+        catch (LogException e) {
             JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -178,8 +182,10 @@ public class LogViewer extends JPanel {
         }
         String name = args[0];
         try {
+            /*
             MessageRegistry.register(StandardMessageFactory.INSTANCE);
             EntityRegistry.register(StandardEntityFactory.INSTANCE);
+            */
             LogReader reader = new FileLogReader(name);
             LogViewer viewer = new LogViewer(reader);
             viewer.setPreferredSize(new Dimension(VIEWER_SIZE, VIEWER_SIZE));
@@ -196,7 +202,7 @@ public class LogViewer extends JPanel {
         catch (IOException e) {
             e.printStackTrace();
         }
-        catch (KernelLogException e) {
+        catch (LogException e) {
             e.printStackTrace();
         }
     }

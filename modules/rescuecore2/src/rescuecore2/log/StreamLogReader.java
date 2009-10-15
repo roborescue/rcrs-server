@@ -1,8 +1,9 @@
-package kernel.log;
+package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.readMessage;
+import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
@@ -11,6 +12,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.misc.Pair;
+import rescuecore2.config.Config;
 
 import java.util.Collection;
 import java.util.Map;
@@ -20,94 +22,92 @@ import java.util.HashSet;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
 
 /**
    An class for reading kernel logs from a stream.
  */
 public class StreamLogReader implements LogReader {
     private int maxTime;
-    private Map<Integer, Collection<Command>> commands;
-    private Map<Integer, Collection<Entity>> updates;
+    private Map<Integer, CommandsRecord> commands;
+    private Map<Integer, UpdatesRecord> updates;
     private Map<Integer, WorldModel<? extends Entity>> worldModels;
-    private Map<Integer, Map<EntityID, Pair<Collection<Entity>, Collection<Message>>>> perception;
+    private Map<Integer, Map<EntityID, PerceptionRecord>> perception;
+    private Config config;
 
     /**
        Construct a StreamLogReader.
        @param in The InputStream to read.
-       @throws KernelLogException If there is a problem reading the log.
+       @throws LogException If there is a problem reading the log.
      */
-    public StreamLogReader(InputStream in) throws KernelLogException {
-        commands = new HashMap<Integer, Collection<Command>>();
-        updates = new HashMap<Integer, Collection<Entity>>();
+    public StreamLogReader(InputStream in) throws LogException {
+        commands = new HashMap<Integer, CommandsRecord>();
+        updates = new HashMap<Integer, UpdatesRecord>();
         worldModels = new HashMap<Integer, WorldModel<? extends Entity>>();
-        perception = new HashMap<Integer, Map<EntityID, Pair<Collection<Entity>, Collection<Message>>>>();
+        perception = new HashMap<Integer, Map<EntityID, PerceptionRecord>>();
         try {
             readLog(in);
         }
         catch (IOException e) {
-            throw new KernelLogException(e);
+            throw new LogException(e);
         }
     }
 
     @Override
-    public int getMaxTimestep() throws KernelLogException {
+    public Config getConfig() throws LogException {
+        if (config == null) {
+            throw new LogException("No config record found");
+        }
+        return config;
+    }
+
+    @Override
+    public int getMaxTimestep() throws LogException {
         return maxTime;
     }
 
     @Override
-    public WorldModel<? extends Entity> getWorldModel(int time) throws KernelLogException {
+    public WorldModel<? extends Entity> getWorldModel(int time) throws LogException {
         checkTime(time);
         WorldModel<? extends Entity> result = worldModels.get(time);
         if (result == null) {
-            result = new DefaultWorldModel<Entity>(Entity.class);
+            result = DefaultWorldModel.create();
         }
         return result;
     }
 
     @Override
-    public Set<EntityID> getEntitiesWithUpdates(int time) throws KernelLogException {
+    public Set<EntityID> getEntitiesWithUpdates(int time) throws LogException {
         checkTime(time);
-        Map<EntityID, Pair<Collection<Entity>, Collection<Message>>> agentData = perception.get(time);
+        Map<EntityID, PerceptionRecord> agentData = perception.get(time);
         Set<EntityID> result = new HashSet<EntityID>();
+        if (agentData != null) {
+            result.addAll(agentData.keySet());
+        }
+        return result;
+    }
+
+    @Override
+    public PerceptionRecord getPerception(int time, EntityID entity) throws LogException {
+        checkTime(time);
+        Map<EntityID, PerceptionRecord> agentData = perception.get(time);
         if (agentData == null) {
-            return result;
+            return null;
         }
-        result.addAll(agentData.keySet());
+        PerceptionRecord result = agentData.get(entity);
         return result;
     }
 
     @Override
-    public Pair<Collection<Entity>, Collection<Message>> getEntityUpdates(int time, EntityID entity) throws KernelLogException {
+    public CommandsRecord getCommands(int time) throws LogException {
         checkTime(time);
-        Map<EntityID, Pair<Collection<Entity>, Collection<Message>>> agentData = perception.get(time);
-        if (agentData == null) {
-            return new Pair<Collection<Entity>, Collection<Message>>(new HashSet<Entity>(), new HashSet<Message>());
-        }
-        Pair<Collection<Entity>, Collection<Message>> result = agentData.get(entity);
-        if (result == null) {
-            return new Pair<Collection<Entity>, Collection<Message>>(new HashSet<Entity>(), new HashSet<Message>());
-        }
-        return result;
+        return commands.get(time);
     }
 
     @Override
-    public Collection<Command> getCommands(int time) throws KernelLogException {
+    public UpdatesRecord getUpdates(int time) throws LogException {
         checkTime(time);
-        Collection<Command> result = commands.get(time);
-        if (result == null) {
-            result = new HashSet<Command>();
-        }
-        return result;
-    }
-
-    @Override
-    public Collection<Entity> getUpdates(int time) throws KernelLogException {
-        checkTime(time);
-        Collection<Entity> result = updates.get(time);
-        if (result == null) {
-            result = new HashSet<Entity>();
-        }
-        return result;
+        return updates.get(time);
     }
 
     private void checkTime(int time) {
@@ -116,57 +116,55 @@ public class StreamLogReader implements LogReader {
         }
     }
 
-    private void readLog(InputStream in) throws IOException, KernelLogException {
-        int id = readInt32(in);
-        RecordType type = RecordType.fromID(id);
-        if (!RecordType.START_OF_LOG.equals(type)) {
-            throw new KernelLogException("Log does not start with correct magic number");
-        }
+    private void readLog(InputStream in) throws IOException, LogException {
+        int id;
+        RecordType type;
+        boolean startFound = false;
         do {
             id = readInt32(in);
-            if (id != -1) {
-                type = RecordType.fromID(id);
-                readRecord(type, in);
+            type = RecordType.fromID(id);
+            if (!startFound) {
+                if (type != RecordType.START_OF_LOG) {
+                    throw new LogException("Log does not start with correct magic number");
+                }
+                startFound = true;
             }
-        } while (id != -1 && !RecordType.END_OF_LOG.equals(type));
+            readRecord(type, in);
+        }
+        while (type != RecordType.END_OF_LOG);
     }
 
-    private void readRecord(RecordType type, InputStream in) throws IOException, KernelLogException {
+    private void readRecord(RecordType type, InputStream in) throws IOException, LogException {
+        int size = readInt32(in);
+        byte[] data = readBytes(size, in);
+        InputStream d = new ByteArrayInputStream(data);
         switch (type) {
         case INITIAL_CONDITIONS:
-            readInitialConditions(in);
+            readInitialConditions(d);
             break;
         case PERCEPTION:
-            readPerception(in);
+            readPerception(d);
             break;
         case COMMANDS:
-            readCommands(in);
+            readCommands(d);
             break;
         case UPDATES:
-            readUpdates(in);
+            readUpdates(d);
             break;
         case END_OF_LOG:
             return;
         default:
-            throw new KernelLogException("Unexpected record type: " + type);
+            throw new LogException("Unexpected record type: " + type);
         }
     }
 
-    private void readInitialConditions(InputStream in) throws IOException, KernelLogException {
-        int size = readInt32(in);
-        if (size < 0) {
-            throw new KernelLogException("Invalid initial conditions size: " + size);
-        }
-        System.out.print("Reading initial conditions. " + size + " objects to read...");
-        WorldModel<? extends Entity> world = new DefaultWorldModel<Entity>(Entity.class);
-        for (Entity next : readEntities(size, in)) {
-            world.addEntity(next);
-        }
-        System.out.println("done");
-        worldModels.put(0, world);
+    private void readInitialConditions(InputStream in) throws IOException, LogException {
+        InitialConditionsRecord record = new InitialConditionsRecord(in);
+        worldModels.put(0, record.getWorldModel());
     }
 
-    private void readPerception(InputStream in) throws IOException, KernelLogException {
+    private void readPerception(InputStream in) throws IOException, LogException {
+        /*
         int agentID = readInt32(in);
         int time = readInt32(in);
         System.out.print("Reading perception for agent " + agentID + " at time " + time + "...");
@@ -183,9 +181,11 @@ public class StreamLogReader implements LogReader {
             perception.put(time, agentData);
         }
         agentData.put(new EntityID(agentID), data);
+        */
     }
 
-    private void readCommands(InputStream in) throws IOException, KernelLogException {
+    private void readCommands(InputStream in) throws IOException, LogException {
+        /*
         int time = readInt32(in);
         int size = readInt32(in);
         System.out.print("Reading commands for time " + time + ". " + size + " commands to read...");
@@ -193,9 +193,11 @@ public class StreamLogReader implements LogReader {
         commands.put(time, c);
         System.out.println("done");
         maxTime = Math.max(time, maxTime);
+        */
     }
 
-    private void readUpdates(InputStream in) throws IOException, KernelLogException {
+    private void readUpdates(InputStream in) throws IOException, LogException {
+        /*
         int time = readInt32(in);
         int size = readInt32(in);
         System.out.print("Reading updates for time " + time + ". " + size + " entities to read...");
@@ -215,43 +217,53 @@ public class StreamLogReader implements LogReader {
         newWorld.merge(u);
         worldModels.put(time, newWorld);
         maxTime = Math.max(time, maxTime);
+        */
     }
 
-    private Set<Entity> readEntities(int size, InputStream in) throws IOException, KernelLogException {
+    private Set<Entity> readEntities(int size, InputStream in) throws IOException, LogException {
+        /*
         Set<Entity> result = new HashSet<Entity>(size);
         for (int i = 0; i < size; ++i) {
             Entity e = readEntity(in);
             if (e == null) {
-                throw new KernelLogException("Could not read entity from stream");
+                throw new LogException("Could not read entity from stream");
             }
             result.add(e);
         }
         return result;
+        */
+        return null;
     }
 
-    private Set<Message> readMessages(int size, InputStream in) throws IOException, KernelLogException {
+    private Set<Message> readMessages(int size, InputStream in) throws IOException, LogException {
+        /*
         Set<Message> result = new HashSet<Message>(size);
         for (int i = 0; i < size; ++i) {
             Message m = readMessage(in);
             if (m == null) {
-                throw new KernelLogException("Could not read message from stream");
+                throw new LogException("Could not read message from stream");
             }
             result.add(m);
         }
         return result;
+        */
+        return null;
     }
 
-    private Set<Command> readCommands(int size, InputStream in) throws IOException, KernelLogException {
+    private Set<Command> readCommands(int size, InputStream in) throws IOException, LogException {
+        /*
         Set<Command> result = new HashSet<Command>(size);
         for (int i = 0; i < size; ++i) {
             Message m = readMessage(in);
             if (m == null) {
-                throw new KernelLogException("Could not read message from stream");
+                throw new LogException("Could not read message from stream");
             }
             if (m instanceof Command) {
                 result.add((Command)m);
             }
         }
         return result;
+        */
+        return null;
     }
 }

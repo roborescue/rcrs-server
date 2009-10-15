@@ -1,4 +1,4 @@
-package kernel.log;
+package rescuecore2.log;
 
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
@@ -13,9 +13,9 @@ public class FileLogWriter extends StreamLogWriter {
        Create a file log writer and open it for writing.
        @param name The name of the file to write to.
        @throws IOException If the log file cannot be opened.
-       @throws KernelLogException If the log cannot be written.
+       @throws LogException If the log cannot be written.
     */
-    public FileLogWriter(String name) throws IOException, KernelLogException {
+    public FileLogWriter(String name) throws IOException, LogException {
         this(new File(name));
     }
 
@@ -23,9 +23,9 @@ public class FileLogWriter extends StreamLogWriter {
        Create a file log writer and open it for writing.
        @param file The file to write to.
        @throws IOException If the log file cannot be opened.
-       @throws KernelLogException If the log cannot be written.
+       @throws LogException If the log cannot be written.
     */
-    public FileLogWriter(File file) throws IOException, KernelLogException {
+    public FileLogWriter(File file) throws IOException, LogException {
         super(new BufferedOutputStream(new FileOutputStream(file)));
     }
 }

@@ -48,6 +48,7 @@ import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.java.LoadableType;
 import rescuecore2.Constants;
+import rescuecore2.log.LogException;
 
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
@@ -166,6 +167,9 @@ public final class StartKernel {
         }
         catch (IOException e) {
             System.err.println("Couldn't start kernel");
+            e.printStackTrace();
+        }
+        catch (LogException e) {
             e.printStackTrace();
         }
         catch (InterruptedException e) {

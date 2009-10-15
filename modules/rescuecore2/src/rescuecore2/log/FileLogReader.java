@@ -1,4 +1,4 @@
-package kernel.log;
+package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.readEntity;
@@ -23,6 +23,7 @@ import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.misc.Pair;
+import rescuecore2.config.Config;
 
 /**
    A log reader that reads from a file.
@@ -41,9 +42,9 @@ public class FileLogReader implements LogReader {
        Construct a new FileLogReader.
        @param name The name of the file to read.
        @throws IOException If the file cannot be read.
-       @throws KernelLogException If there is a problem reading the log.
+       @throws LogException If there is a problem reading the log.
     */
-    public FileLogReader(String name) throws IOException, KernelLogException {
+    public FileLogReader(String name) throws IOException, LogException {
         this(new File(name));
     }
 
@@ -51,20 +52,26 @@ public class FileLogReader implements LogReader {
        Construct a new FileLogReader.
        @param file The file object to read.
        @throws IOException If the file cannot be read.
-       @throws KernelLogException If there is a problem reading the log.
+       @throws LogException If there is a problem reading the log.
     */
-    public FileLogReader(File file) throws IOException, KernelLogException {
+    public FileLogReader(File file) throws IOException, LogException {
         this.file = new RandomAccessFile(file, "r");
         index();
     }
 
     @Override
-    public int getMaxTimestep() throws KernelLogException {
+    public Config getConfig() {
+        return null;
+    }
+
+    @Override
+    public int getMaxTimestep() throws LogException {
         return maxTime;
     }
 
     @Override
-    public WorldModel<? extends Entity> getWorldModel(int time) throws KernelLogException {
+    public WorldModel<? extends Entity> getWorldModel(int time) throws LogException {
+        /*
         System.out.println("Getting world model at time " + time);
         WorldModel<? extends Entity> result = new DefaultWorldModel<Entity>(Entity.class);
         // Look for a key frame
@@ -88,19 +95,40 @@ public class FileLogReader implements LogReader {
         // Store this as a key frame - it's quite likely that the next timestep will be viewed soon.
         keyFrames.put(time, result);
         return result;
+        */
+        return null;
     }
 
     @Override
-    public Set<EntityID> getEntitiesWithUpdates(int time) throws KernelLogException {
+    public Set<EntityID> getEntitiesWithUpdates(int time) throws LogException {
+        /*
         Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
         if (timestepMap == null) {
             return new HashSet<EntityID>();
         }
         return timestepMap.keySet();
+        */
+        return null;
     }
 
     @Override
-    public Pair<Collection<Entity>, Collection<Message>> getEntityUpdates(int time, EntityID entity) throws KernelLogException {
+    public PerceptionRecord getPerception(int time, EntityID entity) throws LogException {
+        return null;
+    }
+
+    @Override
+    public CommandsRecord getCommands(int time) throws LogException {
+        return null;
+    }
+
+    @Override
+    public UpdatesRecord getUpdates(int time) throws LogException {
+        return null;
+    }
+
+    /*
+    @Override
+    public Pair<Collection<Entity>, Collection<Message>> getEntityUpdates(int time, EntityID entity) throws LogException {
         try {
             System.out.print("Reading perception for agent " + entity + " at time " + time + "...");
             Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
@@ -120,12 +148,12 @@ public class FileLogReader implements LogReader {
             return new Pair<Collection<Entity>, Collection<Message>>(visible, messages);
         }
         catch (IOException e) {
-            throw new KernelLogException(e);
+            throw new LogException(e);
         }
     }
 
     @Override
-    public Collection<Command> getCommands(int time) throws KernelLogException {
+    public Collection<Command> getCommands(int time) throws LogException {
         try {
             Long l = commandsIndices.get(time);
             if (l == null) {
@@ -139,13 +167,13 @@ public class FileLogReader implements LogReader {
             return c;
         }
         catch (IOException e) {
-            throw new KernelLogException(e);
+            throw new LogException(e);
         }
 
     }
 
     @Override
-    public Collection<Entity> getUpdates(int time) throws KernelLogException {
+    public Collection<Entity> getUpdates(int time) throws LogException {
         try {
             Long l = updatesIndices.get(time);
             if (l == null) {
@@ -159,11 +187,12 @@ public class FileLogReader implements LogReader {
             return e;
         }
         catch (IOException e) {
-            throw new KernelLogException(e);
+            throw new LogException(e);
         }
     }
+    */
 
-    private void index() throws KernelLogException {
+    private void index() throws LogException {
         try {
             keyFrames = new TreeMap<Integer, WorldModel<? extends Entity>>();
             perceptionIndices = new HashMap<Integer, Map<EntityID, Long>>();
@@ -173,7 +202,7 @@ public class FileLogReader implements LogReader {
             int id = readInt32(file);
             RecordType type = RecordType.fromID(id);
             if (!RecordType.START_OF_LOG.equals(type)) {
-                throw new KernelLogException("Log does not start with correct magic number");
+                throw new LogException("Log does not start with correct magic number");
             }
             do {
                 id = readInt32(file);
@@ -184,11 +213,11 @@ public class FileLogReader implements LogReader {
             } while (id != -1 && !RecordType.END_OF_LOG.equals(type));
         }
         catch (IOException e) {
-            throw new KernelLogException(e);
+            throw new LogException(e);
         }
     }
 
-    private void indexRecord(RecordType type) throws IOException, KernelLogException {
+    private void indexRecord(RecordType type) throws IOException, LogException {
         switch (type) {
         case INITIAL_CONDITIONS:
             indexInitialConditions();
@@ -205,14 +234,14 @@ public class FileLogReader implements LogReader {
         case END_OF_LOG:
             return;
         default:
-            throw new KernelLogException("Unexpected record type: " + type);
+            throw new LogException("Unexpected record type: " + type);
         }
     }
 
-    private void indexInitialConditions() throws IOException, KernelLogException {
+    private void indexInitialConditions() throws IOException, LogException {
         int size = readInt32(file);
         if (size < 0) {
-            throw new KernelLogException("Invalid initial conditions size: " + size);
+            throw new LogException("Invalid initial conditions size: " + size);
         }
         System.out.print("Reading initial conditions. " + size + " objects to read...");
         WorldModel<? extends Entity> initialConditions = new DefaultWorldModel<Entity>(Entity.class);
@@ -223,7 +252,7 @@ public class FileLogReader implements LogReader {
         keyFrames.put(0, initialConditions);
     }
 
-    private void indexPerception() throws IOException, KernelLogException {
+    private void indexPerception() throws IOException, LogException {
         int agentID = readInt32(file);
         int time = readInt32(file);
         long position = file.getFilePointer();
@@ -242,7 +271,7 @@ public class FileLogReader implements LogReader {
         System.out.println("Skipped " + visibleSize + " entities and " + commsSize + " messages");
     }
 
-    private void indexCommands() throws IOException, KernelLogException {
+    private void indexCommands() throws IOException, LogException {
         int time = readInt32(file);
         long position = file.getFilePointer();
         System.out.println("Found commands for time " + time + " at position " + position);
@@ -254,7 +283,7 @@ public class FileLogReader implements LogReader {
         System.out.println("Skipped " + size + " commands");
     }
 
-    private void indexUpdates() throws IOException, KernelLogException {
+    private void indexUpdates() throws IOException, LogException {
         int time = readInt32(file);
         long position = file.getFilePointer();
         System.out.println("Found updates for time " + time + " at position " + position);
@@ -265,36 +294,36 @@ public class FileLogReader implements LogReader {
         System.out.println("Skipped " + size + " updates.");
     }
 
-    private Set<Entity> readEntities(int size) throws IOException, KernelLogException {
+    private Set<Entity> readEntities(int size) throws IOException, LogException {
         Set<Entity> result = new HashSet<Entity>(size);
         for (int i = 0; i < size; ++i) {
             Entity e = readEntity(file);
             if (e == null) {
-                throw new KernelLogException("Could not read entity from stream");
+                throw new LogException("Could not read entity from stream");
             }
             result.add(e);
         }
         return result;
     }
 
-    private Set<Message> readMessages(int size) throws IOException, KernelLogException {
+    private Set<Message> readMessages(int size) throws IOException, LogException {
         Set<Message> result = new HashSet<Message>(size);
         for (int i = 0; i < size; ++i) {
             Message m = readMessage(file);
             if (m == null) {
-                throw new KernelLogException("Could not read message from stream");
+                throw new LogException("Could not read message from stream");
             }
             result.add(m);
         }
         return result;
     }
 
-    private Set<Command> readCommands(int size) throws IOException, KernelLogException {
+    private Set<Command> readCommands(int size) throws IOException, LogException {
         Set<Command> result = new HashSet<Command>(size);
         for (int i = 0; i < size; ++i) {
             Message m = readMessage(file);
             if (m == null) {
-                throw new KernelLogException("Could not read message from stream");
+                throw new LogException("Could not read message from stream");
             }
             if (m instanceof Command) {
                 result.add((Command)m);

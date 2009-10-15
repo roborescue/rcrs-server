@@ -1,7 +1,7 @@
-package kernel.log;
+package rescuecore2.log;
 
 /**
-   Enumeration of possible record types in a kernel log.
+   Enumeration of possible record types in a log file.
  */
 public enum RecordType {
     /** Start of log marker. */
@@ -15,7 +15,9 @@ public enum RecordType {
     /** Commands record. */
     COMMANDS(0x03),
     /** Updates record. */
-    UPDATES(0x04);
+    UPDATES(0x04),
+    /** Config record. */
+    CONFIG(0x05);
 
     private int id;
 

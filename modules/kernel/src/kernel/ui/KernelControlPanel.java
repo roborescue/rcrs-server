@@ -30,6 +30,7 @@ import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.ComponentInitialisationException;
 import rescuecore2.components.ComponentConnectionException;
+import rescuecore2.log.LogException;
 
 /**
    A JComponent containing various controls for the kernel GUI.
@@ -293,6 +294,12 @@ public class KernelControlPanel extends JPanel {
                         kernel.timestep();
                     }
                     catch (KernelException e) {
+                        e.printStackTrace();
+                        kernel.shutdown();
+                        disableAllButtons();
+                        return false;
+                    }
+                    catch (LogException e) {
                         e.printStackTrace();
                         kernel.shutdown();
                         disableAllButtons();

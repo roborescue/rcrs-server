@@ -13,8 +13,16 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 
-import kernel.log.LogWriter;
-import kernel.log.FileLogWriter;
+import rescuecore2.log.LogWriter;
+import rescuecore2.log.FileLogWriter;
+import rescuecore2.log.InitialConditionsRecord;
+import rescuecore2.log.StartLogRecord;
+import rescuecore2.log.EndLogRecord;
+import rescuecore2.log.ConfigRecord;
+import rescuecore2.log.PerceptionRecord;
+import rescuecore2.log.CommandsRecord;
+import rescuecore2.log.UpdatesRecord;
+import rescuecore2.log.LogException;
 
 /**
    The Robocup Rescue kernel.
@@ -74,11 +82,16 @@ public class Kernel {
             String logName = config.getValue("kernel.logname");
             System.out.println("Logging to " + logName);
             log = new FileLogWriter(logName);
+            log.writeRecord(new StartLogRecord());
+            log.writeRecord(new InitialConditionsRecord(worldModel));
+            log.writeRecord(new ConfigRecord(config));
         }
         catch (IOException e) {
             throw new KernelException("Couldn't open log file for writing", e);
         }
-        log.logInitialConditions(worldModel);
+        catch (LogException e) {
+            throw new KernelException("Couldn't open log file for writing", e);
+        }
         commandFilter.initialise(config, this);
         this.termination = termination;
     }
@@ -203,8 +216,9 @@ public class Kernel {
        Run a single timestep.
        @throws InterruptedException If this thread is interrupted during the timestep.
        @throws KernelException If there is a problem executing the timestep.
+       @throws LogException If there is a problem writing the log.
     */
-    public void timestep() throws InterruptedException, KernelException {
+    public void timestep() throws InterruptedException, KernelException, LogException {
         synchronized (this) {
             ++time;
             // Work out what the agents can see and hear (using the commands from the previous timestep).
@@ -218,11 +232,11 @@ public class Kernel {
             long perceptionTime = System.currentTimeMillis();
             System.out.println("Waiting for commands");
             agentCommandsLastTimestep = waitForCommands(time);
-            log.logCommands(time, agentCommandsLastTimestep);
+            log.writeRecord(new CommandsRecord(time, agentCommandsLastTimestep));
             long commandsTime = System.currentTimeMillis();
             System.out.println("Broadcasting commands");
             Collection<Entity> updates = sendCommandsToViewersAndSimulators(time, agentCommandsLastTimestep);
-            log.logUpdates(time, updates);
+            log.writeRecord(new UpdatesRecord(time, updates));
             long updatesTime = System.currentTimeMillis();
             // Merge updates into world model
             System.out.println("Broadcasting updates");
@@ -273,7 +287,13 @@ public class Kernel {
             for (ViewerProxy next : viewers) {
                 next.shutdown();
             }
-            log.close();
+            try {
+                log.writeRecord(new EndLogRecord());
+                log.close();
+            }
+            catch (LogException e) {
+                e.printStackTrace();
+            }
         }
         System.out.println("Kernel has shut down");
     }
@@ -298,7 +318,7 @@ public class Kernel {
         }
     }
 
-    private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException {
+    private void sendAgentUpdates(int timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException, LogException {
         perception.setTime(timestep);
         Map<AgentProxy, Collection<Message>> comms = communicationModel.process(timestep, agents, commandsLastTimestep);
         for (AgentProxy next : agents) {
@@ -306,7 +326,7 @@ public class Kernel {
                 throw new InterruptedException();
             }
             Collection<Entity> visible = perception.getVisibleEntities(next);
-            log.logPerception(timestep, next.getControlledEntity().getID(), visible, comms.get(next));
+            log.writeRecord(new PerceptionRecord(timestep, next.getControlledEntity().getID(), visible, comms.get(next)));
             next.sendPerceptionUpdate(timestep, visible, comms.get(next));
         }
     }
