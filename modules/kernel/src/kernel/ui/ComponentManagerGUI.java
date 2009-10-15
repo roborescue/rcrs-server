@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 
 import java.util.List;
 
+import rescuecore2.misc.gui.ListModelList;
+
 /**
    A user interface component for viewing that state of the ComponentManager.
  */

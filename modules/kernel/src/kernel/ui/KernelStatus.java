@@ -15,6 +15,8 @@ import kernel.SimulatorProxy;
 import kernel.ViewerProxy;
 import kernel.Kernel;
 
+import rescuecore2.misc.gui.ListModelList;
+
 /**
    A status panel for the kernel.
  */
