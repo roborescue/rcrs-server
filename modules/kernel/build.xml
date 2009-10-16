@@ -11,10 +11,4 @@
       <arg line="${kernel.startup.args}"/>
     </java>
   </target>
-
-  <target name="log-viewer" depends="jars" description="Start the log viewer">
-    <java classname="kernel.ui.LogViewer" classpathref="path.common" fork="yes" maxmemory="4096m">
-      <arg value="rescue.log"/>
-    </java>
-  </target>
 </project>
