@@ -114,7 +114,7 @@ public final class StartKernel {
                 }
             }
             // Process jar files
-            processJarFiles(config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR), config);
+            processJarFiles(config);
             // Register messages and entities
             for (String next : config.getArrayValue(Constants.MESSAGE_FACTORY_KEY)) {
                 MessageFactory factory = instantiateFactory(next, MessageFactory.class);
@@ -414,9 +414,8 @@ public final class StartKernel {
         return result;
     }
 
-    private static void processJarFiles(String base, Config config) throws IOException {
-        LoadableTypeProcessor processor = new LoadableTypeProcessor();
-        processor.setDeepInspection(config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, true));
+    private static void processJarFiles(Config config) throws IOException {
+        LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
         processor.addConfigUpdater(LoadableType.MESSAGE_FACTORY, config, Constants.MESSAGE_FACTORY_KEY);
         processor.addConfigUpdater(LoadableType.ENTITY_FACTORY, config, Constants.ENTITY_FACTORY_KEY);
         processor.addConfigUpdater(LoadableType.AGENT, config, AGENT_KEY);
@@ -425,7 +424,7 @@ public final class StartKernel {
         processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, GIS_KEY);
         processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, PERCEPTION_KEY);
         processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, COMMUNICATION_KEY);
-        processor.processJarDirectory(base, LoadableType.MESSAGE_FACTORY, LoadableType.ENTITY_FACTORY, LoadableType.AGENT, LoadableType.SIMULATOR, LoadableType.VIEWER, GIS_LOADABLE_TYPE, PERCEPTION_LOADABLE_TYPE, COMMUNICATION_LOADABLE_TYPE);
+        processor.process();
     }
 
     private static class KernelChooserDialog extends JDialog {
