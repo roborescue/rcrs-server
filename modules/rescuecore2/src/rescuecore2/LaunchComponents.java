@@ -33,7 +33,7 @@ public final class LaunchComponents {
             args = CommandLineOptions.processArgs(args, config);
             int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER, Constants.DEFAULT_KERNEL_PORT_NUMBER);
             String host = config.getValue(Constants.KERNEL_HOST_NAME, Constants.DEFAULT_KERNEL_HOST_NAME);
-            processJarFiles(config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR), config);
+            processJarFiles(config);
             Connection c = new TCPConnection(host, port);
             c.startup();
             ComponentLauncher launcher = new ComponentLauncher(c);
@@ -55,13 +55,11 @@ public final class LaunchComponents {
         }
     }
 
-    private static void processJarFiles(String base, Config config) throws IOException {
-        LoadableTypeProcessor processor = new LoadableTypeProcessor();
-        processor.setDeepInspection(config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, true));
+    private static void processJarFiles(Config config) throws IOException {
+        LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
         processor.addCallback(new LoadableTypeProcessor.MessageFactoryRegisterCallback());
         processor.addCallback(new LoadableTypeProcessor.EntityFactoryRegisterCallback());
-        String dir = config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR);
-        processor.processJarDirectory(dir, LoadableType.MESSAGE_FACTORY, LoadableType.ENTITY_FACTORY);
+        processor.process();
     }
 
     private static void connect(ComponentLauncher launcher, String argLine, Config config) throws InterruptedException, ConnectionException {

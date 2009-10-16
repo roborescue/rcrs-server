@@ -7,10 +7,15 @@ import rescuecore2.messages.MessageRegistry;
 import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.Constants;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -23,22 +28,35 @@ import java.io.IOException;
  */
 public class LoadableTypeProcessor {
     private List<LoadableTypeCallback> callbacks;
+    private Set<LoadableType> types;
     private boolean deep;
+    private String dir;
 
     /**
        Construct a LoadableTypeProcessor that will perform a deep inspection.
     */
-    public LoadableTypeProcessor() {
+    public LoadableTypeProcessor(Config config) {
         callbacks = new ArrayList<LoadableTypeCallback>();
-        deep = true;
+        types = new HashSet<LoadableType>();
+        deep = config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, true);
+        dir = config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR);
+    }
+
+    /**
+       Add the message and entity factory register callbacks.
+    */
+    public void addFactoryRegisterCallbacks() {
+        addCallback(new MessageFactoryRegisterCallback());
+        addCallback(new EntityFactoryRegisterCallback());
     }
 
     /**
        Add a LoadableTypeCallback function.
        @param callback The callback to add.
-     */
+    */
     public void addCallback(LoadableTypeCallback callback) {
         callbacks.add(callback);
+        types.addAll(callback.getTypes());
     }
 
     /**
@@ -46,7 +64,7 @@ public class LoadableTypeProcessor {
        @param type The type to look for.
        @param config The config to update.
        @param configKey The key to update.
-     */
+    */
     public void addConfigUpdater(LoadableType type, Config config, String configKey) {
         addCallback(new ConfigCallback(type, config, configKey));
     }
@@ -60,41 +78,41 @@ public class LoadableTypeProcessor {
     }
 
     /**
-       Process all jars in a directory.
-       @param dirName The name of the directory.
-       @param types The LoadableTypes to process.
-       @throws IOException If there is a problem reading the jar files.
-     */
-    public void processJarDirectory(String dirName, LoadableType... types) throws IOException {
-        processJarDirectory(new File(dirName), types);
+       Set the name of the directory to process.
+       @param name The name of the directory.
+    */
+    public void setDirectory(String name) {
+        dir = name;
     }
 
     /**
        Process all jars in a directory.
-       @param baseDir The directory.
-       @param types The LoadableTypes to process.
        @throws IOException If there is a problem reading the jar files.
-     */
-    public void processJarDirectory(File baseDir, LoadableType... types) throws IOException {
+    */
+    public void process() throws IOException {
+        File baseDir = new File(dir);
+        System.out.println("Processing jar directory: " + baseDir.getAbsolutePath());
         File[] jarFiles = baseDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
                     return name.endsWith(".jar");
                 }
             });
+        if (jarFiles == null) {
+            return;
+        }
         for (File next : jarFiles) {
             JarFile jar = new JarFile(next);
-            processJarFile(jar, types);
+            processJarFile(jar);
         }
     }
 
     /**
-       Inspect a jar file for loadable types.
+       Inspect an individual jar file for loadable types.
        @param jar The jar file to inspect.
-       @param types The LoadableTypes to process.
        @throws IOException If there is a problem reading the jar file.
-     */
-    public void processJarFile(JarFile jar, LoadableType... types) throws IOException {
+    */
+    public void processJarFile(JarFile jar) throws IOException {
         System.out.println("Processing " + jar.getName());
         Manifest mf = jar.getManifest();
         if (mf != null) {
@@ -122,7 +140,9 @@ public class LoadableTypeProcessor {
 
     private void fireCallback(LoadableType type, String classname) {
         for (LoadableTypeCallback next : callbacks) {
-            next.classFound(type, classname);
+            if (next.getTypes().contains(type)) {
+                next.classFound(type, classname);
+            }
         }
     }
 
@@ -139,49 +159,58 @@ public class LoadableTypeProcessor {
 
         @Override
         public void classFound(LoadableType otherType, String className) {
-            if (this.type == otherType) {
-                if (config.isDefined(key)) {
-                    List<String> existing = config.getArrayValue(key);
-                    if (!existing.contains(className)) {
-                        config.appendValue(key, className);
-                    }
-                }
-                else {
-                    config.setValue(key, className);
+            if (config.isDefined(key)) {
+                List<String> existing = config.getArrayValue(key);
+                if (!existing.contains(className)) {
+                    config.appendValue(key, className);
                 }
             }
+            else {
+                config.setValue(key, className);
+            }
+        }
+
+        @Override
+        public Collection<LoadableType> getTypes() {
+            return Collections.singleton(type);
         }
     }
 
     /**
        A LoadableTypeCallback that will registry MessageFactory implementations.
-     */
+    */
     public static class MessageFactoryRegisterCallback implements LoadableTypeCallback {
         @Override
         public void classFound(LoadableType type, String className) {
-            if (LoadableType.MESSAGE_FACTORY == type) {
-                MessageFactory factory = instantiateFactory(className, MessageFactory.class);
-                if (factory != null) {
-                    MessageRegistry.register(factory);
-                    System.out.println("Registered message factory: " + className);
-                }
+            MessageFactory factory = instantiateFactory(className, MessageFactory.class);
+            if (factory != null) {
+                MessageRegistry.register(factory);
+                System.out.println("Registered message factory: " + className);
             }
+        }
+
+        @Override
+        public Collection<LoadableType> getTypes() {
+            return Collections.singleton(LoadableType.MESSAGE_FACTORY);
         }
     }
 
     /**
        A LoadableTypeCallback that will registry EntityFactory implementations.
-     */
+    */
     public static class EntityFactoryRegisterCallback implements LoadableTypeCallback {
         @Override
         public void classFound(LoadableType type, String className) {
-            if (LoadableType.ENTITY_FACTORY == type) {
-                EntityFactory factory = instantiateFactory(className, EntityFactory.class);
-                if (factory != null) {
-                    EntityRegistry.register(factory);
-                    System.out.println("Registered entity factory: " + className);
-                }
+            EntityFactory factory = instantiateFactory(className, EntityFactory.class);
+            if (factory != null) {
+                EntityRegistry.register(factory);
+                System.out.println("Registered entity factory: " + className);
             }
+        }
+
+        @Override
+        public Collection<LoadableType> getTypes() {
+            return Collections.singleton(LoadableType.ENTITY_FACTORY);
         }
     }
 }
