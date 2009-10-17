@@ -327,12 +327,15 @@ public final class StartKernel {
         CommunicationModel comms = dialog.getCommunicationModel();
         CommandFilter filter = makeCommandFilter(config);
         TerminationCondition termination = makeTerminationCondition(config);
+
         // Get the world model
         WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
         // Initialise
         perception.initialise(config, worldModel);
         comms.initialise(config, worldModel);
+        termination.initialise(config);
         // Create the kernel
+        System.out.println("Kernel termination condition: " + termination);
         Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);

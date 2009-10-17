@@ -1,6 +1,7 @@
 package kernel.standard;
 
 import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.Refuge;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.config.Config;
 
@@ -20,12 +21,27 @@ public class CiviliansDeadOrRescuedTerminationCondition implements TerminationCo
         for (Entity next : k.getWorldModel()) {
             if (next instanceof Civilian) {
                 Civilian c = (Civilian)next;
-                if (c.getHP() > 0 && (c.getDamage() > 0 || c.getBuriedness() > 0)) {
-                    // Alive but hurt or buried
+                if (c.getHP() <= 0) {
+                    // Dead - ignore
+                    continue;
+                }
+                if (c.getDamage() > 0 || c.getBuriedness() > 0) {
+                    // Hurt or buried - keep running
+                    return false;
+                }
+                Entity position = k.getWorldModel().getEntity(c.getPosition());
+                if (!(position instanceof Refuge)) {
+                    // Alive but not in a refuge - keep running
                     return false;
                 }
             }
         }
+        // Found no reason to keep going so stop.
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "All civilians rescued or dead";
     }
 }

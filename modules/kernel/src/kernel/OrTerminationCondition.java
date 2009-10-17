@@ -3,6 +3,7 @@ package kernel;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
    A TerminationCondition that returns true if any of its children return true.
@@ -36,5 +37,17 @@ public class OrTerminationCondition implements TerminationCondition {
         for (TerminationCondition next : children) {
             next.initialise(config);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Iterator<TerminationCondition> it = children.iterator(); it.hasNext();) {
+            result.append(it.next());
+            if (it.hasNext()) {
+                result.append(" | ");
+            }
+        }
+        return result.toString();
     }
 }

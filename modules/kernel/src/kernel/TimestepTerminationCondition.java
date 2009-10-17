@@ -22,4 +22,9 @@ public class TimestepTerminationCondition implements TerminationCondition {
     public boolean shouldStop(Kernel k) {
         return k.getTime() >= time;
     }
+
+    @Override
+    public String toString() {
+        return "Timestep >= " + time + "";
+    }
 }
