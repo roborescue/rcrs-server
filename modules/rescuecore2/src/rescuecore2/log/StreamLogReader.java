@@ -151,6 +151,9 @@ public class StreamLogReader implements LogReader {
         case UPDATES:
             readUpdates(d);
             break;
+        case CONFIG:
+            readConfig(d);
+            break;
         case END_OF_LOG:
             return;
         default:
@@ -164,46 +167,27 @@ public class StreamLogReader implements LogReader {
     }
 
     private void readPerception(InputStream in) throws IOException, LogException {
-        /*
-        int agentID = readInt32(in);
-        int time = readInt32(in);
-        System.out.print("Reading perception for agent " + agentID + " at time " + time + "...");
-        int visibleSize = readInt32(in);
-        Set<Entity> visible = readEntities(visibleSize, in);
-        int commsSize = readInt32(in);
-        Set<Message> messages = readMessages(commsSize, in);
-        System.out.println("done. Saw " + visibleSize + " entities and heard " + commsSize + " messages.");
-        maxTime = Math.max(time, maxTime);
-        Pair<Collection<Entity>, Collection<Message>> data = new Pair<Collection<Entity>, Collection<Message>>(visible, messages);
-        Map<EntityID, Pair<Collection<Entity>, Collection<Message>>> agentData = perception.get(time);
+        PerceptionRecord record = new PerceptionRecord(in);
+        int time = record.getTime();
+        Map<EntityID, PerceptionRecord> agentData = perception.get(time);
         if (agentData == null) {
-            agentData = new HashMap<EntityID, Pair<Collection<Entity>, Collection<Message>>>();
+            agentData = new HashMap<EntityID, PerceptionRecord>();
             perception.put(time, agentData);
         }
-        agentData.put(new EntityID(agentID), data);
-        */
+        agentData.put(record.getEntityID(), record);
+        maxTime = Math.max(time, maxTime);
     }
 
     private void readCommands(InputStream in) throws IOException, LogException {
-        /*
-        int time = readInt32(in);
-        int size = readInt32(in);
-        System.out.print("Reading commands for time " + time + ". " + size + " commands to read...");
-        Set<Command> c = readCommands(size, in);
-        commands.put(time, c);
-        System.out.println("done");
-        maxTime = Math.max(time, maxTime);
-        */
+        CommandsRecord record = new CommandsRecord(in);
+        commands.put(record.getTime(), record);
+        maxTime = Math.max(record.getTime(), maxTime);
     }
 
     private void readUpdates(InputStream in) throws IOException, LogException {
-        /*
-        int time = readInt32(in);
-        int size = readInt32(in);
-        System.out.print("Reading updates for time " + time + ". " + size + " entities to read...");
-        Set<Entity> u = readEntities(size, in);
-        updates.put(time, u);
-        System.out.println("done");
+        UpdatesRecord record = new UpdatesRecord(in);
+        int time = record.getTime();
+        updates.put(time, record);
         // Make the world model for this timestep
         WorldModel<? extends Entity> newWorld = new DefaultWorldModel<Entity>(Entity.class);
         WorldModel<? extends Entity> oldWorld = getWorldModel(time - 1);
@@ -214,56 +198,13 @@ public class StreamLogReader implements LogReader {
             }
             newWorld.merge(copy);
         }
-        newWorld.merge(u);
+        newWorld.merge(record.getEntities());
         worldModels.put(time, newWorld);
         maxTime = Math.max(time, maxTime);
-        */
     }
 
-    private Set<Entity> readEntities(int size, InputStream in) throws IOException, LogException {
-        /*
-        Set<Entity> result = new HashSet<Entity>(size);
-        for (int i = 0; i < size; ++i) {
-            Entity e = readEntity(in);
-            if (e == null) {
-                throw new LogException("Could not read entity from stream");
-            }
-            result.add(e);
-        }
-        return result;
-        */
-        return null;
-    }
-
-    private Set<Message> readMessages(int size, InputStream in) throws IOException, LogException {
-        /*
-        Set<Message> result = new HashSet<Message>(size);
-        for (int i = 0; i < size; ++i) {
-            Message m = readMessage(in);
-            if (m == null) {
-                throw new LogException("Could not read message from stream");
-            }
-            result.add(m);
-        }
-        return result;
-        */
-        return null;
-    }
-
-    private Set<Command> readCommands(int size, InputStream in) throws IOException, LogException {
-        /*
-        Set<Command> result = new HashSet<Command>(size);
-        for (int i = 0; i < size; ++i) {
-            Message m = readMessage(in);
-            if (m == null) {
-                throw new LogException("Could not read message from stream");
-            }
-            if (m instanceof Command) {
-                result.add((Command)m);
-            }
-        }
-        return result;
-        */
-        return null;
+    private void readConfig(InputStream in) throws IOException, LogException {
+        ConfigRecord record = new ConfigRecord(in);
+        config = record.getConfig();
     }
 }

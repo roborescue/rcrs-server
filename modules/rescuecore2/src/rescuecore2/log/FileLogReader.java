@@ -1,12 +1,13 @@
 package rescuecore2.log;
 
+import static rescuecore2.misc.EncodingTools.readBytes;
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readEntity;
-import static rescuecore2.misc.EncodingTools.readMessage;
+import static rescuecore2.misc.EncodingTools.reallySkip;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.ByteArrayInputStream;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class FileLogReader implements LogReader {
     private Map<Integer, Map<EntityID, Long>> perceptionIndices;
     private Map<Integer, Long> updatesIndices;
     private Map<Integer, Long> commandsIndices;
+    private Config config;
 
     /**
        Construct a new FileLogReader.
@@ -55,13 +57,14 @@ public class FileLogReader implements LogReader {
        @throws LogException If there is a problem reading the log.
     */
     public FileLogReader(File file) throws IOException, LogException {
+        System.out.println("Reading file log: " + file.getAbsolutePath());
         this.file = new RandomAccessFile(file, "r");
         index();
     }
 
     @Override
     public Config getConfig() {
-        return null;
+        return config;
     }
 
     @Override
@@ -71,7 +74,6 @@ public class FileLogReader implements LogReader {
 
     @Override
     public WorldModel<? extends Entity> getWorldModel(int time) throws LogException {
-        /*
         System.out.println("Getting world model at time " + time);
         WorldModel<? extends Entity> result = new DefaultWorldModel<Entity>(Entity.class);
         // Look for a key frame
@@ -85,7 +87,7 @@ public class FileLogReader implements LogReader {
         }
         // Go through updates and apply them all
         for (int i = startTime + 1; i <= time; ++i) {
-            Collection<Entity> updates = getUpdates(time);
+            Collection<Entity> updates = getUpdates(time).getEntities();
             System.out.println("Merging " + updates.size() + " updates for timestep " + i);
             result.merge(updates);
         }
@@ -95,102 +97,71 @@ public class FileLogReader implements LogReader {
         // Store this as a key frame - it's quite likely that the next timestep will be viewed soon.
         keyFrames.put(time, result);
         return result;
-        */
-        return null;
     }
 
     @Override
     public Set<EntityID> getEntitiesWithUpdates(int time) throws LogException {
-        /*
         Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
         if (timestepMap == null) {
             return new HashSet<EntityID>();
         }
         return timestepMap.keySet();
-        */
-        return null;
     }
 
     @Override
     public PerceptionRecord getPerception(int time, EntityID entity) throws LogException {
-        return null;
+        Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
+        if (timestepMap == null) {
+            return null;
+        }
+        Long l = timestepMap.get(entity);
+        if (l == null) {
+            return null;
+        }
+        try {
+            file.seek(l);
+            int size = readInt32(file);
+            byte[] bytes = readBytes(size, file);
+            return new PerceptionRecord(new ByteArrayInputStream(bytes));
+        }
+        catch (IOException e) {
+            throw new LogException(e);
+        }
     }
 
     @Override
     public CommandsRecord getCommands(int time) throws LogException {
-        return null;
+        Long index = commandsIndices.get(time);
+        if (index == null) {
+            return null;
+        }
+        try {
+            file.seek(index);
+            int size = readInt32(file);
+            byte[] bytes = readBytes(size, file);
+            return new CommandsRecord(new ByteArrayInputStream(bytes));
+        }
+        catch (IOException e) {
+            throw new LogException(e);
+        }
     }
 
     @Override
     public UpdatesRecord getUpdates(int time) throws LogException {
-        return null;
-    }
-
-    /*
-    @Override
-    public Pair<Collection<Entity>, Collection<Message>> getEntityUpdates(int time, EntityID entity) throws LogException {
-        try {
-            System.out.print("Reading perception for agent " + entity + " at time " + time + "...");
-            Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
-            if (timestepMap == null) {
-                return null;
-            }
-            Long l = timestepMap.get(entity);
-            if (l == null) {
-                return null;
-            }
-            file.seek(l);
-            int visibleSize = readInt32(file);
-            Set<Entity> visible = readEntities(visibleSize);
-            int commsSize = readInt32(file);
-            Set<Message> messages = readMessages(commsSize);
-            System.out.println("done. Saw " + visibleSize + " entities and heard " + commsSize + " messages.");
-            return new Pair<Collection<Entity>, Collection<Message>>(visible, messages);
+        Long index = updatesIndices.get(time);
+        if (index == null) {
+            return null;
         }
-        catch (IOException e) {
-            throw new LogException(e);
-        }
-    }
-
-    @Override
-    public Collection<Command> getCommands(int time) throws LogException {
         try {
-            Long l = commandsIndices.get(time);
-            if (l == null) {
-                return new HashSet<Command>();
-            }
-            file.seek(l);
+            file.seek(index);
             int size = readInt32(file);
-            System.out.print("Reading commands for time " + time + ". " + size + " commands to read...");
-            Set<Command> c = readCommands(size);
-            System.out.println("done");
-            return c;
-        }
-        catch (IOException e) {
-            throw new LogException(e);
-        }
-
-    }
-
-    @Override
-    public Collection<Entity> getUpdates(int time) throws LogException {
-        try {
-            Long l = updatesIndices.get(time);
-            if (l == null) {
-                return new HashSet<Entity>();
-            }
-            file.seek(l);
-            int size = readInt32(file);
-            System.out.print("Reading updates for time " + time + ". " + size + " updates to read...");
-            Set<Entity> e = readEntities(size);
-            System.out.println("done");
-            return e;
+            byte[] bytes = readBytes(size, file);
+            return new UpdatesRecord(new ByteArrayInputStream(bytes));
         }
         catch (IOException e) {
             throw new LogException(e);
         }
     }
-    */
 
     private void index() throws LogException {
         try {
@@ -199,18 +170,20 @@ public class FileLogReader implements LogReader {
             updatesIndices = new HashMap<Integer, Long>();
             commandsIndices = new HashMap<Integer, Long>();
             file.seek(0);
-            int id = readInt32(file);
-            RecordType type = RecordType.fromID(id);
-            if (!RecordType.START_OF_LOG.equals(type)) {
-                throw new LogException("Log does not start with correct magic number");
-            }
+            int id;
+            RecordType type;
+            boolean startFound = false;
             do {
                 id = readInt32(file);
-                if (id != -1) {
-                    type = RecordType.fromID(id);
-                    indexRecord(type);
+                type = RecordType.fromID(id);
+                if (!startFound) {
+                    if (!RecordType.START_OF_LOG.equals(type)) {
+                        throw new LogException("Log does not start with correct magic number");
+                    }
+                    startFound = true;
                 }
-            } while (id != -1 && !RecordType.END_OF_LOG.equals(type));
+                indexRecord(type);
+            } while (!RecordType.END_OF_LOG.equals(type));
         }
         catch (IOException e) {
             throw new LogException(e);
@@ -218,7 +191,11 @@ public class FileLogReader implements LogReader {
     }
 
     private void indexRecord(RecordType type) throws IOException, LogException {
+        System.out.println("Record found: " + type);
         switch (type) {
+        case START_OF_LOG:
+            indexStart();
+            break;
         case INITIAL_CONDITIONS:
             indexInitialConditions();
             break;
@@ -231,11 +208,25 @@ public class FileLogReader implements LogReader {
         case UPDATES:
             indexUpdates();
             break;
+        case CONFIG:
+            indexConfig();
+            break;
         case END_OF_LOG:
-            return;
+            indexEnd();
+            break;
         default:
             throw new LogException("Unexpected record type: " + type);
         }
+    }
+
+    private void indexStart() throws IOException {
+        int size = readInt32(file);
+        reallySkip(file, size);
+    }
+
+    private void indexEnd() throws IOException {
+        int size = readInt32(file);
+        reallySkip(file, size);
     }
 
     private void indexInitialConditions() throws IOException, LogException {
@@ -243,93 +234,54 @@ public class FileLogReader implements LogReader {
         if (size < 0) {
             throw new LogException("Invalid initial conditions size: " + size);
         }
-        System.out.print("Reading initial conditions. " + size + " objects to read...");
-        WorldModel<? extends Entity> initialConditions = new DefaultWorldModel<Entity>(Entity.class);
-        for (Entity next : readEntities(size)) {
-            initialConditions.addEntity(next);
-        }
-        System.out.println("done");
-        keyFrames.put(0, initialConditions);
+        byte[] bytes = readBytes(size, file);
+        InitialConditionsRecord record = new InitialConditionsRecord(new ByteArrayInputStream(bytes));
+        keyFrames.put(0, record.getWorldModel());
     }
 
     private void indexPerception() throws IOException, LogException {
-        int agentID = readInt32(file);
-        int time = readInt32(file);
         long position = file.getFilePointer();
+        int size = readInt32(file);
+        byte[] bytes = readBytes(size, file);
+        PerceptionRecord record = new PerceptionRecord(new ByteArrayInputStream(bytes));
+        int time = record.getTime();
+        EntityID agentID = record.getEntityID();
         System.out.println("Found perception for agent " + agentID + " at time " + time + " at position " + position);
         Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
         if (timestepMap == null) {
             timestepMap = new HashMap<EntityID, Long>();
             perceptionIndices.put(time, timestepMap);
         }
-        timestepMap.put(new EntityID(agentID), position);
-        // Skip over the content
-        int visibleSize = readInt32(file);
-        readEntities(visibleSize);
-        int commsSize = readInt32(file);
-        readMessages(commsSize);
-        System.out.println("Skipped " + visibleSize + " entities and " + commsSize + " messages");
+        timestepMap.put(agentID, position);
     }
 
     private void indexCommands() throws IOException, LogException {
-        int time = readInt32(file);
         long position = file.getFilePointer();
+        int size = readInt32(file);
+        byte[] bytes = readBytes(size, file);
+        CommandsRecord record = new CommandsRecord(new ByteArrayInputStream(bytes));
+        int time = record.getTime();
         System.out.println("Found commands for time " + time + " at position " + position);
         commandsIndices.put(time, position);
         maxTime = Math.max(time, maxTime);
-        // Skip the content
-        int size = readInt32(file);
-        readCommands(size);
-        System.out.println("Skipped " + size + " commands");
     }
 
     private void indexUpdates() throws IOException, LogException {
-        int time = readInt32(file);
         long position = file.getFilePointer();
+        int size = readInt32(file);
+        byte[] bytes = readBytes(size, file);
+        UpdatesRecord record = new UpdatesRecord(new ByteArrayInputStream(bytes));
+        int time = record.getTime();
         System.out.println("Found updates for time " + time + " at position " + position);
         updatesIndices.put(time, position);
         maxTime = Math.max(time, maxTime);
+    }
+
+    private void indexConfig() throws IOException, LogException {
         int size = readInt32(file);
-        readEntities(size);
-        System.out.println("Skipped " + size + " updates.");
-    }
-
-    private Set<Entity> readEntities(int size) throws IOException, LogException {
-        Set<Entity> result = new HashSet<Entity>(size);
-        for (int i = 0; i < size; ++i) {
-            Entity e = readEntity(file);
-            if (e == null) {
-                throw new LogException("Could not read entity from stream");
-            }
-            result.add(e);
-        }
-        return result;
-    }
-
-    private Set<Message> readMessages(int size) throws IOException, LogException {
-        Set<Message> result = new HashSet<Message>(size);
-        for (int i = 0; i < size; ++i) {
-            Message m = readMessage(file);
-            if (m == null) {
-                throw new LogException("Could not read message from stream");
-            }
-            result.add(m);
-        }
-        return result;
-    }
-
-    private Set<Command> readCommands(int size) throws IOException, LogException {
-        Set<Command> result = new HashSet<Command>(size);
-        for (int i = 0; i < size; ++i) {
-            Message m = readMessage(file);
-            if (m == null) {
-                throw new LogException("Could not read message from stream");
-            }
-            if (m instanceof Command) {
-                result.add((Command)m);
-            }
-        }
-        return result;
+        byte[] bytes = readBytes(size, file);
+        ConfigRecord record = new ConfigRecord(new ByteArrayInputStream(bytes));
+        config = record.getConfig();
     }
 
     private void removeStaleKeyFrames() {
