@@ -33,8 +33,26 @@ import rescuecore2.standard.messages.KAHearChannel;
    The channel-based communication model.
  */
 public class ChannelCommunicationModel implements CommunicationModel {
+    private static final String COUNT_KEY = "channels.count";
+    private static final String PLATOON_MAX_CHANNELS_KEY = "channels.platoon.max";
+    private static final String CENTRE_MAX_CHANNELS_KEY = "channels.centre.max";
+
+    private static final String PREFIX = "channels.";
+    private static final String TYPE_SUFFIX = ".type";
+
+    private static final String TYPE_VOICE = "voice";
+    private static final String TYPE_RADIO = "radio";
+
+    // Voice constants
+    private static final String RANGE_SUFFIX = ".range";
+    private static final String MESSAGE_SIZE_SUFFIX = ".messages.size";
+    private static final String MESSAGE_MAX_SUFFIX = ".messages.max";
+
+    // Radio constants
+    private static final String BANDWIDTH_SUFFIX = ".bandwidth";
+
     private Map<Integer, Channel> channels;
-    private int agentMax;
+    private int platoonMax;
     private int centreMax;
     private StandardWorldModel world;
 
@@ -49,21 +67,21 @@ public class ChannelCommunicationModel implements CommunicationModel {
         world = StandardWorldModel.createStandardWorldModel(model);
         // Read the channel information
         channels = new HashMap<Integer, Channel>();
-        int count = config.getIntValue("channel_count");
+        int count = config.getIntValue(COUNT_KEY);
         for (int i = 1; i <= count; ++i) {
-            String type = config.getValue("channel_" + i + "_type");
-            if ("voice".equals(type)) {
+            String type = config.getValue(PREFIX + i + TYPE_SUFFIX);
+            if (TYPE_VOICE.equals(type)) {
                 channels.put(i, new VoiceChannel(config, i, world));
             }
-            else if ("radio".equals(type)) {
+            else if (TYPE_RADIO.equals(type)) {
                 channels.put(i, new RadioChannel(config, i));
             }
             else {
-                System.err.println("Unrecognised channel_" + i + "_type: " + type);
+                System.err.println("Unrecognised channel type: " + PREFIX + i + TYPE_SUFFIX + " = '" + type + "'");
             }
         }
-        agentMax = config.getIntValue("agent_max_channels", 1);
-        centreMax = config.getIntValue("centre_max_channels", 2);
+        platoonMax = config.getIntValue(PLATOON_MAX_CHANNELS_KEY, 1);
+        centreMax = config.getIntValue(CENTRE_MAX_CHANNELS_KEY, 2);
     }
 
     @Override
@@ -134,7 +152,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
         }
         int max;
         if (entity instanceof FireBrigade || entity instanceof PoliceForce || entity instanceof AmbulanceTeam) {
-            max = agentMax;
+            max = platoonMax;
         }
         else if (entity instanceof FireStation || entity instanceof PoliceOffice || entity instanceof AmbulanceCentre) {
             max = centreMax;
@@ -144,7 +162,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
             return;
         }
         if (requested.size() > max) {
-            System.out.println("Agent tried to subscribe to " + requested.size() + " channels but only " + agentMax + " allowed");
+            System.out.println("Agent tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
             return;
         }
         // Unsubscribe from all old channels
@@ -235,9 +253,9 @@ public class ChannelCommunicationModel implements CommunicationModel {
         public VoiceChannel(Config config, int index, StandardWorldModel world) {
             super(index);
             this.world = world;
-            range = config.getIntValue("channel_" + index + "_range");
-            maxSize = config.getIntValue("channel_" + index + "_range");
-            maxMessages = config.getIntValue("channel_" + index + "_range");
+            range = config.getIntValue(PREFIX + index + RANGE_SUFFIX);
+            maxSize = config.getIntValue(PREFIX + index + MESSAGE_SIZE_SUFFIX);
+            maxMessages = config.getIntValue(PREFIX + index + MESSAGE_MAX_SUFFIX);
             uttered = new HashMap<EntityID, Integer>();
         }
 
@@ -278,7 +296,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
 
         public RadioChannel(Config config, int index) {
             super(index);
-            bandwidth = config.getIntValue("channel_" + index + "_bandwidth");
+            bandwidth = config.getIntValue(PREFIX + index + BANDWIDTH_SUFFIX);
         }
 
         @Override
