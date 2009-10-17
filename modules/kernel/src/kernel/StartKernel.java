@@ -70,7 +70,7 @@ public final class StartKernel {
     private static final String AGENT_KEY = "kernel.agents";
     private static final String SIMULATOR_KEY = "kernel.simulators";
     private static final String VIEWER_KEY = "kernel.viewers";
-    private static final String TERMINATION_KEY = "kernel.viewers";
+    private static final String TERMINATION_KEY = "kernel.termination";
 
     private static final String GIS_REGEX = "(.+WorldModelCreator).class";
     private static final String PERCEPTION_REGEX = "(.+Perception).class";
