@@ -61,4 +61,12 @@ public class ConfigRecord implements LogRecord {
             config.setValue(key, value);
         }
     }
+
+    /**
+       Get the Config.
+       @return The config.
+    */
+    public Config getConfig() {
+        return config;
+    }
 }
