@@ -49,7 +49,8 @@ namespace Librescue {
 	void sendClear(Id target) const;
 	void sendExtinguish(Id target, int amount) const;
 	void sendSay(const Bytes& data) const;
-	void sendTell(const Bytes& data, Byte channel) const;
+	void sendTell(const Bytes& data) const;
+	void sendSpeak(const Bytes& data, Byte channel) const;
 	void sendAgentCommand(const AgentCommand* command) const;
 
  	RescueObject* me();

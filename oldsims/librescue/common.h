@@ -92,6 +92,7 @@ namespace Librescue {
 	AK_UNLOAD = 0x83,
 	AK_SAY = 0x84,
 	AK_TELL = 0x85,
+	AK_SPEAK = 0x91,
 	AK_EXTINGUISH = 0x86,
 	//	AK_STRETCH = 0x87,
 	AK_RESCUE = 0x88,

@@ -50,6 +50,9 @@ namespace Librescue {
 	case AK_TELL:
 	  result = new TellCommand(in);
 	  break;
+	case AK_SPEAK:
+	  result = new SpeakCommand(in);
+	  break;
 	case AK_CHANNEL:
 	  result = new ChannelCommand(in);
 	  break;

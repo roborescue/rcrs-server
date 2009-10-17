@@ -107,9 +107,14 @@ namespace Librescue {
 	sendAgentCommand(&say);
   }
 
-  void Agent::sendTell(const Bytes& data, Byte channel) const {
-	TellCommand tell(m_id,m_time,data, channel);
+  void Agent::sendTell(const Bytes& data) const {
+	TellCommand tell(m_id,m_time,data);
 	sendAgentCommand(&tell);
+  }
+
+  void Agent::sendSpeak(const Bytes& data, Byte channel) const {
+	SpeakCommand speak(m_id,m_time,data, channel);
+	sendAgentCommand(&speak);
   }
 
   void Agent::sendAgentCommand(const AgentCommand* command) const {

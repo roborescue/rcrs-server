@@ -375,8 +375,8 @@ namespace Librescue {
 
   void AgentCommand::decode(InputBuffer& in) {
 	Command::decode(in);
-	m_agentId = in.readInt32();
-        m_time = in.readInt32();
+	m_agentId = in.readInt32("AgentCommand: Agent ID");
+        m_time = in.readInt32("AgentCommand: Time");
   }
 
   Id AgentCommand::getAgentId() const {
@@ -387,14 +387,12 @@ namespace Librescue {
     return m_time;
   }
 
-  VoiceCommand::VoiceCommand(Id agent, INT_32 time, const Byte* msg, int size, const Byte channel) : AgentCommand(agent, time) {
-  	m_channel=channel;
+  VoiceCommand::VoiceCommand(Id agent, INT_32 time, const Byte* msg, int size) : AgentCommand(agent, time) {
 	m_data.reserve(size);
 	for (int i=0;i<size;++i) m_data.push_back(msg[i]);
   }
 
-  VoiceCommand::VoiceCommand(Id agent, INT_32 time, const Bytes& msg, const Byte channel) : AgentCommand(agent, time) {
-  	m_channel=channel;
+  VoiceCommand::VoiceCommand(Id agent, INT_32 time, const Bytes& msg) : AgentCommand(agent, time) {
 	m_data.reserve(msg.size());
 	m_data.insert(m_data.end(),msg.begin(),msg.end());
   }
@@ -410,29 +408,71 @@ namespace Librescue {
 	return m_data;
   }
   
-  const Byte VoiceCommand::getChannel() const {
-	return m_channel;
-  }
-
   void VoiceCommand::encode(OutputBuffer& out) const {
 	AgentCommand::encode(out);
-	out.writeInt32((INT_32)m_channel);
 	out.writeInt32(m_data.size());
 	out.write(m_data);
   }
 
   void VoiceCommand::decode(InputBuffer& in) {
 	AgentCommand::decode(in);
-	m_channel = (Byte) in.readInt32();
 	INT_32 size = in.readInt32();
 	m_data.clear();
 	m_data.reserve(size);
 	in.read(size,m_data);
   }
 
-  SayCommand::SayCommand(Id agent, INT_32 time, const Byte* msg, int size) : VoiceCommand(agent, time,msg,size, 0) {}
+  SpeakCommand::SpeakCommand(Id agent, INT_32 time, const Byte* msg, int size, const Byte channel) : AgentCommand(agent, time), m_channel(channel) {
+	m_data.reserve(size);
+	for (int i=0;i<size;++i) m_data.push_back(msg[i]);
+  }
 
-  SayCommand::SayCommand(Id agent, INT_32 time, const Bytes& msg) : VoiceCommand(agent,time,msg, 0) {}
+  SpeakCommand::SpeakCommand(Id agent, INT_32 time, const Bytes& msg, const Byte channel) : AgentCommand(agent,time), m_channel(channel) {
+	m_data.reserve(msg.size());
+	m_data.insert(m_data.end(),msg.begin(),msg.end());
+  }
+
+  SpeakCommand::SpeakCommand(InputBuffer& in) : AgentCommand(0,0) {
+	decode(in);
+  }
+
+  SpeakCommand::~SpeakCommand() {}
+
+  void SpeakCommand::encode(OutputBuffer& out) const {
+    AgentCommand::encode(out);
+    out.writeInt32((INT_32)m_channel);
+    out.writeInt32(m_data.size());
+    out.write(m_data);
+  }
+
+  void SpeakCommand::decode(InputBuffer& in) {
+    AgentCommand::decode(in);
+    m_channel = (Byte) in.readInt32();
+    INT_32 size = in.readInt32();
+    m_data.clear();
+    m_data.reserve(size);
+    in.read(size,m_data);
+  }
+
+  const Bytes& SpeakCommand::getData() const {
+	return m_data;
+  }
+  
+  const Byte SpeakCommand::getChannel() const {
+	return m_channel;
+  }
+
+  Header SpeakCommand::getType() const {
+	return AK_SPEAK;
+  }
+
+  Command* SpeakCommand::clone() const {
+    return new SpeakCommand(m_agentId,m_time,m_data,m_channel);
+  }
+
+  SayCommand::SayCommand(Id agent, INT_32 time, const Byte* msg, int size) : VoiceCommand(agent, time,msg,size) {}
+
+  SayCommand::SayCommand(Id agent, INT_32 time, const Bytes& msg) : VoiceCommand(agent,time,msg) {}
 
   SayCommand::SayCommand(InputBuffer& in) : VoiceCommand(0,0,0,0) {
 	decode(in);
@@ -448,9 +488,9 @@ namespace Librescue {
     return new SayCommand(m_agentId,m_time,m_data);
   }
 
-  TellCommand::TellCommand(Id agent, INT_32 time, const Byte* msg, int size, const Byte channel) : VoiceCommand(agent,time,msg,size,channel) {}
+  TellCommand::TellCommand(Id agent, INT_32 time, const Byte* msg, int size) : VoiceCommand(agent,time,msg,size) {}
 
-  TellCommand::TellCommand(Id agent, INT_32 time, const Bytes& msg, const Byte channel) : VoiceCommand(agent,time,msg,channel) {}
+  TellCommand::TellCommand(Id agent, INT_32 time, const Bytes& msg) : VoiceCommand(agent,time,msg) {}
 
   TellCommand::TellCommand(InputBuffer& in) : VoiceCommand(0,0,0,0) {
 	decode(in);
@@ -548,12 +588,12 @@ namespace Librescue {
   }
 
   void MoveCommand::decode(InputBuffer& in) {
-	AgentCommand::decode(in);
+        AgentCommand::decode(in);
 	m_path.clear();
-	int count = in.readInt32();
+	int count = in.readInt32("AK_MOVE path length");
 	m_path.reserve(count);
 	for (int i=0;i<count;++i) {
-	  m_path.push_back((Id)in.readInt32());
+	  m_path.push_back((Id)in.readInt32("AK_MOVE path element"));
 	}
   }
 

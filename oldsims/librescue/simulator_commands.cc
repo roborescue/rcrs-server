@@ -254,16 +254,16 @@ namespace Librescue {
 
   void Commands::decode(InputBuffer& in) {
 	Command::decode(in);
-        m_id = in.readInt32();
-	m_time = in.readInt32();
+        m_id = in.readInt32("Commands: id");
+	m_time = in.readInt32("Commands: time");
 	// Delete any old objects
 	deleteObjects();
-        INT_32 count = in.readInt32();
+        INT_32 count = in.readInt32("Commands: count");
         //        LOG_DEBUG("Reading %d commands", count);
         for (INT_32 i = 0; i < count; ++i) {
-          Header header = (Header)in.readInt32();
+          Header header = (Header)in.readInt32("Commands: next command ID");
           //          LOG_DEBUG("Command %d is %d", i, header);
-	  int size = in.readInt32();
+	  int size = in.readInt32("Commands: next command size");
 	  Command* next = decodeCommand(header,size,in);
 	  if (next) {
 		AgentCommand* a = dynamic_cast<AgentCommand*>(next);
@@ -342,8 +342,8 @@ namespace Librescue {
 	Command::decode(in);
 	// Delete any old objects
 	deleteObjects();
-        m_id = in.readInt32();
-	m_time = in.readInt32();
+        m_id = in.readInt32("Update: Simulator ID");
+	m_time = in.readInt32("Update: Time");
 	in.readObjects(m_time,m_objects);
 	m_delete = true;
   }

@@ -211,10 +211,9 @@ namespace Librescue {
   class VoiceCommand : public AgentCommand {
   protected:
 	Bytes m_data;
-	Byte m_channel;
 
-	VoiceCommand(Id agent, INT_32 time, const Byte* message, int size, const Byte channel = CHANNEL_NONE);
-	VoiceCommand(Id agent, INT_32 time, const Bytes& message, const Byte channel = CHANNEL_NONE);
+	VoiceCommand(Id agent, INT_32 time, const Byte* message, int size);
+	VoiceCommand(Id agent, INT_32 time, const Bytes& message);
 	VoiceCommand(InputBuffer& in);
 
   public:
@@ -224,7 +223,6 @@ namespace Librescue {
 	virtual void decode(InputBuffer& in);
 
 	const Bytes& getData() const;
-	const Byte getChannel() const;
   };
 
   class SayCommand : public VoiceCommand {
@@ -241,14 +239,36 @@ namespace Librescue {
 
   class TellCommand : public VoiceCommand {
   public:
-	TellCommand(Id agent, INT_32 time, const Byte* message, int size, const Byte channel = CHANNEL_NONE);
-	TellCommand(Id agent, INT_32 time, const Bytes& message, const Byte channel = CHANNEL_NONE);
+	TellCommand(Id agent, INT_32 time, const Byte* message, int size);
+	TellCommand(Id agent, INT_32 time, const Bytes& message);
 	TellCommand(InputBuffer& in);
 	virtual ~TellCommand();
 
 	virtual Header getType() const;
 
 	virtual Command* clone() const;
+  };
+
+  class SpeakCommand : public AgentCommand {
+  public:
+    SpeakCommand(Id agent, INT_32 time, const Byte* message, int size, const Byte channel);
+    SpeakCommand(Id agent, INT_32 time, const Bytes& message, const Byte channel);
+    SpeakCommand(InputBuffer& in);
+    virtual ~SpeakCommand();
+
+    virtual Header getType() const;
+
+    virtual Command* clone() const;
+
+    virtual void encode(OutputBuffer& out) const;
+    virtual void decode(InputBuffer& in);
+
+    const Byte getChannel() const;
+    const Bytes& getData() const;
+
+  private:
+    Byte m_channel;
+    Bytes m_data;
   };
 
   class ChannelCommand : public AgentCommand

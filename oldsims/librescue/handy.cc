@@ -382,6 +382,32 @@ namespace Librescue {
   }
   */
 
+    void dump(InputBuffer* input) {
+        Cursor cursor = input->cursor();
+        input->setCursor(0);
+        Byte buffer[4];
+        LOG_DEBUG("Index\t                  Int");
+        while (input->cursor() < input->size()) {
+            INT_32 next = input->peekInt32();
+            input->read(4, buffer);
+            LOG_DEBUG("%d\t%.2X  %.2X  %.2X  %.2X  %d", input->cursor(), buffer[0], buffer[1], buffer[2], buffer[3], next);
+        }
+        input->setCursor(cursor);
+    }
+
+    /*
+    void dump(OutputBuffer* output) {
+        const Bytes& data = output->buffer();
+        Byte buffer[4];
+        LOG_DEBUG("Index\t                  Int\n");
+        while (input->cursor() < input->size()) {
+            INT_32 next = input->peekInt32();
+            input->read(4, buffer);
+            LOG_DEBUG("%d\t%2X%2X%2X%2X  %d\n", input->cursor(), buffer[0], buffer[1], buffer[2], buffer[3], next);
+        }
+    }
+    */
+
   StopWatch::StopWatch() : m_start(clock()) {
   }
 

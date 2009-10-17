@@ -18,6 +18,7 @@
 #define HANDY_H
 
 #include "common.h"
+#include "input.h"
 #include <sys/time.h>
 #include <string>
 
@@ -50,6 +51,9 @@ namespace Librescue {
   Bytes stringToBytes(std::string s);
 
   int round(int value, int base);
+
+  void dump(InputBuffer* buffer);
+  //  void dump(OutputBuffer* buffer);
 
   std::string propertyName(PropertyId property);
   std::string typeName(TypeId type);

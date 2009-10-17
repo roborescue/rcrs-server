@@ -52,7 +52,7 @@ namespace Librescue {
   void InputBuffer::skip(INT_32 size) {
 	m_index += size;
 	if (unsigned(m_index) > m_bytes.size())
-	  throw Overrun();
+	  throw Overrun("Can't skip that many bytes");
   }
 
   INT_32 InputBuffer::readInt32(std::string reason) {
