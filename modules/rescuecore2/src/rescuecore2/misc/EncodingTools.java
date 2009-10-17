@@ -411,6 +411,23 @@ public final class EncodingTools {
     }
 
     /**
+       Call DataInput.skip until exactly <code>count</code> bytes have been skipped. If DataInput.skip ever returns a negative number then an EOFException is thrown.
+       @param in The DataInput to skip.
+       @param count The number of bytes to skip.
+       @throws IOException If the bytes cannot be skipped for some reason.
+     */
+    public static void reallySkip(DataInput in, int count) throws IOException {
+        int done = 0;
+        while (done < count) {
+            int next = in.skipBytes(count - done);
+            if (next < 0) {
+                throw new EOFException();
+            }
+            done += next;
+        }
+    }
+
+    /**
        Write an entity to a stream.
        @param e The entity to write.
        @param out The OutputStream to write to.
