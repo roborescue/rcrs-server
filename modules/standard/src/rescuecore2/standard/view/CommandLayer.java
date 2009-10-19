@@ -1,12 +1,17 @@
 package rescuecore2.standard.view;
 
 import rescuecore2.messages.Command;
-import rescuecore2.view.RenderedObject;
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.DrawingTools;
+import rescuecore2.misc.gui.ScreenTransform;
+import rescuecore2.view.ViewLayer;
+import rescuecore2.view.RenderedObject;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.messages.AKClear;
@@ -27,7 +32,7 @@ import java.awt.geom.Ellipse2D;
 /**
    A layer for viewing commands.
  */
-public class CommandLayer extends StandardViewLayer {
+public class CommandLayer implements ViewLayer {
     private static final int SIZE = 15;
     private static final Color CLEAR_COLOUR = new Color(0, 0, 255, 128);
     private static final Color RESCUE_COLOUR = new Color(255, 255, 255, 128);
@@ -37,63 +42,52 @@ public class CommandLayer extends StandardViewLayer {
     private static final double ARROW_ANGLE = Math.toRadians(135);
     private static final double ARROW_LENGTH = 5;
 
-    private Collection<Command> commands;
-
-    /**
-       Construct a CommandLayer with no commands to view.
-    */
-    public CommandLayer() {
-        commands = new ArrayList<Command>();
-    }
-
-    /**
-       Set the commands to view.
-       @param c The new set of commands.
-     */
-    public void setCommands(Collection<? extends Command> c) {
-        commands.clear();
-        commands.addAll(c);
-    }
+    private StandardWorldModel world;
+    private Graphics2D g;
+    private ScreenTransform t;
 
     @Override
-    public Collection<RenderedObject> render(Graphics2D g, int width, int height) {
+    public Collection<RenderedObject> render(Graphics2D graphics, ScreenTransform transform, int width, int height, WorldModel<? extends Entity> worldModel, Collection<Command> commands, Collection<Entity> updates) {
         Collection<RenderedObject> result = new ArrayList<RenderedObject>();
+        world = StandardWorldModel.createStandardWorldModel(worldModel);
+        g = graphics;
+        t = transform;
         for (Command next : commands) {
             if (next instanceof AKMove) {
-                renderMove((AKMove)next, g);
+                renderMove((AKMove)next);
             }
             if (next instanceof AKExtinguish) {
-                renderExtinguish((AKExtinguish)next, g);
+                renderExtinguish((AKExtinguish)next);
             }
             if (next instanceof AKClear) {
-                renderClear((AKClear)next, g);
+                renderClear((AKClear)next);
             }
             if (next instanceof AKRescue) {
-                renderRescue((AKRescue)next, g);
+                renderRescue((AKRescue)next);
             }
             if (next instanceof AKLoad) {
-                renderLoad((AKLoad)next, g);
+                renderLoad((AKLoad)next);
             }
             if (next instanceof AKUnload) {
-                renderUnload((AKUnload)next, g);
+                renderUnload((AKUnload)next);
             }
         }
         return result;
     }
 
-    private void renderMove(AKMove move, Graphics2D g) {
+    private void renderMove(AKMove move) {
         g.setColor(Color.BLACK);
         List<EntityID> path = move.getPath();
         Iterator<EntityID> it = path.iterator();
-        StandardEntity first = getWorld().getEntity(it.next());
-        Pair<Integer, Integer> firstLocation = first.getLocation(getWorld());
-        int startX = transform.xToScreen(firstLocation.first());
-        int startY = transform.yToScreen(firstLocation.second());
+        StandardEntity first = world.getEntity(it.next());
+        Pair<Integer, Integer> firstLocation = first.getLocation(world);
+        int startX = t.xToScreen(firstLocation.first());
+        int startY = t.yToScreen(firstLocation.second());
         while (it.hasNext()) {
-            StandardEntity next = getWorld().getEntity(it.next());
-            Pair<Integer, Integer> nextLocation = next.getLocation(getWorld());
-            int nextX = transform.xToScreen(nextLocation.first());
-            int nextY = transform.yToScreen(nextLocation.second());
+            StandardEntity next = world.getEntity(it.next());
+            Pair<Integer, Integer> nextLocation = next.getLocation(world);
+            int nextX = t.xToScreen(nextLocation.first());
+            int nextY = t.yToScreen(nextLocation.second());
             g.drawLine(startX, startY, nextX, nextY);
             // Draw an arrow partway along the length
             int dx = nextX - startX;
@@ -112,39 +106,39 @@ public class CommandLayer extends StandardViewLayer {
         }
     }
 
-    private void renderExtinguish(AKExtinguish ex, Graphics2D g) {
-        StandardEntity fb = getWorld().getEntity(ex.getAgentID());
-        StandardEntity target = getWorld().getEntity(ex.getTarget());
-        Pair<Integer, Integer> fbLocation = fb.getLocation(getWorld());
-        Pair<Integer, Integer> targetLocation = target.getLocation(getWorld());
-        int fbX = transform.xToScreen(fbLocation.first());
-        int fbY = transform.yToScreen(fbLocation.second());
-        int bX = transform.xToScreen(targetLocation.first());
-        int bY = transform.yToScreen(targetLocation.second());
+    private void renderExtinguish(AKExtinguish ex) {
+        StandardEntity fb = world.getEntity(ex.getAgentID());
+        StandardEntity target = world.getEntity(ex.getTarget());
+        Pair<Integer, Integer> fbLocation = fb.getLocation(world);
+        Pair<Integer, Integer> targetLocation = target.getLocation(world);
+        int fbX = t.xToScreen(fbLocation.first());
+        int fbY = t.yToScreen(fbLocation.second());
+        int bX = t.xToScreen(targetLocation.first());
+        int bY = t.yToScreen(targetLocation.second());
         g.setColor(Color.BLUE);
         g.drawLine(fbX, fbY, bX, bY);
     }
 
-    private void renderClear(AKClear clear, Graphics2D g) {
-        renderHumanAction(getWorld().getEntity(clear.getAgentID()), CLEAR_COLOUR, g, null);
+    private void renderClear(AKClear clear) {
+        renderHumanAction(world.getEntity(clear.getAgentID()), CLEAR_COLOUR, null);
     }
 
-    private void renderRescue(AKRescue rescue, Graphics2D g) {
-        renderHumanAction(getWorld().getEntity(rescue.getAgentID()), RESCUE_COLOUR, g, null);
+    private void renderRescue(AKRescue rescue) {
+        renderHumanAction(world.getEntity(rescue.getAgentID()), RESCUE_COLOUR, null);
     }
 
-    private void renderLoad(AKLoad load, Graphics2D g) {
-        renderHumanAction(getWorld().getEntity(load.getAgentID()), LOAD_COLOUR, g, "L");
+    private void renderLoad(AKLoad load) {
+        renderHumanAction(world.getEntity(load.getAgentID()), LOAD_COLOUR, "L");
     }
 
-    private void renderUnload(AKUnload unload, Graphics2D g) {
-        renderHumanAction(getWorld().getEntity(unload.getAgentID()), UNLOAD_COLOUR, g, "U");
+    private void renderUnload(AKUnload unload) {
+        renderHumanAction(world.getEntity(unload.getAgentID()), UNLOAD_COLOUR, "U");
     }
 
-    private void renderHumanAction(StandardEntity entity, Color colour, Graphics2D g, String s) {
-        Pair<Integer, Integer> location = entity.getLocation(getWorld());
-        int x = transform.xToScreen(location.first()) - SIZE / 2;
-        int y = transform.yToScreen(location.second()) - SIZE / 2;
+    private void renderHumanAction(StandardEntity entity, Color colour, String s) {
+        Pair<Integer, Integer> location = entity.getLocation(world);
+        int x = t.xToScreen(location.first()) - SIZE / 2;
+        int y = t.yToScreen(location.second()) - SIZE / 2;
         Shape shape = new Ellipse2D.Double(x, y, SIZE, SIZE);
         g.setColor(colour);
         g.fill(shape);
@@ -153,8 +147,8 @@ public class CommandLayer extends StandardViewLayer {
             FontMetrics metrics = g.getFontMetrics();
             int width = metrics.stringWidth(s);
             int height = metrics.getHeight();
-            x = transform.xToScreen(location.first());
-            y = transform.yToScreen(location.second());
+            x = t.xToScreen(location.first());
+            y = t.yToScreen(location.second());
             g.drawString(s, x - (width / 2), y + (height / 2));
         }
     }

@@ -9,14 +9,17 @@ import java.util.ArrayList;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.misc.gui.ScreenTransform;
-
 import rescuecore2.view.RenderedObject;
+import rescuecore2.view.ViewLayer;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.messages.Command;
 
 /**
    An abstract base class for StandardWorldModel view layers that render standard entities.
    @param <T> The subclass of StandardEntity that this layer knows how to render.
  */
-public abstract class StandardEntityViewLayer<T extends StandardEntity> extends StandardViewLayer {
+public abstract class StandardEntityViewLayer<T extends StandardEntity> implements ViewLayer {
     private Class<T> clazz;
 
     /**
@@ -28,11 +31,12 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
     }
 
     @Override
-    public Collection<RenderedObject> render(Graphics2D g, int width, int height) {
+    public Collection<RenderedObject> render(Graphics2D g, ScreenTransform transform, int width, int height, WorldModel<? extends Entity> world, Collection<Command> commands, Collection<Entity> updates) {
         Collection<RenderedObject> result = new ArrayList<RenderedObject>();
-        for (StandardEntity next : getWorld()) {
+        StandardWorldModel model = StandardWorldModel.createStandardWorldModel(world);
+        for (Entity next : model) {
             if (clazz.isAssignableFrom(next.getClass())) {
-                result.add(new RenderedObject(next, render(clazz.cast(next), g, transform, getWorld())));
+                result.add(new RenderedObject(next, render(clazz.cast(next), g, transform, model)));
             }
         }
         return result;
