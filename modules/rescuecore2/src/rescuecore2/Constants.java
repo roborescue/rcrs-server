@@ -29,5 +29,10 @@ public final class Constants {
     /** The random seed key. */
     public static final String RANDOM_SEED_KEY = "random.seed";
 
+    /** The name of the communication model class. */
+    public static final String COMMUNICATION_MODEL_KEY = "kernel.communication-model";
+    /** The name of the perception class. */
+    public static final String PERCEPTION_KEY = "kernel.perception";
+
     private Constants() {}
 }
