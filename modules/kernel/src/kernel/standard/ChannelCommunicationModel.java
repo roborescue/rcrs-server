@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 import kernel.AgentProxy;
 import kernel.CommunicationModel;
@@ -16,6 +17,7 @@ import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.Constants;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -39,9 +41,13 @@ public class ChannelCommunicationModel implements CommunicationModel {
 
     private static final String PREFIX = "channels.";
     private static final String TYPE_SUFFIX = ".type";
+    private static final String NOISE_SUFFIX = ".noise";
 
     private static final String TYPE_VOICE = "voice";
     private static final String TYPE_RADIO = "radio";
+
+    private static final String NOISE_TYPE_DROPOUT = "dropout";
+    private static final String NOISE_TYPE_STATIC = "static";
 
     // Voice constants
     private static final String RANGE_SUFFIX = ".range";
@@ -52,9 +58,12 @@ public class ChannelCommunicationModel implements CommunicationModel {
     private static final String BANDWIDTH_SUFFIX = ".bandwidth";
 
     private Map<Integer, Channel> channels;
+    private Map<Integer, Noise> noise;
     private int platoonMax;
     private int centreMax;
     private StandardWorldModel world;
+
+    private Random random;
 
     /**
        Construct a ChannelCommunicationModel.
@@ -67,8 +76,9 @@ public class ChannelCommunicationModel implements CommunicationModel {
         world = StandardWorldModel.createStandardWorldModel(model);
         // Read the channel information
         channels = new HashMap<Integer, Channel>();
+        noise = new HashMap<Integer, Noise>();
         int count = config.getIntValue(COUNT_KEY);
-        for (int i = 1; i <= count; ++i) {
+        for (int i = 0; i < count; ++i) {
             String type = config.getValue(PREFIX + i + TYPE_SUFFIX);
             if (TYPE_VOICE.equals(type)) {
                 channels.put(i, new VoiceChannel(config, i, world));
@@ -80,8 +90,14 @@ public class ChannelCommunicationModel implements CommunicationModel {
                 System.err.println("Unrecognised channel type: " + PREFIX + i + TYPE_SUFFIX + " = '" + type + "'");
             }
         }
+        createNoiseObjects(config);
         platoonMax = config.getIntValue(PLATOON_MAX_CHANNELS_KEY, 1);
         centreMax = config.getIntValue(CENTRE_MAX_CHANNELS_KEY, 2);
+        random = new Random();
+        long seed = config.getIntValue(Constants.RANDOM_SEED_KEY, 0);
+        if (seed != 0) {
+            random.setSeed(seed);
+        }
     }
 
     @Override
@@ -108,10 +124,18 @@ public class ChannelCommunicationModel implements CommunicationModel {
                 AKSpeak speak = (AKSpeak)next;
                 int channelNumber = speak.getChannel();
                 Channel channel = channels.get(channelNumber);
+                Noise n = noise.get(channelNumber);
                 if (channel == null) {
                     System.out.println("Unrecognised channel: " + channelNumber);
                 }
                 else {
+                    if (n != null) {
+                        System.out.println("Adding noise to message:");
+                        rescuecore2.connection.ByteLogger.log(speak.getContent());
+                        speak = n.addNoise(speak);
+                        System.out.println("Added noise to message:");
+                        rescuecore2.connection.ByteLogger.log(speak.getContent());
+                    }
                     channel.push(speak);
                 }
             }
@@ -126,6 +150,38 @@ public class ChannelCommunicationModel implements CommunicationModel {
             result.put(agent, msgs);
         }
         return result;
+    }
+
+    private void createNoiseObjects(Config config) {
+        int count = config.getIntValue(COUNT_KEY);
+        for (int i = 0; i < count; ++i) {
+            String key = PREFIX + i + NOISE_SUFFIX;
+            if (config.isDefined(key)) {
+                List<String> types = config.getArrayValue(key);
+                List<Noise> noises = new ArrayList<Noise>(types.size());
+                for (String next : types) {
+                    if (next.startsWith(NOISE_TYPE_DROPOUT)) {
+                        double p = Double.parseDouble(next.substring(next.indexOf("(") + 1, next.indexOf(")")));
+                        noises.add(new DropoutNoise(p));
+                    }
+                    else if (next.startsWith(NOISE_TYPE_STATIC)) {
+                        double p = Double.parseDouble(next.substring(next.indexOf("(") + 1, next.indexOf(")")));
+                        noises.add(new StaticNoise(p));
+                    }
+                    else {
+                        System.err.println("Unrecognised noise type: " + key + " = '" + next + "'");
+                    }
+                }
+                Noise result;
+                if (noises.size() == 1) {
+                    result = noises.get(0);
+                }
+                else {
+                    result = new ChainedNoise(noises);
+                }
+                noise.put(i, result);
+            }
+        }
     }
 
     private AgentProxy findAgent(Collection<AgentProxy> agents, Entity e) {
@@ -225,7 +281,11 @@ public class ChannelCommunicationModel implements CommunicationModel {
 
         @Override
         public Collection<Message> getMessagesForAgent(AgentProxy agent) {
-            return new ArrayList<Message>(messagesForAgents.get(agent));
+            Collection<KAHearChannel> c = messagesForAgents.get(agent);
+            if (c == null) {
+                c = new ArrayList<KAHearChannel>();
+            }
+            return new ArrayList<Message>(c);
         }
 
         @Override
@@ -269,7 +329,8 @@ public class ChannelCommunicationModel implements CommunicationModel {
         public void push(AKSpeak speak) {
             EntityID id = speak.getAgentID();
             byte[] data = speak.getContent();
-            int count = uttered.get(id);
+            Integer i = uttered.get(id);
+            int count = i == null ? 0 : i.intValue();
             if (count >= maxMessages) {
                 System.out.println("Agent " + id + " has uttered too many voice messages on channel " + channelID + ": limit is " + maxMessages);
                 return;
@@ -315,6 +376,92 @@ public class ChannelCommunicationModel implements CommunicationModel {
                 addMessageForAgent(next, new KAHearChannel(speak.getAgentID(), channelID, data));
             }
             usedBandwidth += data.length;
+        }
+    }
+
+    /**
+       Noise implementations mess with messages in some way.
+     */
+    private static interface Noise {
+        /**
+           Optionally add some noise to a message and return either the original message or a replacement.
+           @param message The message to tinker with.
+           @return The original message or a replacement.
+        */
+        AKSpeak addNoise(AKSpeak message);
+    }
+
+    /**
+       A Noise implementation that chains Noise objects together.
+    */
+    private static class ChainedNoise implements Noise {
+        private List<Noise> chain;
+
+        public ChainedNoise(Collection<Noise> chain) {
+            this.chain = new ArrayList<Noise>(chain);
+        }
+
+        @Override
+        public AKSpeak addNoise(AKSpeak message) {
+            AKSpeak current = message;
+            for (Noise next : chain) {
+                current = next.addNoise(current);
+            }
+            return current;
+        }
+    }
+
+    /**
+       Dropout noise completely zeroes a message with some probability.
+    */
+    private class DropoutNoise implements Noise {
+        private double p;
+
+        /**
+           Construct a DropoutNoise object that will wipe out messages with some probability.
+           @param p The probability of destroying a message.
+        */
+        public DropoutNoise(double p) {
+            this.p = p;
+        }
+
+        @Override
+        public AKSpeak addNoise(AKSpeak message) {
+            if (random.nextDouble() >= p) {
+                return message;
+            }
+            return new AKSpeak(message.getAgentID(), message.getTime(), message.getChannel(), new byte[0]);
+        }
+    }
+
+    /**
+       Static noise flips bits in the message with some probability.
+    */
+    private class StaticNoise implements Noise {
+        private static final int BITS = 8;
+
+        private double p;
+
+        /**
+           Construct a StaticNoise object that will flip bits with some probability.
+           @param p The probability of flipping a bit.
+        */
+        public StaticNoise(double p) {
+            this.p = p;
+        }
+
+        @Override
+        public AKSpeak addNoise(AKSpeak message) {
+            byte[] data = message.getContent();
+            for (int i = 0; i < data.length; ++i) {
+                for (int j = 0; j < BITS; ++j) {
+                    if (random.nextDouble() < p) {
+                        // Flip this bit
+                        data[i] = (byte)(data[i] ^ (1 << j));
+                    }
+                }
+            }
+            return new AKSpeak(message.getAgentID(), message.getTime(), message.getChannel(), data);
         }
     }
 }
