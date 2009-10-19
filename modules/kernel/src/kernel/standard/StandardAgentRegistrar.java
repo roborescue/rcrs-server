@@ -10,6 +10,7 @@ import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
+import rescuecore2.Constants;
 
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.FireStation;
@@ -36,6 +37,8 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         VISIBLE_CONFIG_OPTIONS.add("fire.tank.refill-rate");
         VISIBLE_CONFIG_OPTIONS.add("fire.extinguish.max-sum");
         VISIBLE_CONFIG_OPTIONS.add("fire.extinguish.max-distance");
+        VISIBLE_CONFIG_OPTIONS.add(Constants.COMMUNICATION_MODEL_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(Constants.PERCEPTION_KEY);
     }
 
     @Override

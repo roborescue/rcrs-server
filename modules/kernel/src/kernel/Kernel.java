@@ -12,6 +12,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
+import rescuecore2.Constants;
 
 import rescuecore2.log.LogWriter;
 import rescuecore2.log.FileLogWriter;
@@ -94,6 +95,8 @@ public class Kernel {
         }
         commandFilter.initialise(config, this);
         this.termination = termination;
+        config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
+        config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
     }
 
     /**
