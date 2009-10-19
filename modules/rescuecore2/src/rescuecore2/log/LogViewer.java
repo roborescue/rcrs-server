@@ -1,19 +1,16 @@
 package rescuecore2.log;
 
+import static rescuecore2.misc.java.JavaTools.instantiate;
+
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.messages.Command;
-import rescuecore2.messages.MessageRegistry;
+import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.gui.ListModelList;
-
-/*
-import rescuecore2.standard.view.StandardWorldModelViewer;
-import rescuecore2.standard.view.CommandLayer;
-import rescuecore2.standard.entities.StandardEntityFactory;
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.messages.StandardMessageFactory;
-*/
+import rescuecore2.misc.java.LoadableTypeProcessor;
+import rescuecore2.config.Config;
+import rescuecore2.config.ConfigException;
+import rescuecore2.view.WorldModelViewer;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -31,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
+import javax.swing.JTabbedPane;
 import javax.swing.BorderFactory;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -39,11 +37,15 @@ import java.io.IOException;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
    A class for viewing log files.
  */
 public class LogViewer extends JPanel {
+    private static final String VIEWERS_KEY = "log.viewers";
+
     private static final int TICK_STEP_SIZE = 10;
 
     private static final int VIEWER_SIZE = 500;
@@ -55,9 +57,7 @@ public class LogViewer extends JPanel {
     private JList updatesList;
     private ListModelList<Command> commands;
     private ListModelList<Entity> updates;
-    private WorldModel<? extends Entity> world;
-    //    private StandardWorldModelViewer worldViewer;
-    //    private CommandLayer commandLayer;
+    private List<WorldModelViewer> viewers;
     private JButton down;
     private JButton up;
     private int maxTime;
@@ -65,11 +65,13 @@ public class LogViewer extends JPanel {
     /**
        Construct a LogViewer.
        @param reader The LogReader to read.
+       @param config The system configuration.
        @throws LogException If there is a problem reading the log.
-     */
-    public LogViewer(LogReader reader) throws LogException {
+    */
+    public LogViewer(LogReader reader, Config config) throws LogException {
         super(new BorderLayout());
         this.log = reader;
+        registerViewers(config);
         maxTime = log.getMaxTimestep();
         slider = new JSlider(0, maxTime);
         down = new JButton("<-");
@@ -122,13 +124,11 @@ public class LogViewer extends JPanel {
         s.setPreferredSize(updatesList.getPreferredScrollableViewportSize());
         lists.add(s);
         timestep = new JLabel("Timestep: 0");
-        /*
-        worldViewer = new StandardWorldModelViewer();
-        commandLayer = new CommandLayer();
-        worldViewer.addLayer(commandLayer);
-        worldViewer.setBorder(BorderFactory.createTitledBorder("World model"));
-        add(worldViewer, BorderLayout.CENTER);
-        */
+        JTabbedPane tabs = new JTabbedPane();
+        for (WorldModelViewer next : viewers) {
+            tabs.addTab(next.getViewerName(), next);
+        }
+        add(tabs, BorderLayout.CENTER);
         add(lists, BorderLayout.EAST);
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(down, BorderLayout.WEST);
@@ -142,7 +142,7 @@ public class LogViewer extends JPanel {
     /**
        Show a particular timestep in the viewer.
        @param time The timestep to show. If this value is out of range then this method will silently return.
-     */
+    */
     public void showTimestep(int time) {
         try {
             if (time < 0 || time > maxTime) {
@@ -152,17 +152,22 @@ public class LogViewer extends JPanel {
             commands.clear();
             updates.clear();
             CommandsRecord commandsRecord = log.getCommands(time);
-            /*
-            commands.addAll(log.getCommands(time));
-            updates.addAll(log.getUpdates(time));
-            world = log.getWorldModel(time);
-            worldViewer.setWorldModel(StandardWorldModel.createStandardWorldModel(world));
-            commandLayer.setCommands(commands);
-            worldViewer.repaint();
-            */
+            if (commandsRecord != null) {
+                commands.addAll(commandsRecord.getCommands());
+            }
+            UpdatesRecord updatesRecord = log.getUpdates(time);
+            if (updatesRecord != null) {
+                updates.addAll(updatesRecord.getEntities());
+            }
+            WorldModel<? extends Entity> model = log.getWorldModel(time);
+            for (WorldModelViewer next : viewers) {
+                next.view(model, commandsRecord == null ? null : commandsRecord.getCommands(), updatesRecord == null ? null : updatesRecord.getEntities());
+                next.repaint();
+            }
             down.setEnabled(time != 0);
             up.setEnabled(time != maxTime);
             System.out.println("Showing time " + time);
+            System.out.println(model.getAllEntities().size() + " entities");
             System.out.println(commands.size() + " commands");
             System.out.println(updates.size() + " updates");
         }
@@ -171,23 +176,35 @@ public class LogViewer extends JPanel {
         }
     }
 
+    private void registerViewers(Config config) {
+        viewers = new ArrayList<WorldModelViewer>();
+        for (String next : config.getArrayValue(VIEWERS_KEY)) {
+            WorldModelViewer viewer = instantiate(next, WorldModelViewer.class);
+            if (viewer != null) {
+                viewer.initialise(config);
+                viewers.add(viewer);
+                System.out.println("Added viewer: " + next);
+            }
+        }
+    }
+
+
     /**
        Launch a new LogViewer.
        @param args Command line arguments. Accepts only one argument: the name of a log file.
     */
     public static void main(String[] args) {
-        if (args.length != 1) {
-            printUsage();
-            return;
-        }
-        String name = args[0];
+        Config config = new Config();
         try {
-            /*
-            MessageRegistry.register(StandardMessageFactory.INSTANCE);
-            EntityRegistry.register(StandardEntityFactory.INSTANCE);
-            */
+            args = CommandLineOptions.processArgs(args, config);
+            if (args.length != 1) {
+                printUsage();
+                return;
+            }
+            String name = args[0];
+            processJarFiles(config);
             LogReader reader = new FileLogReader(name);
-            LogViewer viewer = new LogViewer(reader);
+            LogViewer viewer = new LogViewer(reader, config);
             viewer.setPreferredSize(new Dimension(VIEWER_SIZE, VIEWER_SIZE));
             JFrame frame = new JFrame("Log viewer: " + name);
             frame.getContentPane().add(viewer, BorderLayout.CENTER);
@@ -202,6 +219,9 @@ public class LogViewer extends JPanel {
         catch (IOException e) {
             e.printStackTrace();
         }
+        catch (ConfigException e) {
+            e.printStackTrace();
+        }
         catch (LogException e) {
             e.printStackTrace();
         }
@@ -209,5 +229,11 @@ public class LogViewer extends JPanel {
 
     private static void printUsage() {
         System.out.println("Usage: LogViewer <filename>");
+    }
+
+    private static void processJarFiles(Config config) throws IOException {
+        LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
+        processor.addFactoryRegisterCallbacks();
+        processor.process();
     }
 }
