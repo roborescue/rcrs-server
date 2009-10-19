@@ -12,6 +12,7 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKSay;
+import rescuecore2.standard.messages.AKSpeak;
 
 /**
    A sample civilian agent.
@@ -97,7 +98,12 @@ public class SampleCivilian extends AbstractSampleAgent {
 
     private void say(String message, int time) {
         try {
-            send(new AKSay(getID(), time, message.getBytes("UTF-8")));
+            if (useSpeak) {
+                send(new AKSpeak(getID(), time, 0, message.getBytes("UTF-8")));
+            }
+            else {
+                send(new AKSay(getID(), time, message.getBytes("UTF-8")));
+            }
         }
         catch (java.io.UnsupportedEncodingException e) {
             throw new RuntimeException("This should not have happened!", e);

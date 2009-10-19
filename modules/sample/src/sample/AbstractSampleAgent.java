@@ -9,6 +9,7 @@ import java.util.Collections;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.components.AbstractAgent;
+import rescuecore2.Constants;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -22,6 +23,9 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
     private static final int MESH_SIZE = 10000;
     private static final int RANDOM_WALK_LENGTH = 50;
 
+    private static final String SAY_COMMUNICATION_MODEL = "kernel.standard.StandardCommunicationModel";
+    private static final String SPEAK_COMMUNICATION_MODEL = "kernel.standard.ChannelCommunicationModel";
+
     /**
        The world model referenced as a StandardWorldModel. Note that this will reference the same object as {@link AbstractAgent#model}.
      */
@@ -31,6 +35,11 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
        The search algorithm.
      */
     protected SampleSearch search;
+
+    /**
+       Whether to use AKSpeak messages or not.
+    */
+    protected boolean useSpeak;
 
     /**
        Construct an AbstractSampleAgent.
@@ -48,6 +57,7 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
     protected void postConnect() {
         world.index(MESH_SIZE);
         search = new SampleSearch(world, true);
+        useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
     }
 
     /**
