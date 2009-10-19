@@ -67,12 +67,19 @@ public class ScreenTransform {
     public void zoomOut() {
         zoom /= 2;
         if (zoom <= 1) {
-            zoom = 1;
-            fixedX = minX;
-            fixedY = minY + yRange;
-            fixedScreenX = 0;
-            fixedScreenY = 0;
+            resetZoom();
         }
+    }
+
+    /**
+       Reset the zoom level to one. This also clears the fixed point coordinate.
+     */
+    public void resetZoom() {
+        zoom = 1;
+        fixedX = minX;
+        fixedY = minY + yRange;
+        fixedScreenX = 0;
+        fixedScreenY = 0;
     }
 
     /**
