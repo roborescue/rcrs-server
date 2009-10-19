@@ -18,9 +18,9 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
 
     @Override
     public JComponent getGUIComponent(Kernel kernel) {
-        final WorldModelViewer<StandardWorldModel> viewer = new StandardWorldModelViewer();
+        final WorldModelViewer viewer = new StandardWorldModelViewer();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
-        viewer.setWorldModel(StandardWorldModel.createStandardWorldModel(kernel.getWorldModel()));
+        viewer.view(StandardWorldModel.createStandardWorldModel(kernel.getWorldModel()), null, null);
         kernel.addKernelListener(new KernelListenerAdapter() {
                 @Override
                 public void timestepCompleted(int time) {
