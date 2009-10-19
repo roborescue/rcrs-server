@@ -14,7 +14,6 @@ import rescuecore2.connection.TCPConnection;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.misc.java.LoadableTypeProcessor;
-import rescuecore2.misc.java.LoadableType;
 import rescuecore2.misc.CommandLineOptions;
 
 /**

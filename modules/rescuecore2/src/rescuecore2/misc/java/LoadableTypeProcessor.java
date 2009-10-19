@@ -34,11 +34,12 @@ public class LoadableTypeProcessor {
 
     /**
        Construct a LoadableTypeProcessor that will perform a deep inspection.
+       @param config The system configuration.
     */
     public LoadableTypeProcessor(Config config) {
         callbacks = new ArrayList<LoadableTypeCallback>();
         types = new HashSet<LoadableType>();
-        deep = config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, true);
+        deep = config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, Constants.DEFAULT_DEEP_JAR_INSPECTION);
         dir = config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR);
     }
 
@@ -94,7 +95,7 @@ public class LoadableTypeProcessor {
         System.out.println("Processing jar directory: " + baseDir.getAbsolutePath());
         File[] jarFiles = baseDir.listFiles(new FilenameFilter() {
                 @Override
-                public boolean accept(File dir, String name) {
+                public boolean accept(File dirName, String name) {
                     return name.endsWith(".jar");
                 }
             });

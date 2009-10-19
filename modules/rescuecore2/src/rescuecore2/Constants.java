@@ -14,6 +14,8 @@ public final class Constants {
     public static final String DEEP_JAR_INSPECTION_KEY = "loadabletypes.inspect.deep";
     /** Default location for looking up jar files. */
     public static final String DEFAULT_JAR_DIR = "../jars";
+    /** Default deep inspection. */
+    public static final boolean DEFAULT_DEEP_JAR_INSPECTION = true;
 
     /** Config key for the kernel host name. */
     public static final String KERNEL_HOST_NAME = "kernel.host";

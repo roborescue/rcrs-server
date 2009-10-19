@@ -28,6 +28,7 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
 
     /**
        Construct an empty world model.
+       @return A new DefaultWorldModel that accepts any type of Entity.
     */
     public static DefaultWorldModel<Entity> create() {
         return new DefaultWorldModel<Entity>(Entity.class);

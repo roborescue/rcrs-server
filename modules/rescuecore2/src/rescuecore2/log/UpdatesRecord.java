@@ -60,7 +60,7 @@ public class UpdatesRecord implements LogRecord {
         time = readInt32(in);
         entities = new ArrayList<Entity>();
         int count = readInt32(in);
-        System.out.print("Reading updates for time " + time + ". " + count + " entities to read...");
+        //        System.out.print("Reading updates for time " + time + ". " + count + " entities to read...");
         for (int i = 0; i < count; ++i) {
             Entity e = readEntity(in);
             if (e == null) {
@@ -68,7 +68,7 @@ public class UpdatesRecord implements LogRecord {
             }
             entities.add(e);
         }
-        System.out.println("done");
+        //        System.out.println("done");
     }
 
     /**

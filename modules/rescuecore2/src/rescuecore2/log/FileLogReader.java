@@ -21,9 +21,6 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
-import rescuecore2.messages.Message;
-import rescuecore2.messages.Command;
-import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
 
 /**
@@ -191,7 +188,7 @@ public class FileLogReader implements LogReader {
     }
 
     private void indexRecord(RecordType type) throws IOException, LogException {
-        System.out.println("Record found: " + type);
+        //        System.out.println("Record found: " + type);
         switch (type) {
         case START_OF_LOG:
             indexStart();
@@ -246,7 +243,7 @@ public class FileLogReader implements LogReader {
         PerceptionRecord record = new PerceptionRecord(new ByteArrayInputStream(bytes));
         int time = record.getTime();
         EntityID agentID = record.getEntityID();
-        System.out.println("Found perception for agent " + agentID + " at time " + time + " at position " + position);
+        //        System.out.println("Found perception for agent " + agentID + " at time " + time + " at position " + position);
         Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
         if (timestepMap == null) {
             timestepMap = new HashMap<EntityID, Long>();
@@ -261,7 +258,7 @@ public class FileLogReader implements LogReader {
         byte[] bytes = readBytes(size, file);
         CommandsRecord record = new CommandsRecord(new ByteArrayInputStream(bytes));
         int time = record.getTime();
-        System.out.println("Found commands for time " + time + " at position " + position);
+        //        System.out.println("Found commands for time " + time + " at position " + position);
         commandsIndices.put(time, position);
         maxTime = Math.max(time, maxTime);
     }
@@ -272,7 +269,7 @@ public class FileLogReader implements LogReader {
         byte[] bytes = readBytes(size, file);
         UpdatesRecord record = new UpdatesRecord(new ByteArrayInputStream(bytes));
         int time = record.getTime();
-        System.out.println("Found updates for time " + time + " at position " + position);
+        //        System.out.println("Found updates for time " + time + " at position " + position);
         updatesIndices.put(time, position);
         maxTime = Math.max(time, maxTime);
     }
@@ -286,8 +283,9 @@ public class FileLogReader implements LogReader {
 
     private void removeStaleKeyFrames() {
         System.out.println("Removing stale key frames");
-        if (keyFrames.size() < KEY_FRAME_BUFFER_MAX_SIZE) {
-            System.out.println("Key frame buffer is not full: " + keyFrames.size() + " entries");
+        int size = keyFrames.size();
+        if (size < KEY_FRAME_BUFFER_MAX_SIZE) {
+            System.out.println("Key frame buffer is not full: " + size + (size == 1 ? " entry" : " entries"));
             return;
         }
         // Try to balance the number of key frames.

@@ -1,10 +1,8 @@
 package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.writeEntity;
 import static rescuecore2.misc.EncodingTools.writeMessage;
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.readMessage;
 
 import java.io.OutputStream;
@@ -13,8 +11,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
 
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 
@@ -64,7 +60,7 @@ public class CommandsRecord implements LogRecord {
         time = readInt32(in);
         commands = new ArrayList<Command>();
         int count = readInt32(in);
-        System.out.print("Reading commands for time " + time + ". " + count + " commands to read...");
+        //        System.out.print("Reading commands for time " + time + ". " + count + " commands to read...");
         for (int i = 0; i < count; ++i) {
             Message m = readMessage(in);
             if (m == null) {
@@ -75,7 +71,7 @@ public class CommandsRecord implements LogRecord {
             }
             commands.add((Command)m);
         }
-        System.out.println("done");
+        //        System.out.println("done");
     }
 
     /**

@@ -1,20 +1,14 @@
 package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readEntity;
-import static rescuecore2.misc.EncodingTools.readMessage;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.Message;
-import rescuecore2.messages.Command;
-import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;

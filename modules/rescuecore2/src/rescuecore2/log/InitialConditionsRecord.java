@@ -58,14 +58,15 @@ public class InitialConditionsRecord implements LogRecord {
     public void read(InputStream in) throws IOException, LogException {
         model = DefaultWorldModel.create();
         int size = readInt32(in);
-        System.out.print("Reading initial conditions. " + size + " objects to read...");
+        //        System.out.print("Reading initial conditions. " + size + " objects to read...");
         for (int i = 0; i < size; ++i) {
             Entity e = readEntity(in);
             if (e == null) {
                 throw new LogException("Could not read entity from stream");
             }
+            model.addEntity(e);
         }
-        System.out.println("done");
+        //        System.out.println("done");
     }
 
     /**

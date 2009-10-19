@@ -2,7 +2,6 @@ package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
