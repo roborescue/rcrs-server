@@ -98,7 +98,7 @@ namespace Librescue {
 	AK_RESCUE = 0x88,
 	AK_CLEAR = 0x89,
 	AK_CHANNEL = 0x90,
-	AK_REPAIR = 0x91 // changed from 90
+	AK_REPAIR = 0x95
   };
 
   enum TypeId {

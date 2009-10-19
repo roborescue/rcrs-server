@@ -332,14 +332,16 @@ namespace Librescue {
 	  return "AK_SAY";
 	case AK_TELL:
 	  return "AK_TELL";
+	case AK_SPEAK:
+	  return "AK_SPEAK";
 	case AK_EXTINGUISH:
 	  return "AK_EXTINGUISH";
 	case AK_RESCUE:
 	  return "AK_RESCUE";
 	case AK_CLEAR:
 	  return "AK_CLEAR";
-	case AK_REPAIR:
-	  return "AK_REPAIR";
+        case AK_REPAIR:
+          return "AK_REPAIR";
 	case AK_CHANNEL:
 	  return "AK_CHANNEL";
 	}
