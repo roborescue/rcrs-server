@@ -4,11 +4,11 @@ import java.awt.Dimension;
 import javax.swing.JComponent;
 
 import rescuecore2.view.WorldModelViewer;
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import kernel.Kernel;
 import kernel.KernelListenerAdapter;
+import kernel.Timestep;
 
 /**
    A KernelGUIComponent that will view a standard world model.
@@ -17,13 +17,14 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
     private static final int SIZE = 500;
 
     @Override
-    public JComponent getGUIComponent(Kernel kernel) {
+    public JComponent getGUIComponent(final Kernel kernel) {
         final WorldModelViewer viewer = new StandardWorldModelViewer();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
-        viewer.view(StandardWorldModel.createStandardWorldModel(kernel.getWorldModel()), null, null);
+        viewer.view(kernel.getWorldModel(), null, null);
         kernel.addKernelListener(new KernelListenerAdapter() {
                 @Override
-                public void timestepCompleted(int time) {
+                public void timestepCompleted(Timestep time) {
+                    viewer.view(kernel.getWorldModel(), time.getCommands(), time.getUpdates());
                     viewer.repaint();
                 }
             });

@@ -14,6 +14,7 @@ import kernel.AgentProxy;
 import kernel.SimulatorProxy;
 import kernel.ViewerProxy;
 import kernel.Kernel;
+import kernel.Timestep;
 
 import rescuecore2.misc.gui.ListModelList;
 
@@ -67,8 +68,8 @@ public class KernelStatus extends JPanel implements KernelListener {
     }
 
     @Override
-    public void timestepCompleted(int time) {
-        timeLabel.setText("Time: " + time);
+    public void timestepCompleted(Timestep time) {
+        timeLabel.setText("Time: " + time.getTime());
     }
 
     @Override

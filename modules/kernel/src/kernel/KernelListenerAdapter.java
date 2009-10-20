@@ -5,7 +5,7 @@ package kernel;
  */
 public class KernelListenerAdapter implements KernelListener {
     @Override
-    public void timestepCompleted(int time) {}
+    public void timestepCompleted(Timestep time) {}
 
     @Override
     public void agentAdded(AgentProxy agent) {}

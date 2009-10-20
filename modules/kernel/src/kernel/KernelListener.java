@@ -8,7 +8,7 @@ public interface KernelListener {
        Notification that a timestep has been completed.
        @param time The timestep that has just been completed.
     */
-    void timestepCompleted(int time);
+    void timestepCompleted(Timestep time);
 
     /**
        Notification that an agent has been added.

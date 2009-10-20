@@ -43,6 +43,7 @@ public class Kernel {
     private Collection<SimulatorProxy> sims;
     private Collection<ViewerProxy> viewers;
     private int time;
+    private Timestep previous;
     private Collection<Command> agentCommandsLastTimestep;
 
     private CommandFilter commandFilter;
@@ -254,7 +255,8 @@ public class Kernel {
             System.out.println("World model merge took : " + (mergeTime - updatesTime) + "ms");
             System.out.println("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
             System.out.println("Total time             : " + (broadcastTime - start) + "ms");
-            fireTimestepCompleted(time);
+            previous = new Timestep(time, agentCommandsLastTimestep, updates);
+            fireTimestepCompleted(previous);
         }
     }
 
@@ -387,7 +389,7 @@ public class Kernel {
         return result;
     }
 
-    private void fireTimestepCompleted(int timestep) {
+    private void fireTimestepCompleted(Timestep timestep) {
         for (KernelListener next : getListeners()) {
             next.timestepCompleted(timestep);
         }
