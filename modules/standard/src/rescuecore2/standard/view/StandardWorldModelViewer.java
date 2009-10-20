@@ -28,10 +28,15 @@ public class StandardWorldModelViewer extends LayerWorldModelViewer {
 
     @Override
     public void view(WorldModel<? extends Entity> model, Collection<Command> commands, Collection<Entity> updates) {
-        StandardWorldModel world = StandardWorldModel.createStandardWorldModel(model);
-        super.view(world, commands, updates);
-        world.index();
-        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bounds = world.getWorldBounds();
+        // If we already know about the world then don't bother calculating new bounds
+        if (world == model) {
+            super.view(world, commands, updates);
+            return;
+        }
+        super.view(model, commands, updates);
+        StandardWorldModel swm = StandardWorldModel.createStandardWorldModel(model);
+        swm.index();
+        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bounds = swm.getWorldBounds();
         double xMin = bounds.first().first();
         double yMin = bounds.first().second();
         double xMax = bounds.second().first();
