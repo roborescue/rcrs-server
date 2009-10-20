@@ -70,6 +70,7 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
 
     @Override
     protected void handleUpdate(Update u) {
+        super.handleUpdate(u);
         changed.clear();
         for (Entity next : u.getUpdatedEntities()) {
             if (next instanceof Building) {
@@ -93,7 +94,6 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
                 }
             }
         }
-        super.handleUpdate(u);
     }
 
     private int calculateBlock(Building b) {
