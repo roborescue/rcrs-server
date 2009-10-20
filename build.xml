@@ -4,12 +4,13 @@
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
 
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade"/>
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc"/>
   <property name="modules.kernel.depend" value="rescuecore2,standard,sample,handy"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
   <property name="modules.collapse.depend" value="rescuecore2,standard"/>
   <property name="modules.blockade.depend" value="rescuecore2,standard"/>
+  <property name="modules.misc.depend" value="rescuecore2,standard"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
@@ -17,6 +18,9 @@
   <import file="${modules.dir}/sample/build.xml" optional="true"/>
   <import file="${modules.dir}/handy/build.xml" optional="true"/>
   <import file="${modules.dir}/human/build.xml" optional="true"/>
+  <import file="${modules.dir}/collapse/build.xml" optional="true"/>
+  <import file="${modules.dir}/blockade/build.xml" optional="true"/>
+  <import file="${modules.dir}/misc/build.xml" optional="true"/>
 
   <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->
@@ -295,6 +299,9 @@
       <class location="${jar.dir}/sample.jar"/>
       <class location="${jar.dir}/handy.jar"/>
       <class location="${jar.dir}/human.jar"/>
+      <class location="${jar.dir}/blockade.jar"/>
+      <class location="${jar.dir}/collapse.jar"/>
+      <class location="${jar.dir}/misc.jar"/>
       <auxClasspath refid="path.common"/>
       <auxClasspath refid="path.allmodules.lib"/>
     </findbugs>

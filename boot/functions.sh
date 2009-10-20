@@ -126,7 +126,7 @@ function processArgs {
 
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $*"
+    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewer.auto= --kernel.agents.auto= --kernel.gis.auto=kernel.standard.InlineWorldModelCreator --kernel.perception.auto=kernel.standard.TunableStandardPerception --kernel.communication.auto=kernel.standard.ChannelCommunicationModel $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
     xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS 2>&1 | tee $LOGDIR/kernel.log" &
     KERNEL=$!
@@ -136,7 +136,6 @@ function startKernel {
 
 # Start the viewer and simulators
 function startSims {
-    LD_COMMAND="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/oldsims/librescue"
     # Viewer
     if [ -z $TEAM ]; then
 	xterm -T viewer -e "java -Xmx256m -cp $BASEDIR/oldsims/ viewer.Main -h localhost -p 7000 2>&1 | tee $LOGDIR/viewer.log" &
@@ -144,8 +143,8 @@ function startSims {
 	xterm -T viewer -e "java -Xmx256m -cp $BASEDIR/oldsims/ viewer.Main -h localhost -p 7000 -t \"$TEAM - $MAP\" 2>&1 | tee $LOGDIR/viewer.log" &
     fi
     VIEWER=$!
-    # Old simulators
-    xterm -T misc -e "$LD_COMMAND && $BASEDIR/oldsims/miscsimulator/miscsimulator --mapdir $MAP --config $DIR/config/misc.cfg 2>&1 | tee $LOGDIR/misc.log" &
+    # Simulators
+    xterm -T misc -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator 2>&1 | tee $LOGDIR/misc.log" &
     MISC=$!
     xterm -T traffic -e "java -Xmx256m -cp $BASEDIR/oldsims/ traffic.Main localhost 7000 2>&1 | tee $LOGDIR/traffic.log" &
     TRAFFIC=$!
