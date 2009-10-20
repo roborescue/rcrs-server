@@ -121,14 +121,12 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
         private double severe;
         private double moderate;
         private double slight;
-        private double none;
 
         CollapseStats(int code, Config config) {
             destroyed = config.getFloatValue(CONFIG_PREFIX + CODES[code] + DESTROYED_SUFFIX);
             severe = destroyed + config.getFloatValue(CONFIG_PREFIX + CODES[code] + SEVERE_SUFFIX);
             moderate = severe + config.getFloatValue(CONFIG_PREFIX + CODES[code] + MODERATE_SUFFIX);
             slight = moderate + config.getFloatValue(CONFIG_PREFIX + CODES[code] + SLIGHT_SUFFIX);
-            none = slight + config.getFloatValue(CONFIG_PREFIX + CODES[code] + NONE_SUFFIX);
         }
 
         int damage() {
