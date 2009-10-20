@@ -121,7 +121,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
         List<Human> targets = new ArrayList<Human>();
         for (StandardEntity next : world.getEntitiesOfType(StandardEntityType.CIVILIAN, StandardEntityType.FIRE_BRIGADE, StandardEntityType.POLICE_FORCE, StandardEntityType.AMBULANCE_TEAM)) {
             Human h = (Human)next;
-            if (h.getBuriedness() > 0 || h.getDamage() > 0) {
+            if (h.getHP() > 0 && (h.getBuriedness() > 0 || h.getDamage() > 0)) {
                 targets.add(h);
             }
         }
