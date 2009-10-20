@@ -11,6 +11,7 @@ import rescuecore2.misc.Pair;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
    The Building object.
@@ -39,6 +40,10 @@ public class Building extends StandardEntity {
         /** Completely burnt out. */
         BURNT_OUT;
     }
+
+    /**
+       Fieryness levels that indicate burning. */
+    public static final EnumSet<Fieryness> BURNING = EnumSet.of(Fieryness.HEATING, Fieryness.BURNING, Fieryness.INFERNO);
 
     private IntProperty x;
     private IntProperty y;
