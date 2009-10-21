@@ -12,7 +12,7 @@ import rescuecore2.misc.EntityTools;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Road;
@@ -113,10 +113,10 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         System.out.println("Time: " + time);
         System.out.println("|    Civ ID |     HP | Damage | Buriedness |");
         System.out.println("--------------------------------------------");
-        for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityType.CIVILIAN,
-                                                                                             StandardEntityType.FIRE_BRIGADE,
-                                                                                             StandardEntityType.POLICE_FORCE,
-                                                                                             StandardEntityType.AMBULANCE_TEAM))) {
+        for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
+                                                                                             StandardEntityURN.FIRE_BRIGADE,
+                                                                                             StandardEntityURN.POLICE_FORCE,
+                                                                                             StandardEntityURN.AMBULANCE_TEAM))) {
             Human h = (Human)e;
             if (h.getDamage() > 0 || h.getBuriedness() > 0) {
                 System.out.printf("| %1$9d | %2$6d | %3$6d | %4$10d |%n", h.getID().getValue(), h.getHP(), h.getDamage(), h.getBuriedness());
@@ -125,7 +125,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         System.out.println("--------------------------------------------");
         System.out.println("|   Road ID |  Block |");
         System.out.println("----------------------");
-        for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityType.ROAD))) {
+        for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.ROAD))) {
             Road r = (Road)e;
             if (r.getBlock() > 0) {
                 System.out.printf("| %1$9d | %2$6d |%n", r.getID().getValue(), r.getBlock());
@@ -146,10 +146,10 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
                 if (b.isBrokennessDefined()) {
                     // Brokenness has changed. Bury any agents inside.
                     System.out.println(b + " is broken. Updating trapped agents");
-                    for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityType.CIVILIAN,
-                                                                                  StandardEntityType.FIRE_BRIGADE,
-                                                                                  StandardEntityType.POLICE_FORCE,
-                                                                                  StandardEntityType.AMBULANCE_TEAM)) {
+                    for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
+                                                                                  StandardEntityURN.FIRE_BRIGADE,
+                                                                                  StandardEntityURN.POLICE_FORCE,
+                                                                                  StandardEntityURN.AMBULANCE_TEAM)) {
                         Human h = (Human)e;
                         if (h.getPosition().equals(b.getID())) {
                             System.out.println("Human in building: " + h);
@@ -328,7 +328,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             return;
         }
         // Is there something already loaded?
-        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityType.CIVILIAN)) {
+        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
             if (agentID.equals(c.getPosition())) {
                 System.out.println("Rejecting load command " + load + ": agent already has something loaded");
@@ -370,7 +370,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
         // Is there something loaded?
         Civilian target = null;
-        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityType.CIVILIAN)) {
+        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
             if (agentID.equals(c.getPosition())) {
                 target = c;
@@ -389,10 +389,10 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private void updateHealth() {
-        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityType.CIVILIAN,
-                                                                      StandardEntityType.FIRE_BRIGADE,
-                                                                      StandardEntityType.POLICE_FORCE,
-                                                                      StandardEntityType.AMBULANCE_TEAM)) {
+        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
+                                                                      StandardEntityURN.FIRE_BRIGADE,
+                                                                      StandardEntityURN.POLICE_FORCE,
+                                                                      StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)e;
             int buriedness = h.getBuriedness();
             int damage = h.getDamage();
