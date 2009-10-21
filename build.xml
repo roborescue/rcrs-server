@@ -231,7 +231,7 @@
       <delete dir="${jar.dir}/@{module}.jar" failonerror="false"/>
       <delete dir="${cobertura.instrument.dir}/@{module}.jar" failonerror="false"/>
       <delete failonerror="false">
-        <fileset dir="@{module}/test">
+        <fileset dir="${modules.dir}/@{module}/test">
           <include name="**/*.class"/>
         </fileset>
       </delete>
