@@ -1,9 +1,13 @@
-package rescuecore2.messages;
+package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readMessage;
 import static rescuecore2.misc.EncodingTools.writeMessage;
+
+import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.Command;
+import rescuecore2.messages.Message;
 
 import java.util.List;
 import java.util.ArrayList;

@@ -4,9 +4,9 @@ import java.util.Collection;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.EntityListComponent;
-import rescuecore2.messages.ConfigComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.EntityListComponent;
+import rescuecore2.messages.components.ConfigComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.config.Config;
 
@@ -48,7 +48,7 @@ public class KVConnectOK extends AbstractMessage implements Control {
     }
 
     private KVConnectOK() {
-        super("KV_CONNECT_OK", ControlMessageConstants.KV_CONNECT_OK);
+        super(ControlMessageURN.KV_CONNECT_OK);
         viewerID = new IntComponent("Viewer ID");
         requestID = new IntComponent("Request ID");
         world = new EntityListComponent("Entities");

@@ -23,7 +23,7 @@ public final class EntityTools {
      */
     public static void copyProperties(Entity from, Entity to) {
         for (Property next : from.getProperties()) {
-            Property p = to.getProperty(next.getID());
+            Property p = to.getProperty(next.getURN());
             if (p != null) {
                 p.takeValue(next);
             }

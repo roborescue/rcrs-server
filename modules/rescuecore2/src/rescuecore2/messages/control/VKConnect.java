@@ -2,8 +2,8 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.StringComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.StringComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class VKConnect extends AbstractMessage implements Control {
     }
 
     private VKConnect() {
-        super("VK_CONNECT", ControlMessageConstants.VK_CONNECT);
+        super(ControlMessageURN.VK_CONNECT);
         requestID = new IntComponent("Request ID");
         version = new IntComponent("Version");
         viewerName = new StringComponent("Name");

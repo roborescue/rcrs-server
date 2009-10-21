@@ -4,88 +4,64 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
+import rescuecore2.messages.AbstractMessageFactory;
 
 /**
    A factory for control messages.
  */
-public final class ControlMessageFactory implements MessageFactory {
+public final class ControlMessageFactory extends AbstractMessageFactory<ControlMessageURN> {
     /** Singleton instance. */
     public static final ControlMessageFactory INSTANCE = new ControlMessageFactory();
 
     private ControlMessageFactory() {
+        super(ControlMessageURN.class);
     }
 
     @Override
-    public int[] getKnownMessageTypeIDs() {
-        return new int[] {ControlMessageConstants.KG_CONNECT,
-                          ControlMessageConstants.KG_ACKNOWLEDGE,
-                          ControlMessageConstants.GK_CONNECT_OK,
-                          ControlMessageConstants.GK_CONNECT_ERROR,
-                          ControlMessageConstants.SK_CONNECT,
-                          ControlMessageConstants.SK_ACKNOWLEDGE,
-                          ControlMessageConstants.SK_UPDATE,
-                          ControlMessageConstants.KS_CONNECT_OK,
-                          ControlMessageConstants.KS_CONNECT_ERROR,
-                          ControlMessageConstants.VK_CONNECT,
-                          ControlMessageConstants.VK_ACKNOWLEDGE,
-                          ControlMessageConstants.KV_CONNECT_OK,
-                          ControlMessageConstants.KV_CONNECT_ERROR,
-                          ControlMessageConstants.AK_CONNECT,
-                          ControlMessageConstants.AK_ACKNOWLEDGE,
-                          ControlMessageConstants.KA_CONNECT_OK,
-                          ControlMessageConstants.KA_CONNECT_ERROR,
-                          ControlMessageConstants.KA_SENSE,
-                          ControlMessageConstants.COMMANDS,
-                          ControlMessageConstants.UPDATE
-        };
-    }
-
-    @Override
-    public Message createMessage(int id, InputStream data) throws IOException {
-        switch (id) {
-        case ControlMessageConstants.KG_CONNECT:
+    public Message createMessage(ControlMessageURN urn, InputStream data) throws IOException {
+        switch (urn) {
+        case KG_CONNECT:
             return new KGConnect(data);
-        case ControlMessageConstants.KG_ACKNOWLEDGE:
+        case KG_ACKNOWLEDGE:
             return new KGAcknowledge(data);
-        case ControlMessageConstants.GK_CONNECT_OK:
+        case GK_CONNECT_OK:
             return new GKConnectOK(data);
-        case ControlMessageConstants.GK_CONNECT_ERROR:
+        case GK_CONNECT_ERROR:
             return new GKConnectError(data);
-        case ControlMessageConstants.SK_CONNECT:
+        case SK_CONNECT:
             return new SKConnect(data);
-        case ControlMessageConstants.SK_ACKNOWLEDGE:
+        case SK_ACKNOWLEDGE:
             return new SKAcknowledge(data);
-        case ControlMessageConstants.SK_UPDATE:
+        case SK_UPDATE:
             return new SKUpdate(data);
-        case ControlMessageConstants.KS_CONNECT_OK:
+        case KS_CONNECT_OK:
             return new KSConnectOK(data);
-        case ControlMessageConstants.KS_CONNECT_ERROR:
+        case KS_CONNECT_ERROR:
             return new KSConnectError(data);
-        case ControlMessageConstants.VK_CONNECT:
+        case VK_CONNECT:
             return new VKConnect(data);
-        case ControlMessageConstants.VK_ACKNOWLEDGE:
+        case VK_ACKNOWLEDGE:
             return new VKAcknowledge(data);
-        case ControlMessageConstants.KV_CONNECT_OK:
+        case KV_CONNECT_OK:
             return new KVConnectOK(data);
-        case ControlMessageConstants.KV_CONNECT_ERROR:
+        case KV_CONNECT_ERROR:
             return new KVConnectError(data);
-        case ControlMessageConstants.AK_CONNECT:
+        case AK_CONNECT:
             return new AKConnect(data);
-        case ControlMessageConstants.AK_ACKNOWLEDGE:
+        case AK_ACKNOWLEDGE:
             return new AKAcknowledge(data);
-        case ControlMessageConstants.KA_CONNECT_OK:
+        case KA_CONNECT_OK:
             return new KAConnectOK(data);
-        case ControlMessageConstants.KA_CONNECT_ERROR:
+        case KA_CONNECT_ERROR:
             return new KAConnectError(data);
-        case ControlMessageConstants.KA_SENSE:
+        case KA_SENSE:
             return new KASense(data);
-        case ControlMessageConstants.COMMANDS:
+        case COMMANDS:
             return new Commands(data);
-        case ControlMessageConstants.UPDATE:
+        case UPDATE:
             return new Update(data);
         default:
-            System.out.println("Unrecognised message ID: " + id);
+            System.out.println("Unrecognised message urn: " + urn);
             return null;
         }
     }

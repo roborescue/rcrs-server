@@ -1,10 +1,11 @@
-package rescuecore2.messages;
+package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeString;
 
+import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.config.Config;
 
 import java.io.InputStream;

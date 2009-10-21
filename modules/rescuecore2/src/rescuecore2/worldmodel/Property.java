@@ -9,22 +9,10 @@ import java.io.IOException;
  */
 public interface Property {
     /**
-       Get the type of this property.
-       @return The type of this property.
+       Get the urn of this property.
+       @return The urn of this property.
      */
-    PropertyType getType();
-
-    /**
-       Get the ID number of this property.
-       @return The ID of this property.
-     */
-    int getID();
-
-    /**
-       Get the name of this property. The name is a unique identifier.
-       @return The name of this property.
-     */
-    String getName();
+    String getURN();
 
     /**
        Does this property have a defined value?

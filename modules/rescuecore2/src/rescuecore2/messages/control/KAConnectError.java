@@ -2,8 +2,8 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.StringComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.StringComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class KAConnectError extends AbstractMessage implements Control {
     }
 
     private KAConnectError() {
-        super("KA_CONNECT_ERROR", ControlMessageConstants.KA_CONNECT_ERROR);
+        super(ControlMessageURN.KA_CONNECT_ERROR);
         requestID = new IntComponent("Request ID");
         reason = new StringComponent("Reason");
         addMessageComponent(requestID);

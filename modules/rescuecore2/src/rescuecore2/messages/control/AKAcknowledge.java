@@ -2,8 +2,8 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.EntityIDComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.worldmodel.EntityID;
 
 import java.io.InputStream;
@@ -38,7 +38,7 @@ public class AKAcknowledge extends AbstractMessage implements Control {
     }
 
     private AKAcknowledge() {
-        super("AK_ACKNOWLEDGE", ControlMessageConstants.AK_ACKNOWLEDGE);
+        super(ControlMessageURN.AK_ACKNOWLEDGE);
         requestID = new IntComponent("Request ID");
         agentID = new EntityIDComponent("Agent ID");
         addMessageComponent(requestID);

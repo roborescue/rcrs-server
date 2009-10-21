@@ -8,30 +8,30 @@ import rescuecore2.messages.MessageFactory;
 
 public class TestMessageFactory implements MessageFactory {
     private String description;
-    private int[] ids;
+    private String[] urns;
 
-    public TestMessageFactory(String description, int... ids) {
+    public TestMessageFactory(String description, String... urns) {
         this.description = description;
-        this.ids = ids;
+        this.urns = urns;
     }
 
     @Override
-    public int[] getKnownMessageTypeIDs() {
-        return ids;
+    public String[] getKnownMessageURNs() {
+        return urns;
     }
 
     @Override
-    public Message createMessage(int id, InputStream in) throws IOException {
+    public Message createMessage(String urn, InputStream in) throws IOException {
         boolean found = false;
-        for (int i = 0; i < ids.length && !found; ++i) {
-            if (ids[i] == id) {
+        for (int i = 0; i < urns.length && !found; ++i) {
+            if (urns[i].equals(urn)) {
                 found = true;
             }
         }
         if (!found) {
             return null;
         }
-        Message result = new TestMessage(id, description);
+        Message result = new TestMessage(urn, description);
         result.read(in);
         return result;
     }

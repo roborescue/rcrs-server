@@ -68,7 +68,7 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
             else {
                 Set<Property> props = existing.getProperties();
                 for (Property prop : props) {
-                    Property other = next.getProperty(prop.getType());
+                    Property other = next.getProperty(prop.getURN());
                     if (other.isDefined()) {
                         prop.takeValue(other);
                     }

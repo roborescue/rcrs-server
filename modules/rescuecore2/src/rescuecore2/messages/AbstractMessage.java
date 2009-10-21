@@ -8,32 +8,32 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 /**
-   An abstract base class for Message objects. This class is implemented in terms of MessageComponent objects so subclasses need only provide a name, ID and a list of MessageComponent objects.
+   An abstract base class for Message objects. This class is implemented in terms of MessageComponent objects so subclasses need only provide a urn and a list of MessageComponent objects.
  */
 public abstract class AbstractMessage implements Message {
-    private String name;
-    private int id;
+    private String urn;
     private List<MessageComponent> components;
 
     /**
-       Construct a message with a given name and type ID.
-       @param name The name of the message.
-       @param id The type ID of the message.
+       Construct a message with a given urn.
+       @param urn The urn of the message.
      */
-    protected AbstractMessage(String name, int id) {
-        this.name = name;
-        this.id = id;
+    protected AbstractMessage(String urn) {
+        this.urn = urn;
         this.components = new ArrayList<MessageComponent>();
     }
 
-    @Override
-    public final String getName() {
-        return name;
+    /**
+       Construct a message with a urn defined as an enum.
+       @param urn The urn of the message.
+     */
+    protected AbstractMessage(Enum<?> urn) {
+        this(urn.name());
     }
 
     @Override
-    public final int getMessageTypeID() {
-        return id;
+    public final String getURN() {
+        return urn;
     }
 
     /**
@@ -55,10 +55,8 @@ public abstract class AbstractMessage implements Message {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(name);
-        result.append(" (");
-        result.append(id);
-        result.append(") : ");
+        result.append(urn);
+        result.append(" : ");
         for (Iterator<MessageComponent> it = components.iterator(); it.hasNext();) {
             MessageComponent next = it.next();
             result.append(next.toString());

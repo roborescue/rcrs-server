@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.PropertyType;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -19,19 +18,37 @@ public class DoubleProperty extends AbstractProperty {
 
     /**
        Construct a DoubleProperty with no defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
     */
-    public DoubleProperty(PropertyType type) {
-        super(type);
+    public DoubleProperty(String urn) {
+        super(urn);
+    }
+
+    /**
+       Construct a DoubleProperty with no defined value.
+       @param urn The urn of this property.
+    */
+    public DoubleProperty(Enum<?> urn) {
+        super(urn);
     }
 
     /**
        Construct a DoubleProperty with a defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public DoubleProperty(PropertyType type, double value) {
-        super(type, true);
+    public DoubleProperty(String urn, double value) {
+        super(urn, true);
+        this.value = value;
+    }
+
+    /**
+       Construct a DoubleProperty with a defined value.
+       @param urn The urn of this property.
+       @param value The initial value of the property.
+    */
+    public DoubleProperty(Enum<?> urn, double value) {
+        super(urn, true);
         this.value = value;
     }
 
@@ -91,7 +108,7 @@ public class DoubleProperty extends AbstractProperty {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(getName());
+        result.append(getURN());
         if (isDefined()) {
             result.append(" = ");
             result.append(value);

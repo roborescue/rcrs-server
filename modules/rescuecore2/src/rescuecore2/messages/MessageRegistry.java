@@ -11,13 +11,13 @@ import java.io.IOException;
    A class for managing the different types of messages that can be passed around.
  */
 public final class MessageRegistry {
-    private static Map<Integer, MessageFactory> factories;
+    private static Map<String, MessageFactory> factories;
 
     // Static class; private constructor.
     private MessageRegistry() {}
 
     static {
-        factories = new HashMap<Integer, MessageFactory>();
+        factories = new HashMap<String, MessageFactory>();
         // Automatically register control messages
         register(ControlMessageFactory.INSTANCE);
     }
@@ -27,52 +27,52 @@ public final class MessageRegistry {
        @param factory The message factory to register.
      */
     public static void register(MessageFactory factory) {
-        for (int i : factory.getKnownMessageTypeIDs()) {
-            register(i, factory);
+        for (String urn : factory.getKnownMessageURNs()) {
+            register(urn, factory);
         }
     }
 
     /**
-       Register a message ID number and assign a MessageFactory for decoding instances of this message type.
-       @param id The message type ID to register.
+       Register a message urn and assign a MessageFactory for decoding instances of this message type.
+       @param urn The message urn to register.
        @param factory The factory that is responsible for decoding messages of this type.
      */
-    public static void register(int id, MessageFactory factory) {
+    public static void register(String urn, MessageFactory factory) {
         synchronized (factories) {
-            MessageFactory old = factories.get(id);
+            MessageFactory old = factories.get(urn);
             if (old != null && old != factory) {
-                System.out.println("WARNING: Message ID " + id + " is being clobbered by " + factory + ". Old factory: " + old);
+                System.out.println("WARNING: Message " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
             }
-            factories.put(id, factory);
+            factories.put(urn, factory);
         }
     }
 
     /**
-       Deregister a message ID number.
-       @param id The message type ID to deregister.
+       Deregister a message urn.
+       @param urn The message urn to deregister.
      */
-    public static void deregister(int id) {
+    public static void deregister(String urn) {
         synchronized (factories) {
-            factories.remove(id);
+            factories.remove(urn);
         }
     }
 
     /**
-       Create a message based on its type ID and populate it with data from a stream. If the ID is not recognised then return null. This method will delegate to the {@link #register(MessageFactory) previously registered} MessageFactory.
-       @param id The id of the message type to create.
+       Create a message based on its urn and populate it with data from a stream. If the urn is not recognised then return null. This method will delegate to the {@link #register(MessageFactory) previously registered} MessageFactory.
+       @param urn The urn of the message type to create.
        @param data An InputStream to read message data from.
-       @return A new Message object, or null if the ID is not recognised.
+       @return A new Message object, or null if the urn is not recognised.
        @throws IOException If there is a problem reading the stream.
      */
-    public static Message createMessage(int id, InputStream data) throws IOException {
+    public static Message createMessage(String urn, InputStream data) throws IOException {
         MessageFactory factory;
         synchronized (factories) {
-            factory = factories.get(id);
+            factory = factories.get(urn);
         }
         if (factory == null) {
-            System.out.println("Message id " + id + " not recognised.");
+            System.out.println("Message " + urn + " not recognised.");
             return null;
         }
-        return factory.createMessage(id, data);
+        return factory.createMessage(urn, data);
     }
 }

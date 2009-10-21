@@ -9,16 +9,10 @@ import java.io.IOException;
  */
 public interface Message {
     /**
-       Get the name of this message.
-       @return The name of the message.
+       Get the urn of this message type.
+       @return The message urn.
      */
-    String getName();
-
-    /**
-       Get the ID number of this message type.
-       @return The message ID number.
-     */
-    int getMessageTypeID();
+    String getURN();
 
     /**
        Write the content of this message to a stream. The content should not include the message type ID.

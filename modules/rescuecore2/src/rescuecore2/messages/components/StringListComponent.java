@@ -1,7 +1,11 @@
-package rescuecore2.messages;
+package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
+import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.writeString;
+
+import rescuecore2.messages.AbstractMessageComponent;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,35 +15,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
-   A message component that is a list of integers.
+   A message component that is a list of strings.
  */
-public class IntListComponent extends AbstractMessageComponent {
-    private List<Integer> data;
+public class StringListComponent extends AbstractMessageComponent {
+    private List<String> data;
 
     /**
-       Construct an IntListComponent with no data.
+       Construct an StringListComponent with no data.
        @param name The name of the component.
      */
-    public IntListComponent(String name) {
+    public StringListComponent(String name) {
         super(name);
-        data = new ArrayList<Integer>();
+        data = new ArrayList<String>();
     }
 
     /**
-       Construct an IntListComponent with a list of integers.
+       Construct an StringListComponent with a list of strings.
        @param name The name of the component.
        @param data The data.
      */
-    public IntListComponent(String name, List<Integer> data) {
+    public StringListComponent(String name, List<String> data) {
         super(name);
-        this.data = new ArrayList<Integer>(data);
+        this.data = new ArrayList<String>(data);
     }
 
     /**
-       Get the list of Integers in this component.
-       @return An immutable view of the list of Integers.
+       Get the list of Strings in this component.
+       @return An immutable view of the list of Strings.
      */
-    public List<Integer> getValues() {
+    public List<String> getValues() {
         return Collections.unmodifiableList(data);
     }
 
@@ -47,26 +51,26 @@ public class IntListComponent extends AbstractMessageComponent {
        Set the list of values in this component.
        @param newData The new set of values.
      */
-    public void setValues(List<Integer> newData) {
-        this.data = new ArrayList<Integer>(newData);
+    public void setValues(List<String> newData) {
+        this.data = new ArrayList<String>(newData);
     }
 
     /**
        Set the list of values in this component.
        @param newData The new set of values.
      */
-    public void setValues(int... newData) {
-        this.data = new ArrayList<Integer>();
-        for (int i : newData) {
-            data.add(i);
+    public void setValues(String... newData) {
+        this.data = new ArrayList<String>();
+        for (String s : newData) {
+            data.add(s);
         }
     }
 
     @Override
     public void write(OutputStream out) throws IOException {
         writeInt32(data.size(), out);
-        for (Integer next : data) {
-            writeInt32(next.intValue(), out);
+        for (String next : data) {
+            writeString(next, out);
         }
     }
 
@@ -75,7 +79,7 @@ public class IntListComponent extends AbstractMessageComponent {
         data.clear();
         int count = readInt32(in);
         for (int i = 0; i < count; ++i) {
-            data.add(readInt32(in));
+            data.add(readString(in));
         }
     }
 

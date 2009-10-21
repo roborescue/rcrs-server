@@ -2,7 +2,7 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
+import rescuecore2.messages.components.IntComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class SKAcknowledge extends AbstractMessage implements Control {
     }
 
     private SKAcknowledge() {
-        super("SK_ACKNOWLEDGE", ControlMessageConstants.SK_ACKNOWLEDGE);
+        super(ControlMessageURN.SK_ACKNOWLEDGE);
         requestID = new IntComponent("Request ID");
         simulatorID = new IntComponent("Simulator ID");
         addMessageComponent(requestID);

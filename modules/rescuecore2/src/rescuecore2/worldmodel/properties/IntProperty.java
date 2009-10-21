@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.PropertyType;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -19,19 +18,37 @@ public class IntProperty extends AbstractProperty {
 
     /**
        Construct an IntProperty with no defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
     */
-    public IntProperty(PropertyType type) {
-        super(type);
+    public IntProperty(String urn) {
+        super(urn);
+    }
+
+    /**
+       Construct an IntProperty with no defined value.
+       @param urn The urn of this property.
+    */
+    public IntProperty(Enum<?> urn) {
+        super(urn);
     }
 
     /**
        Construct an IntProperty with a defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public IntProperty(PropertyType type, int value) {
-        super(type, true);
+    public IntProperty(String urn, int value) {
+        super(urn, true);
+        this.value = value;
+    }
+
+    /**
+       Construct an IntProperty with a defined value.
+       @param urn The urn of this property.
+       @param value The initial value of the property.
+    */
+    public IntProperty(Enum<?> urn, int value) {
+        super(urn, true);
         this.value = value;
     }
 
@@ -91,7 +108,7 @@ public class IntProperty extends AbstractProperty {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(getName());
+        result.append(getURN());
         if (isDefined()) {
             result.append(" = ");
             result.append(value);

@@ -19,7 +19,7 @@ public class ConnectionManagerTest {
     private static final int PORT2 = 34333;
     private static final int DELAY = 1000;
     private static final int LONG_DELAY = 5000;
-    private static final int MESSAGE_1 = 0x0100;
+    private static final String MESSAGE_1 = "Message 1";
 
     private ConnectionManager manager;
     private TestConnectionManagerListener listener;

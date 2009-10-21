@@ -2,7 +2,7 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.StringComponent;
+import rescuecore2.messages.components.StringComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class GKConnectError extends AbstractMessage implements Control {
     }
 
     private GKConnectError() {
-        super("GK_CONNECT_ERROR", ControlMessageConstants.GK_CONNECT_ERROR);
+        super(ControlMessageURN.GK_CONNECT_ERROR);
         reason = new StringComponent("Reason");
         addMessageComponent(reason);
     }

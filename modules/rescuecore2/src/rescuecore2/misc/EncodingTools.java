@@ -434,14 +434,14 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeEntity(Entity e, OutputStream out) throws IOException {
-        // TypeID, entityID, size, content
+        // Type URN, entityID, size, content
         // Gather the content first
         ByteArrayOutputStream gather = new ByteArrayOutputStream();
         e.write(gather);
         byte[] bytes = gather.toByteArray();
 
-        // TypeID
-        writeInt32(e.getType().getID(), out);
+        // Type URN
+        writeString(e.getURN(), out);
         // EntityID
         writeInt32(e.getID().getValue(), out);
         // Size
@@ -457,14 +457,14 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeEntity(Entity e, DataOutput out) throws IOException {
-        // TypeID, entityID, size, content
+        // Type URN, entityID, size, content
         // Gather the content first
         ByteArrayOutputStream gather = new ByteArrayOutputStream();
         e.write(gather);
         byte[] bytes = gather.toByteArray();
 
-        // TypeID
-        writeInt32(e.getType().getID(), out);
+        // Type URN
+        writeString(e.getURN(), out);
         // EntityID
         writeInt32(e.getID().getValue(), out);
         // Size
@@ -474,20 +474,17 @@ public final class EncodingTools {
     }
 
     /**
-       Read an entity from a stream. This will use the EntityRegistry class to look up entity type IDs.
+       Read an entity from a stream. This will use the EntityRegistry class to look up entity URNs.
        @param in The InputStream to read from.
-       @return A new Entity, or null if the entity type ID is not recognised.
+       @return A new Entity, or null if the entity URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
     public static Entity readEntity(InputStream in) throws IOException {
-        int typeID = readInt32(in);
-        if (typeID == 0) {
-            return null;
-        }
+        String urn = readString(in);
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Entity result = EntityRegistry.createEntity(typeID, new EntityID(entityID));
+        Entity result = EntityRegistry.createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -501,14 +498,11 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Entity readEntity(DataInput in) throws IOException {
-        int typeID = readInt32(in);
-        if (typeID == 0) {
-            return null;
-        }
+        String urn = readString(in);
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Entity result = EntityRegistry.createEntity(typeID, new EntityID(entityID));
+        Entity result = EntityRegistry.createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -522,14 +516,14 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeMessage(Message m, OutputStream out) throws IOException {
-        // TypeID, size, content
+        // Type URN, size, content
         // Gather the content first
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         m.write(bytes);
         byte[] content = bytes.toByteArray();
         
-        // TypeID
-        writeInt32(m.getMessageTypeID(), out);
+        // Type URN
+        writeString(m.getURN(), out);
         // Size
         writeInt32(content.length, out);
         // Content
@@ -543,14 +537,14 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeMessage(Message m, DataOutput out) throws IOException {
-        // TypeID, size, content
+        // Type URN, size, content
         // Gather the content first
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         m.write(bytes);
         byte[] content = bytes.toByteArray();
         
-        // TypeID
-        writeInt32(m.getMessageTypeID(), out);
+        // Type URN
+        writeString(m.getURN(), out);
         // Size
         writeInt32(content.length, out);
         // Content
@@ -564,13 +558,13 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(InputStream in) throws IOException {
-        int typeID = readInt32(in);
-        if (typeID == 0) {
+        String urn = readString(in);
+        if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Message result = MessageRegistry.createMessage(typeID, new ByteArrayInputStream(content));
+        Message result = MessageRegistry.createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
 
@@ -581,13 +575,13 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(DataInput in) throws IOException {
-        int typeID = readInt32(in);
-        if (typeID == 0) {
+        String urn = readString(in);
+        if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Message result = MessageRegistry.createMessage(typeID, new ByteArrayInputStream(content));
+        Message result = MessageRegistry.createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
 

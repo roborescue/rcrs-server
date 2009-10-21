@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.EntityListComponent;
+import rescuecore2.messages.components.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class GKConnectOK extends AbstractMessage implements Control {
     }
 
     private GKConnectOK() {
-        super("GK_CONNECT_OK", ControlMessageConstants.GK_CONNECT_OK);
+        super(ControlMessageURN.GK_CONNECT_OK);
         world = new EntityListComponent("Entities");
         addMessageComponent(world);
     }

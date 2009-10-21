@@ -5,7 +5,6 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.PropertyType;
 import rescuecore2.worldmodel.AbstractProperty;
 
 import java.io.InputStream;
@@ -20,19 +19,37 @@ public class EntityRefProperty extends AbstractProperty {
 
     /**
        Construct an EntityRefProperty with no defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
     */
-    public EntityRefProperty(PropertyType type) {
-        super(type);
+    public EntityRefProperty(String urn) {
+        super(urn);
+    }
+
+    /**
+       Construct an EntityRefProperty with no defined value.
+       @param urn The urn of this property.
+    */
+    public EntityRefProperty(Enum<?> urn) {
+        super(urn);
     }
 
     /**
        Construct an EntityRefProperty with a defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public EntityRefProperty(PropertyType type, EntityID value) {
-        super(type, true);
+    public EntityRefProperty(String urn, EntityID value) {
+        super(urn, true);
+        this.value = value;
+    }
+
+    /**
+       Construct an EntityRefProperty with a defined value.
+       @param urn The urn of this property.
+       @param value The initial value of the property.
+    */
+    public EntityRefProperty(Enum<?> urn, EntityID value) {
+        super(urn, true);
         this.value = value;
     }
 
@@ -92,7 +109,7 @@ public class EntityRefProperty extends AbstractProperty {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(getName());
+        result.append(getURN());
         if (isDefined()) {
             result.append(" = ");
             result.append(value);

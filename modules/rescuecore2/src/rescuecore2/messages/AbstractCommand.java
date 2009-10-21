@@ -1,5 +1,7 @@
 package rescuecore2.messages;
 
+import rescuecore2.messages.components.EntityIDComponent;
+import rescuecore2.messages.components.IntComponent;
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -11,28 +13,42 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
 
     /**
        Construct a new abstract command.
-       @param name The name of the command.
-       @param typeID The type ID of the command.
+       @param urn The urn of the command.
      */
-    protected AbstractCommand(String name, int typeID) {
-        super(name, typeID);
-        agentID = new EntityIDComponent("Agent ID");
-        time = new IntComponent("Time");
-        addMessageComponent(agentID);
-        addMessageComponent(time);
+    protected AbstractCommand(String urn) {
+        super(urn);
+        init();
     }
 
     /**
        Construct a new abstract command.
-       @param name The name of the command.
-       @param typeID The type ID of the command.
+       @param urn The urn of the command.
        @param agentID The ID of the agent issuing the command.
        @param time The time this command was issued.
      */
-    protected AbstractCommand(String name, int typeID, EntityID agentID, int time) {
-        this(name, typeID);
-        setAgentID(agentID);
-        setTime(time);
+    protected AbstractCommand(String urn, EntityID agentID, int time) {
+        super(urn);
+        init(agentID, time);
+    }
+
+    /**
+       Construct a new abstract command.
+       @param urn The urn of the command.
+     */
+    protected AbstractCommand(Enum<?> urn) {
+        super(urn);
+        init();
+    }
+
+    /**
+       Construct a new abstract command.
+       @param urn The urn of the command.
+       @param agentID The ID of the agent issuing the command.
+       @param time The time this command was issued.
+     */
+    protected AbstractCommand(Enum<?> urn, EntityID agentID, int time) {
+        super(urn);
+        init(agentID, time);
     }
 
     @Override
@@ -59,5 +75,18 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
      */
     protected void setTime(int time) {
         this.time.setValue(time);
+    }
+
+    private void init() {
+        agentID = new EntityIDComponent("Agent ID");
+        time = new IntComponent("Time");
+        addMessageComponent(agentID);
+        addMessageComponent(time);
+    }
+
+    private void init(EntityID id, int t) {
+        init();
+        setAgentID(id);
+        setTime(t);
     }
 }

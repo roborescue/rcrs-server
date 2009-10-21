@@ -1,11 +1,11 @@
 package rescuecore2.worldmodel;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.writeString;
 import static rescuecore2.misc.EncodingTools.readInt32;
+import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
@@ -21,22 +21,31 @@ import java.io.ByteArrayOutputStream;
    Abstract base class for concrete Entity implementations.
  */
 public abstract class AbstractEntity implements Entity {
+    private static final String END_OF_PROPERTIES = "";
+
     /** Map from id to Property. */
-    private final Map<Integer, Property> properties;
     private final EntityID id;
-    private final EntityType type;
+    private final String urn;
     private final Set<EntityListener> listeners;
 
     /**
        Construct an AbstractEntity with a set of properties.
        @param id The ID of this entity.
-       @param type The type of this entity.
+       @param urn The urn of this entity.
     */
-    protected AbstractEntity(EntityID id, EntityType type) {
+    protected AbstractEntity(EntityID id, String urn) {
         this.id = id;
-        this.type = type;
-        properties = new HashMap<Integer, Property>();
+        this.urn = urn;
         listeners = new HashSet<EntityListener>();
+    }
+
+    /**
+       Construct an AbstractEntity with a set of properties.
+       @param id The ID of this entity.
+       @param urn The urn of this entity.
+    */
+    protected AbstractEntity(EntityID id, Enum<?> urn) {
+        this(id, urn.name());
     }
 
     /**
@@ -44,17 +53,7 @@ public abstract class AbstractEntity implements Entity {
        @param other The AbstractEntity to copy.
      */
     protected AbstractEntity(AbstractEntity other) {
-        this(other.getID(), other.getType());
-    }
-
-    /**
-       Add a set of properties to this entity. This should only be used by subclasses during construction.
-       @param props The properties to add.
-    */
-    protected void addProperties(Property... props) {
-        for (Property next : props) {
-            properties.put(next.getType().getID(), next);
-        }
+        this(other.getID(), other.getURN());
     }
 
     @Override
@@ -74,8 +73,8 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public Entity copy() {
         Entity result = copyImpl();
-        for (Property original : properties.values()) {
-            Property copy = result.getProperty(original.getType());
+        for (Property original : getProperties()) {
+            Property copy = result.getProperty(original.getURN());
             copy.takeValue(original);
         }
         return result;
@@ -89,17 +88,12 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public Set<Property> getProperties() {
-        return new HashSet<Property>(properties.values());
+        return new HashSet<Property>();
     }
 
     @Override
-    public Property getProperty(PropertyType getType) {
-        return properties.get(getType.getID());
-    }
-
-    @Override
-    public Property getProperty(int getID) {
-        return properties.get(getID);
+    public Property getProperty(String propertyURN) {
+        return null;
     }
 
     @Override
@@ -108,8 +102,8 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public EntityType getType() {
-        return type;
+    public String getURN() {
+        return urn;
     }
 
     @Override
@@ -120,7 +114,7 @@ public abstract class AbstractEntity implements Entity {
                 next.write(gather);
                 byte[] bytes = gather.toByteArray();
                 //   Type
-                writeInt32(next.getID(), out);
+                writeString(next.getURN(), out);
                 //   Size
                 writeInt32(bytes.length, out);
                 //   Data
@@ -128,30 +122,31 @@ public abstract class AbstractEntity implements Entity {
             }
         }
         // end-of-properties marker
-        writeInt32(0, out);
+        writeString(END_OF_PROPERTIES, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        int propID;
-        do {
-            propID = readInt32(in);
-            if (propID != 0) {
-                //                System.out.println("Reading property " + propID);
-                int size = readInt32(in);
-                //                System.out.println("Size " + size);
-                byte[] data = readBytes(size, in);
-                Property prop = getProperty(propID);
-                prop.read(new ByteArrayInputStream(data));
-                //                System.out.println("Updated state: " + this);
+        String propertyURN;
+        while (true) {
+            propertyURN = readString(in);
+            if (END_OF_PROPERTIES.equals(propertyURN)) {
+                return;
             }
-        } while (propID != 0);
+            //                System.out.println("Reading property " + propID);
+            int size = readInt32(in);
+            //                System.out.println("Size " + size);
+            byte[] data = readBytes(size, in);
+            Property prop = getProperty(propertyURN);
+            prop.read(new ByteArrayInputStream(data));
+            //                System.out.println("Updated state: " + this);
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(type.getName());
+        result.append(urn);
         result.append(" (");
         result.append(id);
         result.append(") [");

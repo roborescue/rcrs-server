@@ -5,24 +5,41 @@ package rescuecore2.worldmodel;
 */
 public abstract class AbstractProperty implements Property {
     private boolean defined;
-    private final PropertyType type;
+    private final String urn;
 
     /**
        Construct a property with a given type and assume that the value of this property is initially undefined.
-       @param type The type of the property.
+       @param urn The urn of the property.
      */
-    protected AbstractProperty(PropertyType type) {
-        this(type, false);
+    protected AbstractProperty(String urn) {
+        this(urn, false);
+    }
+
+    /**
+       Construct a property with a given type and assume that the value of this property is initially undefined.
+       @param urn The urn of the property.
+     */
+    protected AbstractProperty(Enum<?> urn) {
+        this(urn.name(), false);
     }
 
     /**
        Construct a property with a given type and whether the value of this property is initially defined or not.
-       @param type The type of the property.
+       @param urn The urn of the property.
        @param defined Whether the value is initially defined or not.
      */
-    protected AbstractProperty(PropertyType type, boolean defined) {
-        this.type = type;
+    protected AbstractProperty(String urn, boolean defined) {
+        this.urn = urn;
         this.defined = defined;
+    }
+
+    /**
+       Construct a property with a given type and whether the value of this property is initially defined or not.
+       @param urn The urn of the property.
+       @param defined Whether the value is initially defined or not.
+     */
+    protected AbstractProperty(Enum<?> urn, boolean defined) {
+        this(urn.name(), defined);
     }
 
     /**
@@ -30,7 +47,7 @@ public abstract class AbstractProperty implements Property {
        @param other The AbstractProperty to copy.
      */
     protected AbstractProperty(AbstractProperty other) {
-        this(other.getType(), other.isDefined());
+        this(other.getURN(), other.isDefined());
     }
 
     /**
@@ -51,17 +68,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public PropertyType getType() {
-        return type;
-    }
-
-    @Override
-    public int getID() {
-        return type.getID();
-    }
-
-    @Override
-    public String getName() {
-        return type.getName();
+    public String getURN() {
+        return urn;
     }
 }

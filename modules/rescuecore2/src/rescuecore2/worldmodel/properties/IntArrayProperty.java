@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.PropertyType;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -23,20 +22,42 @@ public class IntArrayProperty extends AbstractProperty {
 
     /**
        Construct an IntArrayProperty with no defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
     */
-    public IntArrayProperty(PropertyType type) {
-        super(type);
+    public IntArrayProperty(String urn) {
+        super(urn);
+        data = new ArrayList<Integer>();
+    }
+
+    /**
+       Construct an IntArrayProperty with no defined value.
+       @param urn The urn of this property.
+    */
+    public IntArrayProperty(Enum<?> urn) {
+        super(urn);
         data = new ArrayList<Integer>();
     }
 
     /**
        Construct an IntArrayProperty with a defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
        @param values The initial values of the property.
     */
-    public IntArrayProperty(PropertyType type, int[] values) {
-        super(type, true);
+    public IntArrayProperty(String urn, int[] values) {
+        super(urn, true);
+        data = new ArrayList<Integer>(values.length);
+        for (Integer next : values) {
+            data.add(next);
+        }
+    }
+
+    /**
+       Construct an IntArrayProperty with a defined value.
+       @param urn The urn of this property.
+       @param values The initial values of the property.
+    */
+    public IntArrayProperty(Enum<?> urn, int[] values) {
+        super(urn, true);
         data = new ArrayList<Integer>(values.length);
         for (Integer next : values) {
             data.add(next);
@@ -126,7 +147,7 @@ public class IntArrayProperty extends AbstractProperty {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(getName());
+        result.append(getURN());
         if (isDefined()) {
             result.append(" = {");
             for (Iterator<Integer> it = data.iterator(); it.hasNext();) {

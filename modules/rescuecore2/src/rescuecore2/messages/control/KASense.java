@@ -5,9 +5,9 @@ import java.util.List;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.EntityIDComponent;
-import rescuecore2.messages.EntityListComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.EntityIDComponent;
+import rescuecore2.messages.components.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -46,7 +46,7 @@ public class KASense extends AbstractMessage implements Control {
     }
 
     private KASense() {
-        super("KA_SENSE", ControlMessageConstants.KA_SENSE);
+        super(ControlMessageURN.KA_SENSE);
         agentID = new EntityIDComponent("Agent ID");
         time = new IntComponent("Time");
         updates = new EntityListComponent("Updates");

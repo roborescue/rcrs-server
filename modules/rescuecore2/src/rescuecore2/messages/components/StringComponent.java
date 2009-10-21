@@ -1,7 +1,9 @@
-package rescuecore2.messages;
+package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeString;
+
+import rescuecore2.messages.AbstractMessageComponent;
 
 import java.io.InputStream;
 import java.io.OutputStream;

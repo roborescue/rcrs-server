@@ -3,8 +3,8 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.CommandListComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.CommandListComponent;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +44,7 @@ public class Commands extends AbstractMessage implements Control {
     }
 
     private Commands() {
-        super("Commands", ControlMessageConstants.COMMANDS);
+        super(ControlMessageURN.COMMANDS);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
         commands = new CommandListComponent("Commands");

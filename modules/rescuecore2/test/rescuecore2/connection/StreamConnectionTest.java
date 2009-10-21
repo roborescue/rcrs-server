@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.After;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.MessageRegistry;
 import rescuecore2.misc.Pair;
 
 public class StreamConnectionTest extends ConnectionTestCommon {
@@ -30,8 +31,9 @@ public class StreamConnectionTest extends ConnectionTestCommon {
                                               0x01, 0x02, 0x03, 0x04,
                                               0x00, 0x00, 0x00, 0x00};
     private static final byte[] NEGATIVE_SIZE_INPUT = {(byte)0x80, 0x00, 0x00, 0x00, // Malformed size
-                                                       0x00, 0x00, 0x00, 0x0C, // Good size
-                                                       0x00, 0x00, 0x01, 0x00, // ID
+                                                       0x00, 0x00, 0x00, 0x10, // Good size
+                                                       0x00, 0x00, 0x00, 0x04, // Size of URN
+                                                       0x54, 0x65, 0x73, 0x74, // URN ('Test')
                                                        0x00, 0x00, 0x00, 0x04, // Size of message
                                                        0x00, 0x00, 0x00, 0x00  // Message data
     };
@@ -40,7 +42,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     private static final byte[] SHORT_CONTENT = {0x00, 0x00, 0x00, 0x04,
                                                  0x01, 0x02, 0x03};
     private static final byte[] SHORT_SIZE_FIELD = {0x00, 0x00, 0x01};
-    private static final int MESSAGE_ID = 0x00000100;
+    private static final String MESSAGE_URN = "Test";
 
     @Override
     protected Pair<Connection, Connection> makeConnectionPair() throws IOException {
@@ -115,16 +117,17 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testNegativeSizeInput() throws IOException, InterruptedException {
         System.err.println("Test negative size input");
         try {
+            MessageRegistry.register(new TestMessageFactory("StreamConnectionTest factory", MESSAGE_URN));
             TestInputStream in = new TestInputStream(NEGATIVE_SIZE_INPUT);
             TestOutputStream out = new TestOutputStream();
             Connection c = new StreamConnection(in, out);
             TestConnectionListener l = new TestConnectionListener();
             c.addConnectionListener(l);
             c.startup();
-            // Should ignore the first negative size field then read a message with id 0x00000100
+            // Should ignore the first negative size field then read a message with urn 'T@
             l.waitForMessages(1, TIMEOUT);
             assertEquals(1, l.getMessageCount());
-            assertEquals(MESSAGE_ID, l.getMessage(0).getMessageTypeID());
+            assertEquals(MESSAGE_URN, l.getMessage(0).getURN());
         }
         finally {
             System.err.println("Test negative size input finished");

@@ -29,10 +29,10 @@ public interface Entity {
     EntityID getID();
 
     /**
-       Get the type of this Entity.
+       Get the urn of this Entity.
        @return The type.
      */
-    EntityType getType();
+    String getURN();
 
     /**
        Get all the properties that this entity has.
@@ -41,18 +41,11 @@ public interface Entity {
     Set<Property> getProperties();
 
     /**
-       Get a property by type.
-       @param type The type to look up.
-       @return The property with the given type or null if no such property exists.
+       Get a property by urn.
+       @param urn The urn to look up.
+       @return The property with the given urn or null if no such property exists.
     */
-    Property getProperty(PropertyType type);
-
-    /**
-       Get a property by id.
-       @param id The id to look up.
-       @return The property with the given id or null if no such property exists.
-    */
-    Property getProperty(int id);
+    Property getProperty(String urn);
 
     /**
        Write this Entity to a stream.

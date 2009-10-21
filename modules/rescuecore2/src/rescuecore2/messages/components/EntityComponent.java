@@ -1,8 +1,9 @@
-package rescuecore2.messages;
+package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.writeEntity;
 
+import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.worldmodel.Entity;
 
 import java.io.InputStream;

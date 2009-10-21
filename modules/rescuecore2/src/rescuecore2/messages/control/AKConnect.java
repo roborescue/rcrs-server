@@ -2,9 +2,9 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.IntListComponent;
-import rescuecore2.messages.StringComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.StringComponent;
+import rescuecore2.messages.components.StringListComponent;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class AKConnect extends AbstractMessage implements Control {
     private IntComponent requestID;
     private IntComponent version;
     private StringComponent agentName;
-    private IntListComponent requestedEntityTypes;
+    private StringListComponent requestedEntityTypes;
 
     /**
        An AKConnect message that populates its data from a stream.
@@ -37,7 +37,7 @@ public class AKConnect extends AbstractMessage implements Control {
        @param agentName The name of the agent.
        @param requestedEntityTypes The set of requested entity types.
      */
-    public AKConnect(int requestID, int version, String agentName, int... requestedEntityTypes) {
+    public AKConnect(int requestID, int version, String agentName, String... requestedEntityTypes) {
         this();
         this.requestID.setValue(requestID);
         this.version.setValue(version);
@@ -46,11 +46,11 @@ public class AKConnect extends AbstractMessage implements Control {
     }
 
     private AKConnect() {
-        super("AK_CONNECT", ControlMessageConstants.AK_CONNECT);
+        super(ControlMessageURN.AK_CONNECT);
         requestID = new IntComponent("Request ID");
         version = new IntComponent("Version");
         agentName = new StringComponent("Name");
-        requestedEntityTypes = new IntListComponent("Requested entity types");
+        requestedEntityTypes = new StringListComponent("Requested entity types");
         addMessageComponent(requestID);
         addMessageComponent(version);
         addMessageComponent(agentName);
@@ -85,7 +85,7 @@ public class AKConnect extends AbstractMessage implements Control {
        Get the requested entity types.
        @return The requested entity types.
      */
-    public List<Integer> getRequestedEntityTypes() {
+    public List<String> getRequestedEntityTypes() {
         return requestedEntityTypes.getValues();
     }
 }

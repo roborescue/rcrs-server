@@ -2,8 +2,8 @@ package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.EntityListComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.EntityListComponent;
 import rescuecore2.worldmodel.Entity;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class SKUpdate extends AbstractMessage implements Control {
     }
 
     private SKUpdate() {
-        super("SK_UPDATE", ControlMessageConstants.SK_UPDATE);
+        super(ControlMessageURN.SK_UPDATE);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
         update = new EntityListComponent("Updated objects");

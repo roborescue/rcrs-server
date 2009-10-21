@@ -28,9 +28,9 @@ public abstract class ConnectionTestCommon {
     protected static final int DELAY = 1000;
     protected static final int TIMEOUT = 3000;
 
-    private static final int MESSAGE_ID_1 = 0x0100;
-    private static final int MESSAGE_ID_2 = 0x0101;
-    private static final int MESSAGE_ID_3 = 0x0102;
+    private static final String MESSAGE_ID_1 = "Test message 1";
+    private static final String MESSAGE_ID_2 = "Test message 2";
+    private static final String MESSAGE_ID_3 = "Test message 3";
 
     private final static String FACTORY_1_NAME = "Factory 1";
     private final static String FACTORY_2_NAME = "Factory 2";
@@ -247,8 +247,8 @@ public abstract class ConnectionTestCommon {
 	// Check that the second message was interpreted by the new message factory and that the old message is still OK.
         serverListener.waitForMessages(2, TIMEOUT);
 	assertEquals(2, serverListener.getMessageCount());
-	assertEquals(MESSAGE_ID_1, serverListener.getMessage(0).getMessageTypeID());
-	assertEquals(MESSAGE_ID_2, serverListener.getMessage(1).getMessageTypeID());
+	assertEquals(MESSAGE_ID_1, serverListener.getMessage(0).getURN());
+	assertEquals(MESSAGE_ID_2, serverListener.getMessage(1).getURN());
         assertEquals(FACTORY_1_NAME, ((TestMessage)serverListener.getMessage(0)).getDescription());
         assertEquals(FACTORY_2_NAME, ((TestMessage)serverListener.getMessage(1)).getDescription());
         // Try registering a new message factory that replaces the first one
@@ -259,9 +259,9 @@ public abstract class ConnectionTestCommon {
 	// Check that the third message was interpreted by the new message factory and that the old messages are still OK.
         serverListener.waitForMessages(3, TIMEOUT);
 	assertEquals(3, serverListener.getMessageCount());
-	assertEquals(MESSAGE_ID_1, serverListener.getMessage(0).getMessageTypeID());
-	assertEquals(MESSAGE_ID_2, serverListener.getMessage(1).getMessageTypeID());
-	assertEquals(MESSAGE_ID_1, serverListener.getMessage(2).getMessageTypeID());
+	assertEquals(MESSAGE_ID_1, serverListener.getMessage(0).getURN());
+	assertEquals(MESSAGE_ID_2, serverListener.getMessage(1).getURN());
+	assertEquals(MESSAGE_ID_1, serverListener.getMessage(2).getURN());
         assertEquals(FACTORY_1_NAME, ((TestMessage)serverListener.getMessage(0)).getDescription());
         assertEquals(FACTORY_2_NAME, ((TestMessage)serverListener.getMessage(1)).getDescription());
         assertEquals(FACTORY_3_NAME, ((TestMessage)serverListener.getMessage(2)).getDescription());

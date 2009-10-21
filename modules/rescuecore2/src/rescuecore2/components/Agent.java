@@ -12,10 +12,10 @@ import java.util.Collection;
  */
 public interface Agent extends Component {
     /**
-       Get the list of entity IDs that this agent is willing to control.
-       @return An array of entity IDs.
+       Get the list of entity URNs that this agent is willing to control.
+       @return An array of entity URNs.
     */
-    int[] getRequestedEntityIDs();
+    String[] getRequestedEntityURNs();
 
     /**
        Notification that this agent has been connected to the kernel.

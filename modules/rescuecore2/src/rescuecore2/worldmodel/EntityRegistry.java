@@ -7,13 +7,13 @@ import java.util.HashMap;
    A class for managing the different types of entities and their associated factories.
  */
 public final class EntityRegistry {
-    private static Map<Integer, EntityFactory> factories;
+    private static Map<String, EntityFactory> factories;
 
     // Static class; private constructor.
     private EntityRegistry() {}
 
     static {
-        factories = new HashMap<Integer, EntityFactory>();
+        factories = new HashMap<String, EntityFactory>();
     }
 
     /**
@@ -21,51 +21,51 @@ public final class EntityRegistry {
        @param factory The entity factory to register.
      */
     public static void register(EntityFactory factory) {
-        for (int i : factory.getKnownEntityTypeIDs()) {
-            register(i, factory);
+        for (String  urn : factory.getKnownEntityURNs()) {
+            register(urn, factory);
         }
     }
 
     /**
        Register an entity type and assign an EntityFactory for constructing instances of this type.
-       @param id The entity type ID to register.
+       @param urn The urn to register.
        @param factory The factory that is responsible for constructing instances of this type.
      */
-    public static void register(int id, EntityFactory factory) {
+    public static void register(String urn, EntityFactory factory) {
         synchronized (factories) {
-            EntityFactory old = factories.get(id);
+            EntityFactory old = factories.get(urn);
             if (old != null && old != factory) {
-                System.out.println("WARNING: Entity ID " + id + " is being clobbered by " + factory + ". Old factory: " + old);
+                System.out.println("WARNING: Entity " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
             }
-            factories.put(id, factory);
+            factories.put(urn, factory);
         }
     }
 
     /**
-       Deregister an entity ID number.
-       @param id The entity type ID to deregister.
+       Deregister an entity urn.
+       @param urn The entity urn to deregister.
      */
-    public static void deregister(int id) {
+    public static void deregister(String urn) {
         synchronized (factories) {
-            factories.remove(id);
+            factories.remove(urn);
         }
     }
 
     /**
-       Create an entity from a type ID. If the ID is not recognised then return null. This method will delegate to the {@link #register(EntityFactory) previously registered} EntityFactory.
-       @param type The type id of the entity type to create.
+       Create an entity from a urn. If the urn is not recognised then return null. This method will delegate to the {@link #register(EntityFactory) previously registered} EntityFactory.
+       @param urn The urn of the entity type to create.
        @param id The EntityID of the Entity that will be created.
-       @return A new Entity object, or null if the ID is not recognised.
+       @return A new Entity object, or null if the urn is not recognised.
      */
-    public static Entity createEntity(int type, EntityID id) {
+    public static Entity createEntity(String urn, EntityID id) {
         EntityFactory factory;
         synchronized (factories) {
-            factory = factories.get(type);
+            factory = factories.get(urn);
         }
         if (factory == null) {
-            System.out.println("Entity id " + type + " not recognised.");
+            System.out.println("Entity " + urn + " not recognised.");
             return null;
         }
-        return factory.makeEntity(type, id);
+        return factory.makeEntity(urn, id);
     }
 }

@@ -5,7 +5,6 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.PropertyType;
 import rescuecore2.worldmodel.AbstractProperty;
 
 import java.io.InputStream;
@@ -24,20 +23,39 @@ public class EntityRefListProperty extends AbstractProperty {
 
     /**
        Construct an EntityRefListProperty with no defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
     */
-    public EntityRefListProperty(PropertyType type) {
-        super(type);
+    public EntityRefListProperty(String urn) {
+        super(urn);
+        ids = new ArrayList<EntityID>();
+    }
+
+    /**
+       Construct an EntityRefListProperty with no defined value.
+       @param urn The urn of this property.
+    */
+    public EntityRefListProperty(Enum<?> urn) {
+        super(urn);
         ids = new ArrayList<EntityID>();
     }
 
     /**
        Construct an EntityRefListProperty with a defined value.
-       @param type The type of this property.
+       @param urn The urn of this property.
        @param ids The initial value of the property.
     */
-    public EntityRefListProperty(PropertyType type, List<EntityID> ids) {
-        super(type, true);
+    public EntityRefListProperty(String urn, List<EntityID> ids) {
+        super(urn, true);
+        this.ids = new ArrayList<EntityID>(ids);
+    }
+
+    /**
+       Construct an EntityRefListProperty with a defined value.
+       @param urn The urn of this property.
+       @param ids The initial value of the property.
+    */
+    public EntityRefListProperty(Enum<?> urn, List<EntityID> ids) {
+        super(urn, true);
         this.ids = new ArrayList<EntityID>(ids);
     }
 
@@ -122,7 +140,7 @@ public class EntityRefListProperty extends AbstractProperty {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(getName());
+        result.append(getURN());
         if (isDefined()) {
             result.append(" = {");
             for (Iterator<EntityID> it = ids.iterator(); it.hasNext();) {

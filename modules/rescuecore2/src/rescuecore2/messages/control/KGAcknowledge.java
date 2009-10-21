@@ -24,6 +24,6 @@ public class KGAcknowledge extends AbstractMessage implements Control {
        A KGAcknowldge message.
      */
     public KGAcknowledge() {
-        super("KG_ACKNOWLEDGE", ControlMessageConstants.KG_ACKNOWLEDGE);
+        super(ControlMessageURN.KG_ACKNOWLEDGE);
     }
 }
