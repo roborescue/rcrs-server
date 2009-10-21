@@ -6,7 +6,7 @@ import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.messages.AKClear;
@@ -75,8 +75,8 @@ public class ControlledPoliceForce extends AbstractAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.POLICE_FORCE.getID()};
+    public String[] getRequestedEntityURNs() {
+        return new String[] {StandardEntityURN.POLICE_FORCE.name()};
     }
 
     @Override

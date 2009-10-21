@@ -6,7 +6,7 @@ import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.messages.AKRescue;
@@ -52,7 +52,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
                     return;
                 }
                 else {
-                    List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
+                    List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityURN.REFUGE));
                     if (path != null) {
                         AKMove move = new AKMove(getID(), time, path);
                         System.out.println(me() + " moving to refuge: " + move);
@@ -100,8 +100,8 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.AMBULANCE_TEAM.getID()};
+    public String[] getRequestedEntityURNs() {
+        return new String[] {StandardEntityURN.AMBULANCE_TEAM.name()};
     }
 
     @Override

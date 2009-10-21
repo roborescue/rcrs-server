@@ -6,7 +6,7 @@ import rescuecore2.worldmodel.WorldModel;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
@@ -91,8 +91,8 @@ public class ControlledFireBrigade extends AbstractAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.FIRE_BRIGADE.getID()};
+    public String[] getRequestedEntityURNs() {
+        return new String[] {StandardEntityURN.FIRE_BRIGADE.name()};
     }
 
     @Override
