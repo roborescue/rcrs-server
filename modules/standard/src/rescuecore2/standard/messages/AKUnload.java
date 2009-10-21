@@ -32,7 +32,7 @@ public class AKUnload extends AbstractCommand {
     }
 
     private AKUnload() {
-        super("AK_UNLOAD", MessageConstants.AK_UNLOAD);
+        super(StandardMessageURN.AK_UNLOAD);
     }
 
 }

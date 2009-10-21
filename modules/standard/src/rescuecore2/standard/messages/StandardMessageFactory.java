@@ -4,69 +4,53 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
+import rescuecore2.messages.AbstractMessageFactory;
 
 /**
    A factory for standard messages.
  */
-public final class StandardMessageFactory implements MessageFactory {
+public final class StandardMessageFactory extends AbstractMessageFactory<StandardMessageURN> {
     /** Singleton instance. */
     public static final StandardMessageFactory INSTANCE = new StandardMessageFactory();
 
     /**
        Singleton class: private constructor.
     */
-    private StandardMessageFactory() {}
-
-    @Override
-    public int[] getKnownMessageTypeIDs() {
-        return new int[] {MessageConstants.KA_HEAR_SAY,
-                          MessageConstants.KA_HEAR_TELL,
-                          MessageConstants.AK_MOVE,
-                          MessageConstants.AK_LOAD,
-                          MessageConstants.AK_UNLOAD,
-                          MessageConstants.AK_SAY,
-                          MessageConstants.AK_TELL,
-                          MessageConstants.AK_RESCUE,
-                          MessageConstants.AK_CLEAR,
-                          MessageConstants.AK_EXTINGUISH,
-                          MessageConstants.AK_SUBSCRIBE,
-                          MessageConstants.AK_SPEAK,
-                          MessageConstants.KA_HEAR_CHANNEL
-        };
+    private StandardMessageFactory() {
+        super(StandardMessageURN.class);
     }
 
     @Override
-    public Message createMessage(int id, InputStream data) throws IOException {
-        switch (id) {
-        case MessageConstants.KA_HEAR_SAY:
+    public Message createMessage(StandardMessageURN urn, InputStream data) throws IOException {
+        switch (urn) {
+        case KA_HEAR_SAY:
             return new KAHearSay(data);
-        case MessageConstants.KA_HEAR_TELL:
+        case KA_HEAR_TELL:
             return new KAHearTell(data);
-        case MessageConstants.AK_MOVE:
+        case AK_MOVE:
             return new AKMove(data);
-        case MessageConstants.AK_LOAD:
+        case AK_LOAD:
             return new AKLoad(data);
-        case MessageConstants.AK_UNLOAD:
+        case AK_UNLOAD:
             return new AKUnload(data);
-        case MessageConstants.AK_SAY:
+        case AK_SAY:
             return new AKSay(data);
-        case MessageConstants.AK_TELL:
+        case AK_TELL:
             return new AKTell(data);
-        case MessageConstants.AK_EXTINGUISH:
+        case AK_EXTINGUISH:
             return new AKExtinguish(data);
-        case MessageConstants.AK_RESCUE:
+        case AK_RESCUE:
             return new AKRescue(data);
-        case MessageConstants.AK_CLEAR:
+        case AK_CLEAR:
             return new AKClear(data);
-        case MessageConstants.AK_SUBSCRIBE:
+        case AK_SUBSCRIBE:
             return new AKSubscribe(data);
-        case MessageConstants.AK_SPEAK:
+        case AK_SPEAK:
             return new AKSpeak(data);
-        case MessageConstants.KA_HEAR_CHANNEL:
+        case KA_HEAR_CHANNEL:
             return new KAHearChannel(data);
         default:
-            System.out.println("Unrecognised message ID: " + id);
+            System.out.println("Unrecognised message urn: " + urn);
             return null;
         }
     }

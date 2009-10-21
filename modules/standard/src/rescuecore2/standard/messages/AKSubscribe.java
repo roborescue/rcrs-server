@@ -1,7 +1,7 @@
 package rescuecore2.standard.messages;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.IntListComponent;
+import rescuecore2.messages.components.IntListComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class AKSubscribe extends AbstractCommand {
     }
 
     private AKSubscribe() {
-        super("AK_SUBSCRIBE", MessageConstants.AK_SUBSCRIBE);
+        super(StandardMessageURN.AK_SUBSCRIBE);
         channels = new IntListComponent("Channels");
         addMessageComponent(channels);
     }

@@ -2,12 +2,14 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
 
 import java.util.List;
+import java.util.Set;
 
 /**
    Abstract base class for Humans.
@@ -27,17 +29,16 @@ public abstract class Human extends StandardEntity {
        @param id The ID of this entity.
        @param type The type ID of this entity.
     */
-    protected Human(EntityID id, StandardEntityType type) {
+    protected Human(EntityID id, StandardEntityURN type) {
         super(id, type);
-        position = new EntityRefProperty(StandardPropertyType.POSITION);
-        positionExtra = new IntProperty(StandardPropertyType.POSITION_EXTRA);
-        positionHistory = new EntityRefListProperty(StandardPropertyType.POSITION_HISTORY);
-        direction = new IntProperty(StandardPropertyType.DIRECTION);
-        stamina = new IntProperty(StandardPropertyType.STAMINA);
-        hp = new IntProperty(StandardPropertyType.HP);
-        damage = new IntProperty(StandardPropertyType.DAMAGE);
-        buriedness = new IntProperty(StandardPropertyType.BURIEDNESS);
-        addProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
+        position = new EntityRefProperty(StandardPropertyURN.POSITION);
+        positionExtra = new IntProperty(StandardPropertyURN.POSITION_EXTRA);
+        positionHistory = new EntityRefListProperty(StandardPropertyURN.POSITION_HISTORY);
+        direction = new IntProperty(StandardPropertyURN.DIRECTION);
+        stamina = new IntProperty(StandardPropertyURN.STAMINA);
+        hp = new IntProperty(StandardPropertyURN.HP);
+        damage = new IntProperty(StandardPropertyURN.DAMAGE);
+        buriedness = new IntProperty(StandardPropertyURN.BURIEDNESS);
     }
 
     /**
@@ -54,7 +55,51 @@ public abstract class Human extends StandardEntity {
         hp = new IntProperty(other.hp);
         damage = new IntProperty(other.damage);
         buriedness = new IntProperty(other.buriedness);
-        addProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
+    }
+
+    @Override
+    public Property getProperty(String urn) {
+        StandardPropertyURN type;
+        try {
+            type = StandardPropertyURN.valueOf(urn);
+        }
+        catch (IllegalArgumentException e) {
+            return super.getProperty(urn);
+        }
+        switch (type) {
+        case POSITION:
+            return position;
+        case POSITION_EXTRA:
+            return positionExtra;
+        case POSITION_HISTORY:
+            return positionHistory;
+        case DIRECTION:
+            return direction;
+        case STAMINA:
+            return stamina;
+        case HP:
+            return hp;
+        case DAMAGE:
+            return damage;
+        case BURIEDNESS:
+            return buriedness;
+        default:
+            return super.getProperty(urn);
+        }
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        Set<Property> result = super.getProperties();
+        result.add(position);
+        result.add(positionExtra);
+        result.add(positionHistory);
+        result.add(direction);
+        result.add(stamina);
+        result.add(hp);
+        result.add(damage);
+        result.add(buriedness);
+        return result;
     }
 
     @Override

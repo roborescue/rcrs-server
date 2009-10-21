@@ -1,8 +1,8 @@
 package rescuecore2.standard.messages;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.RawDataComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.RawDataComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.io.InputStream;
@@ -39,7 +39,7 @@ public class AKTell extends AbstractCommand {
     }
 
     private AKTell() {
-        super("AK_TELL", MessageConstants.AK_TELL);
+        super(StandardMessageURN.AK_TELL);
         channel = new IntComponent("Channel");
         data = new RawDataComponent("Message");
         addMessageComponent(channel);

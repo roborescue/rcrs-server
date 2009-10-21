@@ -12,7 +12,7 @@ public class PoliceOffice extends Building {
        @param id The ID of this entity.
      */
     public PoliceOffice(EntityID id) {
-        super(id, StandardEntityType.POLICE_OFFICE);
+        super(id, StandardEntityURN.POLICE_OFFICE);
     }
 
     /**

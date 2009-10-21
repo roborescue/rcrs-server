@@ -3,7 +3,7 @@ package rescuecore2.standard.entities;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -12,7 +12,6 @@ import java.awt.geom.Rectangle2D;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.WorldModelListener;
-import rescuecore2.worldmodel.EntityType;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.Pair;
@@ -23,7 +22,7 @@ import rescuecore2.misc.Pair;
 public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private static final int DEFAULT_MESH_SIZE = 10000;
 
-    private Map<EntityType, Collection<StandardEntity>> storedTypes;
+    private Map<StandardEntityURN, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;
     private Collection<StandardEntity> staticEntities;
     private Collection<StandardEntity> unindexedEntities;
@@ -43,7 +42,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     */
     public StandardWorldModel() {
         super(StandardEntity.class);
-        storedTypes = new HashMap<EntityType, Collection<StandardEntity>>();
+        storedTypes = new EnumMap<StandardEntityURN, Collection<StandardEntity>>(StandardEntityURN.class);
         mobileEntities = new HashSet<StandardEntity>();
         staticEntities = new HashSet<StandardEntity>();
         unindexedEntities = new HashSet<StandardEntity>();
@@ -54,17 +53,17 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /**
        Tell this index to remember a certain class of entities.
-       @param types The EntityTypes to remember.
+       @param urns The type URNs to remember.
     */
-    public void indexClass(EntityType... types) {
-        for (EntityType type : types) {
+    public void indexClass(StandardEntityURN... urns) {
+        for (StandardEntityURN urn : urns) {
             Collection<StandardEntity> bucket = new HashSet<StandardEntity>();
             for (StandardEntity next : this) {
-                if (next.getType().equals(type)) {
+                if (next.getURN().equals(urn.name())) {
                     bucket.add(next);
                 }
             }
-            storedTypes.put(type, bucket);
+            storedTypes.put(urn, bucket);
         }
     }
 
@@ -237,32 +236,26 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /**
        Get all entities of a particular type.
-       @param type The type to look up.
+       @param urn The type urn to look up.
        @return A new Collection of entities of the specified type.
     */
-    public Collection<StandardEntity> getEntitiesOfType(EntityType type) {
-        if (storedTypes.containsKey(type)) {
-            return storedTypes.get(type);
+    public Collection<StandardEntity> getEntitiesOfType(StandardEntityURN urn) {
+        if (storedTypes.containsKey(urn)) {
+            return storedTypes.get(urn);
         }
-        Collection<StandardEntity> result = new HashSet<StandardEntity>();
-        for (StandardEntity next : this) {
-            if (next.getType().equals(type)) {
-                result.add(next);
-            }
-        }
-        storedTypes.put(type, result);
-        return result;
+        indexClass(urn);
+        return storedTypes.get(urn);
     }
 
     /**
        Get all entities of a set of types.
-       @param types The types to look up.
+       @param urns The type urns to look up.
        @return A new Collection of entities of the specified types.
     */
-    public Collection<StandardEntity> getEntitiesOfType(EntityType... types) {
+    public Collection<StandardEntity> getEntitiesOfType(StandardEntityURN... urns) {
         Collection<StandardEntity> result = new HashSet<StandardEntity>();
-        for (EntityType type : types) {
-            result.addAll(getEntitiesOfType(type));
+        for (StandardEntityURN urn : urns) {
+            result.addAll(getEntitiesOfType(urn));
         }
         return result;
     }
@@ -377,7 +370,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private class AddRemoveListener implements WorldModelListener<StandardEntity> {
         @Override
         public void entityAdded(WorldModel<? extends StandardEntity> model, StandardEntity e) {
-            EntityType type = e.getType();
+            String urn = e.getURN();
+            StandardEntityURN type = StandardEntityURN.valueOf(urn);
             if (storedTypes.containsKey(type)) {
                 Collection<StandardEntity> bucket = storedTypes.get(type);
                 bucket.add(e);
@@ -387,7 +381,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
         @Override
         public void entityRemoved(WorldModel<? extends StandardEntity> model, StandardEntity e) {
-            EntityType type = e.getType();
+            String urn = e.getURN();
+            StandardEntityURN type = StandardEntityURN.valueOf(urn);
             if (storedTypes.containsKey(type)) {
                 Collection<StandardEntity> bucket = storedTypes.get(type);
                 bucket.remove(e);

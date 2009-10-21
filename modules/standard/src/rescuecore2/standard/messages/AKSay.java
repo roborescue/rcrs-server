@@ -1,7 +1,7 @@
 package rescuecore2.standard.messages;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.RawDataComponent;
+import rescuecore2.messages.components.RawDataComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.io.InputStream;
@@ -40,7 +40,7 @@ public class AKSay extends AbstractCommand {
        Create an empty AKSay command.
      */
     private AKSay() {
-        super("AK_SAY", MessageConstants.AK_SAY);
+        super(StandardMessageURN.AK_SAY);
         data = new RawDataComponent("Message");
         addMessageComponent(data);
     }

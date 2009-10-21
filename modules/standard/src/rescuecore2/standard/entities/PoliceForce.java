@@ -12,7 +12,7 @@ public class PoliceForce extends Human {
        @param id The ID of this entity.
     */
     public PoliceForce(EntityID id) {
-        super(id, StandardEntityType.POLICE_FORCE);
+        super(id, StandardEntityURN.POLICE_FORCE);
     }
 
     /**

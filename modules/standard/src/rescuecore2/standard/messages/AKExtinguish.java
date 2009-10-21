@@ -1,21 +1,19 @@
 package rescuecore2.standard.messages;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readInt32;
-
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractCommand;
+import rescuecore2.messages.components.EntityIDComponent;
+import rescuecore2.messages.components.IntComponent;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.IOException;
 
 /**
    An agent Extinguish command.
  */
 public class AKExtinguish extends AbstractCommand {
-    private EntityID target;
-    private int water;
+    private EntityIDComponent target;
+    private IntComponent water;
 
     /**
        An AKExtinguish message that populates its data from a stream.
@@ -38,12 +36,16 @@ public class AKExtinguish extends AbstractCommand {
         this();
         setAgentID(agent);
         setTime(time);
-        this.target = target;
-        this.water = water;
+        this.target.setValue(target);
+        this.water.setValue(water);
     }
 
     private AKExtinguish() {
-        super("AK_EXTINGUISH", MessageConstants.AK_EXTINGUISH);
+        super(StandardMessageURN.AK_EXTINGUISH);
+        target = new EntityIDComponent("Target");
+        water = new IntComponent("Water");
+        addMessageComponent(target);
+        addMessageComponent(water);
     }
 
     /**
@@ -51,7 +53,7 @@ public class AKExtinguish extends AbstractCommand {
        @return The target ID.
      */
     public EntityID getTarget() {
-        return target;
+        return target.getValue();
     }
 
     /**
@@ -59,38 +61,6 @@ public class AKExtinguish extends AbstractCommand {
        @return The amount of water to use.
     */
     public int getWater() {
-        return water;
-    }
-
-    @Override
-    public void write(OutputStream out) throws IOException {
-        writeInt32(getAgentID().getValue(), out);
-        writeInt32(getTime(), out);
-        writeInt32(target.getValue(), out);
-        writeInt32(0, out); // Direction
-        writeInt32(0, out); // X
-        writeInt32(0, out); // Y
-        writeInt32(water, out);
-        writeInt32(0, out); // End-of-nozzles marker
-    }
-
-    @Override
-    public void read(InputStream in) throws IOException {
-        setAgentID(new EntityID(readInt32(in)));
-        setTime(readInt32(in));
-        target = new EntityID(readInt32(in));
-        readInt32(in); // Direction
-        readInt32(in); // X
-        readInt32(in); // Y
-        water = readInt32(in);
-        // Check end-of-nozzles marker
-        while (readInt32(in) != 0) {
-            // More nozzles
-            // Skip direction, x, y, water
-            readInt32(in);
-            readInt32(in);
-            readInt32(in);
-            readInt32(in);
-        }
+        return water.getValue();
     }
 }

@@ -1,0 +1,65 @@
+package rescuecore2.standard.entities;
+
+/**
+   URNs for standard property types.
+ */
+public enum StandardPropertyURN {
+    // CHECKSTYLE:OFF:JavadocVariableChec
+
+    START_TIME,
+    LONGITUDE,
+    LATITUDE,
+    WIND_FORCE,
+    WIND_DIRECTION,
+
+    HEAD,
+    TAIL,
+    LENGTH,
+
+    ROAD_KIND,
+    CARS_PASS_TO_HEAD,
+    CARS_PASS_TO_TAIL,
+    HUMANS_PASS_TO_HEAD,
+    HUMANS_PASS_TO_TAIL,
+    WIDTH,
+    BLOCK,
+    REPAIR_COST,
+    MEDIAN_STRIP,
+    LINES_TO_HEAD,
+    LINES_TO_TAIL,
+    WIDTH_FOR_WALKERS,
+    SIGNAL,
+    SHORTCUT_TO_TURN,
+    POCKET_TO_TURN_ACROSS,
+    SIGNAL_TIMING,
+
+    X,
+    Y,
+    EDGES,
+
+    FLOORS,
+    BUILDING_ATTRIBUTES,
+    IGNITION,
+    FIERYNESS,
+    BROKENNESS,
+    ENTRANCES,
+    BUILDING_CODE,
+    BUILDING_AREA_GROUND,
+    BUILDING_AREA_TOTAL,
+    BUILDING_APEXES,
+
+    POSITION,
+    POSITION_EXTRA,
+    DIRECTION,
+    POSITION_HISTORY,
+    STAMINA,
+    HP,
+    DAMAGE,
+    BURIEDNESS,
+    WATER_QUANTITY,
+
+    TEMPERATURE,
+    IMPORTANCE;
+
+    // CHECKSTYLE:ON:JavadocVariableCheck
+}

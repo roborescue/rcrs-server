@@ -3,7 +3,7 @@ package rescuecore2.standard.messages;
 import java.util.List;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.EntityIDListComponent;
+import rescuecore2.messages.components.EntityIDListComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.io.InputStream;
@@ -39,7 +39,7 @@ public class AKMove extends AbstractCommand {
     }
 
     private AKMove() {
-        super("AK_MOVE", MessageConstants.AK_MOVE);
+        super(StandardMessageURN.AK_MOVE);
         path = new EntityIDListComponent("Path");
         addMessageComponent(path);
     }

@@ -2,8 +2,11 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
+
+import java.util.Set;
 
 /**
    The Road object.
@@ -27,20 +30,19 @@ public class Road extends Edge {
        @param id The ID of this entity.
      */
     public Road(EntityID id) {
-        super(id, StandardEntityType.ROAD);
-        kind = new IntProperty(StandardPropertyType.ROAD_KIND);
-        carsToHead = new IntProperty(StandardPropertyType.CARS_PASS_TO_HEAD);
-        carsToTail = new IntProperty(StandardPropertyType.CARS_PASS_TO_TAIL);
-        humansToHead = new IntProperty(StandardPropertyType.HUMANS_PASS_TO_HEAD);
-        humansToTail = new IntProperty(StandardPropertyType.HUMANS_PASS_TO_TAIL);
-        width = new IntProperty(StandardPropertyType.WIDTH);
-        block = new IntProperty(StandardPropertyType.BLOCK);
-        cost = new IntProperty(StandardPropertyType.REPAIR_COST);
-        hasMedian = new BooleanProperty(StandardPropertyType.MEDIAN_STRIP);
-        linesToHead = new IntProperty(StandardPropertyType.LINES_TO_HEAD);
-        linesToTail = new IntProperty(StandardPropertyType.LINES_TO_TAIL);
-        widthForWalkers = new IntProperty(StandardPropertyType.WIDTH_FOR_WALKERS);
-        addProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
+        super(id, StandardEntityURN.ROAD);
+        kind = new IntProperty(StandardPropertyURN.ROAD_KIND);
+        carsToHead = new IntProperty(StandardPropertyURN.CARS_PASS_TO_HEAD);
+        carsToTail = new IntProperty(StandardPropertyURN.CARS_PASS_TO_TAIL);
+        humansToHead = new IntProperty(StandardPropertyURN.HUMANS_PASS_TO_HEAD);
+        humansToTail = new IntProperty(StandardPropertyURN.HUMANS_PASS_TO_TAIL);
+        width = new IntProperty(StandardPropertyURN.WIDTH);
+        block = new IntProperty(StandardPropertyURN.BLOCK);
+        cost = new IntProperty(StandardPropertyURN.REPAIR_COST);
+        hasMedian = new BooleanProperty(StandardPropertyURN.MEDIAN_STRIP);
+        linesToHead = new IntProperty(StandardPropertyURN.LINES_TO_HEAD);
+        linesToTail = new IntProperty(StandardPropertyURN.LINES_TO_TAIL);
+        widthForWalkers = new IntProperty(StandardPropertyURN.WIDTH_FOR_WALKERS);
     }
 
     /**
@@ -61,12 +63,68 @@ public class Road extends Edge {
         linesToHead = new IntProperty(other.linesToHead);
         linesToTail = new IntProperty(other.linesToTail);
         widthForWalkers = new IntProperty(other.widthForWalkers);
-        addProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
-}
+    }
 
     @Override
     protected Entity copyImpl() {
         return new Road(getID());
+    }
+
+    @Override
+    public Property getProperty(String urn) {
+        StandardPropertyURN type;
+        try {
+            type = StandardPropertyURN.valueOf(urn);
+        }
+        catch (IllegalArgumentException e) {
+            return super.getProperty(urn);
+        }
+        switch (type) {
+        case ROAD_KIND:
+            return kind;
+        case CARS_PASS_TO_HEAD:
+            return carsToHead;
+        case CARS_PASS_TO_TAIL:
+            return carsToTail;
+        case HUMANS_PASS_TO_HEAD:
+            return humansToHead;
+        case HUMANS_PASS_TO_TAIL:
+            return humansToTail;
+        case WIDTH:
+            return width;
+        case BLOCK:
+            return block;
+        case REPAIR_COST:
+            return cost;
+        case MEDIAN_STRIP:
+            return hasMedian;
+        case LINES_TO_HEAD:
+            return linesToHead;
+        case LINES_TO_TAIL:
+            return linesToTail;
+        case WIDTH_FOR_WALKERS:
+            return widthForWalkers;
+        default:
+            return super.getProperty(urn);
+        }
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        Set<Property> result = super.getProperties();
+        result.add(kind);
+        result.add(carsToHead);
+        result.add(carsToTail);
+        result.add(humansToHead);
+        result.add(humansToTail);
+        result.add(width);
+        result.add(block);
+        result.add(cost);
+        result.add(hasMedian);
+        result.add(linesToHead);
+        result.add(linesToTail);
+        result.add(widthForWalkers);
+        return result;
     }
 
     /**

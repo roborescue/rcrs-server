@@ -2,8 +2,11 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
+
+import java.util.Set;
 
 /**
    The Node object.
@@ -19,12 +22,11 @@ public class Node extends Vertex {
        @param id The ID of this entity.
      */
     public Node(EntityID id) {
-        super(id, StandardEntityType.NODE);
-        signal = new BooleanProperty(StandardPropertyType.SIGNAL);
-        shortcut = new IntArrayProperty(StandardPropertyType.SHORTCUT_TO_TURN);
-        pocket = new IntArrayProperty(StandardPropertyType.POCKET_TO_TURN_ACROSS);
-        timing = new IntArrayProperty(StandardPropertyType.SIGNAL_TIMING);
-        addProperties(signal, shortcut, pocket, timing);
+        super(id, StandardEntityURN.NODE);
+        signal = new BooleanProperty(StandardPropertyURN.SIGNAL);
+        shortcut = new IntArrayProperty(StandardPropertyURN.SHORTCUT_TO_TURN);
+        pocket = new IntArrayProperty(StandardPropertyURN.POCKET_TO_TURN_ACROSS);
+        timing = new IntArrayProperty(StandardPropertyURN.SIGNAL_TIMING);
     }
 
     /**
@@ -37,12 +39,44 @@ public class Node extends Vertex {
         shortcut = new IntArrayProperty(other.shortcut);
         pocket = new IntArrayProperty(other.pocket);
         timing = new IntArrayProperty(other.timing);
-        addProperties(signal, shortcut, pocket, timing);
     }
 
     @Override
     protected Entity copyImpl() {
         return new Node(getID());
+    }
+
+    @Override
+    public Property getProperty(String urn) {
+        StandardPropertyURN type;
+        try {
+            type = StandardPropertyURN.valueOf(urn);
+        }
+        catch (IllegalArgumentException e) {
+            return super.getProperty(urn);
+        }
+        switch (type) {
+        case SIGNAL:
+            return signal;
+        case SHORTCUT_TO_TURN:
+            return shortcut;
+        case POCKET_TO_TURN_ACROSS:
+            return pocket;
+        case SIGNAL_TIMING:
+            return timing;
+        default:
+            return super.getProperty(urn);
+        }
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        Set<Property> result = super.getProperties();
+        result.add(signal);
+        result.add(shortcut);
+        result.add(pocket);
+        result.add(timing);
+        return result;
     }
 
     /**

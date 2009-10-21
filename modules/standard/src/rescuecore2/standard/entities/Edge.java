@@ -2,10 +2,12 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.misc.Pair;
 
+import java.util.Set;
 
 /**
    Edge-type entities (e.g. roads).
@@ -20,12 +22,11 @@ public abstract class Edge extends StandardEntity {
        @param id The ID of this entity.
        @param type The type ID of this entity.
      */
-    protected Edge(EntityID id, StandardEntityType type) {
+    protected Edge(EntityID id, StandardEntityURN type) {
         super(id, type);
-        head = new EntityRefProperty(StandardPropertyType.HEAD);
-        tail = new EntityRefProperty(StandardPropertyType.TAIL);
-        length = new IntProperty(StandardPropertyType.LENGTH);
-        addProperties(head, tail, length);
+        head = new EntityRefProperty(StandardPropertyURN.HEAD);
+        tail = new EntityRefProperty(StandardPropertyURN.TAIL);
+        length = new IntProperty(StandardPropertyURN.LENGTH);
     }
 
     /**
@@ -37,7 +38,36 @@ public abstract class Edge extends StandardEntity {
         this.head = new EntityRefProperty(head);
         this.tail = new EntityRefProperty(tail);
         this.length = new IntProperty(length);
-        addProperties(head, tail, length);
+    }
+
+    @Override
+    public Property getProperty(String urn) {
+        StandardPropertyURN type;
+        try {
+            type = StandardPropertyURN.valueOf(urn);
+        }
+        catch (IllegalArgumentException e) {
+            return super.getProperty(urn);
+        }
+        switch (type) {
+        case HEAD:
+            return head;
+        case TAIL:
+            return tail;
+        case LENGTH:
+            return length;
+        default:
+            return super.getProperty(urn);
+        }
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        Set<Property> result = super.getProperties();
+        result.add(head);
+        result.add(tail);
+        result.add(length);
+        return result;
     }
 
     @Override

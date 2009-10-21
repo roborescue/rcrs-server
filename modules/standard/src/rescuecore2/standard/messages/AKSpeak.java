@@ -1,8 +1,8 @@
 package rescuecore2.standard.messages;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.RawDataComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.RawDataComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.io.InputStream;
@@ -41,7 +41,7 @@ public class AKSpeak extends AbstractCommand {
     }
 
     private AKSpeak() {
-        super("AK_SPEAK", MessageConstants.AK_SPEAK);
+        super(StandardMessageURN.AK_SPEAK);
         channel = new IntComponent("Channel");
         data = new RawDataComponent("Message");
         addMessageComponent(channel);

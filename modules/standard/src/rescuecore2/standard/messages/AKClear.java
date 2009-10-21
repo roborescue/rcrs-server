@@ -1,7 +1,7 @@
 package rescuecore2.standard.messages;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.EntityIDComponent;
+import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class AKClear extends AbstractCommand {
     }
 
     private AKClear() {
-        super("AK_CLEAR", MessageConstants.AK_CLEAR);
+        super(StandardMessageURN.AK_CLEAR);
         target = new EntityIDComponent("Target");
         addMessageComponent(target);
     }

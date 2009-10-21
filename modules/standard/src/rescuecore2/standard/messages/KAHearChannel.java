@@ -2,9 +2,9 @@ package rescuecore2.standard.messages;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.EntityIDComponent;
-import rescuecore2.messages.IntComponent;
-import rescuecore2.messages.RawDataComponent;
+import rescuecore2.messages.components.EntityIDComponent;
+import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.components.RawDataComponent;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class KAHearChannel extends AbstractMessage {
     }
 
     private KAHearChannel() {
-        super("KA_HEAR_CHANNEL", MessageConstants.KA_HEAR_CHANNEL);
+        super(StandardMessageURN.KA_HEAR_CHANNEL);
         sender = new EntityIDComponent("Sender");
         channel = new IntComponent("Channel");
         data = new RawDataComponent("Message");

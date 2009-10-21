@@ -12,7 +12,7 @@ public class AmbulanceCentre extends Building {
        @param id The ID of this entity.
      */
     public AmbulanceCentre(EntityID id) {
-        super(id, StandardEntityType.AMBULANCE_CENTRE);
+        super(id, StandardEntityURN.AMBULANCE_CENTRE);
     }
 
     /**

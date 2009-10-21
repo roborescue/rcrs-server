@@ -3,6 +3,7 @@ package rescuecore2.standard.entities;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
@@ -12,6 +13,7 @@ import rescuecore2.misc.Pair;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
    The Building object.
@@ -65,31 +67,30 @@ public class Building extends StandardEntity {
        @param id The ID of this entity.
     */
     public Building(EntityID id) {
-        this(id, StandardEntityType.BUILDING);
+        this(id, StandardEntityURN.BUILDING);
     }
 
     /**
        Construct a subclass of a Building object with entirely undefined property values.
        @param id The ID of this entity.
-       @param type The real type of this building.
+       @param urn The real urn of this building.
     */
-    protected Building(EntityID id, StandardEntityType type) {
-        super(id, type);
-        x = new IntProperty(StandardPropertyType.X);
-        y = new IntProperty(StandardPropertyType.Y);
-        floors = new IntProperty(StandardPropertyType.FLOORS);
-        ignition = new BooleanProperty(StandardPropertyType.IGNITION);
-        fieryness = new IntProperty(StandardPropertyType.FIERYNESS);
-        brokenness = new IntProperty(StandardPropertyType.BROKENNESS);
-        code = new IntProperty(StandardPropertyType.BUILDING_CODE);
-        attributes = new IntProperty(StandardPropertyType.BUILDING_ATTRIBUTES);
-        groundArea = new IntProperty(StandardPropertyType.BUILDING_AREA_GROUND);
-        totalArea = new IntProperty(StandardPropertyType.BUILDING_AREA_TOTAL);
-        temperature = new IntProperty(StandardPropertyType.TEMPERATURE);
-        importance = new IntProperty(StandardPropertyType.IMPORTANCE);
-        apexes = new IntArrayProperty(StandardPropertyType.BUILDING_APEXES);
-        entrances = new EntityRefListProperty(StandardPropertyType.ENTRANCES);
-        addProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
+    protected Building(EntityID id, StandardEntityURN urn) {
+        super(id, urn);
+        x = new IntProperty(StandardPropertyURN.X);
+        y = new IntProperty(StandardPropertyURN.Y);
+        floors = new IntProperty(StandardPropertyURN.FLOORS);
+        ignition = new BooleanProperty(StandardPropertyURN.IGNITION);
+        fieryness = new IntProperty(StandardPropertyURN.FIERYNESS);
+        brokenness = new IntProperty(StandardPropertyURN.BROKENNESS);
+        code = new IntProperty(StandardPropertyURN.BUILDING_CODE);
+        attributes = new IntProperty(StandardPropertyURN.BUILDING_ATTRIBUTES);
+        groundArea = new IntProperty(StandardPropertyURN.BUILDING_AREA_GROUND);
+        totalArea = new IntProperty(StandardPropertyURN.BUILDING_AREA_TOTAL);
+        temperature = new IntProperty(StandardPropertyURN.TEMPERATURE);
+        importance = new IntProperty(StandardPropertyURN.IMPORTANCE);
+        apexes = new IntArrayProperty(StandardPropertyURN.BUILDING_APEXES);
+        entrances = new EntityRefListProperty(StandardPropertyURN.ENTRANCES);
     }
 
     /**
@@ -112,12 +113,74 @@ public class Building extends StandardEntity {
         importance = new IntProperty(other.importance);
         apexes = new IntArrayProperty(other.apexes);
         entrances = new EntityRefListProperty(other.entrances);
-        addProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
     }
 
     @Override
     protected Entity copyImpl() {
         return new Building(getID());
+    }
+
+    @Override
+    public Property getProperty(String urn) {
+        StandardPropertyURN type;
+        try {
+            type = StandardPropertyURN.valueOf(urn);
+        }
+        catch (IllegalArgumentException e) {
+            return super.getProperty(urn);
+        }
+        switch (type) {
+        case X:
+            return x;
+        case Y:
+            return y;
+        case FLOORS:
+            return floors;
+        case IGNITION:
+            return ignition;
+        case FIERYNESS:
+            return fieryness;
+        case BROKENNESS:
+            return brokenness;
+        case BUILDING_CODE:
+            return code;
+        case BUILDING_ATTRIBUTES:
+            return attributes;
+        case BUILDING_AREA_GROUND:
+            return groundArea;
+        case BUILDING_AREA_TOTAL:
+            return totalArea;
+        case TEMPERATURE:
+            return temperature;
+        case IMPORTANCE:
+            return importance;
+        case BUILDING_APEXES:
+            return apexes;
+        case ENTRANCES:
+            return entrances;
+        default:
+            return super.getProperty(urn);
+        }
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        Set<Property> result = super.getProperties();
+        result.add(x);
+        result.add(y);
+        result.add(floors);
+        result.add(ignition);
+        result.add(fieryness);
+        result.add(brokenness);
+        result.add(code);
+        result.add(attributes);
+        result.add(groundArea);
+        result.add(totalArea);
+        result.add(temperature);
+        result.add(importance);
+        result.add(apexes);
+        result.add(entrances);
+        return result;
     }
 
     @Override

@@ -2,12 +2,14 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 
 import rescuecore2.misc.Pair;
 
 import java.util.List;
+import java.util.Set;
 
 /**
    Vertex-type entities (e.g. nodes).
@@ -20,14 +22,13 @@ public abstract class Vertex extends StandardEntity {
     /**
        Construct a Vertex object with entirely undefined property values.
        @param id The ID of this entity.
-       @param type The type ID of this entity.
+       @param urn The urn of this entity.
      */
-    protected Vertex(EntityID id, StandardEntityType type) {
-        super(id, type);
-        x = new IntProperty(StandardPropertyType.X);
-        y = new IntProperty(StandardPropertyType.Y);
-        edges = new EntityRefListProperty(StandardPropertyType.EDGES);
-        addProperties(x, y, edges);
+    protected Vertex(EntityID id, StandardEntityURN urn) {
+        super(id, urn);
+        x = new IntProperty(StandardPropertyURN.X);
+        y = new IntProperty(StandardPropertyURN.Y);
+        edges = new EntityRefListProperty(StandardPropertyURN.EDGES);
     }
 
     /**
@@ -39,7 +40,36 @@ public abstract class Vertex extends StandardEntity {
         x = new IntProperty(other.x);
         y = new IntProperty(other.y);
         edges = new EntityRefListProperty(other.edges);
-        addProperties(x, y, edges);
+    }
+
+    @Override
+    public Property getProperty(String urn) {
+        StandardPropertyURN type;
+        try {
+            type = StandardPropertyURN.valueOf(urn);
+        }
+        catch (IllegalArgumentException e) {
+            return super.getProperty(urn);
+        }
+        switch (type) {
+        case X:
+            return x;
+        case Y:
+            return y;
+        case EDGES:
+            return edges;
+        default:
+            return super.getProperty(urn);
+        }
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        Set<Property> result = super.getProperties();
+        result.add(x);
+        result.add(y);
+        result.add(edges);
+        return result;
     }
 
     @Override

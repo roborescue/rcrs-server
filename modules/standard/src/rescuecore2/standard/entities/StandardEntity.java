@@ -12,10 +12,10 @@ public abstract class StandardEntity extends AbstractEntity {
     /**
        Construct a StandardEntity with entirely undefined property values.
        @param id The ID of this entity.
-       @param type The type ID of this entity.
+       @param urn The urn of this entity type.
      */
-    protected StandardEntity(EntityID id, StandardEntityType type) {
-        super(id, type);
+    protected StandardEntity(EntityID id, StandardEntityURN urn) {
+        super(id, urn);
     }
 
     /**

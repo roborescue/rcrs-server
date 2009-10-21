@@ -1,12 +1,12 @@
 package rescuecore2.standard.entities;
 
-import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.worldmodel.AbstractEntityFactory;
 import rescuecore2.worldmodel.EntityID;
 
 /**
    EntityFactory that builds standard Robocup Standard objects.
  */
-public final class StandardEntityFactory implements EntityFactory {
+public final class StandardEntityFactory extends AbstractEntityFactory<StandardEntityURN> {
     /**
        Singleton class. Use this instance to do stuff.
      */
@@ -15,12 +15,13 @@ public final class StandardEntityFactory implements EntityFactory {
     /**
        Singleton class: private constructor.
      */
-    private StandardEntityFactory() {}
+    private StandardEntityFactory() {
+        super(StandardEntityURN.class);
+    }
 
     @Override
-    public StandardEntity makeEntity(int typeID, EntityID id) {
-        StandardEntityType type = StandardEntityType.fromID(typeID);
-        switch (type) {
+    public StandardEntity makeEntity(StandardEntityURN urn, EntityID id) {
+        switch (urn) {
         case WORLD:
             return new World(id);
         case ROAD:
@@ -46,24 +47,7 @@ public final class StandardEntityFactory implements EntityFactory {
         case POLICE_FORCE:
             return new PoliceForce(id);
         default:
-            throw new IllegalArgumentException("Unrecognised entity type: " + type);
+            throw new IllegalArgumentException("Unrecognised entity urn: " + urn);
         }
-    }
-
-    @Override
-    public int[] getKnownEntityTypeIDs() {
-        return new int[] {StandardEntityType.WORLD.getID(),
-                          StandardEntityType.ROAD.getID(),
-                          StandardEntityType.NODE.getID(),
-                          StandardEntityType.BUILDING.getID(),
-                          StandardEntityType.REFUGE.getID(),
-                          StandardEntityType.FIRE_STATION.getID(),
-                          StandardEntityType.AMBULANCE_CENTRE.getID(),
-                          StandardEntityType.POLICE_OFFICE.getID(),
-                          StandardEntityType.CIVILIAN.getID(),
-                          StandardEntityType.FIRE_BRIGADE.getID(),
-                          StandardEntityType.AMBULANCE_TEAM.getID(),
-                          StandardEntityType.POLICE_FORCE.getID()
-        };
     }
 }
