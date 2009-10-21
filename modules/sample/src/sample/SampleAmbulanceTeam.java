@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.messages.AKMove;
@@ -30,8 +31,8 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityType.CIVILIAN, StandardEntityType.FIRE_BRIGADE, StandardEntityType.POLICE_FORCE, StandardEntityType.AMBULANCE_TEAM, StandardEntityType.REFUGE, StandardEntityType.BUILDING);
-        unexploredBuildings = world.getEntitiesOfType(StandardEntityType.BUILDING);
+        world.indexClass(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM, StandardEntityURN.REFUGE, StandardEntityURN.BUILDING);
+        unexploredBuildings = world.getEntitiesOfType(StandardEntityURN.BUILDING);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
             }
             else {
                 // Move to a refuge
-                List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityType.REFUGE));
+                List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityURN.REFUGE));
                 if (path != null) {
                     AKMove move = new AKMove(getID(), time, path);
                     System.out.println(me() + " moving to refuge: " + move);
@@ -103,13 +104,12 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.AMBULANCE_TEAM.getID()
-        };
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.AMBULANCE_TEAM);
     }
 
     private boolean someoneOnBoard() {
-        for (StandardEntity next : world.getEntitiesOfType(StandardEntityType.CIVILIAN, StandardEntityType.FIRE_BRIGADE, StandardEntityType.POLICE_FORCE, StandardEntityType.AMBULANCE_TEAM)) {
+        for (StandardEntity next : world.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
             if (((Human)next).getPosition().equals(getID())) {
                 return true;
             }
@@ -119,7 +119,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
 
     private List<Human> getTargets() {
         List<Human> targets = new ArrayList<Human>();
-        for (StandardEntity next : world.getEntitiesOfType(StandardEntityType.CIVILIAN, StandardEntityType.FIRE_BRIGADE, StandardEntityType.POLICE_FORCE, StandardEntityType.AMBULANCE_TEAM)) {
+        for (StandardEntity next : world.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)next;
             if (h.getHP() > 0 && (h.getBuriedness() > 0 || h.getDamage() > 0)) {
                 targets.add(h);

@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
@@ -35,7 +36,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityType.BUILDING, StandardEntityType.REFUGE);
+        world.indexClass(StandardEntityURN.BUILDING, StandardEntityURN.REFUGE);
         maxWater = config.getIntValue(MAX_WATER_KEY);
         maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
         maxPower = config.getIntValue(MAX_POWER_KEY);
@@ -91,13 +92,12 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.FIRE_BRIGADE.getID()
-        };
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.FIRE_BRIGADE);
     }
 
     private List<Refuge> getRefuges() {
-        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityType.REFUGE);
+        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityURN.REFUGE);
         List<Refuge> result = new ArrayList<Refuge>();
         for (StandardEntity next : e) {
             if (next instanceof Refuge) {
@@ -108,7 +108,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     private List<Building> getBurningBuildings() {
-        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityType.BUILDING);
+        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityURN.BUILDING);
         List<Building> result = new ArrayList<Building>();
         for (StandardEntity next : e) {
             if (next instanceof Building) {

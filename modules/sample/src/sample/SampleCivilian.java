@@ -3,11 +3,12 @@ package sample;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.messages.AKMove;
@@ -41,7 +42,7 @@ public class SampleCivilian extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityType.REFUGE);
+        world.indexClass(StandardEntityURN.REFUGE);
         helpProbability = config.getFloatValue(HELP_PROBABILITY_KEY, DEFAULT_HELP_PROBABILITY);
         ouchProbability = config.getFloatValue(OUCH_PROBABILITY_KEY, DEFAULT_OUCH_PROBABILITY);
         consciousThreshold = config.getIntValue(CONSCIOUS_THRESHOLD_KEY, DEFAULT_CONSCIOUS_THRESHOLD);
@@ -80,13 +81,12 @@ public class SampleCivilian extends AbstractSampleAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.CIVILIAN.getID()
-        };
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.CIVILIAN);
     }
 
     private List<Refuge> getRefuges() {
-        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityType.REFUGE);
+        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityURN.REFUGE);
         List<Refuge> result = new ArrayList<Refuge>();
         for (StandardEntity next : e) {
             if (next instanceof Refuge) {

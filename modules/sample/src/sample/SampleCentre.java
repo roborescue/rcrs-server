@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.List;
+import java.util.EnumSet;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
@@ -8,7 +9,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.components.AbstractAgent;
 
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 
 /**
    A sample centre agent.
@@ -29,10 +30,19 @@ public class SampleCentre extends AbstractAgent<StandardEntity> {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.FIRE_STATION.getID(),
-                          StandardEntityType.POLICE_OFFICE.getID(),
-                          StandardEntityType.AMBULANCE_CENTRE.getID()
-        };
+    public String[] getRequestedEntityURNs() {
+        EnumSet<StandardEntityURN> set = getRequestedEntityURNsEnum();
+        String[] result = new String[set.size()];
+        int i = 0;
+        for (StandardEntityURN next : set) {
+            result[i++] = next.name();
+        }
+        return result;
+    }
+
+    private EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.FIRE_STATION,
+                          StandardEntityURN.AMBULANCE_CENTRE,
+                          StandardEntityURN.POLICE_OFFICE);
     }
 }

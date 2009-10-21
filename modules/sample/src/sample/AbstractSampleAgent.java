@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.EntityID;
@@ -13,6 +14,7 @@ import rescuecore2.Constants;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
 
@@ -45,6 +47,17 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
        Construct an AbstractSampleAgent.
      */
     protected AbstractSampleAgent() {
+    }
+
+    @Override
+    public String[] getRequestedEntityURNs() {
+        EnumSet<StandardEntityURN> set = getRequestedEntityURNsEnum();
+        String[] result = new String[set.size()];
+        int i = 0;
+        for (StandardEntityURN next : set) {
+            result[i++] = next.name();
+        }
+        return result;
     }
 
     @Override
@@ -105,4 +118,10 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
         }
         return result;
     }
+
+    /**
+       Get an EnumSet containing requested entity URNs.
+       @return An EnumSet containing requested entity URNs.
+     */
+    protected abstract EnumSet<StandardEntityURN> getRequestedEntityURNsEnum();
 }

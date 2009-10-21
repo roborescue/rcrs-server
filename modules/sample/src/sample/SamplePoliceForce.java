@@ -3,11 +3,12 @@ package sample;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityType;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKClear;
@@ -24,7 +25,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityType.ROAD);
+        world.indexClass(StandardEntityURN.ROAD);
         search.setIgnoreBlockedRoads(false);
     }
 
@@ -51,13 +52,12 @@ public class SamplePoliceForce extends AbstractSampleAgent {
     }
 
     @Override
-    public int[] getRequestedEntityIDs() {
-        return new int[] {StandardEntityType.POLICE_FORCE.getID()
-        };
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.POLICE_FORCE);
     }
 
     private List<Road> getBlockedRoads() {
-        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityType.ROAD);
+        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityURN.ROAD);
         List<Road> result = new ArrayList<Road>();
         for (StandardEntity next : e) {
             if (next instanceof Road) {
