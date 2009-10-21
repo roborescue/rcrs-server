@@ -36,7 +36,7 @@ public class AgentProxy extends AbstractKernelComponent {
 
     @Override
     public String toString() {
-        return getName() + ": " + entity.getType() + " " + entity.getID();
+        return getName() + ": " + entity.getURN() + " " + entity.getID();
     }
 
     /**

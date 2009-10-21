@@ -22,7 +22,7 @@ import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.StandardPropertyType;
+import rescuecore2.standard.entities.StandardPropertyURN;
 
 /**
    Class that registers standard agents.
@@ -87,7 +87,8 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             // Road properties: ROAD_KIND, WIDTH, MEDIAN_STRIP, LINES_TO_HEAD, LINES_TO_TAIL and WIDTH_FOR_WALKERS
             // Edge properties: HEAD, TAIL, LENGTH
             // Everything else should be undefined
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case ROAD_KIND:
             case WIDTH:
             case MEDIAN_STRIP:
@@ -109,7 +110,8 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             // Node properties: SIGNAL, SHORTCUT_TO_TURN, POCKET_TO_TURN_ACROSS, SIGNAL_TIMING
             // Vertex properties: X, Y, EDGES
             // Everything else should be undefined
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case SIGNAL:
             case SHORTCUT_TO_TURN:
             case POCKET_TO_TURN_ACROSS:
@@ -128,7 +130,8 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         for (Property next : b.getProperties()) {
             // Building properties: X, Y, FLOORS, BUILDING_CODE, BUILDING_ATTRIBUTES, BUILDING_AREA_GROUND, BUILDING_AREA_TOTAL, IMPORTANCE, ENTRANCES
             // Everything else should be undefined
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case X:
             case Y:
             case FLOORS:

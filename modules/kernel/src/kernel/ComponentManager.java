@@ -48,7 +48,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     private ComponentManagerGUI gui;
 
     // Entities that have no controller yet. Map from type to list of entities.
-    private Map<Integer, Queue<ControlledEntityInfo>> uncontrolledEntities;
+    private Map<String, Queue<ControlledEntityInfo>> uncontrolledEntities;
 
     // Connected agents
     private Set<AgentAck> agentsToAcknowledge;
@@ -81,7 +81,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         this.kernel = kernel;
         this.world = world;
         this.config = config;
-        uncontrolledEntities = new HashMap<Integer, Queue<ControlledEntityInfo>>();
+        uncontrolledEntities = new HashMap<String, Queue<ControlledEntityInfo>>();
         agentsToAcknowledge = new HashSet<AgentAck>();
         simsToAcknowledge = new HashSet<SimulatorAck>();
         viewersToAcknowledge = new HashSet<ViewerAck>();
@@ -97,10 +97,10 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
      */
     public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup, Config agentConfig) {
         synchronized (agentLock) {
-            Queue<ControlledEntityInfo> q = uncontrolledEntities.get(entity.getType().getID());
+            Queue<ControlledEntityInfo> q = uncontrolledEntities.get(entity.getURN());
             if (q == null) {
                 q = new LinkedList<ControlledEntityInfo>();
-                uncontrolledEntities.put(entity.getType().getID(), q);
+                uncontrolledEntities.put(entity.getURN(), q);
             }
             if (visibleOnStartup == null) {
                 visibleOnStartup = world.getAllEntities();
@@ -119,7 +119,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
             boolean done = false;
             do {
                 done = true;
-                for (Map.Entry<Integer, Queue<ControlledEntityInfo>> next : uncontrolledEntities.entrySet()) {
+                for (Map.Entry<String, Queue<ControlledEntityInfo>> next : uncontrolledEntities.entrySet()) {
                     if (!next.getValue().isEmpty()) {
                         done = false;
                         System.out.println("Waiting for " + next.getValue().size() + " entities of type " + next.getKey());
@@ -231,8 +231,8 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         }
     }
 
-    private ControlledEntityInfo findEntityToControl(List<Integer> types) {
-        for (int next : types) {
+    private ControlledEntityInfo findEntityToControl(List<String> types) {
+        for (String next : types) {
             Queue<ControlledEntityInfo> q = uncontrolledEntities.get(next);
             if (q != null) {
                 ControlledEntityInfo info = q.poll();
@@ -249,7 +249,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         synchronized (agentLock) {
             for (Queue<ControlledEntityInfo> q : uncontrolledEntities.values()) {
                 for (ControlledEntityInfo info : q) {
-                    data.add(info.entity.getType() + " " + info.entity.getID());
+                    data.add(info.entity.getURN() + " " + info.entity.getID());
                 }
             }
         }
@@ -313,7 +313,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         private void handleAKConnect(AKConnect connect, Connection connection) {
             // Pull out the request ID and requested entity type list
             int requestID = connect.getRequestID();
-            List<Integer> types = connect.getRequestedEntityTypes();
+            List<String> types = connect.getRequestedEntityTypes();
             // See if we can find an entity for this agent to control.
             Message reply = null;
             synchronized (agentLock) {
@@ -418,7 +418,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
 
         @Override
         public String toString() {
-            return agent.getName() + ": " + agent.getControlledEntity().getType() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
+            return agent.getName() + ": " + agent.getControlledEntity().getURN() + " " + agent.getControlledEntity().getID() + "(" + connection + " request ID " + requestID + ")";
         }
     }
 

@@ -25,8 +25,8 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.StandardEntityType;
-import rescuecore2.standard.entities.StandardPropertyType;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardPropertyURN;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
@@ -158,7 +158,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
                 // Copy entities and set property values
                 for (StandardEntity next : nearby) {
                     StandardEntity copy = null;
-                    switch ((StandardEntityType)next.getType()) {
+                    StandardEntityURN urn = StandardEntityURN.valueOf(next.getURN());
+                    switch (urn) {
                     case ROAD:
                         copy = (StandardEntity)next.copy();
                         filterRoadProperties((Road)copy);
@@ -212,7 +213,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     private void filterRoadProperties(Road road) {
         // Update BLOCK only
         for (Property next : road.getProperties()) {
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case BLOCK:
                 break;
             default:
@@ -224,7 +226,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     private void filterBuildingProperties(Building building) {
         // Update TEMPERATURE, FIERYNESS and BROKENNESS
         for (Property next : building.getProperties()) {
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case TEMPERATURE:
             case FIERYNESS:
             case BROKENNESS:
@@ -238,7 +241,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     private void filterFarBuildingProperties(Building building) {
         // Update FIERYNESS only
         for (Property next : building.getProperties()) {
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case FIERYNESS:
                 break;
             default:
@@ -250,7 +254,8 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     private void filterHumanProperties(Human human) {
         // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
         for (Property next : human.getProperties()) {
-            switch ((StandardPropertyType)next.getType()) {
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
             case POSITION:
             case POSITION_EXTRA:
             case DIRECTION:
