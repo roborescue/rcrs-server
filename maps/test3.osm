@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="OpenStreetMap server">
+  <node id="16963770" lat="50.9422357" lon="-1.4087226"/>
+  <node id="28194868" lat="50.9422339" lon="-1.4083426"/>
+  <node id="28194866" lat="50.942091" lon="-1.4067297"/>
+  <node id="16963769" lat="50.9420761" lon="-1.4065193"/>
+  <node id="443512586" lat="50.942325" lon="-1.4066842"/>
+  <node id="28194867" lat="50.9431605" lon="-1.4064618"/>
+  <node id="25303929" lat="50.9413254" lon="-1.4066972"/>
+  <node id="443512587" lat="50.9422933" lon="-1.4064834"/>
+  <node id="21507800" lat="50.9425188" lon="-1.4064169"/>
+
+  <way id="1">
+    <nd ref="16963770"/>
+    <nd ref="28194868"/>
+    <nd ref="28194866"/>
+    <nd ref="16963769"/>
+    <tag k="highway" v="residential"/>
+  </way>
+  <way id="2">
+    <nd ref="28194866"/>
+    <nd ref="443512586"/>
+    <nd ref="28194867"/>
+    <tag k="highway" v="residential"/>
+  </way>
+  <way id="3">
+    <nd ref="25303929"/>
+    <nd ref="16963769"/>
+    <nd ref="443512587"/>
+    <nd ref="21507800"/>
+    <tag k="highway" v="residential"/>
+  </way>
+  <way id="4">
+    <nd ref="443512587"/>
+    <nd ref="443512586"/>
+    <tag k="highway" v="residential"/>
+  </way>
+</osm>

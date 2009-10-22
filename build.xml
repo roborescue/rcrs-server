@@ -20,6 +20,7 @@
   <property name="modules.clear.depend" value="rescuecore2,standard"/>
   <property name="modules.traffic3.depend" value="rescuecore2,standard"/>
   <property name="modules.gis2.depend" value="rescuecore2,standard"/>
+  <property name="modules.maps.depend" value="rescuecore2,standard"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
@@ -34,6 +35,9 @@
   <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
   <import file="${modules.dir}/ignition/build.xml" optional="true"/>
   <import file="${modules.dir}/clear/build.xml" optional="true"/>
+  <import file="${modules.dir}/gis2/build.xml" optional="true"/>
+  <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
+  <import file="${modules.dir}/maps/build.xml" optional="true"/>
 
   <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->
