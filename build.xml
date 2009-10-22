@@ -293,15 +293,9 @@
 
   <target name="findbugs" depends="jars, _generate-module-lib-paths" description="Run Findbugs on all modules">
     <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}">
-      <class location="${jar.dir}/kernel.jar"/>
-      <class location="${jar.dir}/rescuecore2.jar"/>
-      <class location="${jar.dir}/standard.jar"/>
-      <class location="${jar.dir}/sample.jar"/>
-      <class location="${jar.dir}/handy.jar"/>
-      <class location="${jar.dir}/human.jar"/>
-      <class location="${jar.dir}/blockade.jar"/>
-      <class location="${jar.dir}/collapse.jar"/>
-      <class location="${jar.dir}/misc.jar"/>
+      <fileset dir="${jar.dir}">
+	<include name="**/*.jar"/>
+      </fileset>
       <auxClasspath refid="path.common"/>
       <auxClasspath refid="path.allmodules.lib"/>
     </findbugs>
