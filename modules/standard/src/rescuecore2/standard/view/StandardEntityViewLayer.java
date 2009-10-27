@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.ArrayList;
 
 import rescuecore2.misc.gui.ScreenTransform;
@@ -19,8 +20,12 @@ import rescuecore2.standard.entities.StandardEntity;
    @param <T> The subclass of StandardEntity that this layer knows how to render.
  */
 public abstract class StandardEntityViewLayer<T extends StandardEntity> extends StandardViewLayer {
+    /**
+       The entities this layer should render.
+    */
+    protected List<T> entities;
+
     private Class<T> clazz;
-    private Collection<T> entities;
 
     /**
        Construct a new StandardViewLayer.
@@ -34,7 +39,9 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
     @Override
     public Rectangle2D view(Object... objects) {
         entities.clear();
-        return super.view(objects);
+        Rectangle2D result = super.view(objects);
+        postView();
+        return result;
     }
 
     @Override
@@ -68,4 +75,10 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
        @return A Shape that represents the hit-box of the rendered entity.
      */
     public abstract Shape render(T entity, Graphics2D graphics, ScreenTransform transform);
+
+    /**
+       Perform any post-processing required after {@link #view} has been called.
+    */
+    protected void postView() {
+    }
 }

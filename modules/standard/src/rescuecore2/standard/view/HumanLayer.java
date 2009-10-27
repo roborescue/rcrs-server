@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
+import java.util.Comparator;
+import java.util.Collections;
+
 import rescuecore2.misc.Pair;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Civilian;
@@ -70,5 +73,23 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         g.setColor(Color.WHITE);
         g.draw(shape);
         return shape;
+    }
+
+    @Override
+    protected void postView() {
+        Collections.sort(entities, new HumanSorter());
+    }
+
+    private static class HumanSorter implements Comparator<Human>, java.io.Serializable {
+        @Override
+        public int compare(Human h1, Human h2) {
+            if (h1 instanceof Civilian && !(h2 instanceof Civilian)) {
+                return -1;
+            }
+            if (h2 instanceof Civilian && !(h1 instanceof Civilian)) {
+                return 1;
+            }
+            return h1.getID().getValue() - h2.getID().getValue();
+        }
     }
 }
