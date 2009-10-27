@@ -243,9 +243,9 @@ public class Kernel {
             log.writeRecord(new UpdatesRecord(time, updates));
             long updatesTime = System.currentTimeMillis();
             // Merge updates into world model
-            System.out.println("Broadcasting updates");
             worldModel.merge(updates);
             long mergeTime = System.currentTimeMillis();
+            System.out.println("Broadcasting updates");
             sendUpdatesToViewersAndSimulators(time, updates);
             long broadcastTime = System.currentTimeMillis();
             System.out.println("Timestep " + time + " complete");
