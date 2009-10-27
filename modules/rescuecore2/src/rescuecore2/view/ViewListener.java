@@ -8,8 +8,8 @@ import java.util.List;
 public interface ViewListener {
     /**
        Notification that a set of objects were clicked.
-       @param viewer The WorldModelViewer that was clicked.
+       @param view The ViewComponent that was clicked.
        @param objects The list of objects that were under the click point.
      */
-    void objectsClicked(WorldModelViewer viewer, List<RenderedObject> objects);
+    void objectsClicked(ViewComponent view, List<RenderedObject> objects);
 }

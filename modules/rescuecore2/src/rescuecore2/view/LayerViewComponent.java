@@ -7,19 +7,22 @@ import java.util.Collection;
 import java.util.Collections;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
-   A WorldModelViewer that uses layers.
+   A ViewComponent that uses layers.
  */
-public abstract class LayerWorldModelViewer extends WorldModelViewer {
+public class LayerViewComponent extends ViewComponent {
     private List<ViewLayer> layers;
+    private Object[] data;
+    private Rectangle2D bounds;
 
     /**
-       Construct a new LayerWorldModelViewer.
+       Construct a new LayerViewComponent.
      */
-    public LayerWorldModelViewer() {
+    public LayerViewComponent() {
         layers = new ArrayList<ViewLayer>();
     }
 
@@ -29,6 +32,7 @@ public abstract class LayerWorldModelViewer extends WorldModelViewer {
      */
     public void addLayer(ViewLayer layer) {
         layers.add(layer);
+        computeBounds();
     }
 
     /**
@@ -37,6 +41,7 @@ public abstract class LayerWorldModelViewer extends WorldModelViewer {
      */
     public void removeLayer(ViewLayer layer) {
         layers.remove(layer);
+        computeBounds();
     }
 
     /**
@@ -44,6 +49,14 @@ public abstract class LayerWorldModelViewer extends WorldModelViewer {
      */
     public void removeAllLayers() {
         layers.clear();
+        computeBounds();
+    }
+
+    @Override
+    public void view(Object... objects) {
+        data = objects;
+        computeBounds();
+        super.view(objects);
     }
 
     @Override
@@ -52,7 +65,7 @@ public abstract class LayerWorldModelViewer extends WorldModelViewer {
         prepaint();
         for (ViewLayer next : layers) {
             Graphics2D copy = (Graphics2D)g.create();
-            result.addAll(next.render(copy, transform, width, height, world, commands, updates));
+            result.addAll(next.render(copy, transform, width, height));
         }
         postpaint();
         return result;
@@ -76,5 +89,30 @@ public abstract class LayerWorldModelViewer extends WorldModelViewer {
        Do whatever needs doing after the layers are painted. The default implementation does nothing.
      */
     protected void postpaint() {
+    }
+
+    private void computeBounds() {
+        bounds = null;
+        for (ViewLayer next : layers) {
+            expandBounds(next.view(data));
+        }
+        if (bounds == null) {
+            updateBounds(0, 0, 1, 1);
+        }
+        else {
+            updateBounds(bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+        }
+    }
+
+    private void expandBounds(Rectangle2D next) {
+        if (next == null) {
+            return;
+        }
+        if (bounds == null) {
+            bounds = next;
+        }
+        else {
+            Rectangle2D.union(bounds, next, bounds);
+        }
     }
 }

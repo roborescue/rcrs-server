@@ -10,7 +10,7 @@ import rescuecore2.misc.gui.ListModelList;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
-import rescuecore2.view.WorldModelViewer;
+import rescuecore2.view.ViewComponent;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -57,7 +57,7 @@ public class LogViewer extends JPanel {
     private JList updatesList;
     private ListModelList<Command> commands;
     private ListModelList<Entity> updates;
-    private List<WorldModelViewer> viewers;
+    private List<ViewComponent> viewers;
     private JButton down;
     private JButton up;
     private int maxTime;
@@ -125,7 +125,7 @@ public class LogViewer extends JPanel {
         lists.add(s);
         timestep = new JLabel("Timestep: 0");
         JTabbedPane tabs = new JTabbedPane();
-        for (WorldModelViewer next : viewers) {
+        for (ViewComponent next : viewers) {
             tabs.addTab(next.getViewerName(), next);
         }
         add(tabs, BorderLayout.CENTER);
@@ -160,7 +160,7 @@ public class LogViewer extends JPanel {
                 updates.addAll(updatesRecord.getEntities());
             }
             WorldModel<? extends Entity> model = log.getWorldModel(time);
-            for (WorldModelViewer next : viewers) {
+            for (ViewComponent next : viewers) {
                 next.view(model, commandsRecord == null ? null : commandsRecord.getCommands(), updatesRecord == null ? null : updatesRecord.getEntities());
                 next.repaint();
             }
@@ -177,9 +177,9 @@ public class LogViewer extends JPanel {
     }
 
     private void registerViewers(Config config) {
-        viewers = new ArrayList<WorldModelViewer>();
+        viewers = new ArrayList<ViewComponent>();
         for (String next : config.getArrayValue(VIEWERS_KEY)) {
-            WorldModelViewer viewer = instantiate(next, WorldModelViewer.class);
+            ViewComponent viewer = instantiate(next, ViewComponent.class);
             if (viewer != null) {
                 viewer.initialise(config);
                 viewers.add(viewer);

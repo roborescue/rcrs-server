@@ -15,9 +15,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.messages.Command;
 import rescuecore2.config.Config;
 import rescuecore2.misc.gui.PanZoomListener;
 import rescuecore2.misc.gui.ScreenTransform;
@@ -25,47 +22,36 @@ import rescuecore2.misc.gui.ScreenTransform;
 /**
    A JComponent that shows a view of a world model.
  */
-public abstract class WorldModelViewer extends JComponent {
+public abstract class ViewComponent extends JComponent {
     private static final Color BACKGROUND = new Color(0x1B898D);
-
-    /** The world model. */
-    protected WorldModel<? extends Entity> world;
-
-    /** The current commands. */
-    protected Collection<Command> commands;
-
-    /** The updates. */
-    protected Collection<Entity> updates;
 
     private PanZoomListener panZoom;
     private ScreenTransform transform;
 
-    private List<RenderedObject> objects;
+    private List<RenderedObject> renderedObjects;
     private Set<ViewListener> listeners;
 
     /**
-       Construct a new WorldModelViewer.
+       Construct a new ViewComponent.
      */
-    public WorldModelViewer() {
-        objects = new ArrayList<RenderedObject>();
+    protected ViewComponent() {
+        renderedObjects = new ArrayList<RenderedObject>();
         listeners = new HashSet<ViewListener>();
         addMouseListener(new ViewerMouseListener());
         panZoom = new PanZoomListener(this);
         setBackground(BACKGROUND);
-        commands = new HashSet<Command>();
-        updates = new HashSet<Entity>();
     }
 
     /**
-       Initialise this viewer. The default implementation does nothing.
+       Initialise this view component. Default implementation does nothing.
        @param config The system configuration.
     */
     public void initialise(Config config) {
     }
 
     /**
-       Get the name of this viewer. Default implementation just calls toString.
-       @return The name of this viewer.
+       Get the name of this view component. Default implementation calls toString().
+       @return The name of this view component.
     */
     public String getViewerName() {
         return toString();
@@ -112,35 +98,25 @@ public abstract class WorldModelViewer extends JComponent {
     }
 
     /**
-       View a world model, command list and update list.
-       @param newModel The new world model.
-       @param newCommands The new commands list.
-       @param newUpdates The new updates list.
+       View a set of objects. Default implementation just calls repaint.
+       @param objects The objects to view.
      */
-    public void view(WorldModel<? extends Entity> newModel, Collection<Command> newCommands, Collection<Entity> newUpdates) {
-        this.world = newModel;
-        commands.clear();
-        if (newCommands != null) {
-            commands.addAll(newCommands);
-        }
-        updates.clear();
-        if (newUpdates != null) {
-            updates.addAll(newUpdates);
-        }
+    public void view(Object... objects) {
+        repaint();
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public final void paintComponent(Graphics g) {
         super.paintComponent(g);
         int width = getWidth();
         int height = getHeight();
         Insets insets = getInsets();
         width -= insets.left + insets.right;
         height -= insets.top + insets.bottom;
-        objects.clear();
+        renderedObjects.clear();
         transform.rescale(width, height);
         Graphics2D copy = (Graphics2D)g.create(insets.left, insets.top, width, height);
-        objects.addAll(render(copy, transform, width, height));
+        renderedObjects.addAll(render(copy, transform, width, height));
     }
 
     /**
@@ -156,7 +132,7 @@ public abstract class WorldModelViewer extends JComponent {
     // CHECKSTYLE:ON:HiddenField
 
     /**
-       Update the bounds of the viewed model.
+       Update the bounds of the view in world coordinates.
        @param xMin The minimum x coordinate.
        @param yMin The minimum y coordinate.
        @param xMax The maximum x coordinate.
@@ -169,7 +145,7 @@ public abstract class WorldModelViewer extends JComponent {
 
     private List<RenderedObject> getObjectsAtPoint(int x, int y) {
         List<RenderedObject> result = new ArrayList<RenderedObject>();
-        for (RenderedObject next : objects) {
+        for (RenderedObject next : renderedObjects) {
             if (next.getShape().contains(x, y)) {
                 result.add(next);
             }
