@@ -19,13 +19,19 @@ public abstract class Edge extends MotionlessObject {
   public void setTail(int value)   { m_tail = value; }
   public void setLength(int value) { m_length = value; }
 
-  public void input(int property, int[] value) {
-    switch(property) {
-    default: super.input(property, value);      break;
-    case RescueConstants.PROPERTY_HEAD:   setHead(value[0]);    break;
-    case RescueConstants.PROPERTY_TAIL:   setTail(value[0]);    break;
-    case RescueConstants.PROPERTY_LENGTH: setLength(value[0]);  break;
-    }
+  public void input(String property, int[] value) {
+      if ("HEAD".equals(property)) {
+          setHead(value[0]);
+      }
+      else if ("TAIL".equals(property)) {
+          setTail(value[0]);
+      }
+      else if ("LENGTH".equals(property)) {
+          setLength(value[0]);
+      }
+      else {
+          super.input(property, value);
+      }
   }
 
   public int x() { return (head().x() + tail().x()) / 2; }

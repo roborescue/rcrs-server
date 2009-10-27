@@ -4,7 +4,7 @@ import rescuecore.RescueConstants;
 
 public class Car extends Humanoid {
   public Car(int id) { super(id); }
-  public int type() { return RescueConstants.TYPE_CAR; }
+  public String type() { return "CAR"; }
 
   public double maxAcceleration() { return MAX_ACCELERATION; }
   public double maxVelocity()     { return MAX_VELOCITY; }

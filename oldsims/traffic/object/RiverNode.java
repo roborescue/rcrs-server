@@ -4,5 +4,5 @@ import rescuecore.RescueConstants;
 
 public class RiverNode extends Vertex {
   public RiverNode(int id) { super(id); }
-  public int type() { return RescueConstants.TYPE_RIVER_NODE; }
+  public String type() { return "RIVER_NODE"; }
 }

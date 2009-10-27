@@ -166,13 +166,18 @@ public class Viewer extends JFrame implements Constants {
       int x = mv.x();  int y = mv.y();
       if (lane instanceof Lane) { x += lane.dx;  y += lane.dy; }
       x = this.x(x);  y = this.y(y);
-      Color color;
-      switch (mv.type()) {
-      default:                   color = Color.black;   break;
-      case RescueConstants.TYPE_CIVILIAN:        color = Color.green;   break;
-      case RescueConstants.TYPE_AMBULANCE_TEAM:  color = Color.white;   break;
-      case RescueConstants.TYPE_FIRE_BRIGADE:    color = Color.red;    break;
-      case RescueConstants.TYPE_POLICE_FORCE:    color = Color.blue;  break;
+      Color color = Color.black;
+      if ("CIVILIAN".equals(mv.type())) {
+          color = Color.green;
+      }
+      else if ("AMBULANCE_TEAM".equals(mv.type())) {
+          color = Color.white;
+      }
+      else if ("FIRE_BRIGADE".equals(mv.type())) {
+          color = Color.red;
+      }
+      else if ("POLICE_FORCE".equals(mv.type())) {
+          color = Color.blue;
       }
       g.setColor(color);
       g.fillOval(x - VIEWER_HUMANOID_SIZE / 2, y - VIEWER_HUMANOID_SIZE / 2, VIEWER_HUMANOID_SIZE, VIEWER_HUMANOID_SIZE);

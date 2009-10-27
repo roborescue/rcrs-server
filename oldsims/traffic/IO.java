@@ -35,7 +35,7 @@ public abstract class IO implements Constants {
 	public void sendConnect() {
 		System.out.println("connecting");
 		OutputBuffer out = new OutputBuffer();
-		out.writeInt(RescueConstants.SK_CONNECT);
+		out.writeString("SK_CONNECT");
 		out.writeInt((RescueConstants.INT_SIZE * 3) + NAME.length()); // Size
 		out.writeInt(REQUEST_ID);
 		out.writeInt(VERSION);
@@ -50,31 +50,30 @@ public abstract class IO implements Constants {
 		while (now < end) {
 			byte[] data = receive();
 			InputBuffer in = new InputBuffer(data);
-			int header = in.readInt();
-			while (header!=RescueConstants.HEADER_NULL) {
+			String urn = in.readString();
+			while (!"".equals(urn)) {
 				int size = in.readInt();
-				switch (header) {
-				case RescueConstants.KS_CONNECT_OK:
-					System.out.println("initializing");
-					int requestId = in.readInt();
-                                        simID = in.readInt();
-                                        if (requestId != REQUEST_ID) {
-                                            System.out.println("Received unexpected connect ok: expecting request ID of " + REQUEST_ID + " but got " + requestId);
-                                            System.exit(-3);
-                                        }
-					WORLD.update(in, INITIALIZING_TIME);
-					WORLD.initialize();
-					return simID;
-				case RescueConstants.KS_CONNECT_ERROR:
-					System.out.println("KS_CONNECT_ERROR: "+in.readString());
-					System.exit(-1);
-					break;
-				default:
-					in.skip(size);
-					System.err.println("I don't know how to deal with "+header);
-					break;
+                                if ("KS_CONNECT_OK".equals(urn)) {
+                                    System.out.println("initializing");
+                                    int requestId = in.readInt();
+                                    simID = in.readInt();
+                                    if (requestId != REQUEST_ID) {
+                                        System.out.println("Received unexpected connect ok: expecting request ID of " + REQUEST_ID + " but got " + requestId);
+                                        System.exit(-3);
+                                    }
+                                    WORLD.update(in, INITIALIZING_TIME);
+                                    WORLD.initialize();
+                                    return simID;
+                                }
+                                else if ("KS_CONNECT_ERROR".equals(urn)) {
+                                    System.out.println("KS_CONNECT_ERROR: "+in.readString());
+                                    System.exit(-1);
+                                }
+                                else {
+                                    in.skip(size);
+                                    System.err.println("I don't know how to deal with "+urn);
 				}
-				header = in.readInt();
+                                urn = in.readString();
 			}
 		}
 		System.err.println("Timeout connecting to kernel");
@@ -84,7 +83,7 @@ public abstract class IO implements Constants {
 
     public void sendAcknowledge() {
 		OutputBuffer out = new OutputBuffer();
-		out.writeInt(RescueConstants.SK_ACKNOWLEDGE);
+		out.writeString("SK_ACKNOWLEDGE");
 		out.writeInt(RescueConstants.INT_SIZE * 2); // Size
 		out.writeInt(REQUEST_ID);
 		out.writeInt(simID);
@@ -93,27 +92,27 @@ public abstract class IO implements Constants {
 	}
 
 	public void receiveCommands() {
-		byte[] data = receive();
-		InputBuffer in = new InputBuffer(data);
-		int type = in.readInt();
-		if (type==RescueConstants.HEADER_NULL) return;
-		int size = in.readInt();
-		if (type!=RescueConstants.COMMANDS) {
-			System.out.println("I don't know how to deal with "+type);
-			in.skip(size);
-		}
-		else {
-                    int id = in.readInt();
-                    if (id == simID) {
-                        WORLD.parseCommands(in);
-                    }
+            byte[] data = receive();
+            InputBuffer in = new InputBuffer(data);
+            String urn = in.readString();
+            if ("".equals(urn)) return;
+            int size = in.readInt();
+            if (!"COMMANDS".equals(urn)) {
+                System.out.println("I don't know how to deal with "+urn);
+                in.skip(size);
+            }
+            else {
+                int id = in.readInt();
+                if (id == simID) {
+                    WORLD.parseCommands(in);
                 }
+            }
 	}
 
 	public void sendUpdate() {
 		System.out.println("Sending update");
 		OutputBuffer out = new OutputBuffer();
-		out.writeInt(RescueConstants.SK_UPDATE);
+		out.writeString("SK_UPDATE");
 
 		OutputBuffer temp = new OutputBuffer();
 		temp.writeInt(simID);
@@ -140,19 +139,19 @@ public abstract class IO implements Constants {
 	public void receiveUpdate() {
 		byte[] data = receive();
 		InputBuffer in = new InputBuffer(data);
-		int type = in.readInt();
-		if (type==RescueConstants.HEADER_NULL) return;
+		String urn = in.readString();
+		if ("".equals(urn)) return;
 		int size = in.readInt();
-		if (type!=RescueConstants.UPDATE) {
-			System.out.println("I don't know how to deal with "+type);
-			in.skip(size);
+		if (!"UPDATE".equals(urn)) {
+                    System.out.println("I don't know how to deal with "+urn);
+                    in.skip(size);
 		}
 		else {
-                        int id = in.readInt();
-			int time = in.readInt();
-                        if (id == simID) {
-                            WORLD.update(in,time);
-                        }
+                    int id = in.readInt();
+                    int time = in.readInt();
+                    if (id == simID) {
+                        WORLD.update(in,time);
+                    }
 		}
 	}
 }

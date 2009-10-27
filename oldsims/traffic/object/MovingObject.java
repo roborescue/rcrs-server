@@ -12,8 +12,6 @@ public abstract class MovingObject extends RealObject implements Obstruction {
 
     private int m_position;
     private double m_positionExtra;
-    // private int m_direction;
-    // private int[] m_positionHistory;
     private Route m_routePlan;
 
     public void setRoutePlan(Route route) {
@@ -66,15 +64,11 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         return m_positionExtra;
     }
 
-    // public int direction() { return m_direction; }
-    // public int[] positionHistory() { return m_positionHistory; }
     public void setPosition(int value) {
         if (!WORLD.isInitialized()) {
             m_position = value;
             copeWithBugOfGISInitilizer(m_positionExtra);
         }
-        // if(ASSERT)Util.myassert(!WORLD.isInitialized() || value == m_submitedPos,
-        // "position received from kernel missmatch internal position of simulater.");
     }
 
     public void setPositionExtra(int value) {
@@ -98,13 +92,9 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                     + ((position() instanceof Road)
                             ? ", length:" + ((Road) position()).length()
                             : "")));
-            // Util.myassert(!WORLD.isInitialized() || value == m_submitedPosEx,
-            // "positionExtra received from kernel missmatch internal positionExtra of simulater.");
         }
     }
 
-    // public void setDirection(int value) { m_direction = value; }
-    // public void setPositionHistory(int[] value) { m_positionHistory = value; }
     public void copeWithBugOfGISInitilizer(double posEx) {
         if (position() instanceof Building || position() instanceof Node
                 || position() instanceof AmbulanceTeam) {
@@ -120,19 +110,15 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         }
     }
 
-    public void input(int property, int[] value) {
-        switch (property) {
-            default :
-                super.input(property, value);
-                break;
-            case RescueConstants.PROPERTY_POSITION :
-                setPosition(value[0]);
-                break;
-            case RescueConstants.PROPERTY_POSITION_EXTRA :
-                setPositionExtra(value[0]);
-                break;
-        // case PROPERTY_DIRECTION: setDirection(value[0]); break;
-        // case PROPERTY_POSITION_HISTORY: setPositionHistory(value); break;
+    public void input(String property, int[] value) {
+        if ("POSITION".equals(property)) {
+            setPosition(value[0]);
+        }
+        else if ("POSITION_EXTRA".equals(property)) {
+            setPositionExtra(value[0]);
+        }
+        else {
+            super.input(property, value);
         }
     }
 
@@ -161,23 +147,23 @@ public abstract class MovingObject extends RealObject implements Obstruction {
     }
 
     public void output(OutputBuffer out) {
-		out.writeInt(type());
+		out.writeString(type());
 		out.writeInt(id);
 		OutputBuffer temp = new OutputBuffer();
 		if (lastMovingTime() == WORLD.time() || m_lastLoadedOrUnloadedTime == WORLD.time()) {
 			m_submitedPos = m_position;
 			m_submitedPosEx = roundedPositionExtra();
-			temp.writeInt(RescueConstants.PROPERTY_POSITION);
+			temp.writeString("POSITION");
 			temp.writeInt(RescueConstants.INT_SIZE);
 			temp.writeInt(m_submitedPos);
-			temp.writeInt(RescueConstants.PROPERTY_POSITION_EXTRA);
+			temp.writeString("POSITION_EXTRA");
 			temp.writeInt(RescueConstants.INT_SIZE);
 			temp.writeInt(m_submitedPosEx);
 		}
 		if (lastMovingTime() == WORLD.time()) {
 			// NOTE: keep structure of positionHistory of the Atsumi traffic simulator; it is a
 			// list of node IDs.
-			temp.writeInt(RescueConstants.PROPERTY_POSITION_HISTORY);
+			temp.writeString("POSITION_HISTORY");
 			int[] history = new int[routePlan().size()];
 			int count = 0;
 			Iterator it = routePlan().iterator();
@@ -198,11 +184,11 @@ public abstract class MovingObject extends RealObject implements Obstruction {
 			for (int i=0;i<count;++i) temp.writeInt(history[i]);
 		}
 		else if (lastMovingTime() == WORLD.time() - 1) {
-			temp.writeInt(RescueConstants.PROPERTY_POSITION_HISTORY);
+			temp.writeString("POSITION_HISTORY");
 			temp.writeInt(RescueConstants.INT_SIZE);
 			temp.writeInt(0);
 		}
-		temp.writeInt(RescueConstants.PROPERTY_NULL);
+		temp.writeString("");
 		byte[] bytes = temp.getBytes();
 		out.writeInt(bytes.length);
 		out.writeBytes(bytes);
@@ -1047,28 +1033,28 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             System.out.print(str);
     }
 
-    public String stringOfPlan() {
-        StringBuffer result = new StringBuffer().append("{");
-        for (int i = 0; i < m_routePlan.size(); i++) {
-            if (i == m_routeIndex)
-                result.append("<< ");
-            if (i == m_routePlan.indexOfDestination())
-                result.append("[");
-            MotionlessObject m = m_routePlan.get(i);
-            if (m instanceof Building)
-                result.append("B").append(m.id);
-            else if (m instanceof Node)
-                result.append("N").append(m.id);
-            else if (m instanceof Road)
-                result.append("R(").append(((Road) m).head().id).append(")").append(m.id).append(
-                        "(").append(((Road) m).tail().id).append(")");
-            if (i == m_routePlan.indexOfDestination())
-                result.append("]");
-            if (i == m_maxMarkingRouteIndex)
-                result.append(" >>");
-            if (i < m_routePlan.size() - 1)
-                result.append(", ");
-        }
-        return result.append("}").toString();
+public String stringOfPlan() {
+    StringBuffer result = new StringBuffer().append("{");
+    for (int i = 0; i < m_routePlan.size(); i++) {
+        if (i == m_routeIndex)
+            result.append("<< ");
+        if (i == m_routePlan.indexOfDestination())
+            result.append("[");
+        MotionlessObject m = m_routePlan.get(i);
+        if (m instanceof Building)
+            result.append("B").append(m.id);
+        else if (m instanceof Node)
+            result.append("N").append(m.id);
+        else if (m instanceof Road)
+            result.append("R(").append(((Road) m).head().id).append(")").append(m.id).append(
+                                                                                             "(").append(((Road) m).tail().id).append(")");
+        if (i == m_routePlan.indexOfDestination())
+            result.append("]");
+        if (i == m_maxMarkingRouteIndex)
+            result.append(" >>");
+        if (i < m_routePlan.size() - 1)
+            result.append(", ");
     }
+    return result.append("}").toString();
+}
 }

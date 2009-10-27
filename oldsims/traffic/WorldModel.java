@@ -82,8 +82,8 @@ public class WorldModel implements Constants {
         m_time = time;
         int count = in.readInt();
         for (int i = 0; i < count; ++i) {
-            int type = in.readInt();
-            if (type==RescueConstants.TYPE_NULL) return;
+            String type = in.readString();
+            if ("".equals(type)) return;
             int id = in.readInt();
             int size = in.readInt();
             RescueObject obj = get(id);
@@ -92,134 +92,89 @@ public class WorldModel implements Constants {
                 if (obj instanceof RealObject)
                     add((RealObject) obj);
             }
-            int prop;
-            while ((prop = in.readInt()) != RescueConstants.PROPERTY_NULL) {
-                setProperty(prop, in, obj);
+            String prop = null;
+            while (!"".equals(prop)) {
+                prop = in.readString();
+                if (!"".equals(prop)) {
+                    setProperty(prop, in, obj);
+                }
             }
         }
     }
 
-    private RescueObject newRescueObject(int type, int id) {
-        RescueObject obj;
-        switch (type) {
-		default :
-			if (ASSERT)
-				Util.myassert(false, "illeagle object type", type);
-		case RescueConstants.TYPE_WORLD :
-			obj = new World(id);
-			break;
-		case RescueConstants.TYPE_RIVER :
-			obj = new River(id);
-			break;
-		case RescueConstants.TYPE_RIVER_NODE :
-			obj = new RiverNode(id);
-			break;
-		case RescueConstants.TYPE_ROAD :
-			obj = new Road(id);
-			break;
-		case RescueConstants.TYPE_NODE :
-			obj = new Node(id);
-			break;
-		case RescueConstants.TYPE_BUILDING :
-			obj = new Building(id);
-			break;
-		case RescueConstants.TYPE_AMBULANCE_CENTER :
-			obj = new AmbulanceCenter(id);
-			break;
-		case RescueConstants.TYPE_FIRE_STATION :
-			obj = new FireStation(id);
-			break;
-		case RescueConstants.TYPE_POLICE_OFFICE :
-			obj = new PoliceOffice(id);
-			break;
-		case RescueConstants.TYPE_REFUGE :
-			obj = new Refuge(id);
-			break;
-		case RescueConstants.TYPE_CIVILIAN :
-			obj = new Civilian(id);
-			break;
-		case RescueConstants.TYPE_AMBULANCE_TEAM :
-			obj = new AmbulanceTeam(id);
-			break;
-		case RescueConstants.TYPE_FIRE_BRIGADE :
-			obj = new FireBrigade(id);
-			break;
-		case RescueConstants.TYPE_POLICE_FORCE :
-			obj = new PoliceForce(id);
-			break;
-		case RescueConstants.TYPE_CAR :
-			obj = new Car(id);
-			break;
+    private RescueObject newRescueObject(String type, int id) {
+        if ("WORLD".equals(type)) {
+            return new World(id);
         }
-        return obj;
+        else if ("RIVER".equals(type)) {
+            return new River(id);
+        }
+        else if ("RIVER_NODE".equals(type)) {
+            return new RiverNode(id);
+        }
+        else if ("ROAD".equals(type)) {
+            return new Road(id);
+        }
+        else if ("NODE".equals(type)) {
+            return new Node(id);
+        }
+        else if ("BUILDING".equals(type)) {
+            return new Building(id);
+        }
+        else if ("AMBULANCE_CENTRE".equals(type)) {
+            return new AmbulanceCenter(id);
+        }
+        else if ("FIRE_STATION".equals(type)) {
+            return new FireStation(id);
+        }
+        else if ("POLICE_OFFICE".equals(type)) {
+            return new PoliceOffice(id);
+        }
+        else if ("REFUGE".equals(type)) {
+            return new Refuge(id);
+        }
+        else if ("CIVILIAN".equals(type)) {
+            return new Civilian(id);
+        }
+        else if ("AMBULANCE_TEAM".equals(type)) {
+            return new AmbulanceTeam(id);
+        }
+        else if ("FIRE_BRIGADE".equals(type)) {
+            return new FireBrigade(id);
+        }
+        else if ("POLICE_FORCE".equals(type)) {
+            return new PoliceForce(id);
+        }
+        else if ("CAR".equals(type)) {
+            return new Car(id);
+        }
+        else {
+            if (ASSERT) {
+                Util.myassert(false, "illeagle object type", type);
+            }
+            return null;
+        }
     }
 
-    private void setProperty(int property, InputBuffer data, RescueObject obj) {
-		int size = data.readInt();
-		int[] val = null;
-		switch (property) {
-		case RescueConstants.PROPERTY_START_TIME:
-		case RescueConstants.PROPERTY_LONGITUDE:
-		case RescueConstants.PROPERTY_LATITUDE:
-		case RescueConstants.PROPERTY_WIND_FORCE:
-		case RescueConstants.PROPERTY_WIND_DIRECTION:
-		case RescueConstants.PROPERTY_X:
-		case RescueConstants.PROPERTY_Y:
-		case RescueConstants.PROPERTY_DIRECTION:
-		case RescueConstants.PROPERTY_POSITION:
-		case RescueConstants.PROPERTY_POSITION_EXTRA:
-		case RescueConstants.PROPERTY_STAMINA:
-		case RescueConstants.PROPERTY_HP:
-		case RescueConstants.PROPERTY_DAMAGE:
-		case RescueConstants.PROPERTY_BURIEDNESS:
-		case RescueConstants.PROPERTY_FLOORS:
-		case RescueConstants.PROPERTY_BUILDING_ATTRIBUTES:
-		case RescueConstants.PROPERTY_IGNITION:
-		case RescueConstants.PROPERTY_BROKENNESS:
-		case RescueConstants.PROPERTY_FIERYNESS:
-			//		case RescueConstants.PROPERTY_BUILDING_SHAPE_ID:
-		case RescueConstants.PROPERTY_BUILDING_CODE:
-		case RescueConstants.PROPERTY_BUILDING_AREA_GROUND:
-		case RescueConstants.PROPERTY_BUILDING_AREA_TOTAL:
-		case RescueConstants.PROPERTY_WATER_QUANTITY:
-			//		case RescueConstants.PROPERTY_STRETCHED_LENGTH:
-		case RescueConstants.PROPERTY_HEAD:
-		case RescueConstants.PROPERTY_TAIL:
-		case RescueConstants.PROPERTY_LENGTH:
-		case RescueConstants.PROPERTY_ROAD_KIND:
-		case RescueConstants.PROPERTY_CARS_PASS_TO_HEAD:
-		case RescueConstants.PROPERTY_CARS_PASS_TO_TAIL:
-		case RescueConstants.PROPERTY_HUMANS_PASS_TO_HEAD:
-		case RescueConstants.PROPERTY_HUMANS_PASS_TO_TAIL:
-		case RescueConstants.PROPERTY_WIDTH:
-		case RescueConstants.PROPERTY_BLOCK:
-		case RescueConstants.PROPERTY_REPAIR_COST:
-		case RescueConstants.PROPERTY_MEDIAN_STRIP:
-		case RescueConstants.PROPERTY_LINES_TO_HEAD:
-		case RescueConstants.PROPERTY_LINES_TO_TAIL:
-		case RescueConstants.PROPERTY_WIDTH_FOR_WALKERS:
-		case RescueConstants.PROPERTY_SIGNAL:
-		case RescueConstants.PROPERTY_BUILDING_IMPORTANCE:
-		case RescueConstants.PROPERTY_BUILDING_TEMPERATURE:
-			val = new int[] {data.readInt()};
-			break;
-		case RescueConstants.PROPERTY_EDGES:
-		case RescueConstants.PROPERTY_SIGNAL_TIMING:
-		case RescueConstants.PROPERTY_SHORTCUT_TO_TURN:
-		case RescueConstants.PROPERTY_POCKET_TO_TURN_ACROSS:
-		case RescueConstants.PROPERTY_POSITION_HISTORY:
-		case RescueConstants.PROPERTY_ENTRANCES:
-		case RescueConstants.PROPERTY_BUILDING_APEXES:
-			val = new int[data.readInt()];
-			for (int i=0;i<val.length;++i) val[i] = data.readInt();
-			break;
-		default:
-			System.err.println("Unrecognised property: "+property);
-			data.skip(size);
-			break;
-		}
-		if (val!=null)
-			obj.input(property,val);
+    private void setProperty(String property, InputBuffer data, RescueObject obj) {
+        int size = data.readInt();
+        int[] val = null;
+        if ("EDGES".equals(property)
+            || "SIGNAL_TIMING".equals(property)
+            || "SHORTCUT_TO_TURN".equals(property)
+            || "POCKET_TO_TURN_ACROSS".equals(property)
+            || "POSITION_HISTORY".equals(property)
+            || "ENTRANCES".equals(property)
+            || "BUILDING_APEXES".equals(property)) {
+            val = new int[data.readInt()];
+            for (int i=0;i<val.length;++i) val[i] = data.readInt();
+        }
+        else {
+            val = new int[] {data.readInt()};
+        }
+        if (obj != null) {
+            obj.input(property, val);
+        }
     }
 
     public void shuffleMvObjsArray() {
@@ -236,7 +191,7 @@ public class WorldModel implements Constants {
     public void initialize() {
         m_isInitialized = true;
         m_movingObjectArray = (MovingObject[]) m_movingObjectList
-			.toArray(new MovingObject[m_movingObjectList.size()]);
+        .toArray(new MovingObject[m_movingObjectList.size()]);
         m_movingObjectList = null;
         preCulcLanesAndRoadList();
     }
@@ -279,72 +234,51 @@ public class WorldModel implements Constants {
         m_time = in.readInt();
         int count = in.readInt();
         for (int i = 0;i < count; ++i) {
-            int command = in.readInt();
+            String command = in.readString();
             int size = in.readInt();
-			switch (command) {
-			case RescueConstants.AK_MOVE:
-				parseAK_MOVE(in);
-				break;
-			case RescueConstants.AK_LOAD:
-				parseAK_LOAD(in);
-				break;
-			case RescueConstants.AK_UNLOAD:
-				parseAK_UNLOAD(in);
-				break;
-			default:
-				in.skip(size);
-				break;
-			}
+            if ("AK_MOVE".equals(command)) {
+                parseAK_MOVE(in);
+            }
+            else if ("AK_LOAD".equals(command)) {
+                parseAK_LOAD(in);
+            }
+            else if ("AK_UNLOAD".equals(command)) {
+                parseAK_UNLOAD(in);
+            }
+            else {
+                in.skip(size);
+            }
         }
     }
 
-	/*
-    private void parseAK_MOVEs(InputBuffer in) {
-		int count = in.readInt();
-		for (int i=0;i<count;++i)
-			parseAK_MOVE(in);
-    }
-	*/
-
     private void parseAK_MOVE(InputBuffer in) {
-		//		int size = in.readInt();
         int senderID = in.readInt();
         int time = in.readInt();
-		int length = in.readInt();
-		int[] path = new int[length];
-		for (int i=0;i<length;++i) path[i] = in.readInt();
+        int length = in.readInt();
+        int[] path = new int[length];
+        for (int i=0;i<length;++i) path[i] = in.readInt();
         RealObject sender = get(senderID);
         if (!(sender instanceof Humanoid)) {
             printError(sender, "Wrong sender for moving: " + senderID);
-			return;
+            return;
         }
         Humanoid agent = (Humanoid) sender;
-		//		System.out.println("Agent "+agent.id+" trying to move. Buriedness="+agent.buriedness());
-		if (agent.buriedness()>0) {
-			System.out.println("Ignoring move from buried agent "+agent.id+" (buriedness="+agent.buriedness());
-			return;
-		}
+        //		System.out.println("Agent "+agent.id+" trying to move. Buriedness="+agent.buriedness());
+        if (agent.buriedness()>0) {
+            System.out.println("Ignoring move from buried agent "+agent.id+" (buriedness="+agent.buriedness());
+            return;
+        }
         agent.setLastMovingTime(m_time);
         Route submitedRoute = new Route(length);
         for (int i = 0; i < length; i++)
             submitedRoute.add((MotionlessObject) get(path[i]));
-        agent.setRoutePlan(submitedRoute.checkValidity(agent) ? submitedRoute : Route
-						   .singleObjRoute(agent.motionlessPosition()));
+        agent.setRoutePlan(submitedRoute.checkValidity(agent) ? submitedRoute : Route.singleObjRoute(agent.motionlessPosition()));
     }
-
-	/*
-    private void parseAK_LOADs(InputBuffer in) {
-		int count = in.readInt();
-		for (int i=0;i<count;++i)
-			parseAK_LOAD(in);
-    }
-	*/
 
     private void parseAK_LOAD(InputBuffer in) {
-		//        int size = in.readInt();
         int senderID = in.readInt();
         int time = in.readInt();
-		int targetID = in.readInt();
+        int targetID = in.readInt();
         RealObject sender = get(senderID);
         if (!(sender instanceof AmbulanceTeam)) {
             printError(sender, "Wrong sender for loading: " + senderID);
@@ -361,35 +295,24 @@ public class WorldModel implements Constants {
             return;
         }
         Humanoid mv = (Humanoid) target;
-		if (mv.buriedness()>0) {
-			printError(sender,"The target "+target+" is still buried: "+mv.buriedness());
-		}
+        if (mv.buriedness()>0) {
+            printError(sender,"The target "+target+" is still buried: "+mv.buriedness());
+        }
         if (ambulance.position() == mv.position()
-			|| (!(mv.position() instanceof Building) && (ambulance.position() instanceof Node
-														 && ((Node) ambulance.position()).edges().contains(mv.position()) || ambulance
-														 .position() instanceof Road
-														 && (((Road) ambulance.position()).head() == mv.position() || ((Road) ambulance
-																													   .position()).tail() == mv.position())))) {
+            || (!(mv.position() instanceof Building) && (ambulance.position() instanceof Node
+                                                         && ((Node) ambulance.position()).edges().contains(mv.position()) || ambulance.position() instanceof Road
+                                                         && (((Road) ambulance.position()).head() == mv.position() || ((Road) ambulance.position()).tail() == mv.position())))) {
             ambulance.setLoad(mv);
         }
         else {
             printError(sender, "Wrong position: This AmbulanceTeam's position ("
-					   + ambulance.position().id + ") is not the same position of the target's ("
-					   + mv.position().id + ").");
+                       + ambulance.position().id + ") is not the same position of the target's ("
+                       + mv.position().id + ").");
         }
         return;
     }
 
-	/*
-    private void parseAK_UNLOADs(InputBuffer in) {
-		int count = in.readInt();
-		for (int i=0;i<count;++i)
-			parseAK_UNLOAD(in);
-    }
-	*/
-
     private void parseAK_UNLOAD(InputBuffer in) {
-		//        int size = in.readInt();
         int senderID = in.readInt();
         int time = in.readInt();
         RealObject sender = get(senderID);

@@ -16,12 +16,16 @@ public abstract class PointObject extends MotionlessObject {
   public void setX(int value) { m_x = value; }
   public void setY(int value) { m_y = value; }
 
-  public void input(int property, int[] value) {
-    switch(property) {
-    default: super.input(property, value); break;
-    case RescueConstants.PROPERTY_X: setX(value[0]);  break;
-    case RescueConstants.PROPERTY_Y: setY(value[0]);  break;
-    }
+  public void input(String property, int[] value) {
+      if ("X".equals(property)) {
+          setX(value[0]);
+      }
+      else if ("Y".equals(property)) {
+          setY(value[0]);
+      }
+      else {
+          super.input(property, value);
+      }
   }
 
   public abstract HashSet links();

@@ -4,7 +4,7 @@ import rescuecore.RescueConstants;
 
 public class AmbulanceTeam extends Humanoid {
   public AmbulanceTeam(int id) { super(id); }
-  public int type() { return RescueConstants.TYPE_AMBULANCE_TEAM; }
+  public String type() { return "AMBULANCE_TEAM"; }
 
   private MovingObject m_loadingMvObj = null;
   private boolean m_doLoad   = false;
