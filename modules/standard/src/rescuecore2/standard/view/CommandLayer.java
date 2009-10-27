@@ -4,14 +4,10 @@ import rescuecore2.messages.Command;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.DrawingTools;
 import rescuecore2.misc.gui.ScreenTransform;
-import rescuecore2.view.ViewLayer;
 import rescuecore2.view.RenderedObject;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.messages.AKClear;
@@ -28,11 +24,12 @@ import java.awt.Shape;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 /**
    A layer for viewing commands.
  */
-public class CommandLayer implements ViewLayer {
+public class CommandLayer extends StandardViewLayer {
     private static final int SIZE = 15;
     private static final Color CLEAR_COLOUR = new Color(0, 0, 255, 128);
     private static final Color RESCUE_COLOUR = new Color(255, 255, 255, 128);
@@ -42,14 +39,34 @@ public class CommandLayer implements ViewLayer {
     private static final double ARROW_ANGLE = Math.toRadians(135);
     private static final double ARROW_LENGTH = 5;
 
-    private StandardWorldModel world;
     private Graphics2D g;
     private ScreenTransform t;
+    private Collection<Command> commands;
+
+    /**
+       Construct a new CommandLayer.
+    */
+    public CommandLayer() {
+        commands = new ArrayList<Command>();
+    }
 
     @Override
-    public Collection<RenderedObject> render(Graphics2D graphics, ScreenTransform transform, int width, int height, WorldModel<? extends Entity> worldModel, Collection<Command> commands, Collection<Entity> updates) {
+    public Rectangle2D view(Object... objects) {
+        commands.clear();
+        return super.view(objects);
+    }
+
+    @Override
+    protected void viewObject(Object o) {
+        super.viewObject(o);
+        if (o instanceof Command) {
+            commands.add((Command)o);
+        }
+    }
+
+    @Override
+    public Collection<RenderedObject> render(Graphics2D graphics, ScreenTransform transform, int width, int height) {
         Collection<RenderedObject> result = new ArrayList<RenderedObject>();
-        world = StandardWorldModel.createStandardWorldModel(worldModel);
         g = graphics;
         t = transform;
         for (Command next : commands) {

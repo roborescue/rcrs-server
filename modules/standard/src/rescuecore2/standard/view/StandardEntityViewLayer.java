@@ -2,25 +2,25 @@ package rescuecore2.standard.view;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 
 import java.util.Collection;
 import java.util.ArrayList;
 
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.view.RenderedObject;
-import rescuecore2.view.ViewLayer;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.messages.Command;
+
+import rescuecore2.standard.entities.StandardEntity;
 
 /**
    An abstract base class for StandardWorldModel view layers that render standard entities.
    @param <T> The subclass of StandardEntity that this layer knows how to render.
  */
-public abstract class StandardEntityViewLayer<T extends StandardEntity> implements ViewLayer {
+public abstract class StandardEntityViewLayer<T extends StandardEntity> extends StandardViewLayer {
     private Class<T> clazz;
+    private Collection<T> entities;
 
     /**
        Construct a new StandardViewLayer.
@@ -28,16 +28,34 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> implemen
      */
     protected StandardEntityViewLayer(Class<T> clazz) {
         this.clazz = clazz;
+        entities = new ArrayList<T>();
     }
 
     @Override
-    public Collection<RenderedObject> render(Graphics2D g, ScreenTransform transform, int width, int height, WorldModel<? extends Entity> world, Collection<Command> commands, Collection<Entity> updates) {
-        Collection<RenderedObject> result = new ArrayList<RenderedObject>();
-        StandardWorldModel model = StandardWorldModel.createStandardWorldModel(world);
-        for (Entity next : model) {
-            if (clazz.isAssignableFrom(next.getClass())) {
-                result.add(new RenderedObject(next, render(clazz.cast(next), g, transform, model)));
+    public Rectangle2D view(Object... objects) {
+        entities.clear();
+        return super.view(objects);
+    }
+
+    @Override
+    protected void viewObject(Object o) {
+        super.viewObject(o);
+        if (clazz.isAssignableFrom(o.getClass())) {
+            entities.add(clazz.cast(o));
+        }
+        if (o instanceof WorldModel) {
+            WorldModel<? extends Entity> wm = (WorldModel<? extends Entity>)o;
+            for (Entity next : wm) {
+                viewObject(next);
             }
+        }
+    }
+
+    @Override
+    public Collection<RenderedObject> render(Graphics2D g, ScreenTransform transform, int width, int height) {
+        Collection<RenderedObject> result = new ArrayList<RenderedObject>();
+        for (T next : entities) {
+            result.add(new RenderedObject(next, render(next, g, transform)));
         }
         return result;
     }
@@ -47,8 +65,7 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> implemen
        @param entity The entity to render.
        @param graphics The graphics to render on.
        @param transform A helpful coordinate transformer.
-       @param world The world model.
        @return A Shape that represents the hit-box of the rendered entity.
      */
-    public abstract Shape render(T entity, Graphics2D graphics, ScreenTransform transform, StandardWorldModel world);
+    public abstract Shape render(T entity, Graphics2D graphics, ScreenTransform transform);
 }

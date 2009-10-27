@@ -1,19 +1,11 @@
 package rescuecore2.standard.view;
 
-import java.util.Collection;
-
-import rescuecore2.view.LayerWorldModelViewer;
-import rescuecore2.misc.Pair;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.messages.Command;
-
-import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.view.LayerViewComponent;
 
 /**
    A viewer for StandardWorldModels.
  */
-public class StandardWorldModelViewer extends LayerWorldModelViewer {
+public class StandardWorldModelViewer extends LayerViewComponent {
     /**
        Construct a standard world model viewer.
      */
@@ -26,26 +18,8 @@ public class StandardWorldModelViewer extends LayerWorldModelViewer {
         return "Standard world model viewer";
     }
 
-    @Override
-    public void view(WorldModel<? extends Entity> model, Collection<Command> commands, Collection<Entity> updates) {
-        // If we already know about the world then don't bother calculating new bounds
-        if (world == model) {
-            super.view(world, commands, updates);
-            return;
-        }
-        super.view(model, commands, updates);
-        StandardWorldModel swm = StandardWorldModel.createStandardWorldModel(model);
-        swm.index();
-        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> bounds = swm.getWorldBounds();
-        double xMin = bounds.first().first();
-        double yMin = bounds.first().second();
-        double xMax = bounds.second().first();
-        double yMax = bounds.second().second();
-        updateBounds(xMin, yMin, xMax, yMax);
-    }
-
     /**
-       Add the default layer set, i.e. nodes, roads, buildings and humans.
+       Add the default layer set, i.e. nodes, roads, buildings, humans and commands.
      */
     public void addDefaultLayers() {
         addLayer(new NodeLayer());

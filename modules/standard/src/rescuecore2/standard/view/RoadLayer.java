@@ -8,7 +8,6 @@ import java.awt.geom.Line2D;
 
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
@@ -25,9 +24,9 @@ public class RoadLayer extends StandardEntityViewLayer<Road> {
     }
 
     @Override
-    public Shape render(Road r, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
-        Node head = (Node)r.getHead(model);
-        Node tail = (Node)r.getTail(model);
+    public Shape render(Road r, Graphics2D g, ScreenTransform t) {
+        Node head = (Node)r.getHead(world);
+        Node tail = (Node)r.getTail(world);
         int headX = t.xToScreen(head.getX());
         int headY = t.yToScreen(head.getY());
         int tailX = t.xToScreen(tail.getX());

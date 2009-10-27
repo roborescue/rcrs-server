@@ -12,7 +12,6 @@ import rescuecore2.standard.entities.FireStation;
 import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.entities.PoliceOffice;
 import rescuecore2.standard.entities.Node;
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
@@ -32,7 +31,7 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     }
 
     @Override
-    public Shape render(Building b, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
+    public Shape render(Building b, Graphics2D g, ScreenTransform t) {
         int[] apexes = b.getApexes();
         int count = apexes.length / 2;
         int[] xs = new int[count];
@@ -108,7 +107,7 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
         int y = t.yToScreen(b.getY());
         g.setColor(Color.LIGHT_GRAY);
         for (EntityID next : b.getEntrances()) {
-            Node n = (Node)model.getEntity(next);
+            Node n = (Node)world.getEntity(next);
             int nx = t.xToScreen(n.getX());
             int ny = t.yToScreen(n.getY());
             g.drawLine(x, y, nx, ny);

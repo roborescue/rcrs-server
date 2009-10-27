@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.awt.geom.Rectangle2D;
+
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.WorldModelListener;
@@ -293,6 +295,17 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             return -1;
         }
         return distance(a, b);
+    }
+
+    /**
+       Get the world bounds.
+       @return A Rectangle2D describing the bounds of the world.
+    */
+    public Rectangle2D getBounds() {
+        if (!indexed) {
+            index();
+        }
+        return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 
     /**

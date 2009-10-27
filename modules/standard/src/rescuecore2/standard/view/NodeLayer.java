@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.misc.gui.ScreenTransform;
 
@@ -23,7 +22,7 @@ public class NodeLayer extends StandardEntityViewLayer<Node> {
     }
 
     @Override
-    public Shape render(Node n, Graphics2D g, ScreenTransform t, StandardWorldModel world) {
+    public Shape render(Node n, Graphics2D g, ScreenTransform t) {
         int x = t.xToScreen(n.getX()) - (SIZE / 2);
         int y = t.yToScreen(n.getY()) - (SIZE / 2);
         g.setColor(Color.BLACK);

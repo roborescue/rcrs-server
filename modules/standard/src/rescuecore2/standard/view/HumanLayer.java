@@ -11,7 +11,6 @@ import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
@@ -32,8 +31,8 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     }
 
     @Override
-    public Shape render(Human h, Graphics2D g, ScreenTransform t, StandardWorldModel model) {
-        Pair<Integer, Integer> location = h.getLocation(model);
+    public Shape render(Human h, Graphics2D g, ScreenTransform t) {
+        Pair<Integer, Integer> location = h.getLocation(world);
         int x = t.xToScreen(location.first()) - SIZE / 2;
         int y = t.yToScreen(location.second()) - SIZE / 2;
         Shape shape = new Ellipse2D.Double(x, y, SIZE, SIZE);
