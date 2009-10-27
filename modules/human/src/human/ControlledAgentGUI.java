@@ -7,7 +7,7 @@ import rescuecore2.components.Agent;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.view.WorldModelViewer;
+import rescuecore2.view.ViewComponent;
 import rescuecore2.view.ViewListener;
 import rescuecore2.view.RenderedObject;
 import rescuecore2.messages.control.Commands;
@@ -99,7 +99,7 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
         main.add(viewer, BorderLayout.CENTER);
         viewer.addViewListener(new ViewListener() {
                 @Override
-                public void objectsClicked(WorldModelViewer view, List<RenderedObject> objects) {
+                public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
                     handleClick(objects);
                 }
             });
