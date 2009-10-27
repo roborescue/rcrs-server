@@ -3,7 +3,6 @@ package kernel.ui;
 import java.awt.Dimension;
 import javax.swing.JComponent;
 
-import rescuecore2.view.WorldModelViewer;
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import kernel.Kernel;
@@ -18,9 +17,9 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
 
     @Override
     public JComponent getGUIComponent(final Kernel kernel) {
-        final WorldModelViewer viewer = new StandardWorldModelViewer();
+        final StandardWorldModelViewer viewer = new StandardWorldModelViewer();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
-        viewer.view(kernel.getWorldModel(), null, null);
+        viewer.view(kernel.getWorldModel());
         kernel.addKernelListener(new KernelListenerAdapter() {
                 @Override
                 public void timestepCompleted(Timestep time) {
