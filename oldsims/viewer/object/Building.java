@@ -67,21 +67,26 @@ public class Building extends PointObject {
   public void setBuildingApexes(int[] value)  { m_buildingApexes = value; }
   public void setBuildingImportance(int value) { m_importance=value; }
 
-  public void input(int property, int[] value) {
-    switch(property) {
-      default: super.input(property, value); break;
-	//case PROPERTY_FLOORS:              setFloors(value[0]);            break;
-	//case PROPERTY_BUILDING_ATTRIBUTES: setBuildingAttributes(value[0]);break;
-	//case PROPERTY_IGNITION:            setIgnition(value[0]);          break;
-      case RescueConstants.PROPERTY_FIERYNESS:           setFieryness(value[0]);         break;
-      case RescueConstants.PROPERTY_BROKENNESS:          setBrokenness(value[0]);        break;
-      case RescueConstants.PROPERTY_ENTRANCES:           setEntrances(value);            break;
-	//case PROPERTY_BUILDING_CODE:       setBuildingCode(value[0]);      break;
-	//case PROPERTY_BUILDING_AREA_GROUND:setBuildingAreaGround(value[0]);break;
-      case RescueConstants.PROPERTY_BUILDING_AREA_TOTAL: setBuildingAreaTotal(value[0]); break;
-      case RescueConstants.PROPERTY_BUILDING_APEXES:     setBuildingApexes(value);       break;
-	case RescueConstants.PROPERTY_BUILDING_IMPORTANCE: setBuildingImportance(value[0]); break;
-    }
+  public void input(String property, int[] value) {
+      if ("FIERYNESS".equals(property)) {
+          setFieryness(value[0]);
+      }
+      if ("BROKENNESS".equals(property)) {
+          setBrokenness(value[0]);
+      }
+      if ("ENTRANCES".equals(property)) {
+          setEntrances(value);
+      }
+      if ("BUILDING_AREA_TOTAL".equals(property)) {
+          setBuildingAreaTotal(value[0]);
+      }
+      if ("BUILDING_APEXES".equals(property)) {
+          setBuildingApexes(value);
+      }
+      if ("BUILDING_IMPORTANCE".equals(property)) {
+          setBuildingImportance(value[0]);
+      }
+      super.input(property, value);
   }
 
   public boolean isNoBurned() { return (fieryness() == 0); }

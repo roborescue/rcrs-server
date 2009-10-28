@@ -13,11 +13,11 @@ public abstract class RealObject extends RescueObject {
 
   // ------------------------------------------------------------------- action
   private int m_lastActingTime = -1;
-  private int m_actionType;
+  private String m_actionType;
   private byte[] m_actionData;
 
-  public int actionType() {
-    return (m_lastActingTime == WORLD.time()) ? m_actionType : -1;
+  public String actionType() {
+    return (m_lastActingTime == WORLD.time()) ? m_actionType : null;
   }
   public InputBuffer actionData() {
     return (m_lastActingTime == WORLD.time())
@@ -25,7 +25,7 @@ public abstract class RealObject extends RescueObject {
       : null;
   }
 
-  public void setAction(int command, byte[] actionData) {
+  public void setAction(String command, byte[] actionData) {
     m_lastActingTime = WORLD.time();
     m_actionType = command;
     m_actionData = actionData;
@@ -41,10 +41,10 @@ public abstract class RealObject extends RescueObject {
   }
 
   public class Communication {
-    public final int command;
+    public final String command;
     private final byte[] m_data;
 
-    public Communication(int command, byte[] communicationData) {
+    public Communication(String command, byte[] communicationData) {
       this.command = command;
       m_data = communicationData;
     }
@@ -54,7 +54,7 @@ public abstract class RealObject extends RescueObject {
     }
   }
 
-  public void setCommunication(int command, byte[] communicationData) {
+  public void setCommunication(String command, byte[] communicationData) {
     m_lastCommunicatingTime = WORLD.time();
     communicationDataList().add(new Communication(command, communicationData));
   }

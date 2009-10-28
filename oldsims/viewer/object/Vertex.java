@@ -24,11 +24,11 @@ public abstract class Vertex extends PointObject {
       m_edges = value;
   }
 
-  public void input(int property, int[] value) {
-    switch(property) {
-    default: super.input(property, value); break;
-    case RescueConstants.PROPERTY_EDGES: setEdges(value);  break;
-    }
+  public void input(String property, int[] value) {
+      if ("EDGES".equals(property)) {
+          setEdges(value);
+      }
+      super.input(property, value);
   }
 
   public boolean isAdjacentTo(MotionlessObject obj)

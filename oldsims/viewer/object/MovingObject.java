@@ -47,14 +47,17 @@ public abstract class MovingObject extends RealObject {
     m_timeUpdatedPositionHistory = WORLD.time();
   }
 
-  public void input(int property, int[] value) {
-    switch(property) {
-      default: super.input(property, value); break;
-      case RescueConstants.PROPERTY_POSITION:         setPosition(value[0]);      break;
-      case RescueConstants.PROPERTY_POSITION_EXTRA:   setPositionExtra(value[0]); break;
-      //case PROPERTY_DIRECTION:        setDirection(value[0]);     break;
-      case RescueConstants.PROPERTY_POSITION_HISTORY: setPositionHistory(value);  break;
-    }
+  public void input(String property, int[] value) {
+      if ("POSITION".equals(property)) {
+          setPosition(value[0]);
+      }
+      if ("POSITION_EXTRA".equals(property)) {
+          setPositionExtra(value[0]);
+      }
+      if ("POSITION_HISTORY".equals(property)) {
+          setPositionHistory(value);
+      }
+      super.input(property, value);
   }
 
   // ------------------------------------------------------------------- Viewer

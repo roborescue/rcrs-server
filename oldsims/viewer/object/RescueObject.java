@@ -10,10 +10,10 @@ public abstract class RescueObject implements Constants {
   public abstract int type();
 
   /** sets a property
-   *  @param property an integer indicating a type of the property
+   *  @param property a urn indicating a type of the property
    *  @param value    value of the property
    */
-  public void input(int property, int[] value) { /* nothing to do */ }
+  public void input(String property, int[] value) { /* nothing to do */ }
 
   public int hashCode() { return id; }
 
