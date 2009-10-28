@@ -23,7 +23,7 @@ import rescuecore2.misc.gui.ScreenTransform;
    A JComponent that shows a view of a world model.
  */
 public abstract class ViewComponent extends JComponent {
-    private static final Color BACKGROUND = new Color(0x1B898D);
+    private static final Color BACKGROUND = new Color(120, 120, 120);
 
     private PanZoomListener panZoom;
     private ScreenTransform transform;
