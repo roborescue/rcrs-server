@@ -38,10 +38,12 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
 
     @Override
     public Rectangle2D view(Object... objects) {
-        entities.clear();
-        Rectangle2D result = super.view(objects);
-        postView();
-        return result;
+        synchronized (entities) {
+            entities.clear();
+            Rectangle2D result = super.view(objects);
+            postView();
+            return result;
+        }
     }
 
     @Override
@@ -60,11 +62,13 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
 
     @Override
     public Collection<RenderedObject> render(Graphics2D g, ScreenTransform transform, int width, int height) {
-        Collection<RenderedObject> result = new ArrayList<RenderedObject>();
-        for (T next : entities) {
-            result.add(new RenderedObject(next, render(next, g, transform)));
+        synchronized (entities) {
+            Collection<RenderedObject> result = new ArrayList<RenderedObject>();
+            for (T next : entities) {
+                result.add(new RenderedObject(next, render(next, g, transform)));
+            }
+            return result;
         }
-        return result;
     }
 
     /**

@@ -34,4 +34,12 @@ public abstract class StandardEntity extends AbstractEntity {
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
         return null;
     }
+
+    /**
+       Get the URN of this entity type as an instanceof StandardEntityURN.
+       @return A StandardEntityURN.
+     */
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.valueOf(getURN());
+    }
 }
