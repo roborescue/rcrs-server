@@ -92,6 +92,7 @@ public class LayerViewComponent extends ViewComponent {
     }
 
     private void computeBounds() {
+        Rectangle2D oldBounds = bounds;
         bounds = null;
         for (ViewLayer next : layers) {
             expandBounds(next.view(data));
@@ -99,7 +100,11 @@ public class LayerViewComponent extends ViewComponent {
         if (bounds == null) {
             updateBounds(0, 0, 1, 1);
         }
-        else {
+        else if (oldBounds == null
+                 || oldBounds.getMinX() != bounds.getMinX()
+                 || oldBounds.getMinY() != bounds.getMinY()
+                 || oldBounds.getMaxX() != bounds.getMaxX()
+                 || oldBounds.getMaxY() != bounds.getMaxY()) {
             updateBounds(bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
         }
     }
