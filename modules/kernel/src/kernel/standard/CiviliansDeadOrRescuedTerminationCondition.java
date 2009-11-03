@@ -21,6 +21,10 @@ public class CiviliansDeadOrRescuedTerminationCondition implements TerminationCo
         for (Entity next : k.getWorldModel()) {
             if (next instanceof Civilian) {
                 Civilian c = (Civilian)next;
+                if (!c.isHPDefined() || !c.isDamageDefined() || !c.isBuriednessDefined() || !c.isPositionDefined()) {
+                    // Civilian with unknown state: we're not ready to stop.
+                    return false;
+                }
                 if (c.getHP() <= 0) {
                     // Dead - ignore
                     continue;
