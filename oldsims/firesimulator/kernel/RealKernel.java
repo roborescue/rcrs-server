@@ -37,10 +37,10 @@ public class RealKernel implements Kernel{
 			e.printStackTrace();
 			System.exit(1);
 		}
-		rio =new RIO(ad,port);
-		int[] data=rio.connect(world);
-		id = data[3];
+		rio = new RIO(ad,port);
+		id = rio.connect(world);
                 System.out.println("Connected to kernel. Simulator ID is " + id);
+                /*
 		if(Configuration.isActive("store")){
 			System.out.println("storing initial data in "+Configuration.getValue("store"));
 			FileOutputStream fos;
@@ -59,6 +59,7 @@ public class RealKernel implements Kernel{
 				e1.printStackTrace();
 			}
 		}
+                */
 	}
 	
 	public void signalReadyness(){

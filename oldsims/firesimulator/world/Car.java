@@ -12,8 +12,8 @@ public class Car extends MovingObject {
 		super(id);
 	}
 
-	public int getType(){
-		return TYPE_CAR;
+	public String getType(){
+		return "CAR";
 	}
 
 }

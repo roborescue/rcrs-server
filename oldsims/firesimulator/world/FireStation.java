@@ -12,8 +12,8 @@ public class FireStation extends Building {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_FIRE_STATION;
+	public String getType(){
+		return "FIRE_STATION";
 	}
 	
 	public boolean isInflameable(){

@@ -13,8 +13,8 @@ public class PoliceOffice extends Building {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_POLICE_OFFICE;
+	public String getType(){
+		return "POLICE_OFFICE";
 	}
 	
 

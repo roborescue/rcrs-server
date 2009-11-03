@@ -12,8 +12,8 @@ public class PoliceForce extends MovingObject {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_POLICE_FORCE;
+	public String getType(){
+		return "POLICE_FORCE";
 	}
 
 }

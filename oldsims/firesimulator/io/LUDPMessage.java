@@ -8,10 +8,10 @@ public class LUDPMessage {
 	
 	int id;
 	int remaining;
-	int[][] parts;
+	byte[][] parts;
 	
 	public LUDPMessage(int id, int size){
-		parts=new int[size][];
+		parts=new byte[size][];
 		this.id=id;
 		remaining=size;
 	}
@@ -20,7 +20,7 @@ public class LUDPMessage {
 		return id;
 	}
 	
-	public void store(int[] part,int nth){
+	public void store(byte[] part,int nth){
 		parts[nth]=part;
 		remaining--;
 	}
@@ -29,7 +29,7 @@ public class LUDPMessage {
 		return remaining==0;
 	}
 	
-	public int[][] getParts(){
+	public byte[][] getParts(){
 		return parts;
 	}
 

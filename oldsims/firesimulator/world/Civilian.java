@@ -13,8 +13,8 @@ public class Civilian extends MovingObject {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_CIVILIAN;
+	public String getType(){
+		return "CIVILIAN";
 	}
 
 }

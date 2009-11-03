@@ -6,26 +6,24 @@ package firesimulator.world;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Node extends StationaryObject {
+public abstract class Node extends StationaryObject {
 
-	int[] edgesID;
+    int[] edgesID;
 
-	public Node(int id) {
-		super(id);		
-	}
+    public Node(int id) {
+        super(id);		
+    }
 	
-	private void setEdges(int[] value){
-		edgesID=value;	
-	}
+    private void setEdges(int[] value){
+        edgesID=value;	
+    }
 	
-	public void input(int property, int[] value) {
-		switch(property) {
-			default: 
-				super.input(property, value); 
-				break;
-			case PROPERTY_EDGES: 
-				setEdges(value);  
-				break;
-	  	}
-	}
+    public void input(String property, int[] value) {
+        if ("EDGES".equals(property)) {
+            setEdges(value);  
+        }
+        else {
+            super.input(property, value); 
+        }
+    }
 }

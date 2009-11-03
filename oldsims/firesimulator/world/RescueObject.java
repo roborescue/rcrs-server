@@ -1,6 +1,6 @@
 package firesimulator.world;
 
-import java.io.DataOutputStream;
+import rescuecore.OutputBuffer;
 
 
 /**
@@ -9,7 +9,7 @@ import java.io.DataOutputStream;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public  class RescueObject implements WorldConstants {
+public abstract class RescueObject implements WorldConstants {
 
 	int id;
 	
@@ -30,19 +30,17 @@ public  class RescueObject implements WorldConstants {
 		return(id==o.hashCode());
 	}
 		
-	public void input(int property, int[] value){
-		//System.out.println("unkown property: "+property);
+	public void input(String property, int[] value){
+            System.out.println("unkown property: "+property);
 	}
 	
-	public int getType(){
-			return TYPE_NULL;
-	}
+    public abstract String getType();
 		
 	public int getID(){
 		return id;
 	}
 	
-	public void encode(DataOutputStream dos){
+	public void encode(OutputBuffer dos){
 	}
 	
 }

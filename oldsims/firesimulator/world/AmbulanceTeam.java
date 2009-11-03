@@ -12,8 +12,8 @@ public class AmbulanceTeam extends MovingObject {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_AMBULANCE_TEAM;
+	public String getType(){
+		return "AMBULANCE_TEAM";
 	}
 
 }

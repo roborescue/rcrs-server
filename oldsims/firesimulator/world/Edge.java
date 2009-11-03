@@ -6,7 +6,7 @@ package firesimulator.world;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Edge extends StationaryObject {
+public abstract class Edge extends StationaryObject {
 
 	int headID;
 	int tailID;
@@ -28,21 +28,19 @@ public class Edge extends StationaryObject {
 		this.Length=length;
 	}
 	
-	public void input(int property, int[] value) {
-	 	switch(property) {
-	  		case PROPERTY_HEAD: 
-	  			setHead(value[0]);    
-	  			break;
-	  		case PROPERTY_TAIL:
-	  			setTail(value[0]);    
-	  			break;
-	  		case PROPERTY_LENGTH: 
-	  			setLength(value[0]);  
-	  			break;
-			default: 
-				super.input(property, value);      
-				break;
-	  }
+	public void input(String property, int[] value) {
+            if ("HEAD".equals(property)) {
+                setHead(value[0]);    
+            }
+            else if ("TAIL".equals(property)) {
+                setTail(value[0]);    
+            }
+            else if ("LENGTH".equals(property)) {
+                setLength(value[0]);  
+            }
+            else {
+                super.input(property, value);      
+            }
 	}
 
 	protected int getTailID() {	

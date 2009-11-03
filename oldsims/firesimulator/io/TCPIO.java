@@ -50,7 +50,7 @@ public class TCPIO extends IO {
 		}
 	}
 	
-	public int[] receive(){
+	public byte[] receiveImpl(){
 		try{
 			//			int length = in.readInt();
 			int length = in.read();
@@ -63,7 +63,7 @@ public class TCPIO extends IO {
 			while (total < length) {
 				total += in.read(buffer,total,length-total);
 			}
-			return getIntArray(buffer,0,length);
+                        return buffer;
 		}catch(Exception e){
 			e.printStackTrace();
 			System.exit(1);

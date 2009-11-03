@@ -7,12 +7,8 @@ public class StreetNode extends Node {
 		super(id);
 	}
 	
-	public void input(int property, int[] value) {
-		super.input(property,value);
-	}	
-	
-	public int getType(){
-		return TYPE_NODE;
+	public String getType(){
+		return "NODE";
 	}
 
 }

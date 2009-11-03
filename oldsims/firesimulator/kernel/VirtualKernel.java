@@ -37,6 +37,7 @@ public class VirtualKernel implements Kernel,IOConstans {
     }
 
 	public void establishConnection() {
+            /*
 		System.out.println("scenery file is \""+Configuration.getValue("virtual")+"\"");
 		try {
 			File file=new File(Configuration.getValue("virtual"));
@@ -51,9 +52,10 @@ public class VirtualKernel implements Kernel,IOConstans {
 			world.processUpdate(data,2,INIT_TIME);
 			world.printSummary();
 		} catch (Exception e) {
+            */
 			System.out.println("unable to load scenery file. exiting.");
 			System.exit(1);
-		}
+                        //		}
 	}
 
 

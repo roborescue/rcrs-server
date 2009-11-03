@@ -15,8 +15,8 @@ public class AmbulanceCenter extends Building {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_AMBULANCE_CENTER;
+	public String getType(){
+		return "AMBULANCE_CENTRE";
 	}
 
 

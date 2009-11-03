@@ -12,8 +12,8 @@ public class Refuge extends Building {
 		super(id);
 	}
 	
-	public int getType(){
-		return TYPE_REFUGE;
+	public String getType(){
+		return "REFUGE";
 	}
 
 	public boolean isRefuge() {

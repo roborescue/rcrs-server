@@ -69,7 +69,7 @@ public class UDPIO extends IO {
 		}
 	}
 	
-	public int[] receive(){
+	public byte[] receiveImpl(){
 		try{
 			LUDPMessage m;
 			do{
@@ -81,7 +81,9 @@ public class UDPIO extends IO {
 				int ludpID = (short) ((((int) buffer[2] & 0xff) << 8) | ((int) buffer[3] & 0xff));
 				int nth    = (short) ((((int) buffer[4] & 0xff) << 8) | ((int) buffer[5] & 0xff));
 				int total  = (short) ((((int) buffer[6] & 0xff) << 8) | ((int) buffer[7] & 0xff));
-				int[] body = getIntArray(pkt.getData(), 8, pkt.getLength());
+                                byte[] packetData = pkt.getData();
+				byte[] body = new byte[packetData.length - 8];
+                                System.arraycopy(packetData, 8, body, 0, body.length); //getIntArray(pkt.getData(), 8, pkt.getLength());
 				//System.err.println("ID: "+ludpID+" ("+nth+" of "+total+")");
 				m=getMessage(ludpID);
 				if(m==null) pktList.add(m=new LUDPMessage(ludpID,total));
@@ -96,11 +98,11 @@ public class UDPIO extends IO {
 		return null;
 	}
 
-	private int[] udpsToLudp(int[][] udps) {
+	private byte[] udpsToLudp(byte[][] udps) {
 		int size = 0;
 	   	for (int i = 0;  i < udps.length;  i ++)
 			size += udps[i].length;
-	   	int[] result = new int[size];
+	   	byte[] result = new byte[size];
 	   	for (int i = 0, pos = 0;  i < udps.length;  i++) {
 			int len = udps[i].length;
 		 	System.arraycopy(udps[i], 0, result, pos, len);

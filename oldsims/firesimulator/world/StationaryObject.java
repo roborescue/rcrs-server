@@ -1,6 +1,6 @@
 package firesimulator.world;
 
-public class StationaryObject extends RealObject {
+public abstract class StationaryObject extends RealObject {
 
 	private int x;
 	private int y;
@@ -29,18 +29,16 @@ public class StationaryObject extends RealObject {
 		this.y=y;
 	}
 	
-	public void input(int property, int[] value) {
-		switch(property) {
-			case PROPERTY_X:
-				setX(value[0]);		
-				break;
-			case PROPERTY_Y:
-				setY(value[0]);
-				break;
-			default: 				
-				super.input(property, value);
-				break;
-		}
+	public void input(String property, int[] value) {
+            if ("X".equals(property)) {
+                setX(value[0]);		
+            }
+            else if ("Y".equals(property)) {
+                setY(value[0]);
+            }
+            else {
+                super.input(property, value);
+            }
 	}
 
 	

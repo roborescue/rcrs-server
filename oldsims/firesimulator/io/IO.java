@@ -11,15 +11,22 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import rescuecore.InputBuffer;
+
 /**
  * @author tn
  *
  */
 public abstract class IO implements IOConstans{
 	public abstract void send(byte[] body);
-	public abstract int[] receive();
+	public abstract byte[] receiveImpl();
+
+    public final InputBuffer receive() {
+        return new InputBuffer(receiveImpl());
+    }
 
 	/** @return int[] casted from src[from..to] */
+    /*
 	protected int[] getIntArray(byte[] src, int from, int to) {
 		int[] result = new int[(to - from) / 4];
 		for (int i = 0, b = from;  i < result.length;   i ++, b += 4)
@@ -29,5 +36,6 @@ public abstract class IO implements IOConstans{
 				+ (int)  (src[b+3] & 0xff);
 		return result;
 	}
+    */
 
 }
