@@ -17,13 +17,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import rescuecore2.misc.Pair;
-
 /**
    This class represents a config file and any other config files that might have been included with a !include directive. Config files must be defined relative to a base directory so that includes can be resolved.
  */
 public class Config {
     private static final String INCLUDE = "!include";
+    private static final String ARRAY_REGEX = " |,";
 
     /**
        The raw data and caches of int/float/boolean/array interpretations.
@@ -34,7 +33,7 @@ public class Config {
     private Map<String, Integer> intData;
     private Map<String, Double> floatData;
     private Map<String, Boolean> booleanData;
-    private Map<String, Pair<String, List<String>>> arrayData;
+    private Map<String, List<String>> arrayData;
 
     /**
        Create an empty config.
@@ -45,7 +44,7 @@ public class Config {
         intData = new HashMap<String, Integer>();
         floatData = new HashMap<String, Double>();
         booleanData = new HashMap<String, Boolean>();
-        arrayData = new HashMap<String, Pair<String, List<String>>>();
+        arrayData = new HashMap<String, List<String>>();
     }
 
     /**
@@ -371,42 +370,45 @@ public class Config {
        @throws NoSuchConfigOptionException If the key is not defined.
     */
     public List<String> getArrayValue(String key) {
-        return getArrayValue(key, " |,");
-    }
-
-    /**
-       Get the value of a key as an array of strings. The value will be split using the given regex and the resulting list of tokens is returned.
-       @param key The key to look up. Must not be null.
-       @param regex The regular expression to split the value on. This is passed to {@link String#split(String)} directly. Must not be null or the empty string.
-       @return The value associated with that key interpreted as an array of regex-separated tokens.
-       @throws NoSuchConfigOptionException If the key is not defined.
-    */
-    public List<String> getArrayValue(String key, String regex) {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
-        if (regex == null) {
-            throw new IllegalArgumentException("Regex cannot be null");
-        }
-        if ("".equals(regex)) {
-            throw new IllegalArgumentException("Regex cannot be the empty string");
-        }
         if (!noCache.contains(key) && arrayData.containsKey(key)) {
-            Pair<String, List<String>> entry = arrayData.get(key);
-            if (entry.first().equals(regex)) {
-                return entry.second();
+            List<String> entry = arrayData.get(key);
+            if (entry != null) {
+                return entry;
             }
         }
-        String value = getValue(key);
+        List<String> result = splitArrayValue(getValue(key));
+        arrayData.put(key, result);
+        return result;
+    }
+
+    /**
+       Get the value of a key (or a default value) as an array of strings. The value will be split on space and comma characters and the resulting list of tokens is returned.
+       @param key The key to look up. Must not be null.
+       @param defaultValue The default value to use if the key is not defined.
+       @return The value associated with the key (or the default value) interpreted as an array of space or comma-separated tokens.
+    */
+    public List<String> getArrayValue(String key, String defaultValue) {
+        try {
+            return getArrayValue(key);
+        }
+        catch (NoSuchConfigOptionException e) {
+            return splitArrayValue(defaultValue);
+        }
+    }
+
+    private List<String> splitArrayValue(String value) {
         List<String> result = new ArrayList<String>();
-        String[] s = value.split(regex);
-        for (String next : s) {
-            if (!"".equals(next)) {
-                result.add(next);
+        if (value != null) {
+            String[] s = value.split(ARRAY_REGEX);
+            for (String next : s) {
+                if (!"".equals(next)) {
+                    result.add(next);
+                }
             }
         }
-        Pair<String, List<String>> entry = new Pair<String, List<String>>(regex, result);
-        arrayData.put(key, entry);
         return result;
     }
 

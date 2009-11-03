@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 import java.util.Set;
+import java.util.List;
 
 public class ConfigTest {
     private Config config;
@@ -403,20 +404,43 @@ public class ConfigTest {
     @Test
     public void testArrays() throws IOException, ConfigException {
         read(ARRAY_CONFIG);
-        assertEquals(4, config.getAllKeys().size());
+        assertEquals(6, config.getAllKeys().size());
         assertEquals(1, config.getArrayValue("key1").size());
         assertEquals(2, config.getArrayValue("key2").size());
         assertEquals(2, config.getArrayValue("key3").size());
         assertEquals(1, config.getArrayValue("key4").size());
+        assertEquals(2, config.getArrayValue("key5").size());
+        assertEquals(2, config.getArrayValue("key6").size());
         assertTrue(config.getArrayValue("key1").contains("value"));
         assertTrue(config.getArrayValue("key2").contains("value1"));
         assertTrue(config.getArrayValue("key2").contains("value2"));
         assertTrue(config.getArrayValue("key3").contains("value1"));
         assertTrue(config.getArrayValue("key3").contains("value2"));
         assertTrue(config.getArrayValue("key4").contains("value1|value2"));
-        assertEquals(2, config.getArrayValue("key4","\\|").size());
-        assertTrue(config.getArrayValue("key4","\\|").contains("value1"));
-        assertTrue(config.getArrayValue("key4","\\|").contains("value2"));
+        assertTrue(config.getArrayValue("key5").contains("value1"));
+        assertTrue(config.getArrayValue("key5").contains("value2"));
+        assertTrue(config.getArrayValue("key6").contains("value1"));
+        assertTrue(config.getArrayValue("key6").contains("value2"));
+    }
+
+    @Test
+    public void testArraysDefaultValue() throws IOException, ConfigException {
+        assertEquals(0, config.getAllKeys().size());
+        List<String> l = config.getArrayValue("key", "value");
+        assertEquals(1, l.size());
+        assertTrue(l.contains("value"));
+        l = config.getArrayValue("key", "value1,value2");
+        assertEquals(2, l.size());
+        assertTrue(l.contains("value1"));
+        assertTrue(l.contains("value2"));
+        l = config.getArrayValue("key", "value1 value2");
+        assertEquals(2, l.size());
+        assertTrue(l.contains("value1"));
+        assertTrue(l.contains("value2"));
+        l = config.getArrayValue("key", "");
+        assertEquals(0, l.size());
+        l = config.getArrayValue("key", null);
+        assertEquals(0, l.size());
     }
 
     @Test
