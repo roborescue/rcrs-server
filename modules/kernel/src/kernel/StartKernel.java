@@ -6,21 +6,21 @@ import static rescuecore2.misc.java.JavaTools.instantiateFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
 import javax.swing.JDialog;
-import javax.swing.JComboBox;
 import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
 import rescuecore2.connection.Connection;
@@ -29,7 +29,6 @@ import rescuecore2.connection.ConnectionManager;
 import rescuecore2.connection.StreamConnection;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
-import rescuecore2.config.NoSuchConfigOptionException;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentInitialisationException;
@@ -64,12 +63,6 @@ public final class StartKernel {
     private static final String PERCEPTION_MANIFEST_KEY = "Perception";
     private static final String COMMUNICATION_MANIFEST_KEY = "CommunicationModel";
 
-    private static final String GIS_KEY = "kernel.gis";
-    private static final String PERCEPTION_KEY = "kernel.perception";
-    private static final String COMMUNICATION_KEY = "kernel.communication";
-    private static final String AGENT_KEY = "kernel.agents";
-    private static final String SIMULATOR_KEY = "kernel.simulators";
-    private static final String VIEWER_KEY = "kernel.viewers";
     private static final String TERMINATION_KEY = "kernel.termination";
 
     private static final String GIS_REGEX = "(.+WorldModelCreator).class";
@@ -79,8 +72,6 @@ public final class StartKernel {
     private static final LoadableType GIS_LOADABLE_TYPE = new LoadableType(GIS_MANIFEST_KEY, GIS_REGEX, WorldModelCreator.class);
     private static final LoadableType PERCEPTION_LOADABLE_TYPE = new LoadableType(PERCEPTION_MANIFEST_KEY, PERCEPTION_REGEX, Perception.class);
     private static final LoadableType COMMUNICATION_LOADABLE_TYPE = new LoadableType(COMMUNICATION_MANIFEST_KEY, COMMUNICATION_REGEX, CommunicationModel.class);
-
-    private static final String AUTOSTART_SUFFIX = ".auto";
 
     private static final String KERNEL_STARTUP_TIME_KEY = "kernel.startup.connect-time";
 
@@ -116,14 +107,14 @@ public final class StartKernel {
             // Process jar files
             processJarFiles(config);
             // Register messages and entities
-            for (String next : config.getArrayValue(Constants.MESSAGE_FACTORY_KEY)) {
+            for (String next : config.getArrayValue(Constants.MESSAGE_FACTORY_KEY, null)) {
                 MessageFactory factory = instantiateFactory(next, MessageFactory.class);
                 if (factory != null) {
                     MessageRegistry.register(factory);
                     System.out.println("Registered message factory: " + next);
                 }
             }
-            for (String next : config.getArrayValue(Constants.ENTITY_FACTORY_KEY)) {
+            for (String next : config.getArrayValue(Constants.ENTITY_FACTORY_KEY, null)) {
                 EntityFactory factory = instantiateFactory(next, EntityFactory.class);
                 if (factory != null) {
                     EntityRegistry.register(factory);
@@ -131,7 +122,6 @@ public final class StartKernel {
                 }
             }
             final KernelInfo kernelInfo = createKernel(config);
-            autostartComponents(kernelInfo, config);
             if (showGUI) {
                 KernelGUI gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun);
                 for (KernelGUIComponent next : kernelInfo.guiComponents) {
@@ -149,6 +139,7 @@ public final class StartKernel {
                 frame.setVisible(true);
             }
             initialiseKernel(kernelInfo, config);
+            autostartComponents(kernelInfo, config);
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo, config);
                 while (!kernelInfo.kernel.hasTerminated()) {
@@ -246,45 +237,127 @@ public final class StartKernel {
     }
 
     private static void autostartComponents(KernelInfo info, Config config) throws InterruptedException {
-        Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
-        info.componentManager.newConnection(connections.first());
-        ComponentLauncher launcher = new ComponentLauncher(connections.second());
+        KernelChooserDialog gui = info.choices;
+        Collection<Callable<Void>> all = new ArrayList<Callable<Void>>();
         // Simulators
-        try {
-            autostartComponents(Simulator.class, SIMULATOR_KEY, config, launcher);
-        }
-        catch (NoSuchConfigOptionException e) {
-            // Ignore
-            System.out.println("Not starting any simulators");
+        for (String next : gui.getSimulators()) {
+            all.add(new ComponentStarter<Simulator>(Simulator.class, next, config, info.componentManager, 1));
         }
         // Viewers
-        try {
-            autostartComponents(Viewer.class, VIEWER_KEY, config, launcher);
-        }
-        catch (NoSuchConfigOptionException e) {
-            // Ignore
-            System.out.println("Not starting any viewers");
+        for (String next : gui.getViewers()) {
+            all.add(new ComponentStarter<Viewer>(Viewer.class, next, config, info.componentManager, 1));
         }
         // Agents
-        try {
-            autostartComponents(Agent.class, AGENT_KEY, config, launcher);
+        for (Pair<String, Integer> next : gui.getAgents()) {
+            all.add(new ComponentStarter<Agent>(Agent.class, next.first(), config, info.componentManager, next.second()));
         }
-        catch (NoSuchConfigOptionException e) {
-            // Ignore
-            System.out.println("Not starting any agents");
-        }
+        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        service.invokeAll(all);
     }
 
-    private static <T extends Component> void autostartComponents(Class<T> clazz, String key, Config config, ComponentLauncher launcher) throws InterruptedException {
-        for (String next : config.getArrayValue(key + AUTOSTART_SUFFIX)) {
-            // Check if this class name has a multiplier
-            int index = next.indexOf("*");
-            int count = 1;
-            String className = next;
-            if (index != -1) {
-                count = Integer.parseInt(next.substring(index + 1));
-                className = next.substring(0, index);
+    private static KernelInfo createKernel(Config config) throws KernelException {
+        // Show the chooser GUI
+        KernelChooserDialog dialog = new KernelChooserDialog(config);
+        dialog.setVisible(true);
+        WorldModelCreator gis = dialog.getWorldModelCreator();
+        Perception perception = dialog.getPerception();
+        CommunicationModel comms = dialog.getCommunicationModel();
+        CommandFilter filter = makeCommandFilter(config);
+        TerminationCondition termination = makeTerminationCondition(config);
+
+        // Get the world model
+        WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
+        // Initialise
+        perception.initialise(config, worldModel);
+        comms.initialise(config, worldModel);
+        termination.initialise(config);
+        // Create the kernel
+        System.out.println("Kernel termination condition: " + termination);
+        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination);
+        // Create the component manager
+        ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
+        registerInitialAgents(config, componentManager, worldModel);
+        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config), dialog);
+        return result;
+    }
+
+    private static void registerInitialAgents(Config config, ComponentManager c, WorldModel<? extends Entity> model) throws KernelException {
+        AgentRegistrar ar = instantiate(config.getValue(AGENT_REGISTRAR_KEY), AgentRegistrar.class);
+        if (ar == null) {
+            throw new KernelException("Couldn't instantiate agent registrar");
+        }
+        ar.registerAgents(model, config, c);
+    }
+
+    private static CommandFilter makeCommandFilter(Config config) {
+        ChainedCommandFilter result = new ChainedCommandFilter();
+        List<String> classNames = config.getArrayValue(COMMAND_FILTERS_KEY, null);
+        for (String next : classNames) {
+            System.out.println("Command filter found: '" + next + "'");
+            CommandFilter f = instantiate(next, CommandFilter.class);
+            if (f != null) {
+                result.addFilter(f);
             }
+        }
+        return result;
+    }
+
+    private static TerminationCondition makeTerminationCondition(Config config) {
+        List<TerminationCondition> result = new ArrayList<TerminationCondition>();
+        for (String next : config.getArrayValue(TERMINATION_KEY, null)) {
+            TerminationCondition t = instantiate(next, TerminationCondition.class);
+            if (t != null) {
+                result.add(t);
+            }
+        }
+        return new OrTerminationCondition(result);
+    }
+
+    private static List<KernelGUIComponent> makeKernelGUIComponents(Config config) {
+        List<KernelGUIComponent> result = new ArrayList<KernelGUIComponent>();
+            List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY, null);
+            for (String next : classNames) {
+                System.out.println("GUI component found: '" + next + "'");
+                KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
+                if (c != null) {
+                    result.add(c);
+                }
+            }
+        return result;
+    }
+
+    private static void processJarFiles(Config config) throws IOException {
+        LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
+        processor.addConfigUpdater(LoadableType.MESSAGE_FACTORY, config, Constants.MESSAGE_FACTORY_KEY);
+        processor.addConfigUpdater(LoadableType.ENTITY_FACTORY, config, Constants.ENTITY_FACTORY_KEY);
+        processor.addConfigUpdater(LoadableType.AGENT, config, KernelConstants.AGENTS_KEY);
+        processor.addConfigUpdater(LoadableType.SIMULATOR, config, KernelConstants.SIMULATORS_KEY);
+        processor.addConfigUpdater(LoadableType.VIEWER, config, KernelConstants.VIEWERS_KEY);
+        processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, KernelConstants.GIS_KEY);
+        processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, KernelConstants.PERCEPTION_KEY);
+        processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, KernelConstants.COMMUNICATION_MODEL_KEY);
+        processor.process();
+    }
+
+    private static class ComponentStarter<T extends Component> implements Callable<Void> {
+        private Class<T> clazz;
+        private String className;
+        private Config config;
+        private ComponentManager componentManager;
+        private int count;
+
+        public ComponentStarter(Class<T> clazz, String className, Config config, ComponentManager componentManager, int count) {
+            this.clazz = clazz;
+            this.className = className;
+            this.config = config;
+            this.componentManager = componentManager;
+            this.count = count;
+        }
+
+        public Void call() throws InterruptedException {
+            Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
+            componentManager.newConnection(connections.first());
+            ComponentLauncher launcher = new ComponentLauncher(connections.second());
             System.out.println("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
                 Component c = instantiate(className, clazz);
@@ -310,147 +383,18 @@ public final class StartKernel {
                     e.printStackTrace();
                 }
             }
+            return null;
         }
-    }
-
-    private static KernelInfo createKernel(Config config) throws KernelException {
-        // Show the chooser GUI
-        List<WorldModelCreator> gisChoices = createChoices(config, GIS_KEY, WorldModelCreator.class);
-        List<Perception> perceptionChoices = createChoices(config, PERCEPTION_KEY, Perception.class);
-        List<CommunicationModel> commsChoices = createChoices(config, COMMUNICATION_KEY, CommunicationModel.class);
-        KernelChooserDialog dialog = new KernelChooserDialog(gisChoices.toArray(new WorldModelCreator[0]), perceptionChoices.toArray(new Perception[0]), commsChoices.toArray(new CommunicationModel[0]));
-        if (gisChoices.size() > 1 || perceptionChoices.size() > 1 || commsChoices.size() > 1) {
-            dialog.setVisible(true);
-        }
-        WorldModelCreator gis = dialog.getWorldModelCreator();
-        Perception perception = dialog.getPerception();
-        CommunicationModel comms = dialog.getCommunicationModel();
-        CommandFilter filter = makeCommandFilter(config);
-        TerminationCondition termination = makeTerminationCondition(config);
-
-        // Get the world model
-        WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
-        // Initialise
-        perception.initialise(config, worldModel);
-        comms.initialise(config, worldModel);
-        termination.initialise(config);
-        // Create the kernel
-        System.out.println("Kernel termination condition: " + termination);
-        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination);
-        // Create the component manager
-        ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
-        registerInitialAgents(config, componentManager, worldModel);
-        return new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config));
-    }
-
-    private static void registerInitialAgents(Config config, ComponentManager c, WorldModel<? extends Entity> model) throws KernelException {
-        AgentRegistrar ar = instantiate(config.getValue(AGENT_REGISTRAR_KEY), AgentRegistrar.class);
-        if (ar == null) {
-            throw new KernelException("Couldn't instantiate agent registrar");
-        }
-        ar.registerAgents(model, config, c);
-    }
-
-    private static <T> List<T> createChoices(Config config, String key, Class<T> expectedClass) {
-        List<T> instances = new ArrayList<T>();
-        String auto = config.getValue(key + AUTOSTART_SUFFIX, null);
-        if (auto != null) {
-            System.out.println("Attempting to auto-start " + key + ": '" + auto + "'");
-            T t = instantiate(auto, expectedClass);
-            if (t != null) {
-                instances.add(t);
-                return instances;
-            }
-            System.out.println("Auto-start '" + auto + "' failed. Falling back to option list.");
-        }
-        System.out.println("Loading options: " + key);
-        List<String> classNames = config.getArrayValue(key);
-        for (String next : classNames) {
-            System.out.println("Option found: '" + next + "'");
-            T t = instantiate(next, expectedClass);
-            if (t != null) {
-                instances.add(t);
-            }
-        }
-        return instances;
-    }
-
-    private static CommandFilter makeCommandFilter(Config config) {
-        ChainedCommandFilter result = new ChainedCommandFilter();
-        List<String> classNames = config.getArrayValue(COMMAND_FILTERS_KEY);
-        for (String next : classNames) {
-            System.out.println("Command filter found: '" + next + "'");
-            CommandFilter f = instantiate(next, CommandFilter.class);
-            if (f != null) {
-                result.addFilter(f);
-            }
-        }
-        return result;
-    }
-
-    private static TerminationCondition makeTerminationCondition(Config config) {
-        List<TerminationCondition> result = new ArrayList<TerminationCondition>();
-        for (String next : config.getArrayValue(TERMINATION_KEY)) {
-            TerminationCondition t = instantiate(next, TerminationCondition.class);
-            if (t != null) {
-                result.add(t);
-            }
-        }
-        return new OrTerminationCondition(result);
-    }
-
-    private static List<KernelGUIComponent> makeKernelGUIComponents(Config config) {
-        List<KernelGUIComponent> result = new ArrayList<KernelGUIComponent>();
-        try {
-            List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY);
-            for (String next : classNames) {
-                System.out.println("GUI component found: '" + next + "'");
-                KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
-                if (c != null) {
-                    result.add(c);
-                }
-            }
-        }
-        catch (NoSuchConfigOptionException e) {
-            System.out.println("No extra GUI components found");
-        }
-        return result;
-    }
-
-    private static void processJarFiles(Config config) throws IOException {
-        LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
-        processor.addConfigUpdater(LoadableType.MESSAGE_FACTORY, config, Constants.MESSAGE_FACTORY_KEY);
-        processor.addConfigUpdater(LoadableType.ENTITY_FACTORY, config, Constants.ENTITY_FACTORY_KEY);
-        processor.addConfigUpdater(LoadableType.AGENT, config, AGENT_KEY);
-        processor.addConfigUpdater(LoadableType.SIMULATOR, config, SIMULATOR_KEY);
-        processor.addConfigUpdater(LoadableType.VIEWER, config, VIEWER_KEY);
-        processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, GIS_KEY);
-        processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, PERCEPTION_KEY);
-        processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, COMMUNICATION_KEY);
-        processor.process();
     }
 
     private static class KernelChooserDialog extends JDialog {
-        private JComboBox gisChooser;
-        private JComboBox perceptionChooser;
-        private JComboBox commsChooser;
+        private KernelLaunchGUI components;
 
-        public KernelChooserDialog(WorldModelCreator[] gisChoices, Perception[] perceptionChoices, CommunicationModel[] commsChoices) {
+        public KernelChooserDialog(Config config) {
             super((Frame)null, "Choose kernel options");
-            gisChooser = new JComboBox(gisChoices);
-            perceptionChooser = new JComboBox(perceptionChoices);
-            commsChooser = new JComboBox(commsChoices);
-            // CHECKSTYLE:OFF:MagicNumber
-            JPanel main = new JPanel(new GridLayout(3, 2));
-            // CHECKSTYLE:ON:MagicNumber
-            main.add(new JLabel("GIS: "));
-            main.add(gisChooser);
-            main.add(new JLabel("Perception: "));
-            main.add(perceptionChooser);
-            main.add(new JLabel("Communication model: "));
-            main.add(commsChooser);
+            components = new KernelLaunchGUI(config);
             JButton ok = new JButton("OK");
-            add(main, BorderLayout.CENTER);
+            add(components, BorderLayout.CENTER);
             add(ok, BorderLayout.SOUTH);
             ok.addActionListener(new ActionListener() {
                     @Override
@@ -461,21 +405,30 @@ public final class StartKernel {
             setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             pack();
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            gisChooser.setEnabled(gisChoices.length > 1);
-            perceptionChooser.setEnabled(perceptionChoices.length > 1);
-            commsChooser.setEnabled(commsChoices.length > 1);
         }
 
         public WorldModelCreator getWorldModelCreator() {
-            return (WorldModelCreator)gisChooser.getSelectedItem();
+            return components.getGIS();
         }
 
         public Perception getPerception() {
-            return (Perception)perceptionChooser.getSelectedItem();
+            return components.getPerception();
         }
 
         public CommunicationModel getCommunicationModel() {
-            return (CommunicationModel)commsChooser.getSelectedItem();
+            return components.getCommunicationModel();
+        }
+
+        public Collection<String> getSimulators() {
+            return components.getSimulators();
+        }
+
+        public Collection<String> getViewers() {
+            return components.getViewers();
+        }
+
+        public Collection<Pair<String, Integer>> getAgents() {
+            return components.getAgents();
         }
     }
 
@@ -483,10 +436,12 @@ public final class StartKernel {
         Kernel kernel;
         ComponentManager componentManager;
         List<KernelGUIComponent> guiComponents;
+        KernelChooserDialog choices;
 
-        public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager, List<KernelGUIComponent> otherComponents) {
+        public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager, List<KernelGUIComponent> otherComponents, KernelChooserDialog choices) {
             this.kernel = kernel;
             this.componentManager = componentManager;
+            this.choices = choices;
             guiComponents = new ArrayList<KernelGUIComponent>(otherComponents);
             if (perception instanceof KernelGUIComponent) {
                 guiComponents.add((KernelGUIComponent)perception);

@@ -163,6 +163,9 @@ public class KernelControlPanel extends JPanel {
     }
 
     private void addComponent(Component[] options, String type) {
+        if (options.length == 0) {
+            return;
+        }
         Component c = (Component)JOptionPane.showInputDialog(this, "Choose a " + type, "Choose a " + type, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (c == null) {
             return;
@@ -273,7 +276,7 @@ public class KernelControlPanel extends JPanel {
     }
 
     private Component[] createComponents(String type) {
-        List<String> classNames = config.getArrayValue("kernel." + type);
+        List<String> classNames = config.getArrayValue("kernel." + type, null);
         List<Component> instances = new ArrayList<Component>();
         for (String next : classNames) {
             System.out.println("Option found: '" + next + "'");
