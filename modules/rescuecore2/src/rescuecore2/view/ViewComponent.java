@@ -12,6 +12,7 @@ import java.awt.Point;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 
@@ -37,7 +38,9 @@ public abstract class ViewComponent extends JComponent {
     protected ViewComponent() {
         renderedObjects = new ArrayList<RenderedObject>();
         listeners = new HashSet<ViewListener>();
-        addMouseListener(new ViewerMouseListener());
+        ViewerMouseListener l = new ViewerMouseListener();
+        addMouseListener(l);
+        addMouseMotionListener(l);
         panZoom = new PanZoomListener(this);
         setBackground(BACKGROUND);
     }
@@ -163,21 +166,42 @@ public abstract class ViewComponent extends JComponent {
         }
     }
 
-    private class ViewerMouseListener implements MouseListener {
+    private void fireObjectsRollover(List<RenderedObject> objects) {
+        List<ViewListener> all = new ArrayList<ViewListener>();
+        synchronized (listeners) {
+            all.addAll(listeners);
+        }
+        for (ViewListener next : all) {
+            next.objectsRollover(this, objects);
+        }
+    }
+
+    private class ViewerMouseListener implements MouseListener, MouseMotionListener {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            fireObjectsClicked(getObjects(e));
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            fireObjectsRollover(getObjects(e));
+        }
+
         @Override
         public void mousePressed(MouseEvent e) {}
         @Override
         public void mouseReleased(MouseEvent e) {}
         @Override
-        public void mouseClicked(MouseEvent e) {
-            Point p = e.getPoint();
-            Insets insets = getInsets();
-            List<RenderedObject> clicked = getObjectsAtPoint(p.x - insets.left, p.y - insets.top);
-            fireObjectsClicked(clicked);
-        }
-        @Override
         public void mouseEntered(MouseEvent e) {}
         @Override
         public void mouseExited(MouseEvent e) {}
+        @Override
+        public void mouseDragged(MouseEvent e) {}
+
+        private List<RenderedObject> getObjects(MouseEvent e) {
+            Point p = e.getPoint();
+            Insets insets = getInsets();
+            return getObjectsAtPoint(p.x - insets.left, p.y - insets.top);
+        }
     }
 }

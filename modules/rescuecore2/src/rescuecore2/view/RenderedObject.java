@@ -34,4 +34,9 @@ public class RenderedObject {
     public Object getObject() {
         return object;
     }
+
+    @Override
+    public String toString() {
+        return object.toString();
+    }
 }
