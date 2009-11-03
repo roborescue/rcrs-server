@@ -1,0 +1,7 @@
+<FindBugsFilter>
+  <Match>
+    <Class name="rescuecore2.worldmodel.properties.BooleanProperty"/>
+    <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    <Method name="getValue"/>
+  </Match>
+</FindBugsFilter>

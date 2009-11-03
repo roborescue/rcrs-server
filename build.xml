@@ -292,7 +292,19 @@
   <target name="checkstyle" depends="_run-checkstyle, _checkstyle-warnings" description="Run Checkstyle on all packages"/>
 
   <target name="findbugs" depends="jars, _generate-module-lib-paths" description="Run Findbugs on all modules">
-    <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}">
+    <!-- Collate all findbugs exclude filters -->
+    <concat destfile="${findbugs.output.dir}/exclude-fragments.xml">
+      <header>&lt;fragments&gt;</header>
+      <footer>&lt;/fragments&gt;</footer>
+      <fileset dir="${modules.dir}">
+        <include name="*/findbugs-filter.xml"/>
+      </fileset>
+    </concat>
+    <xslt style="${buildtools.dir}/findbugs-collate.xsl" in="${findbugs.output.dir}/exclude-fragments.xml" out="${findbugs.output.dir}/exclude.xml">
+      <outputproperty name="method" value="xml"/>
+      <outputproperty name="indent" value="yes"/>
+    </xslt>
+    <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}" excludeFilter="${findbugs.output.dir}/exclude.xml">
       <fileset dir="${jar.dir}">
 	<include name="**/*.jar"/>
       </fileset>
