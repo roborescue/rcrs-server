@@ -61,12 +61,11 @@ public class IntProperty extends AbstractProperty {
         this.value = other.value;
     }
 
-    /**
-       Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
-       @return The value of this property, or an undefined result if the value has not been set.
-       @see #isDefined()
-    */
-    public int getValue() {
+    @Override
+    public Integer getValue() {
+        if (!isDefined()) {
+            return null;
+        }
         return value;
     }
 

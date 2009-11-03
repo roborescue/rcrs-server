@@ -73,12 +73,11 @@ public class IntArrayProperty extends AbstractProperty {
         this.data = new ArrayList<Integer>(other.data);
     }
 
-    /**
-       Get the value of this property. If {@link #isDefined()} returns false then the result will be undefined.
-       @return The values of this property, or an undefined result if the values have not been set.
-       @see #isDefined()
-    */
+    @Override
     public int[] getValue() {
+        if (!isDefined()) {
+            return null;
+        }
         Integer[] result = new Integer[data.size()];
         data.toArray(result);
         int[] out = new int[result.length];

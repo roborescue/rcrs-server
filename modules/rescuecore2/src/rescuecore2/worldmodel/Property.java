@@ -45,4 +45,10 @@ public interface Property {
        @throws IOException If the read fails.
      */
     void read(InputStream in) throws IOException;
+
+    /**
+       Get the value of this property. If the property is undefined then the return value should be null.
+       @return The value of this property.
+    */
+    Object getValue();
 }
