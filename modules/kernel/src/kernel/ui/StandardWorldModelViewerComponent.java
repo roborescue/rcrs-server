@@ -2,6 +2,16 @@ package kernel.ui;
 
 import java.awt.Dimension;
 import javax.swing.JComponent;
+import javax.swing.JSplitPane;
+import javax.swing.JScrollPane;
+
+import java.util.List;
+
+import rescuecore2.view.EntityInspector;
+import rescuecore2.view.ViewListener;
+import rescuecore2.view.ViewComponent;
+import rescuecore2.view.RenderedObject;
+import rescuecore2.worldmodel.Entity;
 
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
@@ -18,6 +28,7 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
     @Override
     public JComponent getGUIComponent(final Kernel kernel) {
         final StandardWorldModelViewer viewer = new StandardWorldModelViewer();
+        final EntityInspector inspector = new EntityInspector();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
         viewer.view(kernel.getWorldModel());
         kernel.addKernelListener(new KernelListenerAdapter() {
@@ -27,7 +38,23 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
                     viewer.repaint();
                 }
             });
-        return viewer;
+        viewer.addViewListener(new ViewListener() {
+                @Override
+                public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
+                    for (RenderedObject next : objects) {
+                        if (next.getObject() instanceof Entity) {
+                            inspector.inspect((Entity)next.getObject());
+                            return;
+                        }
+                    }
+                }
+
+                @Override
+                public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
+                }
+            });
+        JComponent result = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, new JScrollPane(inspector));
+        return result;
     }
 
     @Override
