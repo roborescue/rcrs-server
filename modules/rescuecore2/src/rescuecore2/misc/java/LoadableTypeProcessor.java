@@ -31,6 +31,7 @@ public class LoadableTypeProcessor {
     private Set<LoadableType> types;
     private boolean deep;
     private String dir;
+    private Set<String> ignore;
 
     /**
        Construct a LoadableTypeProcessor that will perform a deep inspection.
@@ -41,6 +42,8 @@ public class LoadableTypeProcessor {
         types = new HashSet<LoadableType>();
         deep = config.getBooleanValue(Constants.DEEP_JAR_INSPECTION_KEY, Constants.DEFAULT_DEEP_JAR_INSPECTION);
         dir = config.getValue(Constants.JAR_DIR_KEY, Constants.DEFAULT_JAR_DIR);
+        ignore = new HashSet<String>();
+        ignore.addAll(config.getArrayValue(Constants.IGNORE_JARS_KEY, Constants.DEFAULT_IGNORE_JARS));
     }
 
     /**
@@ -114,6 +117,11 @@ public class LoadableTypeProcessor {
        @throws IOException If there is a problem reading the jar file.
     */
     public void processJarFile(JarFile jar) throws IOException {
+        String name = jar.getName();
+        String tail = name.substring(name.lastIndexOf("/") + 1);
+        if (ignore.contains(tail)) {
+            return;
+        }
         System.out.println("Processing " + jar.getName());
         Manifest mf = jar.getManifest();
         if (mf != null) {

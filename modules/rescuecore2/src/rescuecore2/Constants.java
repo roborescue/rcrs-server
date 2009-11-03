@@ -16,6 +16,10 @@ public final class Constants {
     public static final String DEFAULT_JAR_DIR = "../jars";
     /** Default deep inspection. */
     public static final boolean DEFAULT_DEEP_JAR_INSPECTION = true;
+    /** Config key for specifying jar names to ignore when finding loadable types. */
+    public static final String IGNORE_JARS_KEY = "loadabletypes.ignore";
+    /** Default list of jar names to ignore when finding loadable types. */
+    public static final String DEFAULT_IGNORE_JARS = "rescuecore2.jar";
 
     /** Config key for the kernel host name. */
     public static final String KERNEL_HOST_NAME = "kernel.host";
