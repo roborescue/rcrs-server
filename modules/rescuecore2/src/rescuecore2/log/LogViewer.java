@@ -178,7 +178,7 @@ public class LogViewer extends JPanel {
 
     private void registerViewers(Config config) {
         viewers = new ArrayList<ViewComponent>();
-        for (String next : config.getArrayValue(VIEWERS_KEY)) {
+        for (String next : config.getArrayValue(VIEWERS_KEY, null)) {
             ViewComponent viewer = instantiate(next, ViewComponent.class);
             if (viewer != null) {
                 viewer.initialise(config);
