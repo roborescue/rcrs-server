@@ -26,4 +26,22 @@ public interface ViewLayer {
        @return A set of RenderedObjects representing the things that were actually rendered.
      */
     Collection<RenderedObject> render(Graphics2D g, ScreenTransform transform, int width, int height);
+
+    /**
+       Set whether this layer should be rendered or not.
+       @param b True if this layer should be rendered, false otherwise.
+    */
+    void setVisible(boolean b);
+
+    /**
+       Find out if this layer should be rendered or not.
+       @return True if this layer should be rendered, false otherwise.
+    */
+    boolean isVisible();
+
+    /**
+       Get the name of this layer.
+       @return The name of the layer.
+    */
+    String getName();
 }

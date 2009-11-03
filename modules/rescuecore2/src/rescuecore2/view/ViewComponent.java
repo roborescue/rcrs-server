@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Insets;
+import java.awt.Shape;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
@@ -149,7 +150,8 @@ public abstract class ViewComponent extends JComponent {
     private List<RenderedObject> getObjectsAtPoint(int x, int y) {
         List<RenderedObject> result = new ArrayList<RenderedObject>();
         for (RenderedObject next : renderedObjects) {
-            if (next.getShape().contains(x, y)) {
+            Shape shape = next.getShape();
+            if (shape != null && shape.contains(x, y)) {
                 result.add(next);
             }
         }

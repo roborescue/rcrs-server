@@ -6,6 +6,25 @@ import java.util.Collection;
    An abstract ViewLayer implementation.
  */
 public abstract class AbstractViewLayer implements ViewLayer {
+    private boolean visible;
+
+    /**
+       Construct a new, visible AbstractViewLayer.
+    */
+    protected AbstractViewLayer() {
+        visible = true;
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        visible = b;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
     /**
        Process a set of objects and recursively inspect collections and arrays.
        @param objects The objects to process.
