@@ -102,6 +102,9 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
                 public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
                     handleClick(objects);
                 }
+                @Override
+                public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
+                }
             });
         frame.add(main);
         frame.pack();
