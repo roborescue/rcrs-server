@@ -390,13 +390,9 @@ public class Viewer extends JFrame implements Constants {
                 if ("AK_EXTINGUISH".equals(action)) {
                     Set targets = new HashSet();
                     InputBuffer dis = mv.actionData();
-                    while (true) {
-                        int id = dis.readInt();
-                        if (id == 0)
-                            break;
-                        targets.add(WORLD.get(id));
-                        dis.skip(4 * 4);  // sizeof(int) * {direction, x, y, quantity}
-                    }
+                    int id = dis.readInt();
+                    targets.add(WORLD.get(id));
+                    dis.skip(4); // Skip the quantity
                     g.setColor(targets.size() == 1
                                ? Color.blue.brighter().brighter()
                                : Color.cyan);
