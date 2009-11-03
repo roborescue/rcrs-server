@@ -27,6 +27,11 @@ public class BuildingIconLayer extends StandardEntityViewLayer<Building> {
     }
 
     @Override
+    public String getName() {
+        return "Building icons";
+    }
+
+    @Override
     public Shape render(Building b, Graphics2D g, ScreenTransform t) {
         ImageIcon icon = null;
         switch (b.getStandardURN()) {

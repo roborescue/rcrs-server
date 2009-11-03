@@ -30,6 +30,11 @@ public class RoadLayer extends StandardEntityViewLayer<Road> {
     }
 
     @Override
+    public String getName() {
+        return "Roads";
+    }
+
+    @Override
     public Shape render(Road r, Graphics2D g, ScreenTransform t) {
         Node head = (Node)r.getHead(world);
         Node tail = (Node)r.getTail(world);

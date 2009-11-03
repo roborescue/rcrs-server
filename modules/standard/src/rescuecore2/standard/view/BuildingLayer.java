@@ -34,6 +34,11 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     }
 
     @Override
+    public String getName() {
+        return "Building shapes";
+    }
+
+    @Override
     public Shape render(Building b, Graphics2D g, ScreenTransform t) {
         int[] apexes = b.getApexes();
         int count = apexes.length / 2;

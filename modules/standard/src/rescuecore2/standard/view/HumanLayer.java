@@ -56,6 +56,11 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     }
 
     @Override
+    public String getName() {
+        return "Humans";
+    }
+
+    @Override
     public Shape render(Human h, Graphics2D g, ScreenTransform t) {
         Pair<Integer, Integer> location = h.getLocation(world);
         int x = t.xToScreen(location.first());

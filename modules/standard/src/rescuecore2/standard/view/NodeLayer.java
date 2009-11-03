@@ -22,6 +22,11 @@ public class NodeLayer extends StandardEntityViewLayer<Node> {
     }
 
     @Override
+    public String getName() {
+        return "Nodes";
+    }
+
+    @Override
     public Shape render(Node n, Graphics2D g, ScreenTransform t) {
         int x = t.xToScreen(n.getX()) - (SIZE / 2);
         int y = t.yToScreen(n.getY()) - (SIZE / 2);

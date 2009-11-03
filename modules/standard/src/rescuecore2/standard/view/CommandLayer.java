@@ -51,6 +51,11 @@ public class CommandLayer extends StandardViewLayer {
     }
 
     @Override
+    public String getName() {
+        return "Commands";
+    }
+
+    @Override
     public Rectangle2D view(Object... objects) {
         commands.clear();
         return super.view(objects);
