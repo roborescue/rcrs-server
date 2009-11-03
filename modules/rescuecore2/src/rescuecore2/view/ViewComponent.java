@@ -181,7 +181,9 @@ public abstract class ViewComponent extends JComponent {
     private class ViewerMouseListener implements MouseListener, MouseMotionListener {
         @Override
         public void mouseClicked(MouseEvent e) {
-            fireObjectsClicked(getObjects(e));
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                fireObjectsClicked(getObjects(e));
+            }
         }
 
         @Override
