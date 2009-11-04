@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
 
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Message;
@@ -24,17 +25,17 @@ import rescuecore2.messages.Message;
 public class PerceptionRecord implements LogRecord {
     private int time;
     private EntityID entityID;
-    private Collection<Entity> visible;
+    private ChangeSet visible;
     private Collection<Message> communications;
 
     /**
        Construct a new PerceptionRecord.
        @param time The timestep of this perception record.
        @param id The ID of the entity.
-       @param visible The set of visible entities.
+       @param visible The set of visible changes to entities.
        @param communications The set of communication messages.
      */
-    public PerceptionRecord(int time, EntityID id, Collection<Entity> visible, Collection<Message> communications) {
+    public PerceptionRecord(int time, EntityID id, ChangeSet visible, Collection<Message> communications) {
         this.time = time;
         this.entityID = id;
         this.visible = visible;
@@ -60,10 +61,7 @@ public class PerceptionRecord implements LogRecord {
     public void write(OutputStream out) throws IOException {
         writeInt32(entityID.getValue(), out);
         writeInt32(time, out);
-        writeInt32(visible.size(), out);
-        for (Entity e : visible) {
-            writeEntity(e, out);
-        }
+        visible.write(out);
         writeInt32(communications.size(), out);
         for (Message next : communications) {
             writeMessage(next, out);
@@ -75,17 +73,10 @@ public class PerceptionRecord implements LogRecord {
         entityID = new EntityID(readInt32(in));
         time = readInt32(in);
         //        System.out.print("Reading perception for agent " + entityID + " at time " + time + "...");
-        visible = new ArrayList<Entity>();
+        visible = new ChangeSet();
+        visible.read(in);
         communications = new ArrayList<Message>();
         int count = readInt32(in);
-        for (int i = 0; i < count; ++i) {
-            Entity e = readEntity(in);
-            if (e == null) {
-                throw new LogException("Could not read entity from stream");
-            }
-            visible.add(e);
-        }
-        count = readInt32(in);
         for (int i = 0; i < count; ++i) {
             Message m = readMessage(in);
             if (m == null) {
@@ -113,10 +104,10 @@ public class PerceptionRecord implements LogRecord {
     }
 
     /**
-       Get the set of entity updates.
-       @return The entity updates.
+       Get the set of visible entity updates.
+       @return The visible entity updates.
     */
-    public Collection<Entity> getEntityUpdates() {
+    public ChangeSet getChangeSet() {
         return visible;
     }
 

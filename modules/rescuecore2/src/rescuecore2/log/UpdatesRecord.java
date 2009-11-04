@@ -11,24 +11,26 @@ import java.io.IOException;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Set;
 
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 
 /**
    An updates record.
 */
 public class UpdatesRecord implements LogRecord {
     private int time;
-    private Collection<Entity> entities;
+    private ChangeSet changes;
 
     /**
-       Construct a new EntitiesRecord.
-       @param time The timestep of this entities record.
-       @param entities The set of agent entities.
+       Construct a new UpdatesRecord.
+       @param time The timestep of this updates record.
+       @param changes The set of changes.
      */
-    public UpdatesRecord(int time, Collection<Entity> entities) {
+    public UpdatesRecord(int time, ChangeSet changes) {
         this.time = time;
-        this.entities = entities;
+        this.changes = changes;
     }
 
     /**
@@ -49,25 +51,14 @@ public class UpdatesRecord implements LogRecord {
     @Override
     public void write(OutputStream out) throws IOException {
         writeInt32(time, out);
-        writeInt32(entities.size(), out);
-        for (Entity next : entities) {
-            writeEntity(next, out);
-        }
+        changes.write(out);
     }
 
     @Override
     public void read(InputStream in) throws IOException, LogException {
         time = readInt32(in);
-        entities = new ArrayList<Entity>();
-        int count = readInt32(in);
-        //        System.out.print("Reading updates for time " + time + ". " + count + " entities to read...");
-        for (int i = 0; i < count; ++i) {
-            Entity e = readEntity(in);
-            if (e == null) {
-                throw new LogException("Could not read entity from stream");
-            }
-            entities.add(e);
-        }
+        changes = new ChangeSet();
+        changes.read(in);
         //        System.out.println("done");
     }
 
@@ -81,9 +72,9 @@ public class UpdatesRecord implements LogRecord {
 
     /**
        Get the entity updates.
-       @return The entities.
+       @return The changes.
      */
-    public Collection<Entity> getEntities() {
-        return entities;
+    public ChangeSet getChangeSet() {
+        return changes;
     }
 }

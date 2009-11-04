@@ -155,4 +155,9 @@ public class EntityRefListProperty extends AbstractProperty {
         }
         return result.toString();
     }
+
+    @Override
+    public EntityRefListProperty copy() {
+        return new EntityRefListProperty(this);
+    }
 }

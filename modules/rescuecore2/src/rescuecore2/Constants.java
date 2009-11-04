@@ -8,6 +8,8 @@ public final class Constants {
     public static final String MESSAGE_FACTORY_KEY = "factory.messages";
     /** Config key for entity factories. */
     public static final String ENTITY_FACTORY_KEY = "factory.entities";
+    /** Config key for property factories. */
+    public static final String PROPERTY_FACTORY_KEY = "factory.properties";
     /** Config key for looking up jars for inspection by a LoadableTypeProcessor. */
     public static final String JAR_DIR_KEY = "loadabletypes.inspect.dir";
     /** Config key for specifying whether to do a deep inspection of jars for loadable types. */

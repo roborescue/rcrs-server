@@ -117,4 +117,9 @@ public class BooleanProperty extends AbstractProperty {
         }
         return result.toString();
     }
+
+    @Override
+    public BooleanProperty copy() {
+        return new BooleanProperty(this);
+    }
 }

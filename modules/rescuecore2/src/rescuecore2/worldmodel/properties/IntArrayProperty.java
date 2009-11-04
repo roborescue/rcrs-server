@@ -162,4 +162,9 @@ public class IntArrayProperty extends AbstractProperty {
         }
         return result.toString();
     }
+
+    @Override
+    public IntArrayProperty copy() {
+        return new IntArrayProperty(this);
+    }
 }

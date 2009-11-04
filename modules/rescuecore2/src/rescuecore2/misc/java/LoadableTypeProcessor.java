@@ -7,6 +7,8 @@ import rescuecore2.messages.MessageRegistry;
 import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.worldmodel.PropertyRegistry;
+import rescuecore2.worldmodel.PropertyFactory;
 import rescuecore2.Constants;
 
 import java.util.List;
@@ -52,6 +54,7 @@ public class LoadableTypeProcessor {
     public void addFactoryRegisterCallbacks() {
         addCallback(new MessageFactoryRegisterCallback());
         addCallback(new EntityFactoryRegisterCallback());
+        addCallback(new PropertyFactoryRegisterCallback());
     }
 
     /**
@@ -220,6 +223,25 @@ public class LoadableTypeProcessor {
         @Override
         public Collection<LoadableType> getTypes() {
             return Collections.singleton(LoadableType.ENTITY_FACTORY);
+        }
+    }
+
+    /**
+       A LoadableTypeCallback that will registry PropertyFactory implementations.
+    */
+    public static class PropertyFactoryRegisterCallback implements LoadableTypeCallback {
+        @Override
+        public void classFound(LoadableType type, String className) {
+            PropertyFactory factory = instantiateFactory(className, PropertyFactory.class);
+            if (factory != null) {
+                PropertyRegistry.register(factory);
+                System.out.println("Registered property factory: " + className);
+            }
+        }
+
+        @Override
+        public Collection<LoadableType> getTypes() {
+            return Collections.singleton(LoadableType.PROPERTY_FACTORY);
         }
     }
 }

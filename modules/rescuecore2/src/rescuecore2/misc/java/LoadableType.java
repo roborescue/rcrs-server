@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 
 import rescuecore2.messages.MessageFactory;
 import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.worldmodel.PropertyFactory;
 import rescuecore2.components.Agent;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
@@ -24,6 +25,8 @@ public class LoadableType {
     public static final LoadableType MESSAGE_FACTORY = new LoadableType("MessageFactory", "(.+MessageFactory).class", MessageFactory.class);
     /** An EntityFactory loadable type. */
     public static final LoadableType ENTITY_FACTORY = new LoadableType("EntityFactory", "(.+EntityFactory).class", EntityFactory.class);
+    /** A PropertyFactory loadable type. */
+    public static final LoadableType PROPERTY_FACTORY = new LoadableType("PropertyFactory", "(.+PropertyFactory).class", PropertyFactory.class);
     /** An Agent loadable type. */
     public static final LoadableType AGENT = new LoadableType("Agent", "(.+(?:FireBrigade|PoliceForce|AmbulanceTeam|Centre|Center)).class", Agent.class);
     /** A Simulator loadable type. */

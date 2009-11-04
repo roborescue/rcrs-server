@@ -117,4 +117,9 @@ public class DoubleProperty extends AbstractProperty {
         }
         return result.toString();
     }
+
+    @Override
+    public DoubleProperty copy() {
+        return new DoubleProperty(this);
+    }
 }

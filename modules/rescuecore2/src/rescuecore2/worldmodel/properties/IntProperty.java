@@ -117,4 +117,9 @@ public class IntProperty extends AbstractProperty {
         }
         return result.toString();
     }
+
+    @Override
+    public IntProperty copy() {
+        return new IntProperty(this);
+    }
 }

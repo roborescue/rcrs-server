@@ -56,8 +56,7 @@ public final class LaunchComponents {
 
     private static void processJarFiles(Config config) throws IOException {
         LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
-        processor.addCallback(new LoadableTypeProcessor.MessageFactoryRegisterCallback());
-        processor.addCallback(new LoadableTypeProcessor.EntityFactoryRegisterCallback());
+        processor.addFactoryRegisterCallbacks();
         processor.process();
     }
 

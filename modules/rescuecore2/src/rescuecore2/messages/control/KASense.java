@@ -7,9 +7,10 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.components.EntityIDComponent;
-import rescuecore2.messages.components.EntityListComponent;
+import rescuecore2.messages.components.ChangeSetComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class KASense extends AbstractMessage implements Control {
     private EntityIDComponent agentID;
     private IntComponent time;
-    private EntityListComponent updates;
+    private ChangeSetComponent updates;
 
     /**
        A KASense message that populates its data from a stream.
@@ -36,20 +37,20 @@ public class KASense extends AbstractMessage implements Control {
        A populated KASense message.
        @param agentID The ID of the Entity that is receiving the update.
        @param time The timestep of the simulation.
-       @param updates All Entities that the agent can perceive.
+       @param changes All changes that the agent can perceive.
      */
-    public KASense(EntityID agentID, int time, Collection<? extends Entity> updates) {
+    public KASense(EntityID agentID, int time, ChangeSet changes) {
         this();
         this.agentID.setValue(agentID);
         this.time.setValue(time);
-        this.updates.setEntities(updates);
+        this.updates.setChangeSet(changes);
     }
 
     private KASense() {
         super(ControlMessageURN.KA_SENSE);
         agentID = new EntityIDComponent("Agent ID");
         time = new IntComponent("Time");
-        updates = new EntityListComponent("Updates");
+        updates = new ChangeSetComponent("Updates");
         addMessageComponent(agentID);
         addMessageComponent(time);
         addMessageComponent(updates);
@@ -72,10 +73,10 @@ public class KASense extends AbstractMessage implements Control {
     }
 
     /**
-       Get the updated entity list.
-       @return All entities that have been updated.
+       Get the changed entities.
+       @return The ChangeSet.
      */
-    public List<Entity> getUpdates() {
-        return updates.getEntities();
+    public ChangeSet getChangeSet() {
+        return updates.getChangeSet();
     }
 }

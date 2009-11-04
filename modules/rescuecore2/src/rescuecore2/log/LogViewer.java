@@ -156,12 +156,14 @@ public class LogViewer extends JPanel {
                 commands.addAll(commandsRecord.getCommands());
             }
             UpdatesRecord updatesRecord = log.getUpdates(time);
+            /*
             if (updatesRecord != null) {
-                updates.addAll(updatesRecord.getEntities());
+                updates.addAll(updatesRecord.getChangeSet());
             }
+            */
             WorldModel<? extends Entity> model = log.getWorldModel(time);
             for (ViewComponent next : viewers) {
-                next.view(model, commandsRecord == null ? null : commandsRecord.getCommands(), updatesRecord == null ? null : updatesRecord.getEntities());
+                next.view(model, commandsRecord == null ? null : commandsRecord.getCommands(), updatesRecord == null ? null : updatesRecord.getChangeSet());
                 next.repaint();
             }
             down.setEnabled(time != 0);

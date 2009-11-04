@@ -3,8 +3,9 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
-import rescuecore2.messages.components.EntityListComponent;
+import rescuecore2.messages.components.ChangeSetComponent;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;
 
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class Update extends AbstractMessage implements Control {
     private IntComponent id;
     private IntComponent time;
-    private EntityListComponent updates;
+    private ChangeSetComponent changes;
 
     /**
        An Update message that populates its data from a stream.
@@ -33,23 +34,23 @@ public class Update extends AbstractMessage implements Control {
        A populated Update message.
        @param id The id of the simulator or viewer receiving the update.
        @param time The timestep of the simulation.
-       @param updates All updated entities.
+       @param changes The changeset.
      */
-    public Update(int id, int time, Collection<? extends Entity> updates) {
+    public Update(int id, int time, ChangeSet changes) {
         this();
         this.id.setValue(id);
         this.time.setValue(time);
-        this.updates.setEntities(updates);
+        this.changes.setChangeSet(changes);
     }
 
     private Update() {
         super(ControlMessageURN.UPDATE);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
-        updates = new EntityListComponent("Updates");
+        changes = new ChangeSetComponent("Changes");
         addMessageComponent(id);
         addMessageComponent(time);
-        addMessageComponent(updates);
+        addMessageComponent(changes);
     }
 
     /**
@@ -69,10 +70,10 @@ public class Update extends AbstractMessage implements Control {
     }
 
     /**
-       Get the list of updated entities.
-       @return The updated entities.
+       Get the list of changes.
+       @return The changes.
      */
-    public Collection<Entity> getUpdatedEntities() {
-        return updates.getEntities();
+    public ChangeSet getChangeSet() {
+        return changes.getChangeSet();
     }
 }

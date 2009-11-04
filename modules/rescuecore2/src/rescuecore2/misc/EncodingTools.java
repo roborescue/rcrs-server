@@ -13,6 +13,8 @@ import java.nio.charset.Charset;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityRegistry;
+import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.PropertyRegistry;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.MessageRegistry;
 
@@ -481,6 +483,9 @@ public final class EncodingTools {
     */
     public static Entity readEntity(InputStream in) throws IOException {
         String urn = readString(in);
+        if ("".equals(urn)) {
+            return null;
+        }
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
@@ -492,17 +497,96 @@ public final class EncodingTools {
     }
 
     /**
-       Read an entity from a DataInput. This will use the EntityRegistry class to look up entity type IDs.
+       Read an entity from a DataInput. This will use the EntityRegistry class to look up entity type URNs.
        @param in The DataInput to read from.
-       @return A new Entity, or null if the entity type ID is not recognised.
+       @return A new Entity, or null if the entity URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
     public static Entity readEntity(DataInput in) throws IOException {
         String urn = readString(in);
+        if ("".equals(urn)) {
+            return null;
+        }
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
         Entity result = EntityRegistry.createEntity(urn, new EntityID(entityID));
+        if (result != null) {
+            result.read(new ByteArrayInputStream(content));
+        }
+        return result;
+    }
+
+    /**
+       Write a property to a stream.
+       @param p The property to write.
+       @param out The OutputStream to write to.
+       @throws IOException If there is a problem writing to the stream.
+    */
+    public static void writeProperty(Property p, OutputStream out) throws IOException {
+        ByteArrayOutputStream gather = new ByteArrayOutputStream();
+        p.write(gather);
+        byte[] bytes = gather.toByteArray();
+        //   Type
+        writeString(p.getURN(), out);
+        //   Size
+        writeInt32(bytes.length, out);
+        //   Data
+        out.write(bytes);
+    }
+
+    /**
+       Write a property to a DataOutput.
+       @param p The property to write.
+       @param out The DataOutput to write to.
+       @throws IOException If there is a problem writing to the stream.
+    */
+    public static void writeProperty(Property p, DataOutput out) throws IOException {
+        ByteArrayOutputStream gather = new ByteArrayOutputStream();
+        p.write(gather);
+        byte[] bytes = gather.toByteArray();
+        //   Type
+        writeString(p.getURN(), out);
+        //   Size
+        writeInt32(bytes.length, out);
+        //   Data
+        out.write(bytes);
+    }
+
+    /**
+       Read a property from a stream. This will use the PropertyRegistry class to look up property type URNs.
+       @param in The InputStream to read from.
+       @return A new Property, or null if the property URN is not recognised.
+       @throws IOException If there is a problem reading from the stream.
+    */
+    public static Property readProperty(InputStream in) throws IOException {
+        String urn = readString(in);
+        if ("".equals(urn)) {
+            return null;
+        }
+        int size = readInt32(in);
+        byte[] content = readBytes(size, in);
+        Property result = PropertyRegistry.createProperty(urn);
+        if (result != null) {
+            result.read(new ByteArrayInputStream(content));
+        }
+        return result;
+    }
+
+    /**
+       Read a property from a DataInput. This will use the PropertyRegistry class to look up property type URNs.
+       @param in The DataInput to read from.
+       @return A new Property, or null if the property URN is not recognised.
+       @throws IOException If there is a problem reading from the stream.
+    */
+    public static Property readProperty(DataInput in) throws IOException {
+        String urn = readString(in);
+        if ("".equals(urn)) {
+            return null;
+        }
+        int size = readInt32(in);
+        byte[] content = readBytes(size, in);
+        Property result = PropertyRegistry.createProperty(urn);
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -552,9 +636,9 @@ public final class EncodingTools {
     }
 
     /**
-       Read a message from a stream. This will use the MessageRegistry class to look up message type IDs.
+       Read a message from a stream. This will use the MessageRegistry class to look up message URNs.
        @param in The InputStream to read from.
-       @return A new Message, or null if the message type ID is not recognised.
+       @return A new Message, or null if the message URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(InputStream in) throws IOException {
@@ -569,9 +653,9 @@ public final class EncodingTools {
     }
 
     /**
-       Read a message from a DataInput. This will use the MessageRegistry class to look up message type IDs.
+       Read a message from a DataInput. This will use the MessageRegistry class to look up message URNs.
        @param in The DataInput to read from.
-       @return A new Message, or null if the message type ID is not recognised.
+       @return A new Message, or null if the message URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(DataInput in) throws IOException {

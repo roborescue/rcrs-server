@@ -118,4 +118,9 @@ public class EntityRefProperty extends AbstractProperty {
         }
         return result.toString();
     }
+
+    @Override
+    public EntityRefProperty copy() {
+        return new EntityRefProperty(this);
+    }
 }

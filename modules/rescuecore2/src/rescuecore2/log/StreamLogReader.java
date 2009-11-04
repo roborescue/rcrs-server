@@ -192,7 +192,7 @@ public class StreamLogReader implements LogReader {
             }
             newWorld.merge(copy);
         }
-        newWorld.merge(record.getEntities());
+        newWorld.merge(record.getChangeSet());
         worldModels.put(time, newWorld);
         maxTime = Math.max(time, maxTime);
     }

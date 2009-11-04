@@ -68,6 +68,12 @@ public interface WorldModel<T extends Entity> extends Iterable<T> {
     void merge(Collection<? extends Entity> toMerge);
 
     /**
+       Merge a set of changes into this world.
+       @param changeSet The set of changes to merge into this world model.
+    */
+    void merge(ChangeSet changeSet);
+
+    /**
        Get the classes that specify what is allowed into this world model. This is to work around some of the limitations of Java generics, and also allows fine-grained control of what goes into the model.
        @return A collection of Class objects.
      */

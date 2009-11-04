@@ -7,6 +7,7 @@ import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
@@ -58,13 +59,13 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
        @param u The Update object.
      */
     protected void handleUpdate(Update u) {
-        Collection<Entity> entities = u.getUpdatedEntities();
+        ChangeSet changes = u.getChangeSet();
         int time = u.getTime();
         if (time != lastUpdateTime + 1) {
             System.out.println("WARNING: Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
         }
         lastUpdateTime = time;
-        model.merge(entities);
+        model.merge(changes);
     }
 
     /**
@@ -72,7 +73,7 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
        @param c The Commands object.
      */
     protected void handleCommands(Commands c) {
-        send(new SKUpdate(simulatorID, c.getTime(), new HashSet<Entity>()));
+        send(new SKUpdate(simulatorID, c.getTime(), new ChangeSet()));
     }
 
     private class SimulatorListener implements ConnectionListener {

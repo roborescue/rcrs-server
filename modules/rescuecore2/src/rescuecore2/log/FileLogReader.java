@@ -21,6 +21,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
 
 /**
@@ -84,8 +85,8 @@ public class FileLogReader implements LogReader {
         }
         // Go through updates and apply them all
         for (int i = startTime + 1; i <= time; ++i) {
-            Collection<Entity> updates = getUpdates(time).getEntities();
-            System.out.println("Merging " + updates.size() + " updates for timestep " + i);
+            ChangeSet updates = getUpdates(time).getChangeSet();
+            System.out.println("Merging " + updates.getChangedEntities().size() + " updates for timestep " + i);
             result.merge(updates);
         }
         System.out.println("Done");

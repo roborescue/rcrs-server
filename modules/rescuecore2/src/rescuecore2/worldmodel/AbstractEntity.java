@@ -2,8 +2,10 @@ package rescuecore2.worldmodel;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeString;
+import static rescuecore2.misc.EncodingTools.writeProperty;
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.readString;
+import static rescuecore2.misc.EncodingTools.readProperty;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import java.util.Set;
@@ -109,16 +111,8 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public void write(OutputStream out) throws IOException {
         for (Property next : getProperties()) {
-            ByteArrayOutputStream gather = new ByteArrayOutputStream();
             if (next.isDefined()) {
-                next.write(gather);
-                byte[] bytes = gather.toByteArray();
-                //   Type
-                writeString(next.getURN(), out);
-                //   Size
-                writeInt32(bytes.length, out);
-                //   Data
-                out.write(bytes);
+                writeProperty(next, out);
             }
         }
         // end-of-properties marker
@@ -127,19 +121,14 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void read(InputStream in) throws IOException {
-        String propertyURN;
+        Property prop = null;
         while (true) {
-            propertyURN = readString(in);
-            if (END_OF_PROPERTIES.equals(propertyURN)) {
+            prop = readProperty(in);
+            if (prop == null) {
                 return;
             }
-            //                System.out.println("Reading property " + propID);
-            int size = readInt32(in);
-            //                System.out.println("Size " + size);
-            byte[] data = readBytes(size, in);
-            Property prop = getProperty(propertyURN);
-            prop.read(new ByteArrayInputStream(data));
-            //                System.out.println("Updated state: " + this);
+            Property existing  = getProperty(prop.getURN());
+            existing.takeValue(prop);
         }
     }
 
@@ -158,6 +147,20 @@ public abstract class AbstractEntity implements Entity {
         }
         result.append("]");
         return result.toString();
+    }
+
+    @Override
+    public int hashCode() {
+	return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+	if (o instanceof AbstractEntity) {
+	    AbstractEntity a = (AbstractEntity)o;
+	    return this.id.equals(a.id);
+	}
+	return false;
     }
 
     /**

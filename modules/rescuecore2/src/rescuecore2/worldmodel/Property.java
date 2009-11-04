@@ -51,4 +51,10 @@ public interface Property {
        @return The value of this property.
     */
     Object getValue();
+
+    /**
+       Create a copy of this property.
+       @return A copy of this property.
+    */
+    Property copy();
 }

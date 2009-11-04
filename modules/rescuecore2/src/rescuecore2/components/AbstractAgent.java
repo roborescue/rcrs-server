@@ -45,9 +45,9 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     /**
        Notification that a timestep has started.
        @param time The timestep.
-       @param changed A list of entities that changed this timestep.
+       @param changed A collection of entities that changed this timestep.
      */
-    protected abstract void think(int time, List<EntityID> changed);
+    protected abstract void think(int time, Collection<EntityID> changed);
 
     /**
        Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
@@ -60,12 +60,8 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
        @param sense The sense message.
      */
     protected void processSense(KASense sense) {
-        model.merge(sense.getUpdates());
-        List<Entity> updates = sense.getUpdates();
-        List<EntityID> changed = new ArrayList<EntityID>(updates.size());
-        for (Entity next : updates) {
-            changed.add(next.getID());
-        }
+        model.merge(sense.getChangeSet());
+        Collection<EntityID> changed = sense.getChangeSet().getChangedEntities();
         think(sense.getTime(), changed);
     }
 

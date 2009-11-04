@@ -3,8 +3,9 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
-import rescuecore2.messages.components.EntityListComponent;
+import rescuecore2.messages.components.ChangeSetComponent;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.List;
 import java.util.Collection;
@@ -18,7 +19,7 @@ import java.io.IOException;
 public class SKUpdate extends AbstractMessage implements Control {
     private IntComponent id;
     private IntComponent time;
-    private EntityListComponent update;
+    private ChangeSetComponent update;
 
     /**
        An SKUpdate message that populates its data from a stream.
@@ -34,20 +35,20 @@ public class SKUpdate extends AbstractMessage implements Control {
        SKUpdate message with a specific ID and data component.
        @param id The id of the simulator sending the update.
        @param time The timestep this update refers to.
-       @param data The updated objects.
+       @param changes The changeset.
      */
-    public SKUpdate(int id, int time, Collection<? extends Entity> data) {
+    public SKUpdate(int id, int time, ChangeSet changes) {
         this();
         this.id.setValue(id);
         this.time.setValue(time);
-        this.update.setEntities(data);
+        this.update.setChangeSet(changes);
     }
 
     private SKUpdate() {
         super(ControlMessageURN.SK_UPDATE);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
-        update = new EntityListComponent("Updated objects");
+        update = new ChangeSetComponent("Changes");
         addMessageComponent(id);
         addMessageComponent(time);
         addMessageComponent(update);
@@ -62,11 +63,11 @@ public class SKUpdate extends AbstractMessage implements Control {
     }
 
     /**
-       Get the updated entity list.
-       @return The updated entity list.
+       Get the list of changes.
+       @return The ChangeSet.
      */
-    public List<Entity> getUpdatedEntities() {
-        return update.getEntities();
+    public ChangeSet getChangeSet() {
+        return update.getChangeSet();
     }
 
     /**

@@ -6,6 +6,7 @@ import rescuecore2.messages.Message;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
@@ -56,13 +57,13 @@ public abstract class AbstractViewer<T extends Entity> extends AbstractComponent
        @param u The Update object.
      */
     protected void handleUpdate(Update u) {
-        Collection<Entity> entities = u.getUpdatedEntities();
+        ChangeSet changes = u.getChangeSet();
         int time = u.getTime();
         if (time != lastUpdateTime + 1) {
             System.out.println("WARNING: Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
         }
         lastUpdateTime = time;
-        model.merge(entities);
+        model.merge(changes);
     }
 
     /**
