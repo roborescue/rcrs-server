@@ -5,6 +5,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +32,7 @@ public class ViewerProxy extends AbstractKernelComponent {
        @param time The simulation time.
        @param updates The updated entities.
     */
-    public void sendUpdate(int time, Collection<? extends Entity> updates) {
+    public void sendUpdate(int time, ChangeSet updates) {
         send(Collections.singleton(new Update(id, time, updates)));
     }
 

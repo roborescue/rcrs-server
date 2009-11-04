@@ -42,6 +42,8 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.EntityFactory;
+import rescuecore2.worldmodel.PropertyRegistry;
+import rescuecore2.worldmodel.PropertyFactory;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
@@ -106,7 +108,7 @@ public final class StartKernel {
             }
             // Process jar files
             processJarFiles(config);
-            // Register messages and entities
+            // Register message, entity and property factories
             for (String next : config.getArrayValue(Constants.MESSAGE_FACTORY_KEY, null)) {
                 MessageFactory factory = instantiateFactory(next, MessageFactory.class);
                 if (factory != null) {
@@ -119,6 +121,13 @@ public final class StartKernel {
                 if (factory != null) {
                     EntityRegistry.register(factory);
                     System.out.println("Registered entity factory: " + next);
+                }
+            }
+            for (String next : config.getArrayValue(Constants.PROPERTY_FACTORY_KEY, null)) {
+                PropertyFactory factory = instantiateFactory(next, PropertyFactory.class);
+                if (factory != null) {
+                    PropertyRegistry.register(factory);
+                    System.out.println("Registered property factory: " + next);
                 }
             }
             final KernelInfo kernelInfo = createKernel(config);
@@ -330,6 +339,7 @@ public final class StartKernel {
         LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
         processor.addConfigUpdater(LoadableType.MESSAGE_FACTORY, config, Constants.MESSAGE_FACTORY_KEY);
         processor.addConfigUpdater(LoadableType.ENTITY_FACTORY, config, Constants.ENTITY_FACTORY_KEY);
+        processor.addConfigUpdater(LoadableType.PROPERTY_FACTORY, config, Constants.PROPERTY_FACTORY_KEY);
         processor.addConfigUpdater(LoadableType.AGENT, config, KernelConstants.AGENTS_KEY);
         processor.addConfigUpdater(LoadableType.SIMULATOR, config, KernelConstants.SIMULATORS_KEY);
         processor.addConfigUpdater(LoadableType.VIEWER, config, KernelConstants.VIEWERS_KEY);
@@ -352,9 +362,11 @@ public final class StartKernel {
             this.config = config;
             this.componentManager = componentManager;
             this.count = count;
+            System.out.println("New ComponentStarter: " + className + " * " + count);
         }
 
         public Void call() throws InterruptedException {
+            System.out.println("ComponentStarter running: " + className + " * " + count);
             Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
             componentManager.newConnection(connections.first());
             ComponentLauncher launcher = new ComponentLauncher(connections.second());

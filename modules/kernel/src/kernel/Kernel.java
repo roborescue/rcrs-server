@@ -10,6 +10,7 @@ import java.io.IOException;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.Constants;
@@ -239,14 +240,14 @@ public class Kernel {
             log.writeRecord(new CommandsRecord(time, agentCommandsLastTimestep));
             long commandsTime = System.currentTimeMillis();
             System.out.println("Broadcasting commands");
-            Collection<Entity> updates = sendCommandsToViewersAndSimulators(time, agentCommandsLastTimestep);
-            log.writeRecord(new UpdatesRecord(time, updates));
+            ChangeSet changes = sendCommandsToViewersAndSimulators(time, agentCommandsLastTimestep);
+            log.writeRecord(new UpdatesRecord(time, changes));
             long updatesTime = System.currentTimeMillis();
             // Merge updates into world model
-            worldModel.merge(updates);
+            worldModel.merge(changes);
             long mergeTime = System.currentTimeMillis();
             System.out.println("Broadcasting updates");
-            sendUpdatesToViewersAndSimulators(time, updates);
+            sendUpdatesToViewersAndSimulators(time, changes);
             long broadcastTime = System.currentTimeMillis();
             System.out.println("Timestep " + time + " complete");
             System.out.println("Perception took        : " + (perceptionTime - start) + "ms");
@@ -255,7 +256,7 @@ public class Kernel {
             System.out.println("World model merge took : " + (mergeTime - updatesTime) + "ms");
             System.out.println("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
             System.out.println("Total time             : " + (broadcastTime - start) + "ms");
-            previous = new Timestep(time, agentCommandsLastTimestep, updates);
+            previous = new Timestep(time, agentCommandsLastTimestep, changes);
             fireTimestepCompleted(previous);
         }
     }
@@ -330,7 +331,7 @@ public class Kernel {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
-            Collection<Entity> visible = perception.getVisibleEntities(next);
+            ChangeSet visible = perception.getVisibleEntities(next);
             log.writeRecord(new PerceptionRecord(timestep, next.getControlledEntity().getID(), visible, comms.get(next)));
             next.sendPerceptionUpdate(timestep, visible, comms.get(next));
         }
@@ -357,7 +358,7 @@ public class Kernel {
     /**
        Send commands to all viewers and simulators and return which entities have been updated by the simulators.
     */
-    private Collection<Entity> sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
+    private ChangeSet sendCommandsToViewersAndSimulators(int timestep, Collection<Command> commands) throws InterruptedException {
         for (SimulatorProxy next : sims) {
             next.sendAgentCommands(timestep, commands);
         }
@@ -365,14 +366,14 @@ public class Kernel {
             next.sendAgentCommands(timestep, commands);
         }
         // Wait until all simulators have sent updates
-        Collection<Entity> result = new HashSet<Entity>();
+        ChangeSet result = new ChangeSet();
         for (SimulatorProxy next : sims) {
-            result.addAll(next.getUpdates(timestep));
+            result.merge(next.getUpdates(timestep));
         }
         return result;
     }
 
-    private void sendUpdatesToViewersAndSimulators(int timestep, Collection<Entity> updates) throws InterruptedException {
+    private void sendUpdatesToViewersAndSimulators(int timestep, ChangeSet updates) throws InterruptedException {
         for (SimulatorProxy next : sims) {
             next.sendUpdate(timestep, updates);
         }

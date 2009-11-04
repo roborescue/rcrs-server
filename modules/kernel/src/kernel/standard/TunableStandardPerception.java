@@ -17,6 +17,7 @@ import kernel.ui.KernelGUIComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
@@ -130,13 +131,14 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
         // Look for buildings that caught fire last timestep
         for (Iterator<Building> it = unburntBuildings.iterator(); it.hasNext();) {
             Building next = it.next();
-            int fieryness = next.getFieryness();
-            // Fieryness 1, 2 and 3 mean on fire
-            // CHECKSTYLE:OFF:MagicNumber
-            if (fieryness > 0 && fieryness < 4) {
-                // CHECKSTYLE:ON:MagicNumber
+            switch (next.getFierynessEnum()) {
+            case HEATING:
+            case BURNING:
+            case INFERNO:
                 ignitionTimes.put(next, time);
                 it.remove();
+            default:
+                // Ignore
             }
         }
         time = timestep;
@@ -145,10 +147,10 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
     }
 
     @Override
-    public Collection<Entity> getVisibleEntities(AgentProxy agent) {
+    public ChangeSet getVisibleEntities(AgentProxy agent) {
         synchronized (lock) {
             StandardEntity agentEntity = (StandardEntity)agent.getControlledEntity();
-            Collection<Entity> result = new HashSet<Entity>();
+            ChangeSet result = new ChangeSet();
             // Look for roads/nodes/buildings/humans within range
             Pair<Integer, Integer> location = agentEntity.getLocation(world);
             if (location != null) {
@@ -157,37 +159,33 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
                 Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
                 // Copy entities and set property values
                 for (StandardEntity next : nearby) {
-                    StandardEntity copy = null;
                     StandardEntityURN urn = StandardEntityURN.valueOf(next.getURN());
                     switch (urn) {
                     case ROAD:
-                        copy = (StandardEntity)next.copy();
-                        filterRoadProperties((Road)copy);
+                        addRoadProperties((Road)next, result);
                         break;
                     case BUILDING:
                     case REFUGE:
                     case FIRE_STATION:
                     case AMBULANCE_CENTRE:
                     case POLICE_OFFICE:
-                        copy = (StandardEntity)next.copy();
-                        filterBuildingProperties((Building)copy);
+                        addBuildingProperties((Building)next, result);
                         break;
                     case CIVILIAN:
                     case FIRE_BRIGADE:
                     case AMBULANCE_TEAM:
                     case POLICE_FORCE:
-                        copy = (StandardEntity)next.copy();
                         // Always send all properties of the agent-controlled object
-                        if (next != agentEntity) {
-                            filterHumanProperties((Human)copy);
+                        if (next == agentEntity) {
+                            addSelfProperties((Human)next, result);
+                        }
+                        else {
+                            addHumanProperties((Human)next, result);
                         }
                         break;
                     default:
                         // Ignore other types
                         break;
-                    }
-                    if (copy != null) {
-                        result.add(copy);
                     }
                 }
                 // Now look for far fires
@@ -199,9 +197,7 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
                         int visibleRange = timeDelta * farFireDistance;
                         int range = world.getDistance(agentEntity, b);
                         if (range <= visibleRange) {
-                            Building copy = (Building)b.copy();
-                            filterFarBuildingProperties(copy);
-                            result.add(copy);
+                            addFarBuildingProperties(b, result);
                         }
                     }
                 }
@@ -210,72 +206,50 @@ public class TunableStandardPerception implements Perception, KernelGUIComponent
         }
     }
 
-    private void filterRoadProperties(Road road) {
-        // Update BLOCK only
-        for (Property next : road.getProperties()) {
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
-            switch (urn) {
-            case BLOCK:
-                break;
-            default:
-                next.undefine();
-            }
-        }
+    private void addRoadProperties(Road road, ChangeSet result) {
+        // Only update BLOCK
+        result.addChange(road, road.getBlockProperty());
     }
 
-    private void filterBuildingProperties(Building building) {
+    private void addBuildingProperties(Building building, ChangeSet result) {
         // Update TEMPERATURE, FIERYNESS and BROKENNESS
-        for (Property next : building.getProperties()) {
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
-            switch (urn) {
-            case TEMPERATURE:
-            case FIERYNESS:
-            case BROKENNESS:
-                break;
-            default:
-                next.undefine();
-            }
-        }
+        result.addChange(building, building.getTemperatureProperty());
+        result.addChange(building, building.getFierynessProperty());
+        result.addChange(building, building.getBrokennessProperty());
     }
 
-    private void filterFarBuildingProperties(Building building) {
+    private void addFarBuildingProperties(Building building, ChangeSet result) {
         // Update FIERYNESS only
-        for (Property next : building.getProperties()) {
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
-            switch (urn) {
-            case FIERYNESS:
-                break;
-            default:
-                next.undefine();
-            }
-        }
+        result.addChange(building, building.getFierynessProperty());
     }
 
-    private void filterHumanProperties(Human human) {
+    private void addHumanProperties(Human human, ChangeSet result) {
         // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
-        for (Property next : human.getProperties()) {
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
-            switch (urn) {
-            case POSITION:
-            case POSITION_EXTRA:
-            case DIRECTION:
-            case STAMINA:
-            case BURIEDNESS:
-                break;
-            case HP:
-                roundProperty((IntProperty)next, hpPrecision);
-                break;
-            case DAMAGE:
-                roundProperty((IntProperty)next, damagePrecision);
-                break;
-            default:
-                next.undefine();
-            }
-        }
+        result.addChange(human, human.getPositionProperty());
+        result.addChange(human, human.getPositionExtraProperty());
+        result.addChange(human, human.getDirectionProperty());
+        result.addChange(human, human.getStaminaProperty());
+        result.addChange(human, human.getBuriednessProperty());
+        // Round HP and damage
+        IntProperty hp = (IntProperty)human.getHPProperty().copy();
+        roundProperty(hp, hpPrecision);
+        result.addChange(human, hp);
+        IntProperty damage = (IntProperty)human.getDamageProperty().copy();
+        roundProperty(damage, damagePrecision);
+        result.addChange(human, damage);
+    }
+
+    private void addSelfProperties(Human human, ChangeSet result) {
+        // Update human properties and POSITION_HISTORY
+        addHumanProperties(human, result);
+        result.addChange(human, human.getPositionHistoryProperty());
+        // Un-round hp and damage
+        result.addChange(human, human.getHPProperty());
+        result.addChange(human, human.getDamageProperty());
     }
 
     private void roundProperty(IntProperty p, int precision) {
-        if (precision != 1) {
+        if (precision != 1 && p.isDefined()) {
             p.setValue(round(p.getValue(), precision));
         }
     }

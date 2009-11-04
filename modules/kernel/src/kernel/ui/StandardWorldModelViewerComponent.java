@@ -34,7 +34,7 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
         kernel.addKernelListener(new KernelListenerAdapter() {
                 @Override
                 public void timestepCompleted(Timestep time) {
-                    viewer.view(kernel.getWorldModel(), time.getCommands());
+                    viewer.view(kernel.getWorldModel(), time.getCommands(), time.getChangeSet());
                     viewer.repaint();
                 }
             });

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 
 /**
    A record of everything that happened in a timestep.
@@ -11,18 +12,18 @@ import rescuecore2.worldmodel.Entity;
 public class Timestep {
     private int time;
     private Collection<Command> commands;
-    private Collection<Entity> updates;
+    private ChangeSet changes;
 
     /**
        Construct a timestep record.
        @param time The timestep number.
-       @param commands The commands.
-       @param updates The updates.
+       @param commands The commands sent by agents.
+       @param changes The world model changes.
     */
-    public Timestep(int time, Collection<Command> commands, Collection<Entity> updates) {
+    public Timestep(int time, Collection<Command> commands, ChangeSet changes) {
         this.time = time;
         this.commands = commands;
-        this.updates = updates;
+        this.changes = changes;
     }
 
     /**
@@ -34,7 +35,7 @@ public class Timestep {
     }
 
     /**
-       Get the commands.
+       Get the commands send by agents this timestep.
        @return The commands.
     */
     public Collection<Command> getCommands() {
@@ -42,10 +43,10 @@ public class Timestep {
     }
 
     /**
-       Get the updates.
-       @return The updates.
+       Get the changes to entities during this timestep.
+       @return The changes.
     */
-    public Collection<Entity> getUpdates() {
-        return updates;
+    public ChangeSet getChangeSet() {
+        return changes;
     }
 }

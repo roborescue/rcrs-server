@@ -8,6 +8,7 @@ import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +20,7 @@ import java.util.HashSet;
    This class is the kernel interface to a simulator.
  */
 public class SimulatorProxy extends AbstractKernelComponent {
-    private Map<Integer, Collection<Entity>> updates;
+    private Map<Integer, ChangeSet> updates;
     private int id;
 
     /**
@@ -31,18 +32,18 @@ public class SimulatorProxy extends AbstractKernelComponent {
     public SimulatorProxy(String name, int id, Connection c) {
         super(name, c);
         this.id = id;
-        updates = new HashMap<Integer, Collection<Entity>>();
+        updates = new HashMap<Integer, ChangeSet>();
         c.addConnectionListener(new SimulatorConnectionListener());
     }
 
     /**
        Get updates from this simulator. This method may block until updates are available.
        @param time The timestep to get updates for.
-       @return A collection of entities representing the updates from this simulator.
+       @return A ChangeSet representing the updates from this simulator.
        @throws InterruptedException If this thread is interrupted while waiting for updates.
     */
-    public Collection<Entity> getUpdates(int time) throws InterruptedException {
-        Collection<Entity> result = null;
+    public ChangeSet getUpdates(int time) throws InterruptedException {
+        ChangeSet result = null;
         synchronized (updates) {
             while (result == null) {
                 result = updates.get(time);
@@ -59,7 +60,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        @param time The simulation time.
        @param update The updated entities.
     */
-    public void sendUpdate(int time, Collection<? extends Entity> update) {
+    public void sendUpdate(int time, ChangeSet update) {
         send(Collections.singleton(new Update(id, time, update)));
     }
 
@@ -80,16 +81,16 @@ public class SimulatorProxy extends AbstractKernelComponent {
     /**
        Register an update from the simulator.
        @param time The timestep of the update.
-       @param u The set of updated entities.
+       @param changes The set of changes.
      */
-    protected void updateReceived(int time, Collection<? extends Entity> u) {
+    protected void updateReceived(int time, ChangeSet changes) {
         synchronized (updates) {
-            Collection<Entity> c = updates.get(time);
+            ChangeSet c = updates.get(time);
             if (c == null) {
-                c = new HashSet<Entity>();
+                c = new ChangeSet();
                 updates.put(time, c);
             }
-            c.addAll(u);
+            c.merge(changes);
             updates.notifyAll();
         }
     }
@@ -101,7 +102,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
                 SKUpdate update = (SKUpdate)msg;
                 if (update.getSimulatorID() == id) {
                     System.out.println("Received simulator update: " + msg);
-                    updateReceived(update.getTime(), update.getUpdatedEntities());
+                    updateReceived(update.getTime(), update.getChangeSet());
                 }
             }
         }

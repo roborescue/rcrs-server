@@ -13,6 +13,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KASense;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 
 /**
    This class is the kernel interface to an agent.
@@ -67,10 +68,10 @@ public class AgentProxy extends AbstractKernelComponent {
     /**
        Notify the of a perception update.
        @param time The current timestep.
-       @param visible The set of visible entitites.
+       @param visible The set of visible changes.
        @param communication The set of communication messages that the agent perceived.
      */
-    public void sendPerceptionUpdate(int time, Collection<? extends Entity> visible, Collection<? extends Message> communication) {
+    public void sendPerceptionUpdate(int time, ChangeSet visible, Collection<? extends Message> communication) {
         KASense sense = new KASense(getControlledEntity().getID(), time, visible);
         Collection<Message> all = new ArrayList<Message>();
         all.add(sense);

@@ -5,6 +5,7 @@ import java.util.Collection;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.ChangeSet;
 
 /**
    Implementations of this interface are responsible for determining what entities/properties each agent can see.
@@ -22,7 +23,7 @@ public interface Perception {
        @param agent The agent that is perceiving the world.
        @return A collection of entities that the agent can perceive.
      */
-    Collection<Entity> getVisibleEntities(AgentProxy agent);
+    ChangeSet getVisibleEntities(AgentProxy agent);
 
     /**
        Notify this perception object of the current time.
