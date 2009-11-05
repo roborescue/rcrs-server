@@ -1,14 +1,9 @@
 package rescuecore2.messages.components;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.AbstractMessageComponent;
 
@@ -47,10 +42,10 @@ public class ChangeSetComponent extends AbstractMessageComponent {
 
     /**
        Set the ChangeSet.
-       @param changes The new ChangeSet.
+       @param newChanges The new ChangeSet.
     */
-    public void setChangeSet(ChangeSet changes) {
-        this.changes = new ChangeSet(changes);
+    public void setChangeSet(ChangeSet newChanges) {
+        this.changes = new ChangeSet(newChanges);
     }
 
     @Override

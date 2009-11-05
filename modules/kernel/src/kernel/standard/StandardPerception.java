@@ -15,7 +15,6 @@ import kernel.Kernel;
 import kernel.ui.KernelGUIComponent;
 
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.properties.IntProperty;
@@ -27,7 +26,6 @@ import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.StandardPropertyURN;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
@@ -137,6 +135,7 @@ public class StandardPerception implements Perception, KernelGUIComponent {
             case INFERNO:
                 ignitionTimes.put(next, time);
                 it.remove();
+                break;
             default:
                 // Ignore
             }

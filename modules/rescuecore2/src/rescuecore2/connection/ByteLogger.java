@@ -4,10 +4,10 @@ package rescuecore2.connection;
    Utility class for logging raw bytes. Handy for debugging.
  */
 public final class ByteLogger {
+    private static final Object LOCK = new Object();
+
     /** Utility class: private constructor. */
     private ByteLogger() {}
-
-    private static final Object LOCK = new Object();
 
     /**
        Log a byte array.

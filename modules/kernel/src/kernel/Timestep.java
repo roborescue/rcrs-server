@@ -3,7 +3,6 @@ package kernel;
 import java.util.Collection;
 
 import rescuecore2.messages.Command;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 
 /**

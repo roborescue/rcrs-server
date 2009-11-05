@@ -7,14 +7,12 @@ import rescuecore2.messages.Command;
 import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
    This class is the kernel interface to a simulator.

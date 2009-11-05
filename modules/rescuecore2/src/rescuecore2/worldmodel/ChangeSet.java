@@ -1,10 +1,8 @@
 package rescuecore2.worldmodel;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.writeString;
 import static rescuecore2.misc.EncodingTools.writeProperty;
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.readProperty;
 
 import java.util.Set;
@@ -141,7 +139,6 @@ public class ChangeSet {
                 writeProperty(prop, out);
             }
         }
-        
     }
 
     /**

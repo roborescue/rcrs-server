@@ -1,14 +1,10 @@
 package rescuecore2.messages.control;
 
-import java.util.Collection;
-import java.util.List;
-
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.components.ChangeSetComponent;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 

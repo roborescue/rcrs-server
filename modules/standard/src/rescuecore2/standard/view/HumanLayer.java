@@ -168,22 +168,26 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
             @Override
             public String toString() {
                 return "Healthy";
-            }},
+            }
+        },
         INJURED {
             @Override
             public String toString() {
                 return "Injured";
-            }},
+            }
+        },
         CRITICAL {
             @Override
             public String toString() {
                 return "Critical";
-            }},
+            }
+        },
         DEAD {
             @Override
             public String toString() {
                 return "Dead";
-            }};
+            }
+        };
     }
 
     private static class HumanSorter implements Comparator<Human>, java.io.Serializable {

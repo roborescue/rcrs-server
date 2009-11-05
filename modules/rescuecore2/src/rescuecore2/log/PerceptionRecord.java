@@ -1,10 +1,8 @@
 package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.writeEntity;
 import static rescuecore2.misc.EncodingTools.writeMessage;
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.readMessage;
 
 import java.io.OutputStream;
@@ -15,7 +13,6 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Message;
 

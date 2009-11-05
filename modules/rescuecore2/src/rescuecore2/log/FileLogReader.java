@@ -11,7 +11,6 @@ import java.io.ByteArrayInputStream;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.NavigableMap;

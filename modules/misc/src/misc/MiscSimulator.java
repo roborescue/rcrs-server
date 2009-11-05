@@ -28,9 +28,6 @@ import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
 
-import java.util.Set;
-import java.util.HashSet;
-
 /**
    A simple misc simulator. This simulator handles buriedness, health, loading, unloading and road clearing.
  */

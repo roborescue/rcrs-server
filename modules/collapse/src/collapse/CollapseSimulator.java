@@ -4,14 +4,10 @@ import rescuecore2.config.Config;
 import rescuecore2.components.AbstractSimulator;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.messages.control.SKUpdate;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Building;
-
-import java.util.Set;
-import java.util.HashSet;
 
 /**
    A simple collapse simulator.

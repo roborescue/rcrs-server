@@ -8,8 +8,6 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.config.Config;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**

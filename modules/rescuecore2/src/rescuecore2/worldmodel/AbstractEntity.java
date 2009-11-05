@@ -1,12 +1,8 @@
 package rescuecore2.worldmodel;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeString;
 import static rescuecore2.misc.EncodingTools.writeProperty;
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.readProperty;
-import static rescuecore2.misc.EncodingTools.readBytes;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -16,8 +12,6 @@ import java.util.Iterator;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
    Abstract base class for concrete Entity implementations.
@@ -151,16 +145,18 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public int hashCode() {
-	return id.hashCode();
+        return id.hashCode();
     }
 
     @Override
     public boolean equals(Object o) {
-	if (o instanceof AbstractEntity) {
-	    AbstractEntity a = (AbstractEntity)o;
-	    return this.id.equals(a.id);
-	}
-	return false;
+        if (o instanceof AbstractEntity) {
+            // CHECKSTYLE:OFF:IllegalType
+            AbstractEntity a = (AbstractEntity)o;
+            // CHECKSTYLE:ON:IllegalType
+            return this.id.equals(a.id);
+        }
+        return false;
     }
 
     /**

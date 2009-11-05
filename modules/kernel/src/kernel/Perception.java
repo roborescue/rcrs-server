@@ -1,7 +1,5 @@
 package kernel;
 
-import java.util.Collection;
-
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;

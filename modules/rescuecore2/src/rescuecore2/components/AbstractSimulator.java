@@ -11,7 +11,6 @@ import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
    Abstract base class for simulator implementations.

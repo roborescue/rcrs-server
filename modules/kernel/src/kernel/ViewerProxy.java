@@ -4,7 +4,6 @@ import rescuecore2.connection.Connection;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;

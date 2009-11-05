@@ -1,19 +1,12 @@
 package rescuecore2.log;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.writeEntity;
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readEntity;
 
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Set;
-
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 
 /**

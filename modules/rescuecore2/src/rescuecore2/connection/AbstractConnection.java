@@ -182,6 +182,7 @@ public abstract class AbstractConnection implements Connection {
             e.printStackTrace();
             ByteLogger.log(b, this.toString());
         }
+        // CHECKSTYLE:OFF:IllegalCatch
         catch (RuntimeException e) {
             e.printStackTrace();
             ByteLogger.log(b, this.toString());
@@ -192,6 +193,7 @@ public abstract class AbstractConnection implements Connection {
             ByteLogger.log(b, this.toString());
             throw e;
         }
+        // CHECKSTYLE:ON:IllegalCatch
     }
 
     /**
