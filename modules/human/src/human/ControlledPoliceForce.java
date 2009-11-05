@@ -14,6 +14,7 @@ import rescuecore2.standard.messages.AKMove;
 
 import sample.SampleSearch;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class ControlledPoliceForce extends AbstractAgent {
     }
 
     @Override
-    protected void think(int time, List c) {
+    protected void think(int time, Collection c) {
         if (location() instanceof Road) {
             Road r = (Road)location();
             if (r.isLinesToHeadDefined() && (r.countBlockedLanes() == r.getLinesToHead())) {

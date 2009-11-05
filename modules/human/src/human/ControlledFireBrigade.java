@@ -40,7 +40,7 @@ public class ControlledFireBrigade extends AbstractAgent {
     }
 
     @Override
-    protected void think(int time, List changed) {
+    protected void think(int time, Collection changed) {
         if (target == null) {
             System.out.println(me() + " has nothing to do");
             return;

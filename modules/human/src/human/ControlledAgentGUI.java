@@ -119,7 +119,7 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
 
     @Override
     protected void handleUpdate(Update u) {
-        world.merge(u.getUpdatedEntities());
+        world.merge(u.getChangeSet());
         viewer.repaint();
         fbListModel.refresh();
         pfListModel.refresh();

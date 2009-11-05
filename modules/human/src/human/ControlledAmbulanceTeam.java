@@ -16,6 +16,7 @@ import rescuecore2.standard.messages.AKMove;
 
 import sample.SampleSearch;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
     }
 
     @Override
-    protected void think(int time, List c) {
+    protected void think(int time, Collection c) {
         if (target == null) {
             System.out.println(me() + " has nothing to do.");
             return;
