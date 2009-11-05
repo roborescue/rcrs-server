@@ -5,14 +5,18 @@ import rescuecore2.messages.control.Commands;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
+import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.misc.Pair;
+
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
-import rescuecore2.misc.collections.LazyMap;
-import rescuecore2.misc.Pair;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -22,10 +26,10 @@ import java.util.Map;
    A simple blockade simulator.
  */
 public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
-    private static final int RUBBLE_DIVISOR = 20;
+    private static final int RUBBLE_DIVISOR = 2000;
     private static final double NEARBY_THRESHOLD = 5000;
 
-    private Set<Road> changed;
+    private ChangeSet changes;
     private Map<EntityID, Set<Road>> nearbyRoads;
 
     @Override
@@ -60,27 +64,29 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
             }
         }
         System.out.println("Done");
-        changed = new HashSet<Road>();
+        changes = new ChangeSet();
     }
 
     @Override
     protected void handleCommands(Commands c) {
-        send(new SKUpdate(simulatorID, c.getTime(), changed));
+        send(new SKUpdate(simulatorID, c.getTime(), changes));
     }
 
     @Override
     protected void handleUpdate(Update u) {
         super.handleUpdate(u);
-        changed.clear();
-        for (Entity next : u.getUpdatedEntities()) {
+        changes = new ChangeSet();
+        for (EntityID id : u.getChangeSet().getChangedEntities()) {
+            Entity next = model.getEntity(id);
             if (next instanceof Building) {
                 Building b = (Building)next;
-                if (b.isBrokennessDefined()) {
+                Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
+                if (brokenness != null) {
                     // Brokenness has changed. Add some blockedness to nearby roads
                     //                    System.out.println(b + " is broken. Updating nearby roads");
                     for (Road r : nearbyRoads.get(b.getID())) {
-                        int width = r.getWidth();
-                        int block = r.getBlock();
+                        int width = r.isWidthDefined() ? r.getWidth() : 0;
+                        int block = r.isBlockDefined() ? r.getBlock() : 0;
                         int increase = calculateBlock(b);
                         //                        System.out.println("Increasing block of " + r + " by " + increase);
                         block += increase;
@@ -89,7 +95,7 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
                         }
                         //                        System.out.println("New block: " + block);
                         r.setBlock(block);
-                        changed.add(r);
+                        changes.addChange(r, r.getBlockProperty());
                     }
                 }
             }
@@ -97,35 +103,39 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private int calculateBlock(Building b) {
-        // CHECKSTYLE:OFF:MagicNumber 100 is OK here as brokenness is a value out of 100.
-        long rubble = b.getBrokenness() * b.getGroundArea() * b.getFloors() / 100L;
-        // CHECKSTYLE:ON:MagicNumber
+        if (!b.isBrokennessDefined() || !b.isGroundAreaDefined() || !b.isFloorsDefined()) {
+            return 0;
+        }
+        long rubble = b.getBrokenness() * b.getGroundArea() * b.getFloors();
         return (int)(rubble / RUBBLE_DIVISOR);
     }
 
     private boolean isNear(Road r, Building b) {
-        //        System.out.println("Is " + r + " near " + b + "?");
         return isNear((Node)r.getHead(model), b) || isNear((Node)r.getTail(model), b);
     }
 
     private boolean isNear(Node n, Building b) {
-        //        System.out.println("Is " + n + " near " + b + "?");
+        if (n == null) {
+            return false;
+        }
         if (b.getEntrances().contains(n.getID())) {
-            //            System.out.println("Building entrance: is nearby");
             return true;
         }
         Pair<Integer, Integer> node = n.getLocation(model);
-        //        System.out.println("Node location: " + node.first() + ", " + node.second());
-        for (Pair<Integer, Integer> apex : b.getApexesAsList()) {
-            double d = Math.hypot(apex.first() - node.first(), apex.second() - node.second());
-            //            System.out.println("Apex location: " + apex.first() + ", " + apex.second());
-            //            System.out.println("Distance: " + d);
+        if (b.isApexesDefined()) {
+            for (Pair<Integer, Integer> apex : b.getApexesAsList()) {
+                double d = Math.hypot(apex.first() - node.first(), apex.second() - node.second());
+                if (d < NEARBY_THRESHOLD) {
+                    return true;
+                }
+            }
+        }
+        if (b.isXDefined() && b.isYDefined()) {
+            double d = Math.hypot(b.getX() - node.first(), b.getY() - node.second());
             if (d < NEARBY_THRESHOLD) {
-                //                System.out.println("Nearby");
                 return true;
             }
         }
-        //        System.out.println("Not nearby");
         return false;
     }
 }
