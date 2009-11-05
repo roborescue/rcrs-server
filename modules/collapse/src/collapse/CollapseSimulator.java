@@ -5,6 +5,7 @@ import rescuecore2.components.AbstractSimulator;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Building;
@@ -52,7 +53,7 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
     @Override
     protected void handleCommands(Commands c) {
         int time = c.getTime();
-        Set<Entity> changed = new HashSet<Entity>();
+        ChangeSet changes = new ChangeSet();
         // CHECKSTYLE:OFF:MagicNumber
         int[][] count = new int[CODES.length][6];
         // CHECKSTYLE:ON:MagicNumber
@@ -61,9 +62,9 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
             for (StandardEntity next : model) {
                 if (next instanceof Building) {
                     Building b = (Building)next;
-                    int damage = stats[b.getBuildingCode()].damage();
+                    int damage = b.isBuildingCodeDefined() ? stats[b.getBuildingCode()].damage() : 0;
                     b.setBrokenness(damage);
-                    changed.add(b);
+                    changes.addChange(b, b.getBrokennessProperty());
                     // CHECKSTYLE:OFF:MagicNumber
                     ++count[b.getBuildingCode()][damage/25];
                     ++count[b.getBuildingCode()][5];
@@ -82,38 +83,39 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
             }
             // CHECKSTYLE:ON:MagicNumber
         }
-        else {
-            // Check for fire
-            for (StandardEntity next : model) {
-                if (next instanceof Building) {
-                    Building b = (Building)next;
-                    int minDamage = NONE;
-                    switch (b.getFierynessEnum()) {
-                    case HEATING:
-                        minDamage = SLIGHT;
-                        break;
-                    case BURNING:
-                        minDamage = MODERATE;
-                        break;
-                    case INFERNO:
-                        minDamage = SEVERE;
-                        break;
-                    case BURNT_OUT:
-                        minDamage = DESTROYED;
-                        break;
-                    default:
-                        break;
-                    }
-                    int damage = b.getBrokenness();
-                    if (damage < minDamage) {
-                        System.out.println(b + " damaged by fire. New brokenness: " + minDamage);
-                        b.setBrokenness(minDamage);
-                        changed.add(b);
-                    }
+        // Check for fire
+        for (StandardEntity next : model) {
+            if (next instanceof Building) {
+                Building b = (Building)next;
+                if (!b.isFierynessDefined()) {
+                    continue;
+                }
+                int minDamage = NONE;
+                switch (b.getFierynessEnum()) {
+                case HEATING:
+                    minDamage = SLIGHT;
+                    break;
+                case BURNING:
+                    minDamage = MODERATE;
+                    break;
+                case INFERNO:
+                    minDamage = SEVERE;
+                    break;
+                case BURNT_OUT:
+                    minDamage = DESTROYED;
+                    break;
+                default:
+                    break;
+                }
+                int damage = b.isBrokennessDefined() ? b.getBrokenness() : 0;
+                if (damage < minDamage) {
+                    System.out.println(b + " damaged by fire. New brokenness: " + minDamage);
+                    b.setBrokenness(minDamage);
+                    changes.addChange(b, b.getBrokennessProperty());
                 }
             }
         }
-        send(new SKUpdate(simulatorID, time, changed));
+        send(new SKUpdate(simulatorID, time, changes));
     }
 
     private class CollapseStats {
