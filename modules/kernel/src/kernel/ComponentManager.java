@@ -326,6 +326,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
                     Entity entity = result.entity;
                     AgentProxy agent = new AgentProxy(connect.getAgentName(), entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
+                    System.out.println("Agent '" + connect.getAgentName() + "' id " + entity.getID() + " (" + connection + " request ID " + requestID + ") connected");
                     // Send an OK
                     reply = new KAConnectOK(requestID, entity.getID(), result.visibleSet, result.config);
                 }
@@ -346,7 +347,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
             int requestID = msg.getRequestID();
             EntityID agentID = msg.getAgentID();
             if (agentAcknowledge(requestID, agentID, connection)) {
-                System.out.println("Agent " + agentID + " (request ID " + requestID + ") acknowledged");
+                System.out.println("Agent " + agentID + " (" + connection + " request ID " + requestID + ") acknowledged");
             }
             else {
                 System.out.println("Unexpected acknowledge from agent " + agentID + " (request ID " + requestID + ")");
@@ -357,20 +358,21 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         private void handleSKConnect(SKConnect msg, Connection connection) {
             int simID = getNextSimulatorID();
             int requestID = msg.getRequestID();
-            System.out.println("Simulator " + simID + " (request ID " + requestID + ") connected");
+            System.out.println("Simulator '" + msg.getSimulatorName() + "' id " + simID + " (" + connection + " request ID " + requestID + ") connected");
             SimulatorProxy sim = new SimulatorProxy(msg.getSimulatorName(), simID, connection);
             synchronized (simLock) {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
             }
             // Send an OK
             sim.send(Collections.singleton(new KSConnectOK(simID, requestID, world.getAllEntities(), config)));
+            updateGUISimulatorAck();
         }
 
         private void handleSKAcknowledge(SKAcknowledge msg, Connection connection) {
             int requestID = msg.getRequestID();
             int simID = msg.getSimulatorID();
             if (simAcknowledge(requestID, simID, connection)) {
-                System.out.println("Simulator " + simID + " (request ID " + requestID + ") acknowledged");
+                System.out.println("Simulator " + simID + " (" + connection + " request ID " + requestID + ") acknowledged");
             }
             else {
                 System.out.println("Unexpected acknowledge from simulator " + simID + " (request ID " + requestID + ")");
@@ -381,20 +383,21 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
         private void handleVKConnect(VKConnect msg, Connection connection) {
             int requestID = msg.getRequestID();
             int viewerID = getNextViewerID();
-            System.out.println("Viewer " + viewerID + " (request ID " + requestID + ") connected");
+            System.out.println("Viewer '" + msg.getViewerName() + "' id " + viewerID + " (" + connection + " request ID " + requestID + ") connected");
             ViewerProxy viewer = new ViewerProxy(msg.getViewerName(), viewerID, connection);
             synchronized (viewerLock) {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
             }
             // Send an OK
             viewer.send(Collections.singleton(new KVConnectOK(viewerID, requestID, world.getAllEntities(), config)));
+            updateGUIViewerAck();
         }
 
         private void handleVKAcknowledge(VKAcknowledge msg, Connection connection) {
             int requestID = msg.getRequestID();
             int viewerID = msg.getViewerID();
             if (viewerAcknowledge(requestID, viewerID, connection)) {
-                System.out.println("Viewer " + viewerID + " (" + requestID + ") acknowledged");
+                System.out.println("Viewer " + viewerID + " (" + connection + " request ID " + requestID + ") acknowledged");
             }
             else {
                 System.out.println("Unexpected acknowledge from viewer " + viewerID + " (" + requestID + ")");
@@ -437,7 +440,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
 
         @Override
         public String toString() {
-            return sim + " " + simulatorID + "(" + connection + " request ID " + requestID + ")";
+            return sim + " " + simulatorID + "(connection request ID " + requestID + ")";
         }
     }
 
@@ -456,7 +459,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
 
         @Override
         public String toString() {
-            return viewer + " " + viewerID + "(" + connection + " request ID " + requestID + ")";
+            return viewer + " " + viewerID + "(connection request ID " + requestID + ")";
         }
     }
 

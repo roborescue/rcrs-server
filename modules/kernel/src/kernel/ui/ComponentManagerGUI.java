@@ -60,7 +60,7 @@ public class ComponentManagerGUI extends JPanel {
 
     /**
        Update the list of agents that have not acknowledged the connection.
-       @param data A list of unacknowledged agent descriptions. This list will be displated verbatim.
+       @param data A list of unacknowledged agent descriptions. This list will be displayed verbatim.
      */
     public void updateAgentAck(final List<String> data) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -73,7 +73,7 @@ public class ComponentManagerGUI extends JPanel {
 
     /**
        Update the list of simulators that have not acknowledged the connection.
-       @param data A list of unacknowledged simulator descriptions. This list will be displated verbatim.
+       @param data A list of unacknowledged simulator descriptions. This list will be displayed verbatim.
      */
     public void updateSimulatorAck(final List<String> data) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -86,7 +86,7 @@ public class ComponentManagerGUI extends JPanel {
 
     /**
        Update the list of viewers that have not acknowledged the connection.
-       @param data A list of unacknowledged viewer descriptions. This list will be displated verbatim.
+       @param data A list of unacknowledged viewer descriptions. This list will be displayed verbatim.
      */
     public void updateViewerAck(final List<String> data) {
         SwingUtilities.invokeLater(new Runnable() {
