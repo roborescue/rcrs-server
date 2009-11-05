@@ -21,7 +21,7 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     private static final Color MINOR_DAMAGE = new Color(100, 140, 210, 128);
     private static final Color MODERATE_DAMAGE = new Color(100, 70, 190, 128);
     private static final Color SEVERE_DAMAGE = new Color(80, 60, 140, 128);
-    private static final Color BURNT_OUT = new Color(60, 50, 90, 128);
+    private static final Color BURNT_OUT = new Color(0, 0, 0, 255);
 
     private static final Color OUTLINE = Color.GRAY.darker();
     private static final Color ENTRANCE = new Color(120, 120, 120);
@@ -103,7 +103,7 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     private void drawBrokenness(Building b, Shape shape, Graphics2D g) {
         int brokenness = b.getBrokenness();
         // CHECKSTYLE:OFF:MagicNumber
-        int colour = Math.max(0, 135 - brokenness / 4);
+        int colour = Math.max(0, 135 - brokenness / 2);
         // CHECKSTYLE:ON:MagicNumber
         g.setColor(new Color(colour, colour, colour));
         g.fill(shape);
