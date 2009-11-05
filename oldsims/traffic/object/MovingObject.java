@@ -147,52 +147,47 @@ public abstract class MovingObject extends RealObject implements Obstruction {
     }
 
     public void output(OutputBuffer out) {
-		out.writeString(type());
-		out.writeInt(id);
-		OutputBuffer temp = new OutputBuffer();
-		if (lastMovingTime() == WORLD.time() || m_lastLoadedOrUnloadedTime == WORLD.time()) {
-			m_submitedPos = m_position;
-			m_submitedPosEx = roundedPositionExtra();
-			temp.writeString("POSITION");
-			temp.writeInt(RescueConstants.INT_SIZE);
-			temp.writeInt(m_submitedPos);
-			temp.writeString("POSITION_EXTRA");
-			temp.writeInt(RescueConstants.INT_SIZE);
-			temp.writeInt(m_submitedPosEx);
-		}
-		if (lastMovingTime() == WORLD.time()) {
-			// NOTE: keep structure of positionHistory of the Atsumi traffic simulator; it is a
-			// list of node IDs.
-			temp.writeString("POSITION_HISTORY");
-			int[] history = new int[routePlan().size()];
-			int count = 0;
-			Iterator it = routePlan().iterator();
-			while (it.hasNext()) {
-				MotionlessObject obj = (MotionlessObject) it.next();
-				if (obj instanceof Node) {
-					if (ASSERT)
-						Util.myassert(obj.id != 0,"wrong ID; it's impossible to divid ID and sentinel of ID list",obj.id);
-					history[count++] = obj.id;
-				}
-				if (obj.id == m_submitedPos)
-					break;
-				if (ASSERT)
-					Util.myassert(it.hasNext());
-			}
-			temp.writeInt((count + 1) * RescueConstants.INT_SIZE);
-			temp.writeInt(count);
-			for (int i=0;i<count;++i) temp.writeInt(history[i]);
-		}
-		else if (lastMovingTime() == WORLD.time() - 1) {
-			temp.writeString("POSITION_HISTORY");
-			temp.writeInt(RescueConstants.INT_SIZE);
-			temp.writeInt(0);
-		}
-		temp.writeString("");
-		byte[] bytes = temp.getBytes();
-		out.writeInt(bytes.length);
-		out.writeBytes(bytes);
-	}
+        out.writeInt(id);
+        // Write the number of updated properties
+        boolean writePosition = lastMovingTime() == WORLD.time() || m_lastLoadedOrUnloadedTime == WORLD.time();
+        boolean writeHistory = lastMovingTime() == WORLD.time();
+        out.writeInt((writePosition ? 2 : 0) + (writeHistory ? 1 : 0));
+        if (writePosition) {
+            m_submitedPos = m_position;
+            m_submitedPosEx = roundedPositionExtra();
+            out.writeString("POSITION");
+            out.writeInt(RescueConstants.INT_SIZE);
+            out.writeInt(m_submitedPos);
+            out.writeString("POSITION_EXTRA");
+            out.writeInt(RescueConstants.INT_SIZE);
+            out.writeInt(m_submitedPosEx);
+        }
+        if (writeHistory) {
+            out.writeString("POSITION_HISTORY");
+            // NOTE: keep structure of positionHistory of the Atsumi traffic simulator; it is a
+            // list of node IDs.
+            int[] history = new int[routePlan().size()];
+            int count = 0;
+            Iterator it = routePlan().iterator();
+            while (it.hasNext()) {
+                MotionlessObject obj = (MotionlessObject) it.next();
+                if (obj instanceof Node) {
+                    if (ASSERT)
+                        Util.myassert(obj.id != 0,"wrong ID; it's impossible to divid ID and sentinel of ID list",obj.id);
+                    history[count++] = obj.id;
+                }
+                if (obj.id == m_submitedPos)
+                    break;
+                if (ASSERT)
+                    Util.myassert(it.hasNext());
+            }
+            out.writeInt((history.length + 1) * RescueConstants.INT_SIZE);
+            out.writeInt(history.length);
+            for (int next : history) {
+                out.writeInt(next);
+            }
+        }
+    }
 
     private Lane m_lane;
 

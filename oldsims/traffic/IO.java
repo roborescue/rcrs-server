@@ -61,7 +61,7 @@ public abstract class IO implements Constants {
                                         System.out.println("Received unexpected connect ok: expecting request ID of " + REQUEST_ID + " but got " + requestId);
                                         System.exit(-3);
                                     }
-                                    WORLD.update(in, INITIALIZING_TIME);
+                                    WORLD.connectOK(in);
                                     WORLD.initialize();
                                     return simID;
                                 }

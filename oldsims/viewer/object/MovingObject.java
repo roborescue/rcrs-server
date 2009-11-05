@@ -81,11 +81,13 @@ public abstract class MovingObject extends RealObject {
     for (int i = 0;  i < route.length;  i ++) {
       Node nd0 = (Node) WORLD.get(route[i]);
       if (i == route.length - 1) {
-	m_route.add(nd0);
-	break;
+          if (nd0 != null) {
+              m_route.add(nd0);
+          }
+          break;
       }
       Node nd1 = (Node) WORLD.get(route[i + 1]);
-      Road rd = nd0.roadBetweenThisAnd(nd1);
+      Road rd = (nd0 == null || nd1 == null) ? null : nd0.roadBetweenThisAnd(nd1);
       if (rd == null)
 	// Probably the agent turned, but it's impossible to dicide turn from/to any roads.
 	continue;
@@ -104,6 +106,7 @@ public abstract class MovingObject extends RealObject {
 	|| m_route.isEmpty()
 	|| Math.floor(m_index) > m_route.size() - 1)
       return;
+    
     m_position = ((MotionlessObject) m_route.get((int) m_index)).id;
     if (position() instanceof Road) {
       m_positionExtra = ((Road) position()).length() / 2;

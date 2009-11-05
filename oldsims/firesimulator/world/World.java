@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 import firesimulator.simulator.ExtinguishRequest;
 import firesimulator.util.Configuration;
+import firesimulator.io.IOConstans;
 
 import rescuecore.InputBuffer;
 
@@ -318,8 +319,8 @@ public class World implements WorldConstants {
         this.time=time;
     }
 	
-    public void processUpdate(InputBuffer data, int time){
-        setTime(time);
+    public void processConnectOK(InputBuffer data){
+        setTime(IOConstans.INIT_TIME);
         int count = data.readInt();
         //                System.out.println("processing update (" + count + " items)...");
         for (int i = 0; i < count; ++i) {
@@ -346,6 +347,24 @@ public class World implements WorldConstants {
         }
     }
 	
+    public void processChangeSet(InputBuffer data, int time){
+        setTime(time);
+        int count = data.readInt();
+        //                System.out.println("processing update (" + count + " items)...");
+        for (int i = 0; i < count; ++i) {
+            int id = data.readInt();
+            int propCount = data.readInt();
+            RescueObject obj = getObject(id);
+            if (obj == null) {
+                System.out.println("warning: unknown object (id:"+id+")");
+            }
+            for (int j = 0; j < propCount; ++j) {
+                String propUrn = data.readString();
+                setProperty(data, obj, propUrn);
+            }
+        }
+    }
+	
     private void setProperty(InputBuffer data, RescueObject obj, String urn) {
         int size = data.readInt();
         //                System.out.println("Property="+property+", size="+size);
@@ -365,7 +384,9 @@ public class World implements WorldConstants {
         else {
             val = new int[] {data.readInt()};
         }
-        obj.input(urn, val);
+        if (obj != null) {
+            obj.input(urn, val);
+        }
     }
 	 
     private RescueObject createObject(String urn, int id){

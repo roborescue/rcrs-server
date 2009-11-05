@@ -64,26 +64,45 @@ public class WorldModel implements Constants {
 
     public void update(InputBuffer in, int time) {
         m_time = time;
-        int count = in.readInt();
-        System.out.println("Updating world model: " + count + " objects to read");
-        for (int i = 0; i < count; ++i) {
-            String type = in.readString();
-            int id = in.readInt();
-            int size = in.readInt();
-            RescueObject obj = get(id);
-            if (obj == null) {
-                obj = newRescueObject(type, id);
-                if (obj instanceof RealObject)
-                    add((RealObject) obj);
+        if (time == 0) {
+            // This is really a connect OK
+            int count = in.readInt();
+            System.out.println("Updating world model: " + count + " objects to read");
+            for (int i = 0; i < count; ++i) {
+                String type = in.readString();
+                int id = in.readInt();
+                int size = in.readInt();
+                RescueObject obj = get(id);
+                if (obj == null) {
+                    obj = newRescueObject(type, id);
+                    if (obj instanceof RealObject)
+                        add((RealObject) obj);
+                }
+                if (obj == null) {
+                    in.skip(size);
+                }
+                else {
+                    String propType = in.readString();
+                    while (!"".equals(propType)) {
+                        obj.input(propType, getProperty(propType, in));
+                        propType = in.readString();
+                    }
+                }
             }
-            if (obj == null) {
-                in.skip(size);
-            }
-            else {
-                String propType = in.readString();
-                while (!"".equals(propType)) {
-                    obj.input(propType, getProperty(propType, in));
-                    propType = in.readString();
+        }
+        else {
+            int count = in.readInt();
+            System.out.println("Updating world model: " + count + " objects to read");
+            for (int i = 0; i < count; ++i) {
+                int id = in.readInt();
+                int propCount = in.readInt();
+                RescueObject obj = get(id);
+                for (int j = 0; j < propCount; ++j) {
+                    String propType = in.readString();
+                    int[] data = getProperty(propType, in);
+                    if (obj != null) {
+                        obj.input(propType, data);
+                    }
                 }
             }
         }
@@ -217,9 +236,8 @@ public class WorldModel implements Constants {
         InputBuffer dis = io().updateData(m_time + 1);
         int count = dis.readInt();
         for (int i = 0; i < count; ++i) {
-            String type = dis.readString();
             int id = dis.readInt();
-            int size = dis.readInt();
+            int propCount = dis.readInt();
             RescueObject obj = get(id);
             int pos = 0, posEx = 0, route[] = new int[0];
             MovingObject mv = null;
@@ -228,8 +246,8 @@ public class WorldModel implements Constants {
                 pos   = mv.motionlessPosition().id;
                 posEx = mv.positionExtra();
             }
-            String propType = dis.readString();
-            while (!"".equals(propType)) {
+            for (int j = 0; j < propCount; ++j) {
+                String propType = dis.readString();
                 int[] val = getProperty(propType, dis);
                 if ("POSITION".equals(propType)) {
                     pos = val[0];
@@ -240,7 +258,6 @@ public class WorldModel implements Constants {
                 if ("POSITION_HISTORY".equals(propType)) {
                     route = val;
                 }
-                propType = dis.readString();
             }
             if (obj instanceof MovingObject)
                 mv.prepareForAnimation(pos, posEx, route);

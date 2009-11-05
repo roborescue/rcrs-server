@@ -78,8 +78,8 @@ public class WorldModel implements Constants {
         return (RealObject) idObjMap.get(new Integer(id));
     }
 
-    public void update(InputBuffer in, int time) {
-        m_time = time;
+    public void connectOK(InputBuffer in) {
+        m_time = INITIALIZING_TIME;
         int count = in.readInt();
         for (int i = 0; i < count; ++i) {
             String type = in.readString();
@@ -98,6 +98,23 @@ public class WorldModel implements Constants {
                 if (!"".equals(prop)) {
                     setProperty(prop, in, obj);
                 }
+            }
+        }
+    }
+
+    public void update(InputBuffer in, int time) {
+        m_time = time;
+        int count = in.readInt();
+        for (int i = 0; i < count; ++i) {
+            int id = in.readInt();
+            int propCount = in.readInt();
+            RescueObject obj = get(id);
+            if (obj == null) {
+                System.out.println("warning: unknown object (id:"+id+")");
+            }
+            for (int j = 0; j < propCount; ++j) {
+                String prop = in.readString();
+                setProperty(prop, in, obj);
             }
         }
     }

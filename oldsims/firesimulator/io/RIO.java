@@ -8,6 +8,8 @@ import java.util.Iterator;
 
 import firesimulator.world.RescueObject;
 import firesimulator.world.World;
+import firesimulator.world.Building;
+import firesimulator.world.FireBrigade;
 
 import rescuecore.OutputBuffer;
 import rescuecore.InputBuffer;
@@ -45,7 +47,7 @@ public class RIO implements IOConstans{
         data.readInt();
         data.readInt();
         int time = data.readInt();
-        world.processUpdate(data, time);
+        world.processChangeSet(data, time);
     }
 	
     public void receiveCommands(World world){
@@ -68,7 +70,7 @@ public class RIO implements IOConstans{
         data.readInt();
         data.readInt();
         int id = data.readInt();
-        world.processUpdate(data, INIT_TIME);
+        world.processConnectOK(data);
         return id;
     }
 	
@@ -98,21 +100,32 @@ public class RIO implements IOConstans{
     }
 	
     public void sendUpdate(int id, int time, Collection objects){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
+        OutputBuffer out = new OutputBuffer();
         try {
-            dos.writeInt(id);
-            dos.writeInt(time);
-            dos.writeInt(objects.size());
+            out.writeInt(id);
+            out.writeInt(time);
+            out.writeInt(objects.size());
             for(Iterator i=objects.iterator();i.hasNext();){
-                OutputBuffer out = new OutputBuffer();
                 RescueObject o=(RescueObject)i.next();
-                o.encode(out);		
-                dos.write(out.getBytes());
+                // ID
+                out.writeInt(o.getID());
+                if (o instanceof FireBrigade) {
+                    out.writeInt(1); // 1 property
+                    out.writeString("WATER_QUANTITY"); // URN
+                    out.writeInt(4); // Size
+                    out.writeInt(((FireBrigade)o).getWaterQuantity()); // Value
+                }
+                else if (o instanceof Building) {
+                    out.writeInt(1); // 1 property
+                    out.writeString("FIERYNESS"); // URN
+                    out.writeInt(4); // Size
+                    out.writeInt(((Building)o).getFieryness()); // Value
+                }
+                else {
+                    out.writeInt(0); // No properties
+                }
             }
-            dos.close();
-            send("SK_UPDATE", baos.toByteArray());
-            baos.close();
+            send("SK_UPDATE", out.getBytes());
         } catch (Exception e) {
             e.printStackTrace();  
             System.exit(1); 
