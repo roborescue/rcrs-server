@@ -1,6 +1,6 @@
 package sample;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.WorldModel;
@@ -21,7 +21,7 @@ public class SampleCentre extends AbstractAgent<StandardEntity> {
     }
 
     @Override
-    protected void think(int time, List<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed) {
     }
 
     @Override

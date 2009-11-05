@@ -36,7 +36,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     }
 
     @Override
-    protected void think(int time, List<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed) {
         updateUnexploredBuildings(changed);
         // Am I transporting a civilian to a refuge?
         if (someoneOnBoard()) {
@@ -121,7 +121,12 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
         List<Human> targets = new ArrayList<Human>();
         for (StandardEntity next : world.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)next;
-            if (h.getHP() > 0 && (h.getBuriedness() > 0 || h.getDamage() > 0)) {
+            if (h.isHPDefined()
+                && h.isBuriednessDefined()
+                && h.isDamageDefined()
+                && h.isPositionDefined()
+                && h.getHP() > 0
+                && (h.getBuriedness() > 0 || h.getDamage() > 0)) {
                 targets.add(h);
             }
         }
@@ -129,7 +134,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
         return targets;
     }
 
-    private void updateUnexploredBuildings(List<EntityID> changed) {
+    private void updateUnexploredBuildings(Collection<EntityID> changed) {
         for (EntityID next : changed) {
             StandardEntity e = world.getEntity(next);
             if (e != null) {

@@ -30,10 +30,10 @@ public class SamplePoliceForce extends AbstractSampleAgent {
     }
 
     @Override
-    protected void think(int time, List<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed) {
         // Am I on a blocked road?
         StandardEntity location = location();
-        if (location instanceof Road && ((Road)location).getBlock() > 0) {
+        if (location instanceof Road && ((Road)location).isBlockDefined() && ((Road)location).getBlock() > 0) {
             AKClear clear = new AKClear(getID(), time, location.getID());
             System.out.println(me() + " clearing road: " + clear);
             send(clear);
@@ -62,7 +62,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
         for (StandardEntity next : e) {
             if (next instanceof Road) {
                 Road r = (Road)next;
-                if (r.getBlock() > 0) {
+                if (r.isBlockDefined() && r.getBlock() > 0) {
                     result.add(r);
                 }
             }

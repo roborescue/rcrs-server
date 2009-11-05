@@ -49,7 +49,7 @@ public class SampleCivilian extends AbstractSampleAgent {
     }
 
     @Override
-    protected void think(int time, List<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed) {
         // If we're not hurt or buried run for a refuge!
         Human me = me();
         int damage = me.isDamageDefined() ? me.getDamage() : 0;

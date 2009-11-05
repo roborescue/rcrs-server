@@ -44,7 +44,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     @Override
-    protected void think(int time, List<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed) {
         FireBrigade me = (FireBrigade)me();
         // Are we currently filling with water?
         if (me.getWater() < maxWater && location() instanceof Refuge) {
@@ -52,7 +52,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
             return;
         }
         // Are we out of water?
-        if (me.getWater() == 0) {
+        if (me.isWaterDefined() && me.getWater() == 0) {
             // Head for a refuge
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
@@ -113,9 +113,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         for (StandardEntity next : e) {
             if (next instanceof Building) {
                 Building b = (Building)next;
-                // CHECKSTYLE:OFF:MagicNumber
-                if (b.getFieryness() > 0 && b.getFieryness() < 4) {
-                    // CHECKSTYLE:ON:MagicNumber
+                if (b.isOnFire()) {
                     result.add(b);
                 }
             }
