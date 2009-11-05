@@ -7,12 +7,15 @@ import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.misc.EntityTools;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Road;
@@ -52,7 +55,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     private static final int SEVERE = 75;
     private static final int DESTROYED = 100;
 
-    private Set<Entity> changed;
+    private ChangeSet changes;
 
     private BuriednessStats[] stats;
 
@@ -66,7 +69,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
        Create a MiscSimulator.
      */
     public MiscSimulator() {
-        changed = new HashSet<Entity>();
+        changes = new ChangeSet();
     }
 
     @Override
@@ -118,8 +121,11 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
                                                                                              StandardEntityURN.POLICE_FORCE,
                                                                                              StandardEntityURN.AMBULANCE_TEAM))) {
             Human h = (Human)e;
-            if (h.getDamage() > 0 || h.getBuriedness() > 0) {
-                System.out.printf("| %1$9d | %2$6d | %3$6d | %4$10d |%n", h.getID().getValue(), h.getHP(), h.getDamage(), h.getBuriedness());
+            int hp = h.isHPDefined() ? h.getHP() : 0;
+            int damage = h.isDamageDefined() ? h.getDamage() : 0;
+            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
+            if (hp > 0 && (damage > 0 || buriedness > 0)) {
+                System.out.printf("| %1$9d | %2$6d | %3$6d | %4$10d |%n", h.getID().getValue(), hp, damage, buriedness);
             }
         }
         System.out.println("--------------------------------------------");
@@ -127,23 +133,26 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         System.out.println("----------------------");
         for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.ROAD))) {
             Road r = (Road)e;
-            if (r.getBlock() > 0) {
-                System.out.printf("| %1$9d | %2$6d |%n", r.getID().getValue(), r.getBlock());
+            int block = r.isBlockDefined() ? r.getBlock() : 0;
+            if (block > 0) {
+                System.out.printf("| %1$9d | %2$6d |%n", r.getID().getValue(), block);
             }
         }
         System.out.println("---------------------");
-        send(new SKUpdate(simulatorID, time, changed));
+        send(new SKUpdate(simulatorID, time, changes));
     }
 
     @Override
     protected void handleUpdate(Update u) {
         super.handleUpdate(u);
-        changed.clear();
+        changes = new ChangeSet();
         // Update buriedness if buildings have collapsed
-        for (Entity next : u.getUpdatedEntities()) {
+        for (EntityID id : u.getChangeSet().getChangedEntities()) {
+            Entity next = model.getEntity(id);
             if (next instanceof Building) {
                 Building b = (Building)next;
-                if (b.isBrokennessDefined()) {
+                Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
+                if (brokenness != null) {
                     // Brokenness has changed. Bury any agents inside.
                     System.out.println(b + " is broken. Updating trapped agents");
                     for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
@@ -151,13 +160,13 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
                                                                                   StandardEntityURN.POLICE_FORCE,
                                                                                   StandardEntityURN.AMBULANCE_TEAM)) {
                         Human h = (Human)e;
-                        if (h.getPosition().equals(b.getID())) {
+                        if (h.isPositionDefined() && h.getPosition().equals(b.getID())) {
                             System.out.println("Human in building: " + h);
-                            int buriedness = h.getBuriedness();
+                            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
                             int increase = calculateBuriedness(h, b);
                             buriedness += increase;
                             h.setBuriedness(buriedness);
-                            changed.add(h);
+                            changes.addChange(h, h.getBuriednessProperty());
                             System.out.println("Changed buriedness: increase by " + increase + " to " + buriedness);
                         }
                     }
@@ -192,28 +201,28 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             System.out.println("Rejecting clear command " + clear + ": could not locate agent");
             return;
         }
-        if (police.getHP() <= 0) {
+        if (!police.isHPDefined() || police.getHP() <= 0) {
             System.out.println("Rejecting clear command " + clear + ": agent is dead");
             return;
         }
-        if (police.getBuriedness() > 0) {
+        if (police.isBuriednessDefined() && police.getBuriedness() > 0) {
             System.out.println("Rejecting clear command " + clear + ": agent is buried");
             return;
         }
         Road targetRoad = (Road)target;
-        if (targetRoad.getBlock() <= 0) {
+        if (!targetRoad.isBlockDefined() || targetRoad.getBlock() <= 0) {
             System.out.println("Rejecting clear command " + clear + ": road is not blocked");
             return;
         }
         EntityID agentPositionID = police.getPosition();
-        if (!agentPositionID.equals(target.getID()) && !agentPositionID.equals(targetRoad.getHead()) && !agentPositionID.equals(targetRoad.getTail())) {
+        if (agentPositionID == null || !agentPositionID.equals(target.getID()) && !agentPositionID.equals(targetRoad.getHead()) && !agentPositionID.equals(targetRoad.getTail())) {
             System.out.println("Rejecting clear command " + clear + ": agent is not adjacent to target road");
             return;
         }
         // All checks passed
         int block = targetRoad.getBlock();
         targetRoad.setBlock(Math.max(0, block - clearRate));
-        changed.add(targetRoad);
+        changes.addChange(targetRoad, targetRoad.getBlockProperty());
         System.out.println("Clear: " + clear);
         System.out.println("Reduced road block from " + block + " to: " + targetRoad.getBlock());
     }
@@ -254,26 +263,26 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             System.out.println("Rejecting rescue command " + rescue + ": target is not in a building");
             return;
         }
-        if (ambulance.getHP() <= 0) {
+        if (!ambulance.isHPDefined() || ambulance.getHP() <= 0) {
             System.out.println("Rejecting rescue command " + rescue + ": agent is dead");
             return;
         }
-        if (ambulance.getBuriedness() > 0) {
+        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
             System.out.println("Rejecting rescue command " + rescue + ": agent is buried");
             return;
         }
-        if (targetHuman.getBuriedness() <= 0) {
+        if (!targetHuman.isBuriednessDefined() || targetHuman.getBuriedness() <= 0) {
             System.out.println("Rejecting rescue command " + rescue + ": target is not buried");
             return;
         }
-        if (!ambulance.getPosition().equals(targetHuman.getPosition())) {
+        if (!agentPosition.equals(targetPosition)) {
             System.out.println("Rejecting rescue command " + rescue + ": agent is at a different location to the target");
             return;
         }
         // All checks passed
         int buriedness = targetHuman.getBuriedness();
         targetHuman.setBuriedness(Math.max(0, buriedness - 1));
-        changed.add(targetHuman);
+        changes.addChange(targetHuman, targetHuman.getBuriednessProperty());
         System.out.println("Rescue: " + rescue);
         System.out.println("Reduced buriedness from " + buriedness + " to: " + targetHuman.getBuriedness());
     }
@@ -311,33 +320,33 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             System.out.println("Rejecting load command " + load + ": could not locate target");
             return;
         }
-        if (ambulance.getHP() <= 0) {
+        if (!ambulance.isHPDefined() || ambulance.getHP() <= 0) {
             System.out.println("Rejecting load command " + load + ": agent is dead");
             return;
         }
-        if (ambulance.getBuriedness() > 0) {
+        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
             System.out.println("Rejecting load command " + load + ": agent is buried");
             return;
         }
-        if (targetCivilian.getBuriedness() > 0) {
+        if (targetCivilian.isBuriednessDefined() && targetCivilian.getBuriedness() > 0) {
             System.out.println("Rejecting load command " + load + ": target is buried");
             return;
         }
-        if (!ambulance.getPosition().equals(targetCivilian.getPosition())) {
+        if (!agentPosition.equals(targetPosition)) {
             System.out.println("Rejecting load command " + load + ": agent is at a different location to the target");
             return;
         }
         // Is there something already loaded?
         for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
-            if (agentID.equals(c.getPosition())) {
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
                 System.out.println("Rejecting load command " + load + ": agent already has something loaded");
                 return;
             }
         }
         // All checks passed
         targetCivilian.setPosition(agentID);
-        changed.add(targetCivilian);
+        changes.addChange(targetCivilian, targetCivilian.getPositionProperty());
         System.out.println("Load: " + load);
         System.out.println("Ambulance " + agentID + " loaded civilian " + targetCivilian.getID());
     }
@@ -360,11 +369,11 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             System.out.println("Rejecting unload command " + unload + ": could not locate agent");
             return;
         }
-        if (ambulance.getHP() <= 0) {
+        if (!ambulance.isHPDefined() && ambulance.getHP() <= 0) {
             System.out.println("Rejecting unload command " + unload + ": agent is dead");
             return;
         }
-        if (ambulance.getBuriedness() > 0) {
+        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
             System.out.println("Rejecting unload command " + unload + ": agent is buried");
             return;
         }
@@ -372,7 +381,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         Civilian target = null;
         for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
-            if (agentID.equals(c.getPosition())) {
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
                 target = c;
                 break;
             }
@@ -383,7 +392,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
         // All checks passed
         target.setPosition(ambulance.getPosition());
-        changed.add(target);
+        changes.addChange(target, target.getPositionProperty());
         System.out.println("Unload: " + unload);
         System.out.println("Ambulance " + agentID + " unloaded " + target.getID() + " at " + ambulance.getPosition());
     }
@@ -394,18 +403,18 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
                                                                       StandardEntityURN.POLICE_FORCE,
                                                                       StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)e;
-            int buriedness = h.getBuriedness();
-            int damage = h.getDamage();
-            int hp = h.getHP();
+            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
+            int damage = h.isDamageDefined() ? h.getDamage() : 0;
+            int hp = h.isHPDefined() ? h.getHP() : 0;
             StandardEntity position = h.getPosition((StandardWorldModel)model);
             if (position instanceof Refuge) {
                 if (damage > 0) {
                     h.setDamage(0);
-                    changed.add(h);
+                    changes.addChange(h, h.getDamageProperty());
                 }
                 continue;
             }
-            boolean onFire = (position instanceof Building) && Building.BURNING.contains(((Building)position).getFierynessEnum());
+            boolean onFire = (position instanceof Building) && ((Building)position).isOnFire();
             // Increase damage if the agent is buried
             if (buriedness > 0) {
                 damage += Math.max(0, (int)(random.nextGaussian() * spread * rate * buriedness));
@@ -418,11 +427,15 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             // Update entity
             h.setDamage(damage);
             h.setHP(hp);
-            changed.add(h);
+            changes.addChange(h, h.getDamageProperty());
+            changes.addChange(h, h.getHPProperty());
         }
     }
 
     private int calculateBuriedness(Human h, Building b) {
+        if (!b.isBuildingCodeDefined()) {
+            return 0;
+        }
         int code = b.getBuildingCode();
         return stats[code].computeBuriedness(b);
     }
@@ -441,6 +454,9 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
 
         int computeBuriedness(Building b) {
+            if (!b.isBrokennessDefined()) {
+                return 0;
+            }
             int damage = b.getBrokenness();
             if (damage < SLIGHT) {
                 return 0;
