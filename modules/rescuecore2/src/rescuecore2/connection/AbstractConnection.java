@@ -161,7 +161,7 @@ public abstract class AbstractConnection implements Connection {
     protected abstract void shutdownImpl();
 
     /**
-       Process some bytes that were received. The default implementation will use the installed MessageCodec to decode all messages in the buffer and send them to listeners.
+       Process some bytes that were received. The default implementation will use the MessageRegistry to decode all messages in the buffer and send them to listeners.
        @param b The received bytes.
     */
     protected void bytesReceived(byte[] b) {
@@ -180,7 +180,17 @@ public abstract class AbstractConnection implements Connection {
             // Log and ignore
             // FIXME: Log it!
             e.printStackTrace();
-            ByteLogger.log(b);
+            ByteLogger.log(b, this.toString());
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            ByteLogger.log(b, this.toString());
+            throw e;
+        }
+        catch (Error e) {
+            e.printStackTrace();
+            ByteLogger.log(b, this.toString());
+            throw e;
         }
     }
 
