@@ -756,4 +756,15 @@ public class Building extends StandardEntity {
         }
         return result;
     }
+
+    /**
+       Find out if this building is on fire.
+       @return True iff this buildings fieryness indicates that it is burning.
+    */
+    public boolean isOnFire() {
+        if (!fieryness.isDefined()) {
+            return false;
+        }
+        return BURNING.contains(getFierynessEnum());
+    }
 }
