@@ -57,8 +57,10 @@ public class CommandLayer extends StandardViewLayer {
 
     @Override
     public Rectangle2D view(Object... objects) {
-        commands.clear();
-        return super.view(objects);
+        synchronized (commands) {
+            commands.clear();
+            return super.view(objects);
+        }
     }
 
     @Override
@@ -71,30 +73,32 @@ public class CommandLayer extends StandardViewLayer {
 
     @Override
     public Collection<RenderedObject> render(Graphics2D graphics, ScreenTransform transform, int width, int height) {
-        Collection<RenderedObject> result = new ArrayList<RenderedObject>();
-        g = graphics;
-        t = transform;
-        for (Command next : commands) {
-            if (next instanceof AKMove) {
-                renderMove((AKMove)next);
+        synchronized (commands) {
+            Collection<RenderedObject> result = new ArrayList<RenderedObject>();
+            g = graphics;
+            t = transform;
+            for (Command next : commands) {
+                if (next instanceof AKMove) {
+                    renderMove((AKMove)next);
+                }
+                if (next instanceof AKExtinguish) {
+                    renderExtinguish((AKExtinguish)next);
+                }
+                if (next instanceof AKClear) {
+                    renderClear((AKClear)next);
+                }
+                if (next instanceof AKRescue) {
+                    renderRescue((AKRescue)next);
+                }
+                if (next instanceof AKLoad) {
+                    renderLoad((AKLoad)next);
+                }
+                if (next instanceof AKUnload) {
+                    renderUnload((AKUnload)next);
+                }
             }
-            if (next instanceof AKExtinguish) {
-                renderExtinguish((AKExtinguish)next);
-            }
-            if (next instanceof AKClear) {
-                renderClear((AKClear)next);
-            }
-            if (next instanceof AKRescue) {
-                renderRescue((AKRescue)next);
-            }
-            if (next instanceof AKLoad) {
-                renderLoad((AKLoad)next);
-            }
-            if (next instanceof AKUnload) {
-                renderUnload((AKUnload)next);
-            }
+            return result;
         }
-        return result;
     }
 
     private void renderMove(AKMove move) {
