@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.AbstractMessageFactory;
+import rescuecore2.registry.AbstractMessageFactory;
 
 /**
    A factory for standard messages.
@@ -21,7 +21,7 @@ public final class StandardMessageFactory extends AbstractMessageFactory<Standar
     }
 
     @Override
-    public Message createMessage(StandardMessageURN urn, InputStream data) throws IOException {
+    public Message makeMessage(StandardMessageURN urn, InputStream data) throws IOException {
         switch (urn) {
         case KA_HEAR_SAY:
             return new KAHearSay(data);

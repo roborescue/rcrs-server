@@ -1,7 +1,7 @@
 package rescuecore2.standard.entities;
 
+import rescuecore2.registry.AbstractPropertyFactory;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.AbstractPropertyFactory;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;

@@ -1,6 +1,6 @@
 package rescuecore2.standard.entities;
 
-import rescuecore2.worldmodel.AbstractEntityFactory;
+import rescuecore2.registry.AbstractEntityFactory;
 import rescuecore2.worldmodel.EntityID;
 
 /**
