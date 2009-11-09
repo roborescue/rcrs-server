@@ -7,13 +7,15 @@ import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.TCPConnection;
-import rescuecore2.worldmodel.EntityRegistry;
+import rescuecore2.registry.Registry;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.Constants;
 
 import rescuecore2.standard.entities.StandardEntityFactory;
+import rescuecore2.standard.entities.StandardPropertyFactory;
+import rescuecore2.standard.messages.StandardMessageFactory;
 
 /**
    Launcher for sample agents. This will launch as many instances of each of the sample agents as possible, all using one connction.
@@ -31,7 +33,9 @@ public final class LaunchSampleAgents {
     */
     public static void main(String[] args) {
         try {
-            EntityRegistry.register(StandardEntityFactory.INSTANCE);
+            Registry.SYSTEM_REGISTRY.registerEntityFactory(StandardEntityFactory.INSTANCE);
+            Registry.SYSTEM_REGISTRY.registerMessageFactory(StandardMessageFactory.INSTANCE);
+            Registry.SYSTEM_REGISTRY.registerPropertyFactory(StandardPropertyFactory.INSTANCE);
             Config config = new Config();
             args = CommandLineOptions.processArgs(args, config);
             int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER, Constants.DEFAULT_KERNEL_PORT_NUMBER);
