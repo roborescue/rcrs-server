@@ -2,15 +2,21 @@ package rescuecore2.components;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.messages.control.SKUpdate;
+import rescuecore2.messages.control.SKConnect;
+import rescuecore2.messages.control.SKAcknowledge;
+import rescuecore2.messages.control.KSConnectOK;
+import rescuecore2.messages.control.KSConnectError;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
 
 /**
    Abstract base class for simulator implementations.
@@ -47,6 +53,19 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
         postConnect();
     }
 
+    @Override
+    public void connect(Connection connection, RequestIDGenerator generator) throws ConnectionException, ComponentConnectionException, InterruptedException {
+        int requestID = generator.generateRequestID();
+        SKConnect connect = new SKConnect(requestID, 1, getName());
+        CountDownLatch latch = new CountDownLatch(1);
+        SimulatorConnectionListener l = new SimulatorConnectionListener(requestID, latch);
+        connection.addConnectionListener(l);
+        connection.sendMessage(connect);
+        // Wait for a reply
+        latch.await();
+        l.testSuccess();
+    }
+
     /**
        Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
      */
@@ -73,6 +92,59 @@ public abstract class AbstractSimulator<T extends Entity> extends AbstractCompon
      */
     protected void handleCommands(Commands c) {
         send(new SKUpdate(simulatorID, c.getTime(), new ChangeSet()));
+    }
+
+    private class SimulatorConnectionListener implements ConnectionListener {
+        private int requestID;
+        private CountDownLatch latch;
+        private ComponentConnectionException failureReason;
+
+        public SimulatorConnectionListener(int requestID, CountDownLatch latch) {
+            this.requestID = requestID;
+            this.latch = latch;
+            failureReason = null;
+        }
+
+        @Override
+        public void messageReceived(Connection c, Message msg) {
+            if (msg instanceof KSConnectOK) {
+                handleConnectOK(c, (KSConnectOK)msg);
+            }
+            if (msg instanceof KSConnectError) {
+                handleConnectError(c, (KSConnectError)msg);
+            }
+        }
+
+        private void handleConnectOK(Connection c, KSConnectOK ok) {
+            if (ok.getRequestID() == requestID) {
+                c.removeConnectionListener(this);
+                postConnect(c, ok.getSimulatorID(), ok.getEntities(), ok.getConfig());
+                try {
+                    c.sendMessage(new SKAcknowledge(requestID, ok.getSimulatorID()));
+                }
+                catch (ConnectionException e) {
+                    failureReason = new ComponentConnectionException(e);
+                }
+                latch.countDown();
+            }
+        }
+
+        private void handleConnectError(Connection c, KSConnectError error) {
+            if (error.getRequestID() == requestID) {
+                c.removeConnectionListener(this);
+                failureReason = new ComponentConnectionException(error.getReason());
+                latch.countDown();
+            }
+        }
+
+        /**
+           Check if the connection succeeded and throw an exception if is has not.
+        */
+        void testSuccess() throws ComponentConnectionException {
+            if (failureReason != null) {
+                throw failureReason;
+            }
+        }
     }
 
     private class SimulatorListener implements ConnectionListener {

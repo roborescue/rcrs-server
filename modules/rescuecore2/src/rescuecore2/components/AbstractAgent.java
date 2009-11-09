@@ -2,13 +2,19 @@ package rescuecore2.components;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
+import rescuecore2.connection.ConnectionException;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.control.KASense;
+import rescuecore2.messages.control.AKConnect;
+import rescuecore2.messages.control.AKAcknowledge;
+import rescuecore2.messages.control.KAConnectOK;
+import rescuecore2.messages.control.KAConnectError;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
 
 /**
    Abstract base class for agent implementations.
@@ -38,6 +44,19 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     @Override
     public EntityID getID() {
         return entityID;
+    }
+
+    @Override
+    public void connect(Connection connection, RequestIDGenerator generator) throws ConnectionException, ComponentConnectionException, InterruptedException {
+        int requestID = generator.generateRequestID();
+        AKConnect connect = new AKConnect(requestID, 1, getName(), getRequestedEntityURNs());
+        CountDownLatch latch = new CountDownLatch(1);
+        AgentConnectionListener l = new AgentConnectionListener(requestID, latch);
+        connection.addConnectionListener(l);
+        connection.sendMessage(connect);
+        // Wait for a reply
+        latch.await();
+        l.testSuccess();
     }
 
     /**
@@ -72,6 +91,59 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
             return null;
         }
         return model.getEntity(entityID);
+    }
+
+    private class AgentConnectionListener implements ConnectionListener {
+        private int requestID;
+        private CountDownLatch latch;
+        private ComponentConnectionException failureReason;
+
+        public AgentConnectionListener(int requestID, CountDownLatch latch) {
+            this.requestID = requestID;
+            this.latch = latch;
+            failureReason = null;
+        }
+
+        @Override
+        public void messageReceived(Connection c, Message msg) {
+            if (msg instanceof KAConnectOK) {
+                handleConnectOK(c, (KAConnectOK)msg);
+            }
+            if (msg instanceof KAConnectError) {
+                handleConnectError(c, (KAConnectError)msg);
+            }
+        }
+
+        private void handleConnectOK(Connection c, KAConnectOK ok) {
+            if (ok.getRequestID() == requestID) {
+                c.removeConnectionListener(this);
+                postConnect(c, ok.getAgentID(), ok.getEntities(), ok.getConfig());
+                try {
+                    c.sendMessage(new AKAcknowledge(requestID, ok.getAgentID()));
+                }
+                catch (ConnectionException e) {
+                    failureReason = new ComponentConnectionException(e);
+                }
+                latch.countDown();
+            }
+        }
+
+        private void handleConnectError(Connection c, KAConnectError error) {
+            if (error.getRequestID() == requestID) {
+                c.removeConnectionListener(this);
+                failureReason = new ComponentConnectionException(error.getReason());
+                latch.countDown();
+            }
+        }
+
+        /**
+           Check if the connection succeeded and throw an exception if is has not.
+        */
+        void testSuccess() throws ComponentConnectionException {
+            if (failureReason != null) {
+                throw failureReason;
+            }
+        }
     }
 
     private class AgentListener implements ConnectionListener {
