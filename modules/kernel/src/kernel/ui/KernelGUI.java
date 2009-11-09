@@ -9,6 +9,7 @@ import kernel.Kernel;
 import kernel.ComponentManager;
 
 import rescuecore2.config.Config;
+import rescuecore2.registry.Registry;
 
 /**
    A GUI for the kernel.
@@ -27,8 +28,9 @@ public class KernelGUI extends JPanel {
        @param componentManager The kernel component manager.
        @param config The kernel configuration.
        @param allowControl Whether to allow the control buttons or not.
+       @param registry The registry to use for new connections.
     */
-    public KernelGUI(Kernel kernel, ComponentManager componentManager, Config config, boolean allowControl) {
+    public KernelGUI(Kernel kernel, ComponentManager componentManager, Config config, boolean allowControl, Registry registry) {
         super(new BorderLayout());
         this.kernel = kernel;
         status = new KernelStatus(kernel);
@@ -37,7 +39,7 @@ public class KernelGUI extends JPanel {
         tabs = new JTabbedPane();
         add(tabs, BorderLayout.CENTER);
         if (allowControl) {
-            control = new KernelControlPanel(kernel, config, componentManager);
+            control = new KernelControlPanel(kernel, config, componentManager, registry);
             add(control, BorderLayout.WEST);
             control.activate();
         }

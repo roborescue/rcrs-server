@@ -36,14 +36,12 @@ import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.components.Agent;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
-import rescuecore2.messages.MessageRegistry;
-import rescuecore2.messages.MessageFactory;
+import rescuecore2.registry.Registry;
+import rescuecore2.registry.MessageFactory;
+import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.PropertyFactory;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityRegistry;
-import rescuecore2.worldmodel.EntityFactory;
-import rescuecore2.worldmodel.PropertyRegistry;
-import rescuecore2.worldmodel.PropertyFactory;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
@@ -108,31 +106,32 @@ public final class StartKernel {
             }
             // Process jar files
             processJarFiles(config);
-            // Register message, entity and property factories
+            Registry localRegistry = new Registry("Kernel local registry");
+            // Register preferred message, entity and property factories
             for (String next : config.getArrayValue(Constants.MESSAGE_FACTORY_KEY, null)) {
                 MessageFactory factory = instantiateFactory(next, MessageFactory.class);
                 if (factory != null) {
-                    MessageRegistry.register(factory);
-                    System.out.println("Registered message factory: " + next);
+                    localRegistry.registerMessageFactory(factory);
+                    System.out.println("Registered local message factory: " + next);
                 }
             }
             for (String next : config.getArrayValue(Constants.ENTITY_FACTORY_KEY, null)) {
                 EntityFactory factory = instantiateFactory(next, EntityFactory.class);
                 if (factory != null) {
-                    EntityRegistry.register(factory);
-                    System.out.println("Registered entity factory: " + next);
+                    localRegistry.registerEntityFactory(factory);
+                    System.out.println("Registered local entity factory: " + next);
                 }
             }
             for (String next : config.getArrayValue(Constants.PROPERTY_FACTORY_KEY, null)) {
                 PropertyFactory factory = instantiateFactory(next, PropertyFactory.class);
                 if (factory != null) {
-                    PropertyRegistry.register(factory);
-                    System.out.println("Registered property factory: " + next);
+                    localRegistry.registerPropertyFactory(factory);
+                    System.out.println("Registered local property factory: " + next);
                 }
             }
             final KernelInfo kernelInfo = createKernel(config);
             if (showGUI) {
-                KernelGUI gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun);
+                KernelGUI gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun, localRegistry);
                 for (KernelGUIComponent next : kernelInfo.guiComponents) {
                     gui.addKernelGUIComponent(next);
                 }
@@ -147,8 +146,8 @@ public final class StartKernel {
                     });
                 frame.setVisible(true);
             }
-            initialiseKernel(kernelInfo, config);
-            autostartComponents(kernelInfo, config);
+            initialiseKernel(kernelInfo, config, localRegistry);
+            autostartComponents(kernelInfo, config, localRegistry);
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo, config);
                 while (!kernelInfo.kernel.hasTerminated()) {
@@ -177,11 +176,11 @@ public final class StartKernel {
         }
     }
 
-    private static void initialiseKernel(KernelInfo kernel, Config config) throws KernelException {
+    private static void initialiseKernel(KernelInfo kernel, Config config, Registry registry) throws KernelException {
         // Start the connection manager
         ConnectionManager connectionManager = new ConnectionManager();
         try {
-            connectionManager.listen(config.getIntValue(Constants.KERNEL_PORT_NUMBER), kernel.componentManager);
+            connectionManager.listen(config.getIntValue(Constants.KERNEL_PORT_NUMBER), registry, kernel.componentManager);
         }
         catch (IOException e) {
             throw new KernelException("Couldn't open kernel port", e);
@@ -245,20 +244,20 @@ public final class StartKernel {
         }
     }
 
-    private static void autostartComponents(KernelInfo info, Config config) throws InterruptedException {
+    private static void autostartComponents(KernelInfo info, Config config, Registry registry) throws InterruptedException {
         KernelChooserDialog gui = info.choices;
         Collection<Callable<Void>> all = new ArrayList<Callable<Void>>();
         // Simulators
         for (String next : gui.getSimulators()) {
-            all.add(new ComponentStarter<Simulator>(Simulator.class, next, config, info.componentManager, 1));
+            all.add(new ComponentStarter<Simulator>(Simulator.class, next, config, info.componentManager, 1, registry));
         }
         // Viewers
         for (String next : gui.getViewers()) {
-            all.add(new ComponentStarter<Viewer>(Viewer.class, next, config, info.componentManager, 1));
+            all.add(new ComponentStarter<Viewer>(Viewer.class, next, config, info.componentManager, 1, registry));
         }
         // Agents
         for (Pair<String, Integer> next : gui.getAgents()) {
-            all.add(new ComponentStarter<Agent>(Agent.class, next.first(), config, info.componentManager, next.second()));
+            all.add(new ComponentStarter<Agent>(Agent.class, next.first(), config, info.componentManager, next.second(), registry));
         }
         ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         service.invokeAll(all);
@@ -337,9 +336,7 @@ public final class StartKernel {
 
     private static void processJarFiles(Config config) throws IOException {
         LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
-        processor.addConfigUpdater(LoadableType.MESSAGE_FACTORY, config, Constants.MESSAGE_FACTORY_KEY);
-        processor.addConfigUpdater(LoadableType.ENTITY_FACTORY, config, Constants.ENTITY_FACTORY_KEY);
-        processor.addConfigUpdater(LoadableType.PROPERTY_FACTORY, config, Constants.PROPERTY_FACTORY_KEY);
+        processor.addFactoryRegisterCallbacks(Registry.SYSTEM_REGISTRY);
         processor.addConfigUpdater(LoadableType.AGENT, config, KernelConstants.AGENTS_KEY);
         processor.addConfigUpdater(LoadableType.SIMULATOR, config, KernelConstants.SIMULATORS_KEY);
         processor.addConfigUpdater(LoadableType.VIEWER, config, KernelConstants.VIEWERS_KEY);
@@ -355,19 +352,21 @@ public final class StartKernel {
         private Config config;
         private ComponentManager componentManager;
         private int count;
+        private Registry registry;
 
-        public ComponentStarter(Class<T> clazz, String className, Config config, ComponentManager componentManager, int count) {
+        public ComponentStarter(Class<T> clazz, String className, Config config, ComponentManager componentManager, int count, Registry registry) {
             this.clazz = clazz;
             this.className = className;
             this.config = config;
             this.componentManager = componentManager;
             this.count = count;
+            this.registry = registry;
             System.out.println("New ComponentStarter: " + className + " * " + count);
         }
 
         public Void call() throws InterruptedException {
             System.out.println("ComponentStarter running: " + className + " * " + count);
-            Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
+            Pair<Connection, Connection> connections = StreamConnection.createConnectionPair(registry);
             componentManager.newConnection(connections.first());
             ComponentLauncher launcher = new ComponentLauncher(connections.second());
             System.out.println("Launching " + count + " instances of component '" + className + "'...");

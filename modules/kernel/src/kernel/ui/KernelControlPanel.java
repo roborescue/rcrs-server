@@ -31,6 +31,7 @@ import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.ComponentInitialisationException;
 import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.log.LogException;
+import rescuecore2.registry.Registry;
 
 /**
    A JComponent containing various controls for the kernel GUI.
@@ -38,6 +39,7 @@ import rescuecore2.log.LogException;
 public class KernelControlPanel extends JPanel {
     private Kernel kernel;
     private Config config;
+    private Registry registry;
     private ComponentManager componentManager;
     private ComponentLauncher launcher;
     private Collection<JButton> controlButtons;
@@ -55,12 +57,14 @@ public class KernelControlPanel extends JPanel {
        @param kernel The kernel to control.
        @param config The kernel configuration.
        @param componentManager The kernel component manager.
+       @param registry The registry to use for new connections.
     */
-    public KernelControlPanel(Kernel kernel, Config config, ComponentManager componentManager) {
+    public KernelControlPanel(Kernel kernel, Config config, ComponentManager componentManager, Registry registry) {
         super(new GridLayout(0, 1));
         this.kernel = kernel;
         this.config = config;
         this.componentManager = componentManager;
+        this.registry = registry;
         controlButtons = new ArrayList<JButton>();
         JButton addAgent = new JButton("Add agent");
         JButton removeAgent = new JButton("Remove agent");
@@ -272,7 +276,7 @@ public class KernelControlPanel extends JPanel {
     }
 
     private Pair<Connection, Connection> createConnectionPair() {
-        return StreamConnection.createConnectionPair();
+        return StreamConnection.createConnectionPair(registry);
     }
 
     private Component[] createComponents(String type) {
