@@ -15,6 +15,7 @@ import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.CommandLineOptions;
+import rescuecore2.registry.Registry;
 
 /**
    General launcher for components.
@@ -56,7 +57,7 @@ public final class LaunchComponents {
 
     private static void processJarFiles(Config config) throws IOException {
         LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
-        processor.addFactoryRegisterCallbacks();
+        processor.addFactoryRegisterCallbacks(Registry.SYSTEM_REGISTRY);
         processor.process();
     }
 

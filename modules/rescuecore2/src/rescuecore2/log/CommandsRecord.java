@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
+import rescuecore2.registry.Registry;
 
 /**
    A commands record.
@@ -62,7 +63,7 @@ public class CommandsRecord implements LogRecord {
         int count = readInt32(in);
         //        System.out.print("Reading commands for time " + time + ". " + count + " commands to read...");
         for (int i = 0; i < count; ++i) {
-            Message m = readMessage(in);
+            Message m = readMessage(in, Registry.getCurrentRegistry());
             if (m == null) {
                 throw new LogException("Could not read message from stream");
             }

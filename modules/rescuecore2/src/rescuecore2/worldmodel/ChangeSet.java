@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.registry.Registry;
 
 /**
    This class is used for accumulating changes to entities.
@@ -153,7 +154,7 @@ public class ChangeSet {
             EntityID id = new EntityID(readInt32(in));
             int propCount = readInt32(in);
             for (int j = 0; j < propCount; ++j) {
-                Property p = readProperty(in);
+                Property p = readProperty(in, Registry.getCurrentRegistry());
                 if (p != null) {
                     addChange(id, p);
                 }

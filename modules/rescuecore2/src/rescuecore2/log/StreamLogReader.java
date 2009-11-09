@@ -8,6 +8,7 @@ import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.config.Config;
+import rescuecore2.registry.Registry;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.io.ByteArrayInputStream;
 /**
    An class for reading kernel logs from a stream.
  */
-public class StreamLogReader implements LogReader {
+public class StreamLogReader extends AbstractLogReader {
     private int maxTime;
     private Map<Integer, CommandsRecord> commands;
     private Map<Integer, UpdatesRecord> updates;
@@ -32,9 +33,11 @@ public class StreamLogReader implements LogReader {
     /**
        Construct a StreamLogReader.
        @param in The InputStream to read.
+       @param registry The registry to use for reading log entries.
        @throws LogException If there is a problem reading the log.
      */
-    public StreamLogReader(InputStream in) throws LogException {
+    public StreamLogReader(InputStream in, Registry registry) throws LogException {
+        super(registry);
         commands = new HashMap<Integer, CommandsRecord>();
         updates = new HashMap<Integer, UpdatesRecord>();
         worldModels = new HashMap<Integer, WorldModel<? extends Entity>>();
@@ -111,6 +114,7 @@ public class StreamLogReader implements LogReader {
     }
 
     private void readLog(InputStream in) throws IOException, LogException {
+        Registry.setCurrentRegistry(registry);
         int id;
         RecordType type;
         boolean startFound = false;

@@ -12,7 +12,7 @@ import org.junit.After;
 import java.io.IOException;
 import java.net.Socket;
 
-import rescuecore2.messages.MessageRegistry;
+import rescuecore2.registry.Registry;
 
 public class ConnectionManagerTest {
     private static final int PORT = 34332;
@@ -23,12 +23,14 @@ public class ConnectionManagerTest {
 
     private ConnectionManager manager;
     private TestConnectionManagerListener listener;
+    private Registry registry;
 
     @Before
     public void setup() {
         manager = new ConnectionManager();
         listener = new TestConnectionManagerListener();
-        MessageRegistry.register(new TestMessageFactory("", MESSAGE_1));
+        registry = new Registry();
+        registry.registerMessageFactory(new TestMessageFactory("", MESSAGE_1));
     }
 
     @After
@@ -38,7 +40,7 @@ public class ConnectionManagerTest {
 
     @Test
     public void testListen() throws IOException, InterruptedException {
-        manager.listen(PORT, listener);
+        manager.listen(PORT, registry, listener);
         // Check that connecting to the socket results in a new Connection.
         new Socket("localhost", PORT);
         Thread.sleep(DELAY);
@@ -52,8 +54,8 @@ public class ConnectionManagerTest {
 
     @Test
     public void testListenMultiplePorts() throws IOException, InterruptedException {
-        manager.listen(PORT, listener);
-        manager.listen(PORT2, listener);
+        manager.listen(PORT, registry, listener);
+        manager.listen(PORT2, registry, listener);
         // Check that connecting to each socket results in a new Connection.
         new Socket("localhost", PORT);
         new Socket("localhost", PORT2);
@@ -63,8 +65,8 @@ public class ConnectionManagerTest {
 
     @Test
     public void testShutdown() throws IOException, InterruptedException {
-        manager.listen(PORT, listener);
-        manager.listen(PORT2, listener);
+        manager.listen(PORT, registry, listener);
+        manager.listen(PORT2, registry, listener);
         // Check that connecting to each socket results in a new Connection.
         new Socket("localhost", PORT);
         new Socket("localhost", PORT2);
@@ -94,7 +96,7 @@ public class ConnectionManagerTest {
 
     @Test
     public void testShutdownPreventsListen() throws IOException, InterruptedException {
-        manager.listen(PORT, listener);
+        manager.listen(PORT, registry, listener);
         // Check that connecting to the socket results in a new Connection.
         new Socket("localhost", PORT);
         Thread.sleep(DELAY);
@@ -102,7 +104,7 @@ public class ConnectionManagerTest {
         manager.shutdown();
         // Check that attempting to listen again fails
         try {
-            manager.listen(PORT2, listener);
+            manager.listen(PORT2, registry, listener);
             fail("Expected an IOException when trying to listen after shutdown");
         }
         catch (IOException e) {
@@ -121,7 +123,7 @@ public class ConnectionManagerTest {
 
     @Test
     public void testInterruptedShutdown() throws IOException, InterruptedException {
-        manager.listen(PORT, listener);
+        manager.listen(PORT, registry, listener);
         // Check that connecting to the socket results in a new Connection.
         new Socket("localhost", PORT);
         Thread.sleep(DELAY);
@@ -139,7 +141,7 @@ public class ConnectionManagerTest {
         assertEquals(1, listener.getCount());
         // Check that attempting to listen again fails
         try {
-            manager.listen(PORT2, listener);
+            manager.listen(PORT2, registry, listener);
             fail("Expected an IOException when trying to listen after shutdown");
         }
         catch (IOException e) {

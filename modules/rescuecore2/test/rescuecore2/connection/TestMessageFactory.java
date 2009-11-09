@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageFactory;
+import rescuecore2.registry.MessageFactory;
 
 public class TestMessageFactory implements MessageFactory {
     private String description;
@@ -21,7 +21,7 @@ public class TestMessageFactory implements MessageFactory {
     }
 
     @Override
-    public Message createMessage(String urn, InputStream in) throws IOException {
+    public Message makeMessage(String urn, InputStream in) throws IOException {
         boolean found = false;
         for (int i = 0; i < urns.length && !found; ++i) {
             if (urns[i].equals(urn)) {

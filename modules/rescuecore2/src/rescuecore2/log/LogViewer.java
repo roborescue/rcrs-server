@@ -11,6 +11,7 @@ import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.view.ViewComponent;
+import rescuecore2.registry.Registry;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -205,7 +206,7 @@ public class LogViewer extends JPanel {
             }
             String name = args[0];
             processJarFiles(config);
-            LogReader reader = new FileLogReader(name);
+            LogReader reader = new FileLogReader(name, Registry.SYSTEM_REGISTRY);
             LogViewer viewer = new LogViewer(reader, config);
             viewer.setPreferredSize(new Dimension(VIEWER_SIZE, VIEWER_SIZE));
             JFrame frame = new JFrame("Log viewer: " + name);
@@ -235,7 +236,7 @@ public class LogViewer extends JPanel {
 
     private static void processJarFiles(Config config) throws IOException {
         LoadableTypeProcessor processor = new LoadableTypeProcessor(config);
-        processor.addFactoryRegisterCallbacks();
+        processor.addFactoryRegisterCallbacks(Registry.SYSTEM_REGISTRY);
         processor.process();
     }
 }

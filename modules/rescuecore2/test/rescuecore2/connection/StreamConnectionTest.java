@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.After;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageRegistry;
 import rescuecore2.misc.Pair;
 
 public class StreamConnectionTest extends ConnectionTestCommon {
@@ -117,14 +116,15 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testNegativeSizeInput() throws IOException, InterruptedException {
         System.err.println("Test negative size input");
         try {
-            MessageRegistry.register(new TestMessageFactory("StreamConnectionTest factory", MESSAGE_URN));
+            registry.registerMessageFactory(new TestMessageFactory("StreamConnectionTest factory", MESSAGE_URN));
             TestInputStream in = new TestInputStream(NEGATIVE_SIZE_INPUT);
             TestOutputStream out = new TestOutputStream();
             Connection c = new StreamConnection(in, out);
             TestConnectionListener l = new TestConnectionListener();
+            c.setRegistry(registry);
             c.addConnectionListener(l);
             c.startup();
-            // Should ignore the first negative size field then read a message with urn 'T@
+            // Should ignore the first negative size field then read a message with urn 'T'
             l.waitForMessages(1, TIMEOUT);
             assertEquals(1, l.getMessageCount());
             assertEquals(MESSAGE_URN, l.getMessage(0).getURN());

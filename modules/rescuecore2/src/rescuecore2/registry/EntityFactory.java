@@ -1,4 +1,7 @@
-package rescuecore2.worldmodel;
+package rescuecore2.registry;
+
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 
 /**
    A factory for vending Entities.

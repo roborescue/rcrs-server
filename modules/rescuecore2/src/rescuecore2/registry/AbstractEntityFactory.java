@@ -1,6 +1,9 @@
-package rescuecore2.worldmodel;
+package rescuecore2.registry;
 
 import java.util.EnumSet;
+
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 
 /**
    An abstract entity factory with helper methods for defining URNs with enums.

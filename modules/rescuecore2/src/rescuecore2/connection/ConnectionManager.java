@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import rescuecore2.misc.WorkerThread;
+import rescuecore2.registry.Registry;
 
 /**
    A class for managing incoming connections.
@@ -30,10 +31,11 @@ public class ConnectionManager {
     /**
        Listen for connections on a particular port.
        @param port The port to listen on.
+       @param registry The registry to install in new connections.
        @param listener A ConnectionManagerListener that will be informed of new connections.
        @throws IOException If there is a problem listening on the port.
     */
-    public void listen(int port, ConnectionManagerListener listener) throws IOException {
+    public void listen(int port, Registry registry, ConnectionManagerListener listener) throws IOException {
         synchronized (lock) {
             if (shutdown) {
                 throw new IOException("Connection manager has been shut down");
@@ -42,7 +44,7 @@ public class ConnectionManager {
             ServerSocket socket = new ServerSocket(port);
             socket.setSoTimeout(1000);
             socket.setReuseAddress(true);
-            Reader r = new Reader(socket, listener);
+            Reader r = new Reader(socket, registry, listener);
             readers.add(r);
             r.start();
         }
@@ -81,10 +83,12 @@ public class ConnectionManager {
 
     private class Reader extends WorkerThread {
         private ServerSocket socket;
+        private Registry registry;
         private ConnectionManagerListener callback;
 
-        public Reader(ServerSocket socket, ConnectionManagerListener callback) {
+        public Reader(ServerSocket socket, Registry registry, ConnectionManagerListener callback) {
             this.socket = socket;
+            this.registry = registry;
             this.callback = callback;
         }
 
@@ -94,6 +98,7 @@ public class ConnectionManager {
                 Socket s = socket.accept();
                 TCPConnection conn = new TCPConnection(s);
                 if (ConnectionManager.this.isAlive()) {
+                    conn.setRegistry(registry);
                     callback.newConnection(conn);
                     conn.startup();
                 }

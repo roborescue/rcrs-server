@@ -1,4 +1,6 @@
-package rescuecore2.worldmodel;
+package rescuecore2.registry;
+
+import rescuecore2.worldmodel.Property;
 
 /**
    A factory for vending Properties.

@@ -12,11 +12,9 @@ import java.nio.charset.Charset;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.EntityRegistry;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.PropertyRegistry;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.MessageRegistry;
+import rescuecore2.registry.Registry;
 
 /**
    A bunch of useful tools for encoding and decoding things like integers.
@@ -476,12 +474,13 @@ public final class EncodingTools {
     }
 
     /**
-       Read an entity from a stream. This will use the EntityRegistry class to look up entity URNs.
+       Read an entity from a stream.
        @param in The InputStream to read from.
+       @param registry The Registry to use for decoding entity URNs.
        @return A new Entity, or null if the entity URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Entity readEntity(InputStream in) throws IOException {
+    public static Entity readEntity(InputStream in, Registry registry) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
@@ -489,7 +488,8 @@ public final class EncodingTools {
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Entity result = EntityRegistry.createEntity(urn, new EntityID(entityID));
+        Registry.setCurrentRegistry(registry);
+        Entity result = registry.createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -497,12 +497,13 @@ public final class EncodingTools {
     }
 
     /**
-       Read an entity from a DataInput. This will use the EntityRegistry class to look up entity type URNs.
+       Read an entity from a DataInput.
        @param in The DataInput to read from.
+       @param registry The Registry to use for decoding entity URNs.
        @return A new Entity, or null if the entity URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Entity readEntity(DataInput in) throws IOException {
+    public static Entity readEntity(DataInput in, Registry registry) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
@@ -510,7 +511,8 @@ public final class EncodingTools {
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Entity result = EntityRegistry.createEntity(urn, new EntityID(entityID));
+        Registry.setCurrentRegistry(registry);
+        Entity result = registry.createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -554,19 +556,21 @@ public final class EncodingTools {
     }
 
     /**
-       Read a property from a stream. This will use the PropertyRegistry class to look up property type URNs.
+       Read a property from a stream.
        @param in The InputStream to read from.
+       @param registry The Registry to use for decoding property URNs.
        @return A new Property, or null if the property URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Property readProperty(InputStream in) throws IOException {
+    public static Property readProperty(InputStream in, Registry registry) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Property result = PropertyRegistry.createProperty(urn);
+        Registry.setCurrentRegistry(registry);
+        Property result = registry.createProperty(urn);
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -574,19 +578,21 @@ public final class EncodingTools {
     }
 
     /**
-       Read a property from a DataInput. This will use the PropertyRegistry class to look up property type URNs.
+       Read a property from a DataInput.
        @param in The DataInput to read from.
+       @param registry The Registry to use for decoding property URNs.
        @return A new Property, or null if the property URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Property readProperty(DataInput in) throws IOException {
+    public static Property readProperty(DataInput in, Registry registry) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Property result = PropertyRegistry.createProperty(urn);
+        Registry.setCurrentRegistry(registry);
+        Property result = registry.createProperty(urn);
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -636,36 +642,40 @@ public final class EncodingTools {
     }
 
     /**
-       Read a message from a stream. This will use the MessageRegistry class to look up message URNs.
+       Read a message from a stream.
        @param in The InputStream to read from.
+       @param registry The Registry to use for decoding message URNs.
        @return A new Message, or null if the message URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Message readMessage(InputStream in) throws IOException {
+    public static Message readMessage(InputStream in, Registry registry) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Message result = MessageRegistry.createMessage(urn, new ByteArrayInputStream(content));
+        Registry.setCurrentRegistry(registry);
+        Message result = registry.createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
 
     /**
-       Read a message from a DataInput. This will use the MessageRegistry class to look up message URNs.
+       Read a message from a DataInput.
        @param in The DataInput to read from.
+       @param registry The Registry to use for decoding message URNs.
        @return A new Message, or null if the message URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Message readMessage(DataInput in) throws IOException {
+    public static Message readMessage(DataInput in, Registry registry) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Message result = MessageRegistry.createMessage(urn, new ByteArrayInputStream(content));
+        Registry.setCurrentRegistry(registry);
+        Message result = registry.createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
 

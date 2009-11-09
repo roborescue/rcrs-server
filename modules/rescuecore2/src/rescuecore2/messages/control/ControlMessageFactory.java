@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.AbstractMessageFactory;
+import rescuecore2.registry.AbstractMessageFactory;
 
 /**
    A factory for control messages.
@@ -18,7 +18,7 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
     }
 
     @Override
-    public Message createMessage(ControlMessageURN urn, InputStream data) throws IOException {
+    public Message makeMessage(ControlMessageURN urn, InputStream data) throws IOException {
         switch (urn) {
         case KG_CONNECT:
             return new KGConnect(data);

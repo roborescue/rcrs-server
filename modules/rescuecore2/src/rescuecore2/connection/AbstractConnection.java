@@ -6,6 +6,7 @@ import static rescuecore2.misc.EncodingTools.writeMessage;
 
 import rescuecore2.messages.Message;
 import rescuecore2.misc.WorkerThread;
+import rescuecore2.registry.Registry;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public abstract class AbstractConnection implements Connection {
     private List<ConnectionListener> listeners;
     private List<Message> toSend;
     private MessageBroadcastThread broadcast;
+    private Registry registry;
 
     private boolean logBytes;
 
@@ -42,6 +44,7 @@ public abstract class AbstractConnection implements Connection {
         logBytes = false;
         state = State.NOT_STARTED;
         broadcast = new MessageBroadcastThread();
+        registry = Registry.SYSTEM_REGISTRY;
     }
 
     @Override
@@ -143,6 +146,16 @@ public abstract class AbstractConnection implements Connection {
         }
     }
 
+    @Override
+    public void setRegistry(Registry r) {
+        this.registry = r;
+    }
+
+    @Override
+    public Registry getRegistry() {
+        return registry;
+    }
+
     /**
        Send some bytes to the other end of the connection.
        @param b The bytes to send.
@@ -161,7 +174,7 @@ public abstract class AbstractConnection implements Connection {
     protected abstract void shutdownImpl();
 
     /**
-       Process some bytes that were received. The default implementation will use the MessageRegistry to decode all messages in the buffer and send them to listeners.
+       Process some bytes that were received. The default implementation will use the Registry to decode all messages in the buffer and send them to listeners.
        @param b The received bytes.
     */
     protected void bytesReceived(byte[] b) {
@@ -169,7 +182,7 @@ public abstract class AbstractConnection implements Connection {
         Message m = null;
         try {
             do {
-                m = readMessage(decode);
+                m = readMessage(decode, registry);
                 if (m != null) {
                     //                    System.out.println("Received: " + m);
                     fireMessageReceived(m);

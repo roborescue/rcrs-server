@@ -1,6 +1,7 @@
 package rescuecore2.connection;
 
 import rescuecore2.messages.Message;
+import rescuecore2.registry.Registry;
 
 import java.util.Collection;
 
@@ -55,4 +56,16 @@ public interface Connection {
        @param enabled Whether to enable byte-level logging.
     */
     void setLogBytes(boolean enabled);
+
+    /**
+       Set the Registry that this connection should use for decoding messages and entities.
+       @param registry The new Registry to use.
+    */
+    void setRegistry(Registry registry);
+
+    /**
+       Get the Registry that this connection is using for decoding messages and entities.
+       @return The Registry in use.
+    */
+    Registry getRegistry();
 }

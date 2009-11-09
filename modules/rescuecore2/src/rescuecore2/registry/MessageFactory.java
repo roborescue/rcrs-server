@@ -1,4 +1,6 @@
-package rescuecore2.messages;
+package rescuecore2.registry;
+
+import rescuecore2.messages.Message;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -14,7 +16,7 @@ public interface MessageFactory {
        @return A new Message object, or null if the urn is not recognised.
        @throws IOException If there is a problem reading the stream.
      */
-    Message createMessage(String urn, InputStream data) throws IOException;
+    Message makeMessage(String urn, InputStream data) throws IOException;
 
     /**
        Get all message urns understood by this factory.

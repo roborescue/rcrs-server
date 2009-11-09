@@ -1,8 +1,10 @@
-package rescuecore2.messages;
+package rescuecore2.registry;
 
 import java.util.EnumSet;
 import java.io.InputStream;
 import java.io.IOException;
+
+import rescuecore2.messages.Message;
 
 /**
    An abstract message factory with helper methods for defining URNs with enums.
@@ -31,9 +33,9 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
     }
 
     @Override
-    public Message createMessage(String urn, InputStream data) throws IOException {
+    public Message makeMessage(String urn, InputStream data) throws IOException {
         T t = Enum.valueOf(clazz, urn);
-        return createMessage(t, data);
+        return makeMessage(t, data);
     }
 
     /**
@@ -51,5 +53,5 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
        @return A new Message object, or null if the urn is not recognised.
        @throws IOException If there is a problem reading the stream.
      */
-    protected abstract Message createMessage(T urn, InputStream data) throws IOException;
+    protected abstract Message makeMessage(T urn, InputStream data) throws IOException;
 }

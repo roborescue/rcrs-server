@@ -1,6 +1,8 @@
-package rescuecore2.worldmodel;
+package rescuecore2.registry;
 
 import java.util.EnumSet;
+
+import rescuecore2.worldmodel.Property;
 
 /**
    An abstract property factory with helper methods for defining URNs with enums.

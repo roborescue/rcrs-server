@@ -14,6 +14,7 @@ import java.util.Collection;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.DefaultWorldModel;
+import rescuecore2.registry.Registry;
 
 /**
    An initial conditions record.
@@ -60,7 +61,7 @@ public class InitialConditionsRecord implements LogRecord {
         int size = readInt32(in);
         //        System.out.print("Reading initial conditions. " + size + " objects to read...");
         for (int i = 0; i < size; ++i) {
-            Entity e = readEntity(in);
+            Entity e = readEntity(in, Registry.getCurrentRegistry());
             if (e == null) {
                 throw new LogException("Could not read entity from stream");
             }

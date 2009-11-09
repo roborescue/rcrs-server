@@ -8,6 +8,7 @@ import static rescuecore2.misc.EncodingTools.writeMessage;
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.Message;
+import rescuecore2.registry.Registry;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class CommandListComponent extends AbstractMessageComponent {
         commands.clear();
         int size = readInt32(in);
         for (int i = 0; i < size; ++i) {
-            Message m = readMessage(in);
+            Message m = readMessage(in, Registry.getCurrentRegistry());
             if (m instanceof Command) {
                 commands.add((Command)m);
             }

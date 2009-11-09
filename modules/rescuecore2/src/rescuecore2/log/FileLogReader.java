@@ -22,11 +22,12 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
+import rescuecore2.registry.Registry;
 
 /**
    A log reader that reads from a file.
  */
-public class FileLogReader implements LogReader {
+public class FileLogReader extends AbstractLogReader {
     private static final int KEY_FRAME_BUFFER_MAX_SIZE = 10;
 
     private RandomAccessFile file;
@@ -40,20 +41,23 @@ public class FileLogReader implements LogReader {
     /**
        Construct a new FileLogReader.
        @param name The name of the file to read.
+       @param registry The registry to use for reading log entries.
        @throws IOException If the file cannot be read.
        @throws LogException If there is a problem reading the log.
     */
-    public FileLogReader(String name) throws IOException, LogException {
-        this(new File(name));
+    public FileLogReader(String name, Registry registry) throws IOException, LogException {
+        this(new File(name), registry);
     }
 
     /**
        Construct a new FileLogReader.
        @param file The file object to read.
+       @param registry The registry to use for reading log entries.
        @throws IOException If the file cannot be read.
        @throws LogException If there is a problem reading the log.
     */
-    public FileLogReader(File file) throws IOException, LogException {
+    public FileLogReader(File file, Registry registry) throws IOException, LogException {
+        super(registry);
         System.out.println("Reading file log: " + file.getAbsolutePath());
         this.file = new RandomAccessFile(file, "r");
         index();
@@ -162,6 +166,7 @@ public class FileLogReader implements LogReader {
 
     private void index() throws LogException {
         try {
+            Registry.setCurrentRegistry(registry);
             keyFrames = new TreeMap<Integer, WorldModel<? extends Entity>>();
             perceptionIndices = new HashMap<Integer, Map<EntityID, Long>>();
             updatesIndices = new HashMap<Integer, Long>();

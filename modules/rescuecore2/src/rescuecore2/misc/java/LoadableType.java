@@ -8,9 +8,9 @@ import java.util.jar.Attributes;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import rescuecore2.messages.MessageFactory;
-import rescuecore2.worldmodel.EntityFactory;
-import rescuecore2.worldmodel.PropertyFactory;
+import rescuecore2.registry.MessageFactory;
+import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.PropertyFactory;
 import rescuecore2.components.Agent;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;

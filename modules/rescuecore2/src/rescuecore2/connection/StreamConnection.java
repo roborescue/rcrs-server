@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.misc.Pair;
+import rescuecore2.registry.Registry;
 
 /**
    Connection implementation that uses InputStreams and OutputStreams.
@@ -172,10 +173,11 @@ public class StreamConnection extends AbstractConnection {
     }
 
     /**
-       Create a pair of connections that pipe input to each other.
+       Create and start a pair of connections that pipe input to each other.
+       @param registry The registry to install in the two connections.
        @return A pair of connections.
     */
-    public static Pair<Connection, Connection> createConnectionPair() {
+    public static Pair<Connection, Connection> createConnectionPair(Registry registry) {
         try {
             PipedInputStream in1 = new PipedInputStream();
             PipedInputStream in2 = new PipedInputStream();
@@ -183,6 +185,8 @@ public class StreamConnection extends AbstractConnection {
             PipedOutputStream out2 = new PipedOutputStream(in1);
             Connection c1 = new StreamConnection(in1, out1);
             Connection c2 = new StreamConnection(in2, out2);
+            c1.setRegistry(registry);
+            c2.setRegistry(registry);
             c1.startup();
             c2.startup();
             return new Pair<Connection, Connection>(c1, c2);
