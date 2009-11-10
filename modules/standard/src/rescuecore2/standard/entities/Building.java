@@ -361,10 +361,13 @@ public class Building extends StandardEntity {
     }
 
     /**
-       Get the fieryness of this building as an enum constant.
-       @return The fieryness property value.
+       Get the fieryness of this building as an enum constant. If fieryness is not defined then return null.
+       @return The fieryness property value as a Fieryness enum, or null if fieryness is undefined.
      */
     public Fieryness getFierynessEnum() {
+        if (!fieryness.isDefined()) {
+            return null;
+        }
         return Fieryness.values()[fieryness.getValue()];
     }
 
