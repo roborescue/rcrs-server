@@ -2,6 +2,8 @@ package rescuecore2.view;
 
 import java.util.Collection;
 
+import rescuecore2.config.Config;
+
 /**
    An abstract ViewLayer implementation.
  */
@@ -13,6 +15,10 @@ public abstract class AbstractViewLayer implements ViewLayer {
     */
     protected AbstractViewLayer() {
         visible = true;
+    }
+
+    @Override
+    public void initialise(Config config) {
     }
 
     @Override

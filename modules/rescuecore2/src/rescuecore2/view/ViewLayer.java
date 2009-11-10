@@ -4,12 +4,19 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
+import rescuecore2.config.Config;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A layer of a view. The LayerViewComponent is composed of a list of ViewLayer objects.
  */
 public interface ViewLayer {
+    /**
+       Initialise this view layer.
+       @param config The system configuration.
+    */
+    void initialise(Config config);
+
     /**
        Set the list of objects this layer should view. The layer should record the objects it understands and draw them when {@link #render(Graphics2D, ScreenTransform, int, int)} is called.
        @param objects The objects to view.

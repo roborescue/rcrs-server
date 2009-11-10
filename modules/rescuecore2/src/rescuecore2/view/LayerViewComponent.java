@@ -19,6 +19,7 @@ import javax.swing.Action;
 import javax.swing.AbstractAction;
 
 import rescuecore2.misc.gui.ScreenTransform;
+import rescuecore2.config.Config;
 
 /**
    A ViewComponent that uses layers.
@@ -27,6 +28,7 @@ public class LayerViewComponent extends ViewComponent {
     private static final Icon TICK = new ImageIcon(LayerViewComponent.class.getClassLoader().getResource("rescuecore2/view/tick.png"));
     private static final Icon CROSS = new ImageIcon(LayerViewComponent.class.getClassLoader().getResource("rescuecore2/view/cross.png"));
 
+    private Config config;
     private List<ViewLayer> layers;
     private List<Action> layerActions;
     private Object[] data;
@@ -60,6 +62,14 @@ public class LayerViewComponent extends ViewComponent {
             });
     }
 
+    @Override
+    public void initialise(Config c) {
+        this.config = c;
+        for (ViewLayer next : layers) {
+            next.initialise(config);
+        }
+    }
+
     /**
        Add a view layer.
        @param layer The layer to add.
@@ -67,6 +77,9 @@ public class LayerViewComponent extends ViewComponent {
     public void addLayer(ViewLayer layer) {
         layers.add(layer);
         layerActions.add(new LayerAction(layer));
+        if (config != null) {
+            layer.initialise(config);
+        }
         computeBounds();
     }
 
