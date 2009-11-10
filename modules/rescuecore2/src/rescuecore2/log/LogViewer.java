@@ -12,6 +12,9 @@ import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.view.ViewComponent;
 import rescuecore2.registry.Registry;
+import rescuecore2.view.ViewListener;
+import rescuecore2.view.RenderedObject;
+import rescuecore2.view.EntityInspector;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -30,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
+import javax.swing.JSplitPane;
 import javax.swing.BorderFactory;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -53,6 +57,7 @@ public class LogViewer extends JPanel {
 
     private LogReader log;
     private JLabel timestep;
+    private EntityInspector inspector;
     private JSlider slider;
     private JList commandsList;
     private JList updatesList;
@@ -72,6 +77,7 @@ public class LogViewer extends JPanel {
     public LogViewer(LogReader reader, Config config) throws LogException {
         super(new BorderLayout());
         this.log = reader;
+        inspector = new EntityInspector();
         registerViewers(config);
         maxTime = log.getMaxTimestep();
         slider = new JSlider(0, maxTime);
@@ -128,9 +134,24 @@ public class LogViewer extends JPanel {
         JTabbedPane tabs = new JTabbedPane();
         for (ViewComponent next : viewers) {
             tabs.addTab(next.getViewerName(), next);
+            next.addViewListener(new ViewListener() {
+                    @Override
+                    public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
+                        for (RenderedObject next : objects) {
+                            if (next.getObject() instanceof Entity) {
+                                inspector.inspect((Entity)next.getObject());
+                                return;
+                            }
+                        }
+                    }
+                    @Override
+                    public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
+                    }
+                });
         }
-        add(tabs, BorderLayout.CENTER);
-        add(lists, BorderLayout.EAST);
+        JSplitPane split1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inspector, tabs);
+        JSplitPane split2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, split1, lists);
+        add(split2, BorderLayout.CENTER);
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(down, BorderLayout.WEST);
         bottom.add(slider, BorderLayout.CENTER);
