@@ -130,11 +130,11 @@ public class ChannelCommunicationModel implements CommunicationModel {
                 }
                 else {
                     if (n != null) {
-                        System.out.println("Adding noise to message:");
-                        rescuecore2.connection.ByteLogger.log(speak.getContent());
+                        //                        System.out.println("Adding noise to message:");
+                        //                        rescuecore2.connection.ByteLogger.log(speak.getContent());
                         speak = n.addNoise(speak);
-                        System.out.println("Added noise to message:");
-                        rescuecore2.connection.ByteLogger.log(speak.getContent());
+                        //                        System.out.println("Added noise to message:");
+                        //                        rescuecore2.connection.ByteLogger.log(speak.getContent());
                     }
                     channel.push(speak);
                 }

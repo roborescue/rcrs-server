@@ -48,6 +48,7 @@ import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.java.LoadableType;
 import rescuecore2.Constants;
 import rescuecore2.log.LogException;
+import rescuecore2.score.ScoreFunction;
 
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
@@ -272,6 +273,7 @@ public final class StartKernel {
         CommunicationModel comms = dialog.getCommunicationModel();
         CommandFilter filter = makeCommandFilter(config);
         TerminationCondition termination = makeTerminationCondition(config);
+        ScoreFunction score = makeScoreFunction(config);
 
         // Get the world model
         WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
@@ -279,9 +281,10 @@ public final class StartKernel {
         perception.initialise(config, worldModel);
         comms.initialise(config, worldModel);
         termination.initialise(config);
+        score.initialise(config);
         // Create the kernel
         System.out.println("Kernel termination condition: " + termination);
-        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination);
+        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination, score);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);
@@ -319,6 +322,12 @@ public final class StartKernel {
             }
         }
         return new OrTerminationCondition(result);
+    }
+
+    private static ScoreFunction makeScoreFunction(Config config) {
+        String className = config.getValue(Constants.SCORE_FUNCTION_KEY);
+        ScoreFunction result = instantiate(className, ScoreFunction.class);
+        return result;
     }
 
     private static List<KernelGUIComponent> makeKernelGUIComponents(Config config) {

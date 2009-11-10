@@ -33,6 +33,7 @@ public class KernelStatus extends JPanel implements KernelListener {
     private JList simulatorsList;
     private JList viewersList;
     private JLabel timeLabel;
+    private JLabel scoreLabel;
 
     /**
        Construct a KernelStatus component.
@@ -62,15 +63,24 @@ public class KernelStatus extends JPanel implements KernelListener {
         lists.add(viewersScroll);
         add(lists, BorderLayout.CENTER);
         timeLabel = new JLabel("Time: not started", JLabel.CENTER);
-        add(timeLabel, BorderLayout.NORTH);
+        scoreLabel = new JLabel("Score: not started", JLabel.CENTER);
+        JPanel labels = new JPanel(new GridLayout(1, 2));
+        labels.add(timeLabel);
+        labels.add(scoreLabel);
+        add(labels, BorderLayout.NORTH);
         agents.addAll(kernel.getAllAgents());
         simulators.addAll(kernel.getAllSimulators());
         viewers.addAll(kernel.getAllViewers());
     }
 
     @Override
-    public void timestepCompleted(Timestep time) {
-        timeLabel.setText("Time: " + time.getTime());
+    public void timestepCompleted(final Timestep time) {
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    timeLabel.setText("Time: " + time.getTime());
+                    scoreLabel.setText("Score: " + time.getScore());
+                }
+            });
     }
 
     @Override

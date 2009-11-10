@@ -16,6 +16,7 @@ import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.Constants;
 import rescuecore2.Timestep;
+import rescuecore2.score.ScoreFunction;
 
 import rescuecore2.log.LogWriter;
 import rescuecore2.log.FileLogWriter;
@@ -51,6 +52,7 @@ public class Kernel {
     private CommandFilter commandFilter;
 
     private TerminationCondition termination;
+    private ScoreFunction score;
 
     private int agentTime;
 
@@ -62,6 +64,7 @@ public class Kernel {
        @param worldModel The world model.
        @param commandFilter An optional command filter. This may be null.
        @param termination The termination condition.
+       @param score The score function.
        @throws KernelException If there is a problem constructing the kernel.
     */
     public Kernel(Config config,
@@ -69,12 +72,14 @@ public class Kernel {
                   CommunicationModel communicationModel,
                   WorldModel<? extends Entity> worldModel,
                   CommandFilter commandFilter,
-                  TerminationCondition termination) throws KernelException {
-        //        this.config = config;
+                  TerminationCondition termination,
+                  ScoreFunction score) throws KernelException {
         this.perception = perception;
         this.communicationModel = communicationModel;
         this.worldModel = worldModel;
         this.commandFilter = commandFilter;
+        this.score = score;
+        this.termination = termination;
         listeners = new HashSet<KernelListener>();
         agents = new HashSet<AgentProxy>();
         sims = new HashSet<SimulatorProxy>();
@@ -96,9 +101,10 @@ public class Kernel {
             throw new KernelException("Couldn't open log file for writing", e);
         }
         commandFilter.initialise(config, this);
-        this.termination = termination;
         config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
         config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
+
+        score.initialise(config);
     }
 
     /**
@@ -254,13 +260,19 @@ public class Kernel {
             sendUpdatesToSimulators(time, changes);
             sendToViewers(nextTimestep);
             long broadcastTime = System.currentTimeMillis();
+            System.out.println("Computing score");
+            double s = score.score(worldModel, nextTimestep);
+            long scoreTime = System.currentTimeMillis();
+            nextTimestep.setScore(s);
             System.out.println("Timestep " + time + " complete");
+            System.out.println("Score: " + s);
             System.out.println("Perception took        : " + (perceptionTime - start) + "ms");
             System.out.println("Agent commands took    : " + (commandsTime - perceptionTime) + "ms");
             System.out.println("Simulator updates took : " + (updatesTime - commandsTime) + "ms");
             System.out.println("World model merge took : " + (mergeTime - updatesTime) + "ms");
             System.out.println("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
-            System.out.println("Total time             : " + (broadcastTime - start) + "ms");
+            System.out.println("Score calculation took : " + (scoreTime - broadcastTime) + "ms");
+            System.out.println("Total time             : " + (scoreTime - start) + "ms");
             fireTimestepCompleted(nextTimestep);
             previousTimestep = nextTimestep;
         }
