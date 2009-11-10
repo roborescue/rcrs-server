@@ -30,7 +30,8 @@ public class SampleViewer extends AbstractViewer<StandardEntity> {
         world.index();
         JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + world.getAllEntities().size() + " entities)");
         viewer = new StandardWorldModelViewer();
-        viewer.view(world, null, null);
+        viewer.initialise(config);
+        viewer.view(world);
         // CHECKSTYLE:OFF:MagicNumber
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
