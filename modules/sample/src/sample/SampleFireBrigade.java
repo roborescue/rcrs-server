@@ -48,7 +48,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         FireBrigade me = (FireBrigade)me();
         // Are we currently filling with water?
         if (me.getWater() < maxWater && location() instanceof Refuge) {
-            System.out.println(me() + " filling with water at " + location());
+            //            System.out.println(me() + " filling with water at " + location());
             return;
         }
         // Are we out of water?
@@ -57,12 +57,12 @@ public class SampleFireBrigade extends AbstractSampleAgent {
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
                 AKMove move = new AKMove(getID(), time, path);
-                System.out.println(me() + " moving to refuge: " + move);
+                //                System.out.println(me() + " moving to refuge: " + move);
                 send(move);
                 return;
             }
             else {
-                System.out.println(me() + " couldn't plan a path to a refuge.");
+                //                System.out.println(me() + " couldn't plan a path to a refuge.");
                 send(new AKMove(getID(), time, randomWalk()));
             }
         }
@@ -72,7 +72,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         for (Building next : all) {
             if (world.getDistance(me, next) <= maxDistance) {
                 AKExtinguish ex = new AKExtinguish(getID(), time, next.getID(), maxPower);
-                System.out.println(me() + " extinguishing " + next + ": " + ex);
+                //                System.out.println(me() + " extinguishing " + next + ": " + ex);
                 send(ex);
                 return;
             }
@@ -82,12 +82,12 @@ public class SampleFireBrigade extends AbstractSampleAgent {
             List<EntityID> path = planPathToFire(next);
             if (path != null) {
                 AKMove move = new AKMove(getID(), time, path);
-                System.out.println(me() + " moving to fire: " + move);
+                //                System.out.println(me() + " moving to fire: " + move);
                 send(move);
                 return;
             }
         }
-        System.out.println(me() + " couldn't plan a path to a fire.");
+        //        System.out.println(me() + " couldn't plan a path to a fire.");
         send(new AKMove(getID(), time, randomWalk()));
     }
 

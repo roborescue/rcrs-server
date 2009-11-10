@@ -35,7 +35,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
         StandardEntity location = location();
         if (location instanceof Road && ((Road)location).isBlockDefined() && ((Road)location).getBlock() > 0) {
             AKClear clear = new AKClear(getID(), time, location.getID());
-            System.out.println(me() + " clearing road: " + clear);
+            //            System.out.println(me() + " clearing road: " + clear);
             send(clear);
             return;
         }
@@ -43,11 +43,11 @@ public class SamplePoliceForce extends AbstractSampleAgent {
         List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
             AKMove move = new AKMove(getID(), time, path);
-            System.out.println(me() + " moving to road: " + move);
+            //            System.out.println(me() + " moving to road: " + move);
             send(move);
             return;
         }
-        System.out.println(me() + " couldn't plan a path to a blocked road.");
+        //        System.out.println(me() + " couldn't plan a path to a blocked road.");
         send(new AKMove(getID(), time, randomWalk()));
     }
 

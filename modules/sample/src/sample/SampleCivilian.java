@@ -70,11 +70,11 @@ public class SampleCivilian extends AbstractSampleAgent {
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
                 AKMove move = new AKMove(getID(), time, path);
-                System.out.println(me() + " moving to refuge: " + move);
+                //                System.out.println(me() + " moving to refuge: " + move);
                 send(move);
             }
             else {
-                System.out.println(me() + " couldn't plan a path to a refuge.");
+                //                System.out.println(me() + " couldn't plan a path to a refuge.");
                 send(new AKMove(getID(), time, randomWalk()));
             }
         }

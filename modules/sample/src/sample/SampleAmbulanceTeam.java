@@ -43,7 +43,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
             // Am I at a refuge?
             if (location() instanceof Refuge) {
                 // Unload!
-                System.out.println(me() + " unloading");
+                //                System.out.println(me() + " unloading");
                 send(new AKUnload(getID(), time));
                 return;
             }
@@ -52,14 +52,14 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityURN.REFUGE));
                 if (path != null) {
                     AKMove move = new AKMove(getID(), time, path);
-                    System.out.println(me() + " moving to refuge: " + move);
+                    //                    System.out.println(me() + " moving to refuge: " + move);
                     send(move);
                     return;
                 }
-                else {
-                    System.out.println(me() + " couldn't plan a path to refuge!");
+                //                else {
+                    //                    System.out.println(me() + " couldn't plan a path to refuge!");
                     // What do I do now? Might as well carry on and see if we can dig someone else out.
-                }
+                //                }
             }
         }
         // Go through targets (sorted by distance) and check for things we can do
@@ -69,14 +69,14 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 if (next.getBuriedness() == 0 && next.getDamage() > 0 && !(location() instanceof Refuge)) {
                     // Load
                     AKLoad load = new AKLoad(getID(), time, next.getID());
-                    System.out.println(me() + " loading target " + next);
+                    //                    System.out.println(me() + " loading target " + next);
                     send(load);
                     return;
                 }
                 if (next.getBuriedness() > 0) {
                     // Rescue
                     AKRescue rescue = new AKRescue(getID(), time, next.getID());
-                    System.out.println(me() + " rescueing target " + next);
+                    //                    System.out.println(me() + " rescueing target " + next);
                     send(rescue);
                     return;
                 }
@@ -85,7 +85,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 // Try to move to the target
                 List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(world));
                 if (path != null) {
-                    System.out.println(me() + " moving to target " + next);
+                    //                    System.out.println(me() + " moving to target " + next);
                     send(new AKMove(getID(), time, path));
                     return;
                 }
@@ -95,11 +95,11 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
         List<EntityID> path = search.breadthFirstSearch(location(), unexploredBuildings);
         if (path != null) {
             AKMove move = new AKMove(getID(), time, path);
-            System.out.println(me() + " exploring building: " + move);
+            //            System.out.println(me() + " exploring building: " + move);
             send(move);
             return;
         }
-        System.out.println(me() + " has nothing to do");
+        //        System.out.println(me() + " has nothing to do");
         send(new AKMove(getID(), time, randomWalk()));
     }
 
