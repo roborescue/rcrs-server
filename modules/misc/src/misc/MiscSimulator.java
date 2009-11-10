@@ -151,20 +151,20 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
                 Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
                 if (brokenness != null) {
                     // Brokenness has changed. Bury any agents inside.
-                    System.out.println(b + " is broken. Updating trapped agents");
+                    //                    System.out.println(b + " is broken. Updating trapped agents");
                     for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
                                                                                   StandardEntityURN.FIRE_BRIGADE,
                                                                                   StandardEntityURN.POLICE_FORCE,
                                                                                   StandardEntityURN.AMBULANCE_TEAM)) {
                         Human h = (Human)e;
                         if (h.isPositionDefined() && h.getPosition().equals(b.getID())) {
-                            System.out.println("Human in building: " + h);
+                            //                            System.out.println("Human in building: " + h);
                             int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
                             int increase = calculateBuriedness(h, b);
                             buriedness += increase;
                             h.setBuriedness(buriedness);
                             changes.addChange(h, h.getBuriednessProperty());
-                            System.out.println("Changed buriedness: increase by " + increase + " to " + buriedness);
+                            //                            System.out.println("Changed buriedness: increase by " + increase + " to " + buriedness);
                         }
                     }
                 }
