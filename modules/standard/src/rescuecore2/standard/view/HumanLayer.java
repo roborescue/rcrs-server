@@ -11,15 +11,14 @@ import javax.swing.Icon;
 
 import java.util.Comparator;
 import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.net.URL;
 
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.ScreenTransform;
+import rescuecore2.config.Config;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -34,34 +33,11 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     private static final int HP_INJURED = 7500;
     private static final int HP_CRITICAL = 1000;
 
-    private static final int ICON_SIZE = 32;
+    private static final String ICON_SIZE_KEY = "view.standard.human.icons.size";
+    private static final String USE_ICONS_KEY = "view.standard.human.icons.use";
+    private static final int DEFAULT_ICON_SIZE = 32;
 
-    /*
-      private static final ImageIcon FIRE_BRIGADE_HEALTHY = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/FireBrigade-Healthy-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon FIRE_BRIGADE_INJURED = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/FireBrigade-Injured-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon FIRE_BRIGADE_CRITICAL = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/FireBrigade-Critical-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon FIRE_BRIGADE_DEAD = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/FireBrigade-Dead-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon POLICE_FORCE_HEALTHY = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/PoliceForce-Healthy-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon POLICE_FORCE_INJURED = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/PoliceForce-Injured-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon POLICE_FORCE_CRITICAL = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/PoliceForce-Critical-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon POLICE_FORCE_DEAD = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/PoliceForce-Dead-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon AMBULANCE_TEAM_HEALTHY = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/AmbulanceTeam-Healthy-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon AMBULANCE_TEAM_INJURED = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/AmbulanceTeam-Injured-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon AMBULANCE_TEAM_CRITICAL = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/AmbulanceTeam-Critical-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon AMBULANCE_TEAM_DEAD = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/AmbulanceTeam-Dead-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_MALE_HEALTHY = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Male-Healthy-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_MALE_CRITICAL = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Male-Injured-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_MALE_CRITICAL = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Male-Critical-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_MALE_DEAD = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Male-Dead-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_FEMALE_HEALTHY = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Female-Healthy-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_FEMALE_INJURED = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Female-Injured-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_FEMALE_CRITICAL = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Female-Critical-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-      private static final ImageIcon CIVILIAN_FEMALE_DEAD = new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Civilian-Female-Dead-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-    */
-
-    private Set<EntityID> male;
-    private Set<EntityID> female;
-
+    private int iconSize;
     private Map<String, Map<State, Icon>> icons;
 
     /**
@@ -69,14 +45,20 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     */
     public HumanLayer() {
         super(Human.class);
-        male = new HashSet<EntityID>();
-        female = new HashSet<EntityID>();
+        iconSize = DEFAULT_ICON_SIZE;
+    }
+
+    @Override
+    public void initialise(Config config) {
+        iconSize = config.getIntValue(ICON_SIZE_KEY, DEFAULT_ICON_SIZE);
         icons = new HashMap<String, Map<State, Icon>>();
-        icons.put(StandardEntityURN.FIRE_BRIGADE.toString(), generateIconMap("FireBrigade"));
-        icons.put(StandardEntityURN.AMBULANCE_TEAM.toString(), generateIconMap("AmbulanceTeam"));
-        icons.put(StandardEntityURN.POLICE_FORCE.toString(), generateIconMap("PoliceForce"));
-        icons.put(StandardEntityURN.CIVILIAN.toString() + "-Male", generateIconMap("Civilian-Male"));
-        icons.put(StandardEntityURN.CIVILIAN.toString() + "-Female", generateIconMap("Civilian-Female"));
+        if (config.getBooleanValue(USE_ICONS_KEY, true)) {
+            icons.put(StandardEntityURN.FIRE_BRIGADE.toString(), generateIconMap("FireBrigade"));
+            icons.put(StandardEntityURN.AMBULANCE_TEAM.toString(), generateIconMap("AmbulanceTeam"));
+            icons.put(StandardEntityURN.POLICE_FORCE.toString(), generateIconMap("PoliceForce"));
+            icons.put(StandardEntityURN.CIVILIAN.toString() + "-Male", generateIconMap("Civilian-Male"));
+            icons.put(StandardEntityURN.CIVILIAN.toString() + "-Female", generateIconMap("Civilian-Female"));
+        }
     }
 
     @Override
@@ -113,7 +95,14 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     private Map<State, Icon> generateIconMap(String type) {
         Map<State, Icon> result = new EnumMap<State, Icon>(State.class);
         for (State state : State.values()) {
-            result.put(state, new ImageIcon(HumanLayer.class.getClassLoader().getResource("rescuecore2/standard/view/" + type + "-" + state.toString() + "-" + ICON_SIZE + "x" + ICON_SIZE + ".png")));
+            String resourceName = "rescuecore2/standard/view/" + type + "-" + state.toString() + "-" + iconSize + "x" + iconSize + ".png";
+            URL resource = HumanLayer.class.getClassLoader().getResource(resourceName);
+            if (resource == null) {
+                System.out.println("Couldn't find resource: " + resourceName);
+            }
+            else {
+                result.put(state, new ImageIcon(resource));
+            }
         }
         return result;
     }
@@ -123,20 +112,11 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         Map<State, Icon> iconMap = null;
         switch (h.getStandardURN()) {
         case CIVILIAN:
-            if (!male.contains(h.getID()) && !female.contains(h.getID())) {
-                // CHECKSTYLE:OFF:MagicNumber
-                if (Math.random() < 0.5) {
-                    // CHECKSTYLE:ON:MagicNumber
-                    male.add(h.getID());
-                }
-                else {
-                    female.add(h.getID());
-                }
-            }
-            if (male.contains(h.getID())) {
+            boolean male = h.getID().getValue() % 2 == 0;
+            if (male) {
                 iconMap = icons.get(StandardEntityURN.CIVILIAN.toString() + "-Male");
             }
-            if (female.contains(h.getID())) {
+            else {
                 iconMap = icons.get(StandardEntityURN.CIVILIAN.toString() + "-Female");
             }
             break;
