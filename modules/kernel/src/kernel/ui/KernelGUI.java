@@ -21,6 +21,7 @@ public class KernelGUI extends JPanel {
     private KernelStatus status;
     private KernelControlPanel control;
     private JTabbedPane tabs;
+    private Config config;
 
     /**
        Construct a KernelGUI component.
@@ -33,6 +34,7 @@ public class KernelGUI extends JPanel {
     public KernelGUI(Kernel kernel, ComponentManager componentManager, Config config, boolean allowControl, Registry registry) {
         super(new BorderLayout());
         this.kernel = kernel;
+        this.config = config;
         status = new KernelStatus(kernel);
         status.setPreferredSize(new Dimension(STATUS_SIZE, STATUS_SIZE));
         add(status, BorderLayout.EAST);
@@ -51,6 +53,6 @@ public class KernelGUI extends JPanel {
        @param c The GUI component to add.
      */
     public void addKernelGUIComponent(KernelGUIComponent c) {
-        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent(kernel));
+        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent(kernel, config));
     }
 }

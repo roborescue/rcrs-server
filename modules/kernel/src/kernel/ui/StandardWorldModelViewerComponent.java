@@ -12,6 +12,7 @@ import rescuecore2.view.ViewListener;
 import rescuecore2.view.ViewComponent;
 import rescuecore2.view.RenderedObject;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.config.Config;
 
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
@@ -26,10 +27,11 @@ public class StandardWorldModelViewerComponent implements KernelGUIComponent {
     private static final int SIZE = 500;
 
     @Override
-    public JComponent getGUIComponent(final Kernel kernel) {
+    public JComponent getGUIComponent(final Kernel kernel, Config config) {
         final StandardWorldModelViewer viewer = new StandardWorldModelViewer();
         final EntityInspector inspector = new EntityInspector();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
+        viewer.initialise(config);
         viewer.view(kernel.getWorldModel());
         kernel.addKernelListener(new KernelListenerAdapter() {
                 @Override

@@ -168,7 +168,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     }
 
     @Override
-    public JComponent getGUIComponent(Kernel k) {
+    public JComponent getGUIComponent(Kernel k, Config c) {
         return gui;
     }
 

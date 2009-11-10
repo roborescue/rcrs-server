@@ -115,7 +115,7 @@ public class StandardPerception implements Perception, KernelGUIComponent {
     }
 
     @Override
-    public JComponent getGUIComponent(Kernel kernel) {
+    public JComponent getGUIComponent(Kernel kernel, Config c) {
         return new TunePanel();
     }
 
