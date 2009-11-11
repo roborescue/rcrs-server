@@ -1,0 +1,1 @@
+java -Xmx512m -cp ..\jars\misc.jar;..\jars\rescuecore2.jar;..\jars\standard.jar rescuecore2.LaunchComponents misc.MiscSimulator -c config

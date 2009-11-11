@@ -1,0 +1,1 @@
+java -Xmx512m -cp ..\jars\blockade.jar;..\jars\rescuecore2.jar;..\jars\standard.jar rescuecore2.LaunchComponents blockade.BlockadeSimulator -c config
