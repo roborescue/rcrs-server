@@ -10,10 +10,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JSplitPane;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
@@ -26,6 +28,7 @@ import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
 import rescuecore2.components.Agent;
 import rescuecore2.misc.Pair;
+import rescuecore2.misc.gui.ConfigTree;
 
 /**
    A GUI for setting up kernel options.
@@ -39,15 +42,14 @@ public class KernelLaunchGUI extends JPanel {
     private JComboBox gis;
     private JComboBox perception;
     private JComboBox comms;
+    private ConfigTree configTree;
 
     /**
        Create a kernel launch GUI.
        @param config The system configuration.
     */
     public KernelLaunchGUI(Config config) {
-        GridBagLayout layout = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        setLayout(layout);
+        super(new BorderLayout());
         gis = createComboBox(config, KernelConstants.GIS_KEY, WorldModelCreator.class);
         perception = createComboBox(config, KernelConstants.PERCEPTION_KEY, Perception.class);
         comms = createComboBox(config, KernelConstants.COMMUNICATION_MODEL_KEY, CommunicationModel.class);
@@ -60,6 +62,15 @@ public class KernelLaunchGUI extends JPanel {
         viewersScroll.setBorder(BorderFactory.createTitledBorder("Viewers"));
         JScrollPane agentsScroll = new JScrollPane(agents);
         agentsScroll.setBorder(BorderFactory.createTitledBorder("Agents"));
+        configTree = new ConfigTree(config);
+        JScrollPane configTreeScroll = new JScrollPane(configTree);
+        configTreeScroll.setBorder(BorderFactory.createTitledBorder("Config"));
+
+        GridBagLayout layout = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel options = new JPanel(layout);
+        JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, options, configTreeScroll);
+        add(top, BorderLayout.CENTER);
 
         c.gridx = 0;
         c.gridy = 0;
@@ -71,26 +82,26 @@ public class KernelLaunchGUI extends JPanel {
         c.anchor = GridBagConstraints.CENTER;
         JLabel l = new JLabel("GIS:");
         layout.setConstraints(l, c);
-        add(l);
+        options.add(l);
         c.gridy = 1;
         l = new JLabel("Perception:");
         layout.setConstraints(l, c);
-        add(l);
+        options.add(l);
         c.gridy = 2;
         l = new JLabel("Communication model:");
         layout.setConstraints(l, c);
-        add(l);
+        options.add(l);
         c.gridy = 0;
         c.gridx = 1;
         c.weightx = 1;
         layout.setConstraints(gis, c);
-        add(gis);
+        options.add(gis);
         c.gridy = 1;
         layout.setConstraints(perception, c);
-        add(perception);
+        options.add(perception);
         c.gridy = 2;
         layout.setConstraints(comms, c);
-        add(comms);
+        options.add(comms);
 
         // Simulators, viewers, agents
         c.gridx = 0;
@@ -99,13 +110,13 @@ public class KernelLaunchGUI extends JPanel {
         c.weightx = 1;
         c.weighty = 1;
         layout.setConstraints(simulatorsScroll, c);
-        add(simulatorsScroll);
+        options.add(simulatorsScroll);
         ++c.gridy;
         layout.setConstraints(viewersScroll, c);
-        add(viewersScroll);
+        options.add(viewersScroll);
         ++c.gridy;
         layout.setConstraints(agentsScroll, c);
-        add(agentsScroll);
+        options.add(agentsScroll);
     }
 
     /**
