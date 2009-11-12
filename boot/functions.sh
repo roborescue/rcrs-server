@@ -157,3 +157,9 @@ function startSims {
     xterm -T civilian -e "java -Xmx1024m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleCivilian*n 2>&1 | tee $LOGDIR/civilian.log" &
     CIVILIAN=$!
 }
+
+function compileOldSims {
+    pushd ../oldsims >& /dev/null
+    make || exit 1
+    popd >& /dev/null
+}

@@ -7,6 +7,7 @@ processArgs $*
 # Delete old logs
 rm -f $LOGDIR/*.log
 
+compileOldSims
 startKernel
 startSims
 
