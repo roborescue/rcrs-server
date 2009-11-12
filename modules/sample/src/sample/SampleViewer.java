@@ -2,22 +2,26 @@ package sample;
 
 import rescuecore2.components.AbstractViewer;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.messages.Command;
 import rescuecore2.messages.control.Commands;
 import rescuecore2.messages.control.Update;
+import rescuecore2.view.ViewComponent;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.view.StandardWorldModelViewer;
+import rescuecore2.standard.view.AnimatedWorldModelViewer;
 
 import java.awt.Dimension;
 import javax.swing.JFrame;
+import java.util.Collection;
 
 /**
    A simple viewer.
  */
 public class SampleViewer extends AbstractViewer<StandardEntity> {
-    private StandardWorldModelViewer viewer;
+    private ViewComponent viewer;
     private StandardWorldModel world;
+    private Collection<Command> commands;
 
     @Override
     protected WorldModel<StandardEntity> createWorldModel() {
@@ -29,7 +33,7 @@ public class SampleViewer extends AbstractViewer<StandardEntity> {
     protected void postConnect() {
         world.index();
         JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + world.getAllEntities().size() + " entities)");
-        viewer = new StandardWorldModelViewer();
+        viewer = new AnimatedWorldModelViewer();
         viewer.initialise(config);
         viewer.view(world);
         // CHECKSTYLE:OFF:MagicNumber
@@ -42,11 +46,13 @@ public class SampleViewer extends AbstractViewer<StandardEntity> {
 
     @Override
     protected void handleCommands(Commands c) {
+        commands = c.getCommands();
     }
 
     @Override
     protected void handleUpdate(Update u) {
         super.handleUpdate(u);
+        viewer.view(world, commands);
         viewer.repaint();
     }
 
