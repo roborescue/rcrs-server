@@ -12,14 +12,24 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.view.AnimatedWorldModelViewer;
 
 import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+
 import java.util.Collection;
 
 /**
    A simple viewer.
  */
 public class SampleViewer extends AbstractViewer<StandardEntity> {
+    private static final int FONT_SIZE = 20;
+
     private ViewComponent viewer;
+    private JLabel timeLabel;
     private StandardWorldModel world;
     private Collection<Command> commands;
 
@@ -39,7 +49,12 @@ public class SampleViewer extends AbstractViewer<StandardEntity> {
         // CHECKSTYLE:OFF:MagicNumber
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
-        frame.add(viewer);
+        timeLabel = new JLabel("Time: Not started", JLabel.CENTER);
+        timeLabel.setBackground(Color.WHITE);
+        timeLabel.setOpaque(true);
+        timeLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, FONT_SIZE));
+        frame.add(viewer, BorderLayout.CENTER);
+        frame.add(timeLabel, BorderLayout.NORTH);
         frame.pack();
         frame.setVisible(true);
     }
@@ -50,10 +65,15 @@ public class SampleViewer extends AbstractViewer<StandardEntity> {
     }
 
     @Override
-    protected void handleUpdate(Update u) {
+    protected void handleUpdate(final Update u) {
         super.handleUpdate(u);
-        viewer.view(world, commands);
-        viewer.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    timeLabel.setText("Time: " + u.getTime());
+                    viewer.view(world, commands);
+                    viewer.repaint();
+                }
+            });
     }
 
     @Override
