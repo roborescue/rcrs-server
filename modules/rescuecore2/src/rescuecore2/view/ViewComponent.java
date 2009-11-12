@@ -44,6 +44,7 @@ public abstract class ViewComponent extends JComponent {
         addMouseMotionListener(l);
         panZoom = new PanZoomListener(this);
         setBackground(BACKGROUND);
+        setOpaque(true);
     }
 
     /**
@@ -120,6 +121,10 @@ public abstract class ViewComponent extends JComponent {
         renderedObjects.clear();
         transform.rescale(width, height);
         Graphics2D copy = (Graphics2D)g.create(insets.left, insets.top, width, height);
+        if (isOpaque()) {
+            copy.setColor(getBackground());
+            copy.fillRect(0, 0, width, height);
+        }
         renderedObjects.addAll(render(copy, transform, width, height));
     }
 
