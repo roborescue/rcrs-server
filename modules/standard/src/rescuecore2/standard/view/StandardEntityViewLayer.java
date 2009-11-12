@@ -40,6 +40,7 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
     public Rectangle2D view(Object... objects) {
         synchronized (entities) {
             entities.clear();
+            preView();
             Rectangle2D result = super.view(objects);
             postView();
             return result;
@@ -79,6 +80,12 @@ public abstract class StandardEntityViewLayer<T extends StandardEntity> extends 
        @return A Shape that represents the hit-box of the rendered entity.
      */
     public abstract Shape render(T entity, Graphics2D graphics, ScreenTransform transform);
+
+    /**
+       Perform any pre-processing required before {@link #view} has been called.
+    */
+    protected void preView() {
+    }
 
     /**
        Perform any post-processing required after {@link #view} has been called.

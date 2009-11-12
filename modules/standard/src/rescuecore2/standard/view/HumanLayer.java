@@ -37,6 +37,8 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     private static final String USE_ICONS_KEY = "view.standard.human.icons.use";
     private static final int DEFAULT_ICON_SIZE = 32;
 
+    private static final HumanSorter HUMAN_SORTER = new HumanSorter();
+
     private int iconSize;
     private Map<String, Map<State, Icon>> icons;
 
@@ -68,7 +70,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     @Override
     public Shape render(Human h, Graphics2D g, ScreenTransform t) {
-        Pair<Integer, Integer> location = h.getLocation(world);
+        Pair<Integer, Integer> location = getLocation(h);
         int x = t.xToScreen(location.first());
         int y = t.yToScreen(location.second());
         Shape shape;
@@ -89,7 +91,16 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     @Override
     protected void postView() {
-        Collections.sort(entities, new HumanSorter());
+        Collections.sort(entities, HUMAN_SORTER);
+    }
+
+    /**
+       Get the location of a human.
+       @param h The human to look up.
+       @return The location of the human.
+    */
+    protected Pair<Integer, Integer> getLocation(Human h) {
+        return h.getLocation(world);
     }
 
     private Map<State, Icon> generateIconMap(String type) {
@@ -170,7 +181,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         };
     }
 
-    private static class HumanSorter implements Comparator<Human>, java.io.Serializable {
+    private static final class HumanSorter implements Comparator<Human>, java.io.Serializable {
         @Override
         public int compare(Human h1, Human h2) {
             if (h1 instanceof Civilian && !(h2 instanceof Civilian)) {
