@@ -8,7 +8,10 @@ import static rescuecore2.misc.EncodingTools.readProperty;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
+import java.util.Iterator;
+
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -20,16 +23,16 @@ import rescuecore2.registry.Registry;
    This class is used for accumulating changes to entities.
  */
 public class ChangeSet {
-    private Map<EntityID, Set<Property>> changes;
+    private Map<EntityID, Map<String, Property>> changes;
 
     /**
        Create an empty ChangeSet.
      */
     public ChangeSet() {
-        changes = new LazyMap<EntityID, Set<Property>>() {
+        changes = new LazyMap<EntityID, Map<String, Property>>() {
             @Override
-            public Set<Property> createValue() {
-                return new HashSet<Property>();
+            public Map<String, Property> createValue() {
+                return new HashMap<String, Property>();
             }
         };
     }
@@ -58,7 +61,8 @@ public class ChangeSet {
        @param p The property that has changed.
      */
     public void addChange(EntityID e, Property p) {
-        changes.get(e).add(p.copy());
+        Property prop = p.copy();
+        changes.get(e).put(prop.getURN(), prop);
     }
 
     /**
@@ -67,7 +71,7 @@ public class ChangeSet {
        @return The set of changed properties. This may be empty but will never be null.
     */
     public Set<Property> getChangedProperties(EntityID e) {
-        return changes.get(e);
+        return new HashSet<Property>(changes.get(e).values());
     }
 
     /**
@@ -77,13 +81,9 @@ public class ChangeSet {
        @return The changed property with the right URN, or null if the property is not found or has not changed.
     */
     public Property getChangedProperty(EntityID e, String urn) {
-        Set<Property> props = changes.get(e);
+        Map<String, Property> props = changes.get(e);
         if (props != null) {
-            for (Property next : props) {
-                if (next.getURN().equals(urn)) {
-                    return next;
-                }
-            }
+            return props.get(urn);
         }
         return null;
     }
@@ -101,9 +101,9 @@ public class ChangeSet {
        @param other The other ChangeSet.
      */
     public void merge(ChangeSet other) {
-        for (Map.Entry<EntityID, Set<Property>> next : other.changes.entrySet()) {
+        for (Map.Entry<EntityID, Map<String, Property>> next : other.changes.entrySet()) {
             EntityID e = next.getKey();
-            for (Property p : next.getValue()) {
+            for (Property p : next.getValue().values()) {
                 addChange(e, p);
             }
         }
@@ -131,8 +131,8 @@ public class ChangeSet {
     public void write(OutputStream out) throws IOException {
         // Number of entity IDs
         writeInt32(changes.size(), out);
-        for (Map.Entry<EntityID, Set<Property>> next : changes.entrySet()) {
-            Set<Property> props = next.getValue();
+        for (Map.Entry<EntityID, Map<String, Property>> next : changes.entrySet()) {
+            Collection<Property> props = next.getValue().values();
             // EntityID, number of properties
             writeInt32(next.getKey().getValue(), out);
             writeInt32(props.size(), out);
@@ -160,5 +160,24 @@ public class ChangeSet {
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("ChangeSet: ");
+        for (Map.Entry<EntityID, Map<String, Property>> next : changes.entrySet()) {
+            result.append("Entity ");
+            result.append(next.getKey());
+            result.append(" [");
+            for (Iterator<Property> it = next.getValue().values().iterator(); it.hasNext();) {
+                result.append(it.next());
+                if (it.hasNext()) {
+                    result.append(", ");
+                }
+            }
+            result.append("] ");
+        }
+        return result.toString();
     }
 }
