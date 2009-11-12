@@ -4,8 +4,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Iterator;
 
 import rescuecore2.misc.Pair;
@@ -26,21 +28,22 @@ public class AnimatedHumanLayer extends HumanLayer {
     private Map<EntityID, Pair<EntityID, Integer>> agentLastPositions;
     private Set<EntityID> humanIDs;
 
-    private Map<EntityID, List<Pair<Integer, Integer>>> frames;
+    private Map<EntityID, Queue<Pair<Integer, Integer>>> frames;
 
-    private final int maxFrame;
-    private int frame;
+    private int frameCount;
+
+    private final Object frameLock = new Object();
 
     /**
        Construct an animated human view layer.
-       @param maxFrame The number of animation frames to compute.
+       @param frameCount The number of animation frames to compute.
     */
-    public AnimatedHumanLayer(int maxFrame) {
-        this.maxFrame = maxFrame;
+    public AnimatedHumanLayer(int frameCount) {
+        this.frameCount = frameCount;
         moveCommands = new HashMap<EntityID, AKMove>();
         agentLastPositions = new HashMap<EntityID, Pair<EntityID, Integer>>();
         humanIDs = new HashSet<EntityID>();
-        frames = new HashMap<EntityID, List<Pair<Integer, Integer>>>();
+        frames = new HashMap<EntityID, Queue<Pair<Integer, Integer>>>();
     }
 
     @Override
@@ -57,14 +60,22 @@ public class AnimatedHumanLayer extends HumanLayer {
        Increase the frame number.
     */
     public void nextFrame() {
-        ++frame;
+        synchronized (frameLock) {
+            for (Queue<Pair<Integer, Integer>> next : frames.values()) {
+                if (next.size() > 1) {
+                    next.remove();
+                }
+            }
+        }
     }
 
     @Override
     protected Pair<Integer, Integer> getLocation(Human h) {
-        List<Pair<Integer, Integer>> agentFrames = frames.get(h.getID());
-        if (agentFrames != null && frame < agentFrames.size()) {
-            return agentFrames.get(frame);
+        synchronized (frameLock) {
+            Queue<Pair<Integer, Integer>> agentFrames = frames.get(h.getID());
+            if (agentFrames != null && !agentFrames.isEmpty()) {
+                return agentFrames.peek();
+            }
         }
         return h.getLocation(world);
     }
@@ -92,11 +103,10 @@ public class AnimatedHumanLayer extends HumanLayer {
     protected void postView() {
         super.postView();
         // Compute animation
-        frames.clear();
-        double step = 1.0 / (maxFrame - 1.0);
+        double step = 1.0 / (frameCount - 1.0);
         for (EntityID next : humanIDs) {
             //            System.out.println("Computing frames for " + next);
-            List<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
+            Queue<Pair<Integer, Integer>> result = new LinkedList<Pair<Integer, Integer>>();
             Human human = (Human)world.getEntity(next);
             if (human == null) {
                 continue;
@@ -112,14 +122,15 @@ public class AnimatedHumanLayer extends HumanLayer {
             if (path == null) {
                 continue;
             }
-            for (int i = 0; i < maxFrame; ++i) {
+            for (int i = 0; i < frameCount; ++i) {
                 Pair<Integer, Integer> nextPoint = path.getPointOnPath(i * step);
                 //                System.out.println("Frame " + i + " position " + nextPoint);
                 result.add(nextPoint);
             }
-            frames.put(next, result);
+            synchronized (frameLock) {
+                frames.put(next, result);
+            }
         }
-        frame = 0;
     }
 
     private Path computePath(Human human, EntityID lastPosition, int lastPositionExtra) {

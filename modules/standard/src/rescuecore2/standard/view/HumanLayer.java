@@ -39,6 +39,11 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     private static final HumanSorter HUMAN_SORTER = new HumanSorter();
 
+    private static final Color CIVILIAN_COLOUR = Color.GREEN;
+    private static final Color FIRE_BRIGADE_COLOUR = Color.RED;
+    private static final Color POLICE_FORCE_COLOUR = Color.BLUE;
+    private static final Color AMBULANCE_TEAM_COLOUR = Color.WHITE;
+
     private int iconSize;
     private Map<String, Map<State, Icon>> icons;
 
@@ -77,7 +82,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         Icon icon = getIcon(h);
         if (icon == null) {
             shape = new Ellipse2D.Double(x - SIZE / 2, y - SIZE / 2, SIZE, SIZE);
-            g.setColor(Color.GREEN);
+            g.setColor(getColour(h));
             g.fill(shape);
         }
         else {
@@ -116,6 +121,21 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
             }
         }
         return result;
+    }
+
+    private Color getColour(Human h) {
+        switch (h.getStandardURN()) {
+        case CIVILIAN:
+            return CIVILIAN_COLOUR;
+        case FIRE_BRIGADE:
+            return FIRE_BRIGADE_COLOUR;
+        case AMBULANCE_TEAM:
+            return AMBULANCE_TEAM_COLOUR;
+        case POLICE_FORCE:
+            return POLICE_FORCE_COLOUR;
+        default:
+            throw new IllegalArgumentException("Don't know how to draw humans of type " + h.getStandardURN());
+        }
     }
 
     private Icon getIcon(Human h) {

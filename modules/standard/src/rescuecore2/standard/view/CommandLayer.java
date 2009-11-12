@@ -43,11 +43,72 @@ public class CommandLayer extends StandardViewLayer {
     private ScreenTransform t;
     private Collection<Command> commands;
 
+    private boolean renderMove;
+    private boolean renderExtinguish;
+    private boolean renderClear;
+    private boolean renderLoad;
+    private boolean renderUnload;
+    private boolean renderRescue;
+
     /**
        Construct a new CommandLayer.
     */
     public CommandLayer() {
         commands = new ArrayList<Command>();
+        renderMove = true;
+        renderExtinguish = true;
+        renderClear = true;
+        renderLoad = true;
+        renderUnload = true;
+        renderRescue = true;
+    }
+
+    /**
+       Set whether to render Move commands.
+       @param render True if move commands should be rendered, false otherwise.
+    */
+    public void setRenderMove(boolean render) {
+        renderMove = render;
+    }
+
+    /**
+       Set whether to render Extinguish commands.
+       @param render True if extinguish commands should be rendered, false otherwise.
+    */
+    public void setRenderExtinguish(boolean render) {
+        renderExtinguish = render;
+    }
+
+    /**
+       Set whether to render Clear commands.
+       @param render True if clear commands should be rendered, false otherwise.
+    */
+    public void setRenderClear(boolean render) {
+        renderClear = render;
+    }
+
+    /**
+       Set whether to render Load commands.
+       @param render True if load commands should be rendered, false otherwise.
+    */
+    public void setRenderLoad(boolean render) {
+        renderLoad = render;
+    }
+
+    /**
+       Set whether to render Unload commands.
+       @param render True if unload commands should be rendered, false otherwise.
+    */
+    public void setRenderUnload(boolean render) {
+        renderUnload = render;
+    }
+
+    /**
+       Set whether to render Rescue commands.
+       @param render True if rescue commands should be rendered, false otherwise.
+    */
+    public void setRenderRescue(boolean render) {
+        renderRescue = render;
     }
 
     @Override
@@ -78,22 +139,22 @@ public class CommandLayer extends StandardViewLayer {
             g = graphics;
             t = transform;
             for (Command next : commands) {
-                if (next instanceof AKMove) {
+                if (renderMove && next instanceof AKMove) {
                     renderMove((AKMove)next);
                 }
-                if (next instanceof AKExtinguish) {
+                if (renderExtinguish && next instanceof AKExtinguish) {
                     renderExtinguish((AKExtinguish)next);
                 }
-                if (next instanceof AKClear) {
+                if (renderClear && next instanceof AKClear) {
                     renderClear((AKClear)next);
                 }
-                if (next instanceof AKRescue) {
+                if (renderRescue && next instanceof AKRescue) {
                     renderRescue((AKRescue)next);
                 }
-                if (next instanceof AKLoad) {
+                if (renderLoad && next instanceof AKLoad) {
                     renderLoad((AKLoad)next);
                 }
-                if (next instanceof AKUnload) {
+                if (renderUnload && next instanceof AKUnload) {
                     renderUnload((AKUnload)next);
                 }
             }
