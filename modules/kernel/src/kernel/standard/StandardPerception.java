@@ -50,11 +50,11 @@ public class StandardPerception implements Perception, KernelGUIComponent {
     private static final int DEFAULT_HP_PRECISION = 1000;
     private static final int DEFAULT_DAMAGE_PRECISION = 100;
 
-    private static final String VIEW_DISTANCE_KEY = "perception.tunable.view-distance";
-    private static final String FAR_FIRE_DISTANCE_KEY = "perception.tunable.far-fire-distance";
-    private static final String USE_FAR_FIRES_KEY = "perception.tunable.use-far-fires";
-    private static final String HP_PRECISION_KEY = "perception.tunable.hp-precision";
-    private static final String DAMAGE_PRECISION_KEY = "perception.tunable.damage-precision";
+    private static final String VIEW_DISTANCE_KEY = "perception.standard.view-distance";
+    private static final String FAR_FIRE_DISTANCE_KEY = "perception.standard.far-fire-distance";
+    private static final String USE_FAR_FIRES_KEY = "perception.standard.use-far-fires";
+    private static final String HP_PRECISION_KEY = "perception.standard.hp-precision";
+    private static final String DAMAGE_PRECISION_KEY = "perception.standard.damage-precision";
 
     private static final int PRECISION_STEP_SIZE = 1000;
     private static final int PRECISION_MAX = 10000;
