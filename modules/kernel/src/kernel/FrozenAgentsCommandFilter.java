@@ -1,8 +1,4 @@
-package kernel.standard;
-
-import kernel.Kernel;
-import kernel.AgentProxy;
-import kernel.CommandFilter;
+package kernel;
 
 import rescuecore2.config.Config;
 import rescuecore2.messages.Command;

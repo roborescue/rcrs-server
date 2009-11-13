@@ -5,7 +5,8 @@
   <property name="modules.dir" value="${basedir}/modules"/>
 
   <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc"/>
-  <property name="modules.kernel.depend" value="rescuecore2,standard,sample,handy"/>
+  <property name="modules.kernel.depend" value="rescuecore2,handy"/>
+  <property name="modules.standard.depend" value="kernel"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
   <property name="modules.collapse.depend" value="rescuecore2,standard"/>

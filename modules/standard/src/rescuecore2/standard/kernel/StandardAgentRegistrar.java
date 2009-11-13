@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 import java.util.Set;
 import java.util.HashSet;

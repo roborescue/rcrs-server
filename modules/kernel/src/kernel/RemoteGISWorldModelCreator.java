@@ -1,7 +1,4 @@
-package kernel.standard;
-
-import kernel.KernelException;
-import kernel.WorldModelCreator;
+package kernel;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -13,29 +10,23 @@ import rescuecore2.connection.TCPConnection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.control.GKConnectOK;
 import rescuecore2.messages.control.GKConnectError;
 import rescuecore2.messages.control.KGConnect;
 import rescuecore2.messages.control.KGAcknowledge;
 
-import rescuecore2.standard.entities.StandardWorldModel;
-
 /**
-   A WorldModelCreator that talks to the GIS to build StandardEntities.
+   A WorldModelCreator that talks to a remote GIS.
  */
-public class StandardWorldModelCreator implements WorldModelCreator {
+public class RemoteGISWorldModelCreator implements WorldModelCreator {
     private static final String PORT_KEY = "gis.port";
 
-    /**
-       Create a new StandardWorldModel.
-       @param config The config to use.
-       @return A new world model.
-       @throws KernelException If there is a problem building the world model.
-    */
+    @Override
     public WorldModel<? extends Entity> buildWorldModel(Config config) throws KernelException {
-        System.out.println("Connecting to GIS...");
-        StandardWorldModel world = new StandardWorldModel();
+        System.out.println("Connecting to remote GIS...");
+        DefaultWorldModel<Entity> world = DefaultWorldModel.create();
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue(PORT_KEY);
         Connection conn;
@@ -59,8 +50,12 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             throw new KernelException("Interrupted while connecting to GIS", e);
         }
         conn.shutdown();
-        world.index(config.getIntValue("vision"));
         return world;
+    }
+
+    @Override
+    public String toString() {
+        return "Remote GIS";
     }
 
     /**
@@ -68,9 +63,9 @@ public class StandardWorldModelCreator implements WorldModelCreator {
     */
     private static class GISConnectionListener implements ConnectionListener {
         private CountDownLatch latch;
-        private StandardWorldModel model;
+        private DefaultWorldModel<Entity> model;
 
-        public GISConnectionListener(CountDownLatch latch, StandardWorldModel model) {
+        public GISConnectionListener(CountDownLatch latch, DefaultWorldModel<Entity> model) {
             this.latch = latch;
             this.model = model;
         }
@@ -92,7 +87,8 @@ public class StandardWorldModelCreator implements WorldModelCreator {
                 }
             }
             if (m instanceof GKConnectError) {
-                System.err.println("Error: " + ((GKConnectError)m).getReason());
+                System.err.println("Error connecting to remote GIS: " + ((GKConnectError)m).getReason());
+                latch.countDown();
             }
         }
     }

@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 /**
    An exception class for map validation errors.

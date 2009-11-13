@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 import static rescuecore2.misc.EncodingTools.readInt32LE;
 import static rescuecore2.misc.EncodingTools.reallySkip;
@@ -38,7 +38,11 @@ import rescuecore2.standard.entities.Civilian;
 /**
    A WorldModelCreator that reads .bin files directly.
  */
-public class InlineWorldModelCreator implements WorldModelCreator {
+public class StandardWorldModelCreator implements WorldModelCreator {
+    private static final String MAP_DIR_KEY = "gis.map.dir";
+    private static final String MESH_SIZE_KEY = "gis.map.meshsize";
+    private static final String FIRE_TANK_MAXIMUM_KEY = "fire.tank.maximum";
+
     private static final int HEADER_SIZE = 12;
     private static final int STAMINA = 10000;
     private static final int HP = 10000;
@@ -49,16 +53,16 @@ public class InlineWorldModelCreator implements WorldModelCreator {
     @Override
     public WorldModel<? extends Entity> buildWorldModel(Config config) throws KernelException {
         StandardWorldModel world = new StandardWorldModel();
-        initialWater = config.getIntValue("fire.tank.maximum");
+        initialWater = config.getIntValue(FIRE_TANK_MAXIMUM_KEY);
         try {
-            File baseDir = new File(config.getValue("gis.map.dir"));
+            File baseDir = new File(config.getValue(MAP_DIR_KEY));
             int maxID = readRoads(baseDir, world);
             maxID = Math.max(maxID, readNodes(baseDir, world));
             maxID = Math.max(maxID, readBuildings(baseDir, world));
             nextAgentID = maxID + 1;
             readGISIni(baseDir, world);
             MapValidator.validate(world);
-            world.index(config.getIntValue("gis.map.meshsize"));
+            world.index(config.getIntValue(MESH_SIZE_KEY));
             return world;
         }
         catch (MapValidationException e) {
@@ -67,6 +71,11 @@ public class InlineWorldModelCreator implements WorldModelCreator {
         catch (IOException e) {
             throw new KernelException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Standard world model creator";
     }
 
     private int readRoads(File baseDir, StandardWorldModel world) throws IOException {
@@ -226,7 +235,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
 
     private enum Entry {
         FIRE_STATION(Pattern.compile("^firestation\\s*=\\s*(\\d+)$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID id = new EntityID(Integer.parseInt(m.group(1)));
                 Building b = (Building)model.getEntity(id);
                 if (b == null) {
@@ -240,7 +249,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         POLICE_OFFICE(Pattern.compile("^policeoffice\\s*=\\s*(\\d+)$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID id = new EntityID(Integer.parseInt(m.group(1)));
                 Building b = (Building)model.getEntity(id);
                 if (b == null) {
@@ -254,7 +263,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         AMBULANCE_CENTRE(Pattern.compile("^ambulancecent(?:(?:re)|(?:er))\\s*=\\s*(\\d+)$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID id = new EntityID(Integer.parseInt(m.group(1)));
                 Building b = (Building)model.getEntity(id);
                 if (b == null) {
@@ -268,7 +277,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         REFUGE(Pattern.compile("^refuge\\s*=\\s*(\\d+)$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID id = new EntityID(Integer.parseInt(m.group(1)));
                 Building b = (Building)model.getEntity(id);
                 if (b == null) {
@@ -282,7 +291,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         FIRE_BRIGADE(Pattern.compile("^firebrigade\\s*=\\s*(\\d+)(?:\\s*,\\s*(\\d+))?$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID locationID = new EntityID(Integer.parseInt(m.group(1)));
                 FireBrigade fb = new FireBrigade(new EntityID(c.nextAgentID()));
                 fb.setPosition(locationID);
@@ -296,7 +305,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         POLICE_FORCE(Pattern.compile("^policeforce\\s*=\\s*(\\d+)(?:\\s*,\\s*(\\d+))?$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID locationID = new EntityID(Integer.parseInt(m.group(1)));
                 PoliceForce pf = new PoliceForce(new EntityID(c.nextAgentID()));
                 pf.setPosition(locationID);
@@ -309,7 +318,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         AMBULANCE_TEAM(Pattern.compile("^ambulanceteam\\s*=\\s*(\\d+)(?:\\s*,\\s*(\\d+))?$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID locationID = new EntityID(Integer.parseInt(m.group(1)));
                 AmbulanceTeam at = new AmbulanceTeam(new EntityID(c.nextAgentID()));
                 at.setPosition(locationID);
@@ -322,7 +331,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         CIVILIAN(Pattern.compile("^civilian\\s*=\\s*(\\d+)(?:\\s*,\\s*(\\d+))?$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID locationID = new EntityID(Integer.parseInt(m.group(1)));
                 Civilian civ = new Civilian(new EntityID(c.nextAgentID()));
                 civ.setPosition(locationID);
@@ -335,7 +344,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         FIRE(Pattern.compile("^fire(?:point)?\\s*=\\s*(\\d+)$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID id = new EntityID(Integer.parseInt(m.group(1)));
                 Building b = (Building)model.getEntity(id);
                 if (b == null) {
@@ -345,7 +354,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             }
         },
         IMPORTANT(Pattern.compile("^important(?:building)?\\s+(\\d+)\\s*=\\s*(\\d+)$")) {
-            protected void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+            protected void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
                 EntityID id = new EntityID(Integer.parseInt(m.group(1)));
                 int importance = Integer.parseInt(m.group(2));
                 Building b = (Building)model.getEntity(id);
@@ -362,7 +371,7 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             this.pattern = pattern;
         }
 
-        public boolean process(String line, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException {
+        public boolean process(String line, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException {
             Matcher m = pattern.matcher(line);
             if (m.matches()) {
                 process(m, model, c);
@@ -371,6 +380,6 @@ public class InlineWorldModelCreator implements WorldModelCreator {
             return false;
         }
 
-        protected abstract void process(Matcher m, StandardWorldModel model, InlineWorldModelCreator c) throws KernelException;
+        protected abstract void process(Matcher m, StandardWorldModel model, StandardWorldModelCreator c) throws KernelException;
     }
 }

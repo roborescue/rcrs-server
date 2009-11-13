@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;

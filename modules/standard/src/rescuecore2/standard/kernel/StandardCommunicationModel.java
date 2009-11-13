@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +32,8 @@ import rescuecore2.standard.messages.KAHearTell;
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
  */
 public class StandardCommunicationModel implements CommunicationModel {
+    private static final String SAY_RANGE_KEY = "comms.standard.say.range";
+
     private StandardWorldModel world;
     private int sayDistance;
 
@@ -44,7 +46,7 @@ public class StandardCommunicationModel implements CommunicationModel {
     @Override
     public void initialise(Config config, WorldModel<? extends Entity> model) {
         world = StandardWorldModel.createStandardWorldModel(model);
-        sayDistance = config.getIntValue("standard.say.range");
+        sayDistance = config.getIntValue(SAY_RANGE_KEY);
     }
 
     @Override

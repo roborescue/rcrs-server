@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,11 +35,11 @@ import rescuecore2.standard.messages.KAHearChannel;
    The channel-based communication model.
  */
 public class ChannelCommunicationModel implements CommunicationModel {
-    private static final String COUNT_KEY = "channels.count";
-    private static final String PLATOON_MAX_CHANNELS_KEY = "channels.platoon.max";
-    private static final String CENTRE_MAX_CHANNELS_KEY = "channels.centre.max";
+    private static final String COUNT_KEY = "comms.channels.count";
+    private static final String PLATOON_MAX_CHANNELS_KEY = "comms.channels.max.platoon";
+    private static final String CENTRE_MAX_CHANNELS_KEY = "comms.channels.max.centre";
 
-    private static final String PREFIX = "channels.";
+    private static final String PREFIX = "comms.channels.";
     private static final String TYPE_SUFFIX = ".type";
     private static final String NOISE_SUFFIX = ".noise";
 

@@ -1,4 +1,4 @@
-package kernel.ui;
+package rescuecore2.standard.kernel;
 
 import java.awt.Dimension;
 import javax.swing.JComponent;
@@ -19,6 +19,7 @@ import rescuecore2.standard.view.StandardWorldModelViewer;
 import kernel.Kernel;
 import kernel.KernelListenerAdapter;
 import kernel.Timestep;
+import kernel.ui.KernelGUIComponent;
 
 /**
    A KernelGUIComponent that will view a standard world model.

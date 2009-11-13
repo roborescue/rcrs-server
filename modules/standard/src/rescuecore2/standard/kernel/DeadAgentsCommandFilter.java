@@ -1,4 +1,4 @@
-package kernel.standard;
+package rescuecore2.standard.kernel;
 
 import kernel.Kernel;
 import kernel.AgentProxy;
