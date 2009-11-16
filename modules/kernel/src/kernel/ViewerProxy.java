@@ -1,13 +1,16 @@
 package kernel;
 
 import rescuecore2.connection.Connection;
-import rescuecore2.messages.Command;
+import rescuecore2.messages.Message;
 import rescuecore2.messages.control.Update;
 import rescuecore2.messages.control.Commands;
+import rescuecore2.messages.control.KASense;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.Timestep;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
    This class is the kernel interface to a viewer.
@@ -27,21 +30,18 @@ public class ViewerProxy extends AbstractKernelComponent {
     }
 
     /**
-       Send an update message to this viewer.
-       @param time The simulation time.
-       @param updates The updated entities.
+       Send a Timestep structure to this viewer.
+       @param time The Timestep to send.
     */
-    public void sendUpdate(int time, ChangeSet updates) {
-        send(Collections.singleton(new Update(id, time, updates)));
-    }
-
-    /**
-       Send a set of agent commands to this viewer.
-       @param time The current time.
-       @param commands The agent commands to send.
-     */
-    public void sendAgentCommands(int time, Collection<? extends Command> commands) {
-        send(Collections.singleton(new Commands(id, time, commands)));
+    public void sendTimestep(Timestep time) {
+        List<Message> messages = new ArrayList<Message>();
+        for (EntityID next : time.getAgentsWithUpdates()) {
+            ChangeSet changes = time.getAgentPerception(next);
+            messages.add(new KASense(next, time.getTime(), changes));
+        }
+        messages.add(new Commands(id, time.getTime(), time.getCommands()));
+        messages.add(new Update(id, time.getTime(), time.getChangeSet()));
+        send(messages);
     }
 
     @Override

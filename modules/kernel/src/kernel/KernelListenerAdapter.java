@@ -1,5 +1,7 @@
 package kernel;
 
+import rescuecore2.Timestep;
+
 /**
    Abstract class for objects that want to implement a subset of the KernelListener interface. All default method implementations do nothing.
  */

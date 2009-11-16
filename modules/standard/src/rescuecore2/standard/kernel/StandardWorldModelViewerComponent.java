@@ -13,12 +13,12 @@ import rescuecore2.view.ViewComponent;
 import rescuecore2.view.RenderedObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.config.Config;
+import rescuecore2.Timestep;
 
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
 import kernel.Kernel;
 import kernel.KernelListenerAdapter;
-import kernel.Timestep;
 import kernel.ui.KernelGUIComponent;
 
 /**

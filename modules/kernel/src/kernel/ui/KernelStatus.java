@@ -8,15 +8,16 @@ import javax.swing.JList;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
+import javax.swing.SwingUtilities;
 
 import kernel.KernelListener;
 import kernel.AgentProxy;
 import kernel.SimulatorProxy;
 import kernel.ViewerProxy;
 import kernel.Kernel;
-import kernel.Timestep;
 
 import rescuecore2.misc.gui.ListModelList;
+import rescuecore2.Timestep;
 
 /**
    A status panel for the kernel.
