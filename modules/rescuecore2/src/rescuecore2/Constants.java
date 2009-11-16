@@ -40,5 +40,8 @@ public final class Constants {
     /** The name of the perception class. */
     public static final String PERCEPTION_KEY = "kernel.perception";
 
+    /** Config key for the top-level score function. */
+    public static final String SCORE_FUNCTION_KEY = "score.function";
+
     private Constants() {}
 }

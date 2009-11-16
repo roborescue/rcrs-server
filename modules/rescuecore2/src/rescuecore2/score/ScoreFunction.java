@@ -1,0 +1,25 @@
+package rescuecore2.score;
+
+import rescuecore2.config.Config;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.Timestep;
+
+/**
+   Interface for a score function.
+ */
+public interface ScoreFunction {
+    /**
+       Initialise this score function.
+       @param config The system configuration.
+    */
+    void initialise(Config config);
+
+    /**
+       Calculate the score for a timestep.
+       @param world The state of the world at the end of the timestep.
+       @param timestep The record of perception, commands and changes for the timestep.
+       @return The score for this timestep.
+     */
+    double score(WorldModel<? extends Entity> world, Timestep timestep);
+}
