@@ -140,6 +140,10 @@ public class AnimatedHumanLayer extends HumanLayer {
             //            System.out.println("No move command for " + agentID);
             return null;
         }
+        if (!human.isPositionDefined() || !human.isPositionExtraDefined()) {
+            //            System.out.println("No position for " + agentID);
+            return null;
+        }
         List<EntityID> path = move.getPath();
         Iterator<EntityID> it = path.iterator();
         EntityID position = human.getPosition();
