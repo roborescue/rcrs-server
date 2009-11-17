@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -44,7 +45,10 @@ public class SampleFireBrigade extends AbstractSampleAgent {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+        for (Command next : heard) {
+            System.out.println(me() + " heard " + next);
+        }
         FireBrigade me = (FireBrigade)me();
         // Are we currently filling with water?
         if (me.getWater() < maxWater && location() instanceof Refuge) {

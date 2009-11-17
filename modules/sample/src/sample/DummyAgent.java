@@ -7,6 +7,7 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.components.AbstractAgent;
+import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -16,7 +17,7 @@ import rescuecore2.standard.entities.StandardEntityURN;
  */
 public class DummyAgent extends AbstractAgent<StandardEntity> {
     @Override
-    protected void think(int time, Collection<EntityID> changed) {
+    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
     }
 
     @Override
