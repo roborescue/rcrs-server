@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 /**
-   An raw data component to a message.
+   A raw data component to a message.
  */
 public class RawDataComponent extends AbstractMessageComponent {
     private byte[] data;
