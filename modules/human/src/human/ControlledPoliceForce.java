@@ -3,6 +3,7 @@ package human;
 import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
    A basic police force agent that will try to clear a given target. Fully-blocked roads encountered along the way are also cleared. If there is no target then this agent does nothing.
 */
-public class ControlledPoliceForce extends AbstractAgent {
+public class ControlledPoliceForce extends AbstractAgent<StandardEntity> {
     private StandardWorldModel world;
     private SampleSearch search;
     private Road target;
@@ -34,7 +35,7 @@ public class ControlledPoliceForce extends AbstractAgent {
     }
 
     @Override
-    protected void think(int time, Collection c) {
+    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         if (location() instanceof Road) {
             Road r = (Road)location();
             if (r.isLinesToHeadDefined() && (r.countBlockedLanes() == r.getLinesToHead())) {

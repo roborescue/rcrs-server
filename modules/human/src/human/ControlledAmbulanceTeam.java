@@ -3,6 +3,7 @@ package human;
 import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -22,7 +23,7 @@ import java.util.List;
 /**
    A basic ambulance team agent that will try to rescue a given target. Once the target is unburied this agent will attempt to load it and transport it to a refuge. If there is no target then this agent does nothing.
  */
-public class ControlledAmbulanceTeam extends AbstractAgent {
+public class ControlledAmbulanceTeam extends AbstractAgent<StandardEntity> {
     private StandardWorldModel world;
     private SampleSearch search;
     private Human target;
@@ -36,7 +37,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent {
     }
 
     @Override
-    protected void think(int time, Collection c) {
+    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         if (target == null) {
             System.out.println(me() + " has nothing to do.");
             return;

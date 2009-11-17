@@ -3,6 +3,7 @@ package human;
 import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -22,7 +23,7 @@ import java.util.Collection;
 /**
    A basic fire brigade agent that will try to extinguish a given target. If the target is a refuge then the fire brigade will attempt to enter the building to replenish water. If there is no target then this agent does nothing.
  */
-public class ControlledFireBrigade extends AbstractAgent {
+public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
     private static final int MAX_WATER = 15000;
     private static final int EXTINGUISH_DISTANCE = 30000;
     private static final int EXTINGUISH_POWER = 1000;
@@ -40,7 +41,7 @@ public class ControlledFireBrigade extends AbstractAgent {
     }
 
     @Override
-    protected void think(int time, Collection changed) {
+    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         if (target == null) {
             System.out.println(me() + " has nothing to do");
             return;
