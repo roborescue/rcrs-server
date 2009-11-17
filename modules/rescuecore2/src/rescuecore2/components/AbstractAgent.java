@@ -4,6 +4,7 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KASense;
 import rescuecore2.messages.control.AKConnect;
 import rescuecore2.messages.control.AKAcknowledge;
@@ -63,8 +64,9 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
        Notification that a timestep has started.
        @param time The timestep.
        @param changed A collection of entities that changed this timestep.
+       @param heard The set of communication messages this agent heard.
      */
-    protected abstract void think(int time, Collection<EntityID> changed);
+    protected abstract void think(int time, Collection<EntityID> changed, Collection<Command> heard);
 
     /**
        Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
@@ -79,7 +81,8 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     protected void processSense(KASense sense) {
         model.merge(sense.getChangeSet());
         Collection<EntityID> changed = sense.getChangeSet().getChangedEntities();
-        think(sense.getTime(), changed);
+        Collection<Command> heard = sense.getHearing();
+        think(sense.getTime(), changed, heard);
     }
 
     /**

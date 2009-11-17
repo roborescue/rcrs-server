@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.Message;
+import rescuecore2.messages.Command;
 import rescuecore2.registry.Registry;
 
 /**
@@ -24,7 +24,7 @@ public class PerceptionRecord implements LogRecord {
     private int time;
     private EntityID entityID;
     private ChangeSet visible;
-    private Collection<Message> communications;
+    private Collection<Command> communications;
 
     /**
        Construct a new PerceptionRecord.
@@ -33,7 +33,7 @@ public class PerceptionRecord implements LogRecord {
        @param visible The set of visible changes to entities.
        @param communications The set of communication messages.
      */
-    public PerceptionRecord(int time, EntityID id, ChangeSet visible, Collection<Message> communications) {
+    public PerceptionRecord(int time, EntityID id, ChangeSet visible, Collection<Command> communications) {
         this.time = time;
         this.entityID = id;
         this.visible = visible;
@@ -61,7 +61,7 @@ public class PerceptionRecord implements LogRecord {
         writeInt32(time, out);
         visible.write(out);
         writeInt32(communications.size(), out);
-        for (Message next : communications) {
+        for (Command next : communications) {
             writeMessage(next, out);
         }
     }
@@ -73,14 +73,14 @@ public class PerceptionRecord implements LogRecord {
         //        System.out.print("Reading perception for agent " + entityID + " at time " + time + "...");
         visible = new ChangeSet();
         visible.read(in);
-        communications = new ArrayList<Message>();
+        communications = new ArrayList<Command>();
         int count = readInt32(in);
         for (int i = 0; i < count; ++i) {
-            Message m = readMessage(in, Registry.getCurrentRegistry());
-            if (m == null) {
+            Command c = (Command)readMessage(in, Registry.getCurrentRegistry());
+            if (c == null) {
                 throw new LogException("Could not read message from stream");
             }
-            communications.add(m);
+            communications.add(c);
         }
         //        System.out.println("done. Saw " + visible.size() + " entities and heard " + communications.size() + " messages.");
     }
@@ -110,10 +110,10 @@ public class PerceptionRecord implements LogRecord {
     }
 
     /**
-       Get the set of communication messages.
-       @return The communication messages.
+       Get the set of communication messages heard.
+       @return The communication messages heard.
     */
-    public Collection<Message> getMessages() {
+    public Collection<Command> getHearing() {
         return communications;
     }
 }

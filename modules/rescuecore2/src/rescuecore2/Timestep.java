@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.HashSet;
 
 import rescuecore2.messages.Command;
-import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
 
@@ -19,7 +18,7 @@ public class Timestep {
     private Collection<Command> commands;
     private ChangeSet changes;
     private Map<EntityID, ChangeSet> agentPerception;
-    private Map<EntityID, Collection<Message>> agentHearing;
+    private Map<EntityID, Collection<Command>> agentHearing;
     private double score;
 
     /**
@@ -29,7 +28,7 @@ public class Timestep {
     public Timestep(int time) {
         this.time = time;
         agentPerception = new HashMap<EntityID, ChangeSet>();
-        agentHearing = new HashMap<EntityID, Collection<Message>>();
+        agentHearing = new HashMap<EntityID, Collection<Command>>();
     }
 
     /**
@@ -54,7 +53,7 @@ public class Timestep {
        @param perception The ChangeSet the entity can perceive.
        @param hearing The messages the agent heard.
     */
-    public void registerPerception(EntityID id, ChangeSet perception, Collection<Message> hearing) {
+    public void registerPerception(EntityID id, ChangeSet perception, Collection<Command> hearing) {
         agentPerception.put(id, perception);
         agentHearing.put(id, hearing);
     }
@@ -116,7 +115,7 @@ public class Timestep {
        @param agentID The agent ID to look up.
        @return The set of messages the agent heard, or null if the ID is not recognised.
     */
-    public Collection<Message> getAgentHearing(EntityID agentID) {
+    public Collection<Command> getAgentHearing(EntityID agentID) {
         return agentHearing.get(agentID);
     }
 
