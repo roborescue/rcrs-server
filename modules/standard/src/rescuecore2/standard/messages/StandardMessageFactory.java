@@ -23,10 +23,6 @@ public final class StandardMessageFactory extends AbstractMessageFactory<Standar
     @Override
     public Message makeMessage(StandardMessageURN urn, InputStream data) throws IOException {
         switch (urn) {
-        case KA_HEAR_SAY:
-            return new KAHearSay(data);
-        case KA_HEAR_TELL:
-            return new KAHearTell(data);
         case AK_MOVE:
             return new AKMove(data);
         case AK_LOAD:
@@ -47,8 +43,6 @@ public final class StandardMessageFactory extends AbstractMessageFactory<Standar
             return new AKSubscribe(data);
         case AK_SPEAK:
             return new AKSpeak(data);
-        case KA_HEAR_CHANNEL:
-            return new KAHearChannel(data);
         default:
             System.out.println("Unrecognised message urn: " + urn);
             return null;

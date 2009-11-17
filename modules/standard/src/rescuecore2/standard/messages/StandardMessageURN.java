@@ -4,11 +4,6 @@ package rescuecore2.standard.messages;
    URNs for standard messages.
  */
 public enum StandardMessageURN {
-    /** Kernel-Agent hear (say). */
-    KA_HEAR_SAY,
-    /** Kernel-Agent hear (tell). */
-    KA_HEAR_TELL,
-
     /** Move command. */
     AK_MOVE,
     /** Load command. */
@@ -30,8 +25,5 @@ public enum StandardMessageURN {
     AK_SUBSCRIBE,
 
     /** Channel speak command. */
-    AK_SPEAK,
-
-    /** Channel hear command. */
-    KA_HEAR_CHANNEL;
+    AK_SPEAK
 }

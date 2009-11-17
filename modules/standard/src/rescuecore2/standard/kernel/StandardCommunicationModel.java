@@ -8,7 +8,6 @@ import java.util.HashMap;
 import kernel.AgentProxy;
 import kernel.CommunicationModel;
 
-import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
@@ -25,8 +24,6 @@ import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.messages.AKSay;
 import rescuecore2.standard.messages.AKTell;
-import rescuecore2.standard.messages.KAHearSay;
-import rescuecore2.standard.messages.KAHearTell;
 
 /**
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
@@ -55,11 +52,11 @@ public class StandardCommunicationModel implements CommunicationModel {
     }
 
     @Override
-    public Map<AgentProxy, Collection<Message>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands) {
-        Map<AgentProxy, Collection<Message>> all = new HashMap<AgentProxy, Collection<Message>>();
+    public Map<AgentProxy, Collection<Command>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands) {
+        Map<AgentProxy, Collection<Command>> all = new HashMap<AgentProxy, Collection<Command>>();
         for (AgentProxy agent : agents) {
             //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
-            Collection<Message> result = new HashSet<Message>();
+            Collection<Command> result = new HashSet<Command>();
             // Look for SAY messages from entities within range
             // Look for TELL messages from appropriate entities
             for (Command next : agentCommands) {
@@ -70,7 +67,7 @@ public class StandardCommunicationModel implements CommunicationModel {
                     int distance = world.getDistance((StandardEntity)agent.getControlledEntity(), sender);
                     if (distance <= sayDistance) {
                         //                    System.out.println(agent + " hears say from " + sender);
-                        result.add(new KAHearSay(senderID, say.getContent()));
+                        result.add(say);
                     }
                 }
                 if (next instanceof AKTell) {
@@ -79,7 +76,7 @@ public class StandardCommunicationModel implements CommunicationModel {
                     StandardEntity sender = world.getEntity(senderID);
                     if (canHear(agent.getControlledEntity(), sender)) {
                         //                    System.out.println(agent + " hears tell from " + sender);
-                        result.add(new KAHearTell(senderID, tell.getContent()));
+                        result.add(tell);
                     }
                 }
             }
