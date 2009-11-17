@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 import java.io.IOException;
+import java.io.File;
 
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
@@ -89,7 +90,14 @@ public class Kernel {
         try {
             String logName = config.getValue("kernel.logname");
             System.out.println("Logging to " + logName);
-            log = new FileLogWriter(logName);
+            File logFile = new File(logName);
+            if (logFile.getParentFile().mkdirs()) {
+                System.out.println("Created log directory: " + logFile.getParentFile().getAbsolutePath());
+            }
+            if (logFile.createNewFile()) {
+                System.out.println("Created log file: " + logFile.getAbsolutePath());
+            }
+            log = new FileLogWriter(logFile);
             log.writeRecord(new StartLogRecord());
             log.writeRecord(new InitialConditionsRecord(worldModel));
             log.writeRecord(new ConfigRecord(config));
