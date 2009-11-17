@@ -13,7 +13,6 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.Constants;
 import rescuecore2.Timestep;
@@ -351,13 +350,13 @@ public class Kernel {
 
     private void sendAgentUpdates(Timestep timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException, LogException {
         perception.setTime(time);
-        Map<AgentProxy, Collection<Message>> comms = communicationModel.process(time, agents, commandsLastTimestep);
+        Map<AgentProxy, Collection<Command>> comms = communicationModel.process(time, agents, commandsLastTimestep);
         for (AgentProxy next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
             ChangeSet visible = perception.getVisibleEntities(next);
-            Collection<Message> heard = comms.get(next);
+            Collection<Command> heard = comms.get(next);
             EntityID id = next.getControlledEntity().getID();
             timestep.registerPerception(id, visible, heard);
             log.writeRecord(new PerceptionRecord(time, id, visible, heard));

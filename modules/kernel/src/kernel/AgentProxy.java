@@ -1,10 +1,10 @@
 package kernel;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.ArrayList;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
@@ -69,14 +69,11 @@ public class AgentProxy extends AbstractKernelComponent {
        Notify the of a perception update.
        @param time The current timestep.
        @param visible The set of visible changes.
-       @param communication The set of communication messages that the agent perceived.
+       @param heard The set of communication messages that the agent heard.
      */
-    public void sendPerceptionUpdate(int time, ChangeSet visible, Collection<? extends Message> communication) {
-        KASense sense = new KASense(getControlledEntity().getID(), time, visible);
-        Collection<Message> all = new ArrayList<Message>();
-        all.add(sense);
-        all.addAll(communication);
-        send(all);
+    public void sendPerceptionUpdate(int time, ChangeSet visible, Collection<? extends Command> heard) {
+        KASense sense = new KASense(getControlledEntity().getID(), time, visible, heard);
+        send(Collections.singleton(sense));
     }
 
     /**
