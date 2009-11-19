@@ -5,20 +5,28 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
+import javax.swing.JMenuItem;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
 
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.net.URL;
 
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.config.Config;
+import rescuecore2.view.Icons;
+
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -46,6 +54,8 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     private int iconSize;
     private Map<String, Map<State, Icon>> icons;
+    private boolean useIcons;
+    private Action useIconsAction;
 
     /**
        Construct a human view layer.
@@ -59,13 +69,13 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     public void initialise(Config config) {
         iconSize = config.getIntValue(ICON_SIZE_KEY, DEFAULT_ICON_SIZE);
         icons = new HashMap<String, Map<State, Icon>>();
-        if (config.getBooleanValue(USE_ICONS_KEY, true)) {
-            icons.put(StandardEntityURN.FIRE_BRIGADE.toString(), generateIconMap("FireBrigade"));
-            icons.put(StandardEntityURN.AMBULANCE_TEAM.toString(), generateIconMap("AmbulanceTeam"));
-            icons.put(StandardEntityURN.POLICE_FORCE.toString(), generateIconMap("PoliceForce"));
-            icons.put(StandardEntityURN.CIVILIAN.toString() + "-Male", generateIconMap("Civilian-Male"));
-            icons.put(StandardEntityURN.CIVILIAN.toString() + "-Female", generateIconMap("Civilian-Female"));
-        }
+        useIcons = config.getBooleanValue(USE_ICONS_KEY, true);
+        icons.put(StandardEntityURN.FIRE_BRIGADE.toString(), generateIconMap("FireBrigade"));
+        icons.put(StandardEntityURN.AMBULANCE_TEAM.toString(), generateIconMap("AmbulanceTeam"));
+        icons.put(StandardEntityURN.POLICE_FORCE.toString(), generateIconMap("PoliceForce"));
+        icons.put(StandardEntityURN.CIVILIAN.toString() + "-Male", generateIconMap("Civilian-Male"));
+        icons.put(StandardEntityURN.CIVILIAN.toString() + "-Female", generateIconMap("Civilian-Female"));
+        useIconsAction = new UseIconsAction();
     }
 
     @Override
@@ -79,7 +89,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         int x = t.xToScreen(location.first());
         int y = t.yToScreen(location.second());
         Shape shape;
-        Icon icon = getIcon(h);
+        Icon icon = useIcons ? getIcon(h) : null;
         if (icon == null) {
             shape = new Ellipse2D.Double(x - SIZE / 2, y - SIZE / 2, SIZE, SIZE);
             g.setColor(getColour(h));
@@ -92,6 +102,13 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
             icon.paintIcon(null, g, x, y);
         }
         return shape;
+    }
+
+    @Override
+    public List<JMenuItem> getPopupMenuItems() {
+        List<JMenuItem> result = new ArrayList<JMenuItem>();
+        result.add(new JMenuItem(useIconsAction));
+        return result;
     }
 
     @Override
@@ -211,6 +228,22 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
                 return 1;
             }
             return h1.getID().getValue() - h2.getID().getValue();
+        }
+    }
+
+    private final class UseIconsAction extends AbstractAction {
+        public UseIconsAction() {
+            super("Use icons");
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(useIcons));
+            putValue(Action.SMALL_ICON, useIcons ? Icons.TICK : Icons.CROSS);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            useIcons = !useIcons;
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(useIcons));
+            putValue(Action.SMALL_ICON, useIcons ? Icons.TICK : Icons.CROSS);
+            component.repaint();
         }
     }
 }

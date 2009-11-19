@@ -5,6 +5,7 @@ import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.DrawingTools;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.view.RenderedObject;
+import rescuecore2.view.Icons;
 import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardEntity;
@@ -25,6 +26,11 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.event.ActionEvent;
+
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JMenuItem;
 
 /**
    A layer for viewing commands.
@@ -50,6 +56,13 @@ public class CommandLayer extends StandardViewLayer {
     private boolean renderUnload;
     private boolean renderRescue;
 
+    private RenderMoveAction renderMoveAction;
+    private RenderExtinguishAction renderExtinguishAction;
+    private RenderClearAction renderClearAction;
+    private RenderRescueAction renderRescueAction;
+    private RenderLoadAction renderLoadAction;
+    private RenderUnloadAction renderUnloadAction;
+
     /**
        Construct a new CommandLayer.
     */
@@ -61,6 +74,12 @@ public class CommandLayer extends StandardViewLayer {
         renderLoad = true;
         renderUnload = true;
         renderRescue = true;
+        renderMoveAction = new RenderMoveAction();
+        renderExtinguishAction = new RenderExtinguishAction();
+        renderClearAction = new RenderClearAction();
+        renderRescueAction = new RenderRescueAction();
+        renderLoadAction = new RenderLoadAction();
+        renderUnloadAction = new RenderUnloadAction();
     }
 
     /**
@@ -69,6 +88,7 @@ public class CommandLayer extends StandardViewLayer {
     */
     public void setRenderMove(boolean render) {
         renderMove = render;
+        renderMoveAction.update();
     }
 
     /**
@@ -77,6 +97,7 @@ public class CommandLayer extends StandardViewLayer {
     */
     public void setRenderExtinguish(boolean render) {
         renderExtinguish = render;
+        renderExtinguishAction.update();
     }
 
     /**
@@ -85,6 +106,7 @@ public class CommandLayer extends StandardViewLayer {
     */
     public void setRenderClear(boolean render) {
         renderClear = render;
+        renderClearAction.update();
     }
 
     /**
@@ -93,6 +115,7 @@ public class CommandLayer extends StandardViewLayer {
     */
     public void setRenderLoad(boolean render) {
         renderLoad = render;
+        renderLoadAction.update();
     }
 
     /**
@@ -101,6 +124,7 @@ public class CommandLayer extends StandardViewLayer {
     */
     public void setRenderUnload(boolean render) {
         renderUnload = render;
+        renderUnloadAction.update();
     }
 
     /**
@@ -109,6 +133,19 @@ public class CommandLayer extends StandardViewLayer {
     */
     public void setRenderRescue(boolean render) {
         renderRescue = render;
+        renderRescueAction.update();
+    }
+
+    @Override
+    public List<JMenuItem> getPopupMenuItems() {
+        List<JMenuItem> result = new ArrayList<JMenuItem>();
+        result.add(new JMenuItem(renderMoveAction));
+        result.add(new JMenuItem(renderClearAction));
+        result.add(new JMenuItem(renderExtinguishAction));
+        result.add(new JMenuItem(renderRescueAction));
+        result.add(new JMenuItem(renderLoadAction));
+        result.add(new JMenuItem(renderUnloadAction));
+        return result;
     }
 
     @Override
@@ -237,6 +274,114 @@ public class CommandLayer extends StandardViewLayer {
             x = t.xToScreen(location.first());
             y = t.yToScreen(location.second());
             g.drawString(s, x - (width / 2), y + (height / 2));
+        }
+    }
+
+    private final class RenderMoveAction extends AbstractAction {
+        public RenderMoveAction() {
+            super("Show move commands");
+            update();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setRenderMove(!renderMove);
+            component.repaint();
+        }
+
+        void update() {
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(renderMove));
+            putValue(Action.SMALL_ICON, renderMove ? Icons.TICK : Icons.CROSS);
+        }
+    }
+
+    private final class RenderClearAction extends AbstractAction {
+        public RenderClearAction() {
+            super("Show clear commands");
+            update();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setRenderClear(!renderClear);
+            component.repaint();
+        }
+
+        void update() {
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(renderClear));
+            putValue(Action.SMALL_ICON, renderClear ? Icons.TICK : Icons.CROSS);
+        }
+    }
+
+    private final class RenderExtinguishAction extends AbstractAction {
+        public RenderExtinguishAction() {
+            super("Show extinguish commands");
+            update();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setRenderExtinguish(!renderExtinguish);
+            component.repaint();
+        }
+
+        void update() {
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(renderExtinguish));
+            putValue(Action.SMALL_ICON, renderExtinguish ? Icons.TICK : Icons.CROSS);
+        }
+    }
+
+    private final class RenderRescueAction extends AbstractAction {
+        public RenderRescueAction() {
+            super("Show rescue commands");
+            update();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setRenderRescue(!renderRescue);
+            component.repaint();
+        }
+
+        void update() {
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(renderRescue));
+            putValue(Action.SMALL_ICON, renderRescue ? Icons.TICK : Icons.CROSS);
+        }
+    }
+
+    private final class RenderLoadAction extends AbstractAction {
+        public RenderLoadAction() {
+            super("Show load commands");
+            update();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setRenderLoad(!renderLoad);
+            component.repaint();
+        }
+
+        void update() {
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(renderLoad));
+            putValue(Action.SMALL_ICON, renderLoad ? Icons.TICK : Icons.CROSS);
+        }
+    }
+
+    private final class RenderUnloadAction extends AbstractAction {
+        public RenderUnloadAction() {
+            super("Show unload commands");
+            update();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setRenderUnload(!renderUnload);
+            component.repaint();
+        }
+
+        void update() {
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(renderUnload));
+            putValue(Action.SMALL_ICON, renderUnload ? Icons.TICK : Icons.CROSS);
         }
     }
 }
