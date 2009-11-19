@@ -23,6 +23,8 @@ public final class StandardMessageFactory extends AbstractMessageFactory<Standar
     @Override
     public Message makeMessage(StandardMessageURN urn, InputStream data) throws IOException {
         switch (urn) {
+        case AK_REST:
+            return new AKRest(data);
         case AK_MOVE:
             return new AKMove(data);
         case AK_LOAD:

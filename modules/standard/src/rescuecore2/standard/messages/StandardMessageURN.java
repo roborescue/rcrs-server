@@ -4,6 +4,8 @@ package rescuecore2.standard.messages;
    URNs for standard messages.
  */
 public enum StandardMessageURN {
+    /** Rest command. */
+    AK_REST,
     /** Move command. */
     AK_MOVE,
     /** Load command. */
