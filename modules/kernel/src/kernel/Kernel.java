@@ -33,8 +33,6 @@ import rescuecore2.log.LogException;
    The Robocup Rescue kernel.
  */
 public class Kernel {
-    private static final String AGENT_TIME_KEY = "kernel.agents.think-time";
-
     //    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
@@ -53,8 +51,7 @@ public class Kernel {
 
     private TerminationCondition termination;
     private ScoreFunction score;
-
-    private int agentTime;
+    private CommandCollector commandCollector;
 
     /**
        Construct a kernel.
@@ -65,6 +62,7 @@ public class Kernel {
        @param commandFilter An optional command filter. This may be null.
        @param termination The termination condition.
        @param score The score function.
+       @param collector The CommandCollector to use.
        @throws KernelException If there is a problem constructing the kernel.
     */
     public Kernel(Config config,
@@ -73,19 +71,20 @@ public class Kernel {
                   WorldModel<? extends Entity> worldModel,
                   CommandFilter commandFilter,
                   TerminationCondition termination,
-                  ScoreFunction score) throws KernelException {
+                  ScoreFunction score,
+                  CommandCollector collector) throws KernelException {
         this.perception = perception;
         this.communicationModel = communicationModel;
         this.worldModel = worldModel;
         this.commandFilter = commandFilter;
         this.score = score;
         this.termination = termination;
+        this.commandCollector = collector;
         listeners = new HashSet<KernelListener>();
         agents = new HashSet<AgentProxy>();
         sims = new HashSet<SimulatorProxy>();
         viewers = new HashSet<ViewerProxy>();
         time = 0;
-        agentTime = config.getIntValue(AGENT_TIME_KEY);
         try {
             String logName = config.getValue("kernel.logname");
             System.out.println("Logging to " + logName);
@@ -112,6 +111,15 @@ public class Kernel {
         config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
 
         score.initialise(config);
+        commandCollector.initialise(config);
+
+        System.out.println("Kernel initialised");
+        System.out.println("Perception module: " + perception);
+        System.out.println("Communication module: " + communicationModel);
+        System.out.println("Command filter: " + commandFilter);
+        System.out.println("Score function: " + score);
+        System.out.println("Termination condition: " + termination);
+        System.out.println("Command collector: " + collector);
     }
 
     /**
@@ -329,16 +337,6 @@ public class Kernel {
     }
 
     /**
-       Set the amount of time the kernel will wait for agent commands, in milliseconds.
-       @param newWaitTime The new wait time.
-    */
-    public void setAgentWaitTime(int newWaitTime) {
-        synchronized (this) {
-            agentTime = newWaitTime;
-        }
-    }
-
-    /**
        Find out if the kernel has terminated.
        @return True if the kernel has terminated, false otherwise.
     */
@@ -365,21 +363,11 @@ public class Kernel {
     }
 
     private Collection<Command> waitForCommands(int timestep) throws InterruptedException {
-        long now = System.currentTimeMillis();
-        long end = now + agentTime;
-        while (now < end) {
-            Thread.sleep(end - now);
-            now = System.currentTimeMillis();
+        Collection<Command> commands = commandCollector.getAgentCommands(agents, timestep);
+        if (commandFilter != null) {
+            commandFilter.filter(commands);
         }
-        Collection<Command> result = new HashSet<Command>();
-        for (AgentProxy next : agents) {
-            Collection<Command> commands = next.getAgentCommands(timestep);
-            if (commandFilter != null) {
-                commandFilter.filter(commands, next);
-            }
-            result.addAll(commands);
-        }
-        return result;
+        return commands;
     }
 
     /**

@@ -64,6 +64,8 @@ public final class StartKernel {
     private static final String PERCEPTION_MANIFEST_KEY = "Perception";
     private static final String COMMUNICATION_MANIFEST_KEY = "CommunicationModel";
 
+    private static final String COMMAND_COLLECTOR_KEY = "kernel.commandcollectors";
+
     private static final String TERMINATION_KEY = "kernel.termination";
 
     private static final String GIS_REGEX = "(.+WorldModelCreator).class";
@@ -274,6 +276,7 @@ public final class StartKernel {
         CommandFilter filter = makeCommandFilter(config);
         TerminationCondition termination = makeTerminationCondition(config);
         ScoreFunction score = makeScoreFunction(config);
+        CommandCollector collector = makeCommandCollector(config);
 
         // Get the world model
         WorldModel<? extends Entity> worldModel = gis.buildWorldModel(config);
@@ -281,10 +284,8 @@ public final class StartKernel {
         perception.initialise(config, worldModel);
         comms.initialise(config, worldModel);
         termination.initialise(config);
-        score.initialise(config);
         // Create the kernel
-        System.out.println("Kernel termination condition: " + termination);
-        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination, score);
+        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination, score, collector);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);
@@ -327,6 +328,18 @@ public final class StartKernel {
     private static ScoreFunction makeScoreFunction(Config config) {
         String className = config.getValue(Constants.SCORE_FUNCTION_KEY);
         ScoreFunction result = instantiate(className, ScoreFunction.class);
+        return result;
+    }
+
+    private static CommandCollector makeCommandCollector(Config config) {
+        List<String> classNames = config.getArrayValue(COMMAND_COLLECTOR_KEY);
+        CompositeCommandCollector result = new CompositeCommandCollector();
+        for (String next : classNames) {
+            CommandCollector c = instantiate(next, CommandCollector.class);
+            if (c != null) {
+                result.addCommandCollector(c);
+            }
+        }
         return result;
     }
 

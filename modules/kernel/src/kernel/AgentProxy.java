@@ -49,7 +49,7 @@ public class AgentProxy extends AbstractKernelComponent {
     }
 
     /**
-       Get all agent commands since the last call to this method.
+       Get all agent commands at a particular time.
        @param timestep The current timestep.
        @return A collection of messages representing the commands
      */
