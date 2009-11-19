@@ -23,8 +23,9 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
         timer = new Timer(FRAME_DELAY, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    humans.nextFrame();
-                    repaint();
+                    if (humans.nextFrame()) {
+                        repaint();
+                    }
                 }
             });
         timer.setRepeats(true);

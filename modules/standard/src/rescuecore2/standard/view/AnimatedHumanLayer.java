@@ -29,6 +29,8 @@ public class AnimatedHumanLayer extends HumanLayer {
     private Set<EntityID> humanIDs;
 
     private Map<EntityID, Queue<Pair<Integer, Integer>>> frames;
+    private boolean animationDone;
+    private boolean ready;
 
     private int frameCount;
 
@@ -44,11 +46,21 @@ public class AnimatedHumanLayer extends HumanLayer {
         agentLastPositions = new HashMap<EntityID, Pair<EntityID, Integer>>();
         humanIDs = new HashSet<EntityID>();
         frames = new HashMap<EntityID, Queue<Pair<Integer, Integer>>>();
+        ready = false;
+        animationDone = true;
     }
 
     @Override
     public void initialise(Config config) {
         super.initialise(config);
+        synchronized (frameLock) {
+            frames.clear();
+            moveCommands.clear();
+            agentLastPositions.clear();
+            humanIDs.clear();
+            ready = false;
+            animationDone = true;
+        }
     }
 
     @Override
@@ -58,14 +70,21 @@ public class AnimatedHumanLayer extends HumanLayer {
 
     /**
        Increase the frame number.
+       @return True if a new frame is actually required.
     */
-    public void nextFrame() {
+    public boolean nextFrame() {
         synchronized (frameLock) {
+            if (!ready || animationDone) {
+                return false;
+            }
+            animationDone = true;
             for (Queue<Pair<Integer, Integer>> next : frames.values()) {
                 if (next.size() > 1) {
                     next.remove();
+                    animationDone = false;
                 }
             }
+            return !animationDone;
         }
     }
 
@@ -94,6 +113,9 @@ public class AnimatedHumanLayer extends HumanLayer {
 
     @Override
     protected void preView() {
+        synchronized (frameLock) {
+            ready = false;
+        }
         super.preView();
         moveCommands.clear();
         humanIDs.clear();
@@ -130,6 +152,10 @@ public class AnimatedHumanLayer extends HumanLayer {
             synchronized (frameLock) {
                 frames.put(next, result);
             }
+        }
+        synchronized (frameLock) {
+            animationDone = false;
+            ready = true;
         }
     }
 
