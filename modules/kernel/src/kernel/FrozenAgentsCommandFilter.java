@@ -21,7 +21,7 @@ public class FrozenAgentsCommandFilter implements CommandFilter {
     }
 
     @Override
-    public void filter(Collection<Command> commands, AgentProxy agent) {
+    public void filter(Collection<Command> commands) {
         int time = kernel.getTime();
         if (time < freezeTime) {
             commands.clear();
