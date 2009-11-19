@@ -11,6 +11,7 @@ import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.messages.AKRest;
 
 /**
    A no-op agent.
@@ -18,6 +19,7 @@ import rescuecore2.standard.entities.StandardEntityURN;
 public class DummyAgent extends AbstractAgent<StandardEntity> {
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+        send(new AKRest(getID(), time));
     }
 
     @Override

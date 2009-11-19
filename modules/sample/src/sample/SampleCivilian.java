@@ -15,6 +15,7 @@ import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKSay;
 import rescuecore2.standard.messages.AKSpeak;
+import rescuecore2.standard.messages.AKRest;
 
 /**
    A sample civilian agent.
@@ -58,6 +59,7 @@ public class SampleCivilian extends AbstractSampleAgent {
         int buriedness = me.isBuriednessDefined() ? me.getBuriedness() : 0;
         if (hp <= 0 || hp < consciousThreshold) {
             // Unconscious (or dead): do nothing
+            send(new AKRest(getID(), time));
             return;
         }
         if (damage > 0 && random.nextDouble() < ouchProbability) {
@@ -79,6 +81,7 @@ public class SampleCivilian extends AbstractSampleAgent {
                 send(new AKMove(getID(), time, randomWalk()));
             }
         }
+        send(new AKRest(getID(), time));
     }
 
     @Override

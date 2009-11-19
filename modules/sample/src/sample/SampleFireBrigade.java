@@ -16,6 +16,7 @@ import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKExtinguish;
+import rescuecore2.standard.messages.AKRest;
 
 /**
    A sample fire brigade agent.
@@ -53,6 +54,7 @@ public class SampleFireBrigade extends AbstractSampleAgent {
         // Are we currently filling with water?
         if (me.getWater() < maxWater && location() instanceof Refuge) {
             //            System.out.println(me() + " filling with water at " + location());
+            send(new AKRest(getID(), time));
             return;
         }
         // Are we out of water?
