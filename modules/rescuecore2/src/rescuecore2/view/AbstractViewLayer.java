@@ -1,6 +1,9 @@
 package rescuecore2.view;
 
 import java.util.Collection;
+import java.util.List;
+
+import javax.swing.JMenuItem;
 
 import rescuecore2.config.Config;
 
@@ -8,6 +11,9 @@ import rescuecore2.config.Config;
    An abstract ViewLayer implementation.
  */
 public abstract class AbstractViewLayer implements ViewLayer {
+    /** The LayerViewComponent this layer is part of. */
+    protected LayerViewComponent component;
+
     private boolean visible;
 
     /**
@@ -15,6 +21,16 @@ public abstract class AbstractViewLayer implements ViewLayer {
     */
     protected AbstractViewLayer() {
         visible = true;
+    }
+
+    @Override
+    public void setLayerViewComponent(LayerViewComponent c) {
+        component = c;
+    }
+
+    @Override
+    public List<JMenuItem> getPopupMenuItems() {
+        return null;
     }
 
     @Override

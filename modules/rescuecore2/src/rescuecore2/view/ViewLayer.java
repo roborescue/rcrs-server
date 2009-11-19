@@ -2,7 +2,11 @@ package rescuecore2.view;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+
+import javax.swing.JMenuItem;
+
 import java.util.Collection;
+import java.util.List;
 
 import rescuecore2.config.Config;
 import rescuecore2.misc.gui.ScreenTransform;
@@ -16,6 +20,18 @@ public interface ViewLayer {
        @param config The system configuration.
     */
     void initialise(Config config);
+
+    /**
+       Set the LayerViewComponent for this layer.
+       @param component The LayerViewComponent that this layer is part of.
+    */
+    void setLayerViewComponent(LayerViewComponent component);
+
+    /**
+       Get the menu items this layer wants added to the LayerViewComponent popup menu.
+       @return A list of menu items, or null if no menu items are required.
+    */
+    List<JMenuItem> getPopupMenuItems();
 
     /**
        Set the list of objects this layer should view. The layer should record the objects it understands and draw them when {@link #render(Graphics2D, ScreenTransform, int, int)} is called.

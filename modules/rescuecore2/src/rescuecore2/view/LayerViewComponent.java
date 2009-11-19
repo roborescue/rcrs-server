@@ -3,6 +3,8 @@ package rescuecore2.view;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -13,8 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JPopupMenu;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 
@@ -25,21 +27,18 @@ import rescuecore2.config.Config;
    A ViewComponent that uses layers.
  */
 public class LayerViewComponent extends ViewComponent {
-    private static final Icon TICK = new ImageIcon(LayerViewComponent.class.getClassLoader().getResource("rescuecore2/view/tick.png"));
-    private static final Icon CROSS = new ImageIcon(LayerViewComponent.class.getClassLoader().getResource("rescuecore2/view/cross.png"));
-
     private Config config;
     private List<ViewLayer> layers;
-    private List<Action> layerActions;
+    private Map<ViewLayer, Action> layerActions;
     private Object[] data;
     private Rectangle2D bounds;
 
     /**
        Construct a new LayerViewComponent.
-     */
+    */
     public LayerViewComponent() {
         layers = new ArrayList<ViewLayer>();
-        layerActions = new ArrayList<Action>();
+        layerActions = new HashMap<ViewLayer, Action>();
         addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -73,10 +72,11 @@ public class LayerViewComponent extends ViewComponent {
     /**
        Add a view layer.
        @param layer The layer to add.
-     */
+    */
     public void addLayer(ViewLayer layer) {
         layers.add(layer);
-        layerActions.add(new LayerAction(layer));
+        layer.setLayerViewComponent(this);
+        layerActions.put(layer, new LayerAction(layer));
         if (config != null) {
             layer.initialise(config);
         }
@@ -86,20 +86,24 @@ public class LayerViewComponent extends ViewComponent {
     /**
        Remove a view layer.
        @param layer The layer to remove.
-     */
+    */
     public void removeLayer(ViewLayer layer) {
         int index = layers.indexOf(layer);
         if (index != -1) {
             layers.remove(index);
-            layerActions.remove(index);
+            layerActions.remove(layer);
+            layer.setLayerViewComponent(null);
             computeBounds();
         }
     }
 
     /**
        Remove all view layers.
-     */
+    */
     public void removeAllLayers() {
+        for (ViewLayer next : layers) {
+            next.setLayerViewComponent(null);
+        }
         layers.clear();
         layerActions.clear();
         computeBounds();
@@ -136,13 +140,13 @@ public class LayerViewComponent extends ViewComponent {
 
     /**
        Do whatever needs doing before the layers are painted. The default implementation does nothing.
-     */
+    */
     protected void prepaint() {
     }
 
     /**
        Do whatever needs doing after the layers are painted. The default implementation does nothing.
-     */
+    */
     protected void postpaint() {
     }
 
@@ -177,9 +181,21 @@ public class LayerViewComponent extends ViewComponent {
     }
 
     private void showPopupMenu(int x, int y) {
-        JPopupMenu menu = new JPopupMenu("Layers");
-        for (Action next : layerActions) {
-            menu.add(next);
+        JPopupMenu menu = new JPopupMenu();
+        for (ViewLayer next : layers) {
+            Action action = layerActions.get(next);
+            JMenu layerMenu = new JMenu(next.getName());
+            layerMenu.add(new JMenuItem(action));
+            if (next.isVisible()) {
+                List<JMenuItem> items = next.getPopupMenuItems();
+                if (items != null && !items.isEmpty()) {
+                    layerMenu.addSeparator();
+                    for (JMenuItem item : items) {
+                        layerMenu.add(item);
+                    }
+                }
+            }
+            menu.add(layerMenu);
         }
         menu.show(this, x, y);
     }
@@ -188,17 +204,17 @@ public class LayerViewComponent extends ViewComponent {
         private ViewLayer layer;
 
         public LayerAction(ViewLayer layer) {
-            super(layer.getName());
+            super("Visible");
             this.layer = layer;
             putValue(Action.SELECTED_KEY, Boolean.valueOf(layer.isVisible()));
-            putValue(Action.SMALL_ICON, layer.isVisible() ? TICK : CROSS);
+            putValue(Action.SMALL_ICON, layer.isVisible() ? Icons.TICK : Icons.CROSS);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             boolean selected = ((Boolean)getValue(Action.SELECTED_KEY)).booleanValue();
             putValue(Action.SELECTED_KEY, Boolean.valueOf(!selected));
-            putValue(Action.SMALL_ICON, !selected ? TICK : CROSS);
+            putValue(Action.SMALL_ICON, !selected ? Icons.TICK : Icons.CROSS);
             layer.setVisible(!selected);
             LayerViewComponent.this.repaint();
         }
