@@ -28,6 +28,8 @@ import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
 
+import org.uncommons.maths.random.GaussianGenerator;
+
 /**
    A simple misc simulator. This simulator handles buriedness, health, loading, unloading and road clearing.
  */
@@ -41,8 +43,8 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     private static final String SEVERE_SUFFIX = ".severe";
     private static final String DESTROYED_SUFFIX = ".destroyed";
 
-    private static final String DAMAGE_RATE_KEY = "misc.damage.rate";
-    private static final String DAMAGE_SPREAD_KEY = "misc.damage.spread";
+    private static final String DAMAGE_MEAN_KEY = "misc.damage.mean";
+    private static final String DAMAGE_SD_KEY = "misc.damage.sd";
     private static final String DAMAGE_FIRE_KEY = "misc.damage.fire";
 
     private static final String CLEAR_RATE_KEY = "misc.clear.rate";
@@ -56,11 +58,11 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
 
     private BuriednessStats[] stats;
 
-    private double rate;
-    private double spread;
     private int fire;
 
     private int clearRate;
+
+    private GaussianGenerator gaussian;
 
     /**
        Create a MiscSimulator.
@@ -81,14 +83,16 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
 
     @Override
     protected void postConnect() {
+        super.postConnect();
         stats = new BuriednessStats[CODES.length];
         for (int i = 0; i < CODES.length; ++i) {
             stats[i] = new BuriednessStats(i, config);
         }
-        rate = config.getFloatValue(DAMAGE_RATE_KEY);
-        spread = config.getFloatValue(DAMAGE_SPREAD_KEY);
         fire = config.getIntValue(DAMAGE_FIRE_KEY);
         clearRate = config.getIntValue(CLEAR_RATE_KEY);
+        double mean = config.getFloatValue(DAMAGE_MEAN_KEY);
+        double sd = config.getFloatValue(DAMAGE_SD_KEY);
+        gaussian = new GaussianGenerator(mean, sd, config.getRandom());
     }
 
     @Override
@@ -414,7 +418,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             boolean onFire = (position instanceof Building) && ((Building)position).isOnFire();
             // Increase damage if the agent is buried
             if (buriedness > 0) {
-                damage += Math.max(0, (int)(random.nextGaussian() * spread * rate * buriedness));
+                damage += Math.max(0, (int)(gaussian.nextValue() * buriedness));
             }
             if (onFire) {
                 damage += fire;
