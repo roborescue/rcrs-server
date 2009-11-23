@@ -126,7 +126,7 @@ function processArgs {
 
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewer.auto= --kernel.agents.auto= --kernel.gis.auto=kernel.standard.InlineWorldModelCreator --kernel.perception.auto=kernel.standard.TunableStandardPerception --kernel.communication.auto=kernel.standard.ChannelCommunicationModel $*"
+    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewer.auto= --kernel.agents.auto= --kernel.gis.auto=rescuecore2.standard.kernel.StandardWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.StandardPerception --kernel.communication.auto=rescuecore2.standard.kernel.ChannelCommunicationModel $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
     xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS 2>&1 | tee $LOGDIR/kernel.log" &
     KERNEL=$!
