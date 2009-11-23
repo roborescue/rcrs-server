@@ -34,6 +34,10 @@ public final class Constants {
 
     /** The random seed key. */
     public static final String RANDOM_SEED_KEY = "random.seed";
+    /** The random implementation class key. */
+    public static final String RANDOM_CLASS_KEY = "random.class";
+    /** The default random implementation class. */
+    public static final String RANDOM_CLASS_DEFAULT = "org.uncommons.maths.random.MersenneTwisterRNG";
 
     /** The name of the communication model class. */
     public static final String COMMUNICATION_MODEL_KEY = "kernel.communication-model";

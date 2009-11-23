@@ -16,6 +16,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
+import java.math.BigInteger;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import rescuecore2.Constants;
+
+import org.uncommons.maths.random.MersenneTwisterRNG;
+import org.uncommons.maths.random.SeedGenerator;
 
 /**
    This class represents a config file and any other config files that might have been included with a !include directive. Config files must be defined relative to a base directory so that includes can be resolved.
@@ -34,6 +43,8 @@ public class Config {
     private Map<String, Double> floatData;
     private Map<String, Boolean> booleanData;
     private Map<String, List<String>> arrayData;
+
+    private Random random;
 
     /**
        Create an empty config.
@@ -198,7 +209,7 @@ public class Config {
     /**
        Merge all keys and values from another Config into this one.
        @param other The Config to merge from.
-     */
+    */
     public void merge(Config other) {
         clearCache();
         this.data.putAll(other.data);
@@ -434,7 +445,7 @@ public class Config {
        Append a value to a key. If there is no value for the key then this is equivalent to {@link #setValue(String, String)}. This method calls {@link #appendValue(String, String, String)} with a space character as the separator.
        @param key The key to append.
        @param value The value to append.
-     */
+    */
     public void appendValue(String key, String value) {
         appendValue(key, value, " ");
     }
@@ -444,7 +455,7 @@ public class Config {
        @param key The key to append.
        @param value The value to append.
        @param separator A string to add before the new value to separate it from the previous value.
-     */
+    */
     public void appendValue(String key, String value, String separator) {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
@@ -539,6 +550,107 @@ public class Config {
     public void removeExcept(Collection<String> exceptions) {
         data.keySet().retainAll(exceptions);
         noCache.retainAll(exceptions);
+    }
+
+    /**
+       Get the random number generator defined by this config.
+       @return The random number generator.
+    */
+    public Random getRandom() {
+        synchronized (this) {
+            if (random == null) {
+                String className = getValue(Constants.RANDOM_CLASS_KEY, Constants.RANDOM_CLASS_DEFAULT);
+                String seed = getValue(Constants.RANDOM_SEED_KEY, "");
+                try {
+                    Class<? extends Random> clazz = Class.forName(className).asSubclass(Random.class);
+                    System.out.println("Instantiating random number generator: " + className);
+                    if ("".equals(seed)) {
+                        // Just instantiate the RNG
+                        try {
+                            System.out.println("Trying to find no-arg constructor");
+                            random = clazz.newInstance();
+                            System.out.println("Success");
+                        }
+                        catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                        catch (InstantiationException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else {
+                        System.out.println("Using seed " + seed);
+                        // CHECKSTYLE:OFF:MagicNumber
+                        BigInteger bi = new BigInteger(seed, 16);
+                        // CHECKSTYLE:ON:MagicNumber
+                        // Look for a constructor that takes a byte array
+                        try {
+                            System.out.println("Trying to find a SeedGenerator constructor");
+                            Constructor<? extends Random> constructor = clazz.getConstructor(SeedGenerator.class);
+                            random = constructor.newInstance(new StaticSeedGenerator(bi.toByteArray()));
+                            System.out.println("Success");
+                        }
+                        catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                        catch (InstantiationException e) {
+                            e.printStackTrace();
+                        }
+                        catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
+                        catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                        // If that failed try a long argument
+                        if (random == null) {
+                            System.out.println("Trying to find a long constructor");
+                            try {
+                                Constructor<? extends Random> constructor = clazz.getConstructor(Long.TYPE);
+                                random = constructor.newInstance(bi.longValue());
+                                System.out.println("Success");
+                            }
+                            catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                            catch (InstantiationException e) {
+                                e.printStackTrace();
+                            }
+                            catch (NoSuchMethodException e) {
+                                e.printStackTrace();
+                            }
+                            catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (random == null) {
+                            // Just instantiate the RNG
+                            try {
+                                System.out.println("Trying to find no-arg constructor");
+                                random = clazz.newInstance();
+                                System.out.println("Success");
+                            }
+                            catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            }
+                            catch (InstantiationException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                catch (ClassNotFoundException e) {
+                    System.out.println("Class not found: " + className);
+                    System.out.println("Using fallback RNG");
+                }
+                if (random == null) {
+                    // Everything failed
+                    // Just return a sensible RNG
+                    random = new MersenneTwisterRNG();
+                }
+            }
+            return random;
+        }
     }
 
     private void clearCache() {
@@ -705,6 +817,21 @@ public class Config {
         @Override
         public Context include(String path) throws ConfigException {
             return new ResourceContext(path);
+        }
+    }
+
+    private static class StaticSeedGenerator implements SeedGenerator {
+        private byte[] data;
+
+        StaticSeedGenerator(byte[] data) {
+            this.data = data;
+        }
+
+        @Override
+        public byte[] generateSeed(int length) {
+            byte[] result = new byte[length];
+            System.arraycopy(data, 0, result, 0, Math.min(data.length, result.length));
+            return result;
         }
     }
 }

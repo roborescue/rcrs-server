@@ -6,7 +6,6 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.Constants;
 
 import java.util.Collection;
 import java.util.Random;
@@ -36,13 +35,12 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
     /**
        A random number generator.
     */
-    protected final Random random;
+    protected Random random;
 
     /**
        Create a new AbstractComponent.
     */
     protected AbstractComponent() {
-        random = new Random();
     }
 
     /**
@@ -56,10 +54,7 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
         model = createWorldModel();
         model.addEntities(entities);
         config.merge(kernelConfig);
-        long seed = config.getIntValue(Constants.RANDOM_SEED_KEY, 0);
-        if (seed != 0) {
-            random.setSeed(seed);
-        }
+        random = config.getRandom();
     }
 
     /**
