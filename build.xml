@@ -310,11 +310,11 @@
       <outputproperty name="method" value="xml"/>
       <outputproperty name="indent" value="yes"/>
     </xslt>
-    <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}" excludeFilter="${findbugs.output.dir}/exclude.xml">
+    <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}" excludeFilter="${findbugs.output.dir}/exclude.xml" jvmargs="-Xmx1024m">
       <fileset dir="${jar.dir}">
 	<include name="**/*.jar"/>
       </fileset>
-      <auxClasspath refid="path.common"/>
+      <auxClasspath refid="path.lib"/>
       <auxClasspath refid="path.allmodules.lib"/>
     </findbugs>
   </target>
