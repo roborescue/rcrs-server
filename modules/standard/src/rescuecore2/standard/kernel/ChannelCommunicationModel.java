@@ -16,7 +16,6 @@ import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.Constants;
 import rescuecore2.misc.collections.LazyMap;
 
 import rescuecore2.standard.entities.StandardWorldModel;
@@ -62,7 +61,6 @@ public class ChannelCommunicationModel implements CommunicationModel {
     private int platoonMax;
     private int centreMax;
     private StandardWorldModel world;
-
     private Random random;
 
     /**
@@ -104,11 +102,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
         }
         platoonMax = config.getIntValue(PLATOON_MAX_CHANNELS_KEY, 1);
         centreMax = config.getIntValue(CENTRE_MAX_CHANNELS_KEY, 2);
-        random = new Random();
-        long seed = config.getIntValue(Constants.RANDOM_SEED_KEY, 0);
-        if (seed != 0) {
-            random.setSeed(seed);
-        }
+        random = config.getRandom();
     }
 
     @Override
