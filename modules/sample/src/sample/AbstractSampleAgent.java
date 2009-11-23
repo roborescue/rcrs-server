@@ -68,6 +68,7 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
 
     @Override
     protected void postConnect() {
+        super.postConnect();
         world.index(MESH_SIZE);
         search = new SampleSearch(world, true);
         useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
