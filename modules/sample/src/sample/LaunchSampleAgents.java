@@ -38,8 +38,8 @@ public final class LaunchSampleAgents {
             Registry.SYSTEM_REGISTRY.registerPropertyFactory(StandardPropertyFactory.INSTANCE);
             Config config = new Config();
             args = CommandLineOptions.processArgs(args, config);
-            int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER, Constants.DEFAULT_KERNEL_PORT_NUMBER);
-            String host = config.getValue(Constants.KERNEL_HOST_NAME, Constants.DEFAULT_KERNEL_HOST_NAME);
+            int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER_KEY, Constants.DEFAULT_KERNEL_PORT_NUMBER);
+            String host = config.getValue(Constants.KERNEL_HOST_NAME_KEY, Constants.DEFAULT_KERNEL_HOST_NAME);
             int fb = -1;
             int pf = -1;
             int at = -1;
