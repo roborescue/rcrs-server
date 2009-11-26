@@ -29,6 +29,9 @@ import rescuecore2.connection.ConnectionManager;
 import rescuecore2.connection.StreamConnection;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
+import rescuecore2.config.IntegerConstrainedConfigValue;
+import rescuecore2.config.ClassNameSetConstrainedConfigValue;
+import rescuecore2.config.ClassNameConstrainedConfigValue;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentInitialisationException;
@@ -93,6 +96,19 @@ public final class StartKernel {
         Config config = new Config();
         boolean showGUI = true;
         boolean justRun = false;
+        // CHECKSTYLE:OFF:MagicNumber
+        config.addConstraint(new IntegerConstrainedConfigValue(Constants.KERNEL_PORT_NUMBER_KEY, 1, 65535));
+        // CHECKSTYLE:ON:MagicNumber
+        config.addConstraint(new IntegerConstrainedConfigValue(KERNEL_STARTUP_TIME_KEY, 0, Integer.MAX_VALUE));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(Constants.MESSAGE_FACTORY_KEY, MessageFactory.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(Constants.ENTITY_FACTORY_KEY, EntityFactory.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(Constants.PROPERTY_FACTORY_KEY, PropertyFactory.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(COMMAND_FILTERS_KEY, CommandFilter.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(TERMINATION_KEY, TerminationCondition.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(COMMAND_COLLECTOR_KEY, CommandCollector.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(GUI_COMPONENTS_KEY, KernelGUIComponent.class));
+        config.addConstraint(new ClassNameConstrainedConfigValue(AGENT_REGISTRAR_KEY, AgentRegistrar.class));
+        config.addConstraint(new ClassNameConstrainedConfigValue(Constants.SCORE_FUNCTION_KEY, ScoreFunction.class));
         try {
             args = CommandLineOptions.processArgs(args, config);
             int i = 0;
@@ -183,7 +199,7 @@ public final class StartKernel {
         // Start the connection manager
         ConnectionManager connectionManager = new ConnectionManager();
         try {
-            connectionManager.listen(config.getIntValue(Constants.KERNEL_PORT_NUMBER), registry, kernel.componentManager);
+            connectionManager.listen(config.getIntValue(Constants.KERNEL_PORT_NUMBER_KEY), registry, kernel.componentManager);
         }
         catch (IOException e) {
             throw new KernelException("Couldn't open kernel port", e);
@@ -196,7 +212,7 @@ public final class StartKernel {
         final CountDownLatch latch = new CountDownLatch(1);
         final long timeout = config.getIntValue(KERNEL_STARTUP_TIME_KEY, -1);
         Thread timeoutThread = null;
-        if (timeout != -1) {
+        if (timeout > 0) {
             timeoutThread = new Thread() {
                     public void run() {
                         try {
