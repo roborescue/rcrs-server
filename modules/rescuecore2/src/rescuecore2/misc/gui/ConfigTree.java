@@ -2,6 +2,7 @@ package rescuecore2.misc.gui;
 
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -10,7 +11,9 @@ import javax.swing.JTree;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.ToolTipManager;
 import javax.swing.AbstractCellEditor;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 import java.util.EventObject;
 
 import rescuecore2.config.Config;
+import rescuecore2.config.ConstrainedConfigValue;
 
 /**
    A JTree that knows how to display and edit Config objects.
@@ -44,7 +48,10 @@ public class ConfigTree extends JTree {
         buildModel(root, keys);
         setModel(new DefaultTreeModel(root));
         setEditable(true);
-        setCellEditor(new ConfigEntryCellEditor(config));
+        setCellRenderer(new ConfigEntryCellRenderer());
+        setCellEditor(new ConfigEntryCellEditor());
+        setInvokesStopCellEditing(true);
+        ToolTipManager.sharedInstance().registerComponent(this);
     }
 
     private void buildModel(DefaultMutableTreeNode root, Collection<String> keys) {
@@ -61,7 +68,7 @@ public class ConfigTree extends JTree {
                 String name = branchName.toString();
                 DefaultMutableTreeNode nextParent = branches.get(name);
                 if (nextParent == null) {
-                    nextParent = new DefaultMutableTreeNode(name);
+                    nextParent = new DefaultMutableTreeNode(new ConfigCategoryNode(name));
                     branches.put(name, nextParent);
                     parent.add(nextParent);
                     //                    System.out.println("Added branch " + branchName + " to " + parent);
@@ -73,6 +80,19 @@ public class ConfigTree extends JTree {
             DefaultMutableTreeNode leaf = new DefaultMutableTreeNode(new ConfigEntryNode(next, config.getValue(next)));
             parent.add(leaf);
             //            System.out.println("Added " + leaf + " to " + parent);
+        }
+    }
+
+    private static final class ConfigCategoryNode {
+        private String prefix;
+
+        private ConfigCategoryNode(String prefix) {
+            this.prefix = prefix;
+        }
+
+        @Override
+        public String toString() {
+            return prefix;
         }
     }
 
@@ -99,16 +119,36 @@ public class ConfigTree extends JTree {
         }
     }
 
-    private static final class ConfigEntryCellEditor extends AbstractCellEditor implements TreeCellEditor, ActionListener {
+    private final class ConfigEntryCellRenderer extends JLabel implements TreeCellRenderer {
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            DefaultMutableTreeNode node = ((DefaultMutableTreeNode)value);
+            Object o = node.getUserObject();
+            setText(o.toString());
+            setOpaque(false);
+            setToolTipText(null);
+            if (o instanceof ConfigEntryNode) {
+                ConfigEntryNode entry = (ConfigEntryNode)o;
+                String key = entry.getKey();
+                if (config.isConstraintViolated(key)) {
+                    ConstrainedConfigValue constraint = config.getConstraint(key);
+                    setBackground(Color.RED);
+                    setOpaque(true);
+                    setToolTipText(constraint.getDescription());
+                }
+            }
+            return this;
+        }
+    }
+
+    private final class ConfigEntryCellEditor extends AbstractCellEditor implements TreeCellEditor, ActionListener {
         private JPanel panel;
         private JLabel label;
         private JTextField field;
         private DefaultMutableTreeNode node;
         private String key;
-        private Config config;
 
-        private ConfigEntryCellEditor(Config config) {
-            this.config = config;
+        private ConfigEntryCellEditor() {
             panel = new JPanel(new BorderLayout());
             label = new JLabel();
             field = new JTextField();
@@ -123,11 +163,13 @@ public class ConfigTree extends JTree {
             if (o instanceof MouseEvent && o.getSource() instanceof JTree) {
                 JTree tree = (JTree)o.getSource();
                 MouseEvent e = (MouseEvent)o;
-                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-                Object leaf = path.getLastPathComponent();
-                if (leaf instanceof DefaultMutableTreeNode) {
-                    Object content = ((DefaultMutableTreeNode)leaf).getUserObject();
-                    return content instanceof ConfigEntryNode;
+                if (e.getClickCount() > 1) {
+                    TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                    Object leaf = path.getLastPathComponent();
+                    if (leaf instanceof DefaultMutableTreeNode) {
+                        Object content = ((DefaultMutableTreeNode)leaf).getUserObject();
+                        return content instanceof ConfigEntryNode;
+                    }
                 }
             }
             return false;

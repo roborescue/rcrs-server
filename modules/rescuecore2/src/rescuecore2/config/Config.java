@@ -44,6 +44,9 @@ public class Config {
     private Map<String, Boolean> booleanData;
     private Map<String, List<String>> arrayData;
 
+    private Map<String, ConstrainedConfigValue> constraints;
+    private Set<ConstrainedConfigValue> violatedConstraints;
+
     private Random random;
 
     /**
@@ -56,6 +59,8 @@ public class Config {
         floatData = new HashMap<String, Double>();
         booleanData = new HashMap<String, Boolean>();
         arrayData = new HashMap<String, List<String>>();
+        constraints = new HashMap<String, ConstrainedConfigValue>();
+        violatedConstraints = new HashSet<ConstrainedConfigValue>();
     }
 
     /**
@@ -87,6 +92,7 @@ public class Config {
             throw new IllegalArgumentException("Resource cannot be null");
         }
         new ResourceContext(resource).process(this);
+        checkAllConstraints();
     }
 
     /**
@@ -99,6 +105,7 @@ public class Config {
             throw new IllegalArgumentException("File cannot be null");
         }
         new FileContext(file).process(this);
+        checkAllConstraints();
     }
 
     /**
@@ -112,6 +119,7 @@ public class Config {
             throw new IllegalArgumentException("Reader cannot be null");
         }
         new ReaderContext(reader, name).process(this);
+        checkAllConstraints();
     }
 
     private void readWithContext(BufferedReader reader, Context context) throws ConfigException {
@@ -213,6 +221,66 @@ public class Config {
     public void merge(Config other) {
         clearCache();
         this.data.putAll(other.data);
+        checkAllConstraints();
+    }
+
+    /**
+       Add a constraint.
+       @param c The constraint to add.
+    */
+    public void addConstraint(ConstrainedConfigValue c) {
+        constraints.put(c.getKey(), c);
+        checkConstraint(c.getKey());
+    }
+
+    /**
+       Remove a constraint.
+       @param c The constraint to remove.
+    */
+    public void removeConstraint(ConstrainedConfigValue c) {
+        constraints.remove(c.getKey());
+        violatedConstraints.remove(c);
+    }
+
+    /**
+       Remove constraints on a key.
+       @param key The key to remove constraints from.
+    */
+    public void removeConstraint(String key) {
+        ConstrainedConfigValue c = constraints.get(key);
+        if (c != null) {
+            removeConstraint(c);
+        }
+    }
+
+    /**
+       Get all violated constraints.
+       @return All violated constraints.
+    */
+    public Set<ConstrainedConfigValue> getViolatedConstraints() {
+        return violatedConstraints;
+    }
+
+    /**
+       Get the constraint for a particular key.
+       @param key The key to look up.
+       @return The constraint for that key, or null if there is no constraint.
+    */
+    public ConstrainedConfigValue getConstraint(String key) {
+        return constraints.get(key);
+    }
+
+    /**
+       Find out if a value violates its key's constraints.
+       @param key The key to look up.
+       @return True if the key's value violates the constraints.
+    */
+    public boolean isConstraintViolated(String key) {
+        ConstrainedConfigValue c = getConstraint(key);
+        if (c != null) {
+            return violatedConstraints.contains(c);
+        }
+        return false;
     }
 
     /**
@@ -439,6 +507,7 @@ public class Config {
         clearCache(key);
         noCache.remove(key);
         data.put(key, value);
+        checkConstraint(key);
     }
 
     /**
@@ -471,6 +540,7 @@ public class Config {
         else {
             data.put(key, value);
         }
+        checkConstraint(key);
     }
 
     /**
@@ -479,12 +549,7 @@ public class Config {
        @param value The new value.
     */
     public void setIntValue(String key, int value) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-        clearCache(key);
-        noCache.remove(key);
-        data.put(key, Integer.valueOf(value).toString());
+        setValue(key, Integer.valueOf(value).toString());
         intData.put(key, value);
     }
 
@@ -494,12 +559,7 @@ public class Config {
        @param value The new value.
     */
     public void setFloatValue(String key, double value) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-        clearCache(key);
-        noCache.remove(key);
-        data.put(key, Double.valueOf(value).toString());
+        setValue(key, Double.valueOf(value).toString());
         floatData.put(key, value);
     }
 
@@ -509,12 +569,7 @@ public class Config {
        @param value The new value.
     */
     public void setBooleanValue(String key, boolean value) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key cannot be null");
-        }
-        clearCache(key);
-        noCache.remove(key);
-        data.put(key, value ? "true" : "false");
+        setValue(key, value ? "true" : "false");
         booleanData.put(key, value);
     }
 
@@ -697,6 +752,28 @@ public class Config {
                 return defaultValue;
             }
             throw e;
+        }
+    }
+
+    private void checkAllConstraints() {
+        for (String next : data.keySet()) {
+            checkConstraint(next);
+        }
+    }
+
+    private void checkConstraint(String key) {
+        ConstrainedConfigValue c = constraints.get(key);
+        if (c == null) {
+            return;
+        }
+        if (!isDefined(key)) {
+            return;
+        }
+        if (c.isValid(getValue(key), this)) {
+            violatedConstraints.remove(c);
+        }
+        else {
+            violatedConstraints.add(c);
         }
     }
 
