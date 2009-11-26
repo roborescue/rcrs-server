@@ -44,10 +44,10 @@ public final class CommandLineOptions {
                 config.read(new File(it.next()));
             }
             else if (HOST_FLAG.equals(next)) {
-                config.setValue(Constants.KERNEL_HOST_NAME, it.next());
+                config.setValue(Constants.KERNEL_HOST_NAME_KEY, it.next());
             }
             else if (PORT_FLAG.equals(next)) {
-                config.setValue(Constants.KERNEL_PORT_NUMBER, it.next());
+                config.setValue(Constants.KERNEL_PORT_NUMBER_KEY, it.next());
             }
             else if (next.startsWith("--") && next.indexOf("=") != -1) {
                 int index = next.indexOf("=");
