@@ -1,10 +1,8 @@
 package misc;
 
 import rescuecore2.config.Config;
-import rescuecore2.components.AbstractSimulator;
-import rescuecore2.messages.control.Commands;
-import rescuecore2.messages.control.Update;
-import rescuecore2.messages.control.SKUpdate;
+import rescuecore2.messages.control.KSCommands;
+import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
@@ -12,7 +10,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.misc.EntityTools;
 
-import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardPropertyURN;
@@ -33,7 +31,7 @@ import org.uncommons.maths.random.GaussianGenerator;
 /**
    A simple misc simulator. This simulator handles buriedness, health, loading, unloading and road clearing.
  */
-public class MiscSimulator extends AbstractSimulator<StandardEntity> {
+public class MiscSimulator extends StandardSimulator {
     private static final String[] CODES = {"wood", "steel", "concrete"};
 
     private static final String PREFIX = "misc.";
@@ -77,11 +75,6 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     @Override
-    protected StandardWorldModel createWorldModel() {
-        return new StandardWorldModel();
-    }
-
-    @Override
     protected void postConnect() {
         super.postConnect();
         stats = new BuriednessStats[CODES.length];
@@ -96,7 +89,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     @Override
-    protected void handleCommands(Commands c) {
+    protected void processCommands(KSCommands c, ChangeSet cs) {
         int time = c.getTime();
         // Handle clear and rescue commands
         for (Command next : c.getCommands()) {
@@ -117,10 +110,10 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         System.out.println("Time: " + time);
         System.out.println("|    Civ ID |     HP | Damage | Buriedness |");
         System.out.println("--------------------------------------------");
-        for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
-                                                                                             StandardEntityURN.FIRE_BRIGADE,
-                                                                                             StandardEntityURN.POLICE_FORCE,
-                                                                                             StandardEntityURN.AMBULANCE_TEAM))) {
+        for (Entity e : EntityTools.sortedList(model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
+                                                                       StandardEntityURN.FIRE_BRIGADE,
+                                                                       StandardEntityURN.POLICE_FORCE,
+                                                                       StandardEntityURN.AMBULANCE_TEAM))) {
             Human h = (Human)e;
             int hp = h.isHPDefined() ? h.getHP() : 0;
             int damage = h.isDamageDefined() ? h.getDamage() : 0;
@@ -132,7 +125,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         System.out.println("--------------------------------------------");
         System.out.println("|   Road ID |  Block |");
         System.out.println("----------------------");
-        for (Entity e : EntityTools.sortedList(((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.ROAD))) {
+        for (Entity e : EntityTools.sortedList(model.getEntitiesOfType(StandardEntityURN.ROAD))) {
             Road r = (Road)e;
             int block = r.isBlockDefined() ? r.getBlock() : 0;
             if (block > 0) {
@@ -140,11 +133,11 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             }
         }
         System.out.println("---------------------");
-        send(new SKUpdate(simulatorID, time, changes));
+        cs.merge(changes);
     }
 
     @Override
-    protected void handleUpdate(Update u) {
+    protected void handleUpdate(KSUpdate u) {
         super.handleUpdate(u);
         changes = new ChangeSet();
         // Update buriedness if buildings have collapsed
@@ -156,7 +149,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
                 if (brokenness != null) {
                     // Brokenness has changed. Bury any agents inside.
                     //                    System.out.println(b + " is broken. Updating trapped agents");
-                    for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
+                    for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
                                                                                   StandardEntityURN.FIRE_BRIGADE,
                                                                                   StandardEntityURN.POLICE_FORCE,
                                                                                   StandardEntityURN.AMBULANCE_TEAM)) {
@@ -177,9 +170,8 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private void processClear(AKClear clear) {
-        StandardWorldModel world = (StandardWorldModel)model;
-        StandardEntity agent = world.getEntity(clear.getAgentID());
-        StandardEntity target = world.getEntity(clear.getTarget());
+        StandardEntity agent = model.getEntity(clear.getAgentID());
+        StandardEntity target = model.getEntity(clear.getTarget());
         if (agent == null) {
             System.out.println("Rejecting clear command " + clear + ": agent does not exist");
             return;
@@ -197,7 +189,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             return;
         }
         PoliceForce police = (PoliceForce)agent;
-        StandardEntity agentPosition = police.getPosition(world);
+        StandardEntity agentPosition = police.getPosition(model);
         if (agentPosition == null) {
             System.out.println("Rejecting clear command " + clear + ": could not locate agent");
             return;
@@ -229,9 +221,8 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private void processRescue(AKRescue rescue) {
-        StandardWorldModel world = (StandardWorldModel)model;
-        StandardEntity agent = world.getEntity(rescue.getAgentID());
-        StandardEntity target = world.getEntity(rescue.getTarget());
+        StandardEntity agent = model.getEntity(rescue.getAgentID());
+        StandardEntity target = model.getEntity(rescue.getTarget());
         if (agent == null) {
             System.out.println("Rejecting rescue command " + rescue + ": agent does not exist");
             return;
@@ -250,8 +241,8 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
         AmbulanceTeam ambulance = (AmbulanceTeam)agent;
         Human targetHuman = (Human)target;
-        StandardEntity agentPosition = ambulance.getPosition(world);
-        StandardEntity targetPosition = targetHuman.getPosition(world);
+        StandardEntity agentPosition = ambulance.getPosition(model);
+        StandardEntity targetPosition = targetHuman.getPosition(model);
         if (agentPosition == null) {
             System.out.println("Rejecting rescue command " + rescue + ": could not locate agent");
             return;
@@ -289,9 +280,8 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private void processLoad(AKLoad load) {
-        StandardWorldModel world = (StandardWorldModel)model;
-        StandardEntity agent = world.getEntity(load.getAgentID());
-        StandardEntity target = world.getEntity(load.getTarget());
+        StandardEntity agent = model.getEntity(load.getAgentID());
+        StandardEntity target = model.getEntity(load.getTarget());
         if (agent == null) {
             System.out.println("Rejecting load command " + load + ": agent does not exist");
             return;
@@ -310,8 +300,8 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
         AmbulanceTeam ambulance = (AmbulanceTeam)agent;
         Civilian targetCivilian = (Civilian)target;
-        StandardEntity agentPosition = ambulance.getPosition(world);
-        StandardEntity targetPosition = targetCivilian.getPosition(world);
+        StandardEntity agentPosition = ambulance.getPosition(model);
+        StandardEntity targetPosition = targetCivilian.getPosition(model);
         EntityID agentID = agent.getID();
         if (agentPosition == null) {
             System.out.println("Rejecting load command " + load + ": could not locate agent");
@@ -338,7 +328,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
             return;
         }
         // Is there something already loaded?
-        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
             if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
                 System.out.println("Rejecting load command " + load + ": agent already has something loaded");
@@ -353,8 +343,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private void processUnload(AKUnload unload) {
-        StandardWorldModel world = (StandardWorldModel)model;
-        StandardEntity agent = world.getEntity(unload.getAgentID());
+        StandardEntity agent = model.getEntity(unload.getAgentID());
         if (agent == null) {
             System.out.println("Rejecting unload command " + unload + ": agent does not exist");
             return;
@@ -365,7 +354,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
         EntityID agentID = agent.getID();
         AmbulanceTeam ambulance = (AmbulanceTeam)agent;
-        StandardEntity agentPosition = ambulance.getPosition(world);
+        StandardEntity agentPosition = ambulance.getPosition(model);
         if (agentPosition == null) {
             System.out.println("Rejecting unload command " + unload + ": could not locate agent");
             return;
@@ -380,7 +369,7 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
         }
         // Is there something loaded?
         Civilian target = null;
-        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
             if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
                 target = c;
@@ -399,15 +388,15 @@ public class MiscSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     private void updateHealth() {
-        for (Entity e : ((StandardWorldModel)model).getEntitiesOfType(StandardEntityURN.CIVILIAN,
-                                                                      StandardEntityURN.FIRE_BRIGADE,
-                                                                      StandardEntityURN.POLICE_FORCE,
-                                                                      StandardEntityURN.AMBULANCE_TEAM)) {
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
+                                                StandardEntityURN.FIRE_BRIGADE,
+                                                StandardEntityURN.POLICE_FORCE,
+                                                StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)e;
             int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
             int damage = h.isDamageDefined() ? h.getDamage() : 0;
             int hp = h.isHPDefined() ? h.getHP() : 0;
-            StandardEntity position = h.getPosition((StandardWorldModel)model);
+            StandardEntity position = h.getPosition(model);
             if (position instanceof Refuge) {
                 if (damage > 0) {
                     h.setDamage(0);
