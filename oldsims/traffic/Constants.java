@@ -48,19 +48,4 @@ public interface Constants {
   // Simulator
   static final int CALCULATING_LIMIT_MILLI_SEC = 400;
 
-  // Viewer
-  static final boolean USE_VIEWER = false;
-  static final Viewer VIEWER = (USE_VIEWER) ? new Viewer() : null;
-  static final int VIEWER_WAITING_TIME = (int) (100 * UNIT_SEC);  // [milli sec]
-  static final int VIEWER_WIDTH  = 800;
-  static final int VIEWER_HEIGHT = 600;
-  static final int VIEWER_GAP = 50;
-  static final int VIEWER_BUILDING_SIZE = 10;
-  static final int VIEWER_HUMANOID_SIZE =  8;
-  static final int VIEWER_BLOCK_SIZE    =  4;
-  static final int VIEWER_NODE_SIZE     =  4;
-  static final int VIEWER_ARROW_SIZE    =  8;
-  static final boolean VIEWER_USE_REAL_LINE_WIDTH = false;
-  static final double VIEWER_CONSTANT_LINE_WIDTH = 2000d;
-  static final int BLOCKADE_INITIALIZING_TIME = 3;
 }

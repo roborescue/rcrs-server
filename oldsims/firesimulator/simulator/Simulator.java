@@ -310,18 +310,18 @@ public class Simulator {
 	}
 
 	private void loadVars(){			
-		AIR_TO_BUILDING_COEFFICIENT = new Float(Configuration.getValue("air_to_building_flow")).floatValue();
-		AIR_TO_AIR_COEFFICIENT =new Float(Configuration.getValue("air_to_air_flow")).floatValue(); 
-		ENERGY_LOSS = new Float(Configuration.getValue("energy_loss")).floatValue();		
-		WATER_COEFFICIENT= new Float(Configuration.getValue("water_thermal_capacity")).floatValue();
-		WIND_SPEED = new Integer(Configuration.getValue("wind_speed")).intValue();
-		WIND_DIRECTION = new Float(Configuration.getValue("wind_direction")).floatValue();
-		WIND_RANDOM = new Float(Configuration.getValue("wind_random")).floatValue();
-		RADIATION_COEFFICENT=new Float(Configuration.getValue("radiation_coefficient")).floatValue();
-		ExtinguishRequest.MAX_WATER_PER_CYCLE=new Integer(Configuration.getValue("max_extinguish_power_sum")).intValue();
-		ExtinguishRequest.MAX_DISTANCE=new Integer(Configuration.getValue("water_distance")).intValue();
-		GAMMA=new Float(Configuration.getValue("gamma")).floatValue();
-		Rnd.setSeed(new Long(Configuration.getValue("randomseed")).longValue());		
+		AIR_TO_BUILDING_COEFFICIENT = new Float(Configuration.getValue("resq-fire.air_to_building_flow")).floatValue();
+		AIR_TO_AIR_COEFFICIENT =new Float(Configuration.getValue("resq-fire.air_to_air_flow")).floatValue(); 
+		ENERGY_LOSS = new Float(Configuration.getValue("resq-fire.energy_loss")).floatValue();		
+		WATER_COEFFICIENT= new Float(Configuration.getValue("resq-fire.water_thermal_capacity")).floatValue();
+		WIND_SPEED = new Integer(Configuration.getValue("resq-fire.wind_speed")).intValue();
+		WIND_DIRECTION = new Float(Configuration.getValue("resq-fire.wind_direction")).floatValue();
+		WIND_RANDOM = new Float(Configuration.getValue("resq-fire.wind_random")).floatValue();
+		RADIATION_COEFFICENT=new Float(Configuration.getValue("resq-fire.radiation_coefficient")).floatValue();
+		ExtinguishRequest.MAX_WATER_PER_CYCLE=new Integer(Configuration.getValue("resq-fire.max_extinguish_power_sum")).intValue();
+		ExtinguishRequest.MAX_DISTANCE=new Integer(Configuration.getValue("resq-fire.water_distance")).intValue();
+		GAMMA=new Float(Configuration.getValue("resq-fire.gamma")).floatValue();
+		Rnd.setSeed(new Long(Configuration.getValue("resq-fire.randomseed")).longValue());		
 	}
 	
 	private void initialize(){		

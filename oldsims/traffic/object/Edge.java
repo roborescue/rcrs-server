@@ -1,7 +1,5 @@
 package traffic.object;
 
-import rescuecore.RescueConstants;
-
 public abstract class Edge extends MotionlessObject {
   public Edge(int id) { super(id); }
 
@@ -18,21 +16,6 @@ public abstract class Edge extends MotionlessObject {
   public void setHead(int value)   { m_head = value; }
   public void setTail(int value)   { m_tail = value; }
   public void setLength(int value) { m_length = value; }
-
-  public void input(String property, int[] value) {
-      if ("HEAD".equals(property)) {
-          setHead(value[0]);
-      }
-      else if ("TAIL".equals(property)) {
-          setTail(value[0]);
-      }
-      else if ("LENGTH".equals(property)) {
-          setLength(value[0]);
-      }
-      else {
-          super.input(property, value);
-      }
-  }
 
   public int x() { return (head().x() + tail().x()) / 2; }
   public int y() { return (head().y() + tail().y()) / 2; }

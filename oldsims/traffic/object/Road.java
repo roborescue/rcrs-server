@@ -2,11 +2,9 @@ package traffic.object;
 
 import traffic.*;
 import java.util.*;
-import rescuecore.RescueConstants;
 
 public class Road extends Edge {
   public Road(int id) { super(id); }
-  public String type() { return "ROAD"; }
 
   private int m_width;
   private int m_block;
@@ -44,24 +42,6 @@ public class Road extends Edge {
   public void setBlock(int value) { m_block = value; }
   public void setLinesToHead(int value) { m_linesToHead = value; }
   public void setLinesToTail(int value) { m_linesToTail = value; }
-
-  public void input(String property, int[] value) {
-      if ("WIDTH".equals(property)) {
-          setWidth(value[0]);
-      }
-      else if ("BLOCK".equals(property)) {
-          setBlock(value[0]);
-      }
-      else if ("LINES_TO_HEAD".equals(property)) {
-          setLinesToHead(value[0]);
-      }
-      else if ("LINES_TO_TAIL".equals(property)) {
-          setLinesToTail(value[0]);
-      }
-      else {
-          super.input(property, value);
-      }
-  }
 
   // ---------------------------------------------------------------- Simulator
   private List m_lanesToHead;
@@ -163,7 +143,7 @@ public class Road extends Edge {
   private void setLaneD() {
     PointObject h = head(), t = tail();
     double a = Math.atan2(h.y() - t.y(), h.x() - t.x()) - Math.PI / 2;
-    double linewidth = (VIEWER_USE_REAL_LINE_WIDTH) ? lineWidth() : VIEWER_CONSTANT_LINE_WIDTH;
+    double linewidth = lineWidth();
     m_laneDx = linewidth * Math.cos(a);
     m_laneDy = linewidth * Math.sin(a);
   }

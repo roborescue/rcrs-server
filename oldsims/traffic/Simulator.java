@@ -4,19 +4,12 @@ import java.util.*;
 import traffic.object.*;
 
 public class Simulator implements Constants {
-    private final IO io;
-	private int id;
+    private int id;
 
-    public Simulator(InetAddress kernelAddress, int kernelPort) {
-        io = new TCPIO(kernelAddress, kernelPort);
-        io.sendConnect();
-        id = io.receiveConnectOk();
-        System.out.println("Connected. Simulator ID is " + id);
-        io.sendAcknowledge();
-        setInitialPosition();
+    public Simulator() {
     }
 
-    private void setInitialPosition() {
+    public void setInitialPosition() {
         for (int i = WORLD.movingObjectArray().length - 1; i >= 0; i--) {
             MovingObject mv = WORLD.movingObjectArray()[i];
             Lane lane;
@@ -69,16 +62,10 @@ public class Simulator implements Constants {
         return false;
     }
 
-    public void simulate() {
-        System.out.println("start");
-        while (true) {
-            io.receiveCommands();
-            System.out.println("time: " + WORLD.time());
-            move();
-            loadUnload();
-            io.sendUpdate();
-            io.receiveUpdate();
-        }
+    public void step() {
+        System.out.println("time: " + WORLD.time());
+        move();
+        loadUnload();
     }
 
     private void move() {

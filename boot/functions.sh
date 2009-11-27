@@ -148,7 +148,7 @@ function startSims {
     MISC=$!
     xterm -T traffic -e "java -Xmx256m -cp $BASEDIR/oldsims/ traffic.Main localhost 7000 2>&1 | tee $LOGDIR/traffic.log" &
     TRAFFIC=$!
-    xterm -T fire -e "cd $BASEDIR/oldsims/firesimulator; java -Xmx256m -cp $BASEDIR/oldsims/ firesimulator.Main -cstp ../../boot/config/fire.cfg -stp default.stp -p 7000 2>&1 | tee $LOGDIR/fire.log" &
+    xterm -T fire -e "java -Xmx256m -jar $BASEDIR/jars/resq-fire.jar -cstp config/resq-fire.cfg -stp config/resq-fire.cfg -p 7000 2>&1 | tee $LOGDIR/fire.log" &
     FIRE=$!
     xterm -T blockades -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/blockade.jar rescuecore2.LaunchComponents blockade.BlockadeSimulator 2>&1 | tee $LOGDIR/blockades.log" &
     BLOCKADES=$!

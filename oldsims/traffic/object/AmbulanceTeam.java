@@ -1,10 +1,7 @@
 package traffic.object;
 
-import rescuecore.RescueConstants;
-
 public class AmbulanceTeam extends Humanoid {
   public AmbulanceTeam(int id) { super(id); }
-  public String type() { return "AMBULANCE_TEAM"; }
 
   private MovingObject m_loadingMvObj = null;
   private boolean m_doLoad   = false;

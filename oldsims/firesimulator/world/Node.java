@@ -14,7 +14,7 @@ public abstract class Node extends StationaryObject {
         super(id);		
     }
 	
-    private void setEdges(int[] value){
+    public void setEdges(int[] value){
         edgesID=value;	
     }
 	

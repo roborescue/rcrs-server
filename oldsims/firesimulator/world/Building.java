@@ -247,7 +247,7 @@ public class Building extends StationaryObject {
         return "BUILDING";
     }
 	
-    private void setAttributes(int atrb){
+    public void setAttributes(int atrb){
         this.attributes=atrb;
     }
 	
@@ -296,27 +296,27 @@ public class Building extends StationaryObject {
         return 8;           // completely burnt down
     }
 	
-    private void setBrokenness(int brk){
+    public void setBrokenness(int brk){
         this.brokenness=brk;
     }
 	
-    private void setEntrances(int[] ent){
+    public void setEntrances(int[] ent){
         this.entrances=ent;
     }
 	
-    private void setCode(int code){
+    public void setCode(int code){
         this.code=code;
     }
 	
-    private void setBuildingAreaGround(int area){
+    public void setBuildingAreaGround(int area){
         this.buildingAreaGround=area;
     }
 
-    private void setBuildingAreaTotal(int area){
+    public void setBuildingAreaTotal(int area){
         this.buildingAreaTotal=area;
     }
 	
-    private void setApexes(int[] apx){
+    public void setApexes(int[] apx){
         this.apexes=apx;
     }
 	
@@ -324,7 +324,7 @@ public class Building extends StationaryObject {
         return apexes;
     }
 		
-    private void setFloors(int floors){
+    public void setFloors(int floors){
         this.floors=floors;
     }
 

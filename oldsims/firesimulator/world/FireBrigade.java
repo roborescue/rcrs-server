@@ -12,12 +12,14 @@ public class FireBrigade extends MovingObject {
     private int initialWaterQuantity;
     private int waterQuantity;
     private int waterUsed;
+    private boolean changed;
 	
     public FireBrigade(int id) {
         super(id);
         initialWaterQuantity=0;
         waterQuantity=0;
         waterUsed=0;
+        changed = false;
     }
 
     public String getType(){
@@ -33,7 +35,7 @@ public class FireBrigade extends MovingObject {
         }
     }
 
-    private void setInitialWaterQuantity(int quantity) {
+    public void setInitialWaterQuantity(int quantity) {
         initialWaterQuantity=quantity;
         waterQuantity=quantity;			
     }
@@ -48,6 +50,7 @@ public class FireBrigade extends MovingObject {
 	
     public void setWaterQuantity(int quantity){
         waterQuantity=quantity;
+        changed = true;
     }
 	
     public void addWaterUsed(int quantity){
@@ -56,11 +59,17 @@ public class FireBrigade extends MovingObject {
 	
     public void nextCycle(){
         waterUsed=0;
+        changed = false;
     }
 	
     public void reset(){
         waterQuantity=initialWaterQuantity;
         waterUsed=0;
+        changed = false;
+    }
+
+    public boolean hasChanged() {
+        return changed;
     }
 
     public boolean refill() {	 	    

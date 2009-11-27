@@ -16,15 +16,15 @@ public abstract class Edge extends StationaryObject {
 		super(id);
 	}
 
-	private void setHead(int id){
+	public void setHead(int id){
 		headID=id;
 	}
 	
-	private void setTail(int id){
+	public void setTail(int id){
 		tailID=id;
 	}
 	
-	private void setLength(int length){
+	public void setLength(int length){
 		this.Length=length;
 	}
 	

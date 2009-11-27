@@ -9,14 +9,16 @@
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
 
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc"/>
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc,resq-fire,traffic-old"/>
   <property name="modules.kernel.depend" value="rescuecore2,handy"/>
-  <property name="modules.standard.depend" value="kernel"/>
+  <property name="modules.standard.depend" value="rescuecore2,kernel"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
   <property name="modules.collapse.depend" value="rescuecore2,standard"/>
   <property name="modules.blockade.depend" value="rescuecore2,standard"/>
   <property name="modules.misc.depend" value="rescuecore2,standard"/>
+  <property name="modules.resq-fire.depend" value="rescuecore2,standard"/>
+  <property name="modules.traffic-old.depend" value="rescuecore2,standard"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
@@ -27,6 +29,7 @@
   <import file="${modules.dir}/collapse/build.xml" optional="true"/>
   <import file="${modules.dir}/blockade/build.xml" optional="true"/>
   <import file="${modules.dir}/misc/build.xml" optional="true"/>
+  <import file="${modules.dir}/resq-fire/build.xml" optional="true"/>
 
   <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->
@@ -282,6 +285,26 @@
     </sequential>
   </macrodef>
 
+  <!-- Old simulators -->
+  <target name="oldsims" description="Compile all the old simulators">
+    <exec executable="make" dir="${basedir}/oldsims" failonerror="true"/>
+    <jar destfile="${lib.dir}/resq-fire.jar">
+      <fileset dir="${basedir}/oldsims" includes="firesimulator/**/*.class"/>
+    </jar>
+    <jar destfile="${lib.dir}/traffic-old.jar">
+      <fileset dir="${basedir}/oldsims" includes="traffic/**/*.class"/>
+    </jar>
+    <jar destfile="${lib.dir}/rescuecore.jar">
+      <fileset dir="${basedir}/oldsims" includes="rescuecore/**/*.class"/>
+    </jar>
+  </target>
+
+  <target name="oldsims-clean" description="Clean all the old simulators">
+    <exec executable="make" dir="${basedir}/oldsims" failonerror="true">
+      <arg value="clean"/>
+    </exec>
+  </target>
+
   <!-- Useful tools: checkstyle, findbugs, cobertura -->
   <target name="_run-checkstyle" depends="compile, _generate-checkstyle-fileset">
     <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false" failureProperty="checkstyle.failure">
@@ -370,34 +393,27 @@
     <exclude name="boot/logs/"/>
     <include name="docs/**/*"/>
     <include name="maps/**/*"/>
-    <include name="oldsims/**/*"/>
     <!-- These need executable permissions -->
     <exclude name="boot/start.sh"/>
     <exclude name="boot/demo.sh"/>
     <exclude name="boot/sampleagent.sh"/>
     <exclude name="boot/logviewer.sh"/>
-    <exclude name="oldsims/blockadessimulator/blockadessimulator"/>
-    <exclude name="oldsims/collapsesimulator/collapsesimulator"/>
-    <exclude name="oldsims/miscsimulator/miscsimulator"/>
   </tarfileset>
   <tarfileset dir="." prefix="rescue-${version}/" filemode="744" id="dist.exec">
     <include name="boot/start.sh"/>
     <include name="boot/demo.sh"/>
     <include name="boot/sampleagent.sh"/>
     <include name="boot/logviewer.sh"/>
-    <include name="oldsims/blockadessimulator/blockadessimulator"/>
-    <include name="oldsims/collapsesimulator/collapsesimulator"/>
-    <include name="oldsims/miscsimulator/miscsimulator"/>
   </tarfileset>
 
-  <target name="dist-binary" depends="jars" description="Create a binary distribution">
+  <target name="dist-binary" depends="oldsims,jars" description="Create a binary distribution">
     <tar destfile="rescue-${version}.tgz" compression="gzip" longfile="gnu">
       <tarfileset refid="dist.noexec"/>
       <tarfileset refid="dist.exec"/>
     </tar>
   </target>
 
-  <target name="dist-src" depends="jars" description="Create a source distribution">
+  <target name="dist-src" depends="oldsims,jars" description="Create a source distribution">
     <tar destfile="rescue-${version}-src.tgz" compression="gzip"  longfile="gnu">
       <tarfileset refid="dist.noexec"/>
       <tarfileset refid="dist.exec"/>
@@ -405,6 +421,7 @@
       <tarfileset dir="." prefix="rescue-${version}/">
         <include name="modules/**/*"/>
         <include name="build-tools/**/*"/>
+        <include name="oldsims/**/*"/>
         <include name="build.xml"/>
       </tarfileset>
     </tar>
@@ -417,7 +434,7 @@
 
   <target name="test-all" depends="test-static, test-unit" description="Run the static and unit tests for all modules"/>
 
-  <target name="complete-build" depends="clean,compile,jars,javadoc,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
+  <target name="complete-build" depends="clean,oldsims-clean,oldsims,compile,jars,javadoc,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
 
   <!-- Generate module compile/jar/test/clean targets and the overall module targets-->
   <script language="javascript">

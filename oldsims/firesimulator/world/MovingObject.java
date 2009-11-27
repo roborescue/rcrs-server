@@ -28,7 +28,7 @@ public abstract class MovingObject extends RealObject {
     }
 
 
-    private void  setPositionId(int id){
+    public void setPositionId(int id){
         positionId=id;
         if (world != null) {
             position = world.getObject(positionId);
@@ -39,7 +39,7 @@ public abstract class MovingObject extends RealObject {
         return positionId;
     }
 	
-    private void setPositionExtra(int pos){
+    public void setPositionExtra(int pos){
         positionExtra=pos;
     }
 	
@@ -47,7 +47,7 @@ public abstract class MovingObject extends RealObject {
         return positionExtra;
     }
 	
-    private void setPosition(){
+    public void setPosition(){
 		
     }
 
@@ -100,19 +100,19 @@ public abstract class MovingObject extends RealObject {
             return getLocation().getY();
     }
 	
-    private void setStamina(int stamina){
+    public void setStamina(int stamina){
         this.stamina=stamina;
     }
 	
-    private void setHp(int hp){
+    public void setHp(int hp){
         this.hp=hp;
     }
 	
-    private void setDamage(int damage){
+    public void setDamage(int damage){
         this.damage=damage;
     }
 	
-    private void setBuriedness(int buriedness){
+    public void setBuriedness(int buriedness){
         this.buriedness=buriedness;
     }
 	

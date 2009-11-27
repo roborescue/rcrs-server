@@ -2,8 +2,6 @@ package traffic.object;
 import java.io.*;
 import java.util.*;
 import traffic.*;
-import rescuecore.OutputBuffer;
-import rescuecore.RescueConstants;
 
 public abstract class MovingObject extends RealObject implements Obstruction {
     public MovingObject(int id) {
@@ -110,18 +108,6 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         }
     }
 
-    public void input(String property, int[] value) {
-        if ("POSITION".equals(property)) {
-            setPosition(value[0]);
-        }
-        else if ("POSITION_EXTRA".equals(property)) {
-            setPositionExtra(value[0]);
-        }
-        else {
-            super.input(property, value);
-        }
-    }
-
     /** It's necessary to avoid existing on a blockade. */
     public void roundPositionExtra() {
         m_positionExtra = roundedPositionExtra();
@@ -146,47 +132,26 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         return !(lastMovingTime() < WORLD.time() - 1 && m_lastLoadedOrUnloadedTime != WORLD.time());
     }
 
-    public void output(OutputBuffer out) {
-        out.writeInt(id);
-        // Write the number of updated properties
-        boolean writePosition = lastMovingTime() == WORLD.time() || m_lastLoadedOrUnloadedTime == WORLD.time();
-        boolean writeHistory = lastMovingTime() == WORLD.time();
-        out.writeInt((writePosition ? 2 : 0) + (writeHistory ? 1 : 0));
-        if (writePosition) {
-            m_submitedPos = m_position;
-            m_submitedPosEx = roundedPositionExtra();
-            out.writeString("POSITION");
-            out.writeInt(RescueConstants.INT_SIZE);
-            out.writeInt(m_submitedPos);
-            out.writeString("POSITION_EXTRA");
-            out.writeInt(RescueConstants.INT_SIZE);
-            out.writeInt(m_submitedPosEx);
+    public int[] positionHistory() {
+        if (m_lastMovingTime != WORLD.time()) {
+            return new int[0];
         }
-        if (writeHistory) {
-            out.writeString("POSITION_HISTORY");
-            // NOTE: keep structure of positionHistory of the Atsumi traffic simulator; it is a
-            // list of node IDs.
-            int[] history = new int[routePlan().size()];
-            int count = 0;
-            Iterator it = routePlan().iterator();
-            while (it.hasNext()) {
-                MotionlessObject obj = (MotionlessObject) it.next();
-                if (obj instanceof Node) {
-                    if (ASSERT)
-                        Util.myassert(obj.id != 0,"wrong ID; it's impossible to divid ID and sentinel of ID list",obj.id);
-                    history[count++] = obj.id;
-                }
-                if (obj.id == m_submitedPos)
-                    break;
+        int[] history = new int[routePlan().size()];
+        int count = 0;
+        Iterator it = routePlan().iterator();
+        while (it.hasNext()) {
+            MotionlessObject obj = (MotionlessObject) it.next();
+            if (obj instanceof Node) {
                 if (ASSERT)
-                    Util.myassert(it.hasNext());
+                    Util.myassert(obj.id != 0,"wrong ID; it's impossible to divid ID and sentinel of ID list",obj.id);
+                history[count++] = obj.id;
             }
-            out.writeInt((history.length + 1) * RescueConstants.INT_SIZE);
-            out.writeInt(history.length);
-            for (int next : history) {
-                out.writeInt(next);
-            }
+            if (obj.id == m_submitedPos)
+                break;
+            if (ASSERT)
+                Util.myassert(it.hasNext());
         }
+        return history;
     }
 
     private Lane m_lane;

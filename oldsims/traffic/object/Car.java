@@ -1,10 +1,7 @@
 package traffic.object;
 
-import rescuecore.RescueConstants;
-
 public class Car extends Humanoid {
   public Car(int id) { super(id); }
-  public String type() { return "CAR"; }
 
   public double maxAcceleration() { return MAX_ACCELERATION; }
   public double maxVelocity()     { return MAX_VELOCITY; }

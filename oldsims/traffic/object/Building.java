@@ -1,14 +1,9 @@
 package traffic.object;
 import java.util.*;
-import rescuecore.RescueConstants;
 
 public class Building extends PointObject {
     public Building(int id) {
         super(id);
-    }
-
-    public String type() {
-        return "BUILDING";
     }
 
     private int[] m_entrances;
@@ -28,15 +23,6 @@ public class Building extends PointObject {
     public void setEntrances(int[] value) {
         if (m_entranceSet == null && m_entrances == null)
             m_entrances = value;
-    }
-
-    public void input(String property, int[] value) {
-        if ("ENTRANCES".equals(property)) {
-            setEntrances(value);
-        }
-        else {
-            super.input(property, value);
-        }
     }
 
     public boolean isAdjacentTo(MotionlessObject obj) {

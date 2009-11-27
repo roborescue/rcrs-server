@@ -2,7 +2,6 @@ package traffic.object;
 
 import java.util.*;
 import traffic.*;
-import rescuecore.RescueConstants;
 
 public abstract class PointObject extends MotionlessObject {
   public PointObject(int id) { super(id); }
@@ -15,18 +14,6 @@ public abstract class PointObject extends MotionlessObject {
 
   public void setX(int value) { m_x = value; }
   public void setY(int value) { m_y = value; }
-
-  public void input(String property, int[] value) {
-      if ("X".equals(property)) {
-          setX(value[0]);
-      }
-      else if ("Y".equals(property)) {
-          setY(value[0]);
-      }
-      else {
-          super.input(property, value);
-      }
-  }
 
   public abstract HashSet links();
 

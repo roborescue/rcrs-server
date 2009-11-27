@@ -1,9 +1,6 @@
 package traffic;
 import java.util.*;
 import traffic.object.*;
-import rescuecore.InputBuffer;
-import rescuecore.OutputBuffer;
-import rescuecore.RescueConstants;
 
 public class WorldModel implements Constants {
     public final HashMap idObjMap = new HashMap();
@@ -43,6 +40,10 @@ public class WorldModel implements Constants {
         return m_time;
     }
 
+    public void setTime(int time) {
+        m_time = time;
+    }
+
     public double sec() {
         return m_sec;
     }
@@ -78,122 +79,6 @@ public class WorldModel implements Constants {
         return (RealObject) idObjMap.get(new Integer(id));
     }
 
-    public void connectOK(InputBuffer in) {
-        m_time = INITIALIZING_TIME;
-        int count = in.readInt();
-        for (int i = 0; i < count; ++i) {
-            String type = in.readString();
-            if ("".equals(type)) return;
-            int id = in.readInt();
-            int size = in.readInt();
-            RescueObject obj = get(id);
-            if (obj == null) {
-                obj = newRescueObject(type, id);
-                if (obj instanceof RealObject)
-                    add((RealObject) obj);
-            }
-            String prop = null;
-            while (!"".equals(prop)) {
-                prop = in.readString();
-                if (!"".equals(prop)) {
-                    setProperty(prop, in, obj);
-                }
-            }
-        }
-    }
-
-    public void update(InputBuffer in, int time) {
-        m_time = time;
-        int count = in.readInt();
-        for (int i = 0; i < count; ++i) {
-            int id = in.readInt();
-            int propCount = in.readInt();
-            RescueObject obj = get(id);
-            if (obj == null) {
-                System.out.println("warning: unknown object (id:"+id+")");
-            }
-            for (int j = 0; j < propCount; ++j) {
-                String prop = in.readString();
-                setProperty(prop, in, obj);
-            }
-        }
-    }
-
-    private RescueObject newRescueObject(String type, int id) {
-        if ("WORLD".equals(type)) {
-            return new World(id);
-        }
-        else if ("RIVER".equals(type)) {
-            return new River(id);
-        }
-        else if ("RIVER_NODE".equals(type)) {
-            return new RiverNode(id);
-        }
-        else if ("ROAD".equals(type)) {
-            return new Road(id);
-        }
-        else if ("NODE".equals(type)) {
-            return new Node(id);
-        }
-        else if ("BUILDING".equals(type)) {
-            return new Building(id);
-        }
-        else if ("AMBULANCE_CENTRE".equals(type)) {
-            return new AmbulanceCenter(id);
-        }
-        else if ("FIRE_STATION".equals(type)) {
-            return new FireStation(id);
-        }
-        else if ("POLICE_OFFICE".equals(type)) {
-            return new PoliceOffice(id);
-        }
-        else if ("REFUGE".equals(type)) {
-            return new Refuge(id);
-        }
-        else if ("CIVILIAN".equals(type)) {
-            return new Civilian(id);
-        }
-        else if ("AMBULANCE_TEAM".equals(type)) {
-            return new AmbulanceTeam(id);
-        }
-        else if ("FIRE_BRIGADE".equals(type)) {
-            return new FireBrigade(id);
-        }
-        else if ("POLICE_FORCE".equals(type)) {
-            return new PoliceForce(id);
-        }
-        else if ("CAR".equals(type)) {
-            return new Car(id);
-        }
-        else {
-            if (ASSERT) {
-                Util.myassert(false, "illeagle object type", type);
-            }
-            return null;
-        }
-    }
-
-    private void setProperty(String property, InputBuffer data, RescueObject obj) {
-        int size = data.readInt();
-        int[] val = null;
-        if ("EDGES".equals(property)
-            || "SIGNAL_TIMING".equals(property)
-            || "SHORTCUT_TO_TURN".equals(property)
-            || "POCKET_TO_TURN_ACROSS".equals(property)
-            || "POSITION_HISTORY".equals(property)
-            || "ENTRANCES".equals(property)
-            || "BUILDING_APEXES".equals(property)) {
-            val = new int[data.readInt()];
-            for (int i=0;i<val.length;++i) val[i] = data.readInt();
-        }
-        else {
-            val = new int[] {data.readInt()};
-        }
-        if (obj != null) {
-            obj.input(property, val);
-        }
-    }
-
     public void shuffleMvObjsArray() {
         MovingObject tmp;
         MovingObject[] mvs = m_movingObjectArray;
@@ -206,6 +91,7 @@ public class WorldModel implements Constants {
     }
 
     public void initialize() {
+        m_time = INITIALIZING_TIME;
         m_isInitialized = true;
         m_movingObjectArray = (MovingObject[]) m_movingObjectList
         .toArray(new MovingObject[m_movingObjectList.size()]);
@@ -221,16 +107,6 @@ public class WorldModel implements Constants {
                 PointObject po = (PointObject) obj;
                 po.outLanes();
                 po.inLanes();
-                if (USE_VIEWER) {
-                    if (m_minX > po.x())
-                        m_minX = po.x();
-                    if (m_maxX < po.x())
-                        m_maxX = po.x();
-                    if (m_minY > po.y())
-                        m_minY = po.y();
-                    if (m_maxY < po.y())
-                        m_maxY = po.y();
-                }
             }
             else if (obj instanceof Road) {
                 ((Road) obj).setAdjacentLanesOfSamePriorityRoad();
@@ -247,33 +123,7 @@ public class WorldModel implements Constants {
         }
     }
 
-    public void parseCommands(InputBuffer in) {
-        m_time = in.readInt();
-        int count = in.readInt();
-        for (int i = 0;i < count; ++i) {
-            String command = in.readString();
-            int size = in.readInt();
-            if ("AK_MOVE".equals(command)) {
-                parseAK_MOVE(in);
-            }
-            else if ("AK_LOAD".equals(command)) {
-                parseAK_LOAD(in);
-            }
-            else if ("AK_UNLOAD".equals(command)) {
-                parseAK_UNLOAD(in);
-            }
-            else {
-                in.skip(size);
-            }
-        }
-    }
-
-    private void parseAK_MOVE(InputBuffer in) {
-        int senderID = in.readInt();
-        int time = in.readInt();
-        int length = in.readInt();
-        int[] path = new int[length];
-        for (int i=0;i<length;++i) path[i] = in.readInt();
+    public void processMove(int senderID, int[] path) {
         RealObject sender = get(senderID);
         if (!(sender instanceof Humanoid)) {
             printError(sender, "Wrong sender for moving: " + senderID);
@@ -286,16 +136,13 @@ public class WorldModel implements Constants {
             return;
         }
         agent.setLastMovingTime(m_time);
-        Route submitedRoute = new Route(length);
-        for (int i = 0; i < length; i++)
+        Route submitedRoute = new Route(path.length);
+        for (int i = 0; i < path.length; i++)
             submitedRoute.add((MotionlessObject) get(path[i]));
         agent.setRoutePlan(submitedRoute.checkValidity(agent) ? submitedRoute : Route.singleObjRoute(agent.motionlessPosition()));
     }
 
-    private void parseAK_LOAD(InputBuffer in) {
-        int senderID = in.readInt();
-        int time = in.readInt();
-        int targetID = in.readInt();
+    public void processLoad(int senderID, int targetID) {
         RealObject sender = get(senderID);
         if (!(sender instanceof AmbulanceTeam)) {
             printError(sender, "Wrong sender for loading: " + senderID);
@@ -326,23 +173,21 @@ public class WorldModel implements Constants {
                        + ambulance.position().id + ") is not the same position of the target's ("
                        + mv.position().id + ").");
         }
-        return;
     }
 
-    private void parseAK_UNLOAD(InputBuffer in) {
-        int senderID = in.readInt();
-        int time = in.readInt();
+    public void processUnload(int senderID) {
         RealObject sender = get(senderID);
         if (!(sender instanceof AmbulanceTeam)) {
             printError(sender, "Wrong sender for unloading: " + senderID);
             return;
         }
         AmbulanceTeam ambulance = (AmbulanceTeam) sender;
-        if (ambulance.isLoading())
+        if (ambulance.isLoading()) {
             ambulance.setUnload();
-        else
+        }
+        else {
             printError(sender, "This AmbulanceTeam is not loading an injured person now.");
-        return;
+        }
     }
 
     private void printError(RealObject obj, String message) {

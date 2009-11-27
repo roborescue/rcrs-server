@@ -30,11 +30,11 @@ public class Road extends Edge {
         }
     }
 	
-    private void setHead(StreetNode node){
+    public void setHead(StreetNode node){
         head=node;
     }
 	
-    private void setTail(StreetNode node){
+    public void setTail(StreetNode node){
         tail=node;
     }
 	
@@ -50,19 +50,19 @@ public class Road extends Edge {
         return "ROAD";
     }
 	
-    private void setWidth(int width){
+    public void setWidth(int width){
         this.width=width;
     }
 	
-    private void setBlock(int block){
+    public void setBlock(int block){
         this.block=block;
     }
 	
-    private void setLinesToHead(int lines){
+    public void setLinesToHead(int lines){
         linesToHead=lines;
     }
 	
-    private void setLinesToTail(int lines){
+    public void setLinesToTail(int lines){
         linesToTail=lines;
     }
 	

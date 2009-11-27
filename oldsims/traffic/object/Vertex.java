@@ -1,7 +1,6 @@
 package traffic.object;
 
 import java.util.*;
-import rescuecore.RescueConstants;
 
 public abstract class Vertex extends PointObject {
   public Vertex(int id) { super(id); }
@@ -22,15 +21,6 @@ public abstract class Vertex extends PointObject {
   public void setEdges(int[] value) {
     if (m_edgeSet == null  &&  m_edges == null)
       m_edges = value;
-  }
-
-  public void input(String property, int[] value) {
-      if ("EDGES".equals(property)) {
-          setEdges(value);
-      }
-      else {
-          super.input(property, value);
-      }
   }
 
   public boolean isAdjacentTo(MotionlessObject obj)
