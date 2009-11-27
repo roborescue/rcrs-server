@@ -1,9 +1,7 @@
 package blockade;
 
-import rescuecore2.components.AbstractSimulator;
-import rescuecore2.messages.control.Commands;
-import rescuecore2.messages.control.Update;
-import rescuecore2.messages.control.SKUpdate;
+import rescuecore2.messages.control.KSCommands;
+import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
@@ -11,8 +9,7 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.misc.collections.LazyMap;
 import rescuecore2.misc.Pair;
 
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Road;
@@ -25,7 +22,7 @@ import java.util.Map;
 /**
    A simple blockade simulator.
  */
-public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
+public class BlockadeSimulator extends StandardSimulator {
     private static final int RUBBLE_DIVISOR = 2000;
     private static final double NEARBY_THRESHOLD = 5000;
 
@@ -38,12 +35,8 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     @Override
-    protected StandardWorldModel createWorldModel() {
-        return new StandardWorldModel();
-    }
-
-    @Override
     protected void postConnect() {
+        super.postConnect();
         nearbyRoads = new LazyMap<EntityID, Set<Road>>() {
             public Set<Road> createValue() {
                 return new HashSet<Road>();
@@ -68,12 +61,12 @@ public class BlockadeSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     @Override
-    protected void handleCommands(Commands c) {
-        send(new SKUpdate(simulatorID, c.getTime(), changes));
+    protected void processCommands(KSCommands c, ChangeSet cs) {
+        cs.merge(changes);
     }
 
     @Override
-    protected void handleUpdate(Update u) {
+    protected void handleUpdate(KSUpdate u) {
         super.handleUpdate(u);
         changes = new ChangeSet();
         for (EntityID id : u.getChangeSet().getChangedEntities()) {
