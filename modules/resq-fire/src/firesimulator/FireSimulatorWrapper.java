@@ -1,17 +1,16 @@
 package firesimulator;
 
 import rescuecore2.config.NoSuchConfigOptionException;
-import rescuecore2.components.AbstractSimulator;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.messages.control.Update;
-import rescuecore2.messages.control.Commands;
+import rescuecore2.messages.control.KSUpdate;
+import rescuecore2.messages.control.KSCommands;
 import rescuecore2.messages.control.SKUpdate;
+
 import rescuecore2.standard.messages.AKExtinguish;
+import rescuecore2.standard.components.StandardSimulator;
 
 import firesimulator.kernel.Kernel;
 import firesimulator.world.World;
@@ -40,18 +39,14 @@ import java.util.concurrent.BrokenBarrierException;
 /**
    A rescuecore2 Simulator that wraps the ResQ Freiburg fire simulator.
  */
-public class FireSimulatorWrapper extends AbstractSimulator<Entity> {
+public class FireSimulatorWrapper extends StandardSimulator {
     private Simulator sim;
     private World world;
     private WrapperKernel kernel;
 
     @Override
-    protected WorldModel<Entity> createWorldModel() {
-        return new DefaultWorldModel<Entity>(Entity.class);
-    }
-
-    @Override
     protected void postConnect() {
+        super.postConnect();
         Configuration c = new Configuration();
         c.initialize();
         for (String next : c.getPropertyNames()) {
@@ -84,7 +79,7 @@ public class FireSimulatorWrapper extends AbstractSimulator<Entity> {
     }
 
     @Override
-    protected void handleUpdate(Update u) {
+    protected void handleUpdate(KSUpdate u) {
         super.handleUpdate(u);
         // Merge objects
         for (EntityID id : u.getChangeSet().getChangedEntities()) {
@@ -124,7 +119,7 @@ public class FireSimulatorWrapper extends AbstractSimulator<Entity> {
     }
 
     @Override
-    protected void handleCommands(Commands c) {
+    protected void handleCommands(KSCommands c) {
         for (Command next : c.getCommands()) {
             if (next instanceof AKExtinguish) {
                 AKExtinguish ex = (AKExtinguish)next;
