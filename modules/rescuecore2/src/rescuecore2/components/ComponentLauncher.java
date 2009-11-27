@@ -1,5 +1,6 @@
 package rescuecore2.components;
 
+import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 
@@ -8,14 +9,17 @@ import rescuecore2.connection.ConnectionException;
  */
 public class ComponentLauncher implements RequestIDGenerator {
     private Connection connection;
+    private Config config;
     private int nextRequestID;
 
     /**
        Construct a new ComponentLauncher that will use a particular connection to connect components. The same connection will be re-used for all components.
        @param connection The Connection to use.
+       @param config The system configuration.
     */
-    public ComponentLauncher(Connection connection) {
+    public ComponentLauncher(Connection connection, Config config) {
         this.connection = connection;
+        this.config = config;
         nextRequestID = 1;
     }
 
@@ -27,7 +31,7 @@ public class ComponentLauncher implements RequestIDGenerator {
        @throws ComponentConnectionException If the connection fails.
     */
     public void connect(Component c) throws InterruptedException, ConnectionException, ComponentConnectionException {
-        c.connect(connection, this);
+        c.connect(connection, this, config);
     }
 
     @Override

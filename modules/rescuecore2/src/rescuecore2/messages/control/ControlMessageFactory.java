@@ -38,6 +38,10 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
             return new KSConnectOK(data);
         case KS_CONNECT_ERROR:
             return new KSConnectError(data);
+        case KS_UPDATE:
+            return new KSUpdate(data);
+        case KS_COMMANDS:
+            return new KSCommands(data);
         case VK_CONNECT:
             return new VKConnect(data);
         case VK_ACKNOWLEDGE:
@@ -46,6 +50,8 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
             return new KVConnectOK(data);
         case KV_CONNECT_ERROR:
             return new KVConnectError(data);
+        case KV_TIMESTEP:
+            return new KVTimestep(data);
         case AK_CONNECT:
             return new AKConnect(data);
         case AK_ACKNOWLEDGE:
@@ -56,10 +62,6 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
             return new KAConnectError(data);
         case KA_SENSE:
             return new KASense(data);
-        case COMMANDS:
-            return new Commands(data);
-        case UPDATE:
-            return new Update(data);
         default:
             System.out.println("Unrecognised message urn: " + urn);
             return null;

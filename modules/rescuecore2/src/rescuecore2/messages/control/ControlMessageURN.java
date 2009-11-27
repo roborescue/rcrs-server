@@ -23,6 +23,10 @@ public enum ControlMessageURN {
     KS_CONNECT_OK,
     /** Kernel-Simulator error. */
     KS_CONNECT_ERROR,
+    /** Kernel update broadcast. */
+    KS_UPDATE,
+    /** Kernel commands broadcast. */
+    KS_COMMANDS,
 
     /** Viewer-Kernel connect. */
     VK_CONNECT,
@@ -32,6 +36,8 @@ public enum ControlMessageURN {
     KV_CONNECT_OK,
     /** Kernel-Viewer error. */
     KV_CONNECT_ERROR,
+    /** Kernel-Viewer timestep. */
+    KV_TIMESTEP,
 
     /** Agent-Kernel connect. */
     AK_CONNECT,
@@ -42,10 +48,5 @@ public enum ControlMessageURN {
     /** Kernel-Agent error. */
     KA_CONNECT_ERROR,
     /** Kernel-Agent perception update. */
-    KA_SENSE,
-
-    /** Kernel update broadcast. */
-    UPDATE,
-    /** Kernel commands broadcast. */
-    COMMANDS;
+    KA_SENSE;
 }

@@ -12,6 +12,7 @@ import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.messages.control.KAConnectError;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
 
 import java.util.Collection;
@@ -19,9 +20,10 @@ import java.util.concurrent.CountDownLatch;
 
 /**
    Abstract base class for agent implementations.
-   @param <T> The subclass of Entity that this agent understands.
+   @param <T> The subclass of WorldModel that this agent understands.
+   @param <E> The subclass of Entity that this agent wants to control.
  */
-public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<T> implements Agent {
+public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E extends Entity> extends AbstractComponent<T> implements Agent {
     /**
        The ID of the entity controlled by this agent.
      */
@@ -36,10 +38,9 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
 
     @Override
     public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities, Config kernelConfig) {
-        super.postConnect(c, entities, kernelConfig);
         this.entityID = agentID;
         c.addConnectionListener(new AgentListener());
-        postConnect();
+        super.postConnect(c, entities, kernelConfig);
     }
 
     @Override
@@ -48,7 +49,8 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     }
 
     @Override
-    public void connect(Connection connection, RequestIDGenerator generator) throws ConnectionException, ComponentConnectionException, InterruptedException {
+    public void connect(Connection connection, RequestIDGenerator generator, Config config) throws ConnectionException, ComponentConnectionException, InterruptedException {
+        this.config = config;
         int requestID = generator.generateRequestID();
         AKConnect connect = new AKConnect(requestID, 1, getName(), getRequestedEntityURNs());
         CountDownLatch latch = new CountDownLatch(1);
@@ -69,12 +71,6 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
     protected abstract void think(int time, Collection<EntityID> changed, Collection<Command> heard);
 
     /**
-       Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
-     */
-    protected void postConnect() {
-    }
-
-    /**
        Process an incoming sense message. The default implementation updates the world model and calls {@link #think}. Subclasses should generally not override this method but instead implement the {@link #think} method.
        @param sense The sense message.
      */
@@ -89,11 +85,12 @@ public abstract class AbstractAgent<T extends Entity> extends AbstractComponent<
        Get the entity controlled by this agent.
        @return The entity controlled by this agent.
      */
-    protected T me() {
+    @SuppressWarnings("unchecked")
+    protected E me() {
         if (entityID == null) {
             return null;
         }
-        return model.getEntity(entityID);
+        return (E)model.getEntity(entityID);
     }
 
     private class AgentConnectionListener implements ConnectionListener {

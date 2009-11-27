@@ -1,56 +1,53 @@
 package rescuecore2.messages.control;
 
 import rescuecore2.messages.Control;
-import rescuecore2.messages.Command;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
-import rescuecore2.messages.components.CommandListComponent;
-
-import java.util.Collection;
-import java.util.List;
+import rescuecore2.messages.components.ChangeSetComponent;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.io.InputStream;
 import java.io.IOException;
 
 /**
-   A message containing a list of agent commands. This is sent from the kernel to all simulators and viewers.
+   A broadcast update from the kernel.
  */
-public class Commands extends AbstractMessage implements Control {
+public class KSUpdate extends AbstractMessage implements Control {
     private IntComponent id;
     private IntComponent time;
-    private CommandListComponent commands;
+    private ChangeSetComponent changes;
 
     /**
-       A Commands message that populates its data from a stream.
+       A KSUpdate message that populates its data from a stream.
        @param in The InputStream to read.
        @throws IOException If there is a problem reading the stream.
      */
-    public Commands(InputStream in) throws IOException {
+    public KSUpdate(InputStream in) throws IOException {
         this();
         read(in);
     }
 
     /**
-       A populated Commands message.
-       @param id The id of the simulator or viewer receiving the update.
+       A populated KSUpdate message.
+       @param id The id of the simulator receiving the update.
        @param time The timestep of the simulation.
-       @param commands All AgentCommands.
+       @param changes The changeset.
      */
-    public Commands(int id, int time, Collection<? extends Command> commands) {
+    public KSUpdate(int id, int time, ChangeSet changes) {
         this();
         this.id.setValue(id);
         this.time.setValue(time);
-        this.commands.setCommands(commands);
+        this.changes.setChangeSet(changes);
     }
 
-    private Commands() {
-        super(ControlMessageURN.COMMANDS);
+    private KSUpdate() {
+        super(ControlMessageURN.KS_UPDATE);
         id = new IntComponent("ID");
         time = new IntComponent("Time");
-        commands = new CommandListComponent("Commands");
+        changes = new ChangeSetComponent("Changes");
         addMessageComponent(id);
         addMessageComponent(time);
-        addMessageComponent(commands);
+        addMessageComponent(changes);
     }
 
     /**
@@ -70,10 +67,10 @@ public class Commands extends AbstractMessage implements Control {
     }
 
     /**
-       Get the list of agent commands.
-       @return The agent commands.
+       Get the list of changes.
+       @return The changes.
      */
-    public List<Command> getCommands() {
-        return commands.getCommands();
+    public ChangeSet getChangeSet() {
+        return changes.getChangeSet();
     }
 }

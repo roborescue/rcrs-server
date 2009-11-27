@@ -36,7 +36,7 @@ public class LoadableType {
 
     private String manifestKey;
     private Pattern regex;
-    private Class clazz;
+    private Class<?> clazz;
 
     /**
        Construct a new LoadableType.
@@ -44,7 +44,7 @@ public class LoadableType {
        @param regex A regex to use for determining if a class name should be tested.
        @param clazz A superclass for checking if candidate classes should be extracted.
      */
-    public LoadableType(String manifestKey, String regex, Class clazz) {
+    public LoadableType(String manifestKey, String regex, Class<?> clazz) {
         this.manifestKey = manifestKey;
         this.regex = Pattern.compile(regex);
         this.clazz = clazz;
@@ -72,13 +72,12 @@ public class LoadableType {
        @param e The JarEntry to check.
        @return The class name, or null if the entry does not name a conformant class.
     */
-    @SuppressWarnings("unchecked")
     public String processJarEntry(JarEntry e) {
         Matcher m = regex.matcher(e.getName());
         if (m.matches()) {
             try {
                 String className = m.group(1).replace("/", ".");
-                Class testClass = Class.forName(className);
+                Class<?> testClass = Class.forName(className);
                 if (clazz.isAssignableFrom(testClass) && !testClass.isInterface()) {
                     return className;
                 }

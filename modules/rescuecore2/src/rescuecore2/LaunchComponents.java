@@ -36,9 +36,9 @@ public final class LaunchComponents {
             processJarFiles(config);
             Connection c = new TCPConnection(host, port);
             c.startup();
-            ComponentLauncher launcher = new ComponentLauncher(c);
+            ComponentLauncher launcher = new ComponentLauncher(c, config);
             for (String next : args) {
-                connect(launcher, next, config);
+                connect(launcher, next);
             }
         }
         catch (IOException e) {
@@ -61,7 +61,7 @@ public final class LaunchComponents {
         processor.process();
     }
 
-    private static void connect(ComponentLauncher launcher, String argLine, Config config) throws InterruptedException, ConnectionException {
+    private static void connect(ComponentLauncher launcher, String argLine) throws InterruptedException, ConnectionException {
         // Check if this class name has a multiplier
         int index = argLine.indexOf("*");
         int count = 1;
@@ -84,7 +84,7 @@ public final class LaunchComponents {
             }
             System.out.println("Launching instance " + (i + 1) + "...");
             try {
-                c.initialise(config);
+                c.initialise();
                 launcher.connect(c);
                 System.out.println("success");
             }

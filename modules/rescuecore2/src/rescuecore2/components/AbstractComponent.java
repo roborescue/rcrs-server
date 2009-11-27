@@ -12,9 +12,9 @@ import java.util.Random;
 
 /**
    Abstract base class for component implementations.
-   @param <T> The subclass of Entity that this agent understands.
+   @param <T> The subclass of WorldModel that this component understands.
  */
-public abstract class AbstractComponent<T extends Entity> implements Component {
+public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> implements Component {
     private static final int TIMEOUT = 10000;
 
     /**
@@ -30,7 +30,7 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
     /**
        The world model.
     */
-    protected WorldModel<T> model;
+    protected T model;
 
     /**
        A random number generator.
@@ -55,13 +55,20 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
         model.addEntities(entities);
         config.merge(kernelConfig);
         random = config.getRandom();
+        postConnect();
+    }
+
+    /**
+       Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
+     */
+    protected void postConnect() {
     }
 
     /**
        Construct the world model.
        @return The world model.
     */
-    protected abstract WorldModel<T> createWorldModel();
+    protected abstract T createWorldModel();
 
     /**
        Send a message to the kernel and silently ignore any errors.
@@ -78,8 +85,7 @@ public abstract class AbstractComponent<T extends Entity> implements Component {
     }
 
     @Override
-    public void initialise(Config initialConfig) {
-        config = initialConfig;
+    public void initialise() {
     }
 
     @Override
