@@ -20,7 +20,11 @@ import rescuecore2.misc.Pair;
    A wrapper around a WorldModel that indexes Entities by location.
  */
 public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
-    private static final int DEFAULT_MESH_SIZE = 10000;
+    /** Config key entry for specifying the grid mesh size. */
+    public static final String MESH_SIZE_KEY = "worldmodel.standard.mesh-size";
+
+    /** The default mesh size. */
+    public static final int DEFAULT_MESH_SIZE = 10000;
 
     private Map<StandardEntityURN, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;

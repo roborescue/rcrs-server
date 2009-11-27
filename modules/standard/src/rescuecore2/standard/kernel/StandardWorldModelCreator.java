@@ -40,7 +40,6 @@ import rescuecore2.standard.entities.Civilian;
  */
 public class StandardWorldModelCreator implements WorldModelCreator {
     private static final String MAP_DIR_KEY = "gis.map.dir";
-    private static final String MESH_SIZE_KEY = "gis.map.meshsize";
     private static final String FIRE_TANK_MAXIMUM_KEY = "fire.tank.maximum";
 
     private static final int HEADER_SIZE = 12;
@@ -62,7 +61,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             nextAgentID = maxID + 1;
             readGISIni(baseDir, world);
             MapValidator.validate(world);
-            world.index(config.getIntValue(MESH_SIZE_KEY));
+            world.index(config.getIntValue(StandardWorldModel.MESH_SIZE_KEY, StandardWorldModel.DEFAULT_MESH_SIZE));
             return world;
         }
         catch (MapValidationException e) {
