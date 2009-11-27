@@ -7,12 +7,10 @@ import java.util.HashSet;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.components.AbstractAgent;
 import rescuecore2.Constants;
 
-import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
@@ -20,18 +18,13 @@ import rescuecore2.standard.entities.Human;
 
 /**
    Abstract base class for sample agents.
+   @param <E> The subclass of StandardEntity this agent wants to control.
  */
-public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> {
-    private static final int MESH_SIZE = 10000;
+public abstract class AbstractSampleAgent<E extends StandardEntity> extends StandardAgent<E> {
     private static final int RANDOM_WALK_LENGTH = 50;
 
     private static final String SAY_COMMUNICATION_MODEL = "kernel.standard.StandardCommunicationModel";
     private static final String SPEAK_COMMUNICATION_MODEL = "kernel.standard.ChannelCommunicationModel";
-
-    /**
-       The world model referenced as a StandardWorldModel. Note that this will reference the same object as {@link AbstractAgent#model}.
-     */
-    protected StandardWorldModel world;
 
     /**
        The search algorithm.
@@ -61,16 +54,9 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
     }
 
     @Override
-    protected WorldModel<StandardEntity> createWorldModel() {
-        world = new StandardWorldModel();
-        return world;
-    }
-
-    @Override
     protected void postConnect() {
         super.postConnect();
-        world.index(MESH_SIZE);
-        search = new SampleSearch(world, true);
+        search = new SampleSearch(model, true);
         useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
     }
 
@@ -79,12 +65,17 @@ public abstract class AbstractSampleAgent extends AbstractAgent<StandardEntity> 
        @return The location of the entity controlled by this agent.
      */
     protected StandardEntity location() {
-        return me().getPosition(world);
+        E me = me();
+        if (me instanceof Human) {
+            return ((Human)me).getPosition(model);
+        }
+        return me;
     }
 
     @Override
-    protected Human me() {
-        return (Human)super.me();
+    //    @SuppressWarnings("unchecked")
+    protected E me() {
+        return (E)super.me();
     }
 
     /**

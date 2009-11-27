@@ -61,7 +61,7 @@ public final class LaunchSampleAgents {
             // CHECKSTYLE:ON:ModifiedControlVariable
             Connection c = new TCPConnection(host, port);
             c.startup();
-            connect(c, fb, pf, at);
+            connect(c, fb, pf, at, config);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -77,8 +77,8 @@ public final class LaunchSampleAgents {
         }
     }
 
-    private static void connect(Connection c, int fb, int pf, int at) throws InterruptedException, ConnectionException {
-        ComponentLauncher launcher = new ComponentLauncher(c);
+    private static void connect(Connection c, int fb, int pf, int at, Config config) throws InterruptedException, ConnectionException {
+        ComponentLauncher launcher = new ComponentLauncher(c, config);
         int i = 0;
         try {
             while (fb-- != 0) {

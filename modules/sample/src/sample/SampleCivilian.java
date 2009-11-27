@@ -10,17 +10,13 @@ import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Refuge;
-import rescuecore2.standard.messages.AKMove;
-import rescuecore2.standard.messages.AKSay;
-import rescuecore2.standard.messages.AKSpeak;
-import rescuecore2.standard.messages.AKRest;
 
 /**
    A sample civilian agent.
  */
-public class SampleCivilian extends AbstractSampleAgent {
+public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     private static final double DEFAULT_HELP_PROBABILITY = 0.1;
     private static final double DEFAULT_OUCH_PROBABILITY = 0.1;
     private static final int DEFAULT_CONSCIOUS_THRESHOLD = 2500;
@@ -44,7 +40,7 @@ public class SampleCivilian extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityURN.REFUGE);
+        model.indexClass(StandardEntityURN.REFUGE);
         helpProbability = config.getFloatValue(HELP_PROBABILITY_KEY, DEFAULT_HELP_PROBABILITY);
         ouchProbability = config.getFloatValue(OUCH_PROBABILITY_KEY, DEFAULT_OUCH_PROBABILITY);
         consciousThreshold = config.getIntValue(CONSCIOUS_THRESHOLD_KEY, DEFAULT_CONSCIOUS_THRESHOLD);
@@ -53,13 +49,13 @@ public class SampleCivilian extends AbstractSampleAgent {
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         // If we're not hurt or buried run for a refuge!
-        Human me = me();
+        Civilian me = me();
         int damage = me.isDamageDefined() ? me.getDamage() : 0;
         int hp = me.isHPDefined() ? me.getHP() : 0;
         int buriedness = me.isBuriednessDefined() ? me.getBuriedness() : 0;
         if (hp <= 0 || hp < consciousThreshold) {
             // Unconscious (or dead): do nothing
-            send(new AKRest(getID(), time));
+            sendRest(time);
             return;
         }
         if (damage > 0 && random.nextDouble() < ouchProbability) {
@@ -72,16 +68,14 @@ public class SampleCivilian extends AbstractSampleAgent {
             // Run for the refuge
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
-                AKMove move = new AKMove(getID(), time, path);
-                //                System.out.println(me() + " moving to refuge: " + move);
-                send(move);
+                sendMove(time, path);
+                return;
             }
             else {
-                //                System.out.println(me() + " couldn't plan a path to a refuge.");
-                send(new AKMove(getID(), time, randomWalk()));
+                sendMove(time, randomWalk());
             }
         }
-        send(new AKRest(getID(), time));
+        sendRest(time);
     }
 
     @Override
@@ -90,7 +84,7 @@ public class SampleCivilian extends AbstractSampleAgent {
     }
 
     private List<Refuge> getRefuges() {
-        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityURN.REFUGE);
+        Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.REFUGE);
         List<Refuge> result = new ArrayList<Refuge>();
         for (StandardEntity next : e) {
             if (next instanceof Refuge) {
@@ -103,10 +97,10 @@ public class SampleCivilian extends AbstractSampleAgent {
     private void say(String message, int time) {
         try {
             if (useSpeak) {
-                send(new AKSpeak(getID(), time, 0, message.getBytes("UTF-8")));
+                sendSpeak(time, 0, message.getBytes("UTF-8"));
             }
             else {
-                send(new AKSay(getID(), time, message.getBytes("UTF-8")));
+                sendSay(time, message.getBytes("UTF-8"));
             }
         }
         catch (java.io.UnsupportedEncodingException e) {

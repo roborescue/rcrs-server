@@ -11,13 +11,12 @@ import rescuecore2.messages.Command;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.messages.AKMove;
-import rescuecore2.standard.messages.AKClear;
+import rescuecore2.standard.entities.PoliceForce;
 
 /**
    A sample police force agent.
  */
-public class SamplePoliceForce extends AbstractSampleAgent {
+public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     @Override
     public String toString() {
         return "Sample police force";
@@ -26,7 +25,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityURN.ROAD);
+        model.indexClass(StandardEntityURN.ROAD);
         search.setIgnoreBlockedRoads(false);
     }
 
@@ -38,21 +37,16 @@ public class SamplePoliceForce extends AbstractSampleAgent {
         // Am I on a blocked road?
         StandardEntity location = location();
         if (location instanceof Road && ((Road)location).isBlockDefined() && ((Road)location).getBlock() > 0) {
-            AKClear clear = new AKClear(getID(), time, location.getID());
-            //            System.out.println(me() + " clearing road: " + clear);
-            send(clear);
+            sendClear(time, location.getID());
             return;
         }
         // Plan a path to a blocked road
         List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
-            AKMove move = new AKMove(getID(), time, path);
-            //            System.out.println(me() + " moving to road: " + move);
-            send(move);
+            sendMove(time, path);
             return;
         }
-        //        System.out.println(me() + " couldn't plan a path to a blocked road.");
-        send(new AKMove(getID(), time, randomWalk()));
+        sendMove(time, randomWalk());
     }
 
     @Override
@@ -61,7 +55,7 @@ public class SamplePoliceForce extends AbstractSampleAgent {
     }
 
     private List<Road> getBlockedRoads() {
-        Collection<StandardEntity> e = world.getEntitiesOfType(StandardEntityURN.ROAD);
+        Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.ROAD);
         List<Road> result = new ArrayList<Road>();
         for (StandardEntity next : e) {
             if (next instanceof Road) {

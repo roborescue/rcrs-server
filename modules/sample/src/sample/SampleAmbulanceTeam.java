@@ -11,17 +11,14 @@ import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Refuge;
-import rescuecore2.standard.messages.AKMove;
-import rescuecore2.standard.messages.AKLoad;
-import rescuecore2.standard.messages.AKUnload;
-import rescuecore2.standard.messages.AKRescue;
 
 /**
    A sample ambulance team agent.
  */
-public class SampleAmbulanceTeam extends AbstractSampleAgent {
+public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     private Collection<StandardEntity> unexploredBuildings;
 
     @Override
@@ -32,8 +29,8 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     @Override
     protected void postConnect() {
         super.postConnect();
-        world.indexClass(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM, StandardEntityURN.REFUGE, StandardEntityURN.BUILDING);
-        unexploredBuildings = world.getEntitiesOfType(StandardEntityURN.BUILDING);
+        model.indexClass(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM, StandardEntityURN.REFUGE, StandardEntityURN.BUILDING);
+        unexploredBuildings = model.getEntitiesOfType(StandardEntityURN.BUILDING);
     }
 
     @Override
@@ -48,22 +45,17 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
             if (location() instanceof Refuge) {
                 // Unload!
                 //                System.out.println(me() + " unloading");
-                send(new AKUnload(getID(), time));
+                sendUnload(time);
                 return;
             }
             else {
                 // Move to a refuge
-                List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityURN.REFUGE));
+                List<EntityID> path = search.breadthFirstSearch(location(), model.getEntitiesOfType(StandardEntityURN.REFUGE));
                 if (path != null) {
-                    AKMove move = new AKMove(getID(), time, path);
-                    //                    System.out.println(me() + " moving to refuge: " + move);
-                    send(move);
+                    sendMove(time, path);
                     return;
                 }
-                //                else {
-                    //                    System.out.println(me() + " couldn't plan a path to refuge!");
-                    // What do I do now? Might as well carry on and see if we can dig someone else out.
-                //                }
+                // What do I do now? Might as well carry on and see if we can dig someone else out.
             }
         }
         // Go through targets (sorted by distance) and check for things we can do
@@ -72,25 +64,20 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 // Targets in the same place might need rescueing or loading
                 if (next.getBuriedness() == 0 && next.getDamage() > 0 && !(location() instanceof Refuge)) {
                     // Load
-                    AKLoad load = new AKLoad(getID(), time, next.getID());
-                    //                    System.out.println(me() + " loading target " + next);
-                    send(load);
+                    sendLoad(time, next.getID());
                     return;
                 }
                 if (next.getBuriedness() > 0) {
                     // Rescue
-                    AKRescue rescue = new AKRescue(getID(), time, next.getID());
-                    //                    System.out.println(me() + " rescueing target " + next);
-                    send(rescue);
+                    sendRescue(time, next.getID());
                     return;
                 }
             }
             else {
                 // Try to move to the target
-                List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(world));
+                List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(model));
                 if (path != null) {
-                    //                    System.out.println(me() + " moving to target " + next);
-                    send(new AKMove(getID(), time, path));
+                    sendMove(time, path);
                     return;
                 }
             }
@@ -98,13 +85,11 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
         // Nothing to do
         List<EntityID> path = search.breadthFirstSearch(location(), unexploredBuildings);
         if (path != null) {
-            AKMove move = new AKMove(getID(), time, path);
-            //            System.out.println(me() + " exploring building: " + move);
-            send(move);
+            sendMove(time, path);
             return;
         }
         //        System.out.println(me() + " has nothing to do");
-        send(new AKMove(getID(), time, randomWalk()));
+        sendMove(time, randomWalk());
     }
 
     @Override
@@ -113,7 +98,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
     }
 
     private boolean someoneOnBoard() {
-        for (StandardEntity next : world.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
+        for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
             if (((Human)next).getPosition().equals(getID())) {
                 return true;
             }
@@ -123,7 +108,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
 
     private List<Human> getTargets() {
         List<Human> targets = new ArrayList<Human>();
-        for (StandardEntity next : world.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
+        for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)next;
             if (h.isHPDefined()
                 && h.isBuriednessDefined()
@@ -134,13 +119,13 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent {
                 targets.add(h);
             }
         }
-        Collections.sort(targets, new DistanceSorter(location(), world));
+        Collections.sort(targets, new DistanceSorter(location(), model));
         return targets;
     }
 
     private void updateUnexploredBuildings(Collection<EntityID> changed) {
         for (EntityID next : changed) {
-            StandardEntity e = world.getEntity(next);
+            StandardEntity e = model.getEntity(next);
             if (e != null) {
                 unexploredBuildings.remove(e);
             }
