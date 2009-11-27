@@ -95,7 +95,17 @@ public class FireSimulatorWrapper extends AbstractSimulator<Entity> {
             }
             else {
                 if (r instanceof Building && e instanceof rescuecore2.standard.entities.Building) {
-                    mapBuildingProperties((rescuecore2.standard.entities.Building)e, (Building)r);
+                    Building b = (Building)r;
+                    mapBuildingProperties((rescuecore2.standard.entities.Building)e, b);
+                    // Check for new ignitions
+                    if (b.getIgnition() == 1 && b.isInflameable()) {
+                        int fieryness = b.getFieryness();
+                        // CHECKSTYLE:OFF:MagicNumber
+                        if (fieryness == 0 || fieryness == 4) {
+                            // CHECKSTYLE:ON:MagicNumber
+                            b.ignite();
+                        }
+                    }
                 }
                 else if (r instanceof MovingObject && e instanceof rescuecore2.standard.entities.Human) {
                     mapHumanProperties((rescuecore2.standard.entities.Human)e, (MovingObject)r);
