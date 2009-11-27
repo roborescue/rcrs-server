@@ -5,8 +5,8 @@ import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.SKUpdate;
-import rescuecore2.messages.control.Update;
-import rescuecore2.messages.control.Commands;
+import rescuecore2.messages.control.KSUpdate;
+import rescuecore2.messages.control.KSCommands;
 import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;
@@ -59,7 +59,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        @param update The updated entities.
     */
     public void sendUpdate(int time, ChangeSet update) {
-        send(Collections.singleton(new Update(id, time, update)));
+        send(Collections.singleton(new KSUpdate(id, time, update)));
     }
 
     /**
@@ -68,7 +68,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        @param commands The agent commands to send.
      */
     public void sendAgentCommands(int time, Collection<? extends Command> commands) {
-        send(Collections.singleton(new Commands(id, time, commands)));
+        send(Collections.singleton(new KSCommands(id, time, commands)));
     }
 
     @Override

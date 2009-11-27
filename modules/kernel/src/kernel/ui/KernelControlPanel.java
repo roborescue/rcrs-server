@@ -139,7 +139,7 @@ public class KernelControlPanel extends JPanel {
         runThread.start();
         Pair<Connection, Connection> connections = createConnectionPair();
         componentManager.newConnection(connections.first());
-        launcher = new ComponentLauncher(connections.second());
+        launcher = new ComponentLauncher(connections.second(), config);
     }
 
     private void addAgent() {
@@ -175,7 +175,7 @@ public class KernelControlPanel extends JPanel {
             return;
         }
         try {
-            c.initialise(config);
+            c.initialise();
             launcher.connect(c);
             System.out.println(type + " added OK");
         }
