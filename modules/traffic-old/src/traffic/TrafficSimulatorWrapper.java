@@ -1,15 +1,12 @@
 package traffic;
 
-import rescuecore2.components.AbstractSimulator;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.messages.control.Update;
-import rescuecore2.messages.control.Commands;
-import rescuecore2.messages.control.SKUpdate;
+import rescuecore2.messages.control.KSUpdate;
+import rescuecore2.messages.control.KSCommands;
+import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
@@ -37,16 +34,12 @@ import java.util.ArrayList;
 /**
    A rescuecore2 Simulator that wraps the old traffic simulator.
  */
-public class TrafficSimulatorWrapper extends AbstractSimulator<Entity> {
+public class TrafficSimulatorWrapper extends StandardSimulator {
     private Simulator sim;
 
     @Override
-    protected WorldModel<Entity> createWorldModel() {
-        return new DefaultWorldModel<Entity>(Entity.class);
-    }
-
-    @Override
     protected void postConnect() {
+        super.postConnect();
         sim = new Simulator();
         // Map each entity to a traffic simulator object
         for (Entity next : model) {
@@ -60,7 +53,7 @@ public class TrafficSimulatorWrapper extends AbstractSimulator<Entity> {
     }
 
     @Override
-    protected void handleUpdate(Update u) {
+    protected void handleUpdate(KSUpdate u) {
         super.handleUpdate(u);
         // Merge objects
         for (EntityID id : u.getChangeSet().getChangedEntities()) {
@@ -90,7 +83,7 @@ public class TrafficSimulatorWrapper extends AbstractSimulator<Entity> {
     }
 
     @Override
-    protected void handleCommands(Commands c) {
+    protected void processCommands(KSCommands c, ChangeSet changes) {
         Constants.WORLD.setTime(c.getTime());
         for (Command next : c.getCommands()) {
             if (next instanceof AKMove) {
@@ -113,8 +106,7 @@ public class TrafficSimulatorWrapper extends AbstractSimulator<Entity> {
         }
         // Simulate
         sim.step();
-        // Send updates
-        ChangeSet changes = new ChangeSet();
+        // Find changes
         for (MovingObject next : Constants.WORLD.movingObjectArray()) {
             if (next.needsUpdate()) {
                 rescuecore2.standard.entities.Human h = (rescuecore2.standard.entities.Human)model.getEntity(new EntityID(next.id));
@@ -127,7 +119,6 @@ public class TrafficSimulatorWrapper extends AbstractSimulator<Entity> {
                 changes.addChange(h, h.getPositionHistoryProperty());
             }
         }
-        send(new SKUpdate(simulatorID, c.getTime(), changes));
     }
 
     private RealObject mapEntity(Entity e) {
