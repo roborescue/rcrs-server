@@ -1,19 +1,14 @@
 package human;
 
-import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Command;
 
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.messages.AKRescue;
-import rescuecore2.standard.messages.AKLoad;
-import rescuecore2.standard.messages.AKUnload;
-import rescuecore2.standard.messages.AKMove;
+import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.components.StandardAgent;
 
 import sample.SampleSearch;
 
@@ -23,8 +18,7 @@ import java.util.List;
 /**
    A basic ambulance team agent that will try to rescue a given target. Once the target is unburied this agent will attempt to load it and transport it to a refuge. If there is no target then this agent does nothing.
  */
-public class ControlledAmbulanceTeam extends AbstractAgent<StandardEntity> {
-    private StandardWorldModel world;
+public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
     private SampleSearch search;
     private Human target;
 
@@ -48,17 +42,13 @@ public class ControlledAmbulanceTeam extends AbstractAgent<StandardEntity> {
                 // Yes
                 // Are we at a  refuge?
                 if (location() instanceof Refuge) {
-                    AKUnload unload = new AKUnload(getID(), time);
-                    System.out.println(me() + " unloading");
-                    send(unload);
+                    sendUnload(time);
                     return;
                 }
                 else {
-                    List<EntityID> path = search.breadthFirstSearch(location(), world.getEntitiesOfType(StandardEntityURN.REFUGE));
+                    List<EntityID> path = search.breadthFirstSearch(location(), model.getEntitiesOfType(StandardEntityURN.REFUGE));
                     if (path != null) {
-                        AKMove move = new AKMove(getID(), time, path);
-                        System.out.println(me() + " moving to refuge: " + move);
-                        send(move);
+                        sendMove(time, path);
                         return;
                     }
                     else {
@@ -68,19 +58,15 @@ public class ControlledAmbulanceTeam extends AbstractAgent<StandardEntity> {
                 }
             }
             else {
-                if (target.getPosition().equals(((Human)me()).getPosition())) {
+                if (target.getPosition().equals(me().getPosition())) {
                     // We're at the same location
                     if (target.getBuriedness() != 0) {
-                        AKRescue rescue = new AKRescue(getID(), time, target.getID());
-                        System.out.println(me() + " rescueing target " + target);
-                        send(rescue);
+                        sendRescue(time, target.getID());
                         return;
                     }
                     else {
                         // Unburied: try to load
-                        AKLoad load = new AKLoad(getID(), time, target.getID());
-                        System.out.println(me() + " loading target " + target);
-                        send(load);
+                        sendLoad(time, target.getID());
                         return;
                     }
                 }
@@ -88,9 +74,7 @@ public class ControlledAmbulanceTeam extends AbstractAgent<StandardEntity> {
                     // Plan a path
                     List<EntityID> path = search.breadthFirstSearch(location(), target);
                     if (path != null) {
-                        AKMove move = new AKMove(getID(), time, path);
-                        System.out.println(me() + " moving to target: " + move);
-                        send(move);
+                        sendMove(time, path);
                         return;
                     }
                     else {
@@ -106,25 +90,19 @@ public class ControlledAmbulanceTeam extends AbstractAgent<StandardEntity> {
         return new String[] {StandardEntityURN.AMBULANCE_TEAM.name()};
     }
 
-    @Override
-    protected WorldModel<StandardEntity> createWorldModel() {
-        world = new StandardWorldModel();
-        return world;
-    }
-
     /**
        Get the location of the entity controlled by this agent.
        @return The location of the entity controlled by this agent.
     */
     protected StandardEntity location() {
-        Human me = (Human)me();
-        return me.getPosition(world);
+        AmbulanceTeam me = me();
+        return me.getPosition(model);
     }
 
     @Override
     protected void postConnect() {
-        world.index();
-        search = new SampleSearch(world, true);
+        super.postConnect();
+        search = new SampleSearch(model, true);
     }
 
     @Override

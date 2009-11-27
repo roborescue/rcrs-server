@@ -1,19 +1,14 @@
 package human;
 
-import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Command;
 
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.messages.AKExtinguish;
-import rescuecore2.standard.messages.AKMove;
+import rescuecore2.standard.components.StandardAgent;
 
 import sample.SampleSearch;
 
@@ -23,12 +18,11 @@ import java.util.Collection;
 /**
    A basic fire brigade agent that will try to extinguish a given target. If the target is a refuge then the fire brigade will attempt to enter the building to replenish water. If there is no target then this agent does nothing.
  */
-public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
+public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
     private static final int MAX_WATER = 15000;
     private static final int EXTINGUISH_DISTANCE = 30000;
     private static final int EXTINGUISH_POWER = 1000;
 
-    private StandardWorldModel world;
     private SampleSearch search;
     private Building target;
 
@@ -50,9 +44,7 @@ public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
             // Just go there
             List<EntityID> path = search.breadthFirstSearch(location(), target);
             if (path != null) {
-                AKMove move = new AKMove(getID(), time, path);
-                System.out.println(me() + " moving to refuge: " + move);
-                send(move);
+                sendMove(time, path);
                 return;
             }
             else {
@@ -60,20 +52,16 @@ public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
             }
         }
         // Are we close enough to extinguish?
-        int distance = world.getDistance((StandardEntity)me(), target);
+        int distance = model.getDistance(me(), target);
         if (distance < EXTINGUISH_DISTANCE) {
-            AKExtinguish ex = new AKExtinguish(getID(), time, target.getID(), EXTINGUISH_POWER);
-            System.out.println(me() + " extinguishing " + target + ": " + ex);
-            send(ex);
+            sendExtinguish(time, target.getID(), EXTINGUISH_POWER);
             return;
         }
         // Otherwise plan a path
         if (!target.equals(location())) {
             List<EntityID> path = planPathToFire();
             if (path != null) {
-                AKMove move = new AKMove(getID(), time, path);
-                System.out.println(me() + " moving to target: " + move);
-                send(move);
+                sendMove(time, path);
                 return;
             }
             else {
@@ -84,7 +72,7 @@ public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
 
     private List<EntityID> planPathToFire() {
         // Try to get to anything within EXTINGUISH_DISTANCE of the target
-        Collection<StandardEntity> targets = world.getObjectsInRange(target, EXTINGUISH_DISTANCE);
+        Collection<StandardEntity> targets = model.getObjectsInRange(target, EXTINGUISH_DISTANCE);
         if (targets.isEmpty()) {
             return null;
         }
@@ -96,25 +84,19 @@ public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
         return new String[] {StandardEntityURN.FIRE_BRIGADE.name()};
     }
 
-    @Override
-    protected WorldModel<StandardEntity> createWorldModel() {
-        world = new StandardWorldModel();
-        return world;
-    }
-
     /**
        Get the location of the entity controlled by this agent.
        @return The location of the entity controlled by this agent.
     */
     protected StandardEntity location() {
-        Human me = (Human)me();
-        return me.getPosition(world);
+        FireBrigade me = me();
+        return me.getPosition(model);
     }
 
     @Override
     protected void postConnect() {
-        world.index();
-        search = new SampleSearch(world, true);
+        super.postConnect();
+        search = new SampleSearch(model, true);
     }
 
     @Override
@@ -122,7 +104,7 @@ public class ControlledFireBrigade extends AbstractAgent<StandardEntity> {
         if (me() == null) {
             return "Human controlled fire brigade";
         }
-        return "Human controlled fire brigade " + me().getID() + " (" + ((FireBrigade)me()).getWater() + " water)" + (target == null ? " (no target)" : " target: building " + target.getID());
+        return "Human controlled fire brigade " + me().getID() + " (" + me().getWater() + " water)" + (target == null ? " (no target)" : " target: building " + target.getID());
     }
 }
 

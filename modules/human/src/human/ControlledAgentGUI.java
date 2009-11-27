@@ -1,24 +1,19 @@
 package human;
 
-import rescuecore2.config.Config;
 import rescuecore2.connection.ConnectionException;
-import rescuecore2.components.AbstractViewer;
 import rescuecore2.components.Agent;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.ComponentConnectionException;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.view.ViewComponent;
 import rescuecore2.view.ViewListener;
 import rescuecore2.view.RenderedObject;
-import rescuecore2.messages.control.Commands;
-import rescuecore2.messages.control.Update;
+import rescuecore2.messages.control.KVTimestep;
 
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.view.StandardWorldModelViewer;
+import rescuecore2.standard.components.StandardViewer;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -36,9 +31,8 @@ import java.util.ArrayList;
 /**
    A viewer that also connects a bunch of human-controlled fire brigades, ambulance teams and police forces.
  */
-public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
+public class ControlledAgentGUI extends StandardViewer {
     private StandardWorldModelViewer viewer;
-    private StandardWorldModel world;
     private List<ControlledFireBrigade> fbs;
     private ListListModel fbListModel;
     private JList fbList;
@@ -50,26 +44,16 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
     private JList atList;
 
     @Override
-    public void initialise(Config config) {
-    }
-
-    @Override
     public String toString() {
         return "Human controlled agents";
     }
 
     @Override
-    protected WorldModel<StandardEntity> createWorldModel() {
-        world = new StandardWorldModel();
-        return world;
-    }
-
-    @Override
     protected void postConnect() {
-        world.index();
-        JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + world.getAllEntities().size() + " entities)");
+        super.postConnect();
+        JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + model.getAllEntities().size() + " entities)");
         viewer = new StandardWorldModelViewer();
-        viewer.view(world, null, null);
+        viewer.view(model);
         // CHECKSTYLE:OFF:MagicNumber
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
@@ -114,12 +98,8 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
     }
 
     @Override
-    protected void handleCommands(Commands c) {
-    }
-
-    @Override
-    protected void handleUpdate(Update u) {
-        world.merge(u.getChangeSet());
+    protected void handleTimestep(KVTimestep t) {
+        super.handleTimestep(t);
         viewer.repaint();
         fbListModel.refresh();
         pfListModel.refresh();
@@ -229,7 +209,7 @@ public class ControlledAgentGUI extends AbstractViewer<StandardEntity> {
         }
 
         private <T extends Agent> void connectAgents(AgentType<T> type, List<? super T> list, ListListModel model) {
-            ComponentLauncher launcher = new ComponentLauncher(connection);
+            ComponentLauncher launcher = new ComponentLauncher(connection, config);
             int count = 0;
             while (true) {
                 ++count;

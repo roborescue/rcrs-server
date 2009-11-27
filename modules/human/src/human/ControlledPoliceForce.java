@@ -1,17 +1,13 @@
 package human;
 
-import rescuecore2.components.AbstractAgent;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Command;
 
-import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.messages.AKClear;
-import rescuecore2.standard.messages.AKMove;
+import rescuecore2.standard.entities.PoliceForce;
+import rescuecore2.standard.components.StandardAgent;
 
 import sample.SampleSearch;
 
@@ -21,8 +17,7 @@ import java.util.List;
 /**
    A basic police force agent that will try to clear a given target. Fully-blocked roads encountered along the way are also cleared. If there is no target then this agent does nothing.
 */
-public class ControlledPoliceForce extends AbstractAgent<StandardEntity> {
-    private StandardWorldModel world;
+public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
     private SampleSearch search;
     private Road target;
 
@@ -39,9 +34,7 @@ public class ControlledPoliceForce extends AbstractAgent<StandardEntity> {
         if (location() instanceof Road) {
             Road r = (Road)location();
             if (r.isLinesToHeadDefined() && (r.countBlockedLanes() == r.getLinesToHead())) {
-                System.out.println(me() + " clearing road " + r.getID());
-                AKClear clear = new AKClear(getID(), time, r.getID());
-                send(clear);
+                sendClear(time, r.getID());
                 return;
             }
         }
@@ -51,23 +44,18 @@ public class ControlledPoliceForce extends AbstractAgent<StandardEntity> {
         }
         if (location().equals(target)) {
             if (target.isBlockDefined() && target.getBlock() == 0) {
-                System.out.println(me() + ": target is clear");
                 target = null;
                 return;
             }
             else {
-                System.out.println(me() + " clearing target road " + target.getID());
-                AKClear clear = new AKClear(getID(), time, target.getID());
-                send(clear);
+                sendClear(time, target.getID());
                 return;
             }
         }
         else {
             List<EntityID> path = search.breadthFirstSearch(location(), target);
             if (path != null) {
-                AKMove move = new AKMove(getID(), time, path);
-                System.out.println(me() + " moving to target: " + move);
-                send(move);
+                sendMove(time, path);
                 return;
             }
             else {
@@ -81,25 +69,19 @@ public class ControlledPoliceForce extends AbstractAgent<StandardEntity> {
         return new String[] {StandardEntityURN.POLICE_FORCE.name()};
     }
 
-    @Override
-    protected WorldModel<StandardEntity> createWorldModel() {
-        world = new StandardWorldModel();
-        return world;
-    }
-
     /**
        Get the location of the entity controlled by this agent.
        @return The location of the entity controlled by this agent.
     */
     protected StandardEntity location() {
-        Human me = (Human)me();
-        return me.getPosition(world);
+        PoliceForce me = me();
+        return me.getPosition(model);
     }
 
     @Override
     protected void postConnect() {
-        world.index();
-        search = new SampleSearch(world, false);
+        super.postConnect();
+        search = new SampleSearch(model, false);
     }
 
     @Override
