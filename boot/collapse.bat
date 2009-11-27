@@ -1,1 +1,0 @@
-java -Xmx512m -cp ..\jars\collapse.jar;..\jars\rescuecore2.jar;..\jars\standard.jar rescuecore2.LaunchComponents collapse.CollapseSimulator -c config

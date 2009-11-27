@@ -1,1 +1,0 @@
-java -Xmx512m -cp ..\jars\kernel.jar;..\jars\rescuecore2.jar;..\jars\standard.jar;..\jars\handy.jar;..\jars\human.jar;..\jars\sample.jar kernel.StartKernel -c config --kernel.simulators.auto= --kernel.agents.auto=sample.SampleCivilian --gis.map.dir=..\maps\Kobe --just-run

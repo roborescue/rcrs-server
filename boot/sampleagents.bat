@@ -1,1 +1,0 @@
-java -Xmx512m -cp ..\jars\sample.jar;..\jars\rescuecore2.jar;..\jars\standard.jar sample.LaunchSampleAgents

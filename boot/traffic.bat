@@ -1,1 +1,0 @@
-java -Xmx512m -cp ..\oldsims traffic.Main localhost 7000

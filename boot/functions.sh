@@ -126,7 +126,7 @@ function processArgs {
 
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewer.auto= --kernel.agents.auto= --kernel.gis.auto=rescuecore2.standard.kernel.StandardWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.StandardPerception --kernel.communication.auto=rescuecore2.standard.kernel.ChannelCommunicationModel $*"
+    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewers.auto= --kernel.agents.auto= --kernel.gis.auto=rescuecore2.standard.kernel.StandardWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.StandardPerception --kernel.communication.auto=rescuecore2.standard.kernel.ChannelCommunicationModel --just-run $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
     xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS 2>&1 | tee $LOGDIR/kernel.log" &
     KERNEL=$!
@@ -136,30 +136,23 @@ function startKernel {
 
 # Start the viewer and simulators
 function startSims {
+    makeClasspath $BASEDIR/lib
     # Viewer
-    if [ -z $TEAM ]; then
-	xterm -T viewer -e "java -Xmx256m -cp $BASEDIR/oldsims/ viewer.Main -h localhost -p 7000 2>&1 | tee $LOGDIR/viewer.log" &
-    else
-	xterm -T viewer -e "java -Xmx256m -cp $BASEDIR/oldsims/ viewer.Main -h localhost -p 7000 -t \"$TEAM - $MAP\" 2>&1 | tee $LOGDIR/viewer.log" &
-    fi
+    xterm -T viewer -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleViewer 2>&1 | tee $LOGDIR/viewer.log" &
     VIEWER=$!
     # Simulators
-    xterm -T misc -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator 2>&1 | tee $LOGDIR/misc.log" &
+    xterm -T misc -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator 2>&1 | tee $LOGDIR/misc.log" &
     MISC=$!
-    xterm -T traffic -e "java -Xmx256m -cp $BASEDIR/oldsims/ traffic.Main localhost 7000 2>&1 | tee $LOGDIR/traffic.log" &
+    xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic-old.jar rescuecore2.LaunchComponents traffic.TrafficSimulatorWrapper 2>&1 | tee $LOGDIR/traffic.log" &
     TRAFFIC=$!
-    xterm -T fire -e "java -Xmx256m -jar $BASEDIR/jars/resq-fire.jar -cstp config/resq-fire.cfg -stp config/resq-fire.cfg -p 7000 2>&1 | tee $LOGDIR/fire.log" &
+    xterm -T fire -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper 2>&1 | tee $LOGDIR/fire.log" &
     FIRE=$!
-    xterm -T blockades -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/blockade.jar rescuecore2.LaunchComponents blockade.BlockadeSimulator 2>&1 | tee $LOGDIR/blockades.log" &
+    xterm -T ignition -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar rescuecore2.LaunchComponents ignition.IgnitionSimulator 2>&1 | tee $LOGDIR/ignition.log" &
+    IGNITION=$!
+    xterm -T blockades -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/blockade.jar rescuecore2.LaunchComponents blockade.BlockadeSimulator 2>&1 | tee $LOGDIR/blockades.log" &
     BLOCKADES=$!
-    xterm -T collapse -e "java -Xmx256m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar rescuecore2.LaunchComponents collapse.CollapseSimulator 2>&1 | tee $LOGDIR/collapse.log" &
+    xterm -T collapse -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar rescuecore2.LaunchComponents collapse.CollapseSimulator 2>&1 | tee $LOGDIR/collapse.log" &
     COLLAPSE=$!
-    xterm -T civilian -e "java -Xmx1024m -cp $BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleCivilian*n 2>&1 | tee $LOGDIR/civilian.log" &
+    xterm -T civilian -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleCivilian*n 2>&1 | tee $LOGDIR/civilian.log" &
     CIVILIAN=$!
-}
-
-function compileOldSims {
-    pushd ../oldsims >& /dev/null
-    make || exit 1
-    popd >& /dev/null
 }

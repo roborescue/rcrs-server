@@ -1,1 +1,0 @@
-java -Xmx512m -cp ..\oldsims viewer.Main -h localhost -p 7000
