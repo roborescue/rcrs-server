@@ -1,13 +1,9 @@
 package ignition;
 
-import rescuecore2.components.AbstractSimulator;
 import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.messages.control.SKUpdate;
-import rescuecore2.messages.control.Commands;
+import rescuecore2.messages.control.KSCommands;
 
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.Building;
 
 import java.util.Set;
@@ -15,29 +11,23 @@ import java.util.Set;
 /**
    A simulator that determines when new building fires begin.
 */
-public class IgnitionSimulator extends AbstractSimulator<StandardEntity> {
+public class IgnitionSimulator extends StandardSimulator {
     private IgnitionModel ignitionModel;
 
     @Override
-    protected WorldModel<StandardEntity> createWorldModel() {
-        return new StandardWorldModel();
-    }
-
-    @Override
     protected void postConnect() {
-        ignitionModel = new RandomIgnitionModel((StandardWorldModel)model, config);
+        super.postConnect();
+        ignitionModel = new RandomIgnitionModel(model, config);
     }
 
     @Override
-    protected void handleCommands(Commands c) {
+    protected void processCommands(KSCommands c, ChangeSet changes) {
         // Find out which buildings have ignited.
-        Set<Building> buildings = ignitionModel.findIgnitionPoints((StandardWorldModel)model, c.getTime());
-        ChangeSet changes = new ChangeSet();
+        Set<Building> buildings = ignitionModel.findIgnitionPoints(model, c.getTime());
         for (Building next : buildings) {
             next.setIgnition(true);
             changes.addChange(next, next.getIgnitionProperty());
         }
-        send(new SKUpdate(simulatorID, c.getTime(), changes));
     }
 
     @Override
