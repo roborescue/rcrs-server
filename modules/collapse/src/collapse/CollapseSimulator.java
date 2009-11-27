@@ -1,18 +1,17 @@
 package collapse;
 
 import rescuecore2.config.Config;
-import rescuecore2.components.AbstractSimulator;
-import rescuecore2.messages.control.Commands;
-import rescuecore2.messages.control.SKUpdate;
+import rescuecore2.messages.control.KSCommands;
 import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.standard.entities.StandardWorldModel;
+
+import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Building;
 
 /**
    A simple collapse simulator.
  */
-public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
+public class CollapseSimulator extends StandardSimulator {
     private static final String[] CODES = {"wood", "steel", "concrete"};
     private static final String CONFIG_PREFIX = "collapse.";
     private static final String DESTROYED_SUFFIX = ".p-destroyed";
@@ -34,12 +33,8 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     @Override
-    protected StandardWorldModel createWorldModel() {
-        return new StandardWorldModel();
-    }
-
-    @Override
     protected void postConnect() {
+        super.postConnect();
         stats = new CollapseStats[CODES.length];
         for (int i = 0; i < CODES.length; ++i) {
             stats[i] = new CollapseStats(i, config);
@@ -47,9 +42,8 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
     }
 
     @Override
-    protected void handleCommands(Commands c) {
+    protected void processCommands(KSCommands c, ChangeSet changes) {
         int time = c.getTime();
-        ChangeSet changes = new ChangeSet();
         // CHECKSTYLE:OFF:MagicNumber
         int[][] count = new int[CODES.length][6];
         // CHECKSTYLE:ON:MagicNumber
@@ -111,7 +105,6 @@ public class CollapseSimulator extends AbstractSimulator<StandardEntity> {
                 }
             }
         }
-        send(new SKUpdate(simulatorID, time, changes));
     }
 
     private class CollapseStats {
