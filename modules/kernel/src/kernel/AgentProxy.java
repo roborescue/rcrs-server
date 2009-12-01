@@ -1,7 +1,6 @@
 package kernel;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +72,7 @@ public class AgentProxy extends AbstractKernelComponent {
      */
     public void sendPerceptionUpdate(int time, ChangeSet visible, Collection<? extends Command> heard) {
         KASense sense = new KASense(getControlledEntity().getID(), time, visible, heard);
-        send(Collections.singleton(sense));
+        send(sense);
     }
 
     /**

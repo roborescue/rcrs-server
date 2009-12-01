@@ -53,6 +53,8 @@ public class Kernel {
     private ScoreFunction score;
     private CommandCollector commandCollector;
 
+    private boolean isShutdown;
+
     /**
        Construct a kernel.
        @param config The configuration to use.
@@ -112,6 +114,8 @@ public class Kernel {
 
         score.initialise(worldModel, config);
         commandCollector.initialise(config);
+
+        isShutdown = false;
 
         System.out.println("Kernel initialised");
         System.out.println("Perception module: " + perception);
@@ -246,6 +250,9 @@ public class Kernel {
     */
     public void timestep() throws InterruptedException, KernelException, LogException {
         synchronized (this) {
+            if (isShutdown) {
+                return;
+            }
             ++time;
             // Work out what the agents can see and hear (using the commands from the previous timestep).
             // Wait for new commands
@@ -316,6 +323,10 @@ public class Kernel {
     */
     public void shutdown() {
         synchronized (this) {
+            if (isShutdown) {
+                return;
+            }
+            System.out.println("Kernel is shutting down");
             for (AgentProxy next : agents) {
                 next.shutdown();
             }
@@ -332,8 +343,9 @@ public class Kernel {
             catch (LogException e) {
                 e.printStackTrace();
             }
+            System.out.println("Kernel has shut down");
+            isShutdown = true;
         }
-        System.out.println("Kernel has shut down");
     }
 
     /**
@@ -342,7 +354,7 @@ public class Kernel {
     */
     public boolean hasTerminated() {
         synchronized (this) {
-            return termination.shouldStop(this);
+            return isShutdown || termination.shouldStop(this);
         }
     }
 

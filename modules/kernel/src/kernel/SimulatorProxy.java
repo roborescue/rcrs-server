@@ -10,7 +10,6 @@ import rescuecore2.messages.control.KSCommands;
 import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -59,7 +58,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        @param update The updated entities.
     */
     public void sendUpdate(int time, ChangeSet update) {
-        send(Collections.singleton(new KSUpdate(id, time, update)));
+        send(new KSUpdate(id, time, update));
     }
 
     /**
@@ -68,7 +67,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        @param commands The agent commands to send.
      */
     public void sendAgentCommands(int time, Collection<? extends Command> commands) {
-        send(Collections.singleton(new KSCommands(id, time, commands)));
+        send(new KSCommands(id, time, commands));
     }
 
     @Override
