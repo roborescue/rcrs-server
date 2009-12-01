@@ -134,6 +134,19 @@ public abstract class AbstractEntity implements Entity {
         result.append(urn);
         result.append(" (");
         result.append(id);
+        result.append(")");
+        return result.toString();
+    }
+
+    /**
+       Get the full description of this object.
+       @return The full description.
+    */
+    public String getFullDescription() {
+        StringBuilder result = new StringBuilder();
+        result.append(urn);
+        result.append(" (");
+        result.append(id);
         result.append(") [");
         for (Iterator<Property> it = getProperties().iterator(); it.hasNext();) {
             result.append(it.next().toString());
