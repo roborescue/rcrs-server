@@ -1,8 +1,10 @@
 package rescuecore2.worldmodel;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.writeString;
 import static rescuecore2.misc.EncodingTools.writeProperty;
 import static rescuecore2.misc.EncodingTools.readInt32;
+import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.readProperty;
 
 import java.util.Set;
@@ -24,6 +26,7 @@ import rescuecore2.registry.Registry;
  */
 public class ChangeSet {
     private Map<EntityID, Map<String, Property>> changes;
+    private Map<EntityID, String> entityURNs;
 
     /**
        Create an empty ChangeSet.
@@ -35,6 +38,7 @@ public class ChangeSet {
                 return new HashMap<String, Property>();
             }
         };
+        entityURNs = new HashMap<EntityID, String>();
     }
 
     /**
@@ -52,17 +56,19 @@ public class ChangeSet {
        @param p The property that has changed.
      */
     public void addChange(Entity e, Property p) {
-        addChange(e.getID(), p);
+        addChange(e.getID(), e.getURN(), p);
     }
 
     /**
        Add a change.
        @param e The ID of the entity that has changed.
+       @param urn The URN of the entity that has changed.
        @param p The property that has changed.
      */
-    public void addChange(EntityID e, Property p) {
+    public void addChange(EntityID e, String urn, Property p) {
         Property prop = p.copy();
         changes.get(e).put(prop.getURN(), prop);
+        entityURNs.put(e, urn);
     }
 
     /**
@@ -97,14 +103,24 @@ public class ChangeSet {
     }
 
     /**
+       Get the URN of a changed entity.
+       @param id The ID of the entity.
+       @return The URN of the changed entity.
+    */
+    public String getEntityURN(EntityID id) {
+        return entityURNs.get(id);
+    }
+
+    /**
        Merge another ChangeSet into this one.
        @param other The other ChangeSet.
      */
     public void merge(ChangeSet other) {
         for (Map.Entry<EntityID, Map<String, Property>> next : other.changes.entrySet()) {
             EntityID e = next.getKey();
+            String urn = other.getEntityURN(e);
             for (Property p : next.getValue().values()) {
-                addChange(e, p);
+                addChange(e, urn, p);
             }
         }
     }
@@ -132,9 +148,11 @@ public class ChangeSet {
         // Number of entity IDs
         writeInt32(changes.size(), out);
         for (Map.Entry<EntityID, Map<String, Property>> next : changes.entrySet()) {
+            EntityID id = next.getKey();
             Collection<Property> props = next.getValue().values();
-            // EntityID, number of properties
-            writeInt32(next.getKey().getValue(), out);
+            // EntityID, URN, number of properties
+            writeInt32(id.getValue(), out);
+            writeString(getEntityURN(id), out);
             writeInt32(props.size(), out);
             for (Property prop : props) {
                 writeProperty(prop, out);
@@ -152,11 +170,12 @@ public class ChangeSet {
         int entityCount = readInt32(in);
         for (int i = 0; i < entityCount; ++i) {
             EntityID id = new EntityID(readInt32(in));
+            String urn = readString(in);
             int propCount = readInt32(in);
             for (int j = 0; j < propCount; ++j) {
                 Property p = readProperty(in, Registry.getCurrentRegistry());
                 if (p != null) {
-                    addChange(id, p);
+                    addChange(id, urn, p);
                 }
             }
         }
@@ -169,7 +188,9 @@ public class ChangeSet {
         for (Map.Entry<EntityID, Map<String, Property>> next : changes.entrySet()) {
             result.append("Entity ");
             result.append(next.getKey());
-            result.append(" [");
+            result.append(" (");
+            result.append(getEntityURN(next.getKey()));
+            result.append(") [");
             for (Iterator<Property> it = next.getValue().values().iterator(); it.hasNext();) {
                 result.append(it.next());
                 if (it.hasNext()) {

@@ -4,6 +4,8 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 
+import rescuecore2.registry.Registry;
+
 /**
    Abstract base class for WorldModel implementations.
    @param <T> The subclass of Entity that this world model holds.
@@ -82,7 +84,9 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
         for (EntityID e : changeSet.getChangedEntities()) {
             Entity existingEntity = getEntity(e);
             if (existingEntity == null) {
-                continue;
+                // Construct a new entity
+                existingEntity = Registry.getCurrentRegistry().createEntity(changeSet.getEntityURN(e), e);
+                addEntity(existingEntity);
             }
             for (Property p : changeSet.getChangedProperties(e)) {
                 Property existingProperty = existingEntity.getProperty(p.getURN());
