@@ -98,6 +98,10 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     }
 
     @Override
+    public void shutdown() {
+    }
+
+    @Override
     public String getName() {
         return getClass().getName();
     }

@@ -15,6 +15,11 @@ public interface Component {
     void initialise() throws ComponentInitialisationException;
 
     /**
+       Shut this component down.
+     */
+    void shutdown();
+
+    /**
        Get the name of this component. This is useful for debugging. Often a class name will be sufficient.
        @return A name.
     */

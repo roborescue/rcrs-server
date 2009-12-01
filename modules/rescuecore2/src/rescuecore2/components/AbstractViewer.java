@@ -9,6 +9,7 @@ import rescuecore2.messages.control.VKConnect;
 import rescuecore2.messages.control.VKAcknowledge;
 import rescuecore2.messages.control.KVConnectOK;
 import rescuecore2.messages.control.KVConnectError;
+import rescuecore2.messages.control.Shutdown;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.WorldModel;
@@ -140,6 +141,9 @@ public abstract class AbstractViewer<T extends WorldModel<? extends Entity>> ext
                 if (t.getTargetID() == viewerID) {
                     handleTimestep(t);
                 }
+            }
+            if (msg instanceof Shutdown) {
+                shutdown();
             }
         }
     }

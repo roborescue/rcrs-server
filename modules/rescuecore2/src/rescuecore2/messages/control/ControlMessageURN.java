@@ -51,7 +51,13 @@ public enum ControlMessageURN {
     KA_SENSE("urn:rescuecore2:messages.control:ka_sense"),
 
     /** Shutdown message. */
-    SHUTDOWN("urn:rescuecore2:messages.control:shutdown");
+    SHUTDOWN("urn:rescuecore2:messages.control:shutdown"),
+
+    /** New EntityID request. */
+    ENTITY_ID_REQUEST("urn:rescuecore2:messages.control:entity_id_request"),
+
+    /** New EntityID response. */
+    ENTITY_ID_RESPONSE("urn:rescuecore2:messages.control:entity_id_response");
 
     private String urn;
 

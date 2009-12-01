@@ -10,6 +10,7 @@ import rescuecore2.messages.control.AKConnect;
 import rescuecore2.messages.control.AKAcknowledge;
 import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.messages.control.KAConnectError;
+import rescuecore2.messages.control.Shutdown;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
@@ -156,6 +157,9 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
                     return;
                 }
                 processSense(sense);
+            }
+            if (msg instanceof Shutdown) {
+                shutdown();
             }
         }
     }

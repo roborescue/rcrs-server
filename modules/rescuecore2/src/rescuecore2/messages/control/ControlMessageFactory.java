@@ -69,6 +69,10 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
             return new KASense(data);
         case SHUTDOWN:
             return new Shutdown(data);
+        case ENTITY_ID_REQUEST:
+            return new EntityIDRequest(data);
+        case ENTITY_ID_RESPONSE:
+            return new EntityIDResponse(data);
         default:
             LOG.warn("Unrecognised message urn: " + urn);
             return null;

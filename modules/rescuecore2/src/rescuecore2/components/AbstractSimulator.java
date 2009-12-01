@@ -11,13 +11,23 @@ import rescuecore2.messages.control.SKConnect;
 import rescuecore2.messages.control.SKAcknowledge;
 import rescuecore2.messages.control.KSConnectOK;
 import rescuecore2.messages.control.KSConnectError;
+import rescuecore2.messages.control.Shutdown;
+import rescuecore2.messages.control.EntityIDRequest;
+import rescuecore2.messages.control.EntityIDResponse;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
+import rescuecore2.misc.WorkerThread;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
    Abstract base class for simulator implementations.
@@ -31,16 +41,22 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
 
     private int lastUpdateTime;
 
+    private ProcessThread processor;
+
+    private Map<Integer, List<EntityID>> idRequests;
+    private int nextIDRequest;
+
     /**
        Create a new AbstractSimulator.
-     */
+    */
     protected AbstractSimulator() {
+        processor = new ProcessThread();
     }
 
     /**
        Get this simulator's ID.
        @return The simulator ID.
-     */
+    */
     public final int getSimulatorID() {
         return simulatorID;
     }
@@ -50,6 +66,9 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
         this.simulatorID = id;
         c.addConnectionListener(new SimulatorListener());
         lastUpdateTime = 0;
+        nextIDRequest = 0;
+        idRequests = new HashMap<Integer, List<EntityID>>();
+        processor.start();
         super.postConnect(c, entities, kernelConfig);
     }
 
@@ -67,10 +86,21 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
         l.testSuccess();
     }
 
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        try {
+            processor.kill();
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
        Handle a KSUpdate object from the server. The default implementation just updates the world model.
        @param u The Update object.
-     */
+    */
     protected void handleUpdate(KSUpdate u) {
         ChangeSet changes = u.getChangeSet();
         int time = u.getTime();
@@ -84,7 +114,7 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
     /**
        Handle a KSCommands object from the server. The default implementation tells the kernel that nothing has changed.
        @param c The Commands object.
-     */
+    */
     protected void handleCommands(KSCommands c) {
         ChangeSet changes = new ChangeSet();
         processCommands(c, changes);
@@ -97,6 +127,52 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
        @param changes The ChangeSet to populate.
     */
     protected void processCommands(KSCommands c, ChangeSet changes) {
+    }
+
+    /**
+       Request some new entity IDs from the kernel.
+       @param count The number to request.
+       @return A list of new entity IDs.
+    */
+    protected List<EntityID> requestNewEntityIDs(int count) throws InterruptedException {
+        synchronized (idRequests) {
+            int id = nextIDRequest++;
+            send(new EntityIDRequest(simulatorID, id, count));
+            // Wait for a reply
+            Integer key = id;
+            while (!idRequests.containsKey(key)) {
+                idRequests.wait();
+            }
+            List<EntityID> result = idRequests.get(key);
+            idRequests.remove(key);
+            return result;
+        }
+    }
+
+    private class ProcessThread extends WorkerThread {
+        private BlockingQueue<Message> queue;
+
+        ProcessThread() {
+            queue = new LinkedBlockingQueue<Message>();
+        }
+
+        void push(Message m) {
+            queue.add(m);
+        }
+
+        @Override
+        public boolean work() throws InterruptedException {
+            Message msg = queue.take();
+            if (msg instanceof KSUpdate) {
+                KSUpdate u = (KSUpdate)msg;
+                handleUpdate(u);
+            }
+            if (msg instanceof KSCommands) {
+                KSCommands commands = (KSCommands)msg;
+                handleCommands(commands);
+            }
+            return true;
+        }
     }
 
     private class SimulatorConnectionListener implements ConnectionListener {
@@ -158,13 +234,25 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
             if (msg instanceof KSUpdate) {
                 KSUpdate u = (KSUpdate)msg;
                 if (u.getTargetID() == simulatorID) {
-                    handleUpdate(u);
+                    processor.push(u);
                 }
             }
             if (msg instanceof KSCommands) {
                 KSCommands commands = (KSCommands)msg;
                 if (commands.getTargetID() == simulatorID) {
-                    handleCommands(commands);
+                    processor.push(commands);
+                }
+            }
+            if (msg instanceof Shutdown) {
+                shutdown();
+            }
+            if (msg instanceof EntityIDResponse) {
+                EntityIDResponse resp = (EntityIDResponse)msg;
+                if (resp.getSimulatorID() == simulatorID) {
+                    synchronized (idRequests) {
+                        idRequests.put(resp.getRequestID(), resp.getEntityIDs());
+                        idRequests.notifyAll();
+                    }
                 }
             }
         }
