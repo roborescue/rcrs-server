@@ -48,5 +48,8 @@ public enum ControlMessageURN {
     /** Kernel-Agent error. */
     KA_CONNECT_ERROR,
     /** Kernel-Agent perception update. */
-    KA_SENSE;
+    KA_SENSE,
+
+    /** Shutdown message. */
+    SHUTDOWN;
 }

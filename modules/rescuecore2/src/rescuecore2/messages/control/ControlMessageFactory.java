@@ -62,6 +62,8 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
             return new KAConnectError(data);
         case KA_SENSE:
             return new KASense(data);
+        case SHUTDOWN:
+            return new Shutdown(data);
         default:
             System.out.println("Unrecognised message urn: " + urn);
             return null;
