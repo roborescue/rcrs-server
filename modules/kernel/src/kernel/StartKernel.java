@@ -299,7 +299,7 @@ public final class StartKernel {
         termination.initialise(config);
         // Create the kernel
         ScoreGraph graph = new ScoreGraph(score);
-        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination, graph, collector);
+        Kernel kernel = new Kernel(config, perception, comms, worldModel, gis, filter, termination, graph, collector);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);

@@ -51,6 +51,7 @@ public class Kernel {
     private int time;
     private Timestep previousTimestep;
 
+    private EntityIDGenerator idGenerator;
     private CommandFilter commandFilter;
 
     private TerminationCondition termination;
@@ -65,6 +66,7 @@ public class Kernel {
        @param perception A perception calculator.
        @param communicationModel A communication model.
        @param worldModel The world model.
+       @param idGenerator An EntityIDGenerator.
        @param commandFilter An optional command filter. This may be null.
        @param termination The termination condition.
        @param score The score function.
@@ -75,6 +77,7 @@ public class Kernel {
                   Perception perception,
                   CommunicationModel communicationModel,
                   WorldModel<? extends Entity> worldModel,
+                  EntityIDGenerator idGenerator,
                   CommandFilter commandFilter,
                   TerminationCondition termination,
                   ScoreFunction score,
@@ -87,6 +90,7 @@ public class Kernel {
         this.score = score;
         this.termination = termination;
         this.commandCollector = collector;
+        this.idGenerator = idGenerator;
         listeners = new HashSet<KernelListener>();
         agents = new HashSet<AgentProxy>();
         sims = new HashSet<SimulatorProxy>();
@@ -186,6 +190,7 @@ public class Kernel {
     public void addSimulator(SimulatorProxy sim) {
         synchronized (this) {
             sims.add(sim);
+            sim.setEntityIDGenerator(idGenerator);
         }
         fireSimulatorAdded(sim);
     }

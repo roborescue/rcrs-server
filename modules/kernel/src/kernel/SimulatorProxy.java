@@ -7,11 +7,16 @@ import rescuecore2.messages.Command;
 import rescuecore2.messages.control.SKUpdate;
 import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.control.KSCommands;
+import rescuecore2.messages.control.EntityIDRequest;
+import rescuecore2.messages.control.EntityIDResponse;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.EntityID;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
    This class is the kernel interface to a simulator.
@@ -19,6 +24,7 @@ import java.util.HashMap;
 public class SimulatorProxy extends AbstractKernelComponent {
     private Map<Integer, ChangeSet> updates;
     private int id;
+    private EntityIDGenerator idGenerator;
 
     /**
        Construct a new simulator.
@@ -76,6 +82,14 @@ public class SimulatorProxy extends AbstractKernelComponent {
     }
 
     /**
+       Set the EntityIDGenerator.
+       @param generator The new EntityIDGenerator.
+    */
+    public void setEntityIDGenerator(EntityIDGenerator generator) {
+        idGenerator = generator;
+    }
+
+    /**
        Register an update from the simulator.
        @param time The timestep of the update.
        @param changes The set of changes.
@@ -99,6 +113,18 @@ public class SimulatorProxy extends AbstractKernelComponent {
                 SKUpdate update = (SKUpdate)msg;
                 if (update.getSimulatorID() == id) {
                     updateReceived(update.getTime(), update.getChangeSet());
+                }
+            }
+            if (msg instanceof EntityIDRequest) {
+                EntityIDRequest req = (EntityIDRequest)msg;
+                if (req.getSimulatorID() == id) {
+                    int requestID = req.getRequestID();
+                    int count = req.getCount();
+                    List<EntityID> result = new ArrayList<EntityID>(count);
+                    for (int i = 0; i < count; ++i) {
+                        result.add(idGenerator.generateID());
+                    }
+                    send(new EntityIDResponse(id, requestID, result));
                 }
             }
         }

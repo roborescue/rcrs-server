@@ -7,7 +7,7 @@ import rescuecore2.config.Config;
 /**
    The interface for world model creators, e.g. GIS systems.
  */
-public interface WorldModelCreator {
+public interface WorldModelCreator extends EntityIDGenerator {
     /**
        Create a new WorldModel.
        @param config The config to use.

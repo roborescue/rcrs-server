@@ -1,4 +1,14 @@
 Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.7.1
+<<<<<<< HEAD:modules/misc/manifest
+<<<<<<< HEAD:modules/misc/manifest
 Created-By: 14.2-b01 (Sun Microsystems Inc.)
 Simulator: misc.MiscSimulator
+=======
+Created-By: 14.0-b16 (Sun Microsystems Inc.)
+
+>>>>>>> 7e893c2... Kernel: SimulatorProxy now processes EntityIDRequest messages:modules/misc/manifest
+=======
+Created-By: 14.0-b16 (Sun Microsystems Inc.)
+
+>>>>>>> 7e893c2... Kernel: SimulatorProxy now processes EntityIDRequest messages:modules/misc/manifest
