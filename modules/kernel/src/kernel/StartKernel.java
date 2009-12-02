@@ -55,6 +55,7 @@ import rescuecore2.score.ScoreFunction;
 
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
+import kernel.ui.ScoreTable;
 
 /**
    A class for launching the kernel.
@@ -305,7 +306,7 @@ public final class StartKernel {
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);
-        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config), dialog);
+        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config, perception, comms, termination, filter, score, collector), dialog);
         return result;
     }
 
@@ -344,7 +345,7 @@ public final class StartKernel {
     private static ScoreFunction makeScoreFunction(Config config) {
         String className = config.getValue(Constants.SCORE_FUNCTION_KEY);
         ScoreFunction result = instantiate(className, ScoreFunction.class);
-        return result;
+        return new ScoreTable(result);
     }
 
     private static CommandCollector makeCommandCollector(Config config) {
@@ -359,16 +360,21 @@ public final class StartKernel {
         return result;
     }
 
-    private static List<KernelGUIComponent> makeKernelGUIComponents(Config config) {
+    private static List<KernelGUIComponent> makeKernelGUIComponents(Config config, Object... objectsToTest) {
         List<KernelGUIComponent> result = new ArrayList<KernelGUIComponent>();
-            List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY, null);
-            for (String next : classNames) {
-                System.out.println("GUI component found: '" + next + "'");
-                KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
-                if (c != null) {
-                    result.add(c);
-                }
+        List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY, null);
+        for (String next : classNames) {
+            System.out.println("GUI component found: '" + next + "'");
+            KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
+            if (c != null) {
+                result.add(c);
             }
+        }
+        for (Object next : objectsToTest) {
+            if (next instanceof KernelGUIComponent) {
+                result.add((KernelGUIComponent)next);
+            }
+        }
         return result;
     }
 
@@ -492,12 +498,6 @@ public final class StartKernel {
             this.componentManager = componentManager;
             this.choices = choices;
             guiComponents = new ArrayList<KernelGUIComponent>(otherComponents);
-            if (perception instanceof KernelGUIComponent) {
-                guiComponents.add((KernelGUIComponent)perception);
-            }
-            if (comms instanceof KernelGUIComponent) {
-                guiComponents.add((KernelGUIComponent)comms);
-            }
         }
     }
 }

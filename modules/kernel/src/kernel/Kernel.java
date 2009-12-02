@@ -110,7 +110,7 @@ public class Kernel {
         config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
         config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
 
-        score.initialise(config);
+        score.initialise(worldModel, config);
         commandCollector.initialise(config);
 
         System.out.println("Kernel initialised");
