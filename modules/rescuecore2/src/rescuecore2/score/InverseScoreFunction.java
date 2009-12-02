@@ -1,6 +1,5 @@
 package rescuecore2.score;
 
-import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.Timestep;
@@ -8,20 +7,18 @@ import rescuecore2.Timestep;
 /**
    A score function that returns the inverse of a child score function.
  */
-public class InverseScoreFunction implements ScoreFunction {
-    private ScoreFunction child;
-
+public class InverseScoreFunction extends DelegatingScoreFunction {
     /**
        Create an InverseScoreFunction.
        @param child The child function to invert.
     */
     public InverseScoreFunction(ScoreFunction child) {
-        this.child = child;
+        super(child);
     }
 
     @Override
-    public void initialise(Config config) {
-        child.initialise(config);
+    public String toString() {
+        return "Inverse";
     }
 
     @Override

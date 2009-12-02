@@ -34,6 +34,11 @@ public class MultiplicativeScoreFunction extends CompositeScoreFunction {
     }
 
     @Override
+    public String toString() {
+        return "Multiplier";
+    }
+
+    @Override
     public double score(WorldModel<? extends Entity> world, Timestep timestep) {
         double result = 1;
         for (ScoreFunction next : children) {

@@ -1,10 +1,13 @@
 package rescuecore2.score;
 
 import rescuecore2.config.Config;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
 
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
    A score function that applies some function to the scores of a set of child score functions.
@@ -95,9 +98,17 @@ public abstract class CompositeScoreFunction implements ScoreFunction {
     }
 
     @Override
-    public void initialise(Config config) {
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
         for (ScoreFunction next : children) {
-            next.initialise(config);
+            next.initialise(world, config);
         }
+    }
+
+    /**
+       Get all the child functions.
+       @return All child functions.
+    */
+    public Set<ScoreFunction> getChildFunctions() {
+        return Collections.unmodifiableSet(children);
     }
 }

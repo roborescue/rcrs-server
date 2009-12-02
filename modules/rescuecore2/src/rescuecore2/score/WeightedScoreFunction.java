@@ -21,6 +21,11 @@ public class WeightedScoreFunction extends CompositeScoreFunction {
         weights = new HashMap<ScoreFunction, Double>();
     }
 
+    @Override
+    public String toString() {
+        return "Weighted sum";
+    }
+
     /**
        Add a child score function with a weight.
        @param child The child score function to add.

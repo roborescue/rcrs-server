@@ -6,12 +6,14 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.Timestep;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
    A score function that accumulates scores from a set of child score functions.
  */
 public class CumulativeScoreFunction extends CompositeScoreFunction {
-    private double sum;
+    private Map<Integer, Double> scores;
 
     /**
        Create a CumulativeScoreFunction with no children.
@@ -37,16 +39,22 @@ public class CumulativeScoreFunction extends CompositeScoreFunction {
     }
 
     @Override
-    public void initialise(Config config) {
-        super.initialise(config);
-        sum = 0;
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
+        super.initialise(world, config);
+        scores = new HashMap<Integer, Double>();
     }
 
     @Override
     public double score(WorldModel<? extends Entity> world, Timestep timestep) {
+        double sum = 0;
         for (ScoreFunction next : children) {
             sum += next.score(world, timestep);
         }
+        Double previous = scores.get(timestep.getTime() - 1);
+        if (previous != null) {
+            sum += previous;
+        }
+        scores.put(timestep.getTime(), sum);
         return sum;
     }
 }

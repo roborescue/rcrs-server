@@ -20,7 +20,12 @@ public class ConstantScoreFunction implements ScoreFunction {
     }
 
     @Override
-    public void initialise(Config config) {
+    public String toString() {
+        return "Constant score";
+    }
+
+    @Override
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
     }
 
     @Override

@@ -1,6 +1,5 @@
 package rescuecore2.score;
 
-import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.Timestep;
@@ -8,8 +7,7 @@ import rescuecore2.Timestep;
 /**
    A score function that performs a unary operation on a child score function.
  */
-public class UnaryOperatorScoreFunction implements ScoreFunction {
-    private ScoreFunction child;
+public class UnaryOperatorScoreFunction extends DelegatingScoreFunction {
     private Operator op;
 
     /**
@@ -18,18 +16,18 @@ public class UnaryOperatorScoreFunction implements ScoreFunction {
        @param child The child function to invert.
     */
     public UnaryOperatorScoreFunction(Operator op, ScoreFunction child) {
+        super(child);
         this.op = op;
-        this.child = child;
-    }
-
-    @Override
-    public void initialise(Config config) {
-        child.initialise(config);
     }
 
     @Override
     public double score(WorldModel<? extends Entity> world, Timestep timestep) {
         return op.perform(child.score(world, timestep));
+    }
+
+    @Override
+    public String toString() {
+        return "Unary operator: " + op.toString();
     }
 
     /**

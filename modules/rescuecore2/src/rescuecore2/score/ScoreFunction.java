@@ -11,9 +11,10 @@ import rescuecore2.Timestep;
 public interface ScoreFunction {
     /**
        Initialise this score function.
+       @param world The state of the world at the start of the simulation.
        @param config The system configuration.
     */
-    void initialise(Config config);
+    void initialise(WorldModel<? extends Entity> world, Config config);
 
     /**
        Calculate the score for a timestep.
