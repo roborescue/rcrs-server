@@ -23,7 +23,12 @@ public class DiscoveryScoreFunction implements ScoreFunction {
     private Set<EntityID> found;
 
     @Override
-    public void initialise(Config config) {
+    public String toString() {
+        return "Civilian discovery time";
+    }
+
+    @Override
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
         found = new HashSet<EntityID>();
     }
 

@@ -13,7 +13,12 @@ import rescuecore2.standard.entities.Civilian;
  */
 public class CiviliansAliveScoreFunction implements ScoreFunction {
     @Override
-    public void initialise(Config config) {
+    public String toString() {
+        return "Civilians alive";
+    }
+
+    @Override
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
     }
 
     @Override

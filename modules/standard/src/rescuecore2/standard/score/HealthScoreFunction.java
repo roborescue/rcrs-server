@@ -18,7 +18,15 @@ public class HealthScoreFunction implements ScoreFunction {
     private boolean absolute;
 
     @Override
-    public void initialise(Config config) {
+    public String toString() {
+        if (absolute) {
+            return "Civilian health (absolute)";
+        }
+        return "Civilian health (proportion)";
+    }
+
+    @Override
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
         absolute = config.getBooleanValue(ABSOLUTE_KEY, false);
     }
 

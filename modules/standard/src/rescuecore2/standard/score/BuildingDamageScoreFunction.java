@@ -29,7 +29,12 @@ public class BuildingDamageScoreFunction implements ScoreFunction {
     private boolean absolute;
 
     @Override
-    public void initialise(Config config) {
+    public String toString() {
+        return "Building damage";
+    }
+
+    @Override
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
         factors = new EnumMap<Building.Fieryness, Double>(Building.Fieryness.class);
         factors.put(Building.Fieryness.UNBURNT, 1.0);
         factors.put(Building.Fieryness.HEATING, config.getFloatValue(HEATING_FACTOR));
