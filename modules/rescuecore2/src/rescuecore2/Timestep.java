@@ -75,11 +75,26 @@ public class Timestep {
     }
 
     /**
-       Get the commands send by agents this timestep.
+       Get the commands sent by agents this timestep.
        @return The commands.
     */
     public Collection<Command> getCommands() {
         return commands;
+    }
+
+    /**
+       Get the commands sent by a particular agent this timestep.
+       @param agentID The ID of the agent.
+       @return All commands send by that agent.
+    */
+    public Collection<Command> getCommands(EntityID agentID) {
+        Set<Command> result = new HashSet<Command>();
+        for (Command next : commands) {
+            if (next.getAgentID().equals(agentID)) {
+                result.add(next);
+            }
+        }
+        return result;
     }
 
     /**
