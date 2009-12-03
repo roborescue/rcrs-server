@@ -1,6 +1,6 @@
 package rescuecore2.standard.score;
 
-import rescuecore2.score.ScoreFunction;
+import rescuecore2.score.AbstractScoreFunction;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
@@ -22,13 +22,15 @@ import rescuecore2.standard.misc.AgentPath;
 /**
    A score function that measures the distance travelled by all agents.
 */
-public class DistanceTravelledScoreFunction implements ScoreFunction {
+public class DistanceTravelledScoreFunction extends AbstractScoreFunction {
     private Map<EntityID, EntityID> lastPosition;
     private Map<EntityID, Integer> lastPositionExtra;
 
-    @Override
-    public String toString() {
-        return "Distance travelled";
+    /**
+       Construct a DistanceTravelledScoreFunction.
+    */
+    public DistanceTravelledScoreFunction() {
+        super("Distance travelled");
     }
 
     @Override

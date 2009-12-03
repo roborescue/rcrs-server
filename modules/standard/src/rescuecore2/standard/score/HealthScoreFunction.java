@@ -1,6 +1,6 @@
 package rescuecore2.standard.score;
 
-import rescuecore2.score.ScoreFunction;
+import rescuecore2.score.AbstractScoreFunction;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
@@ -11,23 +11,23 @@ import rescuecore2.standard.entities.Civilian;
 /**
    Score function that measures the health of living civilians.
  */
-public class HealthScoreFunction implements ScoreFunction {
+public class HealthScoreFunction extends AbstractScoreFunction {
     private static final String ABSOLUTE_KEY = "score.standard.health.absolute";
     private static final double MAX = 10000;
 
     private boolean absolute;
 
-    @Override
-    public String toString() {
-        if (absolute) {
-            return "Civilian health (absolute)";
-        }
-        return "Civilian health (proportion)";
+    /**
+       Construct a HealthScoreFunction.
+    */
+    public HealthScoreFunction() {
+        super("Civilian health");
     }
 
     @Override
     public void initialise(WorldModel<? extends Entity> world, Config config) {
         absolute = config.getBooleanValue(ABSOLUTE_KEY, false);
+        setName(absolute ? "Civilian health (absolute)" : "Civilian health (proportion)");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package rescuecore2.standard.score;
 
-import rescuecore2.score.ScoreFunction;
+import rescuecore2.score.AbstractScoreFunction;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
@@ -14,7 +14,7 @@ import rescuecore2.standard.entities.Building;
 /**
    Score function that measures the amount of damage done to buildings by fire.
  */
-public class BuildingDamageScoreFunction implements ScoreFunction {
+public class BuildingDamageScoreFunction extends AbstractScoreFunction {
     private static final String HEATING_FACTOR = "score.standard.building-fire.heating";
     private static final String BURNING_FACTOR = "score.standard.building-fire.burning";
     private static final String INFERNO_FACTOR = "score.standard.building-fire.inferno";
@@ -28,9 +28,11 @@ public class BuildingDamageScoreFunction implements ScoreFunction {
     private Map<Building.Fieryness, Double> factors;
     private boolean absolute;
 
-    @Override
-    public String toString() {
-        return "Building damage";
+    /**
+       Construct a BuildingDamageScoreFunction.
+    */
+    public BuildingDamageScoreFunction() {
+        super("Building damage");
     }
 
     @Override

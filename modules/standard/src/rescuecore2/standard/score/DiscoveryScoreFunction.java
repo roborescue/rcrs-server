@@ -1,6 +1,6 @@
 package rescuecore2.standard.score;
 
-import rescuecore2.score.ScoreFunction;
+import rescuecore2.score.AbstractScoreFunction;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
@@ -19,12 +19,14 @@ import rescuecore2.standard.entities.PoliceForce;
 /**
    Score function that measures how quickly civilians are discovered by agents.
  */
-public class DiscoveryScoreFunction implements ScoreFunction {
+public class DiscoveryScoreFunction extends AbstractScoreFunction {
     private Set<EntityID> found;
 
-    @Override
-    public String toString() {
-        return "Civilian discovery time";
+    /**
+       Construct a DiscoveryScoreFunction.
+    */
+    public DiscoveryScoreFunction() {
+        super("Civilian discovery time");
     }
 
     @Override

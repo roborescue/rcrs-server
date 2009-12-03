@@ -1,6 +1,6 @@
 package rescuecore2.standard.score;
 
-import rescuecore2.score.ScoreFunction;
+import rescuecore2.score.AbstractScoreFunction;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
@@ -11,10 +11,12 @@ import rescuecore2.standard.entities.Civilian;
 /**
    Score function that measures the number of living civilians. One point per civilian still alive.
  */
-public class CiviliansAliveScoreFunction implements ScoreFunction {
-    @Override
-    public String toString() {
-        return "Civilians alive";
+public class CiviliansAliveScoreFunction extends AbstractScoreFunction {
+    /**
+       Construct a CiviliansAliveScoreFunction.
+    */
+    public CiviliansAliveScoreFunction() {
+        super("Civilians alive");
     }
 
     @Override
