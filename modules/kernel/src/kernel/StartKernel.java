@@ -56,6 +56,7 @@ import rescuecore2.score.ScoreFunction;
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelGUIComponent;
 import kernel.ui.ScoreTable;
+import kernel.ui.ScoreGraph;
 
 /**
    A class for launching the kernel.
@@ -302,11 +303,12 @@ public final class StartKernel {
         comms.initialise(config, worldModel);
         termination.initialise(config);
         // Create the kernel
-        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination, score, collector);
+        ScoreGraph graph = new ScoreGraph(score);
+        Kernel kernel = new Kernel(config, perception, comms, worldModel, filter, termination, graph, collector);
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);
-        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config, perception, comms, termination, filter, score, collector), dialog);
+        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config, perception, comms, termination, filter, graph, collector, score), dialog);
         return result;
     }
 

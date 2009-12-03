@@ -10,8 +10,14 @@ import rescuecore2.Timestep;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
+import javax.swing.JList;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.AbstractListModel;
+import javax.swing.UIManager;
+import javax.swing.ListCellRenderer;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -24,36 +30,41 @@ import kernel.Kernel;
 /**
    A ScoreFunction that also provides a JTable for viewing the components of the score.
  */
-public class ScoreTable implements KernelGUIComponent, ScoreFunction {
-    private ScoreFunction child;
-    private JTable table;
-    private ScoreTableModel model;
+public class ScoreTable extends DelegatingScoreFunction implements KernelGUIComponent {
+    private ScoreModel model;
 
     /**
        Construct a ScoreTable that wraps a child score function.
        @param child The child score function.
     */
     public ScoreTable(ScoreFunction child) {
-        this.child = child;
+        super("Score Table", child);
     }
 
     @Override
     public void initialise(WorldModel<? extends Entity> world, Config config) {
-        child.initialise(world, config);
-        model = new ScoreTableModel(child);
-        table = new JTable(model);
+        super.initialise(world, config);
+        model = new ScoreModel(child);
     }
 
     @Override
     public double score(WorldModel<? extends Entity> world, Timestep timestep) {
         model.update(world, timestep);
-        return child.score(world, timestep);
+        return super.score(world, timestep);
     }
 
     @Override
     public JComponent getGUIComponent(Kernel kernel, Config config) {
+        JTable table = new JTable(model.table);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        return new JScrollPane(table);
+        JScrollPane scroll = new JScrollPane(table);
+        JList rowHeader = new JList(model.list);
+        rowHeader.setFixedCellHeight(table.getRowHeight());
+        rowHeader.setCellRenderer(new RowHeaderRenderer(table));
+        rowHeader.setBackground(table.getBackground());
+        rowHeader.setOpaque(true);
+        scroll.setRowHeaderView(rowHeader);
+        return scroll;
     }
 
     @Override
@@ -61,54 +72,52 @@ public class ScoreTable implements KernelGUIComponent, ScoreFunction {
         return "Score";
     }
 
-    private static class ScoreTableModel extends AbstractTableModel {
+    private static class RowHeaderRenderer extends JLabel implements ListCellRenderer {
+        RowHeaderRenderer(JTable table) {
+            JTableHeader header = table.getTableHeader();
+            setOpaque(true);
+            setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+            setHorizontalAlignment(LEFT);
+            setForeground(header.getForeground());
+            setBackground(header.getBackground());
+            setFont(header.getFont());
+        }
+
+        @Override
+        public JLabel getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setText((value == null) ? "" : value.toString());
+            return this;
+        }
+    }
+
+    private static class ScoreModel {
+        ScoreTableModel table;
+        ScoreListModel list;
         private int steps;
         private List<ScoreFunctionEntry> entries;
 
-        ScoreTableModel(ScoreFunction root) {
+        ScoreModel(ScoreFunction root) {
             steps = 0;
             entries = new ArrayList<ScoreFunctionEntry>();
             populateEntries(root, "");
+            table = new ScoreTableModel();
+            list = new ScoreListModel();
         }
 
         private void populateEntries(ScoreFunction root, String prefix) {
-            entries.add(new ScoreFunctionEntry(root, prefix));
+            String suffix = "";
+            if (!(root instanceof ScoreTable || root instanceof ScoreGraph)) {
+                entries.add(new ScoreFunctionEntry(root, prefix));
+                suffix = "--";
+            }
             if (root instanceof DelegatingScoreFunction) {
-                populateEntries(((DelegatingScoreFunction)root).getChildFunction(), prefix + "--");
+                populateEntries(((DelegatingScoreFunction)root).getChildFunction(), prefix + suffix);
             }
             if (root instanceof CompositeScoreFunction) {
                 Set<ScoreFunction> children = ((CompositeScoreFunction)root).getChildFunctions();
                 for (ScoreFunction next : children) {
-                    populateEntries(next, prefix + "--");
+                    populateEntries(next, prefix + suffix);
                 }
-            }
-        }
-
-        @Override
-        public String getColumnName(int col) {
-            if (col == 0) {
-                return "Score function";
-            }
-            return String.valueOf(col);
-        }
-
-        @Override
-        public int getRowCount() {
-            return entries.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return steps + 1;
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            if (column == 0) {
-                return entries.get(row).getScoreFunctionName();
-            }
-            else {
-                return entries.get(row).getScore(column);
             }
         }
 
@@ -117,7 +126,41 @@ public class ScoreTable implements KernelGUIComponent, ScoreFunction {
                 next.update(world, timestep);
             }
             steps = timestep.getTime();
-            fireTableStructureChanged();
+            table.fireTableStructureChanged();
+        }
+
+        private class ScoreTableModel extends AbstractTableModel {
+            @Override
+            public String getColumnName(int col) {
+                return String.valueOf(col + 1);
+            }
+
+            @Override
+            public int getRowCount() {
+                return entries.size();
+            }
+
+            @Override
+            public int getColumnCount() {
+                return steps;
+            }
+
+            @Override
+            public Object getValueAt(int row, int column) {
+                return entries.get(row).getScore(column + 1);
+            }
+        }
+
+        private class ScoreListModel extends AbstractListModel {
+            @Override
+            public int getSize() {
+                return entries.size();
+            }
+
+            @Override
+            public Object getElementAt(int row) {
+                return entries.get(row).getScoreFunctionName();
+            }
         }
 
         private static class ScoreFunctionEntry {
@@ -132,7 +175,7 @@ public class ScoreTable implements KernelGUIComponent, ScoreFunction {
             }
 
             public String getScoreFunctionName() {
-                return prefix + function.toString();
+                return prefix + function.getName();
             }
 
             public double getScore(int step) {
