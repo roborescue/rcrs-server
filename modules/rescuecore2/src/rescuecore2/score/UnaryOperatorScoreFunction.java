@@ -12,22 +12,18 @@ public class UnaryOperatorScoreFunction extends DelegatingScoreFunction {
 
     /**
        Create a UnaryOperatorScoreFunction.
+       @param name The name of this function.
        @param op The operation to perform.
        @param child The child function to invert.
     */
-    public UnaryOperatorScoreFunction(Operator op, ScoreFunction child) {
-        super(child);
+    public UnaryOperatorScoreFunction(String name, Operator op, ScoreFunction child) {
+        super(name, child);
         this.op = op;
     }
 
     @Override
     public double score(WorldModel<? extends Entity> world, Timestep timestep) {
         return op.perform(child.score(world, timestep));
-    }
-
-    @Override
-    public String toString() {
-        return "Unary operator: " + op.toString();
     }
 
     /**

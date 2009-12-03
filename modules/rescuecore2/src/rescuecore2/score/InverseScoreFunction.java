@@ -10,10 +10,11 @@ import rescuecore2.Timestep;
 public class InverseScoreFunction extends DelegatingScoreFunction {
     /**
        Create an InverseScoreFunction.
+       @param name The name of this function.
        @param child The child function to invert.
     */
-    public InverseScoreFunction(ScoreFunction child) {
-        super(child);
+    public InverseScoreFunction(String name, ScoreFunction child) {
+        super(name, child);
     }
 
     @Override

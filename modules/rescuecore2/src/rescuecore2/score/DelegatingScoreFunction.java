@@ -8,15 +8,17 @@ import rescuecore2.Timestep;
 /**
    A score function that applies some function to the score of a child score function.
  */
-public abstract class DelegatingScoreFunction implements ScoreFunction {
+public abstract class DelegatingScoreFunction extends AbstractScoreFunction {
     /** The child score function. */
     protected ScoreFunction child;
 
     /**
        Create a DelegatingScoreFunction with a child function.
+       @param name The name of this function.
        @param c The child score function.
     */
-    public DelegatingScoreFunction(ScoreFunction c) {
+    public DelegatingScoreFunction(String name, ScoreFunction c) {
+        super(name);
         child = c;
     }
 

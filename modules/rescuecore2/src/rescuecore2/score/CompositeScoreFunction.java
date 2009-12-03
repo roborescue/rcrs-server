@@ -12,32 +12,36 @@ import java.util.Collections;
 /**
    A score function that applies some function to the scores of a set of child score functions.
  */
-public abstract class CompositeScoreFunction implements ScoreFunction {
+public abstract class CompositeScoreFunction extends AbstractScoreFunction {
     /** The child score functions. */
     protected Set<ScoreFunction> children;
 
     /**
        Create a CompositeScoreFunction with no children.
+       @param name The name of this function.
     */
-    public CompositeScoreFunction() {
+    public CompositeScoreFunction(String name) {
+        super(name);
         children = new HashSet<ScoreFunction>();
     }
 
     /**
        Create a CompositeScoreFunction with a collection of children.
+       @param name The name of this function.
        @param c The child score functions.
     */
-    public CompositeScoreFunction(Collection<ScoreFunction> c) {
-        this();
+    public CompositeScoreFunction(String name, Collection<ScoreFunction> c) {
+        this(name);
         addChildFunctions(c);
     }
 
     /**
        Create a CompositeScoreFunction with a collection of children.
+       @param name The name of this function.
        @param c The child score functions.
     */
-    public CompositeScoreFunction(ScoreFunction... c) {
-        this();
+    public CompositeScoreFunction(String name, ScoreFunction... c) {
+        this(name);
         addChildFunctions(c);
     }
 

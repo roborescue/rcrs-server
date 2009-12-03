@@ -8,14 +8,16 @@ import rescuecore2.Timestep;
 /**
    A score function that returns a constant score.
  */
-public class ConstantScoreFunction implements ScoreFunction {
+public class ConstantScoreFunction extends AbstractScoreFunction {
     private double score;
 
     /**
        Create a ConstantScoreFunction.
+       @param name The name of this function.
        @param score The constant score.
     */
-    public ConstantScoreFunction(double score) {
+    public ConstantScoreFunction(String name, double score) {
+        super(name);
         this.score = score;
     }
 

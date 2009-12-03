@@ -15,9 +15,10 @@ public class WeightedScoreFunction extends CompositeScoreFunction {
 
     /**
        Create a WeightedScoreFunction with no children.
+       @param name The name of this function.
     */
-    public WeightedScoreFunction() {
-        super();
+    public WeightedScoreFunction(String name) {
+        super(name);
         weights = new HashMap<ScoreFunction, Double>();
     }
 

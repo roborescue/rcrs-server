@@ -12,25 +12,28 @@ import java.util.Collection;
 public class MultiplicativeScoreFunction extends CompositeScoreFunction {
     /**
        Create a MultiplicativeScoreFunction with no children.
+       @param name The name of this function.
     */
-    public MultiplicativeScoreFunction() {
-        super();
+    public MultiplicativeScoreFunction(String name) {
+        super(name);
     }
 
     /**
        Create a MultiplicativeScoreFunction with a collection of children.
+       @param name The name of this function.
        @param children The child score functions.
     */
-    public MultiplicativeScoreFunction(Collection<ScoreFunction> children) {
-        super(children);
+    public MultiplicativeScoreFunction(String name, Collection<ScoreFunction> children) {
+        super(name, children);
     }
 
     /**
        Create a MultiplicativeScoreFunction with a collection of children.
+       @param name The name of this function.
        @param children The child score functions.
     */
-    public MultiplicativeScoreFunction(ScoreFunction... children) {
-        super(children);
+    public MultiplicativeScoreFunction(String name, ScoreFunction... children) {
+        super(name, children);
     }
 
     @Override

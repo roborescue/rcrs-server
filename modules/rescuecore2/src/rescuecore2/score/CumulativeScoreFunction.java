@@ -17,25 +17,28 @@ public class CumulativeScoreFunction extends CompositeScoreFunction {
 
     /**
        Create a CumulativeScoreFunction with no children.
+       @param name The name of this function.
     */
-    public CumulativeScoreFunction() {
-        super();
+    public CumulativeScoreFunction(String name) {
+        super(name);
     }
 
     /**
        Create a CumulativeScoreFunction with a collection of children.
+       @param name The name of this function.
        @param children The child score functions.
     */
-    public CumulativeScoreFunction(Collection<ScoreFunction> children) {
-        super(children);
+    public CumulativeScoreFunction(String name, Collection<ScoreFunction> children) {
+        super(name, children);
     }
 
     /**
        Create a CumulativeScoreFunction with a collection of children.
+       @param name The name of this function.
        @param children The child score functions.
     */
-    public CumulativeScoreFunction(ScoreFunction... children) {
-        super(children);
+    public CumulativeScoreFunction(String name, ScoreFunction... children) {
+        super(name, children);
     }
 
     @Override

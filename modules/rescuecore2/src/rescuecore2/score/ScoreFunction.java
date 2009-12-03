@@ -23,4 +23,10 @@ public interface ScoreFunction {
        @return The score for this timestep.
      */
     double score(WorldModel<? extends Entity> world, Timestep timestep);
+
+    /**
+       Get the name of this score function.
+       @return The name.
+    */
+    String getName();
 }
