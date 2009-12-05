@@ -70,30 +70,32 @@ public class ShapeDebugFrame extends JFrame {
         step.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        //                        setVisible(false);
                         barrier.await();
                     }
+                    // CHECKSTYLE:OFF:EmptyBlock
                     catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                        // Ignore
                     }
                     catch (BrokenBarrierException ex) {
-                        ex.printStackTrace();
+                        // Ignore
                     }
+                    // CHECKSTYLE:ON:EmptyBlock
                 }
             });
         cont.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        //                        setVisible(false);
                         deactivate();
                         barrier.await();
                     }
+                    // CHECKSTYLE:OFF:EmptyBlock
                     catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                        // Ignore
                     }
                     catch (BrokenBarrierException ex) {
-                        ex.printStackTrace();
+                        // Ignore
                     }
+                    // CHECKSTYLE:ON:EmptyBlock
                 }
             });
         addWindowListener(new WindowAdapter() {
@@ -101,12 +103,14 @@ public class ShapeDebugFrame extends JFrame {
                     try {
                         barrier.await();
                     }
+                    // CHECKSTYLE:OFF:EmptyBlock
                     catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                        // Ignore
                     }
                     catch (BrokenBarrierException ex) {
-                        ex.printStackTrace();
+                        // Ignore
                     }
+                    // CHECKSTYLE:ON:EmptyBlock
                 }
             });
         enabled = true;
@@ -172,12 +176,14 @@ public class ShapeDebugFrame extends JFrame {
         try {
             barrier.await();
         }
+        // CHECKSTYLE:OFF:EmptyBlock
         catch (InterruptedException e) {
-            e.printStackTrace();
+            // Ignore
         }
         catch (BrokenBarrierException e) {
-            e.printStackTrace();
+            // Ignore
         }
+        // CHECKSTYLE:ON:EmptyBlock
     }
 
     /**

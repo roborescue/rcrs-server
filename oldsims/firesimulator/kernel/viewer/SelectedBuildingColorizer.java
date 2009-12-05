@@ -15,7 +15,9 @@ public class SelectedBuildingColorizer implements BuildingColorizer, SelectorLis
 
 	public Color getColor(Building b) {
 		if (selected==null) return Color.DARK_GRAY;
-		if (selected==b){System.out.println(b.getBuildingAreaGround());return Color.RED;}		
+		if (selected==b){
+                    return Color.RED;
+                }		
 		return Color.YELLOW;
 	}
 

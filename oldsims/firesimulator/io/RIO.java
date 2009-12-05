@@ -14,12 +14,17 @@ import firesimulator.world.FireBrigade;
 import rescuecore.OutputBuffer;
 import rescuecore.InputBuffer;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  * Modified by Cameron Skinner
  *
  */
 public class RIO implements IOConstans{
+    private static final Log LOG = LogFactory.getLog(RIO.class);
+
     private final static String NAME = "ResQ fire simulator";
 
     private IO io;
@@ -29,11 +34,11 @@ public class RIO implements IOConstans{
     }
 	
     public int connect(World world){
-        System.out.print("sending SK_CONNECT..");
+        LOG.info("sending SK_CONNECT..");
         sendConnect();
-        System.out.print("ok\nwaiting for KS_CONNECT_OK..");
+        LOG.info("ok\nwaiting for KS_CONNECT_OK..");
         int id = receiveConnectOK(world);
-        System.out.println("ok");
+        LOG.info("ok");
         return id;
     }
 	
@@ -41,7 +46,7 @@ public class RIO implements IOConstans{
         InputBuffer data = receive();
         String urn = data.readString();
         if(!"UPDATE".equals(urn)) {
-            System.out.println("warning: received " + urn + " instead of UPDATE");
+            LOG.warn("Received " + urn + " instead of UPDATE");
         }
         // Skip size, id
         data.readInt();
@@ -54,7 +59,7 @@ public class RIO implements IOConstans{
         InputBuffer data=receive();
         String urn = data.readString();
         if(!"COMMANDS".equals(urn)) {
-            System.out.println("warning: received " + urn + " instead of COMMANDS");
+            LOG.warn("Received " + urn + " instead of COMMANDS");
         }
         world.processCommands(data);
     }
@@ -64,7 +69,7 @@ public class RIO implements IOConstans{
         InputBuffer data = receive();
         String urn = data.readString();
         if(!"KS_CONECT_OK".equals(urn)) {
-            System.out.println("warning: received " + urn + " instead of KS_CONNECT_OK");
+            LOG.warn("Received " + urn + " instead of KS_CONNECT_OK");
         }
         // Skip size, requestID
         data.readInt();
@@ -79,9 +84,9 @@ public class RIO implements IOConstans{
     }
 	
     public void sendReadyness(int id){
-        System.out.print("sending SK_ACKNOWLEDGE..");
+        LOG.info("sending SK_ACKNOWLEDGE..");
         sendAcknowledge(0, id);
-        System.out.println("ok");
+        LOG.info("ok");
     }
 	
     public void sendConnect(){
@@ -127,7 +132,7 @@ public class RIO implements IOConstans{
             }
             send("SK_UPDATE", out.getBytes());
         } catch (Exception e) {
-            e.printStackTrace();  
+            LOG.fatal("Couldn't send update", e);
             System.exit(1); 
         }
     }
@@ -142,7 +147,7 @@ public class RIO implements IOConstans{
             byte[] ludpBody=out.getBytes();
             io.send(ludpBody);
         }catch(Exception e){
-            e.printStackTrace();
+            LOG.fatal("Couldn't send data", e);
             System.exit(1);
         }
     }

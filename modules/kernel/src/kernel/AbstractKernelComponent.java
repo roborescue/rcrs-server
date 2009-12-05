@@ -8,10 +8,18 @@ import rescuecore2.connection.ConnectionException;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    Abstract base class for KernelComponent implementations.
  */
 public abstract class AbstractKernelComponent implements KernelComponent {
+    /**
+       The logger for this kernel component.
+    */
+    protected Log log;
+
     private Connection connection;
     private String name;
 
@@ -23,6 +31,7 @@ public abstract class AbstractKernelComponent implements KernelComponent {
     protected AbstractKernelComponent(String name, Connection c) {
         this.name = name;
         this.connection = c;
+        log = LogFactory.getLog(getClass());
     }
 
     @Override
@@ -34,7 +43,7 @@ public abstract class AbstractKernelComponent implements KernelComponent {
             connection.sendMessages(messages);
         }
         catch (ConnectionException e) {
-            e.printStackTrace();
+            log.error("Error sending message", e);
         }
     }
 

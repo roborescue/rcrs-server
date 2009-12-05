@@ -53,7 +53,6 @@ public class TempView extends JFrame{
 			if(pos>=keyColors.length)
 				return Color.BLUE;
 			float pc=(temp-keyColors[pos][0])/(keyColors[pos-1][0]-keyColors[pos][0]);
-			//System.out.println(pc+":"+(keyColors[pos][1]-keyColors[pos-1][1])*pc);
 			float red=(keyColors[pos-1][1]-keyColors[pos][1])*pc+keyColors[pos][1];
 			float green=(keyColors[pos-1][2]-keyColors[pos][2])*pc+keyColors[pos][2];
 			float blue=(keyColors[pos-1][3]-keyColors[pos][3])*pc+keyColors[pos][3];

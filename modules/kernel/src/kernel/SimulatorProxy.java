@@ -98,7 +98,6 @@ public class SimulatorProxy extends AbstractKernelComponent {
             if (msg instanceof SKUpdate) {
                 SKUpdate update = (SKUpdate)msg;
                 if (update.getSimulatorID() == id) {
-                    System.out.println("Received simulator update: " + msg);
                     updateReceived(update.getTime(), update.getChangeSet());
                 }
             }

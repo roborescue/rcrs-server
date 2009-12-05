@@ -18,11 +18,15 @@ import firesimulator.io.IOConstans;
 
 import rescuecore.InputBuffer;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class World implements WorldConstants {   
+    private static final Log LOG = LogFactory.getLog(World.class);
     
     private Hashtable pool;
     private Collection extinguishRequests;
@@ -199,14 +203,14 @@ public class World implements WorldConstants {
                 b.connectedValues=wght;
             }
             loaded=true;
-            System.out.println("loaded radiation sample file \""+fname+"\"");
+            LOG.info("loaded radiation sample file \""+fname+"\"");
         }catch(Exception e){			
-            System.out.println("unable to load radiation sample file \""+fname+"\", sampling:");
+            LOG.warn("unable to load radiation sample file \""+fname+"\", sampling:");
             int n=0;
             long t1=System.currentTimeMillis();
             for(Iterator i=buildings.iterator();i.hasNext();){
                 Building b=(Building)i.next();
-                System.out.print("building "+b.getID()+" ("+(n++)+" of "+buildings.size()+") ");
+                LOG.info("building "+b.getID()+" ("+(n++)+" of "+buildings.size()+") ");
                 b.initWallValues(this);
                 long dt=System.currentTimeMillis()-t1;
                 dt=dt/n;
@@ -215,7 +219,7 @@ public class World implements WorldConstants {
                 long min=(sec/60)%60;
                 long hour=sec/(60*60);
                 sec=sec%60;				
-                System.out.println(" time left: ca. "+hour+":"+min+":"+sec);
+                LOG.info(" time left: ca. "+hour+":"+min+":"+sec);
             }	
         }		
         try{
@@ -236,10 +240,10 @@ public class World implements WorldConstants {
                     }
                 }
                 bw.close();
-                System.out.println("wrote radiation sample file \""+fname+"\"");
+                LOG.info("wrote radiation sample file \""+fname+"\"");
             }			
         }catch(Exception e){
-            System.out.println("error while writting radiation sample file \""+fname+"\"");
+            LOG.error("error while writting radiation sample file \""+fname+"\"", e);
         }
     }
 
@@ -250,7 +254,7 @@ public class World implements WorldConstants {
             if(b.isBuilding(x,y))
                 return b;
         }
-        System.out.println("parser error");
+        LOG.error("parser error");
         throw new NullPointerException();		
     }
 
@@ -261,7 +265,7 @@ public class World implements WorldConstants {
     private void initializeAir() {
         int xSampels=1+(maxX-minX)/SAMPLE_SIZE;		
         int ySamples=1+(maxY-minY)/SAMPLE_SIZE;
-        System.out.println("grid cell size="+SAMPLE_SIZE+"mm, x*y="+ySamples+"*"+xSampels+"="+xSampels*ySamples);
+        LOG.info("grid cell size="+SAMPLE_SIZE+"mm, x*y="+ySamples+"*"+xSampels+"="+xSampels*ySamples);
         airTemp=new double[xSampels][ySamples];
         for(int x=0;x<airTemp.length;x++)
             for(int y=0;y<airTemp[x].length;y++)
@@ -339,20 +343,17 @@ public class World implements WorldConstants {
     public void processConnectOK(InputBuffer data){
         setTime(IOConstans.INIT_TIME);
         int count = data.readInt();
-        //                System.out.println("processing update (" + count + " items)...");
         for (int i = 0; i < count; ++i) {
             String urn = data.readString();
-            //                    System.out.println("Object " + i + " type: " + urn);
             if ("".equals(urn)) break;
             int id   = data.readInt();
             int size = data.readInt();
-            //                    System.out.println("Update for object "+id+" (type="+type+", size="+size+")");
             RescueObject obj = getObject(id);
             if (obj == null) {
                 obj = createObject(urn, id);
                 if (obj != null){
                     putObject(obj);
-                }else System.out.println("warning: unknown object (type:"+urn+")");
+                }else LOG.warn("Unknown object (type:"+urn+")");
             }
             if(obj!=null){
                 String propUrn = data.readString();
@@ -367,13 +368,12 @@ public class World implements WorldConstants {
     public void processChangeSet(InputBuffer data, int time){
         setTime(time);
         int count = data.readInt();
-        //                System.out.println("processing update (" + count + " items)...");
         for (int i = 0; i < count; ++i) {
             int id = data.readInt();
             int propCount = data.readInt();
             RescueObject obj = getObject(id);
             if (obj == null) {
-                System.out.println("warning: unknown object (id:"+id+")");
+                LOG.warn("Unknown object (id:"+id+")");
             }
             for (int j = 0; j < propCount; ++j) {
                 String propUrn = data.readString();
@@ -384,7 +384,6 @@ public class World implements WorldConstants {
 	
     private void setProperty(InputBuffer data, RescueObject obj, String urn) {
         int size = data.readInt();
-        //                System.out.println("Property="+property+", size="+size);
         int[] val;
         if (urn.equals("SIGNAL_TIMING")
             || urn.equals("POSITION_HISTORY")
@@ -488,7 +487,6 @@ public class World implements WorldConstants {
     }
 
     public void igniteGISFires(){
-        //System.out.println("igniting gis fires");
         for(Iterator it=getBuildings().iterator();it.hasNext();){
             Building b=(Building)it.next();
             if(b.getIgnition()!=0){
@@ -510,8 +508,7 @@ public class World implements WorldConstants {
 
 
     public void processCommands(InputBuffer data) {								
-        System.out.println("processing commands...");
-        //		for(int j=0;j<data.length;j++)System.out.println("data["+j+"]="+data[j]);
+        LOG.info("processing commands...");
         data.readInt(); // Skip the size
         data.readInt(); // Skip the simulator ID
         int time = data.readInt();
@@ -521,11 +518,10 @@ public class World implements WorldConstants {
             String cmd = data.readString();
             int size = data.readInt();
             if ("AK_EXTINGUISH".equals(cmd)) {
-                System.out.println("EXTINGUISH");
+                LOG.debug("EXTINGUISH");
                 int agentID = data.readInt();
                 data.readInt(); // Skip the command time
-                System.out.println("fb.id="+agentID);					
-                //					System.out.println("Command length: "+size);
+                LOG.debug("fb.id="+agentID);					
                 FireBrigade source=(FireBrigade)getObject(agentID);
                 source.setCurrentAction(cmd);
                 int targetID = data.readInt();
@@ -536,21 +532,21 @@ public class World implements WorldConstants {
             }
             else if ("AK_MOVE".equals(cmd)) {
                 int agentID = data.readInt();
-                System.out.println("MOVE (id="+agentID+")");
+                LOG.debug("MOVE (id="+agentID+")");
                 MovingObject obj = (MovingObject)getObject(agentID);
                 obj.setCurrentAction(cmd);
                 data.skip(size - 4);
             }
             else {
-                System.out.println("Ignoring " + cmd);
-                System.out.println("Skipping " + size + " bytes");
+                LOG.debug("Ignoring " + cmd);
+                LOG.debug("Skipping " + size + " bytes");
                 data.skip(size);
             }
         }	
     }
 
     public void printSummary() {		
-        System.out.println("objects total: "+countObjects());
+        LOG.debug("objects total: "+countObjects());
     }
 	
     public long hash(){

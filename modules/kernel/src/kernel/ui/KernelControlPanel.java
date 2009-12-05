@@ -33,10 +33,15 @@ import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.log.LogException;
 import rescuecore2.registry.Registry;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A JComponent containing various controls for the kernel GUI.
  */
 public class KernelControlPanel extends JPanel {
+    private static final Log LOG = LogFactory.getLog(KernelControlPanel.class);
+
     private Kernel kernel;
     private Config config;
     private Registry registry;
@@ -177,26 +182,21 @@ public class KernelControlPanel extends JPanel {
         try {
             c.initialise();
             launcher.connect(c);
-            System.out.println(type + " added OK");
         }
         catch (NoSuchConfigOptionException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
         }
         catch (ComponentInitialisationException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
         }
         catch (ComponentConnectionException e) {
-            System.out.println("Adding " + type + " failed: " + e.getMessage());
             JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e.getMessage());
         }
         catch (ConnectionException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
         }
         catch (InterruptedException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Adding " + type + " failed: " + e);
         }
     }
 
@@ -265,7 +265,8 @@ public class KernelControlPanel extends JPanel {
                 });
         }
         catch (java.lang.reflect.InvocationTargetException e) {
-            e.printStackTrace();
+            // Should never happen
+            LOG.error("KernelControlPanel.disableAllButtons", e);
         }
     }
 
@@ -283,7 +284,6 @@ public class KernelControlPanel extends JPanel {
         List<String> classNames = config.getArrayValue("kernel." + type, null);
         List<Component> instances = new ArrayList<Component>();
         for (String next : classNames) {
-            System.out.println("Option found: '" + next + "'");
             Component c = instantiate(next, Component.class);
             if (c != null) {
                 instances.add(c);
@@ -301,13 +301,13 @@ public class KernelControlPanel extends JPanel {
                         kernel.timestep();
                     }
                     catch (KernelException e) {
-                        e.printStackTrace();
+                        LOG.error("Kernel error", e);
                         kernel.shutdown();
                         disableAllButtons();
                         return false;
                     }
                     catch (LogException e) {
-                        e.printStackTrace();
+                        LOG.error("Log error", e);
                         kernel.shutdown();
                         disableAllButtons();
                         return false;

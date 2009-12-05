@@ -36,10 +36,15 @@ import java.util.Collection;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.BrokenBarrierException;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A rescuecore2 Simulator that wraps the ResQ Freiburg fire simulator.
  */
 public class FireSimulatorWrapper extends StandardSimulator {
+    private static final Log LOG = LogFactory.getLog(FireSimulatorWrapper.class);
+
     private Simulator sim;
     private World world;
     private WrapperKernel kernel;
@@ -53,11 +58,11 @@ public class FireSimulatorWrapper extends StandardSimulator {
             try {
                 String value = config.getValue(next);
                 Configuration.setProperty(next, value, true);
-                System.out.println("Setting '" + next + "' to '" + value + "'");
+                LOG.debug("Setting '" + next + "' to '" + value + "'");
             }
             catch (NoSuchConfigOptionException e) {
                 // Ignore
-                System.out.println("Ignoring property " + next);
+                LOG.debug("Ignoring property " + next);
             }
         }
         world = new World();
@@ -112,7 +117,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
                     mapRoadProperties((rescuecore2.standard.entities.Road)e, (Road)r);
                 }
                 else {
-                    System.out.println("Don't know how to map " + r + " from " + e);
+                    LOG.error("Don't know how to map " + r + " from " + e);
                 }
             }
         }
@@ -136,10 +141,10 @@ public class FireSimulatorWrapper extends StandardSimulator {
             kernel.commandsReceived(c.getTime());
         }
         catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("FireSimulatorWrapper.handleCommands", e);
         }
         catch (BrokenBarrierException e) {
-            e.printStackTrace();
+            LOG.error("FireSimulatorWrapper.handleCommands", e);
         }
     }
 
@@ -203,7 +208,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
             mapHumanProperties((rescuecore2.standard.entities.AmbulanceTeam)e, at);
             return at;
         }
-        System.err.println("Don't know how to map this: " + e);
+        LOG.error("Don't know how to map this: " + e);
         return null;
     }
 

@@ -77,7 +77,7 @@ public class CommandListComponent extends AbstractMessageComponent {
                 commands.add((Command)m);
             }
             else {
-                System.err.println("Command list stream contained a non-command message: " + m + " (" + m.getClass().getName() + ")");
+                throw new IOException("Command list stream contained a non-command message: " + m + " (" + m.getClass().getName() + ")");
             }
         }
     }

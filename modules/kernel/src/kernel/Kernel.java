@@ -29,10 +29,15 @@ import rescuecore2.log.CommandsRecord;
 import rescuecore2.log.UpdatesRecord;
 import rescuecore2.log.LogException;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    The Robocup Rescue kernel.
  */
 public class Kernel {
+    private static final Log LOG = LogFactory.getLog(Kernel.class);
+
     //    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
@@ -89,13 +94,13 @@ public class Kernel {
         time = 0;
         try {
             String logName = config.getValue("kernel.logname");
-            System.out.println("Logging to " + logName);
+            LOG.info("Logging to " + logName);
             File logFile = new File(logName);
             if (logFile.getParentFile().mkdirs()) {
-                System.out.println("Created log directory: " + logFile.getParentFile().getAbsolutePath());
+                LOG.info("Created log directory: " + logFile.getParentFile().getAbsolutePath());
             }
             if (logFile.createNewFile()) {
-                System.out.println("Created log file: " + logFile.getAbsolutePath());
+                LOG.info("Created log file: " + logFile.getAbsolutePath());
             }
             log = new FileLogWriter(logFile);
             log.writeRecord(new StartLogRecord());
@@ -117,13 +122,13 @@ public class Kernel {
 
         isShutdown = false;
 
-        System.out.println("Kernel initialised");
-        System.out.println("Perception module: " + perception);
-        System.out.println("Communication module: " + communicationModel);
-        System.out.println("Command filter: " + commandFilter);
-        System.out.println("Score function: " + score);
-        System.out.println("Termination condition: " + termination);
-        System.out.println("Command collector: " + collector);
+        LOG.info("Kernel initialised");
+        LOG.info("Perception module: " + perception);
+        LOG.info("Communication module: " + communicationModel);
+        LOG.info("Command filter: " + commandFilter);
+        LOG.info("Score function: " + score);
+        LOG.info("Termination condition: " + termination);
+        LOG.info("Command collector: " + collector);
     }
 
     /**
@@ -296,17 +301,17 @@ public class Kernel {
             // Collate updates and broadcast to simulators
             // Send perception, commands and updates to viewers
             Timestep nextTimestep = new Timestep(time);
-            System.out.println("Timestep " + time);
-            System.out.println("Sending agent updates");
+            LOG.info("Timestep " + time);
+            LOG.debug("Sending agent updates");
             long start = System.currentTimeMillis();
             sendAgentUpdates(nextTimestep, previousTimestep == null ? new HashSet<Command>() : previousTimestep.getCommands());
             long perceptionTime = System.currentTimeMillis();
-            System.out.println("Waiting for commands");
+            LOG.debug("Waiting for commands");
             Collection<Command> commands = waitForCommands(time);
             nextTimestep.setCommands(commands);
             log.writeRecord(new CommandsRecord(time, commands));
             long commandsTime = System.currentTimeMillis();
-            System.out.println("Broadcasting commands");
+            LOG.debug("Broadcasting commands");
             ChangeSet changes = sendCommandsToSimulators(time, commands);
             nextTimestep.setChangeSet(changes);
             log.writeRecord(new UpdatesRecord(time, changes));
@@ -314,23 +319,23 @@ public class Kernel {
             // Merge updates into world model
             worldModel.merge(changes);
             long mergeTime = System.currentTimeMillis();
-            System.out.println("Broadcasting updates");
+            LOG.debug("Broadcasting updates");
             sendUpdatesToSimulators(time, changes);
             sendToViewers(nextTimestep);
             long broadcastTime = System.currentTimeMillis();
-            System.out.println("Computing score");
+            LOG.debug("Computing score");
             double s = score.score(worldModel, nextTimestep);
             long scoreTime = System.currentTimeMillis();
             nextTimestep.setScore(s);
-            System.out.println("Timestep " + time + " complete");
-            System.out.println("Score: " + s);
-            System.out.println("Perception took        : " + (perceptionTime - start) + "ms");
-            System.out.println("Agent commands took    : " + (commandsTime - perceptionTime) + "ms");
-            System.out.println("Simulator updates took : " + (updatesTime - commandsTime) + "ms");
-            System.out.println("World model merge took : " + (mergeTime - updatesTime) + "ms");
-            System.out.println("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
-            System.out.println("Score calculation took : " + (scoreTime - broadcastTime) + "ms");
-            System.out.println("Total time             : " + (scoreTime - start) + "ms");
+            LOG.info("Timestep " + time + " complete");
+            LOG.debug("Score: " + s);
+            LOG.debug("Perception took        : " + (perceptionTime - start) + "ms");
+            LOG.debug("Agent commands took    : " + (commandsTime - perceptionTime) + "ms");
+            LOG.debug("Simulator updates took : " + (updatesTime - commandsTime) + "ms");
+            LOG.debug("World model merge took : " + (mergeTime - updatesTime) + "ms");
+            LOG.debug("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
+            LOG.debug("Score calculation took : " + (scoreTime - broadcastTime) + "ms");
+            LOG.debug("Total time             : " + (scoreTime - start) + "ms");
             fireTimestepCompleted(nextTimestep);
             previousTimestep = nextTimestep;
         }
@@ -344,7 +349,7 @@ public class Kernel {
             if (isShutdown) {
                 return;
             }
-            System.out.println("Kernel is shutting down");
+            LOG.info("Kernel is shutting down");
             for (AgentProxy next : agents) {
                 next.shutdown();
             }
@@ -359,9 +364,9 @@ public class Kernel {
                 log.close();
             }
             catch (LogException e) {
-                e.printStackTrace();
+                LOG.error("Error closing log", e);
             }
-            System.out.println("Kernel has shut down");
+            LOG.info("Kernel has shut down");
             isShutdown = true;
         }
     }

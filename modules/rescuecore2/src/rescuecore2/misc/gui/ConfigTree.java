@@ -60,18 +60,15 @@ public class ConfigTree extends JTree {
             String[] branchNames = next.split("\\.");
             // Create all parent branches if required
             DefaultMutableTreeNode parent = root;
-            //            System.out.println("Processing " + next);
             StringBuilder branchName = new StringBuilder();
             for (int i = 0; i < branchNames.length - 1; ++i) {
                 branchName.append(branchNames[i]);
-                //                System.out.println("Looking for branch " + branchName);
                 String name = branchName.toString();
                 DefaultMutableTreeNode nextParent = branches.get(name);
                 if (nextParent == null) {
                     nextParent = new DefaultMutableTreeNode(new ConfigCategoryNode(name));
                     branches.put(name, nextParent);
                     parent.add(nextParent);
-                    //                    System.out.println("Added branch " + branchName + " to " + parent);
                 }
                 branchName.append(".");
                 parent = nextParent;
@@ -79,7 +76,6 @@ public class ConfigTree extends JTree {
             // Create the leaf node
             DefaultMutableTreeNode leaf = new DefaultMutableTreeNode(new ConfigEntryNode(next, config.getValue(next)));
             parent.add(leaf);
-            //            System.out.println("Added " + leaf + " to " + parent);
         }
     }
 

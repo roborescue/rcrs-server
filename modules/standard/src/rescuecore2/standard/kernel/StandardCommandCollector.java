@@ -17,12 +17,16 @@ import kernel.AgentProxy;
 import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Iterator;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
    A CommandCollector that will wait until a non-communication command has been received from each agent.
 */
 public class StandardCommandCollector implements CommandCollector {
+    private static final Log LOG = LogFactory.getLog(StandardCommandCollector.class);
+
     private static final long WAIT_TIME = 100;
 
     @Override
@@ -31,26 +35,25 @@ public class StandardCommandCollector implements CommandCollector {
 
     @Override
     public Collection<Command> getAgentCommands(Collection<AgentProxy> agents, int timestep) throws InterruptedException {
-        Collection<Command> result = new HashSet<Command>();
         Set<AgentProxy> waiting = new HashSet<AgentProxy>(agents);
         while (!waiting.isEmpty()) {
-            for (Iterator<AgentProxy> it = waiting.iterator(); it.hasNext();) {
-                AgentProxy next = it.next();
+            for (AgentProxy next : agents) {
                 Collection<Command> commands = next.getAgentCommands(timestep);
-                boolean trigger = false;
                 for (Command c : commands) {
-                    trigger = trigger || isTriggerCommand(c);
-                }
-                if (trigger) {
-                    System.out.println(next + " sent a trigger command");
-                    result.addAll(commands);
-                    it.remove();
+                    if (isTriggerCommand(c)) {
+                        LOG.debug(next + " sent a trigger command");
+                        waiting.remove(next);
+                    }
                 }
             }
-            System.out.println(this + " waiting for commands from " + waiting.size() + " agents");
+            LOG.info(this + " waiting for commands from " + waiting.size() + " agents");
             Thread.sleep(WAIT_TIME);
         }
-        System.out.println(this + " returning " + result.size() + " commands");
+        Collection<Command> result = new HashSet<Command>();
+        for (AgentProxy next : agents) {
+            result.addAll(next.getAgentCommands(timestep));
+        }
+        LOG.trace(this + " returning " + result.size() + " commands");
         return result;
     }
 

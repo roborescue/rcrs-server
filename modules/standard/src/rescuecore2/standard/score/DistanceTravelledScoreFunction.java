@@ -42,7 +42,6 @@ public class DistanceTravelledScoreFunction extends AbstractScoreFunction {
 
     @Override
     public double score(WorldModel<? extends Entity> world, Timestep timestep) {
-        System.out.println("Computing distance travelled");
         StandardWorldModel model = StandardWorldModel.createStandardWorldModel(world);
         // Find out how far each agent moved
         double sum = 0;
@@ -67,13 +66,10 @@ public class DistanceTravelledScoreFunction extends AbstractScoreFunction {
                 int startExtra = lastPositionExtra.get(h.getPosition());
                 AgentPath path = AgentPath.computePath(h, start, startExtra, move, model);
                 if (path != null) {
-                    System.out.println(next + " path: " + path);
-                    System.out.println("Length: " + path.getLength());
                     sum += path.getLength();
                 }
             }
         }
-        System.out.println("Total distance travelled: " + sum);
         storePositions(world);
         return sum;
     }

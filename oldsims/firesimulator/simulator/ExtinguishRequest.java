@@ -4,11 +4,15 @@ import firesimulator.util.Configuration;
 import firesimulator.world.Building;
 import firesimulator.world.FireBrigade;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class ExtinguishRequest {
+    private static final Log LOG = LogFactory.getLog(ExtinguishRequest.class);
 		
     public static final int REASON_OK=1;
     public static final int REASON_OK_VIRTUAL=2;
@@ -40,7 +44,7 @@ public class ExtinguishRequest {
 	
 	public void verbose(String msg){
 	    if(DEBUG_VERBOSE)
-	        System.out.print(msg);
+                LOG.debug(msg);
 	}
 	
 	public int validate(){
@@ -93,7 +97,6 @@ public class ExtinguishRequest {
 		if(source!=null){
 			source.addWaterUsed(quantity);
 			source.setWaterQuantity(source.getWaterQuantity()-quantity);		
-			//			System.out.println("Fire brigade "+source.getID()+" now has "+source.getWaterQuantity()+" water");
 		}
 		target.setWaterQuantity(target.getWaterQuantity()+quantity);
 		verbose("OK reason = "+getReason(result)+"\n");

@@ -70,7 +70,6 @@ public class PerceptionRecord implements LogRecord {
     public void read(InputStream in) throws IOException, LogException {
         entityID = new EntityID(readInt32(in));
         time = readInt32(in);
-        //        System.out.print("Reading perception for agent " + entityID + " at time " + time + "...");
         visible = new ChangeSet();
         visible.read(in);
         communications = new ArrayList<Command>();
@@ -82,7 +81,6 @@ public class PerceptionRecord implements LogRecord {
             }
             communications.add(c);
         }
-        //        System.out.println("done. Saw " + visible.size() + " entities and heard " + communications.size() + " messages.");
     }
 
     /**

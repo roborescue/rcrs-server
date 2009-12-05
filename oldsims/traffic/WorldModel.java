@@ -2,7 +2,12 @@ package traffic;
 import java.util.*;
 import traffic.object.*;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 public class WorldModel implements Constants {
+    private static final Log LOG = LogFactory.getLog(WorldModel.class);
+
     public final HashMap idObjMap = new HashMap();
     private ArrayList m_movingObjectList = new ArrayList();
     private MovingObject[] m_movingObjectArray;
@@ -130,9 +135,8 @@ public class WorldModel implements Constants {
             return;
         }
         Humanoid agent = (Humanoid) sender;
-        //		System.out.println("Agent "+agent.id+" trying to move. Buriedness="+agent.buriedness());
         if (agent.buriedness()>0) {
-            System.out.println("Ignoring move from buried agent "+agent.id+" (buriedness="+agent.buriedness());
+            LOG.info("Ignoring move from buried agent "+agent.id+" (buriedness="+agent.buriedness());
             return;
         }
         agent.setLastMovingTime(m_time);
@@ -192,6 +196,6 @@ public class WorldModel implements Constants {
 
     private void printError(RealObject obj, String message) {
         if (PRINT_REASON_WHY_AGENT_COMMAND_WAS_NOT_EXECUTED)
-            System.err.println("[Wrong Agent Command] time:" + WORLD.time() + ", agentID:" + obj.id + "\n  " + message);
+            LOG.debug("[Wrong Agent Command] time:" + WORLD.time() + ", agentID:" + obj.id + "\n  " + message);
     }
 }

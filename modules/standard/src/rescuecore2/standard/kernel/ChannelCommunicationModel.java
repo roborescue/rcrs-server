@@ -29,10 +29,15 @@ import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.messages.AKSpeak;
 import rescuecore2.standard.messages.AKSubscribe;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    The channel-based communication model.
  */
 public class ChannelCommunicationModel implements CommunicationModel {
+    private static final Log LOG = LogFactory.getLog(ChannelCommunicationModel.class);
+
     private static final String COUNT_KEY = "comms.channels.count";
     private static final String PLATOON_MAX_CHANNELS_KEY = "comms.channels.max.platoon";
     private static final String CENTRE_MAX_CHANNELS_KEY = "comms.channels.max.centre";
@@ -85,7 +90,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
                 channel = new RadioChannel(config, i);
             }
             else {
-                System.err.println("Unrecognised channel type: " + PREFIX + i + TYPE_SUFFIX + " = '" + type + "'");
+                LOG.error("Unrecognised channel type: " + PREFIX + i + TYPE_SUFFIX + " = '" + type + "'");
             }
             if (channel != null) {
                 String key = PREFIX + i + NOISE_SUFFIX;
@@ -138,7 +143,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
                     }
                 }
                 catch (InvalidMessageException e) {
-                    System.out.println(e);
+                    LOG.warn("Invalid message: " + next, e);
                 }
             }
         }
@@ -169,7 +174,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
                     noises.add(new StaticNoise(p));
                 }
                 else {
-                    System.err.println("Unrecognised noise type: " + key + " = '" + next + "'");
+                    LOG.error("Unrecognised noise type: " + key + " = '" + next + "'");
                 }
             }
             if (noises.size() == 1) {
@@ -196,12 +201,12 @@ public class ChannelCommunicationModel implements CommunicationModel {
         EntityID id = sub.getAgentID();
         Entity entity = world.getEntity(id);
         if (entity == null) {
-            System.out.println("Couldn't find entity " + id);
+            LOG.warn("Couldn't find entity " + id);
             return;
         }
         AgentProxy agent = findAgent(agents, entity);
         if (agent == null) {
-            System.out.println("Couldn't find agent controlling entity " + entity);
+            LOG.warn("Couldn't find agent controlling entity " + entity);
             return;
         }
         int max;
@@ -212,11 +217,11 @@ public class ChannelCommunicationModel implements CommunicationModel {
             max = centreMax;
         }
         else {
-            System.out.println("I don't know how to handle subscriptions for this entity: " + entity);
+            LOG.warn("I don't know how to handle subscriptions for this entity: " + entity);
             return;
         }
         if (requested.size() > max) {
-            System.out.println("Agent tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
+            LOG.warn("Agent tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
             return;
         }
         // Unsubscribe from all old channels
@@ -227,7 +232,7 @@ public class ChannelCommunicationModel implements CommunicationModel {
         for (int next : requested) {
             Channel channel = channels.get(next);
             if (channel == null) {
-                System.out.println("Agent tried to subscribe to non-existant channel " + next);
+                LOG.warn("Agent tried to subscribe to non-existant channel " + next);
             }
             else {
                 channel.addSubscriber(agent);

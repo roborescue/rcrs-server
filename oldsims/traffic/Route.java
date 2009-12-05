@@ -3,7 +3,11 @@ package traffic;
 import java.util.*;
 import traffic.object.*;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 public class Route {
+    private static final Log LOG = LogFactory.getLog(Route.class);
   private ArrayList m_route;
   private int m_indexOfDestination;
 
@@ -89,7 +93,7 @@ public class Route {
 
   private boolean printError(MovingObject mv, String reason) {
     if (Constants.PRINT_REASON_WHY_AGENT_COMMAND_WAS_NOT_EXECUTED)
-      System.err.println("[Wrong AK_MOVE Route] time:" + Constants.WORLD.time() + ", agentID:" + mv.id + "\n  " + reason);
+      LOG.debug("[Wrong AK_MOVE Route] time:" + Constants.WORLD.time() + ", agentID:" + mv.id + "\n  " + reason);
     return false;
   }
 

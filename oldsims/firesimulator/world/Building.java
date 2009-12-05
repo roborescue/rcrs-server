@@ -14,11 +14,15 @@ import rescuecore.OutputBuffer;
 import firesimulator.simulator.Simulator;
 import firesimulator.util.Geometry;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class Building extends StationaryObject {
+    private static final Log LOG = LogFactory.getLog(Building.class);
 
     public static int WATER_EXTINGUISH_PARAM;
     public static float woodSpeed;
@@ -170,7 +174,7 @@ public class Building extends StationaryObject {
                 totalWallArea+=FLOOR_HEIGHT*1000*w.length;
             }
             else
-                System.out.println("warning: ignoring odd wall at building "+getID());
+                LOG.warn("Ignoring odd wall at building "+getID());
             lx=tx;
             ly=ty;			
         }
@@ -207,7 +211,7 @@ public class Building extends StationaryObject {
             connectedBuilding[c]=b;
             connectedValues[c]=value.floatValue()/base;
         }
-        System.out.print("{"+(((float)totalHits)*100/((float)totalRays))+","+totalRays+","+totalHits+","+selfHits+","+strange+"}");
+        LOG.debug("{"+(((float)totalHits)*100/((float)totalRays))+","+totalRays+","+totalHits+","+selfHits+","+strange+"}");
     }
 	
     public float getInitialFuel(){
@@ -399,7 +403,7 @@ public class Building extends StationaryObject {
                 cells[c][1]=((Integer)i.next()).intValue();
                 cells[c][2]=((Integer)i.next()).intValue();
             }
-        }else System.out.println("WARNING: "+getID()+" has no cell");
+        }else LOG.warn(getID()+" has no cell");
     }
 
 

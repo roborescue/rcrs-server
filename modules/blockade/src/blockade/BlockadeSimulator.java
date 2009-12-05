@@ -19,10 +19,15 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A simple blockade simulator.
  */
 public class BlockadeSimulator extends StandardSimulator {
+    private static final Log LOG = LogFactory.getLog(BlockadeSimulator.class);
+
     private static final int RUBBLE_DIVISOR = 2000;
     private static final double NEARBY_THRESHOLD = 5000;
 
@@ -42,7 +47,7 @@ public class BlockadeSimulator extends StandardSimulator {
                 return new HashSet<Road>();
             }
         };
-        System.out.println("Computing roads near buildings...");
+        LOG.debug("Computing roads near buildings...");
         for (Entity next : model) {
             if (next instanceof Building) {
                 Building b = (Building)next;
@@ -56,7 +61,7 @@ public class BlockadeSimulator extends StandardSimulator {
                 }
             }
         }
-        System.out.println("Done");
+        LOG.debug("Done");
         changes = new ChangeSet();
     }
 
@@ -76,17 +81,17 @@ public class BlockadeSimulator extends StandardSimulator {
                 Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
                 if (brokenness != null) {
                     // Brokenness has changed. Add some blockedness to nearby roads
-                    //                    System.out.println(b + " is broken. Updating nearby roads");
+                    LOG.debug(b + " is broken. Updating nearby roads");
                     for (Road r : nearbyRoads.get(b.getID())) {
                         int width = r.isWidthDefined() ? r.getWidth() : 0;
                         int block = r.isBlockDefined() ? r.getBlock() : 0;
                         int increase = calculateBlock(b);
-                        //                        System.out.println("Increasing block of " + r + " by " + increase);
+                        LOG.debug("Increasing block of " + r + " by " + increase);
                         block += increase;
                         if (block > width) {
                             block = width;
                         }
-                        //                        System.out.println("New block: " + block);
+                        LOG.debug("New block: " + block);
                         r.setBlock(block);
                         changes.addChange(r, r.getBlockProperty());
                     }

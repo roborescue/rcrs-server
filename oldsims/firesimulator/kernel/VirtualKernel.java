@@ -11,11 +11,15 @@ import firesimulator.simulator.Simulator;
 import firesimulator.util.Configuration;
 import firesimulator.world.World;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class VirtualKernel implements Kernel,IOConstans {
+    private static final Log LOG = LogFactory.getLog(VirtualKernel.class);
 	
 	private World world;
 	protected ViewerFrame viewerFrame;
@@ -23,7 +27,7 @@ public class VirtualKernel implements Kernel,IOConstans {
 	private int goalCycle=1;
 	
 	public VirtualKernel(World world){
-		System.out.println("configuration environment mode");		
+            LOG.info("configuration environment mode");		
 		this.world=world;
 		viewerFrame=createFrame();
 	}
@@ -37,25 +41,8 @@ public class VirtualKernel implements Kernel,IOConstans {
     }
 
 	public void establishConnection() {
-            /*
-		System.out.println("scenery file is \""+Configuration.getValue("virtual")+"\"");
-		try {
-			File file=new File(Configuration.getValue("virtual"));
-			FileInputStream fis=new FileInputStream(file);
-			DataInputStream is=new DataInputStream(fis);
-			long size=file.length()/4;
-			int[] data=new int[(int)size];
-			for(int i=0;i<size;i++){
-				data[i]=is.readInt();
-			}
-			System.out.println("creating world model");
-			world.processUpdate(data,2,INIT_TIME);
-			world.printSummary();
-		} catch (Exception e) {
-            */
-			System.out.println("unable to load scenery file. exiting.");
-			System.exit(1);
-                        //		}
+            LOG.fatal("unable to load scenery file. exiting.");
+            System.exit(1);
 	}
 
 

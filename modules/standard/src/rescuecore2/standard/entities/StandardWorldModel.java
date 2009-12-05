@@ -16,6 +16,9 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.Pair;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A wrapper around a WorldModel that indexes Entities by location.
  */
@@ -25,6 +28,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /** The default mesh size. */
     public static final int DEFAULT_MESH_SIZE = 10000;
+
+    private static final Log LOG = LogFactory.getLog(StandardWorldModel.class);
 
     private Map<StandardEntityURN, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;
@@ -87,11 +92,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             newMeshSize = DEFAULT_MESH_SIZE;
         }
         if (indexed && unindexedEntities.isEmpty() && meshSize == newMeshSize) {
-            System.out.println("Not bothering with reindex: new mesh size is same as old and no entities are currently unindexed");
+            LOG.debug("Not bothering with reindex: new mesh size is same as old and no entities are currently unindexed");
             return;
         }
         this.meshSize = newMeshSize;
-        //        System.out.println("Re-indexing world model");
+        LOG.debug("Re-indexing world model");
         mobileEntities.clear();
         staticEntities.clear();
         unindexedEntities.clear();
@@ -136,11 +141,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         // Now divide the world into a grid
         int width = maxX - minX;
         int height = maxY - minY;
-        //        System.out.println("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
+        LOG.trace("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
         gridWidth = 1 + (int)Math.ceil(width / (double)meshSize);
         gridHeight = 1 + (int)Math.ceil(height / (double)meshSize);
         grid = new ArrayList<List<Collection<StandardEntity>>>(gridWidth);
-        //        System.out.println("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
+        LOG.trace("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
         for (int i = 0; i < gridWidth; ++i) {
             List<Collection<StandardEntity>> list = new ArrayList<Collection<StandardEntity>>(gridHeight);
             grid.add(list);
@@ -161,7 +166,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 biggest = Math.max(biggest, getCell(i, j).size());
             }
         }
-        //        System.out.println("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
+        LOG.trace("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
         indexed = true;
     }
 
@@ -173,9 +178,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     */
     public Collection<StandardEntity> getObjectsInRange(StandardEntity entity, int range) {
         Pair<Integer, Integer> location = entity.getLocation(this);
-        //        System.out.println("Looking for objects within " + range + " of " + entity);
         if (location == null) {
-            //            System.out.println("Couldn't locate entity");
             return new HashSet<StandardEntity>();
         }
         return getObjectsInRange(location.first(), location.second(), range);
@@ -189,7 +192,6 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @return A collection of StandardEntitys that are within range.
     */
     public Collection<StandardEntity> getObjectsInRange(int x, int y, int range) {
-        //        System.out.println("Looking for objects within " + range + " of " + x + ", " + y);
         Collection<StandardEntity> result = new HashSet<StandardEntity>();
         int cellX = getXCell(x);
         int cellY = getYCell(y);
@@ -198,13 +200,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             for (int j = Math.max(0, cellY - cellRange); j <= Math.min(gridHeight - 1, cellY + cellRange); ++j) {
                 Collection<StandardEntity> cell = getCell(i, j);
                 for (StandardEntity next : cell) {
-                    //                    System.out.println("Next candidate: " + next);
                     Pair<Integer, Integer> location = next.getLocation(this);
                     if (location != null) {
                         int targetX = location.first().intValue();
                         int targetY = location.second().intValue();
                         int distance = distance(x, y, targetX, targetY);
-                        //                        System.out.println("Range: " + distance);
                         if (distance <= range) {
                             result.add(next);
                         }

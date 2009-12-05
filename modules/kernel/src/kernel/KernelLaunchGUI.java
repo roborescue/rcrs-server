@@ -31,10 +31,15 @@ import rescuecore2.components.Component;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.ConfigTree;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A GUI for setting up kernel options.
 */
 public class KernelLaunchGUI extends JPanel {
+    private static final Log LOG = LogFactory.getLog(KernelLaunchGUI.class);
+
     private static final String AUTO_SUFFIX = ".auto";
 
     private SimulatorsPanel simulators;
@@ -209,11 +214,11 @@ public class KernelLaunchGUI extends JPanel {
         List<T> instances = new ArrayList<T>();
         int index = 0;
         int selectedIndex = 0;
-        System.out.println("Loading options: " + key);
+        LOG.trace("Loading options: " + key);
         List<String> classNames = config.getArrayValue(key);
         String auto = config.getValue(key + AUTO_SUFFIX, null);
         for (String next : classNames) {
-            System.out.println("Option found: '" + next + "'");
+            LOG.trace("Option found: '" + next + "'");
             T t = instantiate(next, expectedClass);
             if (t != null) {
                 instances.add(t);

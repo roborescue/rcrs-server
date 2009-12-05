@@ -23,10 +23,15 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A utility class for processing loadable types from jar files.
  */
 public class LoadableTypeProcessor {
+    private static final Log LOG = LogFactory.getLog(LoadableTypeProcessor.class);
+
     private List<LoadableTypeCallback> callbacks;
     private Set<LoadableType> types;
     private boolean deep;
@@ -97,7 +102,7 @@ public class LoadableTypeProcessor {
     */
     public void process() throws IOException {
         File baseDir = new File(dir);
-        System.out.println("Processing jar directory: " + baseDir.getAbsolutePath());
+        LOG.info("Processing jar directory: " + baseDir.getAbsolutePath());
         File[] jarFiles = baseDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dirName, String name) {
@@ -124,10 +129,10 @@ public class LoadableTypeProcessor {
         if (ignore.contains(tail)) {
             return;
         }
-        System.out.println("Processing " + jar.getName());
+        LOG.info("Processing " + jar.getName());
         Manifest mf = jar.getManifest();
         if (mf != null) {
-            System.out.println("Inspecting manifest...");
+            LOG.debug("Inspecting manifest...");
             for (LoadableType type : types) {
                 for (String next : type.processManifest(mf)) {
                     fireCallback(type, next);
@@ -136,7 +141,7 @@ public class LoadableTypeProcessor {
         }
         if (deep) {
             // Look for well-named classes
-            System.out.println("Looking for likely class names...");
+            LOG.debug("Looking for likely class names...");
             for (Enumeration<JarEntry> e = jar.entries(); e.hasMoreElements();) {
                 JarEntry next = e.nextElement();
                 for (LoadableType type : types) {
@@ -170,7 +175,7 @@ public class LoadableTypeProcessor {
 
         @Override
         public void classFound(LoadableType otherType, String className) {
-            System.out.println("Adding " + className + " to " + key);
+            LOG.info("Adding " + className + " to " + key);
             if (config.isDefined(key)) {
                 List<String> existing = config.getArrayValue(key);
                 if (!existing.contains(className)) {
@@ -203,7 +208,7 @@ public class LoadableTypeProcessor {
             MessageFactory factory = instantiateFactory(className, MessageFactory.class);
             if (factory != null) {
                 registry.registerMessageFactory(factory);
-                System.out.println("Registered message factory '" + className + "' with registry " + registry.getName());
+                LOG.info("Registered message factory '" + className + "' with registry " + registry.getName());
             }
         }
 
@@ -228,7 +233,7 @@ public class LoadableTypeProcessor {
             EntityFactory factory = instantiateFactory(className, EntityFactory.class);
             if (factory != null) {
                 registry.registerEntityFactory(factory);
-                System.out.println("Registered entity factory '" + className + "' with registry " + registry.getName());
+                LOG.info("Registered entity factory '" + className + "' with registry " + registry.getName());
             }
         }
 
@@ -253,7 +258,7 @@ public class LoadableTypeProcessor {
             PropertyFactory factory = instantiateFactory(className, PropertyFactory.class);
             if (factory != null) {
                 registry.registerPropertyFactory(factory);
-                System.out.println("Registered property factory '" + className + "' with registry " + registry.getName());
+                LOG.info("Registered property factory '" + className + "' with registry " + registry.getName());
             }
         }
 

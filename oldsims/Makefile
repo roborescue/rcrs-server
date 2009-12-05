@@ -20,7 +20,7 @@ export CPPFLAGS=$(DEBUG) $(OPTIMISE) -pipe
 export CXXFLAGS=$(DEBUG) $(OPTIMISE) -pipe
 export LDFLAGS=
 export JAVAC=javac
-export CLASSPATH=$(shell pwd)
+export CLASSPATH=$(shell pwd):$(shell pwd)/../lib/commons-logging-1.1.1.jar
 export JFLAGS=-g
 export TOP_DIR=$(shell pwd)
 

@@ -11,10 +11,15 @@ import java.util.HashSet;
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.registry.Registry;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A class for managing incoming connections.
  */
 public class ConnectionManager {
+    private static final Log LOG = LogFactory.getLog(ConnectionManager.class);
+
     private Set<Reader> readers;
     private boolean shutdown;
 
@@ -40,7 +45,7 @@ public class ConnectionManager {
             if (shutdown) {
                 throw new IOException("Connection manager has been shut down");
             }
-            System.out.println("Listening for connections on port " + port);
+            LOG.info("Listening for connections on port " + port);
             ServerSocket socket = new ServerSocket(port);
             socket.setSoTimeout(1000);
             socket.setReuseAddress(true);
@@ -65,8 +70,7 @@ public class ConnectionManager {
                 next.kill();
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
-                // FIXME: Log it!
+                LOG.error("ConnectionManager interrupted while shutting down read threads", e);
             }
         }
     }
@@ -109,8 +113,7 @@ public class ConnectionManager {
             }
             // CHECKSTYLE:ON:EmptyBlock
             catch (IOException e) {
-                e.printStackTrace();
-                // FIXME: Log it!
+                LOG.error("Error listening for connection", e);
             }
             return true;
         }
@@ -121,8 +124,7 @@ public class ConnectionManager {
                 socket.close();
             }
             catch (IOException e) {
-                e.printStackTrace();
-                // FIXME: Log it!
+                LOG.error("Error closing server socket", e);
             }
         }
     }

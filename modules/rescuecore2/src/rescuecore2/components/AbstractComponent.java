@@ -10,6 +10,9 @@ import rescuecore2.worldmodel.Entity;
 import java.util.Collection;
 import java.util.Random;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    Abstract base class for component implementations.
    @param <T> The subclass of WorldModel that this component understands.
@@ -38,9 +41,15 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     protected Random random;
 
     /**
+       The logger for this component.
+    */
+    protected Log log;
+
+    /**
        Create a new AbstractComponent.
     */
     protected AbstractComponent() {
+        log = LogFactory.getLog(getClass());
     }
 
     /**
@@ -80,7 +89,7 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
         }
         catch (ConnectionException e) {
             // Ignore and log
-            System.out.println(e);
+            log.error("Error sending message", e);
         }
     }
 

@@ -36,10 +36,15 @@ import kernel.ui.ComponentManagerGUI;
 
 import javax.swing.JComponent;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
 public class ComponentManager implements ConnectionManagerListener, GUIComponent {
+    private static final Log LOG = LogFactory.getLog(ComponentManager.class);
+
     private static final int STARTING_ID = 1;
 
     private static final int WAIT_TIME = 10000;
@@ -122,12 +127,12 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
                 for (Map.Entry<String, Queue<ControlledEntityInfo>> next : uncontrolledEntities.entrySet()) {
                     if (!next.getValue().isEmpty()) {
                         done = false;
-                        System.out.println("Waiting for " + next.getValue().size() + " entities of type " + next.getKey());
+                        LOG.info("Waiting for " + next.getValue().size() + " entities of type " + next.getKey());
                     }
                 }
                 if (!agentsToAcknowledge.isEmpty()) {
                     done = false;
-                    System.out.println("Waiting for " + agentsToAcknowledge.size() + " agents to acknowledge");
+                    LOG.info("Waiting for " + agentsToAcknowledge.size() + " agents to acknowledge");
                 }
                 if (!done) {
                     agentLock.wait(WAIT_TIME);
@@ -144,7 +149,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
         synchronized (simLock) {
             while (!simsToAcknowledge.isEmpty()) {
                 simLock.wait(WAIT_TIME);
-                System.out.println("Waiting for " + simsToAcknowledge.size() + " simulators to acknowledge");
+                LOG.info("Waiting for " + simsToAcknowledge.size() + " simulators to acknowledge");
             }
         }
     }
@@ -157,7 +162,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
         synchronized (viewerLock) {
             while (!viewersToAcknowledge.isEmpty()) {
                 viewerLock.wait(WAIT_TIME);
-                System.out.println("Waiting for " + viewersToAcknowledge.size() + " viewers to acknowledge");
+                LOG.info("Waiting for " + viewersToAcknowledge.size() + " viewers to acknowledge");
             }
         }
     }
@@ -289,7 +294,6 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
     private class ComponentConnectionListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection connection, Message msg) {
-            //            System.out.println("Received " + msg);
             if (msg instanceof AKConnect) {
                 handleAKConnect((AKConnect)msg, connection);
             }
@@ -326,7 +330,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
                     Entity entity = result.entity;
                     AgentProxy agent = new AgentProxy(connect.getAgentName(), entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
-                    System.out.println("Agent '" + connect.getAgentName() + "' id " + entity.getID() + " (" + connection + " request ID " + requestID + ") connected");
+                    LOG.info("Agent '" + connect.getAgentName() + "' id " + entity.getID() + " (" + connection + " request ID " + requestID + ") connected");
                     // Send an OK
                     reply = new KAConnectOK(requestID, entity.getID(), result.visibleSet, result.config);
                 }
@@ -336,7 +340,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
                     connection.sendMessage(reply);
                 }
                 catch (ConnectionException e) {
-                    e.printStackTrace();
+                    LOG.error("Error sending reply", e);
                 }
             }
             updateGUIUncontrolledAgents();
@@ -347,10 +351,10 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
             int requestID = msg.getRequestID();
             EntityID agentID = msg.getAgentID();
             if (agentAcknowledge(requestID, agentID, connection)) {
-                System.out.println("Agent " + agentID + " (" + connection + " request ID " + requestID + ") acknowledged");
+                LOG.info("Agent " + agentID + " (" + connection + " request ID " + requestID + ") acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from agent " + agentID + " (request ID " + requestID + ")");
+                LOG.warn("Unexpected acknowledge from agent " + agentID + " (request ID " + requestID + ")");
             }
             updateGUIAgentAck();
         }
@@ -358,7 +362,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
         private void handleSKConnect(SKConnect msg, Connection connection) {
             int simID = getNextSimulatorID();
             int requestID = msg.getRequestID();
-            System.out.println("Simulator '" + msg.getSimulatorName() + "' id " + simID + " (" + connection + " request ID " + requestID + ") connected");
+            LOG.info("Simulator '" + msg.getSimulatorName() + "' id " + simID + " (" + connection + " request ID " + requestID + ") connected");
             SimulatorProxy sim = new SimulatorProxy(msg.getSimulatorName(), simID, connection);
             synchronized (simLock) {
                 simsToAcknowledge.add(new SimulatorAck(sim, simID, requestID, connection));
@@ -372,10 +376,10 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
             int requestID = msg.getRequestID();
             int simID = msg.getSimulatorID();
             if (simAcknowledge(requestID, simID, connection)) {
-                System.out.println("Simulator " + simID + " (" + connection + " request ID " + requestID + ") acknowledged");
+                LOG.info("Simulator " + simID + " (" + connection + " request ID " + requestID + ") acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from simulator " + simID + " (request ID " + requestID + ")");
+                LOG.warn("Unexpected acknowledge from simulator " + simID + " (request ID " + requestID + ")");
             }
             updateGUISimulatorAck();
         }
@@ -383,7 +387,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
         private void handleVKConnect(VKConnect msg, Connection connection) {
             int requestID = msg.getRequestID();
             int viewerID = getNextViewerID();
-            System.out.println("Viewer '" + msg.getViewerName() + "' id " + viewerID + " (" + connection + " request ID " + requestID + ") connected");
+            LOG.info("Viewer '" + msg.getViewerName() + "' id " + viewerID + " (" + connection + " request ID " + requestID + ") connected");
             ViewerProxy viewer = new ViewerProxy(msg.getViewerName(), viewerID, connection);
             synchronized (viewerLock) {
                 viewersToAcknowledge.add(new ViewerAck(viewer, viewerID, requestID, connection));
@@ -397,10 +401,10 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
             int requestID = msg.getRequestID();
             int viewerID = msg.getViewerID();
             if (viewerAcknowledge(requestID, viewerID, connection)) {
-                System.out.println("Viewer " + viewerID + " (" + connection + " request ID " + requestID + ") acknowledged");
+                LOG.info("Viewer " + viewerID + " (" + connection + " request ID " + requestID + ") acknowledged");
             }
             else {
-                System.out.println("Unexpected acknowledge from viewer " + viewerID + " (" + requestID + ")");
+                LOG.warn("Unexpected acknowledge from viewer " + viewerID + " (" + requestID + ")");
             }
             updateGUIViewerAck();
         }

@@ -15,10 +15,15 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A sample fire brigade agent.
  */
 public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
+    private static final Log LOG = LogFactory.getLog(SampleFireBrigade.class);
+
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
     private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
     private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
@@ -39,18 +44,17 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         maxWater = config.getIntValue(MAX_WATER_KEY);
         maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
         maxPower = config.getIntValue(MAX_POWER_KEY);
-        System.out.println("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
+        LOG.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
     }
 
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         for (Command next : heard) {
-            System.out.println(me() + " heard " + next);
+            LOG.debug(me() + " heard " + next);
         }
         FireBrigade me = me();
         // Are we currently filling with water?
         if (me.getWater() < maxWater && location() instanceof Refuge) {
-            //            System.out.println(me() + " filling with water at " + location());
             sendRest(time);
             return;
         }
@@ -63,7 +67,6 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
                 return;
             }
             else {
-                //                System.out.println(me() + " couldn't plan a path to a refuge.");
                 sendMove(time, randomWalk());
             }
         }

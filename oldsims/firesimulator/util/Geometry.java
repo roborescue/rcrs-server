@@ -62,11 +62,9 @@ public class Geometry {
 	}
 
 	public static float[] getAffineFunction(float x1,float y1,float x2,float y2){
-		//System.out.println("("+x1+","+y1+") to ("+x2+","+y2+")");
 		if(x1==x2)return null;
 		float m=(y1-y2)/(x1-x2);
 		float b=y1-m*x1;
-		//System.out.println("b="+b+", m="+m);
 		return new float[]{m,b};		
 	}
 	

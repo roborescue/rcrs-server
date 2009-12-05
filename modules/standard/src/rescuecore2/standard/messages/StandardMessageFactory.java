@@ -6,12 +6,17 @@ import java.io.IOException;
 import rescuecore2.messages.Message;
 import rescuecore2.registry.AbstractMessageFactory;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A factory for standard messages.
  */
 public final class StandardMessageFactory extends AbstractMessageFactory<StandardMessageURN> {
     /** Singleton instance. */
     public static final StandardMessageFactory INSTANCE = new StandardMessageFactory();
+
+    private static final Log LOG = LogFactory.getLog(StandardMessageFactory.class);
 
     /**
        Singleton class: private constructor.
@@ -46,7 +51,7 @@ public final class StandardMessageFactory extends AbstractMessageFactory<Standar
         case AK_SPEAK:
             return new AKSpeak(data);
         default:
-            System.out.println("Unrecognised message urn: " + urn);
+            LOG.warn("Unrecognised message urn: " + urn);
             return null;
         }
     }

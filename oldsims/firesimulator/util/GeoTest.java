@@ -74,17 +74,13 @@ public class GeoTest extends JFrame implements MouseListener{
 	}
 
 	private void findPoint() {
-		System.out.println("find point");
 		Point a=new Point((int)p[0],(int)p[1]);
 		Point b=new Point((int)p[2],(int)p[3]);
 		c=Geometry.getRndPoint(a,b);
 	}
 
 	private void findIntersect() {
-		System.out.println("-----------------------------------");
 		cross=Geometry.intersect(p);
-		if(cross!=null)System.out.println("crossing at ("+cross[0]+","+cross[1]+")");
-		else System.out.println("no crossing");		
 	}
 
 	public void mousePressed(MouseEvent e) {

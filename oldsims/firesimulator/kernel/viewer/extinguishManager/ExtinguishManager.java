@@ -22,11 +22,15 @@ import firesimulator.kernel.viewer.ViewerFrame;
 import firesimulator.world.Building;
 import firesimulator.world.RescueObject;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class ExtinguishManager extends JPanel implements SelectorListener{
+    private static final Log LOG = LogFactory.getLog(ExtinguishManager.class);
 	
 	/**
      * Comment for <code>serialVersionUID</code>
@@ -146,7 +150,7 @@ public class ExtinguishManager extends JPanel implements SelectorListener{
 			jobsPanel.validate();
 			jobsPanel.update(jobsPanel.getGraphics());			
 		} catch (Exception ex) {			
-			ex.printStackTrace();
+                    LOG.debug("continueNewExtinguish(" + q + ", " + s + ", " + e + ") failed", ex);
 		}
 	}
 
@@ -176,7 +180,7 @@ public class ExtinguishManager extends JPanel implements SelectorListener{
 			jobsPanel.validate();
 			jobsPanel.update(jobsPanel.getGraphics());
 		} catch (Exception ex) {			
-			ex.printStackTrace();
+                    LOG.debug("continueEditExtinguish(" + q + ", " + s + ", " + e + ") failed", ex);
 		}
 	}
 

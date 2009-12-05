@@ -51,7 +51,6 @@ public class ExtinguishJob extends JPanel implements MouseListener{
 	public void paint(Graphics gs){
 		super.paint(gs);
 		Graphics2D g=(Graphics2D)gs;
-		//System.out.println("my size :"+getSize());		
 		//g.setColor(Color.YELLOW);
 		//g.fillRect(0,0,getWidth(),getHeight());
 		g.setColor(Color.BLUE);		

@@ -31,10 +31,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A rescuecore2 Simulator that wraps the old traffic simulator.
  */
 public class TrafficSimulatorWrapper extends StandardSimulator {
+    private static final Log LOG = LogFactory.getLog(TrafficSimulatorWrapper.class);
+
     private Simulator sim;
 
     @Override
@@ -76,7 +81,7 @@ public class TrafficSimulatorWrapper extends StandardSimulator {
                     mapRoadProperties((rescuecore2.standard.entities.Road)e, (Road)r);
                 }
                 else {
-                    System.out.println("Don't know how to map " + r + " from " + e);
+                    LOG.error("Don't know how to map " + r + " from " + e);
                 }
             }
         }
@@ -178,7 +183,7 @@ public class TrafficSimulatorWrapper extends StandardSimulator {
             mapHumanProperties((rescuecore2.standard.entities.AmbulanceTeam)e, at);
             return at;
         }
-        System.err.println("Don't know how to map this: " + e);
+        LOG.error("Don't know how to map this: " + e);
         return null;
     }
 

@@ -18,11 +18,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    Abstract base class for Connection implementations.
  */
 public abstract class AbstractConnection implements Connection {
     private static final int BROADCAST_WAIT = 10000;
+
+    /** Logger for this connection. */
+    protected Log log;
 
     private List<ConnectionListener> listeners;
     private List<Message> toSend;
@@ -45,6 +51,7 @@ public abstract class AbstractConnection implements Connection {
         state = State.NOT_STARTED;
         broadcast = new MessageBroadcastThread();
         registry = Registry.SYSTEM_REGISTRY;
+        log = LogFactory.getLog(getClass());
     }
 
     @Override
@@ -71,9 +78,7 @@ public abstract class AbstractConnection implements Connection {
                     broadcast.kill();
                 }
                 catch (InterruptedException e) {
-                    // Log and ignore
-                    // FIXME: Log it!
-                    e.printStackTrace();
+                    log.error("AbstractConnection interrupted while shutting down broadcast thread", e);
                 }
                 shutdownImpl();
                 state = State.SHUTDOWN;
@@ -184,25 +189,22 @@ public abstract class AbstractConnection implements Connection {
             do {
                 m = readMessage(decode, registry);
                 if (m != null) {
-                    //                    System.out.println("Received: " + m);
                     fireMessageReceived(m);
                 }
             } while (m != null);
         }
         catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("AbstractConnection error reading message", e);
             ByteLogger.log(b, this.toString());
         }
         // CHECKSTYLE:OFF:IllegalCatch
         catch (RuntimeException e) {
-            e.printStackTrace();
+            log.error("AbstractConnection error reading message", e);
             ByteLogger.log(b, this.toString());
             throw e;
         }
         catch (Error e) {
-            e.printStackTrace();
+            log.error("AbstractConnection error reading message", e);
             ByteLogger.log(b, this.toString());
             throw e;
         }

@@ -3,7 +3,12 @@ import java.net.*;
 import java.util.*;
 import traffic.object.*;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 public class Simulator implements Constants {
+    private static final Log LOG = LogFactory.getLog(Simulator.class);
+
     private int id;
 
     public Simulator() {
@@ -63,7 +68,7 @@ public class Simulator implements Constants {
     }
 
     public void step() {
-        System.out.println("time: " + WORLD.time());
+        LOG.info("time: " + WORLD.time());
         move();
         loadUnload();
     }
@@ -257,7 +262,7 @@ public class Simulator implements Constants {
 
     private void printReason(MovingObject mv, String reason) {
         if (PRINT_REASON_WHY_AGENT_COMMAND_WAS_NOT_EXECUTED)
-            System.err.println("[AK_LOAD was ignored] time:" + WORLD.time() + ", ambulanceID:"
+            LOG.debug("[AK_LOAD was ignored] time:" + WORLD.time() + ", ambulanceID:"
                     + mv.id + "\n  " + reason);
     }
 }

@@ -45,10 +45,15 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A class for viewing log files.
  */
 public class LogViewer extends JPanel {
+    private static final Log LOG = LogFactory.getLog(LogViewer.class);
+
     private static final String VIEWERS_KEY = "log.viewers";
 
     private static final int TICK_STEP_SIZE = 10;
@@ -190,10 +195,6 @@ public class LogViewer extends JPanel {
             }
             down.setEnabled(time != 0);
             up.setEnabled(time != maxTime);
-            System.out.println("Showing time " + time);
-            System.out.println(model.getAllEntities().size() + " entities");
-            System.out.println(commands.size() + " commands");
-            System.out.println(updates.size() + " updates");
         }
         catch (LogException e) {
             JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
@@ -207,7 +208,6 @@ public class LogViewer extends JPanel {
             if (viewer != null) {
                 viewer.initialise(config);
                 viewers.add(viewer);
-                System.out.println("Added viewer: " + next);
             }
         }
     }
@@ -241,13 +241,13 @@ public class LogViewer extends JPanel {
             frame.setVisible(true);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error reading log", e);
         }
         catch (ConfigException e) {
-            e.printStackTrace();
+            LOG.error("Configuration error", e);
         }
         catch (LogException e) {
-            e.printStackTrace();
+            LOG.error("Error reading log", e);
         }
     }
 

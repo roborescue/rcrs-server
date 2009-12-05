@@ -62,13 +62,10 @@ public final class SampleSearch {
         open.add(start);
         StandardEntity next = null;
         boolean found = false;
-        //        System.out.println("Planning path from " + start + " to " + goals);
         ancestors.put(start, null);
         do {
             next = open.remove(0);
-            //            System.out.println("Next: " + next);
             Collection<StandardEntity> neighbours = findNeighbours(next);
-            //            System.out.println("Neighbours: " + neighbours);
             if (neighbours.isEmpty()) {
                 continue;
             }
@@ -89,7 +86,6 @@ public final class SampleSearch {
         } while (!found && !open.isEmpty());
         if (!found) {
             // No path
-            //            System.out.println("No path found");
             return null;
         }
         // Walk back from goal to start

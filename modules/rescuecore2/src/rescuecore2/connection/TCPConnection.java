@@ -53,9 +53,7 @@ public class TCPConnection extends StreamConnection {
             socket.close();
         }
         catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("Error closing TCP connection", e);
         }
     }
 }

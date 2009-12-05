@@ -13,10 +13,15 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.PoliceForce;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A sample police force agent.
  */
 public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
+    private static final Log LOG = LogFactory.getLog(SamplePoliceForce.class);
+
     @Override
     public String toString() {
         return "Sample police force";
@@ -32,7 +37,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         for (Command next : heard) {
-            System.out.println(me() + " heard " + next);
+            LOG.debug(me() + " heard " + next);
         }
         // Am I on a blocked road?
         StandardEntity location = location();

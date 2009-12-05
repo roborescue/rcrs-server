@@ -85,37 +85,31 @@ public class KernelStatus extends JPanel implements KernelListener {
 
     @Override
     public void agentAdded(AgentProxy info) {
-        //        System.out.println("Agent added: " + info);
         agents.add(info);
     }
 
     @Override
     public void agentRemoved(AgentProxy info) {
-        //        System.out.println("Agent removed: " + info);
         agents.remove(info);
     }
 
     @Override
     public void simulatorAdded(SimulatorProxy info) {
-        //        System.out.println("Simulator added: " + info);
         simulators.add(info);
     }
 
     @Override
     public void simulatorRemoved(SimulatorProxy info) {
-        //        System.out.println("Simulator removed: " + info);
         simulators.remove(info);
     }
 
     @Override
     public void viewerAdded(ViewerProxy info) {
-        //        System.out.println("Viewer added: " + info);
         viewers.add(info);
     }
 
     @Override
     public void viewerRemoved(ViewerProxy info) {
-        //        System.out.println("Viewer removed: " + info);
         viewers.remove(info);
     }
 }

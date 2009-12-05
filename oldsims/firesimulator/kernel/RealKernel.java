@@ -13,8 +13,11 @@ import firesimulator.simulator.Simulator;
 import firesimulator.util.Configuration;
 import firesimulator.world.World;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 public class RealKernel implements Kernel{
+    private static final Log LOG = LogFactory.getLog(RealKernel.class);
 
 	private RIO rio;
 	private String host;
@@ -34,32 +37,12 @@ public class RealKernel implements Kernel{
 			ad= InetAddress.getByName(host);
 		}
 		catch (Exception e){
-			e.printStackTrace();
-			System.exit(1);
+                    LOG.fatal("Couldn't look up server address", e);
+                    System.exit(1);
 		}
 		rio = new RIO(ad,port);
 		id = rio.connect(world);
-                System.out.println("Connected to kernel. Simulator ID is " + id);
-                /*
-		if(Configuration.isActive("store")){
-			System.out.println("storing initial data in "+Configuration.getValue("store"));
-			FileOutputStream fos;
-			try {
-				File f=new File(Configuration.getValue("store"));
-				if(f.exists())f.delete();
-				fos = new FileOutputStream(f);	
-				DataOutputStream dos=new DataOutputStream(fos);		
-				for(int i=0;i<data.length;i++){
-					dos.writeInt(data[i]);
-				}
-				dos.close();
-				fos.close();			
-			} catch (Exception e1) {
-				System.out.println("storing was not sucesfull");
-				e1.printStackTrace();
-			}
-		}
-                */
+                LOG.info("Connected to kernel. Simulator ID is " + id);
 	}
 	
 	public void signalReadyness(){

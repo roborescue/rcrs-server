@@ -57,46 +57,36 @@ public class StreamConnection extends AbstractConnection {
 
     @Override
     protected void shutdownImpl() {
-        System.out.println("Shutting down " + this);
+        log.info("Shutting down " + this);
         try {
             readThread.kill();
         }
         catch (InterruptedException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("StreamConnection interrupted while shutting down read thread", e);
         }
         try {
             writeThread.kill();
         }
         catch (InterruptedException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("StreamConnection interrupted while shutting down write thread", e);
         }
         try {
             out.flush();
         }
         catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("StreamConnection error flushing output buffer", e);
         }
         try {
             out.close();
         }
         catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("StreamConnection error closing output buffer", e);
         }
         try {
             in.close();
         }
         catch (IOException e) {
-            // Log and ignore
-            // FIXME: Log it!
-            e.printStackTrace();
+            log.error("StreamConnection error closing input buffer", e);
         }
     }
 
@@ -115,11 +105,8 @@ public class StreamConnection extends AbstractConnection {
         @Override
         protected boolean work() {
             try {
-                //                System.out.println(StreamConnection.this + ": read thread waiting for input");
                 int size = readInt32(in);
-                //                System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
                 if (size > 0) {
-                    //                    System.out.println(StreamConnection.this + ": read thread reading " + size + " bytes");
                     byte[] buffer = readBytes(size, in);
                     bytesReceived(buffer);
                 }
@@ -132,8 +119,7 @@ public class StreamConnection extends AbstractConnection {
                 return false;
             }
             catch (IOException e) {
-                System.err.println(StreamConnection.this + ": " + e);
-                e.printStackTrace();
+                log.error("Error reading from StreamConnection " + StreamConnection.this, e);
                 return false;
             }
         }
@@ -165,8 +151,7 @@ public class StreamConnection extends AbstractConnection {
                 return true;
             }
             catch (IOException e) {
-                System.err.println(StreamConnection.this + ": " + e);
-                e.printStackTrace();
+                log.error("Error writing to StreamConnection " + StreamConnection.this, e);
                 return false;
             }
         }

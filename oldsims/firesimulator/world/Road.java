@@ -1,5 +1,8 @@
 package firesimulator.world;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
@@ -7,6 +10,7 @@ package firesimulator.world;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class Road extends Edge {
+    private static final Log LOG = LogFactory.getLog(Road.class);
 
     int width;
     int block;
@@ -25,7 +29,7 @@ public class Road extends Edge {
         head=((StreetNode)world.getObject(getHeadID()));
         tail=((StreetNode)world.getObject(getTailID()));
         if(head==null||tail==null){
-            System.out.println("Error: head or tail of an streetnode did not exist. exiting");
+            LOG.fatal("Error: head or tail of an streetnode did not exist. exiting");
             System.exit(1);
         }
     }

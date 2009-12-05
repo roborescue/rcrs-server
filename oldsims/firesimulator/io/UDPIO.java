@@ -8,11 +8,15 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class UDPIO extends IO {
+    private static final Log LOG = LogFactory.getLog(UDPIO.class);
 	
 	int kernelPort;
 	InetAddress kernelIP;
@@ -29,8 +33,8 @@ public class UDPIO extends IO {
 		this.kernelPort=kernelPort;
 		try{	socket=new DatagramSocket();}
 		catch(Exception e){
-			e.printStackTrace();
-			System.exit(1);
+                    LOG.fatal("UDPIO constructor failed", e);
+                    System.exit(1);
 		}
 	}
 	
@@ -64,8 +68,8 @@ public class UDPIO extends IO {
 				offset+=size;
 			}
 		}catch(Exception e){
-			e.printStackTrace();
-			System.exit(1);	 	
+                    LOG.fatal("UDPIO failed to send bytes", e);
+                    System.exit(1);	 	
 		}
 	}
 	
@@ -84,7 +88,6 @@ public class UDPIO extends IO {
                                 byte[] packetData = pkt.getData();
 				byte[] body = new byte[packetData.length - 8];
                                 System.arraycopy(packetData, 8, body, 0, body.length); //getIntArray(pkt.getData(), 8, pkt.getLength());
-				//System.err.println("ID: "+ludpID+" ("+nth+" of "+total+")");
 				m=getMessage(ludpID);
 				if(m==null) pktList.add(m=new LUDPMessage(ludpID,total));
 				m.store(body,nth);
@@ -92,8 +95,8 @@ public class UDPIO extends IO {
 			pktList.remove(m);
 			return udpsToLudp(m.getParts());
 		}catch(Exception e){
-			e.printStackTrace();
-			System.exit(1);
+                    LOG.fatal("UDPIO failed to receive bytes", e);
+                    System.exit(1);
 		}
 		return null;
 	}

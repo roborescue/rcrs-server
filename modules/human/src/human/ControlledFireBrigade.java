@@ -15,10 +15,15 @@ import sample.SampleSearch;
 import java.util.List;
 import java.util.Collection;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A basic fire brigade agent that will try to extinguish a given target. If the target is a refuge then the fire brigade will attempt to enter the building to replenish water. If there is no target then this agent does nothing.
  */
 public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
+    private static final Log LOG = LogFactory.getLog(ControlledFireBrigade.class);
+
     private static final int MAX_WATER = 15000;
     private static final int EXTINGUISH_DISTANCE = 30000;
     private static final int EXTINGUISH_POWER = 1000;
@@ -37,7 +42,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         if (target == null) {
-            System.out.println(me() + " has nothing to do");
+            LOG.info(me() + " has nothing to do");
             return;
         }
         if (target instanceof Refuge) {
@@ -48,7 +53,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
                 return;
             }
             else {
-                System.out.println(me() + " couldn't plan a path to refuge.");
+                LOG.info(me() + " couldn't plan a path to refuge.");
             }
         }
         // Are we close enough to extinguish?
@@ -65,7 +70,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
                 return;
             }
             else {
-                System.out.println(me() + " couldn't plan a path to target.");
+                LOG.info(me() + " couldn't plan a path to target.");
             }
         }
     }

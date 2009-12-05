@@ -8,10 +8,15 @@ import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Building;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A simple collapse simulator.
  */
 public class CollapseSimulator extends StandardSimulator {
+    private static final Log LOG = LogFactory.getLog(CollapseSimulator.class);
+
     private static final String[] CODES = {"wood", "steel", "concrete"};
     private static final String CONFIG_PREFIX = "collapse.";
     private static final String DESTROYED_SUFFIX = ".p-destroyed";
@@ -62,14 +67,14 @@ public class CollapseSimulator extends StandardSimulator {
                 }
             }
             // CHECKSTYLE:OFF:MagicNumber
-            System.out.println("Finished collapsing buildings: ");
+            LOG.info("Finished collapsing buildings: ");
             for (int i = 0; i < CODES.length; ++i) {
-                System.out.println("Building code " + i + ": " + count[i][5] + " buildings");
-                System.out.println("  " + count[i][0] + " undamaged");
-                System.out.println("  " + count[i][1] + " slightly damaged");
-                System.out.println("  " + count[i][2] + " moderately damaged");
-                System.out.println("  " + count[i][3] + " severely damaged");
-                System.out.println("  " + count[i][4] + " destroyed");
+                LOG.info("Building code " + i + ": " + count[i][5] + " buildings");
+                LOG.info("  " + count[i][0] + " undamaged");
+                LOG.info("  " + count[i][1] + " slightly damaged");
+                LOG.info("  " + count[i][2] + " moderately damaged");
+                LOG.info("  " + count[i][3] + " severely damaged");
+                LOG.info("  " + count[i][4] + " destroyed");
             }
             // CHECKSTYLE:ON:MagicNumber
         }
@@ -99,7 +104,7 @@ public class CollapseSimulator extends StandardSimulator {
                 }
                 int damage = b.isBrokennessDefined() ? b.getBrokenness() : 0;
                 if (damage < minDamage) {
-                    System.out.println(b + " damaged by fire. New brokenness: " + minDamage);
+                    LOG.info(b + " damaged by fire. New brokenness: " + minDamage);
                     b.setBrokenness(minDamage);
                     changes.addChange(b, b.getBrokennessProperty());
                 }

@@ -54,7 +54,6 @@ public class TempColorizer implements AirColorizer,BuildingColorizer {
 		try{
 			c=new Color(red,green,blue);
 		}catch (Exception e) {
-			System.out.println("r="+red+", g="+green+", b="+blue);
 			System.exit(1);
 		}
 		return c;

@@ -28,10 +28,17 @@ import rescuecore2.standard.messages.AKUnload;
 
 import org.uncommons.maths.random.GaussianGenerator;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
+import java.util.Formatter;
+
 /**
    A simple misc simulator. This simulator handles buriedness, health, loading, unloading and road clearing.
  */
 public class MiscSimulator extends StandardSimulator {
+    private static final Log LOG = LogFactory.getLog(MiscSimulator.class);
+
     private static final String[] CODES = {"wood", "steel", "concrete"};
 
     private static final String PREFIX = "misc.";
@@ -46,8 +53,6 @@ public class MiscSimulator extends StandardSimulator {
     private static final String DAMAGE_FIRE_KEY = "misc.damage.fire";
 
     private static final String CLEAR_RATE_KEY = "misc.clear.rate";
-
-    private static final String VERBOSE_KEY = "misc.verbose";
 
     private static final int SLIGHT = 25;
     private static final int MODERATE = 50;
@@ -64,14 +69,11 @@ public class MiscSimulator extends StandardSimulator {
 
     private GaussianGenerator gaussian;
 
-    private boolean verbose;
-
     /**
        Create a MiscSimulator.
     */
     public MiscSimulator() {
         changes = new ChangeSet();
-        verbose = false;
     }
 
     @Override
@@ -91,7 +93,6 @@ public class MiscSimulator extends StandardSimulator {
         double mean = config.getFloatValue(DAMAGE_MEAN_KEY);
         double sd = config.getFloatValue(DAMAGE_SD_KEY);
         gaussian = new GaussianGenerator(mean, sd, config.getRandom());
-        verbose = config.getBooleanValue(VERBOSE_KEY, false);
     }
 
     @Override
@@ -113,10 +114,8 @@ public class MiscSimulator extends StandardSimulator {
             }
         }
         updateHealth();
-        if (verbose) {
-            System.out.println("Time: " + time);
-            writeInfo();
-        }
+        LOG.info("Time: " + time);
+        writeInfo();
         cs.merge(changes);
     }
 
@@ -132,20 +131,20 @@ public class MiscSimulator extends StandardSimulator {
                 Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
                 if (brokenness != null) {
                     // Brokenness has changed. Bury any agents inside.
-                    //                    System.out.println(b + " is broken. Updating trapped agents");
+                    LOG.debug(b + " is broken. Updating trapped agents");
                     for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
                                                             StandardEntityURN.FIRE_BRIGADE,
                                                             StandardEntityURN.POLICE_FORCE,
                                                             StandardEntityURN.AMBULANCE_TEAM)) {
                         Human h = (Human)e;
                         if (h.isPositionDefined() && h.getPosition().equals(b.getID())) {
-                            //                            System.out.println("Human in building: " + h);
+                            LOG.debug("Human in building: " + h);
                             int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
                             int increase = calculateBuriedness(h, b);
                             buriedness += increase;
                             h.setBuriedness(buriedness);
                             changes.addChange(h, h.getBuriednessProperty());
-                            //                            System.out.println("Changed buriedness: increase by " + increase + " to " + buriedness);
+                            LOG.debug("Changed buriedness: increase by " + increase + " to " + buriedness);
                         }
                     }
                 }
@@ -157,72 +156,70 @@ public class MiscSimulator extends StandardSimulator {
         StandardEntity agent = model.getEntity(clear.getAgentID());
         StandardEntity target = model.getEntity(clear.getTarget());
         if (agent == null) {
-            System.out.println("Rejecting clear command " + clear + ": agent does not exist");
+            LOG.warn("Rejecting clear command " + clear + ": agent does not exist");
             return;
         }
         if (target == null) {
-            System.out.println("Rejecting clear command " + clear + ": target does not exist");
+            LOG.warn("Rejecting clear command " + clear + ": target does not exist");
             return;
         }
         if (!(agent instanceof PoliceForce)) {
-            System.out.println("Rejecting clear command " + clear + ": agent is not a police officer");
+            LOG.warn("Rejecting clear command " + clear + ": agent is not a police officer");
             return;
         }
         if (!(target instanceof Road)) {
-            System.out.println("Rejecting clear command " + clear + ": target is not a road");
+            LOG.warn("Rejecting clear command " + clear + ": target is not a road");
             return;
         }
         PoliceForce police = (PoliceForce)agent;
         StandardEntity agentPosition = police.getPosition(model);
         if (agentPosition == null) {
-            System.out.println("Rejecting clear command " + clear + ": could not locate agent");
+            LOG.warn("Rejecting clear command " + clear + ": could not locate agent");
             return;
         }
         if (!police.isHPDefined() || police.getHP() <= 0) {
-            System.out.println("Rejecting clear command " + clear + ": agent is dead");
+            LOG.warn("Rejecting clear command " + clear + ": agent is dead");
             return;
         }
         if (police.isBuriednessDefined() && police.getBuriedness() > 0) {
-            System.out.println("Rejecting clear command " + clear + ": agent is buried");
+            LOG.warn("Rejecting clear command " + clear + ": agent is buried");
             return;
         }
         Road targetRoad = (Road)target;
         if (!targetRoad.isBlockDefined() || targetRoad.getBlock() <= 0) {
-            System.out.println("Rejecting clear command " + clear + ": road is not blocked");
+            LOG.warn("Rejecting clear command " + clear + ": road is not blocked");
             return;
         }
         EntityID agentPositionID = police.getPosition();
         if (agentPositionID == null || !agentPositionID.equals(target.getID()) && !agentPositionID.equals(targetRoad.getHead()) && !agentPositionID.equals(targetRoad.getTail())) {
-            System.out.println("Rejecting clear command " + clear + ": agent is not adjacent to target road");
+            LOG.warn("Rejecting clear command " + clear + ": agent is not adjacent to target road");
             return;
         }
         // All checks passed
         int block = targetRoad.getBlock();
         targetRoad.setBlock(Math.max(0, block - clearRate));
         changes.addChange(targetRoad, targetRoad.getBlockProperty());
-        if (verbose) {
-            System.out.println("Clear: " + clear);
-            System.out.println("Reduced road block from " + block + " to: " + targetRoad.getBlock());
-        }
+        LOG.debug("Clear: " + clear);
+        LOG.debug("Reduced road block from " + block + " to: " + targetRoad.getBlock());
     }
 
     private void processRescue(AKRescue rescue) {
         StandardEntity agent = model.getEntity(rescue.getAgentID());
         StandardEntity target = model.getEntity(rescue.getTarget());
         if (agent == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent does not exist");
+            LOG.warn("Rejecting rescue command " + rescue + ": agent does not exist");
             return;
         }
         if (target == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": target does not exist");
+            LOG.warn("Rejecting rescue command " + rescue + ": target does not exist");
             return;
         }
         if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is not an ambulance");
+            LOG.warn("Rejecting rescue command " + rescue + ": agent is not an ambulance");
             return;
         }
         if (!(target instanceof Human)) {
-            System.out.println("Rejecting rescue command " + rescue + ": target is not a human");
+            LOG.warn("Rejecting rescue command " + rescue + ": target is not a human");
             return;
         }
         AmbulanceTeam ambulance = (AmbulanceTeam)agent;
@@ -230,60 +227,58 @@ public class MiscSimulator extends StandardSimulator {
         StandardEntity agentPosition = ambulance.getPosition(model);
         StandardEntity targetPosition = targetHuman.getPosition(model);
         if (agentPosition == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": could not locate agent");
+            LOG.warn("Rejecting rescue command " + rescue + ": could not locate agent");
             return;
         }
         if (targetPosition == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": could not locate target");
+            LOG.warn("Rejecting rescue command " + rescue + ": could not locate target");
             return;
         }
         if (!(targetPosition instanceof Building)) {
-            System.out.println("Rejecting rescue command " + rescue + ": target is not in a building");
+            LOG.warn("Rejecting rescue command " + rescue + ": target is not in a building");
             return;
         }
         if (!ambulance.isHPDefined() || ambulance.getHP() <= 0) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is dead");
+            LOG.warn("Rejecting rescue command " + rescue + ": agent is dead");
             return;
         }
         if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is buried");
+            LOG.warn("Rejecting rescue command " + rescue + ": agent is buried");
             return;
         }
         if (!targetHuman.isBuriednessDefined() || targetHuman.getBuriedness() <= 0) {
-            System.out.println("Rejecting rescue command " + rescue + ": target is not buried");
+            LOG.warn("Rejecting rescue command " + rescue + ": target is not buried");
             return;
         }
         if (!agentPosition.equals(targetPosition)) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is at a different location to the target");
+            LOG.warn("Rejecting rescue command " + rescue + ": agent is at a different location to the target");
             return;
         }
         // All checks passed
         int buriedness = targetHuman.getBuriedness();
         targetHuman.setBuriedness(Math.max(0, buriedness - 1));
         changes.addChange(targetHuman, targetHuman.getBuriednessProperty());
-        if (verbose) {
-            System.out.println("Rescue: " + rescue);
-            System.out.println("Reduced buriedness from " + buriedness + " to: " + targetHuman.getBuriedness());
-        }
+        LOG.debug("Rescue: " + rescue);
+        LOG.debug("Reduced buriedness from " + buriedness + " to: " + targetHuman.getBuriedness());
     }
 
     private void processLoad(AKLoad load) {
         StandardEntity agent = model.getEntity(load.getAgentID());
         StandardEntity target = model.getEntity(load.getTarget());
         if (agent == null) {
-            System.out.println("Rejecting load command " + load + ": agent does not exist");
+            LOG.warn("Rejecting load command " + load + ": agent does not exist");
             return;
         }
         if (target == null) {
-            System.out.println("Rejecting load command " + load + ": target does not exist");
+            LOG.warn("Rejecting load command " + load + ": target does not exist");
             return;
         }
         if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Rejecting load command " + load + ": agent is not an ambulance");
+            LOG.warn("Rejecting load command " + load + ": agent is not an ambulance");
             return;
         }
         if (!(target instanceof Civilian)) {
-            System.out.println("Rejecting load command " + load + ": target is not a civilian");
+            LOG.warn("Rejecting load command " + load + ": target is not a civilian");
             return;
         }
         AmbulanceTeam ambulance = (AmbulanceTeam)agent;
@@ -292,69 +287,67 @@ public class MiscSimulator extends StandardSimulator {
         StandardEntity targetPosition = targetCivilian.getPosition(model);
         EntityID agentID = agent.getID();
         if (agentPosition == null) {
-            System.out.println("Rejecting load command " + load + ": could not locate agent");
+            LOG.warn("Rejecting load command " + load + ": could not locate agent");
             return;
         }
         if (targetPosition == null) {
-            System.out.println("Rejecting load command " + load + ": could not locate target");
+            LOG.warn("Rejecting load command " + load + ": could not locate target");
             return;
         }
         if (!ambulance.isHPDefined() || ambulance.getHP() <= 0) {
-            System.out.println("Rejecting load command " + load + ": agent is dead");
+            LOG.warn("Rejecting load command " + load + ": agent is dead");
             return;
         }
         if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
-            System.out.println("Rejecting load command " + load + ": agent is buried");
+            LOG.warn("Rejecting load command " + load + ": agent is buried");
             return;
         }
         if (targetCivilian.isBuriednessDefined() && targetCivilian.getBuriedness() > 0) {
-            System.out.println("Rejecting load command " + load + ": target is buried");
+            LOG.warn("Rejecting load command " + load + ": target is buried");
             return;
         }
         if (!agentPosition.equals(targetPosition)) {
-            System.out.println("Rejecting load command " + load + ": agent is at a different location to the target");
+            LOG.warn("Rejecting load command " + load + ": agent is at a different location to the target");
             return;
         }
         // Is there something already loaded?
         for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             Civilian c = (Civilian)e;
             if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
-                System.out.println("Rejecting load command " + load + ": agent already has something loaded");
+                LOG.warn("Rejecting load command " + load + ": agent already has something loaded");
                 return;
             }
         }
         // All checks passed
         targetCivilian.setPosition(agentID);
         changes.addChange(targetCivilian, targetCivilian.getPositionProperty());
-        if (verbose) {
-            System.out.println("Load: " + load);
-            System.out.println("Ambulance " + agentID + " loaded civilian " + targetCivilian.getID());
-        }
+        LOG.debug("Load: " + load);
+        LOG.debug("Ambulance " + agentID + " loaded civilian " + targetCivilian.getID());
     }
 
     private void processUnload(AKUnload unload) {
         StandardEntity agent = model.getEntity(unload.getAgentID());
         if (agent == null) {
-            System.out.println("Rejecting unload command " + unload + ": agent does not exist");
+            LOG.warn("Rejecting unload command " + unload + ": agent does not exist");
             return;
         }
         if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Rejecting unload command " + unload + ": agent is not an ambulance");
+            LOG.warn("Rejecting unload command " + unload + ": agent is not an ambulance");
             return;
         }
         EntityID agentID = agent.getID();
         AmbulanceTeam ambulance = (AmbulanceTeam)agent;
         StandardEntity agentPosition = ambulance.getPosition(model);
         if (agentPosition == null) {
-            System.out.println("Rejecting unload command " + unload + ": could not locate agent");
+            LOG.warn("Rejecting unload command " + unload + ": could not locate agent");
             return;
         }
         if (!ambulance.isHPDefined() && ambulance.getHP() <= 0) {
-            System.out.println("Rejecting unload command " + unload + ": agent is dead");
+            LOG.warn("Rejecting unload command " + unload + ": agent is dead");
             return;
         }
         if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
-            System.out.println("Rejecting unload command " + unload + ": agent is buried");
+            LOG.warn("Rejecting unload command " + unload + ": agent is buried");
             return;
         }
         // Is there something loaded?
@@ -367,16 +360,14 @@ public class MiscSimulator extends StandardSimulator {
             }
         }
         if (target == null) {
-            System.out.println("Rejecting unload command " + unload + ": agent is not carrying any civilians");
+            LOG.warn("Rejecting unload command " + unload + ": agent is not carrying any civilians");
             return;
         }
         // All checks passed
         target.setPosition(ambulance.getPosition());
         changes.addChange(target, target.getPositionProperty());
-        if (verbose) {
-            System.out.println("Unload: " + unload);
-            System.out.println("Ambulance " + agentID + " unloaded " + target.getID() + " at " + ambulance.getPosition());
-        }
+        LOG.debug("Unload: " + unload);
+        LOG.debug("Ambulance " + agentID + " unloaded " + target.getID() + " at " + ambulance.getPosition());
     }
 
     private void updateHealth() {
@@ -423,8 +414,10 @@ public class MiscSimulator extends StandardSimulator {
     }
 
     private void writeInfo() {
-        System.out.println("|    Civ ID |     HP | Damage | Buriedness |");
-        System.out.println("--------------------------------------------");
+        StringBuilder builder = new StringBuilder();
+        Formatter format = new Formatter(builder);
+        format.format("|    Civ ID |     HP | Damage | Buriedness |%n");
+        format.format("--------------------------------------------%n");
         for (Entity e : EntityTools.sortedList(model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
                                                                        StandardEntityURN.FIRE_BRIGADE,
                                                                        StandardEntityURN.POLICE_FORCE,
@@ -434,20 +427,21 @@ public class MiscSimulator extends StandardSimulator {
             int damage = h.isDamageDefined() ? h.getDamage() : 0;
             int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
             if (hp > 0 && (damage > 0 || buriedness > 0)) {
-                System.out.printf("| %1$9d | %2$6d | %3$6d | %4$10d |%n", h.getID().getValue(), hp, damage, buriedness);
+                format.format("| %1$9d | %2$6d | %3$6d | %4$10d |%n", h.getID().getValue(), hp, damage, buriedness);
             }
         }
-        System.out.println("--------------------------------------------");
-        System.out.println("|   Road ID |  Block |");
-        System.out.println("----------------------");
+        format.format("--------------------------------------------%n");
+        format.format("|   Road ID |  Block |%n");
+        format.format("----------------------%n");
         for (Entity e : EntityTools.sortedList(model.getEntitiesOfType(StandardEntityURN.ROAD))) {
             Road r = (Road)e;
             int block = r.isBlockDefined() ? r.getBlock() : 0;
             if (block > 0) {
-                System.out.printf("| %1$9d | %2$6d |%n", r.getID().getValue(), block);
+                format.format("| %1$9d | %2$6d |%n", r.getID().getValue(), block);
             }
         }
-        System.out.println("---------------------");
+        format.format("---------------------%n");
+        LOG.info(builder.toString());
     }
 
     private static class BuriednessStats {

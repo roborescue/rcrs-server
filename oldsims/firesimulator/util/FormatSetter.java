@@ -4,11 +4,15 @@ import javax.swing.JFormattedTextField;
 
 import firesimulator.kernel.viewer.Setter;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class FormatSetter implements Setter {
+    private static final Log LOG = LogFactory.getLog(FormatSetter.class);
 
 	JFormattedTextField client;	
 	String property;
@@ -60,7 +64,7 @@ public class FormatSetter implements Setter {
 			value=left+right+" "+unit;			
 			client.setText(value);
 		}catch(Exception e){
-			System.out.println("setter error at property "+property+" (type="+type+")");
+                    LOG.error("setter error at property "+property+" (type="+type+")", e);
 		}
 	}
 

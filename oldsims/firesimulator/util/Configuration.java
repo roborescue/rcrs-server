@@ -18,7 +18,12 @@ import java.util.regex.Pattern;
 
 import firesimulator.world.Wall;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 public class Configuration {	
+    private static final Log LOG = LogFactory.getLog(Configuration.class);
+
     private static final String PREFIX = "resq-fire.";
 
 
@@ -212,7 +217,7 @@ public class Configuration {
 		String fname=CONFIG_TXT_PATH+File.separator+"config.txt";
 		if(filename!=null)
 			fname=filename;
-		System.out.println("loading values from \""+fname+"\"");
+		LOG.info("loading values from \""+fname+"\"");
 		try{
 			Pattern comment=Pattern.compile("([^#]*)(#(.*))*",Pattern.DOTALL);
 			Pattern keyValue=Pattern.compile("([^:]*):(.*)",Pattern.DOTALL);
@@ -244,7 +249,7 @@ public class Configuration {
 			}		
 			
 		}catch (Exception e) {
-			System.out.println("unable to load \""+fname+"\"");
+                    LOG.error("unable to load \""+fname+"\"", e);
 		}
 
 		
@@ -273,7 +278,7 @@ public class Configuration {
 	public static void dump(){		
 		for(Iterator i=Props.iterator();i.hasNext();){
 			Prop p=(Prop)i.next();
-			System.out.println(p.command+"="+p.value+ "["+p.active+"]");
+			LOG.debug(p.command+"="+p.value+ "["+p.active+"]");
 		}
 	}
 
@@ -283,9 +288,10 @@ public class Configuration {
 		for(Iterator i=Props.iterator();i.hasNext();){
 			Prop p=(Prop)i.next();
 			if(p.description==null){
-				if(p.value==null)
-					System.out.println(p.command);
-				prop.put(p.command,p.value);
+                            if(p.value==null) {
+                                LOG.debug(p.command);
+                            }
+                            prop.put(p.command,p.value);
 			}
 		}
 		if(!fileName.endsWith(".stp"))fileName+=".stp";		

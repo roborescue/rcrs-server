@@ -14,10 +14,15 @@ import sample.SampleSearch;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A basic police force agent that will try to clear a given target. Fully-blocked roads encountered along the way are also cleared. If there is no target then this agent does nothing.
 */
 public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
+    private static final Log LOG = LogFactory.getLog(ControlledPoliceForce.class);
+
     private SampleSearch search;
     private Road target;
 
@@ -39,7 +44,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
             }
         }
         if (target == null) {
-            System.out.println(me() + " has nothing to do.");
+            LOG.info(me() + " has nothing to do.");
             return;
         }
         if (location().equals(target)) {
@@ -59,7 +64,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
                 return;
             }
             else {
-                System.out.println(me() + " couldn't plan a path to target.");
+                LOG.info(me() + " couldn't plan a path to target.");
             }
         }
     }

@@ -13,11 +13,15 @@ import javax.swing.text.MaskFormatter;
 
 import firesimulator.kernel.viewer.Setter;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class ComponentFactory {
+    private static final Log LOG = LogFactory.getLog(ComponentFactory.class);
 	
 	public static final int FLOAT=1;
 	public static final int INT=2;
@@ -74,7 +78,7 @@ public class ComponentFactory {
 	    try {
 	        formatter = new MaskFormatter(s);
 	    } catch (java.text.ParseException exc) {
-	        System.err.println("formatter is bad: " + exc.getMessage());
+	        LOG.fatal("formatter is bad: " + exc.getMessage(), exc);
 	        System.exit(-1);
 	    }
 	    return formatter;

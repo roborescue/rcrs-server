@@ -75,7 +75,7 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
         ChangeSet changes = u.getChangeSet();
         int time = u.getTime();
         if (time != lastUpdateTime + 1) {
-            System.out.println("WARNING: Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
+            log.warn("Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
         }
         lastUpdateTime = time;
         model.merge(changes);

@@ -24,10 +24,15 @@ import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
 import rescuecore2.registry.Registry;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A log reader that reads from a file.
  */
 public class FileLogReader extends AbstractLogReader {
+    private static final Log LOG = LogFactory.getLog(FileLogReader.class);
+
     private static final int KEY_FRAME_BUFFER_MAX_SIZE = 10;
 
     private RandomAccessFile file;
@@ -58,7 +63,7 @@ public class FileLogReader extends AbstractLogReader {
     */
     public FileLogReader(File file, Registry registry) throws IOException, LogException {
         super(registry);
-        System.out.println("Reading file log: " + file.getAbsolutePath());
+        LOG.info("Reading file log: " + file.getAbsolutePath());
         this.file = new RandomAccessFile(file, "r");
         index();
     }
@@ -75,24 +80,24 @@ public class FileLogReader extends AbstractLogReader {
 
     @Override
     public WorldModel<? extends Entity> getWorldModel(int time) throws LogException {
-        System.out.println("Getting world model at time " + time);
+        LOG.debug("Getting world model at time " + time);
         WorldModel<? extends Entity> result = new DefaultWorldModel<Entity>(Entity.class);
         // Look for a key frame
         Map.Entry<Integer, WorldModel<? extends Entity>> entry = keyFrames.floorEntry(time);
         int startTime = entry.getKey();
-        System.out.println("Found key frame " + startTime);
+        LOG.trace("Found key frame " + startTime);
         // Copy the initial conditions
-        System.out.println("Cloning initial conditions");
+        LOG.trace("Cloning initial conditions");
         for (Entity next : entry.getValue()) {
             result.addEntity(next.copy());
         }
         // Go through updates and apply them all
         for (int i = startTime + 1; i <= time; ++i) {
             ChangeSet updates = getUpdates(time).getChangeSet();
-            System.out.println("Merging " + updates.getChangedEntities().size() + " updates for timestep " + i);
+            LOG.trace("Merging " + updates.getChangedEntities().size() + " updates for timestep " + i);
             result.merge(updates);
         }
-        System.out.println("Done");
+        LOG.trace("Done");
         // Remove stale key frames
         removeStaleKeyFrames();
         // Store this as a key frame - it's quite likely that the next timestep will be viewed soon.
@@ -193,7 +198,6 @@ public class FileLogReader extends AbstractLogReader {
     }
 
     private void indexRecord(RecordType type) throws IOException, LogException {
-        //        System.out.println("Record found: " + type);
         switch (type) {
         case START_OF_LOG:
             indexStart();
@@ -248,7 +252,6 @@ public class FileLogReader extends AbstractLogReader {
         PerceptionRecord record = new PerceptionRecord(new ByteArrayInputStream(bytes));
         int time = record.getTime();
         EntityID agentID = record.getEntityID();
-        //        System.out.println("Found perception for agent " + agentID + " at time " + time + " at position " + position);
         Map<EntityID, Long> timestepMap = perceptionIndices.get(time);
         if (timestepMap == null) {
             timestepMap = new HashMap<EntityID, Long>();
@@ -263,7 +266,6 @@ public class FileLogReader extends AbstractLogReader {
         byte[] bytes = readBytes(size, file);
         CommandsRecord record = new CommandsRecord(new ByteArrayInputStream(bytes));
         int time = record.getTime();
-        //        System.out.println("Found commands for time " + time + " at position " + position);
         commandsIndices.put(time, position);
         maxTime = Math.max(time, maxTime);
     }
@@ -274,7 +276,6 @@ public class FileLogReader extends AbstractLogReader {
         byte[] bytes = readBytes(size, file);
         UpdatesRecord record = new UpdatesRecord(new ByteArrayInputStream(bytes));
         int time = record.getTime();
-        //        System.out.println("Found updates for time " + time + " at position " + position);
         updatesIndices.put(time, position);
         maxTime = Math.max(time, maxTime);
     }
@@ -287,25 +288,25 @@ public class FileLogReader extends AbstractLogReader {
     }
 
     private void removeStaleKeyFrames() {
-        System.out.println("Removing stale key frames");
+        LOG.trace("Removing stale key frames");
         int size = keyFrames.size();
         if (size < KEY_FRAME_BUFFER_MAX_SIZE) {
-            System.out.println("Key frame buffer is not full: " + size + (size == 1 ? " entry" : " entries"));
+            LOG.trace("Key frame buffer is not full: " + size + (size == 1 ? " entry" : " entries"));
             return;
         }
         // Try to balance the number of key frames.
         int window = maxTime / KEY_FRAME_BUFFER_MAX_SIZE;
         for (int i = 0; i < maxTime; i += window) {
             NavigableMap<Integer, WorldModel<? extends Entity>> next = keyFrames.subMap(i, false, i + window, true);
-            System.out.println("Window " + i + " -> " + (i + window) + " has " + next.size() + " entries");
+            LOG.trace("Window " + i + " -> " + (i + window) + " has " + next.size() + " entries");
             if (next.size() > 1) {
                 // Remove all but the last entry in this window
                 Map.Entry<Integer, WorldModel<? extends Entity>> last = next.lastEntry();
                 next.clear();
                 next.put(last.getKey(), last.getValue());
-                System.out.println("Retained entry " + last);
+                LOG.trace("Retained entry " + last);
             }
         }
-        System.out.println("New key frame set: " + keyFrames);
+        LOG.trace("New key frame set: " + keyFrames);
     }
 }

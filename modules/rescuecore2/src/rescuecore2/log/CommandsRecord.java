@@ -61,7 +61,6 @@ public class CommandsRecord implements LogRecord {
         time = readInt32(in);
         commands = new ArrayList<Command>();
         int count = readInt32(in);
-        //        System.out.print("Reading commands for time " + time + ". " + count + " commands to read...");
         for (int i = 0; i < count; ++i) {
             Message m = readMessage(in, Registry.getCurrentRegistry());
             if (m == null) {
@@ -72,7 +71,6 @@ public class CommandsRecord implements LogRecord {
             }
             commands.add((Command)m);
         }
-        //        System.out.println("done");
     }
 
     /**

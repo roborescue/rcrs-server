@@ -3,7 +3,12 @@ package traffic;
 import java.util.*;
 import traffic.object.*;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 public class Util implements Constants {
+    private static final Log LOG = LogFactory.getLog(Util.class);
+    
   // -------------------------------------------------------------- Collections
   public static Object getAtRandom(List list) {
     if(ASSERT)Util.myassert(!list.isEmpty(), "list must not be empty");
@@ -39,7 +44,7 @@ public class Util implements Constants {
   }
 
   public static void printTimes() {
-    System.out.println("Processing time\n\t[rate]\t[sec]\t@ [name]");
+      LOG.debug("Processing time\n\t[rate]\t[sec]\t@ [name]");
     Iterator it;
     it = m_nameTimeMap.values().iterator();
     long totalTime = 0;
@@ -49,7 +54,7 @@ public class Util implements Constants {
     while (it.hasNext()) {
       Map.Entry e = (Map.Entry) it.next();
       double time = (double) ((Long) e.getValue()).longValue();
-      System.out.println("\t" + (((int) (time / totalTime * 100d)) / 100d) + "\t" + (time / 1000) + "\t@ " + ((String) e.getKey()));
+      LOG.debug("\t" + (((int) (time / totalTime * 100d)) / 100d) + "\t" + (time / 1000) + "\t@ " + ((String) e.getKey()));
     }
   }
 }

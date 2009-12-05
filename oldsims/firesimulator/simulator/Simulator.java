@@ -11,8 +11,11 @@ import firesimulator.world.Building;
 import firesimulator.world.FireBrigade;
 import firesimulator.world.World;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 public class Simulator {
+    private static final Log LOG = LogFactory.getLog(Simulator.class);
 	
 	private Kernel kernel;
 	private World world;
@@ -86,8 +89,7 @@ public class Simulator {
 			if(!kernel.waitForNextCycle()) break;
 			long t=System.currentTimeMillis();
  			step();
-			if(verbose)
-			    System.out.println("t="+world.getTime()+" ("+(System.currentTimeMillis()-t)+"ms)");		
+                        LOG.info("t="+world.getTime()+" ("+(System.currentTimeMillis()-t)+"ms)");		
 			kernel.sendUpdate();						
 			kernel.receiveUpdate();
 			informStep();
@@ -117,7 +119,7 @@ public class Simulator {
 	    for(Iterator i = world.getFirebrigades().iterator();i.hasNext();){
 	        FireBrigade fb = ((FireBrigade)i.next());
 	        if(fb.refill()){
-	            System.out.println("refilling fire brigade "+fb.getID());
+	            LOG.debug("refilling fire brigade "+fb.getID());
 	        }
 	    }
 	}
@@ -215,7 +217,7 @@ public class Simulator {
 				    newairtemp[x][y]=Double.MAX_VALUE*0.75;
 				}
                 if(newairtemp[x][y] == Double.NEGATIVE_INFINITY || newairtemp[x][y] == Double.NEGATIVE_INFINITY)
-                    System.out.println("aha");
+                    LOG.trace("aha");
 			}
 		}
 		for(int x=0;x<newairtemp.length;x++){
@@ -226,7 +228,7 @@ public class Simulator {
 				    newairtemp[x][y]=Double.MAX_VALUE*0.75;
 				}
                 if(newairtemp[x][y] == Double.NEGATIVE_INFINITY || newairtemp[x][y] == Double.NEGATIVE_INFINITY)
-                    System.out.println("aha2");
+                    LOG.trace("aha2");
 			}
 		}
 		world.setAirTemp(newairtemp);		
@@ -328,8 +330,7 @@ public class Simulator {
 		try{
 			loadVars();
 		}catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("invalid configuration, aborting");
+			LOG.fatal("invalid configuration, aborting", e);
 			System.exit(-1);			
 		}
 			

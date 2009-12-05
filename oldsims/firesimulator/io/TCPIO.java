@@ -11,11 +11,16 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class TCPIO extends IO {
+    private static final Log LOG = LogFactory.getLog(TCPIO.class);
+
 	Socket socket;
 	DataInputStream in;
 	DataOutputStream out;
@@ -29,8 +34,8 @@ public class TCPIO extends IO {
 			in = new DataInputStream(socket.getInputStream());
 		}
 		catch(Exception e){
-			e.printStackTrace();
-			System.exit(1);
+                    LOG.fatal("TCPIO constructor failed", e);
+                    System.exit(1);
 		}
 	}
 	
@@ -45,8 +50,8 @@ public class TCPIO extends IO {
 			out.flush();
 		} 
 		catch(Exception e){
-			e.printStackTrace();
-			System.exit(1);	 	
+                    LOG.fatal("TCPIO failed to send bytes", e);
+                    System.exit(1);	 	
 		}
 	}
 	
@@ -65,8 +70,8 @@ public class TCPIO extends IO {
 			}
                         return buffer;
 		}catch(Exception e){
-			e.printStackTrace();
-			System.exit(1);
+                    LOG.fatal("TCPIO failed to received bytes", e);
+                    System.exit(1);
 		}
 		return null;
 	}

@@ -2,6 +2,8 @@ package firesimulator.world;
 
 import rescuecore.OutputBuffer;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
  * @author tn
@@ -10,6 +12,7 @@ import rescuecore.OutputBuffer;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public abstract class RescueObject implements WorldConstants {
+    private static final Log LOG = LogFactory.getLog(RescueObject.class);
 
 	int id;
 	
@@ -31,7 +34,7 @@ public abstract class RescueObject implements WorldConstants {
 	}
 		
 	public void input(String property, int[] value){
-            System.out.println("unkown property: "+property);
+            LOG.warn("unkown property: "+property);
 	}
 	
     public abstract String getType();

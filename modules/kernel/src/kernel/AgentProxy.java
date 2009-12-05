@@ -82,7 +82,7 @@ public class AgentProxy extends AbstractKernelComponent {
     protected void commandReceived(Command c) {
         // Check that the command is for the right agent
         if (!c.getAgentID().equals(entity.getID())) {
-            System.out.println("Ignoring bogus command: Agent " + entity.getID() + " tried to send a command for agent " + c.getAgentID());
+            log.warn("Ignoring bogus command: Agent " + entity.getID() + " tried to send a command for agent " + c.getAgentID());
             return;
         }
         int time = c.getTime();

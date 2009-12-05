@@ -6,10 +6,15 @@ import rescuecore2.messages.Command;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A CommandCollector that waits for a certain amount of time before returning agent commands.
 */
 public class TimedCommandCollector implements CommandCollector {
+    private static final Log LOG = LogFactory.getLog(TimedCommandCollector.class);
+
     private static final int DEFAULT_TIME = 1000;
     private static final String TIME_KEY = "kernel.agents.think-time";
 
@@ -26,7 +31,7 @@ public class TimedCommandCollector implements CommandCollector {
         long end = now + time;
         while (now < end) {
             long diff = end - now;
-            System.out.println(this + " waiting for " + diff + "ms");
+            LOG.trace(this + " waiting for " + diff + "ms");
             Thread.sleep(diff);
             now = System.currentTimeMillis();
         }
@@ -35,7 +40,7 @@ public class TimedCommandCollector implements CommandCollector {
             Collection<Command> commands = next.getAgentCommands(timestep);
             result.addAll(commands);
         }
-        System.out.println(this + " returning " + result.size() + " commands");
+        LOG.trace(this + " returning " + result.size() + " commands");
         return result;
     }
 

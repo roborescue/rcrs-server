@@ -214,22 +214,17 @@ public class ControlledAgentGUI extends StandardViewer {
             while (true) {
                 ++count;
                 T agent = type.createAgent();
-                System.out.print("Connecting " + type + " " + count + "...");
                 try {
                     launcher.connect(agent);
-                    System.out.println("done.");
                     list.add(agent);
                 }
                 catch (ComponentConnectionException e) {
-                    System.out.println("failed: " + e.getMessage());
                     break;
                 }
                 catch (InterruptedException e) {
-                    System.out.println("interrupted");
                     break;
                 }
                 catch (ConnectionException e) {
-                    System.out.println("failed: " + e);
                     break;
                 }
             }

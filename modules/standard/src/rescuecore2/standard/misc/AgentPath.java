@@ -57,7 +57,6 @@ public abstract class AgentPath {
         }
         if (!it.hasNext()) {
             // Didn't find the agent along the requested path. Let's assume the agent is in the right place.
-            //            System.out.println(agentID + ": original position not found on path");
             it = path.iterator();
             previous = startPosition;
         }
@@ -149,24 +148,18 @@ public abstract class AgentPath {
 
         @Override
         public Pair<Integer, Integer> getPointOnPath(double d) {
-            //            System.out.println("Finding point along composite path: " + d);
             double length = getLength();
             double point = d * length;
-            //            System.out.println("Length = " + length + ", length along path = " + point);
             // Find the right part
             AgentPath result = null;
             for (AgentPath next : parts) {
                 double nextLength = next.getLength();
-                //                System.out.println("Next part: " + next);
-                //                System.out.println("Length: " + nextLength);
                 if (nextLength > point) {
                     result = next;
                     break;
                 }
                 point -= nextLength;
-                //                System.out.println("Length remaining: " + point);
             }
-            //            System.out.println("Result: " + result);
             if (result == null) {
                 // Fell off the end, probably because of numerical issues
                 return parts.get(parts.size() - 1).getPointOnPath(1.0);

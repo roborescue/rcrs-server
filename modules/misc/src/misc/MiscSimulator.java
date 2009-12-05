@@ -28,12 +28,19 @@ import rescuecore2.standard.components.StandardSimulator;
 
 import rescuecore2.GUIComponent;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
+import java.util.Formatter;
+
 /**
  * Implementation of the legacy misc simulator.
  * @author Maitreyi Nanjanath
  * @author Cameron Skinner
  */
 public class MiscSimulator extends StandardSimulator implements GUIComponent {
+    private static final Log LOG = LogFactory.getLog(MiscSimulator.class);
+
     private Map<EntityID, HumanAttributes> humans;
     private Set<EntityID> newlyBrokenBuildings;
 
@@ -63,7 +70,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         humans = new HashMap<EntityID, HumanAttributes>();
         newlyBrokenBuildings = new HashSet<EntityID>();
 
-        System.out.println("MiscSimulator connected. World has " + model.getAllEntities().size() + " entities.");
+        LOG.info("MiscSimulator connected. World has " + model.getAllEntities().size() + " entities.");
         BuildingChangeListener buildingListener = new BuildingChangeListener();
         //HumanChangeListener humanListener = new HumanChangeListener();
         for (Entity et : model.getAllEntities()) {
@@ -118,7 +125,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             }
             // Human is in a newly collapsed building
             // Check for buriedness
-            System.out.println("Checking if human should be buried in broken building");
+            LOG.trace("Checking if human should be buried in broken building");
             Building b = (Building)human.getPosition(model);
             if (parameters.shouldBuryAgent(b)) {
                 int buriedness = parameters.getBuriedness(b);
@@ -157,8 +164,10 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     }
 
     private void writeDebugOutput(int time) {
-        System.out.println("Agents damaged or buried at timestep " + time);
-        System.out.println("  ID  |  HP  | Damage | Bury | Collapse | Fire | Buriedness");
+        StringBuilder builder = new StringBuilder();
+        Formatter format = new Formatter(builder);
+        format.format("Agents damaged or buried at timestep %1d%n", time);
+        format.format("    ID    |   HP   | Damage |   Bury   | Collapse |   Fire   | Buriedness%n");
         for (HumanAttributes ha : humans.values()) {
             Human h = ha.getHuman();
             int hp = h.isHPDefined() ? h.getHP() : 0;
@@ -168,15 +177,11 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             boolean hasDamage = damage > 0;
             boolean isBuried = buriedness > 0;
             if ((hasDamage || isBuried) && isAlive) {
-                System.out.println(" " + ha.getID() + "| "
-                                   + hp + "| "
-                                   + damage + "| "
-                                   + ha.getBuriednessDamage() + "| "
-                                   + ha.getCollapseDamage() + "| "
-                                   + ha.getFireDamage() + "| "
-                                   + buriedness);
+                format.format("%1$9d | %2$6d | %3$6d | %4$8.3f | %5$8.3f | %6$8.3f | %7$6d%n",
+                              ha.getID().getValue(), hp, damage, ha.getBuriednessDamage(), ha.getCollapseDamage(), ha.getFireDamage(), buriedness);
             }
         }
+        LOG.debug(builder.toString());
     }
 
     private void updateDamage(ChangeSet changes) {
@@ -219,7 +224,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     private boolean checkValidity(Command command) {
         Entity e = model.getEntity(command.getAgentID());
         if (e == null) {
-            System.out.println("Received a " + command.getURN() + " command from an unknown agent: " + command.getAgentID());
+            LOG.warn("Received a " + command.getURN() + " command from an unknown agent: " + command.getAgentID());
             return false;
         }
         if (command instanceof AKRescue) {
@@ -235,29 +240,29 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         EntityID targetID = rescue.getTarget();
         Entity target = model.getEntity(targetID);
         if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Received a rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            LOG.warn("Received a rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
             return false;
         }
         if (target == null) {
-            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
             return false;
         }
         if (!(target instanceof Human)) {
-            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
+            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
             return false;
         }
         Human h = (Human)target;
         AmbulanceTeam at = (AmbulanceTeam)agent;
         if (!h.isBuriednessDefined() || h.getBuriedness() == 0) {
-            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
+            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
             return false;
         }
         if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
-            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
+            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
             return false;
         }
         if (h.getID().equals(at.getID())) {
-            System.out.println("Agent " + agent.getID() + " tried to rescue itself");
+            LOG.warn("Agent " + agent.getID() + " tried to rescue itself");
             return false;
         }
         return true;
@@ -272,30 +277,30 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         EntityID targetID = clear.getTarget();
         Entity target = model.getEntity(targetID);
         if (!(agent instanceof PoliceForce)) {
-            System.out.println("Received a clear command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            LOG.warn("Received a clear command from agent " + agent.getID() + " who is of type " + agent.getURN());
             return false;
         }
         if (target == null) {
-            System.out.println("Received a clear command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            LOG.warn("Received a clear command from agent " + agent.getID() + " for a non-existant target " + targetID);
             return false;
         }
         if (!(target instanceof Road)) {
-            System.out.println("Received a clear command from agent " + agent.getID() + " for a non-road target: " + targetID + " is of type " + target.getURN());
+            LOG.warn("Received a clear command from agent " + agent.getID() + " for a non-road target: " + targetID + " is of type " + target.getURN());
             return false;
         }
         Road r = (Road)target;
         PoliceForce pf = (PoliceForce)agent;
         if (!r.isBlockDefined() || r.getBlock() == 0) {
-            System.out.println("Received a clear command from agent " + agent.getID() + " for a non-blocked target " + targetID);
+            LOG.warn("Received a clear command from agent " + agent.getID() + " for a non-blocked target " + targetID);
             return false;
         }
         if (!pf.isPositionDefined()) {
-            System.out.println("Received a clear command from agent " + agent.getID() + " with no position");
+            LOG.warn("Received a clear command from agent " + agent.getID() + " with no position");
             return false;
         }
         EntityID pos = pf.getPosition();
         if (!pos.equals(r.getID()) && !pos.equals(r.getHead()) && !pos.equals(r.getTail())) {
-            System.out.println("Received a clear command from agent " + agent.getID() + " for non-adjacent target " + target);
+            LOG.warn("Received a clear command from agent " + agent.getID() + " for non-adjacent target " + target);
             return false;
         }
         return true;

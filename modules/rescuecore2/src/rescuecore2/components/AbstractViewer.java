@@ -73,7 +73,7 @@ public abstract class AbstractViewer<T extends WorldModel<? extends Entity>> ext
         ChangeSet changes = timestep.getChangeSet();
         int time = timestep.getTime();
         if (time != lastUpdateTime + 1) {
-            System.out.println("WARNING: Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
+            log.warn("Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
         }
         lastUpdateTime = time;
         model.merge(changes);

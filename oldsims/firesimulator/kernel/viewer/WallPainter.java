@@ -57,7 +57,6 @@ public class WallPainter implements Painter, SelectorListener{
 				walln=0;
 		}			
 		if(modifier==3&&selected!=null){
-			//System.out.println("in wall:"+walln+" of  "+selected.walls.size());
 			walln++;
 			if(walln==selected.walls.size())
 				walln=0;

@@ -14,10 +14,15 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A class for validating maps.
  */
 public final class MapValidator {
+    private static final Log LOG = LogFactory.getLog(MapValidator.class);
+
     private MapValidator() {}
 
     /**
@@ -26,9 +31,9 @@ public final class MapValidator {
        @throws MapValidationException If the map is invalid.
      */
     public static void validate(StandardWorldModel world) throws MapValidationException {
-        System.out.print("Validating map...");
+        LOG.info("Validating map...");
         Set<StandardEntity> toVisit = new HashSet<StandardEntity>();
-        System.out.print("validating objects...");
+        LOG.debug("validating objects...");
         for (StandardEntity next : world) {
             if (next instanceof Building) {
                 validateBuilding((Building)next, world);
@@ -43,9 +48,9 @@ public final class MapValidator {
                 toVisit.add(next);
             }
         }
-        System.out.print("validating connectivity...");
+        LOG.debug("validating connectivity...");
         validateConnectivity(toVisit, world);
-        System.out.println("done");
+        LOG.info("done");
     }
 
     private static void validateBuilding(Building b, StandardWorldModel world) throws MapValidationException {
@@ -161,7 +166,7 @@ public final class MapValidator {
         if (!entities.isEmpty()) {
             throw new MapValidationException("Connectivity test failed. Visited " + visited.size() + " entities; missed " + entities.size() + " entities.");
         }
-        System.out.print("connectivity ok (" + visited.size() + " entities)...");
+        LOG.debug("connectivity ok (" + visited.size() + " entities)...");
     }
 
 }

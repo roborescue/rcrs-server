@@ -6,12 +6,17 @@ import java.io.IOException;
 import rescuecore2.messages.Message;
 import rescuecore2.registry.AbstractMessageFactory;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A factory for control messages.
  */
 public final class ControlMessageFactory extends AbstractMessageFactory<ControlMessageURN> {
     /** Singleton instance. */
     public static final ControlMessageFactory INSTANCE = new ControlMessageFactory();
+
+    private static final Log LOG = LogFactory.getLog(ControlMessageFactory.class);
 
     private ControlMessageFactory() {
         super(ControlMessageURN.class);
@@ -65,7 +70,7 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
         case SHUTDOWN:
             return new Shutdown(data);
         default:
-            System.out.println("Unrecognised message urn: " + urn);
+            LOG.warn("Unrecognised message urn: " + urn);
             return null;
         }
     }

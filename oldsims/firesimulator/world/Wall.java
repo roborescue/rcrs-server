@@ -3,11 +3,15 @@ package firesimulator.world;
 import java.awt.Point;
 import java.util.Iterator;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * @author tn
  *
  */
 public class Wall {
+    private static final Log LOG = LogFactory.getLog(Wall.class);
 	
 	public static final int MAX_SAMPLE_DISTANCE = 50000;
     public int x1;
@@ -49,7 +53,7 @@ public class Wall {
 			Point start=firesimulator.util.Geometry.getRndPoint(a,b);
 			if(start==null){
 				strange++;
-				System.out.println("strange -> "+a.x+","+a.y+"/"+b.x+","+b.y);
+				LOG.debug("strange -> "+a.x+","+a.y+"/"+b.x+","+b.y);
 				continue;
 			}
 			Point end=firesimulator.util.Geometry.getRndPoint(start,MAX_SAMPLE_DISTANCE);			

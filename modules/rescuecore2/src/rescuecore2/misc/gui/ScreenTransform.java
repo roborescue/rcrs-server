@@ -36,7 +36,6 @@ public class ScreenTransform {
         this.fixedScreenX = 0;
         this.fixedScreenY = 0;
         this.zoom = 1;
-        //        System.out.println("New screen transform: minX = " + minX + ", minY = " + minY + ", xRange = " + xRange + ", yRange = " + yRange);
     }
 
     /**
@@ -47,7 +46,6 @@ public class ScreenTransform {
        @param screenY The screen Y coordinate of the fixed world coordinate.
      */
     public void setFixedPoint(double x, double y, int screenX, int screenY) {
-        //        System.out.println("Setting fixed point " + x + ", " + y + " to " + screenX + ", " + screenY);
         fixedX = x;
         fixedY = y;
         fixedScreenX = screenX;
@@ -88,20 +86,15 @@ public class ScreenTransform {
        @param height The height of the screen.
      */
     public void rescale(int width, int height) {
-        //        System.out.println("Rescaling to " + width + ", " + height);
         xOffset = 0;
         yOffset = height;
         pixelsPerX = (width / xRange) * zoom;
         pixelsPerY = (height / yRange) * zoom;
         // Work out how to offset points so that the fixed point is in the right place
-        //        System.out.println("pixelsPerX = " + pixelsPerX + ", pixelsPerY = " + pixelsPerY);
-        //        System.out.println("Before adjustment: fixed point " + fixedX + ", " + fixedY + " should be at " + fixedScreenX + ", " + fixedScreenY + "; actually at " + xToScreen(fixedX) + ", " + yToScreen(fixedY));
         int actualFixedX = xToScreen(fixedX);
         xOffset = fixedScreenX - actualFixedX;
         int actualFixedY = yToScreen(fixedY);
         yOffset = height + (fixedScreenY - actualFixedY);
-        //        System.out.println("xOffset = " + xOffset + ", yOffset = " + yOffset);
-        //        System.out.println("Fixed point now at " + xToScreen(fixedX) + ", " + yToScreen(fixedY));
     }
 
     /**

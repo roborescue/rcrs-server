@@ -7,12 +7,15 @@ import firesimulator.simulator.Simulator;
 import firesimulator.util.Configuration;
 import firesimulator.world.World;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
  * @author tn
  *
  */
 public class Main {
+    private static final Log LOG = LogFactory.getLog(Main.class);
 	
 	public static void main(String[] args) {		
 		System.setProperty("apple.laf.useScreenMenuBar","true");
@@ -45,9 +48,9 @@ public class Main {
 			filename=Configuration.getValue("setup");
 		else
 			filename="default.stp";
-		System.out.println("loading values from \""+filename+"\"");
+		LOG.info("loading values from \""+filename+"\"");
 		if(!Configuration.loadSetup(filename)){			
-			System.out.println("unable to load setup file. exiting,");
+			LOG.fatal("unable to load setup file. exiting,");
 			System.exit(1);
 		}
 	}

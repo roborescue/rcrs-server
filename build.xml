@@ -43,6 +43,8 @@
   <property name="jar.dir" value="${basedir}/jars"/>
   <!-- Output directory - javadoc for all modules -->
   <property name="javadoc.dir" value="${basedir}/docs/javadoc"/>
+  <!-- Supplement directory - a place to put stuff that lives on the classpath, e.g. log4j configuration -->
+  <property name="supplement.dir" value="${basedir}/supplement"/>
 
   <!-- Output directories for JUnit, Checkstyle, Findbugs and Cobertura -->
   <property name="junit.output.dir" value="${build.dir}/junit-results"/>
@@ -81,9 +83,14 @@
     </fileset>
   </path>
 
+  <path id="path.supplement">
+    <dirset dir="${supplement.dir}"/>
+  </path>
+
   <path id="path.common">
     <path refid="path.jars"/>
     <path refid="path.lib"/>
+    <path refid="path.supplement"/>
   </path>
 
   <path id="path.junit">

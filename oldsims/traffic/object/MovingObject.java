@@ -3,7 +3,12 @@ import java.io.*;
 import java.util.*;
 import traffic.*;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 public abstract class MovingObject extends RealObject implements Obstruction {
+    private static final Log LOG = LogFactory.getLog(MovingObject.class);
+
     public MovingObject(int id) {
         super(id);
     }
@@ -36,7 +41,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         if (position() instanceof Edge) {
             Edge e = (Edge) position();
             return e.head().x()
-                    + (int) ((e.tail().x() - e.head().x()) * m_positionExtra / e.length());
+            + (int) ((e.tail().x() - e.head().x()) * m_positionExtra / e.length());
         }
         return position().x();
     }
@@ -45,7 +50,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         if (position() instanceof Edge) {
             Edge e = (Edge) position();
             return e.head().y()
-                    + (int) ((e.tail().y() - e.head().y()) * m_positionExtra / e.length());
+            + (int) ((e.tail().y() - e.head().y()) * m_positionExtra / e.length());
         }
         return position().y();
     }
@@ -76,26 +81,26 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         }
         if (ASSERT) {
             boolean isValid = position() == null
-                    || (position() instanceof Building || position() instanceof Node || position() instanceof AmbulanceTeam)
-                    && m_positionExtra == 0 || position() instanceof Road && 0 <= m_positionExtra
-                    && m_positionExtra <= ((Road) position()).length();
+            || (position() instanceof Building || position() instanceof Node || position() instanceof AmbulanceTeam)
+            && m_positionExtra == 0 || position() instanceof Road && 0 <= m_positionExtra
+            && m_positionExtra <= ((Road) position()).length();
             Util.myassert(isValid, (isValid ? "" : "wrong positionExtra "
-                    + m_positionExtra
-                    + ", id:"
-                    + id
-                    + ", pos:"
-                    + position()
-                    + ", posID:"
-                    + m_position
-                    + ((position() instanceof Road)
-                            ? ", length:" + ((Road) position()).length()
-                            : "")));
+                                    + m_positionExtra
+                                    + ", id:"
+                                    + id
+                                    + ", pos:"
+                                    + position()
+                                    + ", posID:"
+                                    + m_position
+                                    + ((position() instanceof Road)
+                                       ? ", length:" + ((Road) position()).length()
+                                       : "")));
         }
     }
 
     public void copeWithBugOfGISInitilizer(double posEx) {
         if (position() instanceof Building || position() instanceof Node
-                || position() instanceof AmbulanceTeam) {
+            || position() instanceof AmbulanceTeam) {
             if (posEx != 0)
                 m_positionExtra = 0;
         }
@@ -119,10 +124,10 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         if (ASSERT)
             Util.myassert(m_lane instanceof Lane);
         double movedLen = Math.min(movedLengthToForwardOfLane(), Math
-                .ceil(m_lane.road.length() / 2) - 1);
+                                   .ceil(m_lane.road.length() / 2) - 1);
         return (m_lane.forward == m_lane.road.head())
-                ? m_lane.road.length() - (int) movedLen
-                : (int) movedLen;
+        ? m_lane.road.length() - (int) movedLen
+        : (int) movedLen;
     }
 
     int m_submitedPos;
@@ -276,13 +281,13 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         m_movingLaneList.add(lane);
         if (ASSERT)
             Util.myassert(m_positionExtra != m_lane.road.length() / 2d || m_lane.isBlocked(),
-                    "MvObj must not be on a blockade.");
+                          "MvObj must not be on a blockade.");
         if (m_routeIndex == m_routePlan.indexOfDestination()) {
             if (pos instanceof Node) {
                 m_maxMarkingRouteIndex = m_routeIndex;
                 if (m_destBuilding != null && !this.canEnter(m_destBuilding)) {
                     setObstruction(Obstruction.BLOCKED_BUILDING);
-                    System.out.println("set obstruction 1 for "+this.id);
+                    LOG.debug("set obstruction 1 for "+this.id);
                     return;
                 }
                 setObstruction(new Destination(pos, 0));
@@ -310,7 +315,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                     }
                     if (m_destBuilding != null && !this.canEnter(m_destBuilding)) {
                         setObstruction(Obstruction.BLOCKED_BUILDING);
-                        System.out.println("set obstruction 2 for "+this.id);
+                        LOG.debug("set obstruction 2 for "+this.id);
                         return;
                     }
                     setObstruction(Obstruction.DUMMY_OBSTRUCTION);
@@ -348,7 +353,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                 }
                 if (ASSERT)
                     Util.myassert(false,
-                            "must not reach here; next of Node must be Road or Building.");
+                                  "must not reach here; next of Node must be Road or Building.");
             }
             if (ml instanceof Road) {
                 m_maxMarkingRouteIndex = i;
@@ -359,14 +364,14 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                     if (ASSERT)
                         Util.myassert(lane.road == rd);
                     double movedLengthToCurrentFwd = (lane == m_lane)
-                            ? movedLengthToForwardOfLane()
-                            : 0;
+                    ? movedLengthToForwardOfLane()
+                    : 0;
                     setObstruction(new TurningPoint(rd.lanesTo(lane.back), movedLengthToCurrentFwd,
-                            rd));
+                                                    rd));
                     return;
                 }
                 if (lane.isBlocked()
-                        && (lane != m_lane || movedLengthToForwardOfLane() <= rd.length() / 2d)) {
+                    && (lane != m_lane || movedLengthToForwardOfLane() <= rd.length() / 2d)) {
                     setObstruction(new Blockade(lane));
                     return;
                 }
@@ -374,7 +379,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             }
             if (ASSERT)
                 Util.myassert(false,
-                        "must not reach here; route must consists of Road, Node or Building.");
+                              "must not reach here; route must consists of Road, Node or Building.");
         }
         setObstruction(Obstruction.DUMMY_OBSTRUCTION);
     }
@@ -395,7 +400,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         PointObject previousForward = lane.forward;
         Road origin = null;
         for (RoadCell roads = RoadCell.roadList(lane).forward(); roads != RoadCell.DUMMY_CELL
-                && roads.road != origin; roads = roads.forward()) {
+             && roads.road != origin; roads = roads.forward()) {
             Road rd = roads.road;
             if (origin == null)
                 origin = rd;
@@ -407,7 +412,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             int tmpPosId = m_position;
             m_position = m_routePlan.get(0).id;
             Util.myassert(m_routePlan.checkValidity(this), "wrong route complementation",
-                    m_routePlan);
+                          m_routePlan);
             m_position = tmpPosId;
         }
     }
@@ -418,8 +423,8 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         MovingObject nearestObs = null;
         Iterator it = m_movingLaneList.iterator();
         if ((m_obstruction instanceof CuttingLanes || m_obstruction instanceof TurningPoint)
-                && Math.floor(Math.abs(lengthToObstruction(m_obstruction)
-                        - m_obstruction.minSafeDistance())) == 0) {
+            && Math.floor(Math.abs(lengthToObstruction(m_obstruction)
+                                   - m_obstruction.minSafeDistance())) == 0) {
             if (it.hasNext()) {
                 Lane ln = (Lane) it.next();
                 if (ASSERT)
@@ -430,12 +435,12 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         while (it.hasNext()) {
             Lane ln = (Lane) it.next();
             double selfVal = (ln == m_lane && !hasCheckedCurrentLane)
-                    ? movedLengthToForwardOfLane()
-                    : -Double.MAX_VALUE;
+            ? movedLengthToForwardOfLane()
+            : -Double.MAX_VALUE;
             hasCheckedCurrentLane = true;
             double min = (!ln.isBlocked() || selfVal > ln.road.length() / 2d)
-                    ? Double.MAX_VALUE
-                    : ln.road.length() / 2d;
+            ? Double.MAX_VALUE
+            : ln.road.length() / 2d;
             // it2 gives all moving objects on the lane ln
             Iterator it2 = ln.mvObjOnSet().iterator();
             while (it2.hasNext()) {
@@ -444,7 +449,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                     continue;
                 double val = mv.movedLengthToForwardOfLane();
                 if (selfVal <= val && val <= min
-                        && (val != selfVal || !(mv.obstruction() instanceof MovingObject))) {
+                    && (val != selfVal || !(mv.obstruction() instanceof MovingObject))) {
                     min = val;
                     nearestObs = mv;
                 }
@@ -461,14 +466,14 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         }
         if (ASSERT)
             Util.myassert(m_obstruction.minSafeDistance() == 0,
-                    "assume that minSafeDistance() of obstruction except MovingObject is zero.");
+                          "assume that minSafeDistance() of obstruction except MovingObject is zero.");
         MotionlessObject dest = m_routePlan.destination();
         Obstruction destObs = new Destination(dest, (dest instanceof Road)
-                ? ((Road) dest).length() / 2d
-                : 0);
+                                              ? ((Road) dest).length() / 2d
+                                              : 0);
         int destIndex = m_routePlan.indexOfDestination();
         if (m_maxMarkingRouteIndex >= destIndex
-                && lengthToObstruction(m_obstruction) > lengthToObstruction(destObs)) {
+            && lengthToObstruction(m_obstruction) > lengthToObstruction(destObs)) {
             m_maxMarkingRouteIndex = destIndex;
             setObstruction(destObs);
         }
@@ -492,15 +497,15 @@ public abstract class MovingObject extends RealObject implements Obstruction {
     private void _move() {
         if (ASSERT)
             Util.myassert(m_routeIndex <= m_routePlan.indexOfDestination(),
-                    "MvObj moved over destination", m_routeIndex);
+                          "MvObj moved over destination", m_routeIndex);
         if (m_moved)
             return;
         if (m_hasReachedDestination)
             return;
         setDestinationObstruction();
         if (Math.floor(m_velocity) == 0
-                && Math.floor(lengthToObstruction(m_obstruction)) == m_obstruction
-                        .minSafeDistance()) {
+            && Math.floor(lengthToObstruction(m_obstruction)) == m_obstruction
+            .minSafeDistance()) {
             m_velocity = 0;
             if (m_obstruction instanceof Destination)
                 stop();
@@ -516,7 +521,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                 overtake();
             else if (ASSERT)
                 Util.myassert(false, "must not reach here; "
-                        + "m_obstruction must not be null or DUMMY_OBSTRUCTION when do not run");
+                              + "m_obstruction must not be null or DUMMY_OBSTRUCTION when do not run");
             return;
         }
         moveWithFollowing();
@@ -549,7 +554,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             double msd = m_obstruction.minSafeDistance();
             if (!(OVERLOOK_EXCESSIVE_CHANGE_LANES && WORLD.sec() == 0)) {
                 if (len < msd || dontCutWhenCantProgress && Math.floor(len - msd) == 0
-                        || isComingMovObjFromBackLanes(ln, cuttingPoint))
+                    || isComingMovObjFromBackLanes(ln, cuttingPoint))
                     continue;
             }
             moveWithFollowing();
@@ -567,32 +572,32 @@ public abstract class MovingObject extends RealObject implements Obstruction {
     private void putIntoNewLane(Lane lane) {
         setLane(lane);
         m_routeIndex = m_routePlan.indexOf(((CuttingLanes) m_obstruction).motionlessPosition(),
-                m_routeIndex);
+                                           m_routeIndex);
         if (ASSERT)
             Util.myassert(m_routeIndex != -1);
         m_position = m_routePlan.get(m_routeIndex).id;
         double len = ((CuttingLanes) m_obstruction).lengthToForwardOfLane();
         m_positionExtra = (position() instanceof Road) ? (lane.forward == lane.road.head())
-                ? lane.road.length() - len
-                : len : 0;
+        ? lane.road.length() - len
+        : len : 0;
     }
 
     private boolean isComingMovObjFromBackLanes(Lane lane, Obstruction cuttingPoint) {
         if (ASSERT)
             Util.myassert(MAX_MAX_VELOCITY >= maxVelocity(), "Update MAX_MAX_VELOCITY to",
-                    maxVelocity());
+                          maxVelocity());
         PointObject preBack = lane.forward;
         MovingObject nearestMv = null;
         Road origin = null;
         for (RoadCell roads = RoadCell.roadList(lane); roads != RoadCell.DUMMY_CELL; roads = roads
-                .back()) {
+             .back()) {
             lane = (Lane) roads.road.lanesTo(preBack).get(lane.nth);
             double selfVal = (lane == m_lane && origin == null)
-                    ? movedLengthToForwardOfLane()
-                    : Double.MAX_VALUE;
+            ? movedLengthToForwardOfLane()
+            : Double.MAX_VALUE;
             double max = (!lane.isBlocked() || selfVal <= roads.road.length() / 2d)
-                    ? -Double.MAX_VALUE
-                    : roads.road.length() / 2;
+            ? -Double.MAX_VALUE
+            : roads.road.length() / 2;
             Iterator it = lane.mvObjOnSet().iterator();
             while (it.hasNext()) {
                 MovingObject mv = (MovingObject) it.next();
@@ -611,7 +616,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                 if (remainLen < 0)
                     return true;
                 double tmpV = (nearestMv.moved()) ? nearestMv.velocity() : nearestMv
-                        .velocityWithFollowing();
+                .velocityWithFollowing();
                 return (remainLen < tmpV + brakingDistance(tmpV));
             }
             if (lane.isBlocked() && selfVal > roads.road.length() / 2d)
@@ -643,7 +648,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             return;
         }
         setObstruction(new CuttingLanes(m_lane.road.lanesTo(m_lane.forward),
-                movedLengthToForwardOfLane(), m_lane.road));
+                                        movedLengthToForwardOfLane(), m_lane.road));
         cutIntoLanes(true);
     }
 
@@ -673,7 +678,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
     private void stop() {
         if (ASSERT)
             Util.myassert(!m_hasReachedDestination,
-                    "must not reach here; agent has already reached destination.");
+                          "must not reach here; agent has already reached destination.");
         if (position() instanceof Building) {
             incrementNumReached();
         }
@@ -688,7 +693,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         }
         else {
             setObstruction(new CuttingLanes((Lane) m_lane.road.lanesTo(m_lane.forward).get(
-                    m_lane.nth - 1), movedLengthToForwardOfLane(), motionlessPosition()));
+                                                                                           m_lane.nth - 1), movedLengthToForwardOfLane(), motionlessPosition()));
             cutIntoLanes();
         }
     }
@@ -740,15 +745,15 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             return;
         int destIndex = m_routePlan.indexOfDestination();
         int mvObsIndex = m_routePlan.indexOf((MotionlessObject) ((MovingObject) m_obstruction)
-                .position(), m_routeIndex);
+                                             .position(), m_routeIndex);
         if (destIndex > mvObsIndex)
             return;
         MotionlessObject dest = m_routePlan.destination();
         Obstruction destObs = new Destination(dest, (dest instanceof Road)
-                ? ((Road) dest).length() / 2d
-                : 0);
+                                              ? ((Road) dest).length() / 2d
+                                              : 0);
         if (lengthToObstruction(m_obstruction) - lengthToObstruction(destObs) <= m_obstruction
-                .minSafeDistance())
+            .minSafeDistance())
             return;
         setObstruction(destObs);
         m_maxMarkingRouteIndex = destIndex;
@@ -788,28 +793,28 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         double dx = lengthToObstruction(obstruction);
         // MvObj can stop urgently only at first second each cycle
         if ((WORLD.sec() == 0 || (OVERLOOK_EXCESSIVE_CHANGE_LANES && WORLD.sec() == 1))
-                && (dx - msd <= Math.max(0, m_velocity - maxAcceleration() * 2d) || accelleration(
-                        dx, msd) < -maxAcceleration() * 2d))
+            && (dx - msd <= Math.max(0, m_velocity - maxAcceleration() * 2d) || accelleration(
+                                                                                              dx, msd) < -maxAcceleration() * 2d))
             return 0;
         if (dx < msd) {
             if (ASSERT)
                 Util.myassert(m_velocity == 0 || Math.floor(msd - dx) == 0, // in
-                                                                                                                        // order
-                                                                                                                        // to
-                                                                                                                        // reach
-                                                                                                                        // Node
-                                                                                                                        // destination
-                                                                                                                        // (cf.
-                                                                                                                        // "void
-                                                                                                                        // move(double
-                                                                                                                        // length)")
-                        "wrong distance (dx - msd) or velocity");
+                              // order
+                              // to
+                              // reach
+                              // Node
+                              // destination
+                              // (cf.
+                              // "void
+                              // move(double
+                              // length)")
+                              "wrong distance (dx - msd) or velocity");
             return 0;
         }
         double a = accelleration(dx, msd);
         if (ASSERT)
             Util.myassert(a >= -maxAcceleration() * 2d, "wrong accelleration;  -"
-                    + maxAcceleration() * 2d + " > ", a);
+                          + maxAcceleration() * 2d + " > ", a);
         double result = m_velocity + Math.min(a, maxAcceleration());
         if (result < 0 && Math.ceil(result) == 0)
             result = 0;
@@ -820,7 +825,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
 
     private double accelleration(double dx, double msd) {
         return maxAcceleration() * (Math.sqrt(1 + 2 * (dx - msd) / maxAcceleration()) - 1)
-                - m_velocity;
+        - m_velocity;
     }
 
     public double lengthToObstruction(Obstruction obstruction) {
@@ -835,9 +840,9 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             Lane ln = (Lane) it.next();
             if (ln.back == obsPos || ln.road == obsPos)
                 if (hasReachedCurrentLane || ln != m_lane
-                        || obstruction.lengthToForwardOfLane() >= movedLengthToForwardOfLane()) // for
-                                                                                                                                                                        // a
-                                                                                                                                                                        // loop
+                    || obstruction.lengthToForwardOfLane() >= movedLengthToForwardOfLane()) // for
+                    // a
+                    // loop
                     break;
                 else
                     lenIfNotLoot = length;
@@ -850,7 +855,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             if (!it.hasNext()) {
                 if (ASSERT)
                     Util.myassert(hasReachedCurrentLane,
-                            "the current lane is not on the moving lane list.");
+                                  "the current lane is not on the moving lane list.");
                 if (ln.forward == obsPos)
                     break;
                 if (lenIfNotLoot != Double.POSITIVE_INFINITY) {
@@ -860,8 +865,8 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                 // TODO: remake this method.
                 // This is a first aid.
                 length = (m_lane instanceof Lane && position() instanceof Road)
-                        ? -movedLengthToForwardOfLane()
-                        : 0;
+                ? -movedLengthToForwardOfLane()
+                : 0;
                 int i;
                 for (i = m_routeIndex; i < m_routePlan.size(); i++) {
                     MotionlessObject ml = m_routePlan.get(i);
@@ -872,7 +877,7 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                 }
                 if (ASSERT)
                     Util.myassert(i < m_routePlan.size(), "obstruction is not on route plan",
-                            obstruction.motionlessPosition());
+                                  obstruction.motionlessPosition());
                 if (i >= m_routePlan.size())
                     return 0; // This line is just to make sure.
                 break;
@@ -897,13 +902,13 @@ public abstract class MovingObject extends RealObject implements Obstruction {
                 Util.myassert(m_routeIndex != -1, "lane is not on moving lane list", ln);
             double movingLength;
             if (Math.ceil(length) >= ln.road.length()) { // in order
-                                                                                        // to reach
-                                                                                        // Node
-                                                                                        // destination.
-                                                                                        // (see also
-                                                                                        // "double
-                                                                                        // _velocityWithFollowing(boolean
-                                                                                        // doChange)")
+                // to reach
+                // Node
+                // destination.
+                // (see also
+                // "double
+                // _velocityWithFollowing(boolean
+                // doChange)")
                 movingLength = Math.min(ln.road.length(), length);
             }
             else {
@@ -925,8 +930,8 @@ public abstract class MovingObject extends RealObject implements Obstruction {
             Util.myassert(!(position() instanceof Building));
         if (m_position == m_lane.road.id)
             return (m_lane.forward == m_lane.road.head())
-                    ? m_lane.road.length() - m_positionExtra
-                    : m_positionExtra;
+            ? m_lane.road.length() - m_positionExtra
+            : m_positionExtra;
         if (ASSERT)
             Util.myassert(position() instanceof Node);
         if (ASSERT)
@@ -936,8 +941,8 @@ public abstract class MovingObject extends RealObject implements Obstruction {
 
     private double positionExtra(Lane lane, double movingLength) {
         return (lane.forward == lane.road.head())
-                ? lane.road.length() - movingLength
-                : movingLength;
+        ? lane.road.length() - movingLength
+        : movingLength;
     }
 
     private double brakingDistance(double velocity) {
@@ -980,41 +985,28 @@ public abstract class MovingObject extends RealObject implements Obstruction {
         return movedLengthToForwardOfLane();
     }
 
-    private void dp() {
-        dp("");
+    public String stringOfPlan() {
+        StringBuffer result = new StringBuffer().append("{");
+        for (int i = 0; i < m_routePlan.size(); i++) {
+            if (i == m_routeIndex)
+                result.append("<< ");
+            if (i == m_routePlan.indexOfDestination())
+                result.append("[");
+            MotionlessObject m = m_routePlan.get(i);
+            if (m instanceof Building)
+                result.append("B").append(m.id);
+            else if (m instanceof Node)
+                result.append("N").append(m.id);
+            else if (m instanceof Road)
+                result.append("R(").append(((Road) m).head().id).append(")").append(m.id).append(
+                                                                                                 "(").append(((Road) m).tail().id).append(")");
+            if (i == m_routePlan.indexOfDestination())
+                result.append("]");
+            if (i == m_maxMarkingRouteIndex)
+                result.append(" >>");
+            if (i < m_routePlan.size() - 1)
+                result.append(", ");
+        }
+        return result.append("}").toString();
     }
-
-    private void dp(String str) {
-        ndp("sec:" + WORLD.sec() + ", id:" + id + str + "\n");
-    }
-
-    private void ndp(String str) {
-        if (true)
-            System.out.print(str);
-    }
-
-public String stringOfPlan() {
-    StringBuffer result = new StringBuffer().append("{");
-    for (int i = 0; i < m_routePlan.size(); i++) {
-        if (i == m_routeIndex)
-            result.append("<< ");
-        if (i == m_routePlan.indexOfDestination())
-            result.append("[");
-        MotionlessObject m = m_routePlan.get(i);
-        if (m instanceof Building)
-            result.append("B").append(m.id);
-        else if (m instanceof Node)
-            result.append("N").append(m.id);
-        else if (m instanceof Road)
-            result.append("R(").append(((Road) m).head().id).append(")").append(m.id).append(
-                                                                                             "(").append(((Road) m).tail().id).append(")");
-        if (i == m_routePlan.indexOfDestination())
-            result.append("]");
-        if (i == m_maxMarkingRouteIndex)
-            result.append(" >>");
-        if (i < m_routePlan.size() - 1)
-            result.append(", ");
-    }
-    return result.append("}").toString();
-}
 }

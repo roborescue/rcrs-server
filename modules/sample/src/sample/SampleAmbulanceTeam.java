@@ -15,10 +15,15 @@ import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Refuge;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A sample ambulance team agent.
  */
 public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
+    private static final Log LOG = LogFactory.getLog(SampleAmbulanceTeam.class);
+
     private Collection<StandardEntity> unexploredBuildings;
 
     @Override
@@ -36,7 +41,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         for (Command next : heard) {
-            System.out.println(me() + " heard " + next);
+            LOG.debug(me() + " heard " + next);
         }
         updateUnexploredBuildings(changed);
         // Am I transporting a civilian to a refuge?
@@ -44,7 +49,6 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             // Am I at a refuge?
             if (location() instanceof Refuge) {
                 // Unload!
-                //                System.out.println(me() + " unloading");
                 sendUnload(time);
                 return;
             }
@@ -88,7 +92,6 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             sendMove(time, path);
             return;
         }
-        //        System.out.println(me() + " has nothing to do");
         sendMove(time, randomWalk());
     }
 

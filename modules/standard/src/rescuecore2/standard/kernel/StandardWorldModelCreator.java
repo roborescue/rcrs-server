@@ -35,10 +35,15 @@ import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Civilian;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A WorldModelCreator that reads .bin files directly.
  */
 public class StandardWorldModelCreator implements WorldModelCreator {
+    private static final Log LOG = LogFactory.getLog(StandardWorldModelCreator.class);
+
     private static final String MAP_DIR_KEY = "gis.map.dir";
     private static final String FIRE_TANK_MAXIMUM_KEY = "fire.tank.maximum";
 
@@ -83,7 +88,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
         // Skip 12 byte header
         reallySkip(in, HEADER_SIZE);
         int count = readInt32LE(in);
-        System.out.print("Reading " + count + " roads");
+        LOG.info("Reading " + count + " roads");
         int max = 0;
         for (int i = 0; i < count; ++i) {
             int size = readInt32LE(in);
@@ -106,9 +111,8 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             road.setLinesToTail(readInt32LE(in));
             road.setWidthForWalkers(readInt32LE(in));
             world.addEntity(road);
-            System.out.print(".");
         }
-        System.out.println();
+        LOG.info("Finished reading roads");
         return max;
     }
 
@@ -118,7 +122,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
         // Skip 12 byte header
         reallySkip(in, HEADER_SIZE);
         int count = readInt32LE(in);
-        System.out.print("Reading " + count + " nodes");
+        LOG.info("Reading " + count + " nodes");
         int max = 0;
         for (int i = 0; i < count; ++i) {
             int size = readInt32LE(in);
@@ -136,9 +140,8 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             node.setSignalTiming(readInts(edgeCount * 3, in));
             // CHECKSTYLE:ON:MagicNumber
             world.addEntity(node);
-            System.out.print(".");
         }
-        System.out.println();
+        LOG.info("Finished reading nodes");
         return max;
     }
 
@@ -148,7 +151,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
         // Skip 12 byte header
         reallySkip(in, HEADER_SIZE);
         int count = readInt32LE(in);
-        System.out.print("Reading " + count + " buildings");
+        LOG.info("Reading " + count + " buildings");
         int max = 0;
         for (int i = 0; i < count; ++i) {
             int size = readInt32LE(in);
@@ -171,9 +174,8 @@ public class StandardWorldModelCreator implements WorldModelCreator {
             int apexCount = readInt32LE(in);
             building.setApexes(readInts(apexCount * 2, in));
             world.addEntity(building);
-            System.out.print(".");
         }
-        System.out.println();
+        LOG.info("Finished reading buildings");
         return max;
     }
 
@@ -193,7 +195,7 @@ public class StandardWorldModelCreator implements WorldModelCreator {
                     found = found || next.process(line, world, this);
                 }
                 if (!found) {
-                    System.err.println("Unrecognised line in gisini.txt: " + line);
+                    LOG.error("Unrecognised line in gisini.txt: " + line);
                 }
             }
         }

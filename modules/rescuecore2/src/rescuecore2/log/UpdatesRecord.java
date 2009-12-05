@@ -52,7 +52,6 @@ public class UpdatesRecord implements LogRecord {
         time = readInt32(in);
         changes = new ChangeSet();
         changes.read(in);
-        //        System.out.println("done");
     }
 
     /**

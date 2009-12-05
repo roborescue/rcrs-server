@@ -14,10 +14,15 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A CommandCollector that waits for any of a set of child CommandCollectors to return a result.
 */
 public class CompositeCommandCollector implements CommandCollector {
+    private static final Log LOG = LogFactory.getLog(CompositeCommandCollector.class);
+
     private Set<CommandCollector> children;
 
     /**
@@ -51,7 +56,7 @@ public class CompositeCommandCollector implements CommandCollector {
                     return service.take().get();
                 }
                 catch (ExecutionException e) {
-                    e.printStackTrace();
+                    LOG.error("Error while getting agent commands", e);
                 }
             }
         }

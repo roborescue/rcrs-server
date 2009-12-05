@@ -55,7 +55,6 @@ public class StandardCommunicationModel implements CommunicationModel {
     public Map<AgentProxy, Collection<Command>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands) {
         Map<AgentProxy, Collection<Command>> all = new HashMap<AgentProxy, Collection<Command>>();
         for (AgentProxy agent : agents) {
-            //        System.out.println("Looking for messages that " + agent + " can hear: " + agentCommands);
             Collection<Command> result = new HashSet<Command>();
             // Look for SAY messages from entities within range
             // Look for TELL messages from appropriate entities
@@ -66,7 +65,6 @@ public class StandardCommunicationModel implements CommunicationModel {
                     StandardEntity sender = world.getEntity(senderID);
                     int distance = world.getDistance((StandardEntity)agent.getControlledEntity(), sender);
                     if (distance <= sayDistance) {
-                        //                    System.out.println(agent + " hears say from " + sender);
                         result.add(say);
                     }
                 }
@@ -75,7 +73,6 @@ public class StandardCommunicationModel implements CommunicationModel {
                     EntityID senderID = tell.getAgentID();
                     StandardEntity sender = world.getEntity(senderID);
                     if (canHear(agent.getControlledEntity(), sender)) {
-                        //                    System.out.println(agent + " hears tell from " + sender);
                         result.add(tell);
                     }
                 }

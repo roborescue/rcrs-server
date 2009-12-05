@@ -19,17 +19,14 @@ public class SampleSimulator extends AbstractSimulator<DefaultWorldModel<Entity>
     @Override
     protected void postConnect() {
         super.postConnect();
-        System.out.println("SampleSimulator connected. World has " + model.getAllEntities().size() + " entities.");
     }
 
     @Override
     protected void handleUpdate(KSUpdate u) {
         super.handleUpdate(u);
-        System.out.println("SampleSimulator received update: " + u);
     }
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
-        System.out.println("SampleSimulator received commands: " + c);
     }
 }

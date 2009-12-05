@@ -15,10 +15,15 @@ import sample.SampleSearch;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A basic ambulance team agent that will try to rescue a given target. Once the target is unburied this agent will attempt to load it and transport it to a refuge. If there is no target then this agent does nothing.
  */
 public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
+    private static final Log LOG = LogFactory.getLog(ControlledAmbulanceTeam.class);
+
     private SampleSearch search;
     private Human target;
 
@@ -33,7 +38,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
     @Override
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         if (target == null) {
-            System.out.println(me() + " has nothing to do.");
+            LOG.info(me() + " has nothing to do.");
             return;
         }
         else {
@@ -52,7 +57,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
                         return;
                     }
                     else {
-                        System.out.println(me() + " couldn't plan a path to refuge!");
+                        LOG.info(me() + " couldn't plan a path to refuge!");
                         return;
                     }
                 }
@@ -78,7 +83,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
                         return;
                     }
                     else {
-                        System.out.println(me() + " couldn't plan a path to target.");
+                        LOG.info(me() + " couldn't plan a path to target.");
                     }
                 }
             }

@@ -26,10 +26,15 @@ import rescuecore2.Constants;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.SeedGenerator;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    This class represents a config file and any other config files that might have been included with a !include directive. Config files must be defined relative to a base directory so that includes can be resolved.
  */
 public class Config {
+    private static final Log LOG = LogFactory.getLog(Config.class);
+
     private static final String INCLUDE = "!include";
     private static final String ARRAY_REGEX = " |,";
 
@@ -192,8 +197,7 @@ public class Config {
                 reader.close();
             }
             catch (IOException e) {
-                // FIXME: Log it!
-                e.printStackTrace();
+                LOG.error("Error reading config", e);
             }
         }
     }
@@ -618,89 +622,89 @@ public class Config {
                 String seed = getValue(Constants.RANDOM_SEED_KEY, "");
                 try {
                     Class<? extends Random> clazz = Class.forName(className).asSubclass(Random.class);
-                    System.out.println("Instantiating random number generator: " + className);
+                    LOG.debug("Instantiating random number generator: " + className);
                     if ("".equals(seed)) {
                         // Just instantiate the RNG
                         try {
-                            System.out.println("Trying to find no-arg constructor");
+                            LOG.trace("Trying to find no-arg constructor");
                             random = clazz.newInstance();
-                            System.out.println("Success");
+                            LOG.trace("Success");
                         }
                         catch (IllegalAccessException e) {
-                            e.printStackTrace();
+                            LOG.trace("No-arg constructor for " + className, e);
                         }
                         catch (InstantiationException e) {
-                            e.printStackTrace();
+                            LOG.trace("No-arg constructor for " + className, e);
                         }
                     }
                     else {
-                        System.out.println("Using seed " + seed);
+                        LOG.debug("Using seed " + seed);
                         // CHECKSTYLE:OFF:MagicNumber
                         BigInteger bi = new BigInteger(seed, 16);
                         // CHECKSTYLE:ON:MagicNumber
                         // Look for a constructor that takes a byte array
                         try {
-                            System.out.println("Trying to find a SeedGenerator constructor");
+                            LOG.trace("Trying to find a SeedGenerator constructor");
                             Constructor<? extends Random> constructor = clazz.getConstructor(SeedGenerator.class);
                             random = constructor.newInstance(new StaticSeedGenerator(bi.toByteArray()));
-                            System.out.println("Success");
+                            LOG.trace("Success");
                         }
                         catch (IllegalAccessException e) {
-                            e.printStackTrace();
+                            LOG.trace("SeedGenerator constructor for " + className, e);
                         }
                         catch (InstantiationException e) {
-                            e.printStackTrace();
+                            LOG.trace("SeedGenerator constructor for " + className, e);
                         }
                         catch (NoSuchMethodException e) {
-                            e.printStackTrace();
+                            LOG.trace("SeedGenerator constructor for " + className, e);
                         }
                         catch (InvocationTargetException e) {
-                            e.printStackTrace();
+                            LOG.trace("SeedGenerator constructor for " + className, e);
                         }
                         // If that failed try a long argument
                         if (random == null) {
-                            System.out.println("Trying to find a long constructor");
+                            LOG.trace("Trying to find a long constructor");
                             try {
                                 Constructor<? extends Random> constructor = clazz.getConstructor(Long.TYPE);
                                 random = constructor.newInstance(bi.longValue());
-                                System.out.println("Success");
+                                LOG.trace("Success");
                             }
                             catch (IllegalAccessException e) {
-                                e.printStackTrace();
+                                LOG.trace("Long constructor for " + className, e);
                             }
                             catch (InstantiationException e) {
-                                e.printStackTrace();
+                                LOG.trace("Long constructor for " + className, e);
                             }
                             catch (NoSuchMethodException e) {
-                                e.printStackTrace();
+                                LOG.trace("Long constructor for " + className, e);
                             }
                             catch (InvocationTargetException e) {
-                                e.printStackTrace();
+                                LOG.trace("Long constructor for " + className, e);
                             }
                         }
                         if (random == null) {
                             // Just instantiate the RNG
                             try {
-                                System.out.println("Trying to find no-arg constructor");
+                                LOG.trace("Trying to find no-arg constructor");
                                 random = clazz.newInstance();
-                                System.out.println("Success");
+                                LOG.trace("Success");
                             }
                             catch (IllegalAccessException e) {
-                                e.printStackTrace();
+                                LOG.trace("No-arg constructor for " + className, e);
                             }
                             catch (InstantiationException e) {
-                                e.printStackTrace();
+                                LOG.trace("No-arg constructor for " + className, e);
                             }
                         }
                     }
                 }
                 catch (ClassNotFoundException e) {
-                    System.out.println("Class not found: " + className);
-                    System.out.println("Using fallback RNG");
+                    LOG.debug("Class not found: " + className);
                 }
                 if (random == null) {
                     // Everything failed
                     // Just return a sensible RNG
+                    LOG.debug("Using fallback RNG");
                     random = new MersenneTwisterRNG();
                 }
             }

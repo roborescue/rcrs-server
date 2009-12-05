@@ -18,10 +18,15 @@ import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.registry.Registry;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    General launcher for components.
  */
 public final class LaunchComponents {
+    private static final Log LOG = LogFactory.getLog(LaunchComponents.class);
+
     private LaunchComponents() {}
 
     /**
@@ -43,16 +48,16 @@ public final class LaunchComponents {
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error connecting components", e);
         }
         catch (ConfigException e) {
-            e.printStackTrace();
+            LOG.error("Configuration error", e);
         }
         catch (ConnectionException e) {
-            e.printStackTrace();
+            LOG.error("Error connecting components", e);
         }
         catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("Error connecting components", e);
         }
     }
 
@@ -77,13 +82,13 @@ public final class LaunchComponents {
             }
             className = argLine.substring(0, index);
         }
-        System.out.println("Launching " + (count == Integer.MAX_VALUE ? "many" : count) + " instances of component '" + className + "'...");
+        LOG.info("Launching " + (count == Integer.MAX_VALUE ? "many" : count) + " instances of component '" + className + "'...");
         for (int i = 0; i < count; ++i) {
             Component c = instantiate(className, Component.class);
             if (c == null) {
                 break;
             }
-            System.out.println("Launching instance " + (i + 1) + "...");
+            LOG.info("Launching instance " + (i + 1) + "...");
             try {
                 c.initialise();
                 launcher.connect(c);
@@ -94,19 +99,17 @@ public final class LaunchComponents {
                     frame.pack();
                     frame.setVisible(true);
                 }
-                System.out.println("success");
+                LOG.info("success");
             }
             catch (ComponentConnectionException e) {
-                System.out.println("failed: " + e.getMessage());
+                LOG.info("failed: " + e.getMessage());
                 break;
             }
             catch (ComponentInitialisationException e) {
-                System.out.println("failed: " + e);
-                e.printStackTrace();
+                LOG.info("failed: " + e);
             }
             catch (ConnectionException e) {
-                System.out.println("failed: " + e);
-                e.printStackTrace();
+                LOG.info("failed: " + e);
             }
         }
     }
