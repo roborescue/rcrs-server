@@ -380,6 +380,7 @@ public final class StartKernel {
         processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, KernelConstants.GIS_KEY);
         processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, KernelConstants.PERCEPTION_KEY);
         processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, KernelConstants.COMMUNICATION_MODEL_KEY);
+        System.out.println("Looking for gis, perception, communication, agent, simulator and viewer implementations");
         processor.process();
     }
 
