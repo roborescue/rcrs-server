@@ -107,4 +107,58 @@ public final class GeometryTools2D {
             return Double.NaN;
         }
     }
+
+    /**
+       Compute the angle between two lines.
+       @param first The first line.
+       @param second The second line.
+       @return The angle in degrees measured in a clockwise direction.
+    */
+    public static double getAngleBetweenLines(Line2D first, Line2D second) {
+        return getAngleBetweenVectors(first.getDirection(), second.getDirection());
+    }
+
+    /**
+       Compute the angle between two vectors.
+       @param first The first vector.
+       @param second The second vector.
+       @return The angle in degrees measured in a clockwise direction.
+    */
+    public static double getAngleBetweenVectors(Vector2D first, Vector2D second) {
+        Vector2D v1 = first.normalised();
+        Vector2D v2 = second.normalised();
+        double cos = v1.dot(v2);
+        double angle = Math.toDegrees(Math.acos(cos));
+        // Now find out if we're turning left or right
+        if (isRightTurn(v1, v2)) {
+            return angle;
+        }
+        else {
+            // It's a left turn, so convert to clockwise
+            // CHECKSTYLE:OFF:MagicNumber
+            return 360.0 - angle;
+            // CHECKSTYLE:ON:MagicNumber
+        }
+    }
+
+    /**
+       Find out if we turn right from one line to another.
+       @param first The first line.
+       @param second The second line.
+       @return True if the second line is a right turn from the first, false otherwise.
+    */
+    public static boolean isRightTurn(Line2D first, Line2D second) {
+        return isRightTurn(first.getDirection(), second.getDirection());
+    }
+
+    /**
+       Find out if we turn right from one vector to another.
+       @param first The first vector.
+       @param second The second vector.
+       @return True if the second vector is a right turn from the first, false otherwise.
+    */
+    public static boolean isRightTurn(Vector2D first, Vector2D second) {
+        double t = (first.getX() * second.getY()) - (first.getY() * second.getX());
+        return t < 0;
+    }
 }
