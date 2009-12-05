@@ -170,6 +170,7 @@ public class LoadableTypeProcessor {
 
         @Override
         public void classFound(LoadableType otherType, String className) {
+            System.out.println("Adding " + className + " to " + key);
             if (config.isDefined(key)) {
                 List<String> existing = config.getArrayValue(key);
                 if (!existing.contains(className)) {

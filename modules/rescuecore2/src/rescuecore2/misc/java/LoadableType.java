@@ -29,7 +29,7 @@ public class LoadableType {
     /** A PropertyFactory loadable type. */
     public static final LoadableType PROPERTY_FACTORY = new LoadableType("PropertyFactory", "(.+PropertyFactory).class", PropertyFactory.class);
     /** An Agent loadable type. */
-    public static final LoadableType AGENT = new LoadableType("Agent", "(.+(?:FireBrigade|PoliceForce|AmbulanceTeam|Centre|Center)).class", Agent.class);
+    public static final LoadableType AGENT = new LoadableType("Agent", "(.+(?:FireBrigade|PoliceForce|AmbulanceTeam|Centre|Center|Civilian)).class", Agent.class);
     /** A Simulator loadable type. */
     public static final LoadableType SIMULATOR = new LoadableType("Simulator", "(.+Simulator).class", Simulator.class);
     /** A Viewer loadable type. */
@@ -46,7 +46,7 @@ public class LoadableType {
        @param manifestKey The key to look for in a jar manifest for this type.
        @param regex A regex to use for determining if a class name should be tested.
        @param clazz A superclass for checking if candidate classes should be extracted.
-     */
+    */
     public LoadableType(String manifestKey, String regex, Class<?> clazz) {
         this.manifestKey = manifestKey;
         this.regex = regex == null ? null : Pattern.compile(regex);
@@ -54,7 +54,7 @@ public class LoadableType {
     }
 
     /**
-       Inspect a jar manifest and extract the entries in the manifestKey attribute if it exists.
+       Inspect a jar manifest and extract the entries in the manifestKey attribute if it exists. This method will check that entries also specify valid class names.
        @param mf The manifest to check.
        @return A list of class names.
     */
@@ -64,7 +64,21 @@ public class LoadableType {
         List<String> result = new ArrayList<String>();
         if (value != null) {
             for (String next : value.split(" ")) {
-                result.add(next);
+                try {
+                    Class<?> testClass = Class.forName(next);
+                    if (!clazz.isAssignableFrom(testClass)) {
+                        System.out.println("WARNING: Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' is not a subclass of '" + clazz.getName() + "'");
+                    }
+                    else if (testClass.isInterface()) {
+                        System.out.println("WARNING: Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' is an interface");
+                    }
+                    else {
+                        result.add(next);
+                    }
+                }
+                catch (ClassNotFoundException e) {
+                    System.out.println("WARNING: Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' not found");
+                }
             }
         }
         return result;
