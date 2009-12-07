@@ -376,9 +376,7 @@ public class Kernel {
 
     private Collection<Command> waitForCommands(int timestep) throws InterruptedException {
         Collection<Command> commands = commandCollector.getAgentCommands(agents, timestep);
-        if (commandFilter != null) {
-            commandFilter.filter(commands);
-        }
+        commandFilter.filter(commands);
         return commands;
     }
 

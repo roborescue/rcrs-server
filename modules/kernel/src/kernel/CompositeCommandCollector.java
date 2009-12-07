@@ -36,6 +36,9 @@ public class CompositeCommandCollector implements CommandCollector {
 
     @Override
     public Collection<Command> getAgentCommands(Collection<AgentProxy> agents, int timestep) throws InterruptedException {
+        if (agents.size() == 0) {
+            return new HashSet<Command>();
+        }
         ExecutorCompletionService<Collection<Command>> service = new ExecutorCompletionService<Collection<Command>>(Executors.newFixedThreadPool(agents.size()));
         Set<Future<Collection<Command>>> futures = new HashSet<Future<Collection<Command>>>();
         for (CommandCollector next : children) {
@@ -57,7 +60,7 @@ public class CompositeCommandCollector implements CommandCollector {
                 next.cancel(true);
             }
         }
-        return null;
+        return new HashSet<Command>();
     }
 
     /**
