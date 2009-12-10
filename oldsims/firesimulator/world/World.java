@@ -32,10 +32,10 @@ public class World implements WorldConstants {
     private Collection extinguishRequests;
     private int time;
     private Collection updatelist;
-    private Collection buildings;
+    private Collection<Building> buildings;
     private Collection firebrigades;	
-    private Collection streetNodes;
-    private Collection roads;
+    //    private Collection streetNodes;
+    //    private Collection roads;
     private int maxX;
     private int maxY;
     private int minX;
@@ -61,9 +61,9 @@ public class World implements WorldConstants {
         extinguishRequests=new LinkedList();
         updatelist=new LinkedList();
         firebrigades=new HashSet();
-        buildings=new HashSet();
-        streetNodes=new HashSet();
-        roads=new HashSet();
+        buildings=new HashSet<Building>();
+        //        streetNodes=new HashSet();
+        //        roads=new HashSet();
         maxX=Integer.MIN_VALUE;
         maxY=Integer.MIN_VALUE;
         minX=Integer.MAX_VALUE;
@@ -142,13 +142,14 @@ public class World implements WorldConstants {
         allWalls.clear();
         clearExtinguishRequests();
         initializeBuildings();				
-        initializeRoads();		
+        //        initializeRoads();		
         initializeAir();
         igniteGISFires();
         isInitialized=true;		
     }
 	
 
+    /*
     private void initializeRoads() {
         for(Iterator i=streetNodes.iterator();i.hasNext();){
             StreetNode sn=(StreetNode)i.next();
@@ -159,10 +160,10 @@ public class World implements WorldConstants {
         }
         for(Iterator i=roads.iterator();i.hasNext();((Road)i.next()).initialize(this));
     }
+    */
 
     private void initializeBuildings() {
-        for(Iterator i=buildings.iterator();i.hasNext();){						
-            Building b=(Building)i.next();
+        for (Building b : buildings) {
             int[] ap=b.getApexes();
             for(int n=0;n<ap.length;n++){
                 if(ap[n]>maxX)maxX=ap[n];
@@ -208,8 +209,7 @@ public class World implements WorldConstants {
             LOG.warn("unable to load radiation sample file \""+fname+"\", sampling:");
             int n=0;
             long t1=System.currentTimeMillis();
-            for(Iterator i=buildings.iterator();i.hasNext();){
-                Building b=(Building)i.next();
+            for (Building b : buildings) {
                 LOG.info("building "+b.getID()+" ("+(n++)+" of "+buildings.size()+") ");
                 b.initWallValues(this);
                 long dt=System.currentTimeMillis()-t1;
@@ -228,8 +228,7 @@ public class World implements WorldConstants {
                 f.createNewFile();				
                 BufferedWriter bw=new BufferedWriter(new FileWriter(f));				
                 bw.write(Wall.RAY_RATE+"\n");
-                for(Iterator i=buildings.iterator();i.hasNext();){
-                    Building b=(Building)i.next();
+                for(Building b : buildings) {
                     bw.write(b.getX()+"\n");
                     bw.write(b.getY()+"\n");
                     bw.write(b.connectedBuilding.length+"\n");
@@ -249,8 +248,7 @@ public class World implements WorldConstants {
 
 
     private Building getBuilding(int x, int y) {
-        for(Iterator i=buildings.iterator();i.hasNext();){
-            Building b=(Building)i.next();
+        for (Building b : buildings) {
             if(b.isBuilding(x,y))
                 return b;
         }
@@ -263,21 +261,24 @@ public class World implements WorldConstants {
     }
 
     private void initializeAir() {
-        int xSampels=1+(maxX-minX)/SAMPLE_SIZE;		
-        int ySamples=1+(maxY-minY)/SAMPLE_SIZE;
-        LOG.info("grid cell size="+SAMPLE_SIZE+"mm, x*y="+ySamples+"*"+xSampels+"="+xSampels*ySamples);
-        airTemp=new double[xSampels][ySamples];
+        LOG.info("World width: " + (maxX - minX) + "mm");
+        LOG.info("World height: " + (maxY - minY) + "mm");
+        int xSamples=1 + (maxX - minX) / SAMPLE_SIZE;		
+        int ySamples=1 + (maxY - minY) / SAMPLE_SIZE;
+        LOG.info("grid cell size=" + SAMPLE_SIZE + "mm, x*y=" + xSamples + "*" + ySamples + " = " + (xSamples * ySamples));
+        airTemp=new double[xSamples][ySamples];
         for(int x=0;x<airTemp.length;x++)
             for(int y=0;y<airTemp[x].length;y++)
                 airTemp[x][y]=INITIAL_TEMP;
         CAPACITY=(int)(SAMPLE_SIZE*SAMPLE_SIZE*AIR_HEIGHT*AIR_CAPACITY)/1000000;
         //assign buildings
-        gridToBuilding=new ArrayList[xSampels][ySamples];
+        gridToBuilding=new ArrayList[xSamples][ySamples];
         for(int x=0;x<gridToBuilding.length;x++)
             for(int y=0;y<gridToBuilding[0].length;y++)
                 gridToBuilding[x][y]=new ArrayList();
-        for(Iterator i=buildings.iterator();i.hasNext();)						
-            ((Building)i.next()).findCells(this);					
+        for(Building b : buildings) {
+            b.findCells(this);
+        }
     }
 
     public double[][] getAirTemp(){
@@ -288,7 +289,7 @@ public class World implements WorldConstants {
         airTemp = a;
     }
 
-    public Collection getBuildings(){
+    public Collection<Building> getBuildings(){
         return buildings;
     }
 	
@@ -322,14 +323,14 @@ public class World implements WorldConstants {
             firebrigades.add(obj);
         }
         if (obj instanceof Building) {
-            buildings.add(obj);
+            buildings.add((Building)obj);
         }
-        if (obj instanceof StreetNode) {
-            streetNodes.add(obj);
-        }
-        if (obj instanceof Road) {
-            roads.add(obj);
-        }
+        //        if (obj instanceof StreetNode) {
+        //            streetNodes.add(obj);
+        //        }
+        //        if (obj instanceof Road) {
+        //            roads.add(obj);
+        //        }
         // Moving objects need the world to get their position
         if (obj instanceof MovingObject) {
             ((MovingObject) obj).setWorld(this);
@@ -409,23 +410,23 @@ public class World implements WorldConstants {
         RescueObject obj=null;
         if (urn.equals("BUILDING")) {
             obj=new Building(id);
-            buildings.add(obj);
+            buildings.add((Building)obj);
         }
         else if (urn.equals("REFUGE")) {
             obj=new Refuge(id);
-            buildings.add(obj);
+            buildings.add((Building)obj);
         }
         else if (urn.equals("WORLD")) {
             obj=new WorldInfo(id);
         }
-        else if (urn.equals("ROAD")) {
-            obj=new Road(id);
-            roads.add(obj);
-        }
-        else if (urn.equals("NODE")) {
-            obj=new StreetNode(id);
-            streetNodes.add(obj);
-        }
+        //        else if (urn.equals("ROAD")) {
+        //            obj=new Road(id);
+        //            roads.add(obj);
+        //        }
+        //        else if (urn.equals("NODE")) {
+        //            obj=new StreetNode(id);
+        //            streetNodes.add(obj);
+        //        }
         else if (urn.equals("CIVILIAN")) {
             obj=new Civilian(id);
         }
@@ -444,15 +445,15 @@ public class World implements WorldConstants {
         }
         else if (urn.equals("AMBULANCE_CENTRE")) {
             obj=new AmbulanceCenter(id);
-            buildings.add(obj);
+            buildings.add((Building)obj);
         }
         else if (urn.equals("FIRE_STATION")) {
             obj=new FireStation(id);
-            buildings.add(obj);
+            buildings.add((Building)obj);
         }
         else if (urn.equals("POLICE_OFFICE")) {
             obj=new PoliceOffice(id);
-            buildings.add(obj);
+            buildings.add((Building)obj);
         }
         // Moving objects need the world to get their position
         if (obj instanceof MovingObject)
@@ -461,13 +462,13 @@ public class World implements WorldConstants {
     }
 
 
-    public Collection getRoads() {
-        return roads;
-    }
+    //    public Collection getRoads() {
+    //        return roads;
+    //    }
 
-    public Collection getNodes() {
-        return streetNodes;
-    }
+    //    public Collection getNodes() {
+    //        return streetNodes;
+    //    }
 
 
     public void reset() {
