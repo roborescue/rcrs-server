@@ -38,7 +38,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
         if (location() instanceof Road) {
             Road r = (Road)location();
             EntityID nearest = getNearestBlockade();

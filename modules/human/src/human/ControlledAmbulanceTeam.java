@@ -36,7 +36,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
         if (target == null) {
             LOG.info(me() + " has nothing to do.");
             return;
