@@ -42,8 +42,9 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         if (transform == null) {
             return;
         }
-        mouseDownX = transform.screenToX(e.getPoint().x);
-        mouseDownY = transform.screenToY(e.getPoint().y);
+        Point p = fixEventPoint(e.getPoint());
+        mouseDownX = transform.screenToX(p.x);
+        mouseDownY = transform.screenToY(p.y);
     }
 
     @Override
@@ -51,7 +52,8 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         if (transform == null) {
             return;
         }
-        transform.setFixedPoint(mouseDownX, mouseDownY, e.getPoint().x, e.getPoint().y);
+        Point p = fixEventPoint(e.getPoint());
+        transform.makeCentreRelativeTo(mouseDownX, mouseDownY, p.x, p.y);
         component.repaint();
     }
 
@@ -61,16 +63,19 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
             return;
         }
         if (e.getWheelRotation() < 0) {
-            Point p = e.getPoint();
-            Insets insets = component.getInsets();
-            double x = transform.screenToX(p.x - insets.left);
-            double y = transform.screenToY(p.y - insets.top);
-            transform.setFixedPoint(x, y, p.x - insets.left, p.y - insets.top);
+            Point p = fixEventPoint(e.getPoint());
+            double x = transform.screenToX(p.x);
+            double y = transform.screenToY(p.y);
             transform.zoomIn();
+            transform.makeCentreRelativeTo(x, y, p.x, p.y);
             component.repaint();
         }
         if (e.getWheelRotation() > 0) {
+            Point p = fixEventPoint(e.getPoint());
+            double x = transform.screenToX(p.x);
+            double y = transform.screenToY(p.y);
             transform.zoomOut();
+            transform.makeCentreRelativeTo(x, y, p.x, p.y);
             component.repaint();
         }
     }
@@ -89,4 +94,9 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
 
     @Override
     public void mouseMoved(MouseEvent e) {}
+
+    private Point fixEventPoint(Point p) {
+        Insets insets = component.getInsets();
+        return new Point(p.x - insets.left, p.y - insets.top);
+    }
 }
