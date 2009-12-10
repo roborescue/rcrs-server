@@ -2,10 +2,13 @@ package human;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
+import rescuecore2.misc.Pair;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Road;
+import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.components.StandardAgent;
 
@@ -38,8 +41,9 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
     protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
         if (location() instanceof Road) {
             Road r = (Road)location();
-            if (r.isLinesToHeadDefined() && (r.countBlockedLanes() == r.getLinesToHead())) {
-                sendClear(time, r.getID());
+            EntityID nearest = getNearestBlockade();
+            if (nearest != null) {
+                sendClear(time, nearest);
                 return;
             }
         }
@@ -47,25 +51,13 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
             LOG.info(me() + " has nothing to do.");
             return;
         }
-        if (location().equals(target)) {
-            if (target.isBlockDefined() && target.getBlock() == 0) {
-                target = null;
-                return;
-            }
-            else {
-                sendClear(time, target.getID());
-                return;
-            }
+        List<EntityID> path = search.breadthFirstSearch(location(), target);
+        if (path != null) {
+            sendMove(time, path);
+            return;
         }
         else {
-            List<EntityID> path = search.breadthFirstSearch(location(), target);
-            if (path != null) {
-                sendMove(time, path);
-                return;
-            }
-            else {
-                LOG.info(me() + " couldn't plan a path to target.");
-            }
+            LOG.info(me() + " couldn't plan a path to target.");
         }
     }
 
@@ -94,7 +86,44 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
         if (me() == null) {
             return "Human controlled police force";
         }
-        return "Human controlled police force " + getID() + (target == null ? " (no target)" : " target: road " + target.getID() + " block = " + (target.isBlockDefined() ? " unknown" : String.valueOf(target.getBlock())));
+        return "Human controlled police force " + getID() + (target == null ? " (no target)" : " target: road " + target.getID() + " with " + (target.isBlockadesDefined() ? " unknown" : String.valueOf(target.getBlockades().size())) + " blockades");
+    }
+
+    /**
+       Get the blockade that is nearest this agent.
+       @return The EntityID of the nearest blockade, or null if there are no blockades in the agents current location.
+    */
+    public EntityID getNearestBlockade() {
+        return getNearestBlockade((Area)location(), me().getX(), me().getY());
+    }
+
+    /**
+       Get the blockade that is nearest a point.
+       @param area The area to check.
+       @param x The X coordinate to look up.
+       @param y The X coordinate to look up.
+       @return The EntityID of the nearest blockade, or null if there are no blockades in this area.
+    */
+    public EntityID getNearestBlockade(Area area, int x, int y) {
+	double bestDistance = 0;
+	EntityID best = null;
+        if (area.isBlockadesDefined()) {
+            for (EntityID blockadeID : area.getBlockades()) {
+                StandardEntity entity = model.getEntity(blockadeID);
+                Pair<Integer, Integer> location = entity.getLocation(model);
+                if (location == null) {
+                    continue;
+                }
+                double dx = location.first() - x;
+                double dy = location.second() - y;
+                double distance = Math.hypot(dx, dy);
+                if(best == null || distance < bestDistance) {
+                    bestDistance = distance;
+                    best = entity.getID();
+                }
+            }
+        }
+        return best;
     }
 }
 
