@@ -33,18 +33,6 @@ public final class StandardPropertyFactory extends AbstractPropertyFactory<Stand
         case LATITUDE:
         case WIND_FORCE:
         case WIND_DIRECTION:
-        case LENGTH:
-        case ROAD_KIND:
-        case CARS_PASS_TO_HEAD:
-        case CARS_PASS_TO_TAIL:
-        case HUMANS_PASS_TO_HEAD:
-        case HUMANS_PASS_TO_TAIL:
-        case WIDTH:
-        case BLOCK:
-        case REPAIR_COST:
-        case LINES_TO_HEAD:
-        case LINES_TO_TAIL:
-        case WIDTH_FOR_WALKERS:
         case X:
         case Y:
         case FLOORS:
@@ -54,7 +42,6 @@ public final class StandardPropertyFactory extends AbstractPropertyFactory<Stand
         case BUILDING_CODE:
         case BUILDING_AREA_GROUND:
         case BUILDING_AREA_TOTAL:
-        case POSITION_EXTRA:
         case DIRECTION:
         case STAMINA:
         case HP:
@@ -63,26 +50,20 @@ public final class StandardPropertyFactory extends AbstractPropertyFactory<Stand
         case WATER_QUANTITY:
         case TEMPERATURE:
         case IMPORTANCE:
+        case TRAVEL_DISTANCE:
             return new IntProperty(urn);
-        case SHORTCUT_TO_TURN:
-        case POCKET_TO_TURN_ACROSS:
-        case SIGNAL_TIMING:
-        case BUILDING_APEXES:
+        case APEXES:
+        case POSITION_HISTORY:
             return new IntArrayProperty(urn);
-        case MEDIAN_STRIP:
         case IGNITION:
-        case SIGNAL:
             return new BooleanProperty(urn);
-        case HEAD:
-        case TAIL:
         case POSITION:
             return new EntityRefProperty(urn);
-        case EDGES:
-        case ENTRANCES:
-        case POSITION_HISTORY:
-        case NEXT_AREA:
-        case BLOCKADE_LIST:
+        case NEIGHBOURS:
+        case BLOCKADES:
             return new EntityRefListProperty(urn);
+        case EDGES:
+            return new EdgeListProperty(urn);
         default:
             throw new IllegalArgumentException("Unrecognised property urn: " + urn);
         }

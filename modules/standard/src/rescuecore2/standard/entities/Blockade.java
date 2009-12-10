@@ -15,40 +15,35 @@ import java.util.Set;
 
 
 /**
-   The Area object.
+   A blockade.
  */
 public class Blockade extends StandardEntity {
-
-    private IntProperty center_x;
-    private IntProperty center_y;
-    private EntityRefProperty area;
-    private IntArrayProperty shape;
-    private IntProperty repair_cost;
+    private IntProperty x;
+    private IntProperty y;
+    private EntityRefProperty position;
+    private IntArrayProperty apexes;
+    private IntProperty repairCost;
 
     /**
-       Construct a Area object with entirely undefined property values.
+       Construct a Blockade object with entirely undefined property values.
        @param id The ID of this entity.
      */
     public Blockade(EntityID id) {
-	this(id, StandardEntityURN.BLOCKADE);
-    }
-    
-    public Blockade(EntityID id, StandardEntityURN urn) {
-        super(id, urn);
-	center_x = new IntProperty(StandardPropertyURN.X);
-	center_y = new IntProperty(StandardPropertyURN.Y);
-	area = new EntityRefProperty(StandardPropertyURN.AREA);
-	shape = new IntArrayProperty(StandardPropertyURN.AREA_APEXES);
-      	repair_cost = new IntProperty(StandardPropertyURN.REPAIR_COST);
+	super(id, StandardEntityURN.BLOCKADE);
+	x = new IntProperty(StandardPropertyURN.X);
+	y = new IntProperty(StandardPropertyURN.Y);
+	position = new EntityRefProperty(StandardPropertyURN.POSITION);
+	apexes = new IntArrayProperty(StandardPropertyURN.APEXES);
+      	repairCost = new IntProperty(StandardPropertyURN.REPAIR_COST);
     }
     
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
-	return new Pair<Integer, Integer>(center_x.getValue(), center_y.getValue());
+	return new Pair<Integer, Integer>(x.getValue(), y.getValue());
     }
     
     @Override
     protected Entity copyImpl() {
-        return new Area(getID());
+        return new Blockade(getID());
     }
 
     @Override
@@ -62,15 +57,15 @@ public class Blockade extends StandardEntity {
         }
         switch (type) {
         case X:
-            return center_x;
+            return x;
         case Y:
-            return center_y;
-        case AREA:
-            return area;
-        case AREA_APEXES:
-            return shape;
+            return y;
+        case POSITION:
+            return position;
+        case APEXES:
+            return apexes;
         case REPAIR_COST:
-            return repair_cost;
+            return repairCost;
         default:
             return super.getProperty(urn);
         }
@@ -79,55 +74,205 @@ public class Blockade extends StandardEntity {
     @Override
     public Set<Property> getProperties() {
         Set<Property> result = super.getProperties();
-        result.add(center_x);
-        result.add(center_y);
-        result.add(area);
-        result.add(shape);
-        result.add(repair_cost);
+        result.add(x);
+        result.add(y);
+        result.add(position);
+        result.add(apexes);
+        result.add(repairCost);
         return result;
     }
 
-
     /**
-       Get the value of the center_x kind property.
-       @return The center_x kind.
+       Get the X property.
+       @return The X property.
      */
-    public int getCenterX() {
-        return center_x.getValue();
-    }
-
-    public void setCenter(int x, int y) {
-	setCenterX(x);
-	setCenterY(y);
+    public IntProperty getXProperty() {
+        return x;
     }
 
     /**
-       Set the value of the center_x kind property.
-       @param newKind The new center_x kind.
+       Get the X coordinate.
+       @return The X coordinate.
+     */
+    public int getX() {
+        return x.getValue();
+    }
+
+    /**
+       Set the X coordinate.
+       @param x The new X coordinate.
     */
-    public void setCenterX(int newKind) {
-        this.center_x.setValue(newKind);
+    public void setX(int x) {
+        this.x.setValue(x);
     }
 
-    public int getCenterY() {
-        return center_y.getValue();
-    }
-    public void setCenterY(int newKind) {
-        this.center_y.setValue(newKind);
-    }
-
-    public EntityID getArea() {
-	return area.getValue();
-    }
-    public void setArea(EntityID id) {
-	area.setValue(id);
+    /**
+       Find out if the X property has been defined.
+       @return True if the X property has been defined, false otherwise.
+     */
+    public boolean isXDefined() {
+        return x.isDefined();
     }
 
-    public int[] getShape() {
-        return shape.getValue();
+    /**
+       Undefine the X property.
+    */
+    public void undefineX() {
+        x.undefine();
     }
-    public void setShape(int[] newShape) {
-        this.shape.setValue(newShape);
+    /**
+       Get the Y property.
+       @return The Y property.
+     */
+    public IntProperty getYProperty() {
+        return y;
     }
 
+    /**
+       Get the Y coordinate.
+       @return The Y coordinate.
+     */
+    public int getY() {
+        return y.getValue();
+    }
+
+    /**
+       Set the Y coordinate.
+       @param x The new y coordinate.
+    */
+    public void setY(int y) {
+        this.y.setValue(y);
+    }
+
+    /**
+       Find out if the Y property has been defined.
+       @return True if the Y property has been defined, false otherwise.
+     */
+    public boolean isYDefined() {
+        return y.isDefined();
+    }
+
+    /**
+       Undefine the Y property.
+    */
+    public void undefineY() {
+        y.undefine();
+    }
+
+    /**
+       Get the apexes property.
+       @return The apexes property.
+     */
+    public IntArrayProperty getApexesProperty() {
+        return apexes;
+    }
+
+    /**
+       Get the apexes of this area.
+       @return The apexes.
+     */
+    public int[] getApexes() {
+        return apexes.getValue();
+    }
+
+    /**
+       Set the apexes.
+       @param apexes The new apexes.
+    */
+    public void setApexes(int[] apexes) {
+        this.apexes.setValue(apexes);
+    }
+
+    /**
+       Find out if the apexes property has been defined.
+       @return True if the apexes property has been defined, false otherwise.
+     */
+    public boolean isApexesDefined() {
+        return apexes.isDefined();
+    }
+
+    /**
+       Undefine the apexes property.
+    */
+    public void undefineApexes() {
+        apexes.undefine();
+    }
+
+    /**
+       Get the position property.
+       @return The position property.
+     */
+    public EntityRefProperty getPositionProperty() {
+        return position;
+    }
+
+    /**
+       Get the position of this blockade.
+       @return The position.
+     */
+    public EntityID getPosition() {
+        return position.getValue();
+    }
+
+    /**
+       Set the position.
+       @param position The new position.
+    */
+    public void setPosition(EntityID position) {
+        this.position.setValue(position);
+    }
+
+    /**
+       Find out if the position property has been defined.
+       @return True if the position property has been defined, false otherwise.
+     */
+    public boolean isPositionDefined() {
+        return position.isDefined();
+    }
+
+    /**
+       Undefine the position property.
+    */
+    public void undefinePosition() {
+        position.undefine();
+    }
+
+    /**
+       Get the repair cost property.
+       @return The repair cost property.
+     */
+    public IntProperty getRepairCostProperty() {
+        return repairCost;
+    }
+
+    /**
+       Get the repair cost of this blockade.
+       @return The repair cost.
+     */
+    public int getRepairCost() {
+        return repairCost.getValue();
+    }
+
+    /**
+       Set the repair cost.
+       @param cost The new repair cost.
+    */
+    public void setRepairCost(int cost) {
+        this.repairCost.setValue(cost);
+    }
+
+    /**
+       Find out if the repair cost property has been defined.
+       @return True if the repair cost property has been defined, false otherwise.
+     */
+    public boolean isRepairCostDefined() {
+        return repairCost.isDefined();
+    }
+
+    /**
+       Undefine the repair cost property.
+    */
+    public void undefineRepairCost() {
+        repairCost.undefine();
+    }
 }

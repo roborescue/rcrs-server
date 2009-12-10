@@ -6,7 +6,6 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
-import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
 
 import java.util.List;
@@ -15,9 +14,11 @@ import java.util.List;
    Abstract base class for Humans.
  */
 public abstract class Human extends StandardEntity {
+    private IntProperty x;
+    private IntProperty y;
     private EntityRefProperty position;
-    private IntProperty positionExtra;
-    private EntityRefListProperty positionHistory;
+    private IntArrayProperty positionHistory;
+    private IntProperty travelDistance;
     private IntProperty direction;
     private IntProperty stamina;
     private IntProperty hp;
@@ -32,8 +33,7 @@ public abstract class Human extends StandardEntity {
     protected Human(EntityID id, StandardEntityURN type) {
         super(id, type);
         position = new EntityRefProperty(StandardPropertyURN.POSITION);
-        //positionExtra = new IntProperty(StandardPropertyURN.POSITION_EXTRA);
-        positionHistory = new EntityRefListProperty(StandardPropertyURN.POSITION_HISTORY);
+        positionHistory = new IntArrayProperty(StandardPropertyURN.POSITION_HISTORY);
         direction = new IntProperty(StandardPropertyURN.DIRECTION);
         stamina = new IntProperty(StandardPropertyURN.STAMINA);
         hp = new IntProperty(StandardPropertyURN.HP);
@@ -48,9 +48,11 @@ public abstract class Human extends StandardEntity {
      */
     public Human(Human other) {
         super(other);
+        x = new IntProperty(other.x);
+        y = new IntProperty(other.y);
+        travelDistance = new IntProperty(other.travelDistance);
         position = new EntityRefProperty(other.position);
-        //positionExtra = new IntProperty(other.positionExtra);
-        positionHistory = new EntityRefListProperty(other.positionHistory);
+        positionHistory = new IntArrayProperty(other.positionHistory);
         direction = new IntProperty(other.direction);
         stamina = new IntProperty(other.stamina);
         hp = new IntProperty(other.hp);
@@ -71,8 +73,6 @@ public abstract class Human extends StandardEntity {
         switch (type) {
         case POSITION:
             return position;
-            //case POSITION_EXTRA:
-            //return positionExtra;
         case POSITION_HISTORY:
             return positionHistory;
         case DIRECTION:
@@ -89,6 +89,8 @@ public abstract class Human extends StandardEntity {
             return damage;
         case BURIEDNESS:
             return buriedness;
+        case TRAVEL_DISTANCE:
+            return travelDistance;
         default:
             return super.getProperty(urn);
         }
@@ -96,38 +98,8 @@ public abstract class Human extends StandardEntity {
 
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
-        if (!position.isDefined()) {
-            return null;
-        }
-        StandardEntity positionEntity = world.getEntity(position.getValue());
-        if (positionEntity == null) {
-            return null;
-        }
-        if (positionEntity instanceof Edge) {
-            // Work out the positionExtra
-            if (!positionExtra.isDefined()) {
-                return positionEntity.getLocation(world);
-            }
-            int extra = positionExtra.getValue();
-            Edge edge = (Edge)positionEntity;
-            double d = ((double)extra) / (double)edge.getLength();
-            StandardEntity head = edge.getHead(world);
-            StandardEntity tail = edge.getTail(world);
-            if (head == null || tail == null) {
-                return null;
-            }
-            Pair<Integer, Integer> headLocation = head.getLocation(world);
-            Pair<Integer, Integer> tailLocation = tail.getLocation(world);
-            double dx = tailLocation.first().intValue() - headLocation.first().intValue();
-            double dy = tailLocation.second().intValue() - headLocation.second().intValue();
-            dx *= d;
-            dy *= d;
-            int x = (int)(headLocation.first().intValue() + dx);
-            int y = (int)(headLocation.second().intValue() + dy);
-            return new Pair<Integer, Integer>(x, y);
-        }
-        else {
-            return positionEntity.getLocation(world);
+        if (x.isDefined() && y.isDefined()) {
+            return new Pair<Integer, Integer>(x.getValue(), y.getValue());
         }
     }
 
@@ -212,7 +184,7 @@ public abstract class Human extends StandardEntity {
        Get the position history property.
        @return The position history property.
      */
-    public EntityRefListProperty getPositionHistoryProperty() {
+    public IntArrayProperty getPositionHistoryProperty() {
         return positionHistory;
     }
 
@@ -220,7 +192,7 @@ public abstract class Human extends StandardEntity {
        Get the position history.
        @return The position history.
      */
-    public List<EntityID> getPositionHistory() {
+    public int[] getPositionHistory() {
         return positionHistory.getValue();
     }
 
@@ -228,7 +200,7 @@ public abstract class Human extends StandardEntity {
        Set the position history.
        @param history The new position history.
     */
-    public void setPositionHistory(List<EntityID> history) {
+    public void setPositionHistory(int[] history) {
         this.positionHistory.setValue(history);
     }
 
@@ -443,6 +415,123 @@ public abstract class Human extends StandardEntity {
     }
 
     /**
+       Get the X property.
+       @return The X property.
+     */
+    public IntProperty getXProperty() {
+        return x;
+    }
+
+    /**
+       Get the X coordinate of this human.
+       @return The x coordinate of this human.
+     */
+    public int getX() {
+        return x.getValue();
+    }
+
+    /**
+       Set the X coordinate of this human.
+       @param x The new x coordinate.
+    */
+    public void setX(int x) {
+        this.x.setValue(x);
+    }
+
+    /**
+       Find out if the x property has been defined.
+       @return True if the x property has been defined, false otherwise.
+     */
+    public boolean isXDefined() {
+        return x.isDefined();
+    }
+
+    /**
+       Undefine the X property.
+    */
+    public void undefineX() {
+        x.undefine();
+    }
+
+    /**
+       Get the y property.
+       @return The y property.
+     */
+    public IntProperty getYProperty() {
+        return y;
+    }
+
+    /**
+       Get the y coordinate of this human.
+       @return The y coordinate of this human.
+     */
+    public int getY() {
+        return y.getValue();
+    }
+
+    /**
+       Set the y coordinate of this human.
+       @param y The new y coordinate.
+    */
+    public void setY(int y) {
+        this.y.setValue(y);
+    }
+
+    /**
+       Find out if the y property has been defined.
+       @return True if the y property has been defined, false otherwise.
+     */
+    public boolean isYDefined() {
+        return y.isDefined();
+    }
+
+    /**
+       Undefine the y property.
+    */
+    public void undefineY() {
+        y.undefine();
+    }
+
+    /**
+       Get the travel distance property.
+       @return The travel distance property.
+     */
+    public IntProperty getTravelDistanceProperty() {
+        return travelDistance;
+    }
+
+    /**
+       Get the travel distance.
+       @return The travel distance.
+     */
+    public int getTravelDistance() {
+        return travelDistance.getValue();
+    }
+
+    /**
+       Set the travel distance.
+       @param d The new travel distance.
+    */
+    public void setTravelDistance(int d) {
+        this.travelDistance.setValue(d);
+    }
+
+    /**
+       Find out if the travel distance property has been defined.
+       @return True if the travel distance property has been defined, false otherwise.
+     */
+    public boolean isTravelDistanceDefined() {
+        return travelDistance.isDefined();
+    }
+
+    /**
+       Undefine the travel distance property.
+    */
+    public void undefineTravelDistance() {
+        travelDistance.undefine();
+    }
+
+    /**
        Get the entity represented by the position property. The result will be null if the position property has not been set or if the entity reference is invalid.
        @param model The WorldModel to look up entity references.
        @return The entity represented by the position property.
@@ -452,5 +541,17 @@ public abstract class Human extends StandardEntity {
             return null;
         }
         return model.getEntity(position.getValue());
+    }
+
+    /**
+       Set the position of this human.
+       @param position The new position.
+       @param x The x coordinate of this agent.
+       @param y The y coordinate if this agent.
+    */
+    public void setPosition(EntityID position, int x, int y) {
+        this.position.setValue(position);
+        this.x.setValue(x);
+        this.y.setValue(y);
     }
 }

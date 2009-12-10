@@ -4,18 +4,20 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Polygon;
-import java.awt.geom.GeneralPath;
+import java.awt.Stroke;
+import java.awt.BasicStroke;
 import java.util.List;
+import java.util.Iterator;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Node;
+import rescuecore2.standard.entities.Edge;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A view layer that renders buildings.
  */
-public class BuildingLayer extends StandardEntityViewLayer<Building> {
+public class BuildingLayer extends AreaLayer<Building> {
     private static final Color HEATING = new Color(176, 176,  56, 128);
     private static final Color BURNING = new Color(204, 122,  50, 128);
     private static final Color INFERNO = new Color(160,  52,  52, 128);
@@ -25,8 +27,11 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     private static final Color SEVERE_DAMAGE = new Color(80, 60, 140, 128);
     private static final Color BURNT_OUT = new Color(0, 0, 0, 255);
 
-    private static final Color OUTLINE = Color.GRAY.darker();
+    private static final Color OUTLINE_COLOUR = Color.GRAY.darker();
     private static final Color ENTRANCE = new Color(120, 120, 120);
+
+    private static final Stroke WALL_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
+    private static final Stroke ENTRANCE_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
 
     /**
        Construct a building view layer.
@@ -41,44 +46,25 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
     }
 
     @Override
-    public Shape render(Building b, Graphics2D g, ScreenTransform t) {
-        int[] apexes = b.getApexes();
-        int count = apexes.length / 2;
-        int[] xs = new int[count];
-        int[] ys = new int[count];
-	List<EntityID> next_id = b.getNextArea();
-	GeneralPath path = new GeneralPath();
-	path.moveTo(t.xToScreen(apexes[0]), t.yToScreen(apexes[1]));
-        for (int i = 0; i < count; ++i) {
-            xs[i] = t.xToScreen(apexes[i * 2]);
-            ys[i] = t.yToScreen(apexes[(i * 2) + 1]);
-	    if(i==0)continue;
-	    if(next_id.get(i-1).getValue()==-1)
-		path.lineTo(t.xToScreen(apexes[i*2]), t.yToScreen(apexes[i*2+1]));
-	    else
-		path.moveTo(t.xToScreen(apexes[i*2]), t.yToScreen(apexes[i*2+1]));
-        }
-        Polygon shape = new Polygon(xs, ys, count);
-        drawBrokenness(b, shape, g);
+    protected void paintEdge(Edge e, Graphics2D g, ScreenTransform t) {
+        g.setColor(OUTLINE_COLOUR);
+        g.setStroke(e.isPassable() ? ENTRANCE_STROKE : WALL_STROKE);
+        g.drawLine(t.xToScreen(e.getStartX()),
+                   t.yToScreen(e.getStartY()),
+                   t.xToScreen(e.getEndX()),
+                   t.yToScreen(e.getEndY()));
+    }
+
+    @Override
+    protected void paintShape(Building b, Polygon shape, Graphics2D g) {
         drawFieryness(b, shape, g);
-        g.setColor(OUTLINE);
-        g.draw(shape);
-        // Draw a line to each entrance
-        int x = t.xToScreen(b.getCenterX());
-        int y = t.yToScreen(b.getCenterY());
-        g.setColor(ENTRANCE);
-        /*
-        for (EntityID next : b.getEntrances()) {
-            Node n = (Node)world.getEntity(next);
-            int nx = t.xToScreen(n.getX());
-            int ny = t.yToScreen(n.getY());
-            g.drawLine(x, y, nx, ny);
-        }
-        */
-        return shape;
+        drawBrokenness(b, shape, g);
     }
 
     private void drawFieryness(Building b, Polygon shape, Graphics2D g) {
+        if (!b.isFierynessDefined()) {
+            return;
+        }
         switch (b.getFierynessEnum()) {
         case UNBURNT:
             return;
@@ -119,7 +105,5 @@ public class BuildingLayer extends StandardEntityViewLayer<Building> {
         // CHECKSTYLE:ON:MagicNumber
         g.setColor(new Color(colour, colour, colour));
         g.fill(shape);
-        g.setColor(Color.BLACK);
-        g.draw(shape);
     }
 }

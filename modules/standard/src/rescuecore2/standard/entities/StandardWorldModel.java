@@ -122,18 +122,20 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 minY = Math.min(minY, y);
                 maxY = Math.max(maxY, y);
             }
-            if (next instanceof Building) {
+            if (next instanceof Area) {
                 // Include apexes in the bounds
-                Building b = (Building)next;
-                if (b.isApexesDefined()) {
-                    int[] apexes = b.getApexes();
-                    for (int i = 0; i < apexes.length; i += 2) {
-                        minX = Math.min(minX, apexes[i]);
-                        maxX = Math.max(maxX, apexes[i]);
-                    }
-                    for (int i = 1; i < apexes.length; i += 2) {
-                        minY = Math.min(minY, apexes[i]);
-                        maxY = Math.max(maxY, apexes[i]);
+                Area a = (Area)next;
+                if (a.isEdgesDefined()) {
+                    List<Edge> edges = a.getEdges();
+                    for (Edge edge : edges) {
+                        minX = Math.min(minX, edge.getStartX());
+                        minX = Math.min(minX, edge.getEndX());
+                        maxX = Math.max(maxX, edge.getStartX());
+                        maxX = Math.max(maxX, edge.getEndX());
+                        minY = Math.min(minY, edge.getStartY());
+                        minY = Math.min(minY, edge.getEndY());
+                        maxY = Math.max(maxY, edge.getStartY());
+                        maxY = Math.max(maxY, edge.getEndY());
                     }
                 }
             }

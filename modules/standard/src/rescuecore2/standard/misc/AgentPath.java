@@ -7,7 +7,6 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.messages.AKMove;
 
@@ -20,101 +19,28 @@ import java.util.ArrayList;
  */
 public abstract class AgentPath {
     /**
-       Compute the path an agent took.
+       Compute the path an agent took. This will read the positionHistory property and generate a path.
        @param human The agent.
-       @param startPosition The agent's position at the start of the timestep.
-       @param startPositionExtra The agent's positionExtra at the start of the timestep.
-       @param move The move command the agent issued.
        @param world The world model.
        @return The computed Path, or null if the agent didn't move.
      */
-    public static AgentPath computePath(Human human, EntityID startPosition, int startPositionExtra, AKMove move, StandardWorldModel world) {
+    public static AgentPath computePath(Human human, StandardWorldModel world) {
         if (human == null) {
             throw new IllegalArgumentException("Agent must not be null");
         }
-        /*
-        if (!human.isPositionDefined() || !human.isPositionExtraDefined()) {
+        if (!human.isPositionDefined()) {
             throw new IllegalArgumentException("Agent has an undefined position");
         }
-        */
-        if (move == null) {
-            throw new IllegalArgumentException("Move command must not be null");
-        }
-        List<EntityID> path = move.getPath();
-        Iterator<EntityID> it = path.iterator();
-        EntityID position = human.getPosition();
-        int positionExtra = 0;
-        /*
-        int positionExtra = human.getPositionExtra();
-        if (position.equals(startPosition) && positionExtra == startPositionExtra) {
-            // Didn't move
+        if (!human.isPositionHistoryDefined()) {
+            // Agent didn't move.
             return null;
         }
-        */
-        if (position.equals(startPosition)) {
-            return null;
+        int[] history = human.getPositionHistory();
+        if (history.length > 2) {
+            return new CoordinatePath(history);
         }
-        EntityID previous = it.next();
-        // Find the agent along the path
-        while (!previous.equals(startPosition) && it.hasNext()) {
-            previous = it.next();
-        }
-        if (!it.hasNext()) {
-            // Didn't find the agent along the requested path. Let's assume the agent is in the right place.
-            it = path.iterator();
-            previous = startPosition;
-        }
-        CompositePath result = new CompositePath();
-        boolean success = false;
-        // Walk along the move command until we find the agent's current position, updating the result as we go.
-        while (it.hasNext()) {
-            EntityID next = it.next();
-            // Create the appropriate path element
-            StandardEntity from = world.getEntity(previous);
-            StandardEntity to = world.getEntity(next);
-            if (from instanceof Road && to instanceof Node) {
-                Road road = (Road)from;
-                Node node = (Node)to;
-                boolean toHead = node.getID().equals(road.getHead());
-                if (previous.equals(startPosition)) {
-                    // At origin: must be a PartialRoadPath
-                    result.addPath(new PartialRoadPath(road, startPositionExtra, toHead, false, world));
-                }
-                else {
-                    // RoadPath
-                    result.addPath(new RoadPath(road, toHead, false, world));
-                }
-            }
-            else if (from instanceof Node && to instanceof Road) {
-                Road road = (Road)to;
-                Node node = (Node)from;
-                boolean fromHead = node.getID().equals(road.getHead());
-                if (next.equals(position)) {
-                    // At destination: must be a PartialRoadPath
-                    result.addPath(new PartialRoadPath(road, positionExtra, fromHead, true, world));
-                }
-                else {
-                    // RoadPath
-                    result.addPath(new RoadPath(road, !fromHead, true, world));
-                }
-            }
-            else if (from instanceof Node && to instanceof Building) {
-                result.addPath(new BuildingEntryPath((Building)to, (Node)from, world));
-            }
-            else if (from instanceof Building && to instanceof Node) {
-                result.addPath(new BuildingExitPath((Building)from, (Node)to, world));
-            }
-            previous = next;
-            if (next.equals(position)) {
-                success = true;
-                break;
-            }
-        }
-        if (!success) {
-            // We never found the agent along the move command. Probably the command was invalid. In any case, we can't determine the agent's true path.
-            return null;
-        }
-        return result;
+        // Agent didn't move far enough: only one piece of history.
+        return null;
     }
 
     /**
@@ -191,6 +117,14 @@ public abstract class AgentPath {
         private double length;
         private String description;
 
+        protected void setStart(int sX, int sY) {
+            start = new Pair<Integer, Integer>(sX, sY);
+        }
+
+        protected void setEnd(int eX, int eY) {
+            end = new Pair<Integer, Integer>(eX, eY);
+        }
+
         protected void setStart(Pair<Integer, Integer> s) {
             start = s;
         }
@@ -233,73 +167,26 @@ public abstract class AgentPath {
         }
     }
 
-    private static class PartialRoadPath extends AbstractPath {
-        PartialRoadPath(Road road, int positionExtra, boolean toOrFromHead, boolean toPositionExtra, StandardWorldModel world) {
-            Node head = (Node)road.getHead(world);
-            Node tail = (Node)road.getTail(world);
-            if (toPositionExtra) {
-                setStart(toOrFromHead ? head.getLocation(world) : tail.getLocation(world));
-                setEnd(findPositionExtra(road, positionExtra, world));
-                setDescription("From node " + (toOrFromHead ? head.getID() : tail.getID()) + " to road " + road.getID() + " position " + positionExtra);
+    private static class CoordinatePath extends CompositePath {
+        CoordinatePath(int[] history) {
+            int fromX = history[0];
+            int fromY = history[1];
+            for (int i = 2; i < history.length; i += 2) {
+                int toX = history[i];
+                int toY = history[i + 1];
+                addPath(new CoordinatePathSegment(fromX, fromY, toX, toY));
+                fromX = toX;
+                fromY = toY;
             }
-            else {
-                setStart(findPositionExtra(road, positionExtra, world));
-                setEnd(toOrFromHead ? head.getLocation(world) : tail.getLocation(world));
-                setDescription("From road " + road.getID() + " position " + positionExtra + " towards node " + (toOrFromHead ? head.getID() : tail.getID()));
-            }
-            setLength(toOrFromHead ? positionExtra : road.getLength() - positionExtra);
-        }
-
-        private Pair<Integer, Integer> findPositionExtra(Road road, double positionExtra, StandardWorldModel world) {
-            double d = positionExtra / road.getLength();
-            Pair<Integer, Integer> start = road.getHead(world).getLocation(world);
-            Pair<Integer, Integer> end = road.getTail(world).getLocation(world);
-            double dx = end.first() - start.first();
-            double dy = end.second() - start.second();
-            int x = start.first() + (int)(d * dx);
-            int y = start.second() + (int)(d * dy);
-            return new Pair<Integer, Integer>(x, y);
         }
     }
 
-    private static class RoadPath extends AbstractPath {
-        RoadPath(Road road, boolean toHead, boolean intoRoad, StandardWorldModel world) {
-            Node head = (Node)road.getHead(world);
-            Node tail = (Node)road.getTail(world);
-            Node from = toHead ? tail : head;
-            Node to = toHead ? head : tail;
-            Pair<Integer, Integer> fromLocation = from.getLocation(world);
-            Pair<Integer, Integer> toLocation = to.getLocation(world);
-            int x = (fromLocation.first() + toLocation.first()) / 2;
-            int y = (fromLocation.second() + toLocation.second()) / 2;
-            if (intoRoad) {
-                setStart(from.getLocation(world));
-                setEnd(new Pair<Integer, Integer>(x, y));
-            }
-            else {
-                setStart(new Pair<Integer, Integer>(x, y));
-                setEnd(to.getLocation(world));
-            }
+    private static class CoordinatePathSegment extends AbstractPath {
+        CoordinatePathSegment(int fromX, int fromY, int toX, int toY) {
+            setStart(fromX, fromY);
+            setEnd(toX, toY);
+            setDescription("From " + fromX + ", " + fromY + " to " + toX + ", " + toY);
             computeLength();
-            setDescription((intoRoad ? "Into" : "Out of") + " road " + road.getID() + " from " + (toHead ? tail.getID() : head.getID()) + " towards " + (toHead ? head.getID() : tail.getID()));
-        }
-    }
-
-    private static class BuildingEntryPath extends AbstractPath {
-        BuildingEntryPath(Building b, Node entrance, StandardWorldModel world) {
-            setStart(entrance.getLocation(world));
-            setEnd(b.getLocation(world));
-            computeLength();
-            setDescription("Into building " + b.getID() + " from node " + entrance.getID());
-        }
-    }
-
-    private static class BuildingExitPath extends AbstractPath {
-        BuildingExitPath(Building b, Node entrance, StandardWorldModel world) {
-            setStart(b.getLocation(world));
-            setEnd(entrance.getLocation(world));
-            computeLength();
-            setDescription("Out of building " + b.getID() + " to node " + entrance.getID());
         }
     }
 }

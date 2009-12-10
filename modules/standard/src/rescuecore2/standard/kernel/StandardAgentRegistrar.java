@@ -22,7 +22,6 @@ import rescuecore2.standard.entities.PoliceOffice;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.StandardPropertyURN;
@@ -30,6 +29,7 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.StandardPropertyURN;
 
 import rescuecore2.standard.StandardConstants;
 
@@ -89,23 +89,9 @@ public class StandardAgentRegistrar implements AgentRegistrar {
     private void maybeAddInitialEntity(Entity e, Set<Entity> initialEntities) {
         if (e instanceof Road) {
             Road r = (Road)e.copy();
-            filterRoadProperties(r);
+            filterAreaProperties(r);
             initialEntities.add(r);
         }
-        if (e instanceof Node) {
-            Node n = (Node)e.copy();
-            filterNodeProperties(n);
-            initialEntities.add(n);
-        }
-	if (e instanceof Area) {
-	    Area a = (Area)e.copy();
-	    filterAreaProperties(a);
-	    initialEntities.add(a);	
-}
-	if (e instanceof Blockade) {
-	    Blockade b = (Blockade)e;
-	    initialEntities.add(b);
-	}
         if (e instanceof Building) {
             Building b = (Building)e.copy();
             filterBuildingProperties(b);
@@ -120,71 +106,30 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         }
     }
 
-    private void filterRoadProperties(Road r) {
-        for (Property next : r.getProperties()) {
-            // Road properties: ROAD_KIND, WIDTH, MEDIAN_STRIP, LINES_TO_HEAD, LINES_TO_TAIL and WIDTH_FOR_WALKERS
-            // Edge properties: HEAD, TAIL, LENGTH
-            // Everything else should be undefined
+    private void filterAreaProperties(Area a) {
+        for (Property next : a.getProperties()) {
+            // Hide blockades
             StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
             switch (urn) {
-            case ROAD_KIND:
-            case WIDTH:
-            case MEDIAN_STRIP:
-            case LINES_TO_HEAD:
-            case LINES_TO_TAIL:
-            case WIDTH_FOR_WALKERS:
-            case HEAD:
-            case TAIL:
-            case LENGTH:
+            case BLOCKADES:
+                next.undefine();
                 break;
             default:
-                next.undefine();
-            }
-        }
-    }
-
-    private void filterNodeProperties(Node n) {
-        for (Property next : n.getProperties()) {
-            // Node properties: SIGNAL, SHORTCUT_TO_TURN, POCKET_TO_TURN_ACROSS, SIGNAL_TIMING
-            // Vertex properties: X, Y, EDGES
-            // Everything else should be undefined
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
-            switch (urn) {
-            case SIGNAL:
-            case SHORTCUT_TO_TURN:
-            case POCKET_TO_TURN_ACROSS:
-            case SIGNAL_TIMING:
-            case X:
-            case Y:
-            case EDGES:
                 break;
-            default:
-                next.undefine();
             }
         }
     }
 
     private void filterBuildingProperties(Building b) {
+        filterAreaProperties(b);
         for (Property next : b.getProperties()) {
-            // Building properties: X, Y, FLOORS, BUILDING_CODE, BUILDING_ATTRIBUTES, BUILDING_AREA_GROUND, BUILDING_AREA_TOTAL, IMPORTANCE, ENTRANCES
-            // Everything else should be undefined
+            // Hide ignition, fieryness, brokenness, temperature
             StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
             switch (urn) {
-            case X:
-            case Y:
-            case AREA_TYPE:
-            case AREA_APEXES:
-	    case NEXT_AREA:
-	    case BLOCKADE_LIST:
-            case FLOORS:
-            case BUILDING_CODE:
-            case BUILDING_ATTRIBUTES:
-            case BUILDING_AREA_GROUND:
-            case BUILDING_AREA_TOTAL:
-            case IMPORTANCE:
-            case ENTRANCES:
-                break;
-            default:
+            case IGNITION:
+            case FIERYNESS:
+            case BROKENNESS:
+            case TEMPERATURE:
                 next.undefine();
             }
         }
@@ -219,7 +164,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
 	    case BLOCKADE_LIST:
                 break;
             default:
-                next.undefine();
+                break;
             }
         }
     }

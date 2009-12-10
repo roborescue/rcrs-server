@@ -52,8 +52,8 @@ public class BuildingIconLayer extends StandardEntityViewLayer<Building> {
         }
         if (icon != null) {
             // Draw an icon over the centre of the building
-            int x = t.xToScreen(b.getCenterX()) - (icon.getIconWidth() / 2);
-            int y = t.yToScreen(b.getCenterY()) - (icon.getIconHeight() / 2);
+            int x = t.xToScreen(b.getX()) - (icon.getIconWidth() / 2);
+            int y = t.yToScreen(b.getY()) - (icon.getIconHeight() / 2);
             icon.paintIcon(null, g, x, y);
         }
         return null;

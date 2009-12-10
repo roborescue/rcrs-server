@@ -99,7 +99,7 @@ public class StandardPerception implements Perception, GUIComponent {
         for (StandardEntity next : world) {
             if (next instanceof Building) {
                 Building b = (Building)next;
-                if (b.getFieryness() == 0) {
+                if (!b.isFierynessDefined() || b.getFieryness() == 0) {
                     unburntBuildings.add(b);
                 }
                 else {
@@ -129,15 +129,17 @@ public class StandardPerception implements Perception, GUIComponent {
         // Look for buildings that caught fire last timestep
         for (Iterator<Building> it = unburntBuildings.iterator(); it.hasNext();) {
             Building next = it.next();
-            switch (next.getFierynessEnum()) {
-            case HEATING:
-            case BURNING:
-            case INFERNO:
-                ignitionTimes.put(next, time);
-                it.remove();
-                break;
-            default:
-                // Ignore
+            if (next.isFierynessDefined()) {
+                switch (next.getFierynessEnum()) {
+                case HEATING:
+                case BURNING:
+                case INFERNO:
+                    ignitionTimes.put(next, time);
+                    it.remove();
+                    break;
+                default:
+                    // Ignore
+                }
             }
         }
         time = timestep;
@@ -209,8 +211,8 @@ public class StandardPerception implements Perception, GUIComponent {
     }
 
     private void addRoadProperties(Road road, ChangeSet result) {
-        // Only update BLOCK
-        result.addChange(road, road.getBlockProperty());
+        // Only update blockades
+        result.addChange(road, road.getBlockadesProperty());
     }
 
     private void addBuildingProperties(Building building, ChangeSet result) {

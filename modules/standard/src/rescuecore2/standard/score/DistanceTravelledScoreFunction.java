@@ -23,21 +23,11 @@ import rescuecore2.standard.misc.AgentPath;
    A score function that measures the distance travelled by all agents.
 */
 public class DistanceTravelledScoreFunction extends AbstractScoreFunction {
-    private Map<EntityID, EntityID> lastPosition;
-    private Map<EntityID, Integer> lastPositionExtra;
-
     /**
        Construct a DistanceTravelledScoreFunction.
     */
     public DistanceTravelledScoreFunction() {
         super("Distance travelled");
-    }
-
-    @Override
-    public void initialise(WorldModel<? extends Entity> world, Config config) {
-        lastPosition = new HashMap<EntityID, EntityID>();
-        lastPositionExtra = new HashMap<EntityID, Integer>();
-        storePositions(world);
     }
 
     @Override
@@ -50,48 +40,13 @@ public class DistanceTravelledScoreFunction extends AbstractScoreFunction {
                 || next instanceof PoliceForce
                 || next instanceof AmbulanceTeam) {
                 Human h = (Human)next;
-                AKMove move = null;
-                for (Command command : timestep.getCommands(h.getID())) {
-                    if (command instanceof AKMove) {
-                        move = (AKMove)command;
-                    }
-                }
-                if (move == null) {
-                    continue;
-                }
-                EntityID start = lastPosition.get(h.getPosition());
-                if (start == null) {
-                    continue;
-                }
-                int startExtra = lastPositionExtra.get(h.getPosition());
-                AgentPath path = AgentPath.computePath(h, start, startExtra, move, model);
+                AgentPath path = AgentPath.computePath(h, model);
                 if (path != null) {
                     sum += path.getLength();
                 }
             }
         }
-        storePositions(world);
+        System.out.println("Total distance travelled: " + sum);
         return sum;
-    }
-
-    private void storePositions(WorldModel<? extends Entity> world) {
-        lastPosition.clear();
-        lastPositionExtra.clear();
-        for (Entity next : world) {
-            if (next instanceof Human) {
-                Human h = (Human)next;
-                if (h.isPositionDefined()) {
-                    lastPosition.put(h.getID(), h.getPosition());
-                    /*
-                    if (h.isPositionExtraDefined()) {
-                        lastPositionExtra.put(h.getID(), h.getPositionExtra());
-                    }
-                    else {
-                        lastPositionExtra.put(h.getID(), 0);
-                    }
-                    */
-                }
-            }
-        }
     }
 }

@@ -5,75 +5,78 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Polygon;
 
+import java.util.List;
+import java.util.Iterator;
+
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireStation;
 import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.entities.PoliceOffice;
-import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Blockade;
+import rescuecore2.standard.entities.Edge;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
-   A view layer that renders buildings.
+   A view layer that renders areas.
  */
-public class AreaLayer extends StandardEntityViewLayer<Area> {
-    private static final int SLIGHTLY_BROKEN = 25;
-    private static final int QUITE_BROKEN = 50;
-    private static final int VERY_BROKEN = 75;
-
+public abstract class AreaLayer<E extends Area> extends StandardEntityViewLayer<E> {
     /**
-       Construct a building view layer.
+       Construct an area view layer.
+       @param clazz The subclass of Area this can render.
      */
-    public AreaLayer() {
-        super(Area.class);
+    protected AreaLayer(Class<E> clazz) {
+        super(clazz);
     }
 
     @Override
-    public String getName() {
-        return "Area";
-    }
-
-    @Override
-    public Shape render(Area a, Graphics2D g, ScreenTransform t) {
-        int[] apexes = a.getApexes();
-        int count = apexes.length / 2;
+    public Shape render(E area, Graphics2D g, ScreenTransform t) {
+        List<Edge> edges = area.getEdges();
+        if (edges.isEmpty()) {
+            return null;
+        }
+        int count = edges.size() + 1;
         int[] xs = new int[count];
         int[] ys = new int[count];
-        for (int i = 0; i < count; ++i) {
-            xs[i] = t.xToScreen(apexes[i * 2]);
-            ys[i] = t.yToScreen(apexes[(i * 2) + 1]);
+        Iterator<Edge> it = edges.iterator();
+        Edge e = it.next();
+        paintEdge(e, g, t);
+        xs[0] = t.xToScreen(e.getStartX());
+        ys[0] = t.yToScreen(e.getStartY());
+        int i = 1;
+        while (it.hasNext()) {
+            e = it.next();
+            xs[i] = t.xToScreen(e.getStartX());
+            ys[i] = t.yToScreen(e.getStartY());
+            ++i;
         }
+        xs[i] = t.xToScreen(e.getEndX());
+        ys[i] = t.yToScreen(e.getEndY());
         Polygon shape = new Polygon(xs, ys, count);
-        g.setColor(Color.GRAY);
-        g.fill(shape);
-	g.setColor(Color.BLACK);
-	if(a.isBlockadeListDefined()) {
-	    for(EntityID id : a.getBlockadeList()) {
-		Blockade blockade = (Blockade)world.getEntity(id);
-		apexes = blockade.getShape();
-		count = apexes.length /2;
-		xs = new int[count];
-		ys = new int[count];
-		for (int i = 0; i < count; ++i) {
-		    xs[i] = t.xToScreen(apexes[i * 2]);
-		    ys[i] = t.yToScreen(apexes[(i * 2) + 1]);
-		}
-		shape = new Polygon(xs, ys, count);
-		g.fill(shape);
-	    }
-	    
-	}
-
-        //g.setColor(Color.BLACK);
-        //g.draw(shape);
-        // Draw a line to each entrance
-        //int x = t.scaleX(a.getX());
-        //int y = t.scaleY(a.getY());
-        g.setColor(Color.LIGHT_GRAY);
-
+        paintShape(area, shape, g);
+        for (Edge edge : edges) {
+            paintEdge(edge, g, t);
+        }
         return shape;
+    }
+
+    /**
+       Paint an individual edge.
+       @param e The edge to paint.
+       @param g The graphics to paint on.
+       @param t The screen transform.
+    */
+    protected void paintEdge(Edge e, Graphics2D g, ScreenTransform t) {
+    }
+
+    /**
+       Paint the overall shape.
+       @param area The area.
+       @param p The overall polygon.
+       @param g The graphics to paint on.
+    */
+    protected void paintShape(E area, Polygon p, Graphics2D g) {
     }
 }

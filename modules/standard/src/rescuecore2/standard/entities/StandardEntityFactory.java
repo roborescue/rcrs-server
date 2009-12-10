@@ -26,8 +26,6 @@ public final class StandardEntityFactory extends AbstractEntityFactory<StandardE
             return new World(id);
         case ROAD:
             return new Road(id);
-        case NODE:
-            return new Node(id);
         case BUILDING:
             return new Building(id);
 	case BLOCKADE:
