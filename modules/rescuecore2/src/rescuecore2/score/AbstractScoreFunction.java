@@ -1,5 +1,9 @@
 package rescuecore2.score;
 
+import rescuecore2.config.Config;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.Entity;
+
 /**
    Abstract base class for a score function.
  */
@@ -22,6 +26,10 @@ public abstract class AbstractScoreFunction implements ScoreFunction {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public void initialise(WorldModel<? extends Entity> world, Config config) {
     }
 
     /**
