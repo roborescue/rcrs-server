@@ -214,17 +214,7 @@ public class CommandLayer extends StandardViewLayer {
             int nextY = t.yToScreen(nextLocation.second());
             g.drawLine(startX, startY, nextX, nextY);
             // Draw an arrow partway along the length
-            int dx = nextX - startX;
-            int dy = nextY - startY;
-            int headX = startX + (dx / 2);
-            int headY = startY + (dy / 2);
-            Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> barbs = DrawingTools.getArrowHeads(startX, startY, headX, headY, ARROW_ANGLE, ARROW_LENGTH);
-            int leftX = barbs.first().first();
-            int leftY = barbs.first().second();
-            int rightX = barbs.second().first();
-            int rightY = barbs.second().second();
-            g.drawLine(leftX, leftY, headX, headY);
-            g.drawLine(rightX, rightY, headX, headY);
+            DrawingTools.drawArrowHeads(startX, startY, nextX, nextY, g);
             startX = nextX;
             startY = nextY;
         }
