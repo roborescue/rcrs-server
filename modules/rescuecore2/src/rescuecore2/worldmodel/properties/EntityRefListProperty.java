@@ -142,6 +142,7 @@ public class EntityRefListProperty extends AbstractProperty {
         setValue(newIDs);
     }
 
+    /*
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -161,6 +162,7 @@ public class EntityRefListProperty extends AbstractProperty {
         }
         return result.toString();
     }
+    */
 
     @Override
     public EntityRefListProperty copy() {

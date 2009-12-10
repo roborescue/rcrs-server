@@ -110,20 +110,6 @@ public class BooleanProperty extends AbstractProperty {
     }
 
     @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(getURN());
-        if (isDefined()) {
-            result.append(" = ");
-            result.append(value);
-        }
-        else {
-            result.append(" (undefined)");
-        }
-        return result.toString();
-    }
-
-    @Override
     public BooleanProperty copy() {
         return new BooleanProperty(this);
     }

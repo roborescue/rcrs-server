@@ -1,7 +1,7 @@
 package rescuecore2.worldmodel.properties;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
+import static rescuecore2.misc.EncodingTools.readDouble;
+import static rescuecore2.misc.EncodingTools.writeDouble;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,60 +9,61 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.AbstractProperty;
+import rescuecore2.misc.geometry.Point2D;
 
 /**
-   A single integer property.
+   A Point2D property.
  */
-public class IntProperty extends AbstractProperty {
-    private int value;
+public class Point2DProperty extends AbstractProperty {
+    private Point2D value;
 
     /**
-       Construct an IntProperty with no defined value.
+       Construct a Point2DProperty with no defined value.
        @param urn The urn of this property.
     */
-    public IntProperty(String urn) {
+    public Point2DProperty(String urn) {
         super(urn);
     }
 
     /**
-       Construct an IntProperty with no defined value.
+       Construct a Point2DProperty with no defined value.
        @param urn The urn of this property.
     */
-    public IntProperty(Enum<?> urn) {
+    public Point2DProperty(Enum<?> urn) {
         super(urn);
     }
 
     /**
-       Construct an IntProperty with a defined value.
+       Construct a Point2DProperty with a defined value.
        @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public IntProperty(String urn, int value) {
+    public Point2DProperty(String urn, Point2D value) {
         super(urn, true);
         this.value = value;
     }
 
     /**
-       Construct an IntProperty with a defined value.
+       Construct a Point2DProperty with a defined value.
        @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public IntProperty(Enum<?> urn, int value) {
+    public Point2DProperty(Enum<?> urn, Point2D value) {
         super(urn, true);
         this.value = value;
     }
 
     /**
-       IntProperty copy constructor.
-       @param other The IntProperty to copy.
+       Point2DProperty copy constructor.
+       @param other The Point2DProperty to copy.
      */
-    public IntProperty(IntProperty other) {
+    public Point2DProperty(Point2DProperty other) {
         super(other);
         this.value = other.value;
     }
 
     @Override
-    public Integer getValue() {
+    public Point2D getValue() {
         if (!isDefined()) {
             return null;
         }
@@ -73,20 +74,15 @@ public class IntProperty extends AbstractProperty {
        Set the value of this property. Future calls to {@link #isDefined()} will return true.
        @param value The new value.
     */
-    public void setValue(int value) {
-        int old = this.value;
-        boolean wasDefined = isDefined();
+    public void setValue(Point2D value) {
         this.value = value;
         setDefined();
-        if (!wasDefined || old != value) {
-            fireChange(old, value);
-        }
     }
 
     @Override
     public void takeValue(Property p) {
-        if (p instanceof IntProperty) {
-            IntProperty i = (IntProperty)p;
+        if (p instanceof Point2DProperty) {
+            Point2DProperty i = (Point2DProperty)p;
             if (i.isDefined()) {
                 setValue(i.getValue());
             }
@@ -101,16 +97,19 @@ public class IntProperty extends AbstractProperty {
 
     @Override
     public void write(OutputStream out) throws IOException {
-        writeInt32(value, out);
+        writeDouble(value.getX(), out);
+        writeDouble(value.getY(), out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        setValue(readInt32(in));
+        double x = readDouble(in);
+        double y = readDouble(in);
+        setValue(new Point2D(x, y));
     }
 
     @Override
-    public IntProperty copy() {
-        return new IntProperty(this);
+    public Point2DProperty copy() {
+        return new Point2DProperty(this);
     }
 }
