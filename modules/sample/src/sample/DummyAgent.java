@@ -15,7 +15,7 @@ import rescuecore2.standard.entities.StandardEntityURN;
  */
 public class DummyAgent extends StandardAgent<StandardEntity> {
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
         sendRest(time);
     }
 

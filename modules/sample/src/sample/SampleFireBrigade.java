@@ -33,8 +33,6 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
     private int maxDistance;
     private int maxPower;
 
-    private List<EntityID> last_path;
-
     @Override
     public String toString() {
         return "Sample fire brigade";
@@ -51,7 +49,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
         for (Command next : heard) {
             LOG.debug(me() + " heard " + next);
         }
@@ -72,12 +70,9 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             }
             else {
                 System.out.println(me() + " couldn't plan a path to a refuge.");
-		if(last_path!=null && last_path.size()>1 && last_path.indexOf(location().getID())!=-1)
-		    for(path=last_path; !path.get(0).equals(location().getID()); ) path.remove(0);
-		else
-		    path = randomWalk();
-		send(new AKMove(getID(), time, path));
-		last_path = path;
+                path = randomWalk();
+		sendMove(time, path);
+                return;
             }
         }
         // Find all buildings that are on fire
@@ -99,12 +94,8 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         }
 	List<EntityID> path = null;
         System.out.println(me() + " couldn't plan a path to a fire.");
-	if(last_path!=null && last_path.size()>1 && last_path.indexOf(location().getID())!=-1)
-	    for(path=last_path; !path.get(0).equals(location().getID()); ) path.remove(0);
-	else
-	    path = randomWalk();
-	send(new AKMove(getID(), time, path));
-	last_path = path;
+        path = randomWalk();
+	sendMove(time, path);
     }
 
     @Override

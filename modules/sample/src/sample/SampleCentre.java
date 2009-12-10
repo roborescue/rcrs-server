@@ -20,7 +20,7 @@ public class SampleCentre extends StandardAgent<Building> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
         sendRest(time);
     }
 

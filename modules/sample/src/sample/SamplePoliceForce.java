@@ -40,7 +40,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<Command> heard) {
+    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
         for (Command next : heard) {
             LOG.debug(me() + " heard " + next);
         }
