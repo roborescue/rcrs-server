@@ -39,4 +39,37 @@ public class Pair<S, T> {
     public String toString() {
         return "<" + first + ", " + second + ">";
     }
+
+    @Override
+    public int hashCode() {
+        return (first == null ? 0 : first.hashCode()) ^ (second == null ? 0 : second.hashCode());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object o) {
+        if (o instanceof Pair) {
+            Pair<S, T> p = (Pair<S, T>)o;
+            if (this.first == null && p.first != null) {
+                return false;
+            }
+            if (this.first != null && p.first == null) {
+                return false;
+            }
+            if (this.second == null && p.second != null) {
+                return false;
+            }
+            if (this.second != null && p.second == null) {
+                return false;
+            }
+            if (this.first != null && p.first != null && !this.first.equals(p.first)) {
+                return false;
+            }
+            if (this.second != null && p.second != null && !this.second.equals(p.second)) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }
