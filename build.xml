@@ -8,16 +8,12 @@
 
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
-<!-- Network based simulator cannot be compiled.
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,blockade,misc,resq-fire,traffic-old,ignition,gis2,traffic3,blockade2"/>
--->
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,ignition,traffic3,gis2,blockade2"/>
+  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,resq-fire,ignition,maps,clear,traffic3,gis2"/>
   <property name="modules.kernel.depend" value="rescuecore2,handy"/>
   <property name="modules.standard.depend" value="rescuecore2,kernel"/>
   <property name="modules.sample.depend" value="rescuecore2,standard"/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
   <property name="modules.collapse.depend" value="rescuecore2,standard"/>
-  <property name="modules.blockade.depend" value="rescuecore2,standard"/>
   <property name="modules.misc.depend" value="rescuecore2,standard"/>
   <property name="modules.resq-fire.depend" value="rescuecore2,standard"/>
   <property name="modules.ignition.depend" value="rescuecore2,standard"/>
@@ -34,7 +30,6 @@
   <import file="${modules.dir}/handy/build.xml" optional="true"/>
   <import file="${modules.dir}/human/build.xml" optional="true"/>
   <import file="${modules.dir}/collapse/build.xml" optional="true"/>
-  <import file="${modules.dir}/blockade/build.xml" optional="true"/>
   <import file="${modules.dir}/misc/build.xml" optional="true"/>
   <import file="${modules.dir}/resq-fire/build.xml" optional="true"/>
   <import file="${modules.dir}/traffic-old/build.xml" optional="true"/>
