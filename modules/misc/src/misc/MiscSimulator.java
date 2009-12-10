@@ -19,11 +19,8 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.PoliceForce;
-import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.messages.AKRescue;
-import rescuecore2.standard.messages.AKClear;
 import rescuecore2.standard.components.StandardSimulator;
 
 import rescuecore2.GUIComponent;
@@ -46,8 +43,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 
     private MiscParameters parameters;
     private MiscSimulatorGUI gui;
-
-    private int roadClearRate;
 
     @Override
     public JComponent getGUIComponent() {
@@ -84,8 +79,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
                 humans.put(ha.getID(), ha);
             }
         }
-
-        roadClearRate = config.getIntValue("misc.clear.rate");
     }
 
     @Override
@@ -97,10 +90,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
                 if (com instanceof AKRescue) {
                     Human human = (Human)(model.getEntity(((AKRescue)com).getTarget()));
                     handleRescue(human, changes);
-                }
-                if (com instanceof AKClear) {
-                    Road road = (Road)(model.getEntity(((AKClear)com).getTarget()));
-                    handleClear(road, changes);
                 }
             }
         }
@@ -178,7 +167,13 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             boolean isBuried = buriedness > 0;
             if ((hasDamage || isBuried) && isAlive) {
                 format.format("%1$9d | %2$6d | %3$6d | %4$8.3f | %5$8.3f | %6$8.3f | %7$6d%n",
-                              ha.getID().getValue(), hp, damage, ha.getBuriednessDamage(), ha.getCollapseDamage(), ha.getFireDamage(), buriedness);
+                              ha.getID().getValue(),
+                              hp,
+                              damage,
+                              ha.getBuriednessDamage(),
+                              ha.getCollapseDamage(),
+                              ha.getFireDamage(),
+                              buriedness);
             }
         }
         LOG.debug(builder.toString());
@@ -230,9 +225,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         if (command instanceof AKRescue) {
             return checkRescue((AKRescue)command, e);
         }
-        if (command instanceof AKClear) {
-            return checkClear((AKClear)command, e);
-        }
         return false;
     }
 
@@ -271,55 +263,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     private void handleRescue(Human target, ChangeSet changes) {
         target.setBuriedness(Math.max(0, target.getBuriedness() - 1));
         changes.addChange(target, target.getBuriednessProperty());
-    }
-
-    private boolean checkClear(AKClear clear, Entity agent) {
-        EntityID targetID = clear.getTarget();
-        Entity target = model.getEntity(targetID);
-        if (!(agent instanceof PoliceForce)) {
-            LOG.warn("Received a clear command from agent " + agent.getID() + " who is of type " + agent.getURN());
-            return false;
-        }
-        if (target == null) {
-            LOG.warn("Received a clear command from agent " + agent.getID() + " for a non-existant target " + targetID);
-            return false;
-        }
-        if (!(target instanceof Road)) {
-            LOG.warn("Received a clear command from agent " + agent.getID() + " for a non-road target: " + targetID + " is of type " + target.getURN());
-            return false;
-        }
-        Road r = (Road)target;
-        PoliceForce pf = (PoliceForce)agent;
-        if (!r.isBlockDefined() || r.getBlock() == 0) {
-            LOG.warn("Received a clear command from agent " + agent.getID() + " for a non-blocked target " + targetID);
-            return false;
-        }
-        if (!pf.isPositionDefined()) {
-            LOG.warn("Received a clear command from agent " + agent.getID() + " with no position");
-            return false;
-        }
-        EntityID pos = pf.getPosition();
-        if (!pos.equals(r.getID()) && !pos.equals(r.getHead()) && !pos.equals(r.getTail())) {
-            LOG.warn("Received a clear command from agent " + agent.getID() + " for non-adjacent target " + target);
-            return false;
-        }
-        return true;
-    }
-
-    private void handleClear(Road target, ChangeSet changes) {
-        int length = target.getLength();
-        int oldBlock = target.getBlock();
-        int totalAreaBlocked = oldBlock * length;
-        int newAreaBlocked = totalAreaBlocked - roadClearRate;
-        if (newAreaBlocked < 0) {
-            newAreaBlocked = 0;
-        }
-        int newBlock = newAreaBlocked / length;
-        int newCost = (newBlock * length + roadClearRate - 1) / roadClearRate;
-        target.setBlock(newBlock);
-        target.setRepairCost(newCost);
-        changes.addChange(target, target.getBlockProperty());
-        changes.addChange(target, target.getRepairCostProperty());
     }
 
     private class BuildingChangeListener implements EntityListener {
