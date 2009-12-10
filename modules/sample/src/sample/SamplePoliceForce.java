@@ -13,6 +13,7 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKClear;
 import rescuecore2.misc.Pair;
@@ -44,31 +45,14 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
             LOG.debug(me() + " heard " + next);
         }
         // Am I on a blocked road?
-        StandardEntity location = location();
-        if (location instanceof Road && ((Road)location).isBlockDefined() && ((Road)location).getBlock() > 0) {
-            sendClear(time, location.getID());
+        EntityID nearest = getNearestBlockade();
+        if (nearest != null) {
+            sendClear(time, nearest);
             return;
         }
-	Pair<Integer, Integer> l = me().getLocation(model);
 
-	//System.err.println(((Area)location).getNearlestBlockade(l.first(), l.second(), world));
-	if(location instanceof Area && ((Area)location).getNearlestBlockade(l.first(), l.second(), model)!=null) {
-	//if(location instanceof Area && ((Area)location).getBlockadeList().size()>0) {
-	    EntityID blockade_id = ((Area)location).getNearlestBlockade(l.first(), l.second(), model);
-            AKClear clear = new AKClear(getID(), time, blockade_id);
-            //System.out.println(me() + " clear road: " + clear);
-            //System.err.println(me() + ":" + location + " clear road: " + clear);
-	    List<EntityID> bl = ((Area)location).getNearBlockadeList(model);
-	    System.err.println(bl+", clear: "+blockade_id);
-
-            send(clear);
-	    return ;
-	}
-
-        List<EntityID> path = null;
         // Plan a path to a blocked area
-
-        path = search.breadthFirstSearch(location(), getBlockedAreas());
+        List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
             AKMove move = new AKMove(getID(), time, path);
             LOG.debug(me() + " moving to road: " + move);
@@ -84,17 +68,52 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         return EnumSet.of(StandardEntityURN.POLICE_FORCE);
     }
 
-    private List<Area> getBlockedAreas() {
+    private List<Road> getBlockedRoads() {
         Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.ROAD);
-        List<Area> result = new ArrayList<Area>();
+        List<Road> result = new ArrayList<Road>();
         for (StandardEntity next : e) {
-            if (next instanceof Area) {
-                Area a = (Area)next;
-                if (a.getBlockadeList().size() > 0) {
-                    result.add(a);
-                }
+            Road r = (Road)next;
+            if (r.isBlockadesDefined() && !r.getBlockades().isEmpty()) {
+                result.add(r);
             }
         }
         return result;
+    }
+
+    /**
+       Get the blockade that is nearest this agent.
+       @return The EntityID of the nearest blockade, or null if there are no blockades in the agents current location.
+    */
+    public EntityID getNearestBlockade() {
+        return getNearestBlockade((Area)location(), me().getX(), me().getY());
+    }
+
+    /**
+       Get the blockade that is nearest a point.
+       @param area The area to check.
+       @param x The X coordinate to look up.
+       @param y The X coordinate to look up.
+       @return The EntityID of the nearest blockade, or null if there are no blockades in this area.
+    */
+    public EntityID getNearestBlockade(Area area, int x, int y) {
+	double bestDistance = 0;
+	EntityID best = null;
+        if (area.isBlockadesDefined()) {
+            for (EntityID blockadeID : area.getBlockades()) {
+                StandardEntity entity = model.getEntity(blockadeID);
+                Pair<Integer, Integer> location = entity.getLocation(model);
+                if (location == null) {
+                    continue;
+                }
+                double dx = location.first() - x;
+                double dy = location.second() - y;
+                double distance = Math.hypot(dx, dy);
+                if(best == null || distance < bestDistance) {
+                    bestDistance = distance;
+                    best = entity.getID();
+                }
+            }
+        }
+        return best;
     }
 }

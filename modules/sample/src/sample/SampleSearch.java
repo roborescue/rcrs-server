@@ -4,7 +4,6 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
 
@@ -110,38 +109,11 @@ public final class SampleSearch {
     public Collection<StandardEntity> findNeighbours(StandardEntity e) {
         Collection<StandardEntity> result = new ArrayList<StandardEntity>();
 	if (e instanceof Area) {
-	    for(EntityID entity_id : ((Area)e).getNextArea())
-		if(entity_id.getValue()!=-1)
-		    result.add(world.getEntity(entity_id));
-	}
-	/*
-        if (e instanceof Building) {
-            for (EntityID next : ((Building)e).getEntrances()) {
+            Area a = (Area)e;
+	    for (EntityID next : a.getNeighbours()) {
                 result.add(world.getEntity(next));
             }
-        }
-	*/
-        if (e instanceof Node) {
-            for (EntityID next : ((Node)e).getEdges()) {
-                StandardEntity edge = world.getEntity(next);
-                if (ignoreBlockedRoads && edge instanceof Road) {
-                    // If it's blocked then ignore it
-                    Road r = (Road)edge;
-                    int blocked = r.countBlockedLanes();
-                    // Assume symmetric road
-                    int lanes = r.getLinesToHead();
-                    if (blocked == lanes) {
-                        continue;
-                    }
-                }
-                result.add(edge);
-            }
-        }
-        if (e instanceof Road) {
-            Road r = (Road)e;
-            result.add(r.getHead(world));
-            result.add(r.getTail(world));
-        }
+	}
         return result;
     }
 
