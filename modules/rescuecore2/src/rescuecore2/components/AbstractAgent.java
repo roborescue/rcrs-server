@@ -66,9 +66,10 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
        Notification that a timestep has started.
        @param time The timestep.
        @param changed A collection of entities that changed this timestep.
+       @param deleted A collection of entities that disappeared this timestep.
        @param heard The set of communication messages this agent heard.
      */
-    protected abstract void think(int time, Collection<EntityID> changed, Collection<Command> heard);
+    protected abstract void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard);
 
     /**
        Process an incoming sense message. The default implementation updates the world model and calls {@link #think}. Subclasses should generally not override this method but instead implement the {@link #think} method.
@@ -77,8 +78,9 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
     protected void processSense(KASense sense) {
         model.merge(sense.getChangeSet());
         Collection<EntityID> changed = sense.getChangeSet().getChangedEntities();
+        Collection<EntityID> deleted = sense.getChangeSet().getDeletedEntities();
         Collection<Command> heard = sense.getHearing();
-        think(sense.getTime(), changed, heard);
+        think(sense.getTime(), changed, deleted, heard);
     }
 
     /**

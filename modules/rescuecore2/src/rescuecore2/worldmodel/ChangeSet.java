@@ -26,6 +26,7 @@ import rescuecore2.registry.Registry;
  */
 public class ChangeSet {
     private Map<EntityID, Map<String, Property>> changes;
+    private Set<EntityID> deleted;
     private Map<EntityID, String> entityURNs;
 
     /**
@@ -39,6 +40,7 @@ public class ChangeSet {
             }
         };
         entityURNs = new HashMap<EntityID, String>();
+        deleted = new HashSet<EntityID>();
     }
 
     /**
@@ -69,6 +71,14 @@ public class ChangeSet {
         Property prop = p.copy();
         changes.get(e).put(prop.getURN(), prop);
         entityURNs.put(e, urn);
+    }
+
+    /**
+       Register a deleted entity.
+       @param e The ID of the entity that has been deleted.
+    */
+    public void entityDeleted(EntityID e) {
+        deleted.add(e);
     }
 
     /**
@@ -103,6 +113,14 @@ public class ChangeSet {
     }
 
     /**
+       Get the IDs of all deleted entities.
+       @return A set of IDs of deleted entities.
+     */
+    public Set<EntityID> getDeletedEntities() {
+        return new HashSet<EntityID>(deleted);
+    }
+
+    /**
        Get the URN of a changed entity.
        @param id The ID of the entity.
        @return The URN of the changed entity.
@@ -123,6 +141,7 @@ public class ChangeSet {
                 addChange(e, urn, p);
             }
         }
+        deleted.addAll(other.deleted);
     }
 
     /**
@@ -158,6 +177,10 @@ public class ChangeSet {
                 writeProperty(prop, out);
             }
         }
+        writeInt32(deleted.size(), out);
+        for (EntityID next : deleted) {
+            writeInt32(next.getValue(), out);
+        }
     }
 
     /**
@@ -167,6 +190,7 @@ public class ChangeSet {
     */
     public void read(InputStream in) throws IOException {
         changes.clear();
+        deleted.clear();
         int entityCount = readInt32(in);
         for (int i = 0; i < entityCount; ++i) {
             EntityID id = new EntityID(readInt32(in));
@@ -179,14 +203,19 @@ public class ChangeSet {
                 }
             }
         }
+        int deletedCount = readInt32(in);
+        for (int i = 0; i < deletedCount; ++i) {
+            EntityID id = new EntityID(readInt32(in));
+            deleted.add(id);
+        }
     }
 
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("ChangeSet: ");
+        result.append("ChangeSet:");
         for (Map.Entry<EntityID, Map<String, Property>> next : changes.entrySet()) {
-            result.append("Entity ");
+            result.append(" Entity ");
             result.append(next.getKey());
             result.append(" (");
             result.append(getEntityURN(next.getKey()));
@@ -197,8 +226,16 @@ public class ChangeSet {
                     result.append(", ");
                 }
             }
-            result.append("] ");
+            result.append("]");
         }
+        result.append(" {Deleted ");
+        for (Iterator<EntityID> it = deleted.iterator(); it.hasNext(); ) {
+            result.append(it.next());
+            if (it.hasNext()) {
+                result.append(", ");
+            }
+        }
+        result.append("}");
         return result.toString();
     }
 }

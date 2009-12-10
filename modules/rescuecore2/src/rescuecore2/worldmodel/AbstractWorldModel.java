@@ -93,6 +93,9 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
                 existingProperty.takeValue(p);
             }
         }
+        for (EntityID next : changeSet.getDeletedEntities()) {
+            removeEntity(next);
+        }
     }
 
     /**
