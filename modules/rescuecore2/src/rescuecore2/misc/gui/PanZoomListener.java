@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 public class PanZoomListener implements MouseListener, MouseMotionListener, MouseWheelListener {
     private double mouseDownX;
     private double mouseDownY;
+    private boolean dragging;
     private ScreenTransform transform;
     private JComponent component;
 
@@ -42,14 +43,24 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         if (transform == null) {
             return;
         }
-        Point p = fixEventPoint(e.getPoint());
-        mouseDownX = transform.screenToX(p.x);
-        mouseDownY = transform.screenToY(p.y);
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            Point p = fixEventPoint(e.getPoint());
+            mouseDownX = transform.screenToX(p.x);
+            mouseDownY = transform.screenToY(p.y);
+            dragging = true;
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            dragging = false;
+        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (transform == null) {
+        if (transform == null || !dragging) {
             return;
         }
         Point p = fixEventPoint(e.getPoint());
@@ -82,9 +93,6 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
 
     @Override
     public void mouseClicked(MouseEvent e) {}
-
-    @Override
-    public void mouseReleased(MouseEvent e) {}
 
     @Override
     public void mouseEntered(MouseEvent e) {}
