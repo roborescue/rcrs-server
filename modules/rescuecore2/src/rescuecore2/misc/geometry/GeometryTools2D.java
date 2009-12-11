@@ -49,7 +49,7 @@ public final class GeometryTools2D {
      */
     public static boolean parallel(Line2D l1, Line2D l2) {
         double d = (l1.getDirection().getX() * l2.getDirection().getY()) - (l1.getDirection().getY() * l2.getDirection().getX());
-        return (d > -THRESHOLD) && (d < THRESHOLD);
+        return nearlyZero(d);
     }
 
     /**
@@ -59,35 +59,29 @@ public final class GeometryTools2D {
        @return true iff the point is on the line (within tolerance).
      */
     public static boolean contains(Line2D line, Point2D point) {
+        if (nearlyZero(line.getDirection().getX())) {
+            // Line is parallel to the Y axis so just check that the X coordinate is correct and the Y coordinate is within bounds
+            double d = point.getX() - line.getOrigin().getX();
+            double y = point.getY();
+            double yMin = Math.min(line.getOrigin().getY(), line.getEndPoint().getY());
+            double yMax = Math.max(line.getOrigin().getY(), line.getEndPoint().getY());
+            return nearlyZero(d) && y >= yMin && y <= yMax;
+        }
+        if (nearlyZero(line.getDirection().getY())) {
+            // Line is parallel to the X axis so just check that the Y coordinate is correct and the X coordinate is within bounds
+            double d = point.getY() - line.getOrigin().getY();
+            double x = point.getX();
+            double xMin = Math.min(line.getOrigin().getX(), line.getEndPoint().getX());
+            double xMax = Math.max(line.getOrigin().getX(), line.getEndPoint().getX());
+            return nearlyZero(d) && x >= xMin && x <= xMax;
+        }
         double tx = (point.getX() - line.getOrigin().getX()) / line.getDirection().getX();
         double ty = (point.getY() - line.getOrigin().getY()) / line.getDirection().getY();
-        if (line.getDirection().getX() > -THRESHOLD && line.getDirection().getX() < THRESHOLD) {
-            // Line is parallel to the Y axis so tx can be anything as long as the point is the right x value
-            double d = point.getX() - line.getOrigin().getX();
-            if (d > -THRESHOLD && d < THRESHOLD) {
-                // Close enough
-                tx = ty;
-            }
-            else {
-                tx = Double.NaN; // This will make all comparisons false
-            }
-        }
-        if (line.getDirection().getY() > -THRESHOLD && line.getDirection().getY() < THRESHOLD) {
-            // Line is parallel to the X axis so ty can be anything as long as the point is the right y value
-            double d = point.getY() - line.getOrigin().getY();
-            if (d > -THRESHOLD && d < THRESHOLD) {
-                // Close enough
-                ty = tx;
-            }
-            else {
-                ty = Double.NaN; // This will make all comparisons false
-            }
-        }
         if (tx < 0 || tx > 1 || ty < 0 || ty > 1) {
             return false;
         }
         double d = tx - ty;
-        return (d > -THRESHOLD) && (d < THRESHOLD);
+        return nearlyZero(d);
     }
 
     /**
@@ -97,10 +91,21 @@ public final class GeometryTools2D {
        @return The t value of the point along the line, or NaN if the point is not on the line.
      */
     public static double positionOnLine(Line2D line, Point2D point) {
+        if (nearlyZero(line.getDirection().getX())) {
+            // Line is parallel to the Y axis so just solve for Y
+            double d = (point.getY() - line.getOrigin().getY()) / line.getDirection().getY();
+            return d;
+        }
+        if (nearlyZero(line.getDirection().getY())) {
+            // Line is parallel to the X axis so just solve for X
+            double d = (point.getX() - line.getOrigin().getX()) / line.getDirection().getX();
+            return d;
+        }
+        // Solve for both X and Y
         double tx = (point.getX() - line.getOrigin().getX()) / line.getDirection().getX();
         double ty = (point.getY() - line.getOrigin().getY()) / line.getDirection().getY();
         double d = tx - ty;
-        if ((d > -THRESHOLD) && (d < THRESHOLD)) {
+        if (nearlyZero(d)) {
             return tx;
         }
         else {
@@ -109,35 +114,78 @@ public final class GeometryTools2D {
     }
 
     /**
-       Compute the angle between two lines.
+       Compute the angle between two lines in a clockwise direction.
        @param first The first line.
        @param second The second line.
        @return The angle in degrees measured in a clockwise direction.
     */
-    public static double getAngleBetweenLines(Line2D first, Line2D second) {
-        return getAngleBetweenVectors(first.getDirection(), second.getDirection());
+    public static double getRightAngleBetweenLines(Line2D first, Line2D second) {
+        return getRightAngleBetweenVectors(first.getDirection(), second.getDirection());
     }
 
     /**
-       Compute the angle between two vectors.
+       Compute the angle between two lines in a counter-clockwise direction.
+       @param first The first line.
+       @param second The second line.
+       @return The angle in degrees measured in a counter-clockwise direction.
+    */
+    public static double getLeftAngleBetweenLines(Line2D first, Line2D second) {
+        return getLeftAngleBetweenVectors(first.getDirection(), second.getDirection());
+    }
+
+    /**
+       Compute the angle between two vectors in degrees.
        @param first The first vector.
        @param second The second vector.
-       @return The angle in degrees measured in a clockwise direction.
+       @return The angle in degrees. This will be between 0 and 180.
     */
     public static double getAngleBetweenVectors(Vector2D first, Vector2D second) {
         Vector2D v1 = first.normalised();
         Vector2D v2 = second.normalised();
         double cos = v1.dot(v2);
+        if (cos > 1) {
+            cos = 1;
+        }
         double angle = Math.toDegrees(Math.acos(cos));
+        return angle;
+    }
+
+    /**
+       Compute the angle between two vectors in a clockwise direction.
+       @param first The first vector.
+       @param second The second vector.
+       @return The angle in degrees measured in a clockwise direction.
+    */
+    public static double getRightAngleBetweenVectors(Vector2D first, Vector2D second) {
+        double angle = getAngleBetweenVectors(first, second);
         // Now find out if we're turning left or right
-        if (isRightTurn(v1, v2)) {
+        if (isRightTurn(first, second)) {
             return angle;
         }
         else {
-            // It's a left turn, so convert to clockwise
+            // It's a left turn
             // CHECKSTYLE:OFF:MagicNumber
             return 360.0 - angle;
             // CHECKSTYLE:ON:MagicNumber
+        }
+    }
+
+    /**
+       Compute the angle between two vectors in a counter-clockwise direction.
+       @param first The first vector.
+       @param second The second vector.
+       @return The angle in degrees measured in a counter-clockwise direction.
+    */
+    public static double getLeftAngleBetweenVectors(Vector2D first, Vector2D second) {
+        double angle = getAngleBetweenVectors(first, second);
+        // Now find out if we're turning left or right
+        if (isRightTurn(first, second)) {
+            // CHECKSTYLE:OFF:MagicNumber
+            return 360.0 - angle;
+            // CHECKSTYLE:ON:MagicNumber
+        }
+        else {
+            return angle;
         }
     }
 
@@ -160,5 +208,14 @@ public final class GeometryTools2D {
     public static boolean isRightTurn(Vector2D first, Vector2D second) {
         double t = (first.getX() * second.getY()) - (first.getY() * second.getX());
         return t < 0;
+    }
+
+    /**
+       Find out if a number is near enough to zero.
+       @param d The number to test.
+       @return true iff the number is nearly zero.
+    */
+    public static boolean nearlyZero(double d) {
+        return d > -THRESHOLD && d < THRESHOLD;
     }
 }

@@ -1,6 +1,6 @@
 package rescuecore2.misc.geometry;
 
-import static rescuecore2.misc.geometry.GeometryTools2D.THRESHOLD;
+import static rescuecore2.misc.geometry.GeometryTools2D.nearlyZero;
 
 /**
    A line segment in 2D space. Lines are immutable.
@@ -92,7 +92,7 @@ public class Line2D {
         double cyay = other.origin.getY() - origin.getY();
         double d = (bxax * dycy) - (byay * dxcx);
         double t = (cxax * dycy) - (cyay * dxcx);
-        if (d > -THRESHOLD && d < THRESHOLD) {
+        if (nearlyZero(d)) {
             // d is close to zero: lines are parallel so no intersection
             return Double.NaN;
         }
