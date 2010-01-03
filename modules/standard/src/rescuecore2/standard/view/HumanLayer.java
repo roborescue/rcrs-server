@@ -69,7 +69,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     public void initialise(Config config) {
         iconSize = config.getIntValue(ICON_SIZE_KEY, DEFAULT_ICON_SIZE);
         icons = new HashMap<String, Map<State, Icon>>();
-        useIcons = config.getBooleanValue(USE_ICONS_KEY, true);
+        useIcons = config.getBooleanValue(USE_ICONS_KEY, false);
         icons.put(StandardEntityURN.FIRE_BRIGADE.toString(), generateIconMap("FireBrigade"));
         icons.put(StandardEntityURN.AMBULANCE_TEAM.toString(), generateIconMap("AmbulanceTeam"));
         icons.put(StandardEntityURN.POLICE_FORCE.toString(), generateIconMap("PoliceForce"));

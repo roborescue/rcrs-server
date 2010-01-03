@@ -3,6 +3,12 @@ package rescuecore2.standard.view;
 import javax.swing.Timer;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Graphics2D;
+
+import java.util.Collection;
+
+import rescuecore2.misc.gui.ScreenTransform;
+import rescuecore2.view.RenderedObject;
 
 /**
    A viewer for StandardWorldModels.
@@ -14,6 +20,8 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
 
     private AnimatedHumanLayer humans;
     private Timer timer;
+    private final Object lock = new Object();
+    private boolean done;
 
     /**
        Construct an animated world model viewer.
@@ -23,8 +31,15 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
         timer = new Timer(FRAME_DELAY, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (humans.nextFrame()) {
-                        repaint();
+                    synchronized (lock) {
+                        if (done) {
+                            return;
+                        }
+                        done = true;
+                        if (humans.nextFrame()) {
+                            done = false;
+                            repaint();
+                        }
                     }
                 }
             });
@@ -44,10 +59,19 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
         addLayer(new NodeLayer());
         addLayer(new RoadBlockageLayer());
         addLayer(new BuildingIconLayer());
-        humans = new AnimatedHumanLayer(FRAME_COUNT);
+        humans = new AnimatedHumanLayer();
         addLayer(humans);
         CommandLayer commands = new CommandLayer();
         addLayer(commands);
         commands.setRenderMove(false);
+    }
+
+    @Override
+    public void view(Object... objects) {
+        super.view(objects);
+        synchronized (lock) {
+            done = false;
+            humans.computeAnimation(FRAME_COUNT);
+        }
     }
 }

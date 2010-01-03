@@ -24,7 +24,7 @@ public abstract class AgentPath {
        @param human The agent.
        @param startPosition The agent's position at the start of the timestep.
        @param startPositionExtra The agent's positionExtra at the start of the timestep.
-       @param move The move command the agent took.
+       @param move The move command the agent issued.
        @param world The world model.
        @return The computed Path, or null if the agent didn't move.
      */
@@ -46,6 +46,10 @@ public abstract class AgentPath {
             // Didn't move
             return null;
         }
+        if (position.equals(startPosition) && Math.abs(positionExtra - startPositionExtra) == 1) {
+            // Didn't really move - traffic simulator sometimes adjusts positionExtra by 1.
+            return null;
+        }
         EntityID previous = it.next();
         // Find the agent along the path
         while (!previous.equals(startPosition) && it.hasNext()) {
@@ -58,6 +62,8 @@ public abstract class AgentPath {
             previous = startPosition;
         }
         CompositePath result = new CompositePath();
+        boolean success = false;
+        // Walk along the move command until we find the agent's current position, updating the result as we go.
         while (it.hasNext()) {
             EntityID next = it.next();
             // Create the appropriate path element
@@ -97,8 +103,13 @@ public abstract class AgentPath {
             }
             previous = next;
             if (next.equals(position)) {
+                success = true;
                 break;
             }
+        }
+        if (!success) {
+            // We never found the agent along the move command. Probably the command was invalid. In any case, we can't determine the agent's true path.
+            return null;
         }
         return result;
     }

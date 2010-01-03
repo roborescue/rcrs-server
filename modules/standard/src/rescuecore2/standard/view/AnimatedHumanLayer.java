@@ -24,37 +24,26 @@ public class AnimatedHumanLayer extends HumanLayer {
 
     private Map<EntityID, Queue<Pair<Integer, Integer>>> frames;
     private boolean animationDone;
-    private boolean ready;
-
-    private int frameCount;
-
-    private final Object frameLock = new Object();
 
     /**
        Construct an animated human view layer.
-       @param frameCount The number of animation frames to compute.
     */
-    public AnimatedHumanLayer(int frameCount) {
-        this.frameCount = frameCount;
+    public AnimatedHumanLayer() {
         moveCommands = new HashMap<EntityID, AKMove>();
         agentLastPositions = new HashMap<EntityID, Pair<EntityID, Integer>>();
         humanIDs = new HashSet<EntityID>();
         frames = new HashMap<EntityID, Queue<Pair<Integer, Integer>>>();
-        ready = false;
         animationDone = true;
     }
 
     @Override
     public void initialise(Config config) {
         super.initialise(config);
-        synchronized (frameLock) {
-            frames.clear();
-            moveCommands.clear();
-            agentLastPositions.clear();
-            humanIDs.clear();
-            ready = false;
-            animationDone = true;
-        }
+        frames.clear();
+        moveCommands.clear();
+        agentLastPositions.clear();
+        humanIDs.clear();
+        animationDone = true;
     }
 
     @Override
@@ -67,8 +56,8 @@ public class AnimatedHumanLayer extends HumanLayer {
        @return True if a new frame is actually required.
     */
     public boolean nextFrame() {
-        synchronized (frameLock) {
-            if (!ready || animationDone) {
+        synchronized (this) {
+            if (animationDone) {
                 return false;
             }
             animationDone = true;
@@ -84,13 +73,20 @@ public class AnimatedHumanLayer extends HumanLayer {
 
     @Override
     protected Pair<Integer, Integer> getLocation(Human h) {
-        synchronized (frameLock) {
+        synchronized (this) {
             Queue<Pair<Integer, Integer>> agentFrames = frames.get(h.getID());
             if (agentFrames != null && !agentFrames.isEmpty()) {
                 return agentFrames.peek();
             }
         }
         return h.getLocation(world);
+    }
+
+    @Override
+    protected void preView() {
+        super.preView();
+        moveCommands.clear();
+        humanIDs.clear();
     }
 
     @Override
@@ -105,55 +101,41 @@ public class AnimatedHumanLayer extends HumanLayer {
         }
     }
 
-    @Override
-    protected void preView() {
-        synchronized (frameLock) {
-            ready = false;
-        }
-        super.preView();
-        moveCommands.clear();
-        humanIDs.clear();
-    }
-
-    @Override
-    protected void postView() {
-        super.postView();
-        // Compute animation
-        double step = 1.0 / (frameCount - 1.0);
-        for (EntityID next : humanIDs) {
-            //            System.out.println("Computing frames for " + next);
-            Queue<Pair<Integer, Integer>> result = new LinkedList<Pair<Integer, Integer>>();
-            Human human = (Human)world.getEntity(next);
-            if (human == null) {
-                continue;
-            }
-            Pair<EntityID, Integer> start = agentLastPositions.get(next);
-            agentLastPositions.put(next, new Pair<EntityID, Integer>(human.getPosition(), human.isPositionExtraDefined() ? human.getPositionExtra() : 0));
-            //            System.out.println("Last position: " + start);
-            //            System.out.println("Current position: " + agentLastPositions.get(next));
-            if (start == null) {
-                continue;
-            }
-            AKMove move = moveCommands.get(human.getID());
-            if (move == null) {
-                continue;
-            }
-            AgentPath path = AgentPath.computePath(human, start.first(), start.second(), move, world);
-            if (path == null) {
-                continue;
-            }
-            for (int i = 0; i < frameCount; ++i) {
-                Pair<Integer, Integer> nextPoint = path.getPointOnPath(i * step);
-                //                System.out.println("Frame " + i + " position " + nextPoint);
-                result.add(nextPoint);
-            }
-            synchronized (frameLock) {
+    /**
+       Compute the animation frames.
+       @param frameCount The number of animation frames to compute.
+    */
+    void computeAnimation(int frameCount) {
+        synchronized (this) {
+            frames.clear();
+            // Compute animation
+            double step = 1.0 / (frameCount - 1.0);
+            for (EntityID next : humanIDs) {
+                Queue<Pair<Integer, Integer>> result = new LinkedList<Pair<Integer, Integer>>();
+                Human human = (Human)world.getEntity(next);
+                if (human == null) {
+                    continue;
+                }
+                Pair<EntityID, Integer> start = agentLastPositions.get(next);
+                agentLastPositions.put(next, new Pair<EntityID, Integer>(human.getPosition(), human.isPositionExtraDefined() ? human.getPositionExtra() : 0));
+                if (start == null) {
+                    continue;
+                }
+                AKMove move = moveCommands.get(human.getID());
+                if (move == null) {
+                    continue;
+                }
+                AgentPath path = AgentPath.computePath(human, start.first(), start.second(), move, world);
+                if (path == null) {
+                    continue;
+                }
+                for (int i = 0; i < frameCount; ++i) {
+                    Pair<Integer, Integer> nextPoint = path.getPointOnPath(i * step);
+                    result.add(nextPoint);
+                }
                 frames.put(next, result);
             }
-        }
-        synchronized (frameLock) {
             animationDone = false;
-            ready = true;
         }
     }
 }
