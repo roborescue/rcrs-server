@@ -3,12 +3,6 @@ package rescuecore2.standard.view;
 import javax.swing.Timer;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Graphics2D;
-
-import java.util.Collection;
-
-import rescuecore2.misc.gui.ScreenTransform;
-import rescuecore2.view.RenderedObject;
 
 /**
    A viewer for StandardWorldModels.

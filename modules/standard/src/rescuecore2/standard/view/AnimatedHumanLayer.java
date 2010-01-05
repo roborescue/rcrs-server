@@ -39,11 +39,13 @@ public class AnimatedHumanLayer extends HumanLayer {
     @Override
     public void initialise(Config config) {
         super.initialise(config);
-        frames.clear();
         moveCommands.clear();
         agentLastPositions.clear();
         humanIDs.clear();
-        animationDone = true;
+        synchronized (this) {
+            frames.clear();
+            animationDone = true;
+        }
     }
 
     @Override
