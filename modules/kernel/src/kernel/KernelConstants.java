@@ -22,5 +22,8 @@ public final class KernelConstants {
     /** The config key for viewer implementations. */
     public static final String VIEWERS_KEY = "kernel.viewers";
 
+    /** The config key for component implementations. */
+    public static final String COMPONENTS_KEY = "kernel.components";
+
     private KernelConstants() {}
 }

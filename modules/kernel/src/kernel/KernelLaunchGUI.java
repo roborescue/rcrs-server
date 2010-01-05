@@ -27,6 +27,7 @@ import rescuecore2.config.Config;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
 import rescuecore2.components.Agent;
+import rescuecore2.components.Component;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.ConfigTree;
 
@@ -39,6 +40,7 @@ public class KernelLaunchGUI extends JPanel {
     private SimulatorsPanel simulators;
     private ViewersPanel viewers;
     private AgentsPanel agents;
+    private ComponentsPanel otherComponents;
     private JComboBox gis;
     private JComboBox perception;
     private JComboBox comms;
@@ -56,12 +58,15 @@ public class KernelLaunchGUI extends JPanel {
         simulators = new SimulatorsPanel(config);
         viewers = new ViewersPanel(config);
         agents = new AgentsPanel(config);
+        otherComponents = new ComponentsPanel(config);
         JScrollPane simulatorsScroll = new JScrollPane(simulators);
         simulatorsScroll.setBorder(BorderFactory.createTitledBorder("Simulators"));
         JScrollPane viewersScroll = new JScrollPane(viewers);
         viewersScroll.setBorder(BorderFactory.createTitledBorder("Viewers"));
         JScrollPane agentsScroll = new JScrollPane(agents);
         agentsScroll.setBorder(BorderFactory.createTitledBorder("Agents"));
+        JScrollPane componentsScroll = new JScrollPane(otherComponents);
+        componentsScroll.setBorder(BorderFactory.createTitledBorder("Other components"));
         configTree = new ConfigTree(config);
         JScrollPane configTreeScroll = new JScrollPane(configTree);
         configTreeScroll.setBorder(BorderFactory.createTitledBorder("Config"));
@@ -103,7 +108,7 @@ public class KernelLaunchGUI extends JPanel {
         layout.setConstraints(comms, c);
         options.add(comms);
 
-        // Simulators, viewers, agents
+        // Simulators, viewers, agents, other components
         c.gridx = 0;
         ++c.gridy;
         c.gridwidth = 2;
@@ -117,13 +122,16 @@ public class KernelLaunchGUI extends JPanel {
         ++c.gridy;
         layout.setConstraints(agentsScroll, c);
         options.add(agentsScroll);
+        ++c.gridy;
+        layout.setConstraints(componentsScroll, c);
+        options.add(componentsScroll);
     }
 
     /**
        Get the names of all selected simulators.
        @return All selected simulator class names.
     */
-    public Collection<String> getSimulators() {
+    private Collection<String> getSimulators() {
         return simulators.getSelectedSimulators();
     }
 
@@ -131,7 +139,7 @@ public class KernelLaunchGUI extends JPanel {
        Get the names of all selected viewers.
        @return All selected viewer class names.
     */
-    public Collection<String> getViewers() {
+    private Collection<String> getViewers() {
         return viewers.getSelectedViewers();
     }
 
@@ -139,8 +147,29 @@ public class KernelLaunchGUI extends JPanel {
        Get the names and the required number of all selected agents.
        @return All selected agent class names and the requested number of each.
     */
-    public Collection<Pair<String, Integer>> getAgents() {
+    private Collection<Pair<String, Integer>> getAgents() {
         return agents.getSelectedAgents();
+    }
+
+    /**
+       Get the names of all selected components.
+       @return All selected component class names and the requested number of each.
+    */
+    public Collection<Pair<String, Integer>> getAllComponents() {
+        Collection<Pair<String, Integer>> all = new ArrayList<Pair<String, Integer>>();
+        for (String next : simulators.getSelectedSimulators()) {
+            all.add(new Pair<String, Integer>(next, 1));
+        }
+        for (String next : viewers.getSelectedViewers()) {
+            all.add(new Pair<String, Integer>(next, 1));
+        }
+        for (Pair<String, Integer> next : agents.getSelectedAgents()) {
+            all.add(next);
+        }
+        for (String next : otherComponents.getSelectedComponents()) {
+            all.add(new Pair<String, Integer>(next, 1));
+        }
+        return all;
     }
 
     /**
@@ -325,7 +354,7 @@ public class KernelLaunchGUI extends JPanel {
                         if (argLine != null) {
                             count = getMultiplier(argLine);
                             if (count == Integer.MAX_VALUE) {
-                                count = 1;
+                                count = 0;
                                 all = true;
                             }
                         }
@@ -384,6 +413,55 @@ public class KernelLaunchGUI extends JPanel {
                 return Integer.MAX_VALUE;
             }
             return Integer.parseInt(arg);
+        }
+    }
+
+    private static final class ComponentsPanel extends JPanel {
+        private List<Pair<String, JCheckBox>> components;
+
+        private ComponentsPanel(Config config) {
+            GridBagLayout layout = new GridBagLayout();
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 1;
+            c.weighty = 1;
+            c.gridwidth = 1;
+            c.gridheight = 1;
+            c.fill = GridBagConstraints.BOTH;
+            c.anchor = GridBagConstraints.CENTER;
+            setLayout(layout);
+            components = new ArrayList<Pair<String, JCheckBox>>();
+                List<String> classNames = config.getArrayValue(KernelConstants.COMPONENTS_KEY, null);
+                List<String> autoClassNames = config.getArrayValue(KernelConstants.COMPONENTS_KEY + AUTO_SUFFIX, null);
+                for (String next : classNames) {
+                    Component comp = instantiate(next, Component.class);
+                    if (comp != null) {
+                        c.gridx = 0;
+                        c.weightx = 1;
+                        JLabel l = new JLabel(comp.getName());
+                        layout.setConstraints(l, c);
+                        add(l);
+                        c.gridx = 1;
+                        c.weightx = 0;
+                        JCheckBox check = new JCheckBox();
+                        check.setSelected(autoClassNames.contains(next));
+                        layout.setConstraints(check, c);
+                        add(check);
+                        components.add(new Pair<String, JCheckBox>(next, check));
+                        ++c.gridy;
+                    }
+                }
+        }
+
+        private Collection<String> getSelectedComponents() {
+            Collection<String> result = new ArrayList<String>();
+            for (Pair<String, JCheckBox> next : components) {
+                if (next.second().isSelected()) {
+                    result.add(next.first());
+                }
+            }
+            return result;
         }
     }
 }

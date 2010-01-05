@@ -36,9 +36,6 @@ import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentInitialisationException;
 import rescuecore2.components.ComponentConnectionException;
-import rescuecore2.components.Agent;
-import rescuecore2.components.Simulator;
-import rescuecore2.components.Viewer;
 import rescuecore2.registry.Registry;
 import rescuecore2.registry.MessageFactory;
 import rescuecore2.registry.EntityFactory;
@@ -268,17 +265,8 @@ public final class StartKernel {
     private static void autostartComponents(KernelInfo info, Config config, Registry registry) throws InterruptedException {
         KernelChooserDialog gui = info.choices;
         Collection<Callable<Void>> all = new ArrayList<Callable<Void>>();
-        // Simulators
-        for (String next : gui.getSimulators()) {
-            all.add(new ComponentStarter<Simulator>(Simulator.class, next, config, info.componentManager, 1, registry));
-        }
-        // Viewers
-        for (String next : gui.getViewers()) {
-            all.add(new ComponentStarter<Viewer>(Viewer.class, next, config, info.componentManager, 1, registry));
-        }
-        // Agents
-        for (Pair<String, Integer> next : gui.getAgents()) {
-            all.add(new ComponentStarter<Agent>(Agent.class, next.first(), config, info.componentManager, next.second(), registry));
+        for (Pair<String, Integer> next : gui.getAllComponents()) {
+            all.add(new ComponentStarter(next.first(), config, info.componentManager, next.second(), registry));
         }
         ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         service.invokeAll(all);
@@ -386,22 +374,21 @@ public final class StartKernel {
         processor.addConfigUpdater(LoadableType.AGENT, config, KernelConstants.AGENTS_KEY);
         processor.addConfigUpdater(LoadableType.SIMULATOR, config, KernelConstants.SIMULATORS_KEY);
         processor.addConfigUpdater(LoadableType.VIEWER, config, KernelConstants.VIEWERS_KEY);
+        processor.addConfigUpdater(LoadableType.COMPONENT, config, KernelConstants.COMPONENTS_KEY);
         processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, KernelConstants.GIS_KEY);
         processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, KernelConstants.PERCEPTION_KEY);
         processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, KernelConstants.COMMUNICATION_MODEL_KEY);
         processor.process();
     }
 
-    private static class ComponentStarter<T extends Component> implements Callable<Void> {
-        private Class<T> clazz;
+    private static class ComponentStarter implements Callable<Void> {
         private String className;
         private Config config;
         private ComponentManager componentManager;
         private int count;
         private Registry registry;
 
-        public ComponentStarter(Class<T> clazz, String className, Config config, ComponentManager componentManager, int count, Registry registry) {
-            this.clazz = clazz;
+        public ComponentStarter(String className, Config config, ComponentManager componentManager, int count, Registry registry) {
             this.className = className;
             this.config = config;
             this.componentManager = componentManager;
@@ -417,7 +404,7 @@ public final class StartKernel {
             ComponentLauncher launcher = new ComponentLauncher(connections.second(), config);
             System.out.println("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
-                Component c = instantiate(className, clazz);
+                Component c = instantiate(className, Component.class);
                 if (c == null) {
                     break;
                 }
@@ -476,6 +463,7 @@ public final class StartKernel {
             return components.getCommunicationModel();
         }
 
+        /*
         public Collection<String> getSimulators() {
             return components.getSimulators();
         }
@@ -486,6 +474,11 @@ public final class StartKernel {
 
         public Collection<Pair<String, Integer>> getAgents() {
             return components.getAgents();
+        }
+        */
+
+        public Collection<Pair<String, Integer>> getAllComponents() {
+            return components.getAllComponents();
         }
     }
 
