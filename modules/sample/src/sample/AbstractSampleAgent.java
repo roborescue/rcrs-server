@@ -14,7 +14,6 @@ import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Human;
 
 /**
    Abstract base class for sample agents.
@@ -58,24 +57,6 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
         super.postConnect();
         search = new SampleSearch(model, true);
         useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
-    }
-
-    /**
-       Get the location of the entity controlled by this agent.
-       @return The location of the entity controlled by this agent.
-     */
-    protected StandardEntity location() {
-        E me = me();
-        if (me instanceof Human) {
-            return ((Human)me).getPosition(model);
-        }
-        return me;
-    }
-
-    @Override
-    //    @SuppressWarnings("unchecked")
-    protected E me() {
-        return (E)super.me();
     }
 
     /**

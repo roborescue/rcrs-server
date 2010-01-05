@@ -1,17 +1,14 @@
 package sample;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
 
-import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Civilian;
-import rescuecore2.standard.entities.Refuge;
 
 /**
    A sample civilian agent.
@@ -81,17 +78,6 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     @Override
     protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
         return EnumSet.of(StandardEntityURN.CIVILIAN);
-    }
-
-    private List<Refuge> getRefuges() {
-        Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.REFUGE);
-        List<Refuge> result = new ArrayList<Refuge>();
-        for (StandardEntity next : e) {
-            if (next instanceof Refuge) {
-                result.add((Refuge)next);
-            }
-        }
-        return result;
     }
 
     private void say(String message, int time) {

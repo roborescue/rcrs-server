@@ -5,6 +5,9 @@ import rescuecore2.worldmodel.EntityID;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.Refuge;
+import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.messages.AKRest;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKExtinguish;
@@ -18,6 +21,7 @@ import rescuecore2.standard.messages.AKSay;
 import rescuecore2.standard.messages.AKTell;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
    Abstract base class for standard agents.
@@ -132,5 +136,37 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
     */
     protected void sendTell(int time, byte[] data) {
         send(new AKTell(getID(), time, data));
+    }
+
+    /**
+       Get a list of all refuges in the world.
+       @return All refuges.
+    */
+    protected List<Refuge> getRefuges() {
+        List<Refuge> result = new ArrayList<Refuge>();
+        for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.REFUGE)) {
+            if (next instanceof Refuge) {
+                result.add((Refuge)next);
+            }
+        }
+        return result;
+    }
+
+    /**
+       Get the location of the entity controlled by this agent.
+       @return The location of the entity controlled by this agent.
+     */
+    protected StandardEntity location() {
+        E me = me();
+        if (me instanceof Human) {
+            return ((Human)me).getPosition(model);
+        }
+        return me;
+    }
+
+    @Override
+    //    @SuppressWarnings("unchecked")
+    protected E me() {
+        return (E)super.me();
     }
 }

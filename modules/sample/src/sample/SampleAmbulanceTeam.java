@@ -50,7 +50,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             }
             else {
                 // Move to a refuge
-                List<EntityID> path = search.breadthFirstSearch(location(), model.getEntitiesOfType(StandardEntityURN.REFUGE));
+                List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
                 if (path != null) {
                     sendMove(time, path);
                     return;

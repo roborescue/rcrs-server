@@ -92,17 +92,6 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         return EnumSet.of(StandardEntityURN.FIRE_BRIGADE);
     }
 
-    private List<Refuge> getRefuges() {
-        Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.REFUGE);
-        List<Refuge> result = new ArrayList<Refuge>();
-        for (StandardEntity next : e) {
-            if (next instanceof Refuge) {
-                result.add((Refuge)next);
-            }
-        }
-        return result;
-    }
-
     private List<Building> getBurningBuildings() {
         Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.BUILDING);
         List<Building> result = new ArrayList<Building>();
