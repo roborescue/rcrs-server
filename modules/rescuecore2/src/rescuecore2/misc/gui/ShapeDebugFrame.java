@@ -61,7 +61,7 @@ public class ShapeDebugFrame extends JFrame {
     private ShapeInfoLegend legend;
     private CyclicBarrier barrier;
     private boolean enabled;
-    private Collection<ShapeInfo> background;
+    private Collection<? extends ShapeInfo> background;
     private boolean backgroundEnabled;
 
     /**
@@ -138,7 +138,7 @@ public class ShapeDebugFrame extends JFrame {
        Set the "background" shapes. These will be drawn on every invocation of show.
        @param back The new background shapes. This should not be null.
     */
-    public void setBackground(Collection<ShapeInfo> back) {
+    public void setBackground(Collection<? extends ShapeInfo> back) {
         background = back;
     }
 
