@@ -6,7 +6,7 @@
 
   <target name="start-kernel" depends="jars" description="Start the kernel">
     <echo message="Starting kernel: ${kernel.startup.config} ${kernel.startup.args}"/>
-    <java classname="kernel.StartKernel" classpathref="path.common" fork="yes" dir="boot">
+    <java classname="kernel.StartKernel" classpathref="path.common" fork="yes" dir="boot" maxmemory="1024m">
       <arg line="${kernel.startup.config}"/>
       <arg line="${kernel.startup.args}"/>
     </java>
