@@ -123,7 +123,7 @@ public abstract class AbstractEntity implements Entity {
             if (prop == null) {
                 return;
             }
-            Property existing  = getProperty(prop.getURN());
+            Property existing = getProperty(prop.getURN());
             existing.takeValue(prop);
         }
     }
