@@ -51,6 +51,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     private static final Color FIRE_BRIGADE_COLOUR = Color.RED;
     private static final Color POLICE_FORCE_COLOUR = Color.BLUE;
     private static final Color AMBULANCE_TEAM_COLOUR = Color.WHITE;
+    private static final Color DEAD_COLOUR = Color.BLACK;
 
     private int iconSize;
     private Map<String, Map<State, Icon>> icons;
@@ -92,7 +93,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         Icon icon = useIcons ? getIcon(h) : null;
         if (icon == null) {
             shape = new Ellipse2D.Double(x - SIZE / 2, y - SIZE / 2, SIZE, SIZE);
-            g.setColor(getColour(h));
+            g.setColor(adjustColour(getColour(h), h.getHP()));
             g.fill(shape);
         }
         else {
@@ -153,6 +154,22 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         default:
             throw new IllegalArgumentException("Don't know how to draw humans of type " + h.getStandardURN());
         }
+    }
+
+    private Color adjustColour(Color c, int hp) {
+        if (hp == 0) {
+            return DEAD_COLOUR;
+        }
+        if (hp < HP_CRITICAL) {
+            c = c.darker();
+        }
+        if (hp < HP_INJURED) {
+            c = c.darker();
+        }
+        if (hp < HP_MAX) {
+            c = c.darker();
+        }
+        return c;
     }
 
     private Icon getIcon(Human h) {
