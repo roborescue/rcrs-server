@@ -1,486 +1,287 @@
 package misc;
 
-import rescuecore2.config.Config;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSCommands;
 import rescuecore2.messages.control.KSUpdate;
-import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.misc.EntityTools;
+import rescuecore2.worldmodel.ChangeSet;
 
-import rescuecore2.standard.components.StandardSimulator;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
-import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.PoliceForce;
-import rescuecore2.standard.messages.AKClear;
+import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.messages.AKRescue;
-import rescuecore2.standard.messages.AKLoad;
-import rescuecore2.standard.messages.AKUnload;
-
-import org.uncommons.maths.random.GaussianGenerator;
+import rescuecore2.standard.components.StandardSimulator;
 
 /**
-   A simple misc simulator. This simulator handles buriedness, health, loading, unloading and road clearing.
+ * Implementation of the legacy misc simulator.
+ * @author Maitreyi Nanjanath
+ * @author Cameron Skinner
  */
 public class MiscSimulator extends StandardSimulator {
-    private static final String[] CODES = {"wood", "steel", "concrete"};
+    private Map<EntityID, HumanAttributes> humans;
+    private Map<EntityID, Integer> brokenBuildings;
+    private Set<EntityID> newlyBrokenBuildings;
 
-    private static final String PREFIX = "misc.";
-    private static final String BURIEDNESS_SUFFIX = ".buriedness";
-    private static final String SLIGHT_SUFFIX = ".slight";
-    private static final String MODERATE_SUFFIX = ".moderate";
-    private static final String SEVERE_SUFFIX = ".severe";
-    private static final String DESTROYED_SUFFIX = ".destroyed";
+    private MiscParameters parameters;
 
-    private static final String DAMAGE_MEAN_KEY = "misc.damage.mean";
-    private static final String DAMAGE_SD_KEY = "misc.damage.sd";
-    private static final String DAMAGE_FIRE_KEY = "misc.damage.fire";
-
-    private static final String CLEAR_RATE_KEY = "misc.clear.rate";
-
-    private static final String VERBOSE_KEY = "misc.verbose";
-
-    private static final int SLIGHT = 25;
-    private static final int MODERATE = 50;
-    private static final int SEVERE = 75;
-    private static final int DESTROYED = 100;
-
-    private ChangeSet changes;
-
-    private BuriednessStats[] stats;
-
-    private int fire;
-
-    private int clearRate;
-
-    private GaussianGenerator gaussian;
-
-    private boolean verbose;
-
-    /**
-       Create a MiscSimulator.
-    */
-    public MiscSimulator() {
-        changes = new ChangeSet();
-        verbose = false;
-    }
-
-    @Override
-    public String getName() {
-        return "Basic misc simulator";
-    }
+    private int updateTime = -1;
 
     @Override
     protected void postConnect() {
         super.postConnect();
-        stats = new BuriednessStats[CODES.length];
-        for (int i = 0; i < CODES.length; ++i) {
-            stats[i] = new BuriednessStats(i, config);
-        }
-        fire = config.getIntValue(DAMAGE_FIRE_KEY);
-        clearRate = config.getIntValue(CLEAR_RATE_KEY);
-        double mean = config.getFloatValue(DAMAGE_MEAN_KEY);
-        double sd = config.getFloatValue(DAMAGE_SD_KEY);
-        gaussian = new GaussianGenerator(mean, sd, config.getRandom());
-        verbose = config.getBooleanValue(VERBOSE_KEY, false);
-    }
 
-    @Override
-    protected void processCommands(KSCommands c, ChangeSet cs) {
-        int time = c.getTime();
-        // Handle clear and rescue commands
-        for (Command next : c.getCommands()) {
-            if (next instanceof AKClear) {
-                processClear((AKClear)next);
+        parameters = new MiscParameters(config);
+        humans = new HashMap<EntityID, HumanAttributes>();
+        brokenBuildings = new HashMap<EntityID, Integer>();
+        newlyBrokenBuildings = new HashSet<EntityID>();
+
+        System.out.println("MiscSimulator connected. World has " + model.getAllEntities().size() + " entities.");
+        BuildingChangeListener buildingListener = new BuildingChangeListener();
+        //HumanChangeListener humanListener = new HumanChangeListener();
+        for (Entity et : model.getAllEntities()) {
+            if (et instanceof Building) {
+                et.addEntityListener(buildingListener);
             }
-            if (next instanceof AKRescue) {
-                processRescue((AKRescue)next);
-            }
-            if (next instanceof AKLoad) {
-                processLoad((AKLoad)next);
-            }
-            if (next instanceof AKUnload) {
-                processUnload((AKUnload)next);
+            else if (et instanceof Human) {
+                //et.addEntityListener(humanListener);
+                Human human = (Human)et;
+                HumanAttributes ha = new HumanAttributes(human, config);
+                humans.put(ha.getID(), ha);
             }
         }
-        updateHealth();
-        if (verbose) {
-            System.out.println("Time: " + time);
-            writeInfo();
-        }
-        cs.merge(changes);
     }
 
     @Override
     protected void handleUpdate(KSUpdate u) {
         super.handleUpdate(u);
-        changes = new ChangeSet();
-        // Update buriedness if buildings have collapsed
+        updateTime = u.getTime();
+        System.out.println("MiscSimulator received update: " + u);
+        // Look for newly broken buildings
         for (EntityID id : u.getChangeSet().getChangedEntities()) {
-            Entity next = model.getEntity(id);
-            if (next instanceof Building) {
-                Building b = (Building)next;
-                Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
-                if (brokenness != null) {
-                    // Brokenness has changed. Bury any agents inside.
-                    //                    System.out.println(b + " is broken. Updating trapped agents");
-                    for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
-                                                            StandardEntityURN.FIRE_BRIGADE,
-                                                            StandardEntityURN.POLICE_FORCE,
-                                                            StandardEntityURN.AMBULANCE_TEAM)) {
-                        Human h = (Human)e;
-                        if (h.isPositionDefined() && h.getPosition().equals(b.getID())) {
-                            //                            System.out.println("Human in building: " + h);
-                            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
-                            int increase = calculateBuriedness(h, b);
-                            buriedness += increase;
-                            h.setBuriedness(buriedness);
-                            changes.addChange(h, h.getBuriednessProperty());
-                            //                            System.out.println("Changed buriedness: increase by " + increase + " to " + buriedness);
-                        }
+            Entity e = model.getEntity(id);
+            if (!(e instanceof Building)) {
+                continue; //we want to only look at buildings
+            }
+            Building b = (Building)e;
+            Property p = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.toString());
+            if (p != null) {
+                System.out.println("Brokenness changed: " + e.getID() + " -> " + p);
+                if (b.isBrokennessDefined() && b.getBrokenness() > 0) { // building is broken
+                    // Was it an increase?
+                    int old = brokenBuildings.containsKey(b.getID()) ? brokenBuildings.get(b.getID()) : 0;
+                    if (b.getBrokenness() > old) {
+                        newlyBrokenBuildings.add(b.getID());
+                        System.out.println("Newly broken");
+                    }
+                    brokenBuildings.put(b.getID(), b.getBrokenness());
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void processCommands(KSCommands c, ChangeSet changes) {
+        super.processCommands(c, changes);
+
+        for (Command com : c.getCommands()) {
+            if (checkValidity(com)) {
+                if (com instanceof AKRescue) {
+                    Human human = (Human)(model.getEntity(((AKRescue)com).getTarget()));
+                    handleRescue(human, changes);
+                }
+            }
+        }
+
+        processBrokenBuildings(changes);
+        processBurningBuildings(changes);
+        updateDamage(changes);
+        // Clean up
+        newlyBrokenBuildings.clear();
+    }
+
+    private void processBrokenBuildings(ChangeSet changes) {
+        for (HumanAttributes hA : humans.values()) {
+            Human human = hA.getHuman();
+            EntityID positionID = human.getPosition();
+            if (!newlyBrokenBuildings.contains(positionID)) {
+                continue;
+            }
+            // Human is in a newly collapsed building
+            // Check for buriedness
+            System.out.println("Checking if human should be buried in broken building");
+            Building b = (Building)human.getPosition(model);
+            if (parameters.shouldBuryAgent(b)) {
+                int buriedness = parameters.getBuriedness(b);
+                if (buriedness != 0) {
+                    int oldBuriedness = human.isBuriednessDefined() ? human.getBuriedness() : 0;
+                    human.setBuriedness(Math.max(oldBuriedness, buriedness));
+                    changes.addChange(human, human.getBuriednessProperty());
+                    // Check for injury from being buried
+                    int damage = parameters.getBuryDamage(b, human);
+                    if (damage != 0) {
+                        hA.addBuriednessDamage(damage);
                     }
                 }
             }
+            // Now check for injury from the collapse
+            int damage = parameters.getCollapseDamage(b, human);
+            if (damage != 0) {
+                hA.addCollapseDamage(damage);
+            }
         }
     }
 
-    private void processClear(AKClear clear) {
-        StandardEntity agent = model.getEntity(clear.getAgentID());
-        StandardEntity target = model.getEntity(clear.getTarget());
-        if (agent == null) {
-            System.out.println("Rejecting clear command " + clear + ": agent does not exist");
-            return;
-        }
-        if (target == null) {
-            System.out.println("Rejecting clear command " + clear + ": target does not exist");
-            return;
-        }
-        if (!(agent instanceof PoliceForce)) {
-            System.out.println("Rejecting clear command " + clear + ": agent is not a police officer");
-            return;
-        }
-        if (!(target instanceof Road)) {
-            System.out.println("Rejecting clear command " + clear + ": target is not a road");
-            return;
-        }
-        PoliceForce police = (PoliceForce)agent;
-        StandardEntity agentPosition = police.getPosition(model);
-        if (agentPosition == null) {
-            System.out.println("Rejecting clear command " + clear + ": could not locate agent");
-            return;
-        }
-        if (!police.isHPDefined() || police.getHP() <= 0) {
-            System.out.println("Rejecting clear command " + clear + ": agent is dead");
-            return;
-        }
-        if (police.isBuriednessDefined() && police.getBuriedness() > 0) {
-            System.out.println("Rejecting clear command " + clear + ": agent is buried");
-            return;
-        }
-        Road targetRoad = (Road)target;
-        if (!targetRoad.isBlockDefined() || targetRoad.getBlock() <= 0) {
-            System.out.println("Rejecting clear command " + clear + ": road is not blocked");
-            return;
-        }
-        EntityID agentPositionID = police.getPosition();
-        if (agentPositionID == null || !agentPositionID.equals(target.getID()) && !agentPositionID.equals(targetRoad.getHead()) && !agentPositionID.equals(targetRoad.getTail())) {
-            System.out.println("Rejecting clear command " + clear + ": agent is not adjacent to target road");
-            return;
-        }
-        // All checks passed
-        int block = targetRoad.getBlock();
-        targetRoad.setBlock(Math.max(0, block - clearRate));
-        changes.addChange(targetRoad, targetRoad.getBlockProperty());
-        if (verbose) {
-            System.out.println("Clear: " + clear);
-            System.out.println("Reduced road block from " + block + " to: " + targetRoad.getBlock());
+    private void processBurningBuildings(ChangeSet changes) {
+        for (HumanAttributes hA : humans.values()) {
+            Human human = hA.getHuman();
+            EntityID positionID = human.getPosition();
+            Entity position = human.getPosition(model);
+            if (position instanceof Building && ((Building)position).isOnFire()) {
+                // Human is in a burning building
+                int damage = parameters.getFireDamage((Building)position, human);
+                if (damage != 0) {
+                    hA.addFireDamage(damage);
+                }
+            }
         }
     }
 
-    private void processRescue(AKRescue rescue) {
-        StandardEntity agent = model.getEntity(rescue.getAgentID());
-        StandardEntity target = model.getEntity(rescue.getTarget());
-        if (agent == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent does not exist");
-            return;
+    private void updateDamage(ChangeSet changes) {
+        System.out.println("Agents damaged or buried at timestep " + updateTime);
+        System.out.println("  ID  |  HP  | Damage | Bury | Collapse | Fire | Buriedness");
+        for (HumanAttributes ha : humans.values()) {
+            updateDamage(ha);
+            Human h = ha.getHuman();
+            int hp = h.isHPDefined() ? h.getHP() : 0;
+            int damage = ha.getTotalDamage();
+            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
+
+            h.setDamage(damage);
+            changes.addChange(ha.getHuman(), ha.getHuman().getDamageProperty());
+
+            // Update HP
+            boolean isAlive = hp > 0;
+            boolean hasDamage = damage > 0;
+            boolean isBuried = buriedness > 0;
+
+            if (isAlive && hasDamage) {
+                int newHP = Math.max(0, hp - damage);
+                h.setHP(newHP);
+                changes.addChange(ha.getHuman(), ha.getHuman().getHPProperty());
+            }
+
+            // Treat damage if in a refuge
+            if (h.getPosition(model) instanceof Refuge) {
+                ha.clearDamage();
+                h.setDamage(0);
+                changes.addChange(ha.getHuman(), ha.getHuman().getDamageProperty());
+            }
+
+            if ((hasDamage || isBuried) && isAlive) {
+                System.out.println(" " + ha.getID() + "| "
+                                   + hp + "| "
+                                   + damage + "| "
+                                   + ha.getBuriednessDamage() + "| "
+                                   + ha.getCollapseDamage() + "| "
+                                   + ha.getFireDamage() + "| "
+                                   + buriedness);
+            }
         }
-        if (target == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": target does not exist");
-            return;
+    }
+
+    private void updateDamage(HumanAttributes ha) {
+        Human h = ha.getHuman();
+        if (h.getHP() <= 0) {
+            return; // Agent is already dead.
         }
+        ha.progressDamage();
+    }
+
+    private boolean checkValidity(Command command) {
+        Entity e = model.getEntity(command.getAgentID());
+        if (e == null) {
+            System.out.println("Received a " + command.getURN() + " command from an unknown agent: " + command.getAgentID());
+            return false;
+        }
+        if (command instanceof AKRescue) {
+            return checkRescue((AKRescue)command, e);
+        }
+        return false;
+    }
+
+    private boolean checkRescue(AKRescue rescue, Entity agent) {
+        EntityID targetID = rescue.getTarget();
+        Entity target = model.getEntity(targetID);
         if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is not an ambulance");
-            return;
+            System.out.println("Received a rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            return false;
+        }
+        if (target == null) {
+            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            return false;
         }
         if (!(target instanceof Human)) {
-            System.out.println("Rejecting rescue command " + rescue + ": target is not a human");
-            return;
+            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
+            return false;
         }
-        AmbulanceTeam ambulance = (AmbulanceTeam)agent;
-        Human targetHuman = (Human)target;
-        StandardEntity agentPosition = ambulance.getPosition(model);
-        StandardEntity targetPosition = targetHuman.getPosition(model);
-        if (agentPosition == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": could not locate agent");
-            return;
+        Human h = (Human)target;
+        AmbulanceTeam at = (AmbulanceTeam)agent;
+        if (!h.isBuriednessDefined() || h.getBuriedness() == 0) {
+            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
+            return false;
         }
-        if (targetPosition == null) {
-            System.out.println("Rejecting rescue command " + rescue + ": could not locate target");
-            return;
+        if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
+            System.out.println("Received a rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
+            return false;
         }
-        if (!(targetPosition instanceof Building)) {
-            System.out.println("Rejecting rescue command " + rescue + ": target is not in a building");
-            return;
+        if (h.getID().equals(at.getID())) {
+            System.out.println("Agent " + agent.getID() + " tried to rescue itself");
+            return false;
         }
-        if (!ambulance.isHPDefined() || ambulance.getHP() <= 0) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is dead");
-            return;
-        }
-        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is buried");
-            return;
-        }
-        if (!targetHuman.isBuriednessDefined() || targetHuman.getBuriedness() <= 0) {
-            System.out.println("Rejecting rescue command " + rescue + ": target is not buried");
-            return;
-        }
-        if (!agentPosition.equals(targetPosition)) {
-            System.out.println("Rejecting rescue command " + rescue + ": agent is at a different location to the target");
-            return;
-        }
-        // All checks passed
-        int buriedness = targetHuman.getBuriedness();
-        targetHuman.setBuriedness(Math.max(0, buriedness - 1));
-        changes.addChange(targetHuman, targetHuman.getBuriednessProperty());
-        if (verbose) {
-            System.out.println("Rescue: " + rescue);
-            System.out.println("Reduced buriedness from " + buriedness + " to: " + targetHuman.getBuriedness());
-        }
+        return true;
     }
 
-    private void processLoad(AKLoad load) {
-        StandardEntity agent = model.getEntity(load.getAgentID());
-        StandardEntity target = model.getEntity(load.getTarget());
-        if (agent == null) {
-            System.out.println("Rejecting load command " + load + ": agent does not exist");
-            return;
-        }
-        if (target == null) {
-            System.out.println("Rejecting load command " + load + ": target does not exist");
-            return;
-        }
-        if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Rejecting load command " + load + ": agent is not an ambulance");
-            return;
-        }
-        if (!(target instanceof Civilian)) {
-            System.out.println("Rejecting load command " + load + ": target is not a civilian");
-            return;
-        }
-        AmbulanceTeam ambulance = (AmbulanceTeam)agent;
-        Civilian targetCivilian = (Civilian)target;
-        StandardEntity agentPosition = ambulance.getPosition(model);
-        StandardEntity targetPosition = targetCivilian.getPosition(model);
-        EntityID agentID = agent.getID();
-        if (agentPosition == null) {
-            System.out.println("Rejecting load command " + load + ": could not locate agent");
-            return;
-        }
-        if (targetPosition == null) {
-            System.out.println("Rejecting load command " + load + ": could not locate target");
-            return;
-        }
-        if (!ambulance.isHPDefined() || ambulance.getHP() <= 0) {
-            System.out.println("Rejecting load command " + load + ": agent is dead");
-            return;
-        }
-        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
-            System.out.println("Rejecting load command " + load + ": agent is buried");
-            return;
-        }
-        if (targetCivilian.isBuriednessDefined() && targetCivilian.getBuriedness() > 0) {
-            System.out.println("Rejecting load command " + load + ": target is buried");
-            return;
-        }
-        if (!agentPosition.equals(targetPosition)) {
-            System.out.println("Rejecting load command " + load + ": agent is at a different location to the target");
-            return;
-        }
-        // Is there something already loaded?
-        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
-            Civilian c = (Civilian)e;
-            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
-                System.out.println("Rejecting load command " + load + ": agent already has something loaded");
+    private void handleRescue(Human target, ChangeSet changes) {
+        target.setBuriedness(Math.max(0, target.getBuriedness() - 1));
+        changes.addChange(target, target.getBuriednessProperty());
+    }
+
+    private class BuildingChangeListener implements EntityListener {
+        @Override
+        public void propertyChanged(Entity e, Property p) {
+            if (!(e instanceof Building)) {
+                return; //we want to only look at buildings
+            }
+            Building b = (Building)e;
+            if (!p.getURN().equals(StandardPropertyURN.BROKENNESS.toString())) {
+                // Only care about brokenness changes
                 return;
             }
-        }
-        // All checks passed
-        targetCivilian.setPosition(agentID);
-        changes.addChange(targetCivilian, targetCivilian.getPositionProperty());
-        if (verbose) {
-            System.out.println("Load: " + load);
-            System.out.println("Ambulance " + agentID + " loaded civilian " + targetCivilian.getID());
-        }
-    }
-
-    private void processUnload(AKUnload unload) {
-        StandardEntity agent = model.getEntity(unload.getAgentID());
-        if (agent == null) {
-            System.out.println("Rejecting unload command " + unload + ": agent does not exist");
-            return;
-        }
-        if (!(agent instanceof AmbulanceTeam)) {
-            System.out.println("Rejecting unload command " + unload + ": agent is not an ambulance");
-            return;
-        }
-        EntityID agentID = agent.getID();
-        AmbulanceTeam ambulance = (AmbulanceTeam)agent;
-        StandardEntity agentPosition = ambulance.getPosition(model);
-        if (agentPosition == null) {
-            System.out.println("Rejecting unload command " + unload + ": could not locate agent");
-            return;
-        }
-        if (!ambulance.isHPDefined() && ambulance.getHP() <= 0) {
-            System.out.println("Rejecting unload command " + unload + ": agent is dead");
-            return;
-        }
-        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
-            System.out.println("Rejecting unload command " + unload + ": agent is buried");
-            return;
-        }
-        // Is there something loaded?
-        Civilian target = null;
-        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
-            Civilian c = (Civilian)e;
-            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
-                target = c;
-                break;
+            int brokenness = b.isBrokennessDefined() ? b.getBrokenness() : 0;
+            EntityID id = b.getID();
+            if (isIncrease(id, brokenness)) {
+                newlyBrokenBuildings.add(id);
             }
-        }
-        if (target == null) {
-            System.out.println("Rejecting unload command " + unload + ": agent is not carrying any civilians");
-            return;
-        }
-        // All checks passed
-        target.setPosition(ambulance.getPosition());
-        changes.addChange(target, target.getPositionProperty());
-        if (verbose) {
-            System.out.println("Unload: " + unload);
-            System.out.println("Ambulance " + agentID + " unloaded " + target.getID() + " at " + ambulance.getPosition());
-        }
-    }
-
-    private void updateHealth() {
-        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
-                                                StandardEntityURN.FIRE_BRIGADE,
-                                                StandardEntityURN.POLICE_FORCE,
-                                                StandardEntityURN.AMBULANCE_TEAM)) {
-            Human h = (Human)e;
-            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
-            int damage = h.isDamageDefined() ? h.getDamage() : 0;
-            int hp = h.isHPDefined() ? h.getHP() : 0;
-            StandardEntity position = h.getPosition(model);
-            if (position instanceof Refuge) {
-                if (damage > 0) {
-                    h.setDamage(0);
-                    changes.addChange(h, h.getDamageProperty());
-                }
-                continue;
-            }
-            boolean onFire = (position instanceof Building) && ((Building)position).isOnFire();
-            // Increase damage if the agent is buried
-            if (buriedness > 0) {
-                damage += Math.max(0, (int)(gaussian.nextValue() * buriedness));
-            }
-            if (onFire) {
-                damage += fire;
-            }
-            // Update HP
-            hp = Math.max(0, hp - damage);
-            // Update entity
-            h.setDamage(damage);
-            h.setHP(hp);
-            changes.addChange(h, h.getDamageProperty());
-            changes.addChange(h, h.getHPProperty());
-        }
-    }
-
-    private int calculateBuriedness(Human h, Building b) {
-        if (!b.isBuildingCodeDefined()) {
-            return 0;
-        }
-        int code = b.getBuildingCode();
-        return stats[code].computeBuriedness(b);
-    }
-
-    private void writeInfo() {
-        System.out.println("|    Civ ID |     HP | Damage | Buriedness |");
-        System.out.println("--------------------------------------------");
-        for (Entity e : EntityTools.sortedList(model.getEntitiesOfType(StandardEntityURN.CIVILIAN,
-                                                                       StandardEntityURN.FIRE_BRIGADE,
-                                                                       StandardEntityURN.POLICE_FORCE,
-                                                                       StandardEntityURN.AMBULANCE_TEAM))) {
-            Human h = (Human)e;
-            int hp = h.isHPDefined() ? h.getHP() : 0;
-            int damage = h.isDamageDefined() ? h.getDamage() : 0;
-            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
-            if (hp > 0 && (damage > 0 || buriedness > 0)) {
-                System.out.printf("| %1$9d | %2$6d | %3$6d | %4$10d |%n", h.getID().getValue(), hp, damage, buriedness);
-            }
-        }
-        System.out.println("--------------------------------------------");
-        System.out.println("|   Road ID |  Block |");
-        System.out.println("----------------------");
-        for (Entity e : EntityTools.sortedList(model.getEntitiesOfType(StandardEntityURN.ROAD))) {
-            Road r = (Road)e;
-            int block = r.isBlockDefined() ? r.getBlock() : 0;
-            if (block > 0) {
-                System.out.printf("| %1$9d | %2$6d |%n", r.getID().getValue(), block);
-            }
-        }
-        System.out.println("---------------------");
-    }
-
-    private static class BuriednessStats {
-        private int destroyed;
-        private int severe;
-        private int moderate;
-        private int slight;
-
-        BuriednessStats(int code, Config config) {
-            destroyed = config.getIntValue(PREFIX + CODES[code] + BURIEDNESS_SUFFIX + DESTROYED_SUFFIX);
-            severe = config.getIntValue(PREFIX + CODES[code] + BURIEDNESS_SUFFIX + SEVERE_SUFFIX);
-            moderate = config.getIntValue(PREFIX + CODES[code] + BURIEDNESS_SUFFIX + MODERATE_SUFFIX);
-            slight = config.getIntValue(PREFIX + CODES[code] + BURIEDNESS_SUFFIX + SLIGHT_SUFFIX);
+            brokenBuildings.put(id, brokenness);
         }
 
-        int computeBuriedness(Building b) {
-            if (!b.isBrokennessDefined()) {
-                return 0;
+        private boolean isIncrease(EntityID id, int brokenness) {
+            if (brokenBuildings.containsKey(id)) {
+                int old = brokenBuildings.get(id);
+                return brokenness > old;
             }
-            int damage = b.getBrokenness();
-            if (damage < SLIGHT) {
-                return 0;
-            }
-            if (damage < MODERATE) {
-                return slight;
-            }
-            if (damage < SEVERE) {
-                return moderate;
-            }
-            if (damage < DESTROYED) {
-                return severe;
-            }
-            return destroyed;
+            return brokenness > 0;
         }
     }
 }
+
