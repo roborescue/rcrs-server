@@ -3,6 +3,7 @@ package rescuecore2;
 import static rescuecore2.misc.java.JavaTools.instantiate;
 
 import java.io.IOException;
+import javax.swing.JFrame;
 
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
@@ -86,6 +87,13 @@ public final class LaunchComponents {
             try {
                 c.initialise();
                 launcher.connect(c);
+                if (c instanceof GUIComponent) {
+                    GUIComponent g = (GUIComponent)c;
+                    JFrame frame = new JFrame(g.getGUIComponentName());
+                    frame.setContentPane(g.getGUIComponent());
+                    frame.pack();
+                    frame.setVisible(true);
+                }
                 System.out.println("success");
             }
             catch (ComponentConnectionException e) {
