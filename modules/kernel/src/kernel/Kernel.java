@@ -108,7 +108,7 @@ public class Kernel {
         catch (LogException e) {
             throw new KernelException("Couldn't open log file for writing", e);
         }
-        commandFilter.initialise(config, this);
+        commandFilter.initialise(config);
         config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
         config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
 
@@ -127,23 +127,11 @@ public class Kernel {
     }
 
     /**
-       Add a KernelListener.
-       @param l The listener to add.
+       Get a snapshot of the kernel's state.
+       @return A new KernelState snapshot.
     */
-    public void addKernelListener(KernelListener l) {
-        synchronized (listeners) {
-            listeners.add(l);
-        }
-    }
-
-    /**
-       Remove a KernelListener.
-       @param l The listener to remove.
-    */
-    public void removeKernelListener(KernelListener l) {
-        synchronized (listeners) {
-            listeners.remove(l);
-        }
+    public KernelState getState() {
+        return new KernelState(getTime(), getWorldModel());
     }
 
     /**
@@ -243,6 +231,54 @@ public class Kernel {
     }
 
     /**
+       Add a KernelListener.
+       @param l The listener to add.
+    */
+    public void addKernelListener(KernelListener l) {
+        synchronized (listeners) {
+            listeners.add(l);
+        }
+    }
+
+    /**
+       Remove a KernelListener.
+       @param l The listener to remove.
+    */
+    public void removeKernelListener(KernelListener l) {
+        synchronized (listeners) {
+            listeners.remove(l);
+        }
+    }
+
+    /**
+       Get the current time.
+       @return The current time.
+    */
+    public int getTime() {
+        synchronized (this) {
+            return time;
+        }
+    }
+
+    /**
+       Get the world model.
+       @return The world model.
+    */
+    public WorldModel<? extends Entity> getWorldModel() {
+        return worldModel;
+    }
+
+    /**
+       Find out if the kernel has terminated.
+       @return True if the kernel has terminated, false otherwise.
+    */
+    public boolean hasTerminated() {
+        synchronized (this) {
+            return isShutdown || termination.shouldStop(getState());
+        }
+    }
+
+    /**
        Run a single timestep.
        @throws InterruptedException If this thread is interrupted during the timestep.
        @throws KernelException If there is a problem executing the timestep.
@@ -301,24 +337,6 @@ public class Kernel {
     }
 
     /**
-       Get the current time.
-       @return The current time.
-    */
-    public int getTime() {
-        synchronized (this) {
-            return time;
-        }
-    }
-
-    /**
-       Get the world model.
-       @return The world model.
-    */
-    public WorldModel<? extends Entity> getWorldModel() {
-        return worldModel;
-    }
-
-    /**
        Shut down the kernel. This method will notify all agents/simulators/viewers of the shutdown.
     */
     public void shutdown() {
@@ -348,16 +366,6 @@ public class Kernel {
         }
     }
 
-    /**
-       Find out if the kernel has terminated.
-       @return True if the kernel has terminated, false otherwise.
-    */
-    public boolean hasTerminated() {
-        synchronized (this) {
-            return isShutdown || termination.shouldStop(this);
-        }
-    }
-
     private void sendAgentUpdates(Timestep timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException, LogException {
         perception.setTime(time);
         Map<AgentProxy, Collection<Command>> comms = communicationModel.process(time, agents, commandsLastTimestep);
@@ -376,7 +384,7 @@ public class Kernel {
 
     private Collection<Command> waitForCommands(int timestep) throws InterruptedException {
         Collection<Command> commands = commandCollector.getAgentCommands(agents, timestep);
-        commandFilter.filter(commands);
+        commandFilter.filter(commands, getState());
         return commands;
     }
 

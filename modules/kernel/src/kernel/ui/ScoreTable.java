@@ -7,6 +7,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
 import rescuecore2.Timestep;
+import rescuecore2.GUIComponent;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -25,12 +26,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
-import kernel.Kernel;
-
 /**
    A ScoreFunction that also provides a JTable for viewing the components of the score.
  */
-public class ScoreTable extends DelegatingScoreFunction implements KernelGUIComponent {
+public class ScoreTable extends DelegatingScoreFunction implements GUIComponent {
     private ScoreModel model;
 
     /**
@@ -54,7 +53,7 @@ public class ScoreTable extends DelegatingScoreFunction implements KernelGUIComp
     }
 
     @Override
-    public JComponent getGUIComponent(Kernel kernel, Config config) {
+    public JComponent getGUIComponent() {
         JTable table = new JTable(model.table);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         JScrollPane scroll = new JScrollPane(table);

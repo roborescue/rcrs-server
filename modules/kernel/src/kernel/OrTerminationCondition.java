@@ -23,9 +23,9 @@ public class OrTerminationCondition implements TerminationCondition {
     }
 
     @Override
-    public boolean shouldStop(Kernel k) {
+    public boolean shouldStop(KernelState state) {
         for (TerminationCondition next : children) {
-            if (next.shouldStop(k)) {
+            if (next.shouldStop(state)) {
                 return true;
             }
         }

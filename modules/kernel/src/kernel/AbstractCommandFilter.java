@@ -10,18 +10,14 @@ import rescuecore2.messages.Command;
    An abstract base class for command filters.
  */
 public abstract class AbstractCommandFilter implements CommandFilter {
-    /** The kernel. */
-    protected Kernel kernel;
-
     @Override
-    public void initialise(Config config, Kernel k) {
-        this.kernel = k;
+    public void initialise(Config config) {
     }
 
     @Override
-    public void filter(Collection<Command> commands) {
+    public void filter(Collection<Command> commands, KernelState state) {
         for (Iterator<Command> it = commands.iterator(); it.hasNext();) {
-            if (!allowed(it.next())) {
+            if (!allowed(it.next(), state)) {
                 it.remove();
             }
         }
@@ -30,7 +26,8 @@ public abstract class AbstractCommandFilter implements CommandFilter {
     /**
        Find out if a particular command is allowed.
        @param command The command.
+       @param state The kernel state.
        @return True iff the command is allowed.
      */
-    protected abstract boolean allowed(Command command);
+    protected abstract boolean allowed(Command command, KernelState state);
 }

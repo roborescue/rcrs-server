@@ -37,16 +37,16 @@ public class ChainedCommandFilter implements CommandFilter {
     }
 
     @Override
-    public void initialise(Config config, Kernel kernel) {
+    public void initialise(Config config) {
         for (CommandFilter next : filters) {
-            next.initialise(config, kernel);
+            next.initialise(config);
         }
     }
 
     @Override
-    public void filter(Collection<Command> commands) {
+    public void filter(Collection<Command> commands, KernelState state) {
         for (CommandFilter next : filters) {
-            next.filter(commands);
+            next.filter(commands, state);
         }
     }
 }

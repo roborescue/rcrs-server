@@ -14,8 +14,8 @@ public interface TerminationCondition {
 
     /**
        Return whether this termination condition has been met.
-       @param k The kernel.
+       @param state The state of the kernel.
        @return True if this termination condition has been met and the simulation should stop, false otherwise.
      */
-    boolean shouldStop(Kernel k);
+    boolean shouldStop(KernelState state);
 }

@@ -30,8 +30,8 @@ import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.GUIComponent;
 
-import kernel.ui.KernelGUIComponent;
 import kernel.ui.ComponentManagerGUI;
 
 import javax.swing.JComponent;
@@ -39,7 +39,7 @@ import javax.swing.JComponent;
 /**
    Class that manages connecting components (agents, simulators, viewers) to the kernel.
  */
-public class ComponentManager implements ConnectionManagerListener, KernelGUIComponent {
+public class ComponentManager implements ConnectionManagerListener, GUIComponent {
     private static final int STARTING_ID = 1;
 
     private static final int WAIT_TIME = 10000;
@@ -168,7 +168,7 @@ public class ComponentManager implements ConnectionManagerListener, KernelGUICom
     }
 
     @Override
-    public JComponent getGUIComponent(Kernel k, Config c) {
+    public JComponent getGUIComponent() {
         return gui;
     }
 

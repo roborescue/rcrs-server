@@ -10,6 +10,7 @@ import kernel.ComponentManager;
 
 import rescuecore2.config.Config;
 import rescuecore2.registry.Registry;
+import rescuecore2.GUIComponent;
 
 /**
    A GUI for the kernel.
@@ -45,14 +46,14 @@ public class KernelGUI extends JPanel {
             add(control, BorderLayout.WEST);
             control.activate();
         }
-        addKernelGUIComponent(componentManager);
+        addGUIComponent(componentManager);
     }
 
     /**
        Add a kernel GUI component.
        @param c The GUI component to add.
      */
-    public void addKernelGUIComponent(KernelGUIComponent c) {
-        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent(kernel, config));
+    public void addGUIComponent(GUIComponent c) {
+        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent());
     }
 }

@@ -47,11 +47,11 @@ import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.java.LoadableType;
 import rescuecore2.Constants;
+import rescuecore2.GUIComponent;
 import rescuecore2.log.LogException;
 import rescuecore2.score.ScoreFunction;
 
 import kernel.ui.KernelGUI;
-import kernel.ui.KernelGUIComponent;
 import kernel.ui.ScoreTable;
 import kernel.ui.ScoreGraph;
 
@@ -105,7 +105,7 @@ public final class StartKernel {
         config.addConstraint(new ClassNameSetConstrainedConfigValue(COMMAND_FILTERS_KEY, CommandFilter.class));
         config.addConstraint(new ClassNameSetConstrainedConfigValue(TERMINATION_KEY, TerminationCondition.class));
         config.addConstraint(new ClassNameSetConstrainedConfigValue(COMMAND_COLLECTOR_KEY, CommandCollector.class));
-        config.addConstraint(new ClassNameSetConstrainedConfigValue(GUI_COMPONENTS_KEY, KernelGUIComponent.class));
+        config.addConstraint(new ClassNameSetConstrainedConfigValue(GUI_COMPONENTS_KEY, GUIComponent.class));
         config.addConstraint(new ClassNameConstrainedConfigValue(AGENT_REGISTRAR_KEY, AgentRegistrar.class));
         config.addConstraint(new ClassNameConstrainedConfigValue(Constants.SCORE_FUNCTION_KEY, ScoreFunction.class));
         try {
@@ -148,10 +148,11 @@ public final class StartKernel {
                 }
             }
             final KernelInfo kernelInfo = createKernel(config);
+            KernelGUI gui = null;
             if (showGUI) {
-                KernelGUI gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun, localRegistry);
-                for (KernelGUIComponent next : kernelInfo.guiComponents) {
-                    gui.addKernelGUIComponent(next);
+                gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun, localRegistry);
+                for (GUIComponent next : kernelInfo.guiComponents) {
+                    gui.addGUIComponent(next);
                 }
                 JFrame frame = new JFrame("Kernel GUI");
                 frame.getContentPane().add(gui);
@@ -165,13 +166,14 @@ public final class StartKernel {
                 frame.setVisible(true);
             }
             initialiseKernel(kernelInfo, config, localRegistry);
-            autostartComponents(kernelInfo, config, localRegistry);
+            autostartComponents(kernelInfo, config, localRegistry, gui);
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo, config);
-                while (!kernelInfo.kernel.hasTerminated()) {
-                    kernelInfo.kernel.timestep();
+                Kernel kernel = kernelInfo.kernel;
+                while (!kernel.hasTerminated()) {
+                    kernel.timestep();
                 }
-                kernelInfo.kernel.shutdown();
+                kernel.shutdown();
             }
         }
         catch (ConfigException e) {
@@ -262,11 +264,11 @@ public final class StartKernel {
         }
     }
 
-    private static void autostartComponents(KernelInfo info, Config config, Registry registry) throws InterruptedException {
-        KernelChooserDialog gui = info.choices;
+    private static void autostartComponents(KernelInfo info, Config config, Registry registry, KernelGUI gui) throws InterruptedException {
+        KernelChooserDialog chooser = info.choices;
         Collection<Callable<Void>> all = new ArrayList<Callable<Void>>();
-        for (Pair<String, Integer> next : gui.getAllComponents()) {
-            all.add(new ComponentStarter(next.first(), config, info.componentManager, next.second(), registry));
+        for (Pair<String, Integer> next : chooser.getAllComponents()) {
+            all.add(new ComponentStarter(next.first(), config, info.componentManager, next.second(), registry, gui));
         }
         ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         service.invokeAll(all);
@@ -296,7 +298,7 @@ public final class StartKernel {
         // Create the component manager
         ComponentManager componentManager = new ComponentManager(kernel, worldModel, config);
         registerInitialAgents(config, componentManager, worldModel);
-        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeKernelGUIComponents(config, perception, comms, termination, filter, graph, collector, score), dialog);
+        KernelInfo result = new KernelInfo(kernel, perception, comms, componentManager, makeGUIComponents(config, perception, comms, termination, filter, graph, collector, score), dialog);
         return result;
     }
 
@@ -350,19 +352,19 @@ public final class StartKernel {
         return result;
     }
 
-    private static List<KernelGUIComponent> makeKernelGUIComponents(Config config, Object... objectsToTest) {
-        List<KernelGUIComponent> result = new ArrayList<KernelGUIComponent>();
+    private static List<GUIComponent> makeGUIComponents(Config config, Object... objectsToTest) {
+        List<GUIComponent> result = new ArrayList<GUIComponent>();
         List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY, null);
         for (String next : classNames) {
             System.out.println("GUI component found: '" + next + "'");
-            KernelGUIComponent c = instantiate(next, KernelGUIComponent.class);
+            GUIComponent c = instantiate(next, GUIComponent.class);
             if (c != null) {
                 result.add(c);
             }
         }
         for (Object next : objectsToTest) {
-            if (next instanceof KernelGUIComponent) {
-                result.add((KernelGUIComponent)next);
+            if (next instanceof GUIComponent) {
+                result.add((GUIComponent)next);
             }
         }
         return result;
@@ -387,13 +389,15 @@ public final class StartKernel {
         private ComponentManager componentManager;
         private int count;
         private Registry registry;
+        private KernelGUI gui;
 
-        public ComponentStarter(String className, Config config, ComponentManager componentManager, int count, Registry registry) {
+        public ComponentStarter(String className, Config config, ComponentManager componentManager, int count, Registry registry, KernelGUI gui) {
             this.className = className;
             this.config = config;
             this.componentManager = componentManager;
             this.count = count;
             this.registry = registry;
+            this.gui = gui;
             System.out.println("New ComponentStarter: " + className + " * " + count);
         }
 
@@ -412,6 +416,9 @@ public final class StartKernel {
                 try {
                     c.initialise();
                     launcher.connect(c);
+                    if (gui != null && c instanceof GUIComponent) {
+                        gui.addGUIComponent((GUIComponent)c);
+                    }
                     System.out.println("success");
                 }
                 catch (ComponentConnectionException e) {
@@ -485,14 +492,14 @@ public final class StartKernel {
     private static class KernelInfo {
         Kernel kernel;
         ComponentManager componentManager;
-        List<KernelGUIComponent> guiComponents;
+        List<GUIComponent> guiComponents;
         KernelChooserDialog choices;
 
-        public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager, List<KernelGUIComponent> otherComponents, KernelChooserDialog choices) {
+        public KernelInfo(Kernel kernel, Perception perception, CommunicationModel comms, ComponentManager componentManager, List<GUIComponent> otherComponents, KernelChooserDialog choices) {
             this.kernel = kernel;
             this.componentManager = componentManager;
             this.choices = choices;
-            guiComponents = new ArrayList<KernelGUIComponent>(otherComponents);
+            guiComponents = new ArrayList<GUIComponent>(otherComponents);
         }
     }
 }

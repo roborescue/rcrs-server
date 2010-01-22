@@ -12,17 +12,15 @@ public class FrozenAgentsCommandFilter implements CommandFilter {
     private static final String IGNORE_AGENT_COMMANDS_KEY = "kernel.agents.ignoreuntil";
 
     private int freezeTime;
-    private Kernel kernel;
 
     @Override
-    public void initialise(Config config, Kernel k) {
+    public void initialise(Config config) {
         freezeTime = config.getIntValue(IGNORE_AGENT_COMMANDS_KEY, 0);
-        this.kernel = k;
     }
 
     @Override
-    public void filter(Collection<Command> commands) {
-        int time = kernel.getTime();
+    public void filter(Collection<Command> commands, KernelState state) {
+        int time = state.getTime();
         if (time < freezeTime) {
             commands.clear();
         }

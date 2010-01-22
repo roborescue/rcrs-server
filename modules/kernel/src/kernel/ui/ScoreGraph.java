@@ -7,6 +7,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
 import rescuecore2.Timestep;
+import rescuecore2.GUIComponent;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -21,8 +22,6 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
-import kernel.Kernel;
-
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartFactory;
@@ -35,7 +34,7 @@ import org.jfree.data.xy.XYSeries;
 /**
    A ScoreFunction that also provides a components for graphing the components of the score.
  */
-public class ScoreGraph extends DelegatingScoreFunction implements KernelGUIComponent {
+public class ScoreGraph extends DelegatingScoreFunction implements GUIComponent {
     private JFreeChart chart;
     private List<SeriesInfo> allSeries;
 
@@ -64,7 +63,7 @@ public class ScoreGraph extends DelegatingScoreFunction implements KernelGUIComp
     }
 
     @Override
-    public JComponent getGUIComponent(Kernel kernel, Config config) {
+    public JComponent getGUIComponent() {
         JComponent selectionPanel = Box.createVerticalBox();
         final XYItemRenderer renderer = ((XYPlot)chart.getPlot()).getRenderer();
         for (SeriesInfo next : allSeries) {

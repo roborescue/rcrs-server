@@ -19,8 +19,8 @@ public class TimestepTerminationCondition implements TerminationCondition {
     }
 
     @Override
-    public boolean shouldStop(Kernel k) {
-        return k.getTime() >= time;
+    public boolean shouldStop(KernelState state) {
+        return state.getTime() >= time;
     }
 
     @Override
