@@ -9,7 +9,6 @@ import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
 
 import java.util.List;
-import java.util.Set;
 
 /**
    Abstract base class for Humans.
@@ -39,6 +38,7 @@ public abstract class Human extends StandardEntity {
         hp = new IntProperty(StandardPropertyURN.HP);
         damage = new IntProperty(StandardPropertyURN.DAMAGE);
         buriedness = new IntProperty(StandardPropertyURN.BURIEDNESS);
+        registerProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
     }
 
     /**
@@ -55,6 +55,7 @@ public abstract class Human extends StandardEntity {
         hp = new IntProperty(other.hp);
         damage = new IntProperty(other.damage);
         buriedness = new IntProperty(other.buriedness);
+        registerProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
     }
 
     @Override
@@ -86,20 +87,6 @@ public abstract class Human extends StandardEntity {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(position);
-        result.add(positionExtra);
-        result.add(positionHistory);
-        result.add(direction);
-        result.add(stamina);
-        result.add(hp);
-        result.add(damage);
-        result.add(buriedness);
-        return result;
     }
 
     @Override

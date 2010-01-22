@@ -13,7 +13,6 @@ import rescuecore2.misc.Pair;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Set;
 
 /**
    The Building object.
@@ -91,6 +90,7 @@ public class Building extends StandardEntity {
         importance = new IntProperty(StandardPropertyURN.IMPORTANCE);
         apexes = new IntArrayProperty(StandardPropertyURN.BUILDING_APEXES);
         entrances = new EntityRefListProperty(StandardPropertyURN.ENTRANCES);
+        registerProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
     }
 
     /**
@@ -113,6 +113,7 @@ public class Building extends StandardEntity {
         importance = new IntProperty(other.importance);
         apexes = new IntArrayProperty(other.apexes);
         entrances = new EntityRefListProperty(other.entrances);
+        registerProperties(x, y, floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, apexes, entrances);
     }
 
     @Override
@@ -161,26 +162,6 @@ public class Building extends StandardEntity {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(x);
-        result.add(y);
-        result.add(floors);
-        result.add(ignition);
-        result.add(fieryness);
-        result.add(brokenness);
-        result.add(code);
-        result.add(attributes);
-        result.add(groundArea);
-        result.add(totalArea);
-        result.add(temperature);
-        result.add(importance);
-        result.add(apexes);
-        result.add(entrances);
-        return result;
     }
 
     @Override

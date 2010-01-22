@@ -6,8 +6,6 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
 
-import java.util.Set;
-
 /**
    The Node object.
  */
@@ -27,6 +25,7 @@ public class Node extends Vertex {
         shortcut = new IntArrayProperty(StandardPropertyURN.SHORTCUT_TO_TURN);
         pocket = new IntArrayProperty(StandardPropertyURN.POCKET_TO_TURN_ACROSS);
         timing = new IntArrayProperty(StandardPropertyURN.SIGNAL_TIMING);
+        registerProperties(signal, shortcut, pocket, timing);
     }
 
     /**
@@ -39,6 +38,7 @@ public class Node extends Vertex {
         shortcut = new IntArrayProperty(other.shortcut);
         pocket = new IntArrayProperty(other.pocket);
         timing = new IntArrayProperty(other.timing);
+        registerProperties(signal, shortcut, pocket, timing);
     }
 
     @Override
@@ -67,16 +67,6 @@ public class Node extends Vertex {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(signal);
-        result.add(shortcut);
-        result.add(pocket);
-        result.add(timing);
-        return result;
     }
 
     /**

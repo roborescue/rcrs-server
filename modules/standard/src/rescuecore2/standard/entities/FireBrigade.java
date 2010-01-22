@@ -5,8 +5,6 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 
-import java.util.Set;
-
 /**
    The FireBrigade object.
  */
@@ -20,6 +18,7 @@ public class FireBrigade extends Human {
     public FireBrigade(EntityID id) {
         super(id, StandardEntityURN.FIRE_BRIGADE);
         water = new IntProperty(StandardPropertyURN.WATER_QUANTITY);
+        registerProperties(water);
     }
 
     /**
@@ -29,6 +28,7 @@ public class FireBrigade extends Human {
     public FireBrigade(FireBrigade other) {
         super(other);
         water = new IntProperty(other.water);
+        registerProperties(water);
     }
 
     @Override
@@ -46,13 +46,6 @@ public class FireBrigade extends Human {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(water);
-        return result;
     }
 
     @Override

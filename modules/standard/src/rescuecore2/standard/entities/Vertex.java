@@ -9,7 +9,6 @@ import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.misc.Pair;
 
 import java.util.List;
-import java.util.Set;
 
 /**
    Vertex-type entities (e.g. nodes).
@@ -29,6 +28,7 @@ public abstract class Vertex extends StandardEntity {
         x = new IntProperty(StandardPropertyURN.X);
         y = new IntProperty(StandardPropertyURN.Y);
         edges = new EntityRefListProperty(StandardPropertyURN.EDGES);
+        registerProperties(x, y, edges);
     }
 
     /**
@@ -40,6 +40,7 @@ public abstract class Vertex extends StandardEntity {
         x = new IntProperty(other.x);
         y = new IntProperty(other.y);
         edges = new EntityRefListProperty(other.edges);
+        registerProperties(x, y, edges);
     }
 
     @Override
@@ -61,15 +62,6 @@ public abstract class Vertex extends StandardEntity {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(x);
-        result.add(y);
-        result.add(edges);
-        return result;
     }
 
     @Override

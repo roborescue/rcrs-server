@@ -6,8 +6,6 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
 
-import java.util.Set;
-
 /**
    The Road object.
  */
@@ -43,6 +41,7 @@ public class Road extends Edge {
         linesToHead = new IntProperty(StandardPropertyURN.LINES_TO_HEAD);
         linesToTail = new IntProperty(StandardPropertyURN.LINES_TO_TAIL);
         widthForWalkers = new IntProperty(StandardPropertyURN.WIDTH_FOR_WALKERS);
+        registerProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
     }
 
     /**
@@ -63,6 +62,7 @@ public class Road extends Edge {
         linesToHead = new IntProperty(other.linesToHead);
         linesToTail = new IntProperty(other.linesToTail);
         widthForWalkers = new IntProperty(other.widthForWalkers);
+        registerProperties(kind, carsToHead, carsToTail, humansToHead, humansToTail, width, block, cost, hasMedian, linesToHead, linesToTail, widthForWalkers);
     }
 
     @Override
@@ -107,24 +107,6 @@ public class Road extends Edge {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(kind);
-        result.add(carsToHead);
-        result.add(carsToTail);
-        result.add(humansToHead);
-        result.add(humansToTail);
-        result.add(width);
-        result.add(block);
-        result.add(cost);
-        result.add(hasMedian);
-        result.add(linesToHead);
-        result.add(linesToTail);
-        result.add(widthForWalkers);
-        return result;
     }
 
     /**

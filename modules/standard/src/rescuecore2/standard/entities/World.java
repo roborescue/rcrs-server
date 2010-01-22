@@ -5,8 +5,6 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
 
-import java.util.Set;
-
 /**
    The World object.
  */
@@ -28,6 +26,7 @@ public class World extends StandardEntity {
         latitude = new IntProperty(StandardPropertyURN.LATITUDE);
         windForce = new IntProperty(StandardPropertyURN.WIND_FORCE);
         windDirection = new IntProperty(StandardPropertyURN.WIND_DIRECTION);
+        registerProperties(startTime, longitude, latitude, windForce, windDirection);
     }
 
     /**
@@ -41,6 +40,7 @@ public class World extends StandardEntity {
         latitude = new IntProperty(other.latitude);
         windForce = new IntProperty(other.windForce);
         windDirection = new IntProperty(other.windDirection);
+        registerProperties(startTime, longitude, latitude, windForce, windDirection);
     }
 
     @Override
@@ -71,17 +71,6 @@ public class World extends StandardEntity {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(startTime);
-        result.add(longitude);
-        result.add(latitude);
-        result.add(windForce);
-        result.add(windDirection);
-        return result;
     }
 
     /**
