@@ -81,9 +81,11 @@ public class EntityRefListProperty extends AbstractProperty {
        @param newIDs The new id list.
     */
     public void setValue(List<EntityID> newIDs) {
+        List<EntityID> old = new ArrayList<EntityID>(ids);
         ids.clear();
         ids.addAll(newIDs);
         setDefined();
+        fireChange(old, Collections.unmodifiableList(ids));
     }
 
     /**
@@ -91,15 +93,19 @@ public class EntityRefListProperty extends AbstractProperty {
        @param id The id to add.
      */
     public void addValue(EntityID id) {
+        List<EntityID> old = new ArrayList<EntityID>(ids);
         ids.add(id);
         setDefined();
+        fireChange(old, Collections.unmodifiableList(ids));
     }
 
     /**
        Remove all entries from this list but keep it defined.
      */
     public void clearValues() {
+        List<EntityID> old = new ArrayList<EntityID>(ids);
         ids.clear();
+        fireChange(old, Collections.unmodifiableList(ids));
     }
 
     @Override
@@ -129,11 +135,11 @@ public class EntityRefListProperty extends AbstractProperty {
     @Override
     public void read(InputStream in) throws IOException {
         int count = readInt32(in);
-        ids.clear();
+        List<EntityID> newIDs = new ArrayList<EntityID>(count);
         for (int i = 0; i < count; ++i) {
-            ids.add(new EntityID(readInt32(in)));
+            newIDs.add(new EntityID(readInt32(in)));
         }
-        setDefined();
+        setValue(newIDs);
     }
 
     @Override

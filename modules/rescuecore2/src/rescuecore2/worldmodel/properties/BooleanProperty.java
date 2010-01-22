@@ -74,8 +74,13 @@ public class BooleanProperty extends AbstractProperty {
        @param value The new value.
     */
     public void setValue(boolean value) {
+        boolean old = this.value;
+        boolean wasDefined = isDefined();
         this.value = value;
         setDefined();
+        if (!wasDefined || old != value) {
+            fireChange(old, value);
+        }
     }
 
     @Override

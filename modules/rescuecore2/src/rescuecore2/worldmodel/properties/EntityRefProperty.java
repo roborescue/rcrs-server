@@ -75,8 +75,13 @@ public class EntityRefProperty extends AbstractProperty {
        @param value The new value.
     */
     public void setValue(EntityID value) {
+        EntityID old = this.value;
+        boolean wasDefined = isDefined();
         this.value = value;
         setDefined();
+        if (!wasDefined || !old.equals(value)) {
+            fireChange(old, value);
+        }
     }
 
     @Override

@@ -21,10 +21,10 @@ import rescuecore2.registry.Registry;
 public abstract class AbstractEntity implements Entity {
     private static final String END_OF_PROPERTIES = "";
 
-    /** Map from id to Property. */
     private final EntityID id;
     private final String urn;
     private final Set<EntityListener> listeners;
+    private final Set<Property> properties;
 
     /**
        Construct an AbstractEntity with a set of properties.
@@ -35,6 +35,7 @@ public abstract class AbstractEntity implements Entity {
         this.id = id;
         this.urn = urn;
         listeners = new HashSet<EntityListener>();
+        properties = new HashSet<Property>();
     }
 
     /**
@@ -85,8 +86,8 @@ public abstract class AbstractEntity implements Entity {
     protected abstract Entity copyImpl();
 
     @Override
-    public Set<Property> getProperties() {
-        return new HashSet<Property>();
+    public final Set<Property> getProperties() {
+        return properties;
     }
 
     @Override
@@ -175,16 +176,31 @@ public abstract class AbstractEntity implements Entity {
     }
 
     /**
+       Register a set of properties.
+       @param props The properties to register.
+     */
+    protected void registerProperties(Property... props) {
+        for (Property p : props) {
+            properties.add(p);
+            if (p instanceof AbstractProperty) {
+                ((AbstractProperty)p).setEntity(this);
+            }
+        }
+    }
+
+    /**
        Notify all listeners that a property has changed.
        @param p The changed property.
+       @param oldValue The old value.
+       @param newValue The new value.
     */
-    protected void firePropertyChanged(Property p) {
+    protected void firePropertyChanged(Property p, Object oldValue, Object newValue) {
         Collection<EntityListener> copy;
         synchronized (listeners) {
             copy = new HashSet<EntityListener>(listeners);
         }
         for (EntityListener next : copy) {
-            next.propertyChanged(this, p);
+            next.propertyChanged(this, p, oldValue, newValue);
         }
     }
 }

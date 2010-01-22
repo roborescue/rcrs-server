@@ -74,8 +74,13 @@ public class IntProperty extends AbstractProperty {
        @param value The new value.
     */
     public void setValue(int value) {
+        int old = this.value;
+        boolean wasDefined = isDefined();
         this.value = value;
         setDefined();
+        if (!wasDefined || old != value) {
+            fireChange(old, value);
+        }
     }
 
     @Override

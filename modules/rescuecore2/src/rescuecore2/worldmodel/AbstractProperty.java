@@ -6,6 +6,9 @@ package rescuecore2.worldmodel;
 public abstract class AbstractProperty implements Property {
     private boolean defined;
     private final String urn;
+    // CHECKSTYLE:OFF:IllegalType
+    private AbstractEntity entity;
+    // CHECKSTYLE:ON:IllegalType
 
     /**
        Construct a property with a given type and assume that the value of this property is initially undefined.
@@ -31,6 +34,7 @@ public abstract class AbstractProperty implements Property {
     protected AbstractProperty(String urn, boolean defined) {
         this.urn = urn;
         this.defined = defined;
+        entity = null;
     }
 
     /**
@@ -57,6 +61,16 @@ public abstract class AbstractProperty implements Property {
         defined = true;
     }
 
+    /**
+       Set this property's containing Entity.
+       @param e The AbstractEntity that holds this property.
+    */
+    // CHECKSTYLE:OFF:IllegalType
+    protected void setEntity(AbstractEntity e) {
+        // CHECKSTYLE:ON:IllegalType
+        entity = e;
+    }
+
     @Override
     public boolean isDefined() {
         return defined;
@@ -64,11 +78,24 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public void undefine() {
+        Object old = getValue();
         defined = false;
+        fireChange(old, null);
     }
 
     @Override
     public String getURN() {
         return urn;
+    }
+
+    /**
+       Notify the entity that this property has changed.
+       @param oldValue The old value of this property.
+       @param newValue The new value of this property.
+    */
+    protected void fireChange(Object oldValue, Object newValue) {
+        if (entity != null) {
+            entity.firePropertyChanged(this, oldValue, newValue);
+        }
     }
 }

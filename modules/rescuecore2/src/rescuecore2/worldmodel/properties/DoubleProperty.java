@@ -74,8 +74,13 @@ public class DoubleProperty extends AbstractProperty {
        @param value The new value.
     */
     public void setValue(double value) {
+        double old = this.value;
+        boolean wasDefined = isDefined();
         this.value = value;
         setDefined();
+        if (!wasDefined || old != value) {
+            fireChange(old, value);
+        }
     }
 
     @Override

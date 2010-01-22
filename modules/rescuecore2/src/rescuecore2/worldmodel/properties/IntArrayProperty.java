@@ -92,11 +92,13 @@ public class IntArrayProperty extends AbstractProperty {
        @param values The new values.
     */
     public void setValue(int[] values) {
+        int[] old = getValue();
         this.data = new ArrayList<Integer>(values.length);
         for (Integer next : values) {
             data.add(next);
         }
         setDefined();
+        fireChange(old, getValue());
     }
 
     /**
@@ -104,8 +106,10 @@ public class IntArrayProperty extends AbstractProperty {
        @param i The value to add.
     */
     public void push(int i) {
+        int[] old = getValue();
         setDefined();
         data.add(i);
+        fireChange(old, getValue());
     }
 
     @Override
@@ -135,7 +139,6 @@ public class IntArrayProperty extends AbstractProperty {
     @Override
     public void read(InputStream in) throws IOException {
         int size = readInt32(in);
-        data.clear();
         int[] result = new int[size];
         for (int i = 0; i < size; ++i) {
             result[i] = readInt32(in);
