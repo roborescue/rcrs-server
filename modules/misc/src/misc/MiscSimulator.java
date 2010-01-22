@@ -5,9 +5,10 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.swing.JComponent;
+
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSCommands;
-import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityListener;
@@ -18,23 +19,41 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.entities.PoliceForce;
+import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.messages.AKRescue;
+import rescuecore2.standard.messages.AKClear;
 import rescuecore2.standard.components.StandardSimulator;
+
+import rescuecore2.GUIComponent;
 
 /**
  * Implementation of the legacy misc simulator.
  * @author Maitreyi Nanjanath
  * @author Cameron Skinner
  */
-public class MiscSimulator extends StandardSimulator {
+public class MiscSimulator extends StandardSimulator implements GUIComponent {
     private Map<EntityID, HumanAttributes> humans;
-    private Map<EntityID, Integer> brokenBuildings;
     private Set<EntityID> newlyBrokenBuildings;
 
     private MiscParameters parameters;
+    private MiscSimulatorGUI gui;
 
-    private int updateTime = -1;
+    private int roadClearRate;
+
+    @Override
+    public JComponent getGUIComponent() {
+        if (gui == null) {
+            gui = new MiscSimulatorGUI();
+        }
+        return gui;
+    }
+
+    @Override
+    public String getGUIComponentName() {
+        return "Misc simulator";
+    }
 
     @Override
     protected void postConnect() {
@@ -42,7 +61,6 @@ public class MiscSimulator extends StandardSimulator {
 
         parameters = new MiscParameters(config);
         humans = new HashMap<EntityID, HumanAttributes>();
-        brokenBuildings = new HashMap<EntityID, Integer>();
         newlyBrokenBuildings = new HashSet<EntityID>();
 
         System.out.println("MiscSimulator connected. World has " + model.getAllEntities().size() + " entities.");
@@ -59,34 +77,8 @@ public class MiscSimulator extends StandardSimulator {
                 humans.put(ha.getID(), ha);
             }
         }
-    }
 
-    @Override
-    protected void handleUpdate(KSUpdate u) {
-        super.handleUpdate(u);
-        updateTime = u.getTime();
-        System.out.println("MiscSimulator received update: " + u);
-        // Look for newly broken buildings
-        for (EntityID id : u.getChangeSet().getChangedEntities()) {
-            Entity e = model.getEntity(id);
-            if (!(e instanceof Building)) {
-                continue; //we want to only look at buildings
-            }
-            Building b = (Building)e;
-            Property p = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.toString());
-            if (p != null) {
-                System.out.println("Brokenness changed: " + e.getID() + " -> " + p);
-                if (b.isBrokennessDefined() && b.getBrokenness() > 0) { // building is broken
-                    // Was it an increase?
-                    int old = brokenBuildings.containsKey(b.getID()) ? brokenBuildings.get(b.getID()) : 0;
-                    if (b.getBrokenness() > old) {
-                        newlyBrokenBuildings.add(b.getID());
-                        System.out.println("Newly broken");
-                    }
-                    brokenBuildings.put(b.getID(), b.getBrokenness());
-                }
-            }
-        }
+        roadClearRate = config.getIntValue("misc.clear.rate");
     }
 
     @Override
@@ -99,6 +91,10 @@ public class MiscSimulator extends StandardSimulator {
                     Human human = (Human)(model.getEntity(((AKRescue)com).getTarget()));
                     handleRescue(human, changes);
                 }
+                if (com instanceof AKClear) {
+                    Road road = (Road)(model.getEntity(((AKClear)com).getTarget()));
+                    handleClear(road, changes);
+                }
             }
         }
 
@@ -107,6 +103,10 @@ public class MiscSimulator extends StandardSimulator {
         updateDamage(changes);
         // Clean up
         newlyBrokenBuildings.clear();
+        writeDebugOutput(c.getTime());
+        if (gui != null) {
+            gui.refresh(humans.values());
+        }
     }
 
     private void processBrokenBuildings(ChangeSet changes) {
@@ -156,15 +156,35 @@ public class MiscSimulator extends StandardSimulator {
         }
     }
 
-    private void updateDamage(ChangeSet changes) {
-        System.out.println("Agents damaged or buried at timestep " + updateTime);
+    private void writeDebugOutput(int time) {
+        System.out.println("Agents damaged or buried at timestep " + time);
         System.out.println("  ID  |  HP  | Damage | Bury | Collapse | Fire | Buriedness");
+        for (HumanAttributes ha : humans.values()) {
+            Human h = ha.getHuman();
+            int hp = h.isHPDefined() ? h.getHP() : 0;
+            int damage = ha.getTotalDamage();
+            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
+            boolean isAlive = hp > 0;
+            boolean hasDamage = damage > 0;
+            boolean isBuried = buriedness > 0;
+            if ((hasDamage || isBuried) && isAlive) {
+                System.out.println(" " + ha.getID() + "| "
+                                   + hp + "| "
+                                   + damage + "| "
+                                   + ha.getBuriednessDamage() + "| "
+                                   + ha.getCollapseDamage() + "| "
+                                   + ha.getFireDamage() + "| "
+                                   + buriedness);
+            }
+        }
+    }
+
+    private void updateDamage(ChangeSet changes) {
         for (HumanAttributes ha : humans.values()) {
             updateDamage(ha);
             Human h = ha.getHuman();
             int hp = h.isHPDefined() ? h.getHP() : 0;
             int damage = ha.getTotalDamage();
-            int buriedness = h.isBuriednessDefined() ? h.getBuriedness() : 0;
 
             h.setDamage(damage);
             changes.addChange(ha.getHuman(), ha.getHuman().getDamageProperty());
@@ -172,7 +192,6 @@ public class MiscSimulator extends StandardSimulator {
             // Update HP
             boolean isAlive = hp > 0;
             boolean hasDamage = damage > 0;
-            boolean isBuried = buriedness > 0;
 
             if (isAlive && hasDamage) {
                 int newHP = Math.max(0, hp - damage);
@@ -185,16 +204,6 @@ public class MiscSimulator extends StandardSimulator {
                 ha.clearDamage();
                 h.setDamage(0);
                 changes.addChange(ha.getHuman(), ha.getHuman().getDamageProperty());
-            }
-
-            if ((hasDamage || isBuried) && isAlive) {
-                System.out.println(" " + ha.getID() + "| "
-                                   + hp + "| "
-                                   + damage + "| "
-                                   + ha.getBuriednessDamage() + "| "
-                                   + ha.getCollapseDamage() + "| "
-                                   + ha.getFireDamage() + "| "
-                                   + buriedness);
             }
         }
     }
@@ -215,6 +224,9 @@ public class MiscSimulator extends StandardSimulator {
         }
         if (command instanceof AKRescue) {
             return checkRescue((AKRescue)command, e);
+        }
+        if (command instanceof AKClear) {
+            return checkClear((AKClear)command, e);
         }
         return false;
     }
@@ -256,31 +268,70 @@ public class MiscSimulator extends StandardSimulator {
         changes.addChange(target, target.getBuriednessProperty());
     }
 
+    private boolean checkClear(AKClear clear, Entity agent) {
+        EntityID targetID = clear.getTarget();
+        Entity target = model.getEntity(targetID);
+        if (!(agent instanceof PoliceForce)) {
+            System.out.println("Received a clear command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            return false;
+        }
+        if (target == null) {
+            System.out.println("Received a clear command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            return false;
+        }
+        if (!(target instanceof Road)) {
+            System.out.println("Received a clear command from agent " + agent.getID() + " for a non-road target: " + targetID + " is of type " + target.getURN());
+            return false;
+        }
+        Road r = (Road)target;
+        PoliceForce pf = (PoliceForce)agent;
+        if (!r.isBlockDefined() || r.getBlock() == 0) {
+            System.out.println("Received a clear command from agent " + agent.getID() + " for a non-blocked target " + targetID);
+            return false;
+        }
+        if (!pf.isPositionDefined()) {
+            System.out.println("Received a clear command from agent " + agent.getID() + " with no position");
+            return false;
+        }
+        EntityID pos = pf.getPosition();
+        if (!pos.equals(r.getID()) && !pos.equals(r.getHead()) && !pos.equals(r.getTail())) {
+            System.out.println("Received a clear command from agent " + agent.getID() + " for non-adjacent target " + target);
+            return false;
+        }
+        return true;
+    }
+
+    private void handleClear(Road target, ChangeSet changes) {
+        int length = target.getLength();
+        int oldBlock = target.getBlock();
+        int totalAreaBlocked = oldBlock * length;
+        int newAreaBlocked = totalAreaBlocked - roadClearRate;
+        if (newAreaBlocked < 0) {
+            newAreaBlocked = 0;
+        }
+        int newBlock = newAreaBlocked / length;
+        int newCost = (newBlock * length + roadClearRate - 1) / roadClearRate;
+        target.setBlock(newBlock);
+        target.setRepairCost(newCost);
+        changes.addChange(target, target.getBlockProperty());
+        changes.addChange(target, target.getRepairCostProperty());
+    }
+
     private class BuildingChangeListener implements EntityListener {
         @Override
-        public void propertyChanged(Entity e, Property p) {
+        public void propertyChanged(Entity e, Property p, Object oldValue, Object newValue) {
             if (!(e instanceof Building)) {
                 return; //we want to only look at buildings
             }
-            Building b = (Building)e;
             if (!p.getURN().equals(StandardPropertyURN.BROKENNESS.toString())) {
                 // Only care about brokenness changes
                 return;
             }
-            int brokenness = b.isBrokennessDefined() ? b.getBrokenness() : 0;
-            EntityID id = b.getID();
-            if (isIncrease(id, brokenness)) {
-                newlyBrokenBuildings.add(id);
+            double old = oldValue == null ? 0 : (Integer)oldValue;
+            double next = newValue == null ? 0 : (Integer)newValue;
+            if (next > old) {
+                newlyBrokenBuildings.add(e.getID());
             }
-            brokenBuildings.put(id, brokenness);
-        }
-
-        private boolean isIncrease(EntityID id, int brokenness) {
-            if (brokenBuildings.containsKey(id)) {
-                int old = brokenBuildings.get(id);
-                return brokenness > old;
-            }
-            return brokenness > 0;
         }
     }
 }
