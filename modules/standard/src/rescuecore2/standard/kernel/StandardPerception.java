@@ -11,8 +11,6 @@ import java.util.Dictionary;
 
 import kernel.Perception;
 import kernel.AgentProxy;
-import kernel.Kernel;
-import kernel.ui.KernelGUIComponent;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
@@ -26,6 +24,7 @@ import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.GUIComponent;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
@@ -45,7 +44,7 @@ import handy.swing.SliderComponent;
 /**
    Legacy implementation of perception with a GUI.
  */
-public class StandardPerception implements Perception, KernelGUIComponent {
+public class StandardPerception implements Perception, GUIComponent {
     private static final boolean DEFAULT_USE_FAR_FIRES = true;
     private static final int DEFAULT_HP_PRECISION = 1000;
     private static final int DEFAULT_DAMAGE_PRECISION = 100;
@@ -115,7 +114,7 @@ public class StandardPerception implements Perception, KernelGUIComponent {
     }
 
     @Override
-    public JComponent getGUIComponent(Kernel kernel, Config c) {
+    public JComponent getGUIComponent() {
         return new TunePanel();
     }
 

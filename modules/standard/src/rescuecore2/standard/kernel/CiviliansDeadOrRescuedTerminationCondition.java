@@ -5,7 +5,7 @@ import rescuecore2.standard.entities.Refuge;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.config.Config;
 
-import kernel.Kernel;
+import kernel.KernelState;
 import kernel.TerminationCondition;
 
 /**
@@ -17,7 +17,7 @@ public class CiviliansDeadOrRescuedTerminationCondition implements TerminationCo
     }
 
     @Override
-    public boolean shouldStop(Kernel k) {
+    public boolean shouldStop(KernelState k) {
         for (Entity next : k.getWorldModel()) {
             if (next instanceof Civilian) {
                 Civilian c = (Civilian)next;
