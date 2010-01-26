@@ -18,6 +18,7 @@
 #include "error.h"
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <stdio.h>
 
 namespace Librescue {
   Connection::Connection() {

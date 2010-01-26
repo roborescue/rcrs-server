@@ -18,6 +18,7 @@
 #include "input.h"
 #include <iostream>
 #include <stdexcept>
+#include <stdio.h>
 
 namespace Librescue {
   Error::Error() {

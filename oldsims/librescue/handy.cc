@@ -19,6 +19,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include <iostream>
+#include <stdio.h>
 
 namespace Librescue {
   bool before(struct timeval* first, struct timespec* last) {
