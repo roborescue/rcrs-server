@@ -43,7 +43,7 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         if (transform == null) {
             return;
         }
-        if (e.getButton() == MouseEvent.BUTTON3) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             Point p = fixEventPoint(e.getPoint());
             mouseDownX = transform.screenToX(p.x);
             mouseDownY = transform.screenToY(p.y);
@@ -53,7 +53,7 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON3) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             dragging = false;
         }
     }
