@@ -64,6 +64,9 @@ public class ShapeDebugFrame extends JFrame {
     private static final int LEGEND_WIDTH = 500;
     private static final int LEGEND_HEIGHT = 500;
 
+    private static final double ZOOM_TO_OFFSET = 0.1;
+    private static final double ZOOM_TO_WIDTH_FACTOR = 1.2;
+
     private JLabel title;
     private JButton step;
     private JButton cont;
@@ -319,8 +322,8 @@ public class ShapeDebugFrame extends JFrame {
                             Insets insets = getInsets();
                             Point p = new Point(e.getPoint());
                             p.translate(-insets.left, -insets.top);
-                            List<ShapeInfo> shapes = getShapesAtPoint(p);
-                            for (ShapeInfo next : shapes) {
+                            List<ShapeInfo> s = getShapesAtPoint(p);
+                            for (ShapeInfo next : s) {
                                 System.out.println(next.getObject());
                             }
                         }
@@ -392,39 +395,10 @@ public class ShapeDebugFrame extends JFrame {
         public void zoomTo(Collection<ShapeInfo> zoom) {
             Rectangle2D bounds = ShapeDebugFrame.this.getBounds(zoom);
             // Increase the bounds by 10%
-            double newX = bounds.getMinX() - (bounds.getWidth() / 10);
-            double newY = bounds.getMinY() - (bounds.getHeight() / 10);
-            double newWidth = bounds.getWidth() * 1.2;
-            double newHeight = bounds.getHeight() * 1.2;
-            bounds.setRect(newX, newY, newWidth, newHeight);
-            transform.show(bounds);
-            repaint();
-        }
-
-        private List<ShapeInfo> getShapesAtPoint(Point p) {
-            List<ShapeInfo> result = new ArrayList<ShapeInfo>();
-            for (Map.Entry<Shape, ShapeInfo> next : drawnShapes.entrySet()) {
-                Shape shape = next.getKey();
-                if (shape.contains(p)) {
-                    result.add(next.getValue());
-                }
-            }
-            transform = new ScreenTransform(minX, minY, maxX, maxY);
-            panZoom.setScreenTransform(transform);
-            repaint();
-        }
-
-        /**
-           Zoom to show a set of ShapeInfo objects.
-           @param zoom The set of objects to zoom to.
-        */
-        public void zoomTo(Collection<ShapeInfo> zoom) {
-            Rectangle2D bounds = ShapeDebugFrame.getBounds(zoom);
-            // Increase the bounds by 10%
-            double newX = bounds.getMinX() - (bounds.getWidth() / 10);
-            double newY = bounds.getMinY() - (bounds.getHeight() / 10);
-            double newWidth = bounds.getWidth() * 1.2;
-            double newHeight = bounds.getHeight() * 1.2;
+            double newX = bounds.getMinX() - (bounds.getWidth() * ZOOM_TO_OFFSET);
+            double newY = bounds.getMinY() - (bounds.getHeight() * ZOOM_TO_OFFSET);
+            double newWidth = bounds.getWidth() * ZOOM_TO_WIDTH_FACTOR;
+            double newHeight = bounds.getHeight() * ZOOM_TO_WIDTH_FACTOR;
             bounds.setRect(newX, newY, newWidth, newHeight);
             transform.show(bounds);
             repaint();
@@ -547,7 +521,7 @@ public class ShapeDebugFrame extends JFrame {
            Paint this ShapeInfo on a the legend.
            @param g The Graphics2D to draw on.
            @param width The available width.
-           @param width The available height.
+           @param height The available height.
         */
         public abstract void paintLegend(Graphics2D g, int width, int height);
 

@@ -131,7 +131,7 @@ public class ScreenTransform {
         double x2 = screenToX(width);
         double y1 = screenToY(height);
         double y2 = screenToY(0);
-        viewBounds = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1); 
+        viewBounds = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
     }
 
     /**

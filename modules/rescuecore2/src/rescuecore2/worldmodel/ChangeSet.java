@@ -229,7 +229,7 @@ public class ChangeSet {
             result.append("]");
         }
         result.append(" {Deleted ");
-        for (Iterator<EntityID> it = deleted.iterator(); it.hasNext(); ) {
+        for (Iterator<EntityID> it = deleted.iterator(); it.hasNext();) {
             result.append(it.next());
             if (it.hasNext()) {
                 result.append(", ");
