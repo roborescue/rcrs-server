@@ -7,6 +7,7 @@ import static rescuecore2.misc.geometry.GeometryTools2D.nearlyZero;
  */
 public class Line2D {
     private Point2D origin;
+    private Point2D end;
     private Vector2D direction;
 
     /**
@@ -17,6 +18,7 @@ public class Line2D {
     public Line2D(Point2D origin, Vector2D direction) {
         this.origin = origin;
         this.direction = direction;
+        this.end = origin.plus(direction);
     }
 
     /**
@@ -26,6 +28,7 @@ public class Line2D {
      */
     public Line2D(Point2D origin, Point2D end) {
         this.origin = origin;
+        this.end = end;
         this.direction = end.minus(origin);
     }
 
@@ -62,7 +65,7 @@ public class Line2D {
        @return The endpoint.
     */
     public Point2D getEndPoint() {
-        return origin.plus(direction);
+        return end;
     }
 
     /**
@@ -75,7 +78,7 @@ public class Line2D {
 
     @Override
     public String toString() {
-        return "Line from " + origin + " towards " + origin.plus(direction) + " (direction = " + direction + ")";
+        return "Line from " + origin + " towards " + end + " (direction = " + direction + ")";
     }
 
     /**
