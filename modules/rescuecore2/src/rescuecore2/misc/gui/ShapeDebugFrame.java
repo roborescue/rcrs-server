@@ -7,6 +7,9 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.BorderFactory;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -34,6 +37,7 @@ import java.awt.event.MouseEvent;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -44,11 +48,17 @@ import java.util.Arrays;
 
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.GeometryTools2D;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 
 /**
    A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a {@link #show(ShapeInfo...)} method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and activated. The "continue" button will hide and {@link #deactivate} the frame so that further calls to show will return immediately.
  */
 public class ShapeDebugFrame extends JFrame {
+    private static final Logger LOG = LogManager.getLogger(ShapeDebugFrame.class);
+
     private static final int DISPLAY_WIDTH = 500;
     private static final int DISPLAY_HEIGHT = 500;
     private static final int LEGEND_WIDTH = 500;
@@ -63,6 +73,7 @@ public class ShapeDebugFrame extends JFrame {
     private boolean enabled;
     private Collection<? extends ShapeInfo> background;
     private boolean backgroundEnabled;
+    private JPopupMenu menu;
 
     /**
        Construct a new ShapeDebugFrame.
@@ -129,9 +140,34 @@ public class ShapeDebugFrame extends JFrame {
                     // CHECKSTYLE:ON:EmptyBlock
                 }
             });
+        MouseAdapter m = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        menu.show(e.getComponent(), e.getPoint().x, e.getPoint().y);
+                    }
+                }
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        menu.show(e.getComponent(), e.getPoint().x, e.getPoint().y);
+                    }
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        menu.show(e.getComponent(), e.getPoint().x, e.getPoint().y);
+                    }
+                }
+            };
+        addMouseListener(m);
+        viewer.addMouseListener(m);
         enabled = true;
+        clearBackground();
         backgroundEnabled = true;
         pack();
+        menu = new JPopupMenu();
+        menu.add(new BackgroundAction());
     }
 
     /**
@@ -140,6 +176,9 @@ public class ShapeDebugFrame extends JFrame {
     */
     public void setBackground(Collection<? extends ShapeInfo> back) {
         background = back;
+        if (background == null) {
+            clearBackground();
+        }
     }
 
     /**
@@ -188,11 +227,7 @@ public class ShapeDebugFrame extends JFrame {
         if (!enabled) {
             return;
         }
-        final List<ShapeInfo> allShapes = new ArrayList<ShapeInfo>();
-        if (backgroundEnabled && background != null) {
-            allShapes.addAll(background);
-        }
-        allShapes.addAll(shapes);
+        final List<ShapeInfo> allShapes = new ArrayList<ShapeInfo>(shapes);
         setVisible(true);
         SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -236,32 +271,36 @@ public class ShapeDebugFrame extends JFrame {
         setVisible(false);
     }
 
-    private static Rectangle2D getBounds(Collection<ShapeInfo> shapes) {
+    private Rectangle2D getBounds(Collection<? extends ShapeInfo>... shapes) {
         double minX = Double.POSITIVE_INFINITY;
         double minY = Double.POSITIVE_INFINITY;
         double maxX = Double.NEGATIVE_INFINITY;
         double maxY = Double.NEGATIVE_INFINITY;
-        for (ShapeInfo next : shapes) {
-            Shape bounds = next.getBoundsShape();
-            if (bounds != null) {
-                Rectangle2D rect = bounds.getBounds2D();
-                minX = Math.min(minX, rect.getMinX());
-                maxX = Math.max(maxX, rect.getMaxX());
-                minY = Math.min(minY, rect.getMinY());
-                maxY = Math.max(maxY, rect.getMaxY());
-            }
-            java.awt.geom.Point2D point = next.getBoundsPoint();
-            if (point != null) {
-                minX = Math.min(minX, point.getX());
-                maxX = Math.max(maxX, point.getX());
-                minY = Math.min(minY, point.getY());
-                maxY = Math.max(maxY, point.getY());
+        for (Collection<? extends ShapeInfo> c : shapes) {
+            if (c != null) {
+                for (ShapeInfo next : c) {
+                    Shape bounds = next.getBoundsShape();
+                    if (bounds != null) {
+                        Rectangle2D rect = bounds.getBounds2D();
+                        minX = Math.min(minX, rect.getMinX());
+                        maxX = Math.max(maxX, rect.getMaxX());
+                        minY = Math.min(minY, rect.getMinY());
+                        maxY = Math.max(maxY, rect.getMaxY());
+                    }
+                    java.awt.geom.Point2D point = next.getBoundsPoint();
+                    if (point != null) {
+                        minX = Math.min(minX, point.getX());
+                        maxX = Math.max(maxX, point.getX());
+                        minY = Math.min(minY, point.getY());
+                        maxY = Math.max(maxY, point.getY());
+                    }
+                }
             }
         }
         return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 
-    private static class ShapeViewer extends JComponent {
+    private class ShapeViewer extends JComponent {
         private List<ShapeInfo> shapes;
         private ScreenTransform transform;
         private PanZoomListener panZoom;
@@ -276,12 +315,14 @@ public class ShapeDebugFrame extends JFrame {
             shapes = new ArrayList<ShapeInfo>();
             addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
-                        Insets insets = getInsets();
-                        Point p = new Point(e.getPoint());
-                        p.translate(-insets.left, -insets.top);
-                        List<ShapeInfo> shapes = getShapesAtPoint(p);
-                        for (ShapeInfo next : shapes) {
-                            System.out.println(next.getObject());
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+                            Insets insets = getInsets();
+                            Point p = new Point(e.getPoint());
+                            p.translate(-insets.left, -insets.top);
+                            List<ShapeInfo> shapes = getShapesAtPoint(p);
+                            for (ShapeInfo next : shapes) {
+                                System.out.println(next.getObject());
+                            }
                         }
                     }
                 });
@@ -307,6 +348,22 @@ public class ShapeDebugFrame extends JFrame {
                         drawnShapes.put(shape, next);
                     }
                 }
+                //                else {
+                    //                    LOG.debug("Pruned " + next);
+                    //                    LOG.debug("Shape bounds: " + next.getBoundsShape());
+                //                }
+            }
+            if (backgroundEnabled) {
+                for (ShapeInfo next : background) {
+                    boolean visible = transform.isInView(next.getBoundsShape()) || transform.isInView(next.getBoundsPoint());
+                    if (visible) {
+                        Graphics g = graphics.create(insets.left, insets.top, width, height);
+                        Shape shape = next.paint((Graphics2D)g, transform);
+                        if (shape != null) {
+                            drawnShapes.put(shape, next);
+                        }
+                    }
+                }
             }
         }
 
@@ -322,8 +379,37 @@ public class ShapeDebugFrame extends JFrame {
         public void setShapes(Collection<ShapeInfo> s) {
             shapes.clear();
             shapes.addAll(s);
-            Rectangle2D bounds = ShapeDebugFrame.getBounds(shapes);
+            Rectangle2D bounds = ShapeDebugFrame.this.getBounds(shapes, backgroundEnabled ? background : null);
             transform = new ScreenTransform(bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+            panZoom.setScreenTransform(transform);
+            repaint();
+        }
+
+        /**
+           Zoom to show a set of ShapeInfo objects.
+           @param zoom The set of objects to zoom to.
+        */
+        public void zoomTo(Collection<ShapeInfo> zoom) {
+            Rectangle2D bounds = ShapeDebugFrame.this.getBounds(zoom);
+            // Increase the bounds by 10%
+            double newX = bounds.getMinX() - (bounds.getWidth() / 10);
+            double newY = bounds.getMinY() - (bounds.getHeight() / 10);
+            double newWidth = bounds.getWidth() * 1.2;
+            double newHeight = bounds.getHeight() * 1.2;
+            bounds.setRect(newX, newY, newWidth, newHeight);
+            transform.show(bounds);
+            repaint();
+        }
+
+        private List<ShapeInfo> getShapesAtPoint(Point p) {
+            List<ShapeInfo> result = new ArrayList<ShapeInfo>();
+            for (Map.Entry<Shape, ShapeInfo> next : drawnShapes.entrySet()) {
+                Shape shape = next.getKey();
+                if (shape.contains(p)) {
+                    result.add(next.getValue());
+                }
+            }
+            transform = new ScreenTransform(minX, minY, maxX, maxY);
             panZoom.setScreenTransform(transform);
             repaint();
         }
@@ -359,7 +445,7 @@ public class ShapeDebugFrame extends JFrame {
     /**
        The legend for the debug frame.
     */
-    private static class ShapeInfoLegend extends JComponent {
+    private class ShapeInfoLegend extends JComponent {
         private static final int ROW_OFFSET = 5;
         private static final int X_INDENT = 5;
         private static final int ENTRY_WIDTH = 50;
@@ -387,6 +473,22 @@ public class ShapeDebugFrame extends JFrame {
             int height = metrics.getHeight();
             int y = getInsets().top;
             int x = getInsets().left + X_INDENT;
+            if (backgroundEnabled) {
+                for (ShapeInfo next : background) {
+                    String name = next.getName();
+                    if (name == null || "".equals(name)) {
+                        continue;
+                    }
+                    if (seen.contains(name)) {
+                        continue;
+                    }
+                    seen.add(name);
+                    next.paintLegend((Graphics2D)g.create(x, y + (height / 2) - (ENTRY_HEIGHT / 2), ENTRY_WIDTH, ENTRY_HEIGHT), ENTRY_WIDTH, ENTRY_HEIGHT);
+                    g.setColor(Color.black);
+                    g.drawString(next.getName(), x + ENTRY_WIDTH + X_INDENT, y + metrics.getAscent());
+                    y += height + ROW_OFFSET;
+                }
+            }
             for (ShapeInfo next : shapes) {
                 String name = next.getName();
                 if (name == null || "".equals(name)) {
@@ -650,12 +752,12 @@ public class ShapeDebugFrame extends JFrame {
        A ShapeInfo that encapsulates a Line2D.
     */
     public static class Line2DShapeInfo extends ShapeInfo {
-        private static final int SIZE = 1;
+        private static final int SIZE = 2;
         private static final BasicStroke THICK_STROKE = new BasicStroke(SIZE * 3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
         private static final BasicStroke THIN_STROKE = new BasicStroke(SIZE, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 
-        private Line2D line;
-        private java.awt.geom.Line2D bounds;
+        private Collection<Line2D> lines;
+        private Shape bounds;
         private boolean arrow;
         private boolean thick;
         private Color colour;
@@ -669,27 +771,59 @@ public class ShapeDebugFrame extends JFrame {
            @param arrow Whether to draw an arrow showing the direction of the line.
         */
         public Line2DShapeInfo(Line2D line, String name, Color colour, boolean thick, boolean arrow) {
-            super(line, name);
-            this.line = line;
+            this(Collections.singleton(line), name, colour, thick, arrow);
+        }
+
+        /**
+           Construct a new Line2DShapeInfo object.
+           @param lines The lines to display.
+           @param name The name of the line.
+           @param colour The colour of the line.
+           @param thick Whether to draw the line with a thick stroke.
+           @param arrow Whether to draw an arrow showing the direction of the line.
+        */
+        public Line2DShapeInfo(Collection<Line2D> lines, String name, Color colour, boolean thick, boolean arrow) {
+            super(lines, name);
+            this.lines = lines;
             this.arrow = arrow;
             this.thick = thick;
             this.colour = colour;
-            if (line != null) {
-                bounds = new java.awt.geom.Line2D.Double(line.getOrigin().getX(), line.getOrigin().getY(), line.getEndPoint().getX(), line.getEndPoint().getY());
+            if (lines.isEmpty()) {
+                return;
+            }
+            if (lines.size() == 1) {
+                Line2D l = lines.iterator().next();
+                bounds = new java.awt.geom.Line2D.Double(l.getOrigin().getX(), l.getOrigin().getY(), l.getEndPoint().getX(), l.getEndPoint().getY());
+            }
+            else {
+                double xMin = Double.POSITIVE_INFINITY;
+                double yMin = Double.POSITIVE_INFINITY;
+                double xMax = Double.NEGATIVE_INFINITY;
+                double yMax = Double.NEGATIVE_INFINITY;
+                for (Line2D line : lines) {
+                    xMin = Math.min(xMin, line.getOrigin().getX());
+                    xMax = Math.max(xMax, line.getOrigin().getX());
+                    xMin = Math.min(xMin, line.getEndPoint().getX());
+                    xMax = Math.max(xMax, line.getEndPoint().getX());
+                    yMin = Math.min(yMin, line.getOrigin().getY());
+                    yMax = Math.max(yMax, line.getOrigin().getY());
+                    yMin = Math.min(yMin, line.getEndPoint().getY());
+                    yMax = Math.max(yMax, line.getEndPoint().getY());
+                }
+                double xRange = xMax - xMin;
+                double yRange = yMax - yMin;
+                bounds = new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
+                if (GeometryTools2D.nearlyZero(xRange) || GeometryTools2D.nearlyZero(yRange)) {
+                    bounds = new java.awt.geom.Line2D.Double(xMin, yMin, xMax, yMax);
+                }
             }
         }
 
         @Override
         public Shape paint(Graphics2D g, ScreenTransform transform) {
-            if (line == null) {
+            if (lines.isEmpty()) {
                 return null;
             }
-            Point2D start = line.getOrigin();
-            Point2D end = line.getEndPoint();
-            int x1 = transform.xToScreen(start.getX());
-            int y1 = transform.yToScreen(start.getY());
-            int x2 = transform.xToScreen(end.getX());
-            int y2 = transform.yToScreen(end.getY());
             if (thick) {
                 g.setStroke(THICK_STROKE);
             }
@@ -697,11 +831,22 @@ public class ShapeDebugFrame extends JFrame {
                 g.setStroke(THIN_STROKE);
             }
             g.setColor(colour);
-            g.drawLine(x1, y1, x2, y2);
-            if (arrow) {
-                DrawingTools.drawArrowHeads(x1, y1, x2, y2, g);
+            Path2D result = new Path2D.Double();
+            for (Line2D line : lines) {
+                Point2D start = line.getOrigin();
+                Point2D end = line.getEndPoint();
+                int x1 = transform.xToScreen(start.getX());
+                int y1 = transform.yToScreen(start.getY());
+                int x2 = transform.xToScreen(end.getX());
+                int y2 = transform.yToScreen(end.getY());
+                g.drawLine(x1, y1, x2, y2);
+                if (arrow) {
+                    DrawingTools.drawArrowHeads(x1, y1, x2, y2, g);
+                }
+                result.moveTo(x1, y1);
+                result.lineTo(x2, y2);
             }
-            return g.getStroke().createStrokedShape(new java.awt.geom.Line2D.Double(x1, y1, x2, y2));
+            return g.getStroke().createStrokedShape(result);
         }
 
         @Override
@@ -720,13 +865,29 @@ public class ShapeDebugFrame extends JFrame {
         }
 
         @Override
-        public java.awt.geom.Line2D getBoundsShape() {
+        public Shape getBoundsShape() {
             return bounds;
         }
 
         @Override
         public java.awt.geom.Point2D getBoundsPoint() {
             return null;
+        }
+    }
+
+    private class BackgroundAction extends AbstractAction {
+        public BackgroundAction() {
+            super(backgroundEnabled ? "Hide background" : "Show background");
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(backgroundEnabled));
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            boolean selected = ((Boolean)getValue(Action.SELECTED_KEY)).booleanValue();
+            setBackgroundEnabled(!selected);
+            putValue(Action.SELECTED_KEY, Boolean.valueOf(backgroundEnabled));
+            putValue(Action.NAME, backgroundEnabled ? "Hide background" : "Show background");
+            ShapeDebugFrame.this.repaint();
         }
     }
 }
