@@ -39,7 +39,7 @@ public abstract class Human extends StandardEntity {
         hp = new IntProperty(StandardPropertyURN.HP);
         damage = new IntProperty(StandardPropertyURN.DAMAGE);
         buriedness = new IntProperty(StandardPropertyURN.BURIEDNESS);
-        registerProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
+        registerProperties(x, y, position, positionHistory, travelDistance, direction, stamina, hp, damage, buriedness);
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class Human extends StandardEntity {
         hp = new IntProperty(other.hp);
         damage = new IntProperty(other.damage);
         buriedness = new IntProperty(other.buriedness);
-        registerProperties(position, positionExtra, positionHistory, direction, stamina, hp, damage, buriedness);
+        registerProperties(x, y, position, positionHistory, travelDistance, direction, stamina, hp, damage, buriedness);
     }
 
     @Override

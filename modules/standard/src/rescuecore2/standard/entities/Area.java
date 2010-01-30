@@ -76,16 +76,6 @@ public abstract class Area extends StandardEntity {
         }
     }
 
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(x);
-        result.add(y);
-        result.add(edges);
-        result.add(blockades);
-        return result;
-    }
-
     /**
        Get the X property.
        @return The X property.

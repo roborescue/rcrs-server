@@ -35,8 +35,24 @@ public class Blockade extends StandardEntity {
 	position = new EntityRefProperty(StandardPropertyURN.POSITION);
 	apexes = new IntArrayProperty(StandardPropertyURN.APEXES);
       	repairCost = new IntProperty(StandardPropertyURN.REPAIR_COST);
+        registerProperties(x, y, position, apexes, repairCost);
     }
     
+    /**
+       Blockade copy constructor.
+       @param other The Blockade to copy.
+     */
+    public Blockade(Blockade other) {
+	super(other);
+	x = new IntProperty(other.x);
+	y = new IntProperty(other.y);
+	position = new EntityRefProperty(other.position);
+	apexes = new IntArrayProperty(other.apexes);
+      	repairCost = new IntProperty(other.repairCost);
+        registerProperties(x, y, position, apexes, repairCost);
+    }
+    
+    @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
 	return new Pair<Integer, Integer>(x.getValue(), y.getValue());
     }
@@ -69,17 +85,6 @@ public class Blockade extends StandardEntity {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        Set<Property> result = super.getProperties();
-        result.add(x);
-        result.add(y);
-        result.add(position);
-        result.add(apexes);
-        result.add(repairCost);
-        return result;
     }
 
     /**
