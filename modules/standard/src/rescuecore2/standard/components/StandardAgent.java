@@ -22,12 +22,30 @@ import rescuecore2.standard.messages.AKTell;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
    Abstract base class for standard agents.
    @param <E> The subclass of StandardEntity that this agent wants to control.
 */
 public abstract class StandardAgent<E extends StandardEntity> extends AbstractAgent<StandardWorldModel, E> {
+    @Override
+    public final String[] getRequestedEntityURNs() {
+        EnumSet<StandardEntityURN> set = getRequestedEntityURNsEnum();
+        String[] result = new String[set.size()];
+        int i = 0;
+        for (StandardEntityURN next : set) {
+            result[i++] = next.name();
+        }
+        return result;
+    }
+
+    /**
+       Get an EnumSet containing requested entity URNs.
+       @return An EnumSet containing requested entity URNs.
+     */
+    protected abstract EnumSet<StandardEntityURN> getRequestedEntityURNsEnum();
+
     @Override
     protected StandardWorldModel createWorldModel() {
         return new StandardWorldModel();
