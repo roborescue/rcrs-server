@@ -7,23 +7,29 @@ import rescuecore2.Timestep;
  */
 public class KernelListenerAdapter implements KernelListener {
     @Override
-    public void timestepCompleted(Timestep time) {}
+    public void simulationStarted(Kernel kernel) {}
 
     @Override
-    public void agentAdded(AgentProxy agent) {}
+    public void simulationEnded(Kernel kernel) {}
 
     @Override
-    public void agentRemoved(AgentProxy agent) {}
+    public void timestepCompleted(Kernel kernel, Timestep time) {}
 
     @Override
-    public void simulatorAdded(SimulatorProxy simulator) {}
+    public void agentAdded(Kernel kernel, AgentProxy agent) {}
 
     @Override
-    public void simulatorRemoved(SimulatorProxy simulator) {}
+    public void agentRemoved(Kernel kernel, AgentProxy agent) {}
 
     @Override
-    public void viewerAdded(ViewerProxy viewer) {}
+    public void simulatorAdded(Kernel kernel, SimulatorProxy simulator) {}
 
     @Override
-    public void viewerRemoved(ViewerProxy viewer) {}
+    public void simulatorRemoved(Kernel kernel, SimulatorProxy simulator) {}
+
+    @Override
+    public void viewerAdded(Kernel kernel, ViewerProxy viewer) {}
+
+    @Override
+    public void viewerRemoved(Kernel kernel, ViewerProxy viewer) {}
 }

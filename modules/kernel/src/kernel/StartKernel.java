@@ -158,6 +158,9 @@ public final class StartKernel {
                 gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, !justRun, localRegistry);
                 for (GUIComponent next : kernelInfo.guiComponents) {
                     gui.addGUIComponent(next);
+                    if (next instanceof KernelListener) {
+                        kernelInfo.kernel.addKernelListener((KernelListener)next);
+                    }
                 }
                 JFrame frame = new JFrame("Kernel GUI");
                 frame.getContentPane().add(gui);

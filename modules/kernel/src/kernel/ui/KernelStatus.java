@@ -74,7 +74,20 @@ public class KernelStatus extends JPanel implements KernelListener {
     }
 
     @Override
-    public void timestepCompleted(final Timestep time) {
+    public void simulationStarted(Kernel kernel) {
+    }
+
+    @Override
+    public void simulationEnded(Kernel kernel) {
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    timeLabel.setText("Time: ended");
+                }
+            });
+    }
+
+    @Override
+    public void timestepCompleted(Kernel kernel, final Timestep time) {
         SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     timeLabel.setText("Time: " + time.getTime());
@@ -84,32 +97,32 @@ public class KernelStatus extends JPanel implements KernelListener {
     }
 
     @Override
-    public void agentAdded(AgentProxy info) {
+    public void agentAdded(Kernel kernel, AgentProxy info) {
         agents.add(info);
     }
 
     @Override
-    public void agentRemoved(AgentProxy info) {
+    public void agentRemoved(Kernel kernel, AgentProxy info) {
         agents.remove(info);
     }
 
     @Override
-    public void simulatorAdded(SimulatorProxy info) {
+    public void simulatorAdded(Kernel kernel, SimulatorProxy info) {
         simulators.add(info);
     }
 
     @Override
-    public void simulatorRemoved(SimulatorProxy info) {
+    public void simulatorRemoved(Kernel kernel, SimulatorProxy info) {
         simulators.remove(info);
     }
 
     @Override
-    public void viewerAdded(ViewerProxy info) {
+    public void viewerAdded(Kernel kernel, ViewerProxy info) {
         viewers.add(info);
     }
 
     @Override
-    public void viewerRemoved(ViewerProxy info) {
+    public void viewerRemoved(Kernel kernel, ViewerProxy info) {
         viewers.remove(info);
     }
 }

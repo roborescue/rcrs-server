@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 public class Kernel {
     private static final Log LOG = LogFactory.getLog(Kernel.class);
 
-    //    private Config config;
+    private Config config;
     private Perception perception;
     private CommunicationModel communicationModel;
     private WorldModel<? extends Entity> worldModel;
@@ -79,6 +79,7 @@ public class Kernel {
                   TerminationCondition termination,
                   ScoreFunction score,
                   CommandCollector collector) throws KernelException {
+        this.config = config;
         this.perception = perception;
         this.communicationModel = communicationModel;
         this.worldModel = worldModel;
@@ -128,6 +129,14 @@ public class Kernel {
         LOG.info("Score function: " + score);
         LOG.info("Termination condition: " + termination);
         LOG.info("Command collector: " + collector);
+    }
+
+    /**
+       Get the kernel's configuration.
+       @return The configuration.
+    */
+    public Config getConfig() {
+        return config;
     }
 
     /**
@@ -289,6 +298,9 @@ public class Kernel {
        @throws LogException If there is a problem writing the log.
     */
     public void timestep() throws InterruptedException, KernelException, LogException {
+        if (time == 0) {
+            fireStarted();
+        }
         synchronized (this) {
             if (isShutdown) {
                 return;
@@ -367,6 +379,7 @@ public class Kernel {
             }
             LOG.info("Kernel has shut down");
             isShutdown = true;
+            fireShutdown();
         }
     }
 
@@ -427,45 +440,57 @@ public class Kernel {
         return result;
     }
 
+    private void fireStarted() {
+        for (KernelListener next : getListeners()) {
+            next.simulationStarted(this);
+        }
+    }
+
+    private void fireShutdown() {
+        for (KernelListener next : getListeners()) {
+            next.simulationEnded(this);
+        }
+    }
+
     private void fireTimestepCompleted(Timestep timestep) {
         for (KernelListener next : getListeners()) {
-            next.timestepCompleted(timestep);
+            next.timestepCompleted(this, timestep);
         }
     }
 
     private void fireAgentAdded(AgentProxy agent) {
         for (KernelListener next : getListeners()) {
-            next.agentAdded(agent);
+            next.agentAdded(this, agent);
         }
     }
 
     private void fireAgentRemoved(AgentProxy agent) {
         for (KernelListener next : getListeners()) {
-            next.agentRemoved(agent);
+            next.agentRemoved(this, agent);
         }
     }
 
     private void fireSimulatorAdded(SimulatorProxy sim) {
         for (KernelListener next : getListeners()) {
-            next.simulatorAdded(sim);
+            next.simulatorAdded(this, sim);
         }
     }
 
     private void fireSimulatorRemoved(SimulatorProxy sim) {
         for (KernelListener next : getListeners()) {
-            next.simulatorRemoved(sim);
+            next.simulatorRemoved(this, sim);
         }
     }
 
     private void fireViewerAdded(ViewerProxy viewer) {
         for (KernelListener next : getListeners()) {
-            next.viewerAdded(viewer);
+            next.viewerAdded(this, viewer);
         }
     }
 
     private void fireViewerRemoved(ViewerProxy viewer) {
         for (KernelListener next : getListeners()) {
-            next.viewerRemoved(viewer);
+            next.viewerRemoved(this, viewer);
         }
     }
 }
