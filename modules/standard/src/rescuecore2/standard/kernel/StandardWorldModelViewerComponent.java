@@ -13,35 +13,28 @@ import rescuecore2.view.ViewComponent;
 import rescuecore2.view.RenderedObject;
 import rescuecore2.worldmodel.Entity;
 //import rescuecore2.config.Config;
-//import rescuecore2.Timestep;
+import rescuecore2.Timestep;
 import rescuecore2.GUIComponent;
 
 import rescuecore2.standard.view.StandardWorldModelViewer;
 
-//import kernel.KernelListenerAdapter;
+import kernel.Kernel;
+import kernel.KernelListenerAdapter;
 
 /**
    A KernelGUIComponent that will view a standard world model.
 */
-public class StandardWorldModelViewerComponent implements GUIComponent {
+public class StandardWorldModelViewerComponent extends KernelListenerAdapter implements GUIComponent {
     private static final int SIZE = 500;
 
-    @Override
-    public JComponent getGUIComponent() {
-        final StandardWorldModelViewer viewer = new StandardWorldModelViewer();
-        final EntityInspector inspector = new EntityInspector();
+    private StandardWorldModelViewer viewer;
+    private EntityInspector inspector;
+    private JComponent view;
+
+    public StandardWorldModelViewerComponent() {
+        viewer = new StandardWorldModelViewer();
+        inspector = new EntityInspector();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
-        /*
-        viewer.initialise(config);
-        viewer.view(kernel.getWorldModel());
-        kernel.addKernelListener(new KernelListenerAdapter() {
-                @Override
-                public void timestepCompleted(Timestep time) {
-                    viewer.view(kernel.getWorldModel(), time.getCommands(), time.getChangeSet());
-                    viewer.repaint();
-                }
-            });
-        */
         viewer.addViewListener(new ViewListener() {
                 @Override
                 public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
@@ -57,8 +50,25 @@ public class StandardWorldModelViewerComponent implements GUIComponent {
                 public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
                 }
             });
-        JComponent result = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, new JScrollPane(inspector));
-        return result;
+        view = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, new JScrollPane(inspector));
+    }
+
+    @Override
+    public void simulationStarted(Kernel kernel) {
+        viewer.initialise(kernel.getConfig());
+        viewer.view(kernel.getWorldModel());
+        viewer.repaint();
+    }
+
+    @Override
+    public void timestepCompleted(Kernel kernel, Timestep time) {
+        viewer.view(kernel.getWorldModel(), time.getCommands(), time.getChangeSet());
+        viewer.repaint();
+    }
+
+    @Override
+    public JComponent getGUIComponent() {
+        return view;
     }
 
     @Override
