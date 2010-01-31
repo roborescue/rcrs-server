@@ -19,8 +19,7 @@
   <property name="modules.ignition.depend" value="rescuecore2,standard"/>
   <property name="modules.clear.depend" value="rescuecore2,standard"/>
   <property name="modules.traffic3.depend" value="rescuecore2,standard"/>
-  <property name="modules.gis2.depend" value="rescuecore2,standard"/>
-  <property name="modules.maps.depend" value="rescuecore2,standard"/>
+  <property name="modules.gis2.depend" value="rescuecore2,standard,maps,kernel"/>
 
   <import file="${modules.dir}/rescuecore2/build.xml" optional="true"/>
   <import file="${modules.dir}/kernel/build.xml" optional="true"/>
@@ -93,9 +92,9 @@
   </path>
 
   <path id="path.common">
+    <path refid="path.supplement"/>
     <path refid="path.jars"/>
     <path refid="path.lib"/>
-    <path refid="path.supplement"/>
   </path>
 
   <path id="path.junit">
