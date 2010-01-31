@@ -2,6 +2,9 @@ package rescuecore2.registry;
 
 import java.util.EnumSet;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -11,6 +14,7 @@ import rescuecore2.worldmodel.EntityID;
  */
 public abstract class AbstractEntityFactory<T extends Enum<T>> implements EntityFactory {
     private Class<T> clazz;
+    private Method fromString;
 
     /**
        Constructor for AbstractEntityFactory.
@@ -18,6 +22,12 @@ public abstract class AbstractEntityFactory<T extends Enum<T>> implements Entity
     */
     protected AbstractEntityFactory(Class<T> clazz) {
         this.clazz = clazz;
+        try {
+            fromString = clazz.getDeclaredMethod("fromString", String.class);
+        }
+        catch (NoSuchMethodException e) {
+            fromString = null;
+        }
     }
 
     @Override
@@ -26,14 +36,28 @@ public abstract class AbstractEntityFactory<T extends Enum<T>> implements Entity
         String[] result = new String[set.size()];
         int i = 0;
         for (T next : set) {
-            result[i++] = next.name();
+            result[i++] = next.toString();
         }
         return result;
     }
 
     @Override
     public Entity makeEntity(String urn, EntityID id) {
-        T t = Enum.valueOf(clazz, urn);
+        T t = null;
+        if (fromString != null) {
+            try {
+                t = (T)fromString.invoke(null, urn);
+            }
+            catch (IllegalAccessException e) {
+                t = null;
+            }
+            catch (InvocationTargetException e) {
+                t = null;
+            }
+        }
+        if (t == null) {
+            t = Enum.valueOf(clazz, urn);
+        }
         return makeEntity(t, id);
     }
 

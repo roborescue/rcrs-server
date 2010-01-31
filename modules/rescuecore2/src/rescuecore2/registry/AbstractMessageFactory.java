@@ -4,6 +4,9 @@ import java.util.EnumSet;
 import java.io.InputStream;
 import java.io.IOException;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
 import rescuecore2.messages.Message;
 
 /**
@@ -12,6 +15,7 @@ import rescuecore2.messages.Message;
  */
 public abstract class AbstractMessageFactory<T extends Enum<T>> implements MessageFactory {
     private Class<T> clazz;
+    private Method fromString;
 
     /**
        Constructor for AbstractMessageFactory.
@@ -19,6 +23,12 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
     */
     protected AbstractMessageFactory(Class<T> clazz) {
         this.clazz = clazz;
+        try {
+            fromString = clazz.getDeclaredMethod("fromString", String.class);
+        }
+        catch (NoSuchMethodException e) {
+            fromString = null;
+        }
     }
 
     @Override
@@ -27,14 +37,28 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
         String[] result = new String[set.size()];
         int i = 0;
         for (T next : set) {
-            result[i++] = next.name();
+            result[i++] = next.toString();
         }
         return result;
     }
 
     @Override
     public Message makeMessage(String urn, InputStream data) throws IOException {
-        T t = Enum.valueOf(clazz, urn);
+        T t = null;
+        if (fromString != null) {
+            try {
+                t = (T)fromString.invoke(null, urn);
+            }
+            catch (IllegalAccessException e) {
+                t = null;
+            }
+            catch (InvocationTargetException e) {
+                t = null;
+            }
+        }
+        if (t == null) {
+            t = Enum.valueOf(clazz, urn);
+        }
         return makeMessage(t, data);
     }
 

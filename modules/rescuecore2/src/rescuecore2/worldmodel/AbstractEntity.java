@@ -22,29 +22,17 @@ public abstract class AbstractEntity implements Entity {
     private static final String END_OF_PROPERTIES = "";
 
     private final EntityID id;
-    private final String urn;
     private final Set<EntityListener> listeners;
     private final Set<Property> properties;
 
     /**
        Construct an AbstractEntity with a set of properties.
        @param id The ID of this entity.
-       @param urn The urn of this entity.
     */
-    protected AbstractEntity(EntityID id, String urn) {
+    protected AbstractEntity(EntityID id) {
         this.id = id;
-        this.urn = urn;
         listeners = new HashSet<EntityListener>();
         properties = new HashSet<Property>();
-    }
-
-    /**
-       Construct an AbstractEntity with a set of properties.
-       @param id The ID of this entity.
-       @param urn The urn of this entity.
-    */
-    protected AbstractEntity(EntityID id, Enum<?> urn) {
-        this(id, urn.name());
     }
 
     /**
@@ -52,7 +40,7 @@ public abstract class AbstractEntity implements Entity {
        @param other The AbstractEntity to copy.
      */
     protected AbstractEntity(AbstractEntity other) {
-        this(other.getID(), other.getURN());
+        this(other.getID());
     }
 
     @Override
@@ -101,11 +89,6 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public String getURN() {
-        return urn;
-    }
-
-    @Override
     public void write(OutputStream out) throws IOException {
         for (Property next : getProperties()) {
             if (next.isDefined()) {
@@ -132,7 +115,7 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(urn);
+        result.append(getURN());
         result.append(" (");
         result.append(id);
         result.append(")");
@@ -145,7 +128,7 @@ public abstract class AbstractEntity implements Entity {
     */
     public String getFullDescription() {
         StringBuilder result = new StringBuilder();
-        result.append(urn);
+        result.append(getURN());
         result.append(" (");
         result.append(id);
         result.append(") [");

@@ -28,7 +28,7 @@ public abstract class AbstractMessage implements Message {
        @param urn The urn of the message.
      */
     protected AbstractMessage(Enum<?> urn) {
-        this(urn.name());
+        this(urn.toString());
     }
 
     @Override

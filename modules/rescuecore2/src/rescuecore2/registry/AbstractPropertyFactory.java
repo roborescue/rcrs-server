@@ -2,6 +2,9 @@ package rescuecore2.registry;
 
 import java.util.EnumSet;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
 import rescuecore2.worldmodel.Property;
 
 /**
@@ -10,6 +13,7 @@ import rescuecore2.worldmodel.Property;
  */
 public abstract class AbstractPropertyFactory<T extends Enum<T>> implements PropertyFactory {
     private Class<T> clazz;
+    private Method fromString;
 
     /**
        Constructor for AbstractPropertyFactory.
@@ -17,6 +21,12 @@ public abstract class AbstractPropertyFactory<T extends Enum<T>> implements Prop
     */
     protected AbstractPropertyFactory(Class<T> clazz) {
         this.clazz = clazz;
+        try {
+            fromString = clazz.getDeclaredMethod("fromString", String.class);
+        }
+        catch (NoSuchMethodException e) {
+            fromString = null;
+        }
     }
 
     @Override
@@ -25,14 +35,28 @@ public abstract class AbstractPropertyFactory<T extends Enum<T>> implements Prop
         String[] result = new String[set.size()];
         int i = 0;
         for (T next : set) {
-            result[i++] = next.name();
+            result[i++] = next.toString();
         }
         return result;
     }
 
     @Override
     public Property makeProperty(String urn) {
-        T t = Enum.valueOf(clazz, urn);
+        T t = null;
+        if (fromString != null) {
+            try {
+                t = (T)fromString.invoke(null, urn);
+            }
+            catch (IllegalAccessException e) {
+                t = null;
+            }
+            catch (InvocationTargetException e) {
+                t = null;
+            }
+        }
+        if (t == null) {
+            t = Enum.valueOf(clazz, urn);
+        }
         return makeProperty(t);
     }
 

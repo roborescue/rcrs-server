@@ -23,7 +23,7 @@ public abstract class AbstractProperty implements Property {
        @param urn The urn of the property.
      */
     protected AbstractProperty(Enum<?> urn) {
-        this(urn.name(), false);
+        this(urn.toString(), false);
     }
 
     /**
@@ -43,7 +43,7 @@ public abstract class AbstractProperty implements Property {
        @param defined Whether the value is initially defined or not.
      */
     protected AbstractProperty(Enum<?> urn, boolean defined) {
-        this(urn.name(), defined);
+        this(urn.toString(), defined);
     }
 
     /**
