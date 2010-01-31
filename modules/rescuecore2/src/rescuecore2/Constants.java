@@ -31,6 +31,10 @@ public final class Constants {
     public static final String KERNEL_PORT_NUMBER_KEY = "kernel.port";
     /** Default kernel port number. */
     public static final int DEFAULT_KERNEL_PORT_NUMBER = 7000;
+    /** Config key for the gis port number. */
+    public static final String GIS_PORT_NUMBER_KEY = "gis.port";
+    /** Default gis port number. */
+    public static final int DEFAULT_GIS_PORT_NUMBER = 7001;
 
     /** The random seed key. */
     public static final String RANDOM_SEED_KEY = "random.seed";
