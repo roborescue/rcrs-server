@@ -297,22 +297,44 @@
 
   <!-- Old simulators -->
   <target name="oldsims" description="Compile all the old simulators">
-    <exec executable="make" dir="${basedir}/oldsims" failonerror="true"/>
+    <javac srcdir="${basedir}/oldsims/" debug="${debug}">
+      <include name="rescuecore/**/*.java"/>
+    </javac>
+    <jar destfile="${lib.dir}/rescuecore.jar">
+      <fileset dir="${basedir}/oldsims" includes="rescuecore/**/*.class"/>
+    </jar>
+    <javac srcdir="${basedir}/oldsims/" debug="${debug}">
+      <include name="firesimulator/**/*.java"/>
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
     <jar destfile="${lib.dir}/resq-fire.jar">
       <fileset dir="${basedir}/oldsims" includes="firesimulator/**/*.class"/>
     </jar>
+    <javac srcdir="${basedir}/oldsims/" debug="${debug}">
+      <include name="traffic/**/*.java"/>
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
     <jar destfile="${lib.dir}/traffic-old.jar">
       <fileset dir="${basedir}/oldsims" includes="traffic/**/*.class"/>
-    </jar>
-    <jar destfile="${lib.dir}/rescuecore.jar">
-      <fileset dir="${basedir}/oldsims" includes="rescuecore/**/*.class"/>
     </jar>
   </target>
 
   <target name="oldsims-clean" description="Clean all the old simulators">
-    <exec executable="make" dir="${basedir}/oldsims" failonerror="true">
-      <arg value="clean"/>
-    </exec>
+    <delete>
+      <fileset dir="${basedir}/oldsims/">
+        <include name="rescuecore/**/*.class"/>
+        <include name="firesimulator/**/*.class"/>
+        <include name="traffic/**/*.class"/>
+      </fileset>
+    </delete>
   </target>
 
   <!-- Useful tools: checkstyle, findbugs, cobertura -->
