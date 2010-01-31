@@ -55,13 +55,12 @@ public class BuildingLayer extends AreaLayer<Building> {
                    t.yToScreen(e.getStartY()),
                    t.xToScreen(e.getEndX()),
                    t.yToScreen(e.getEndY()));
-        //        LOG.debug("Painting edge " + e);
     }
 
     @Override
     protected void paintShape(Building b, Polygon shape, Graphics2D g) {
-        drawFieryness(b, shape, g);
         drawBrokenness(b, shape, g);
+        drawFieryness(b, shape, g);
     }
 
     private void drawFieryness(Building b, Polygon shape, Graphics2D g) {
