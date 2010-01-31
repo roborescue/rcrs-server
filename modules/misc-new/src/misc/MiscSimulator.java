@@ -128,7 +128,7 @@ public class MiscSimulator extends StandardSimulator {
             Entity next = model.getEntity(id);
             if (next instanceof Building) {
                 Building b = (Building)next;
-                Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.name());
+                Property brokenness = u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BROKENNESS.toString());
                 if (brokenness != null) {
                     // Brokenness has changed. Bury any agents inside.
                     LOG.debug(b + " is broken. Updating trapped agents");
