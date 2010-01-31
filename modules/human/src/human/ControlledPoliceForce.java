@@ -1,6 +1,7 @@
 package human;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 import rescuecore2.misc.Pair;
 
@@ -8,7 +9,6 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.components.StandardAgent;
 
@@ -16,6 +16,7 @@ import sample.SampleSearch;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.EnumSet;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -38,7 +39,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         if (location() instanceof Road) {
             Road r = (Road)location();
             EntityID nearest = getNearestBlockade();
@@ -62,8 +63,8 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
     }
 
     @Override
-    public String[] getRequestedEntityURNs() {
-        return new String[] {StandardEntityURN.POLICE_FORCE.name()};
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.POLICE_FORCE);
     }
 
     /**
@@ -105,8 +106,8 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
        @return The EntityID of the nearest blockade, or null if there are no blockades in this area.
     */
     public EntityID getNearestBlockade(Area area, int x, int y) {
-	double bestDistance = 0;
-	EntityID best = null;
+        double bestDistance = 0;
+        EntityID best = null;
         if (area.isBlockadesDefined()) {
             for (EntityID blockadeID : area.getBlockades()) {
                 StandardEntity entity = model.getEntity(blockadeID);
@@ -117,7 +118,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
                 double dx = location.first() - x;
                 double dy = location.second() - y;
                 double distance = Math.hypot(dx, dy);
-                if(best == null || distance < bestDistance) {
+                if (best == null || distance < bestDistance) {
                     bestDistance = distance;
                     best = entity.getID();
                 }
@@ -126,4 +127,3 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
         return best;
     }
 }
-

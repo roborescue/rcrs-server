@@ -1,6 +1,7 @@
 package human;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntity;
@@ -14,6 +15,7 @@ import sample.SampleSearch;
 
 import java.util.List;
 import java.util.Collection;
+import java.util.EnumSet;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -40,7 +42,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         if (target == null) {
             LOG.info(me() + " has nothing to do");
             return;
@@ -85,8 +87,8 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
     }
 
     @Override
-    public String[] getRequestedEntityURNs() {
-        return new String[] {StandardEntityURN.FIRE_BRIGADE.name()};
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.FIRE_BRIGADE);
     }
 
     /**
