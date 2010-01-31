@@ -68,7 +68,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         for (StandardEntityURN urn : urns) {
             Collection<StandardEntity> bucket = new HashSet<StandardEntity>();
             for (StandardEntity next : this) {
-                if (next.getURN().equals(urn.name())) {
+                if (next.getStandardURN().equals(urn)) {
                     bucket.add(next);
                 }
             }
@@ -376,8 +376,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private class AddRemoveListener implements WorldModelListener<StandardEntity> {
         @Override
         public void entityAdded(WorldModel<? extends StandardEntity> model, StandardEntity e) {
-            String urn = e.getURN();
-            StandardEntityURN type = StandardEntityURN.valueOf(urn);
+            StandardEntityURN type = e.getStandardURN();
             if (storedTypes.containsKey(type)) {
                 Collection<StandardEntity> bucket = storedTypes.get(type);
                 bucket.add(e);
@@ -387,8 +386,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
         @Override
         public void entityRemoved(WorldModel<? extends StandardEntity> model, StandardEntity e) {
-            String urn = e.getURN();
-            StandardEntityURN type = StandardEntityURN.valueOf(urn);
+            StandardEntityURN type = e.getStandardURN();
             if (storedTypes.containsKey(type)) {
                 Collection<StandardEntity> bucket = storedTypes.get(type);
                 bucket.remove(e);

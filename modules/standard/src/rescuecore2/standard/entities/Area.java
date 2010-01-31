@@ -1,10 +1,7 @@
 package rescuecore2.standard.entities;
 
-import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.properties.IntProperty;
-import rescuecore2.worldmodel.properties.BooleanProperty;
-import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.Pair;
@@ -12,7 +9,6 @@ import rescuecore2.worldmodel.Property;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
    The Area object.
@@ -26,14 +22,14 @@ public abstract class Area extends StandardEntity {
     /**
        Construct a subclass of Area with entirely undefined property values.
        @param id The ID of this entity.
-       @param type The type ID of this entity.
      */
-    protected Area(EntityID id, StandardEntityURN type) {
-        super(id, type);
-	x = new IntProperty(StandardPropertyURN.X);
-	y = new IntProperty(StandardPropertyURN.Y);
+    protected Area(EntityID id) {
+        super(id);
+        x = new IntProperty(StandardPropertyURN.X);
+        y = new IntProperty(StandardPropertyURN.Y);
         edges = new EdgeListProperty(StandardPropertyURN.EDGES);
-	blockades = new EntityRefListProperty(StandardPropertyURN.BLOCKADES);
+        blockades = new EntityRefListProperty(StandardPropertyURN.BLOCKADES);
+        registerProperties(x, y, edges, blockades);
     }
 
     /**
@@ -42,22 +38,23 @@ public abstract class Area extends StandardEntity {
      */
     protected Area(Area other) {
         super(other);
-	x = new IntProperty(other.x);
-	y = new IntProperty(other.y);
+        x = new IntProperty(other.x);
+        y = new IntProperty(other.y);
         edges = new EdgeListProperty(other.edges);
-	blockades = new EntityRefListProperty(other.blockades);
+        blockades = new EntityRefListProperty(other.blockades);
+        registerProperties(x, y, edges, blockades);
     }
 
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
         return new Pair<Integer, Integer>(x.getValue(), y.getValue());
     }
-    
+
     @Override
     public Property getProperty(String urn) {
         StandardPropertyURN type;
         try {
-            type = StandardPropertyURN.valueOf(urn);
+            type = StandardPropertyURN.fromString(urn);
         }
         catch (IllegalArgumentException e) {
             return super.getProperty(urn);
@@ -133,7 +130,7 @@ public abstract class Area extends StandardEntity {
 
     /**
        Set the Y coordinate.
-       @param x The new y coordinate.
+       @param y The new y coordinate.
     */
     public void setY(int y) {
         this.y.setValue(y);
@@ -251,10 +248,10 @@ public abstract class Area extends StandardEntity {
        @return The list of apexes.
     */
     public int[] getApexList() {
-        List<Edge> edges = getEdges();
-        int[] apexes = new int[edges.size() * 2];
+        List<Edge> e = getEdges();
+        int[] apexes = new int[e.size() * 2];
         int i = 0;
-        for (Edge next : edges) {
+        for (Edge next : e) {
             apexes[i++] = next.getStartX();
             apexes[i++] = next.getStartY();
         }

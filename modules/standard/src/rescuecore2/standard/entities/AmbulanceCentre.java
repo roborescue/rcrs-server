@@ -12,7 +12,7 @@ public class AmbulanceCentre extends Building {
        @param id The ID of this entity.
      */
     public AmbulanceCentre(EntityID id) {
-        super(id, StandardEntityURN.AMBULANCE_CENTRE);
+        super(id);
     }
 
     /**
@@ -26,5 +26,10 @@ public class AmbulanceCentre extends Building {
     @Override
     protected Entity copyImpl() {
         return new AmbulanceCentre(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.AMBULANCE_CENTRE;
     }
 }

@@ -12,7 +12,7 @@ public class PoliceForce extends Human {
        @param id The ID of this entity.
     */
     public PoliceForce(EntityID id) {
-        super(id, StandardEntityURN.POLICE_FORCE);
+        super(id);
     }
 
     /**
@@ -26,5 +26,10 @@ public class PoliceForce extends Human {
     @Override
     protected Entity copyImpl() {
         return new PoliceForce(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.POLICE_FORCE;
     }
 }

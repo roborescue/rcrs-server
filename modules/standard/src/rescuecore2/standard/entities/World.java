@@ -20,7 +20,7 @@ public class World extends StandardEntity {
        @param id The ID of this entity.
     */
     public World(EntityID id) {
-        super(id, StandardEntityURN.WORLD);
+        super(id);
         startTime = new IntProperty(StandardPropertyURN.START_TIME);
         longitude = new IntProperty(StandardPropertyURN.LONGITUDE);
         latitude = new IntProperty(StandardPropertyURN.LATITUDE);
@@ -49,10 +49,15 @@ public class World extends StandardEntity {
     }
 
     @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.WORLD;
+    }
+
+    @Override
     public Property getProperty(String urn) {
         StandardPropertyURN type;
         try {
-            type = StandardPropertyURN.valueOf(urn);
+            type = StandardPropertyURN.fromString(urn);
         }
         catch (IllegalArgumentException e) {
             return super.getProperty(urn);

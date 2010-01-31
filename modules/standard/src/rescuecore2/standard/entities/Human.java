@@ -8,8 +8,6 @@ import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
 import rescuecore2.misc.Pair;
 
-import java.util.List;
-
 /**
    Abstract base class for Humans.
  */
@@ -26,12 +24,14 @@ public abstract class Human extends StandardEntity {
     private IntProperty buriedness;
 
     /**
-       Construct a subclass of a Human object with entirely undefined property values.
+       Construct a Human object with entirely undefined property values.
        @param id The ID of this entity.
-       @param type The type ID of this entity.
     */
-    protected Human(EntityID id, StandardEntityURN type) {
-        super(id, type);
+    protected Human(EntityID id) {
+        super(id);
+        x = new IntProperty(StandardPropertyURN.X);
+        y = new IntProperty(StandardPropertyURN.Y);
+        travelDistance = new IntProperty(StandardPropertyURN.TRAVEL_DISTANCE);
         position = new EntityRefProperty(StandardPropertyURN.POSITION);
         positionHistory = new IntArrayProperty(StandardPropertyURN.POSITION_HISTORY);
         direction = new IntProperty(StandardPropertyURN.DIRECTION);
@@ -65,7 +65,7 @@ public abstract class Human extends StandardEntity {
     public Property getProperty(String urn) {
         StandardPropertyURN type;
         try {
-            type = StandardPropertyURN.valueOf(urn);
+            type = StandardPropertyURN.fromString(urn);
         }
         catch (IllegalArgumentException e) {
             return super.getProperty(urn);
@@ -545,13 +545,13 @@ public abstract class Human extends StandardEntity {
 
     /**
        Set the position of this human.
-       @param position The new position.
-       @param x The x coordinate of this agent.
-       @param y The y coordinate if this agent.
+       @param newPosition The new position.
+       @param newX The x coordinate of this agent.
+       @param newY The y coordinate if this agent.
     */
-    public void setPosition(EntityID position, int x, int y) {
-        this.position.setValue(position);
-        this.x.setValue(x);
-        this.y.setValue(y);
+    public void setPosition(EntityID newPosition, int newX, int newY) {
+        this.position.setValue(newPosition);
+        this.x.setValue(newX);
+        this.y.setValue(newY);
     }
 }

@@ -12,7 +12,7 @@ public class AmbulanceTeam extends Human {
        @param id The ID of this entity.
      */
     public AmbulanceTeam(EntityID id) {
-        super(id, StandardEntityURN.AMBULANCE_TEAM);
+        super(id);
     }
 
     /**
@@ -26,5 +26,10 @@ public class AmbulanceTeam extends Human {
     @Override
     protected Entity copyImpl() {
         return new AmbulanceTeam(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.AMBULANCE_TEAM;
     }
 }

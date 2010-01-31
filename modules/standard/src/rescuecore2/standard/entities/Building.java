@@ -2,16 +2,10 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.IntProperty;
-import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
-import rescuecore2.worldmodel.properties.EntityRefListProperty;
-import rescuecore2.misc.Pair;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.EnumSet;
 
 /**
@@ -43,16 +37,7 @@ public class Building extends StandardEntity {
        @param id The ID of this entity.
     */
     public Building(EntityID id) {
-        this(id, StandardEntityURN.BUILDING);
-    }
-
-    /**
-       Construct a subclass of a Building object with entirely undefined property values.
-       @param id The ID of this entity.
-       @param urn The real urn of this building.
-    */
-    protected Building(EntityID id, StandardEntityURN urn) {
-        super(id, urn);
+        super(id);
         floors = new IntProperty(StandardPropertyURN.FLOORS);
         ignition = new BooleanProperty(StandardPropertyURN.IGNITION);
         fieryness = new IntProperty(StandardPropertyURN.FIERYNESS);
@@ -93,10 +78,15 @@ public class Building extends StandardEntity {
     }
 
     @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.BUILDING;
+    }
+
+    @Override
     public Property getProperty(String urn) {
         StandardPropertyURN type;
         try {
-            type = StandardPropertyURN.valueOf(urn);
+            type = StandardPropertyURN.fromString(urn);
         }
         catch (IllegalArgumentException e) {
             return super.getProperty(urn);

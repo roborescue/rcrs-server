@@ -16,7 +16,7 @@ public class FireBrigade extends Human {
        @param id The ID of this entity.
     */
     public FireBrigade(EntityID id) {
-        super(id, StandardEntityURN.FIRE_BRIGADE);
+        super(id);
         water = new IntProperty(StandardPropertyURN.WATER_QUANTITY);
         registerProperties(water);
     }
@@ -32,10 +32,20 @@ public class FireBrigade extends Human {
     }
 
     @Override
+    protected Entity copyImpl() {
+        return new FireBrigade(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.FIRE_BRIGADE;
+    }
+
+    @Override
     public Property getProperty(String urn) {
         StandardPropertyURN type;
         try {
-            type = StandardPropertyURN.valueOf(urn);
+            type = StandardPropertyURN.fromString(urn);
         }
         catch (IllegalArgumentException e) {
             return super.getProperty(urn);
@@ -46,11 +56,6 @@ public class FireBrigade extends Human {
         default:
             return super.getProperty(urn);
         }
-    }
-
-    @Override
-    protected Entity copyImpl() {
-        return new FireBrigade(getID());
     }
 
     /**

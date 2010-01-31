@@ -12,7 +12,7 @@ public class FireStation extends Building {
        @param id The ID of this entity.
      */
     public FireStation(EntityID id) {
-        super(id, StandardEntityURN.FIRE_STATION);
+        super(id);
     }
 
     /**
@@ -26,5 +26,10 @@ public class FireStation extends Building {
     @Override
     protected Entity copyImpl() {
         return new FireStation(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.FIRE_STATION;
     }
 }

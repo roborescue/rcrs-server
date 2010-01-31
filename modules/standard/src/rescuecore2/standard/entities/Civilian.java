@@ -12,7 +12,7 @@ public class Civilian extends Human {
        @param id The ID of this entity.
     */
     public Civilian(EntityID id) {
-        super(id, StandardEntityURN.CIVILIAN);
+        super(id);
     }
 
     /**
@@ -26,5 +26,10 @@ public class Civilian extends Human {
     @Override
     protected Entity copyImpl() {
         return new Civilian(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.CIVILIAN;
     }
 }

@@ -12,7 +12,7 @@ public class Refuge extends Building {
        @param id The ID of this entity.
      */
     public Refuge(EntityID id) {
-        super(id, StandardEntityURN.REFUGE);
+        super(id);
     }
 
     /**
@@ -23,8 +23,21 @@ public class Refuge extends Building {
         super(other);
     }
 
+    /**
+       Create a refuge based on another Building.
+       @param other The Building to copy.
+     */
+    public Refuge(Building other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new Refuge(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.REFUGE;
     }
 }

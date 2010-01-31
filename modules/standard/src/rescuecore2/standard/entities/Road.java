@@ -2,9 +2,6 @@ package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.properties.IntProperty;
-import rescuecore2.worldmodel.properties.BooleanProperty;
 
 /**
    The Road object.
@@ -15,7 +12,7 @@ public class Road extends Area {
        @param id The ID of this entity.
      */
     public Road(EntityID id) {
-        super(id, StandardEntityURN.ROAD);
+        super(id);
     }
 
     /**
@@ -29,5 +26,10 @@ public class Road extends Area {
     @Override
     protected Entity copyImpl() {
         return new Road(getID());
+    }
+
+    @Override
+    public StandardEntityURN getStandardURN() {
+        return StandardEntityURN.ROAD;
     }
 }

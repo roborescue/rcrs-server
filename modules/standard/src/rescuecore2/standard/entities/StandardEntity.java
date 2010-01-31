@@ -12,10 +12,9 @@ public abstract class StandardEntity extends AbstractEntity {
     /**
        Construct a StandardEntity with entirely undefined property values.
        @param id The ID of this entity.
-       @param urn The urn of this entity type.
      */
-    protected StandardEntity(EntityID id, StandardEntityURN urn) {
-        super(id, urn);
+    protected StandardEntity(EntityID id) {
+        super(id);
     }
 
     /**
@@ -39,7 +38,10 @@ public abstract class StandardEntity extends AbstractEntity {
        Get the URN of this entity type as an instanceof StandardEntityURN.
        @return A StandardEntityURN.
      */
-    public StandardEntityURN getStandardURN() {
-        return StandardEntityURN.valueOf(getURN());
+    public abstract StandardEntityURN getStandardURN();
+
+    @Override
+    public final String getURN() {
+        return getStandardURN().toString();
     }
 }
