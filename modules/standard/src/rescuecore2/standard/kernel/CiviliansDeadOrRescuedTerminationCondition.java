@@ -8,10 +8,15 @@ import rescuecore2.config.Config;
 import kernel.KernelState;
 import kernel.TerminationCondition;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A TerminationCondition that terminates the simulation once all Civilians are either rescued or dead.
 */
 public class CiviliansDeadOrRescuedTerminationCondition implements TerminationCondition {
+    private static final Log LOG = LogFactory.getLog(CiviliansDeadOrRescuedTerminationCondition.class);
+
     @Override
     public void initialise(Config config) {
     }
@@ -41,6 +46,7 @@ public class CiviliansDeadOrRescuedTerminationCondition implements TerminationCo
             }
         }
         // Found no reason to keep going so stop.
+        LOG.debug("CiviliansDeadOrRescuedTerminationCondition fired");
         return true;
     }
 

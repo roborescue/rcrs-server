@@ -22,10 +22,8 @@ public class StandardWorldModelViewer extends LayerViewComponent {
        Add the default layer set, i.e. nodes, roads, buildings, humans and commands.
      */
     public void addDefaultLayers() {
-        //	addLayer(new AreaLayer());
         addLayer(new BuildingLayer());
         addLayer(new RoadLayer());
-        //        addLayer(new NodeLayer());
         addLayer(new RoadBlockageLayer());
         addLayer(new BuildingIconLayer());
         addLayer(new HumanLayer());

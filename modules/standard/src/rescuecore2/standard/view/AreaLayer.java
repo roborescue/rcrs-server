@@ -1,26 +1,19 @@
 package rescuecore2.standard.view;
 
 import java.awt.Graphics2D;
-import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Polygon;
 
 import java.util.List;
 import java.util.Iterator;
 
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Area;
-import rescuecore2.standard.entities.Refuge;
-import rescuecore2.standard.entities.FireStation;
-import rescuecore2.standard.entities.AmbulanceCentre;
-import rescuecore2.standard.entities.PoliceOffice;
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Edge;
 import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A view layer that renders areas.
+   @param <E> The subclass of Area that this layer knows how to draw.
  */
 public abstract class AreaLayer<E extends Area> extends StandardEntityViewLayer<E> {
     /**

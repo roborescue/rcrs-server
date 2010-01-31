@@ -11,7 +11,6 @@ import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.misc.AgentPath;
 
 /**

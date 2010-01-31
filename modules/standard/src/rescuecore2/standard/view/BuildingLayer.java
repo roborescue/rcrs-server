@@ -6,18 +6,20 @@ import java.awt.Shape;
 import java.awt.Polygon;
 import java.awt.Stroke;
 import java.awt.BasicStroke;
-import java.util.List;
-import java.util.Iterator;
 
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Edge;
 import rescuecore2.misc.gui.ScreenTransform;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 /**
    A view layer that renders buildings.
  */
 public class BuildingLayer extends AreaLayer<Building> {
+    private static final Log LOG = LogFactory.getLog(BuildingLayer.class);
+
     private static final Color HEATING = new Color(176, 176,  56, 128);
     private static final Color BURNING = new Color(204, 122,  50, 128);
     private static final Color INFERNO = new Color(160,  52,  52, 128);
@@ -53,6 +55,7 @@ public class BuildingLayer extends AreaLayer<Building> {
                    t.yToScreen(e.getStartY()),
                    t.xToScreen(e.getEndX()),
                    t.yToScreen(e.getEndY()));
+        //        LOG.debug("Painting edge " + e);
     }
 
     @Override

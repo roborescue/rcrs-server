@@ -1,22 +1,15 @@
 package rescuecore2.standard.score;
 
 import rescuecore2.score.AbstractScoreFunction;
-import rescuecore2.config.Config;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.messages.Command;
 import rescuecore2.Timestep;
-
-import java.util.Map;
-import java.util.HashMap;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.misc.AgentPath;
 
 /**

@@ -160,7 +160,7 @@ public class StandardPerception implements Perception, GUIComponent {
                 Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
                 // Copy entities and set property values
                 for (StandardEntity next : nearby) {
-                    StandardEntityURN urn = StandardEntityURN.valueOf(next.getURN());
+                    StandardEntityURN urn = next.getStandardURN();
                     switch (urn) {
                     case ROAD:
                         addRoadProperties((Road)next, result);
@@ -171,9 +171,6 @@ public class StandardPerception implements Perception, GUIComponent {
                     case AMBULANCE_CENTRE:
                     case POLICE_OFFICE:
                         addBuildingProperties((Building)next, result);
-                        break; 
-                    case AREA:
-                        addAreaProperties((Area)next, result);
                         break;
                     case CIVILIAN:
                     case FIRE_BRIGADE:
@@ -211,18 +208,20 @@ public class StandardPerception implements Perception, GUIComponent {
     }
 
     private void addRoadProperties(Road road, ChangeSet result) {
+        addAreaProperties(road, result);
         // Only update blockades
         result.addChange(road, road.getBlockadesProperty());
     }
 
     private void addBuildingProperties(Building building, ChangeSet result) {
+        addAreaProperties(building, result);
         // Update TEMPERATURE, FIERYNESS and BROKENNESS
         result.addChange(building, building.getTemperatureProperty());
         result.addChange(building, building.getFierynessProperty());
         result.addChange(building, building.getBrokennessProperty());
     }
 
-    private void addAreaProperties(Area building, ChangeSet result) {
+    private void addAreaProperties(Area area, ChangeSet result) {
         // Update TEMPERATURE, FIERYNESS and BROKENNESS
     }
 

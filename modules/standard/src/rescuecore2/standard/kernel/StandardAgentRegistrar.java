@@ -2,7 +2,6 @@ package rescuecore2.standard.kernel;
 
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Collection;
 
 import kernel.AgentRegistrar;
 import kernel.ComponentManager;
@@ -109,7 +108,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
     private void filterAreaProperties(Area a) {
         for (Property next : a.getProperties()) {
             // Hide blockades
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            StandardPropertyURN urn = StandardPropertyURN.fromString(next.getURN());
             switch (urn) {
             case BLOCKADES:
                 next.undefine();
@@ -124,7 +123,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         filterAreaProperties(b);
         for (Property next : b.getProperties()) {
             // Hide ignition, fieryness, brokenness, temperature
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            StandardPropertyURN urn = StandardPropertyURN.fromString(next.getURN());
             switch (urn) {
             case IGNITION:
             case FIERYNESS:

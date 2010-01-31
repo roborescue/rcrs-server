@@ -2,11 +2,9 @@ package rescuecore2.standard.view;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.BasicStroke;
 import java.awt.Polygon;
-import java.awt.geom.Line2D;
 
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Edge;
