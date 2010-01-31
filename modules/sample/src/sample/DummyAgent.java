@@ -3,7 +3,7 @@ package sample;
 import java.util.Collection;
 import java.util.EnumSet;
 
-import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 
 import rescuecore2.standard.components.StandardAgent;
@@ -15,22 +15,12 @@ import rescuecore2.standard.entities.StandardEntityURN;
  */
 public class DummyAgent extends StandardAgent<StandardEntity> {
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         sendRest(time);
     }
 
     @Override
-    public String[] getRequestedEntityURNs() {
-        EnumSet<StandardEntityURN> set = getRequestedEntityURNsEnum();
-        String[] result = new String[set.size()];
-        int i = 0;
-        for (StandardEntityURN next : set) {
-            result[i++] = next.name();
-        }
-        return result;
-    }
-
-    private EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
         return EnumSet.of(StandardEntityURN.FIRE_BRIGADE,
                           StandardEntityURN.FIRE_STATION,
                           StandardEntityURN.AMBULANCE_TEAM,

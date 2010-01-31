@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.standard.messages.AKMove;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -49,7 +49,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         for (Command next : heard) {
             LOG.debug(me() + " heard " + next);
         }
@@ -71,7 +71,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             else {
                 System.out.println(me() + " couldn't plan a path to a refuge.");
                 path = randomWalk();
-		sendMove(time, path);
+                sendMove(time, path);
                 return;
             }
         }
@@ -92,10 +92,10 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
                 return;
             }
         }
-	List<EntityID> path = null;
+        List<EntityID> path = null;
         System.out.println(me() + " couldn't plan a path to a fire.");
         path = randomWalk();
-	sendMove(time, path);
+        sendMove(time, path);
     }
 
     @Override

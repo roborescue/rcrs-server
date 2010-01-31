@@ -3,7 +3,6 @@ package sample;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
 
@@ -108,12 +107,12 @@ public final class SampleSearch {
     */
     public Collection<StandardEntity> findNeighbours(StandardEntity e) {
         Collection<StandardEntity> result = new ArrayList<StandardEntity>();
-	if (e instanceof Area) {
+        if (e instanceof Area) {
             Area a = (Area)e;
-	    for (EntityID next : a.getNeighbours()) {
+            for (EntityID next : a.getNeighbours()) {
                 result.add(world.getEntity(next));
             }
-	}
+        }
         return result;
     }
 

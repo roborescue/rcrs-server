@@ -5,15 +5,12 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
-import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.Constants;
 
 import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.Building;
 
 /**
    Abstract base class for sample agents.
@@ -42,17 +39,6 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
     }
 
     @Override
-    public String[] getRequestedEntityURNs() {
-        EnumSet<StandardEntityURN> set = getRequestedEntityURNsEnum();
-        String[] result = new String[set.size()];
-        int i = 0;
-        for (StandardEntityURN next : set) {
-            result[i++] = next.name();
-        }
-        return result;
-    }
-
-    @Override
     protected void postConnect() {
         super.postConnect();
         search = new SampleSearch(model, true);
@@ -73,16 +59,10 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
             List<StandardEntity> neighbours = new ArrayList<StandardEntity>(search.findNeighbours(current));
             Collections.shuffle(neighbours, random);
             boolean found = false;
-
             for (StandardEntity next : neighbours) {
                 if (seen.contains(next)) {
                     continue;
                 }
-		/*
-                if (next instanceof Building && i < RANDOM_WALK_LENGTH - 1) {
-                    continue;
-                }
-		*/
                 current = next;
                 found = true;
                 break;
@@ -94,10 +74,4 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
         }
         return result;
     }
-
-    /**
-       Get an EnumSet containing requested entity URNs.
-       @return An EnumSet containing requested entity URNs.
-     */
-    protected abstract EnumSet<StandardEntityURN> getRequestedEntityURNsEnum();
 }

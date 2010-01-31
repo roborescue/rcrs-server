@@ -2,6 +2,8 @@ package sample;
 
 import rescuecore2.messages.control.KVTimestep;
 import rescuecore2.view.ViewComponent;
+import rescuecore2.view.ViewListener;
+import rescuecore2.view.RenderedObject;
 
 import rescuecore2.standard.view.AnimatedWorldModelViewer;
 
@@ -13,6 +15,8 @@ import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+
+import java.util.List;
 
 import rescuecore2.standard.components.StandardViewer;
 
@@ -43,6 +47,19 @@ public class SampleViewer extends StandardViewer {
         frame.add(timeLabel, BorderLayout.NORTH);
         frame.pack();
         frame.setVisible(true);
+
+        viewer.addViewListener(new ViewListener() {
+                @Override
+                public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
+                    for (RenderedObject next : objects) {
+                        System.out.println(next.getObject());
+                    }
+                }
+
+                @Override
+                public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
+                }
+            });
     }
 
     @Override

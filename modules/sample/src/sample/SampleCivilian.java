@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -44,7 +45,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         // If we're not hurt or buried run for a refuge!
         Civilian me = me();
         int damage = me.isDamageDefined() ? me.getDamage() : 0;

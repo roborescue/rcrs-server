@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.standard.messages.AKMove;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -40,7 +40,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     }
 
     @Override
-    protected void think(int time, Collection<EntityID> changed, Collection<EntityID> deleted, Collection<Command> heard) {
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         for (Command next : heard) {
             LOG.debug(me() + " heard " + next);
         }
@@ -127,8 +127,8 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
         return targets;
     }
 
-    private void updateUnexploredBuildings(Collection<EntityID> changed) {
-        for (EntityID next : changed) {
+    private void updateUnexploredBuildings(ChangeSet changed) {
+        for (EntityID next : changed.getChangedEntities()) {
             StandardEntity e = model.getEntity(next);
             if (e != null) {
                 unexploredBuildings.remove(e);
