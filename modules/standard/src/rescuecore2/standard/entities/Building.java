@@ -19,32 +19,9 @@ import java.util.EnumSet;
  */
 public class Building extends StandardEntity {
     /**
-       Enum defining different levels of fieryness.
-     */
-    public enum Fieryness {
-        /** Not burnt at all. */
-        UNBURNT,
-        /** On fire a bit. */
-        HEATING,
-        /** On fire a bit more. */
-        BURNING,
-        /** On fire a lot. */
-        INFERNO,
-        /** Not burnt at all, but has water damage. */
-        WATER_DAMAGE,
-        /** Extinguished but minor damage. */
-        MINOR_DAMAGE,
-        /** Extinguished but moderate damage. */
-        MODERATE_DAMAGE,
-        /** Extinguished but major damage. */
-        SEVERE_DAMAGE,
-        /** Completely burnt out. */
-        BURNT_OUT;
-    }
-
-    /**
-       Fieryness levels that indicate burning. */
-    public static final EnumSet<Fieryness> BURNING = EnumSet.of(Fieryness.HEATING, Fieryness.BURNING, Fieryness.INFERNO);
+       Fieryness levels that indicate burning.
+    */
+    public static final EnumSet<StandardEntityConstants.Fieryness> BURNING = EnumSet.of(StandardEntityConstants.Fieryness.HEATING, StandardEntityConstants.Fieryness.BURNING, StandardEntityConstants.Fieryness.INFERNO);
 
     private IntProperty x;
     private IntProperty y;
@@ -345,11 +322,11 @@ public class Building extends StandardEntity {
        Get the fieryness of this building as an enum constant. If fieryness is not defined then return null.
        @return The fieryness property value as a Fieryness enum, or null if fieryness is undefined.
      */
-    public Fieryness getFierynessEnum() {
+    public StandardEntityConstants.Fieryness getFierynessEnum() {
         if (!fieryness.isDefined()) {
             return null;
         }
-        return Fieryness.values()[fieryness.getValue()];
+        return StandardEntityConstants.Fieryness.values()[fieryness.getValue()];
     }
 
     /**

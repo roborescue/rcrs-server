@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.EnumMap;
 
 import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.StandardEntityConstants;
 
 /**
    Score function that measures the amount of damage done to buildings by fire.
@@ -25,7 +26,7 @@ public class BuildingDamageScoreFunction extends AbstractScoreFunction {
     private static final String BURNT_OUT_FACTOR = "score.standard.building-fire.burnt-out";
     private static final String ABSOLUTE_KEY = "score.standard.building-fire.absolute";
 
-    private Map<Building.Fieryness, Double> factors;
+    private Map<StandardEntityConstants.Fieryness, Double> factors;
     private boolean absolute;
 
     /**
@@ -37,16 +38,16 @@ public class BuildingDamageScoreFunction extends AbstractScoreFunction {
 
     @Override
     public void initialise(WorldModel<? extends Entity> world, Config config) {
-        factors = new EnumMap<Building.Fieryness, Double>(Building.Fieryness.class);
-        factors.put(Building.Fieryness.UNBURNT, 1.0);
-        factors.put(Building.Fieryness.HEATING, config.getFloatValue(HEATING_FACTOR));
-        factors.put(Building.Fieryness.BURNING, config.getFloatValue(BURNING_FACTOR));
-        factors.put(Building.Fieryness.INFERNO, config.getFloatValue(INFERNO_FACTOR));
-        factors.put(Building.Fieryness.WATER_DAMAGE, config.getFloatValue(WATER_DAMAGE_FACTOR));
-        factors.put(Building.Fieryness.MINOR_DAMAGE, config.getFloatValue(MINOR_DAMAGE_FACTOR));
-        factors.put(Building.Fieryness.MODERATE_DAMAGE, config.getFloatValue(MODERATE_DAMAGE_FACTOR));
-        factors.put(Building.Fieryness.SEVERE_DAMAGE, config.getFloatValue(SEVERE_DAMAGE_FACTOR));
-        factors.put(Building.Fieryness.BURNT_OUT, config.getFloatValue(BURNT_OUT_FACTOR));
+        factors = new EnumMap<StandardEntityConstants.Fieryness, Double>(StandardEntityConstants.Fieryness.class);
+        factors.put(StandardEntityConstants.Fieryness.UNBURNT, 1.0);
+        factors.put(StandardEntityConstants.Fieryness.HEATING, config.getFloatValue(HEATING_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.BURNING, config.getFloatValue(BURNING_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.INFERNO, config.getFloatValue(INFERNO_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.WATER_DAMAGE, config.getFloatValue(WATER_DAMAGE_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.MINOR_DAMAGE, config.getFloatValue(MINOR_DAMAGE_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.MODERATE_DAMAGE, config.getFloatValue(MODERATE_DAMAGE_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.SEVERE_DAMAGE, config.getFloatValue(SEVERE_DAMAGE_FACTOR));
+        factors.put(StandardEntityConstants.Fieryness.BURNT_OUT, config.getFloatValue(BURNT_OUT_FACTOR));
         absolute = config.getBooleanValue(ABSOLUTE_KEY, false);
     }
 
@@ -61,7 +62,7 @@ public class BuildingDamageScoreFunction extends AbstractScoreFunction {
                     continue;
                 }
                 double area = b.getTotalArea();
-                Building.Fieryness fire = b.getFierynessEnum();
+                StandardEntityConstants.Fieryness fire = b.getFierynessEnum();
                 double factor;
                 if (fire == null) {
                     factor = 1;
