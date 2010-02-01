@@ -61,7 +61,8 @@ public class BuildingDamageScoreFunction extends AbstractScoreFunction {
                 if (!b.isTotalAreaDefined()) {
                     continue;
                 }
-                double area = b.getTotalArea();
+                int importance = b.isImportanceDefined() ? b.getImportance() : 1;
+                double area = b.getTotalArea() * importance;
                 StandardEntityConstants.Fieryness fire = b.getFierynessEnum();
                 double factor;
                 if (fire == null) {
