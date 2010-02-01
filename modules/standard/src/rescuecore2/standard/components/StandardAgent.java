@@ -35,7 +35,7 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
         String[] result = new String[set.size()];
         int i = 0;
         for (StandardEntityURN next : set) {
-            result[i++] = next.name();
+            result[i++] = next.toString();
         }
         return result;
     }

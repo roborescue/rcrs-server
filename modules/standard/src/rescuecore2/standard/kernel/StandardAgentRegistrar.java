@@ -136,34 +136,16 @@ public class StandardAgentRegistrar implements AgentRegistrar {
 
     private void filterHumanProperties(Human h) {
         for (Property next : h.getProperties()) {
-            // Human properties: POSITION, POSITION_EXTRA
-            // Everything else should be undefined
-            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
-            switch (urn) {
-            case POSITION:
-            case POSITION_EXTRA:
-                break;
-            default:
-                next.undefine();
-            }
-        }
-    }
-
-    private void filterAreaProperties(Area a) {
-        for (Property next : a.getProperties()) {
-            // Building properties: 
+            // Human properties: POSITION, X, Y
             // Everything else should be undefined
             StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
             switch (urn) {
             case X:
             case Y:
-            case AREA_TYPE:
-            case AREA_APEXES:
-	    case NEXT_AREA:
-	    case BLOCKADE_LIST:
+            case POSITION:
                 break;
             default:
-                break;
+                next.undefine();
             }
         }
     }
