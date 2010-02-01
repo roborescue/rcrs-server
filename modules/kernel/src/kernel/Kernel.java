@@ -298,10 +298,10 @@ public class Kernel {
        @throws LogException If there is a problem writing the log.
     */
     public void timestep() throws InterruptedException, KernelException, LogException {
-        if (time == 0) {
-            fireStarted();
-        }
         synchronized (this) {
+            if (time == 0) {
+                fireStarted();
+            }
             if (isShutdown) {
                 return;
             }
