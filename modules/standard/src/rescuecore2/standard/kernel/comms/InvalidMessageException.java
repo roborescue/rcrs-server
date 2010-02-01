@@ -1,4 +1,4 @@
-package rescuecore2.standard.kernel;
+package rescuecore2.standard.kernel.comms;
 
 /**
    An exception indicating that an agent communication message was invalid.
