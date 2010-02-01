@@ -19,10 +19,15 @@ import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.PoliceOffice;
 import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Node;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.StandardPropertyURN;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardWorldModel;
+
+import rescuecore2.standard.StandardConstants;
 
 /**
    Class that registers standard agents.
@@ -39,12 +44,25 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         VISIBLE_CONFIG_OPTIONS.add("fire.extinguish.max-distance");
         VISIBLE_CONFIG_OPTIONS.add(Constants.COMMUNICATION_MODEL_KEY);
         VISIBLE_CONFIG_OPTIONS.add(Constants.PERCEPTION_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(StandardConstants.FIRE_BRIGADE_COUNT_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(StandardConstants.FIRE_STATION_COUNT_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(StandardConstants.AMBULANCE_TEAM_COUNT_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(StandardConstants.AMBULANCE_CENTRE_COUNT_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(StandardConstants.POLICE_FORCE_COUNT_KEY);
+        VISIBLE_CONFIG_OPTIONS.add(StandardConstants.POLICE_OFFICE_COUNT_KEY);
     }
 
     @Override
     public void registerAgents(WorldModel<? extends Entity> world, Config config, ComponentManager manager) {
+        StandardWorldModel model = StandardWorldModel.createStandardWorldModel(world);
         Config agentConfig = new Config(config);
         agentConfig.removeExcept(VISIBLE_CONFIG_OPTIONS);
+        agentConfig.setIntValue(StandardConstants.FIRE_BRIGADE_COUNT_KEY, model.getEntitiesOfType(StandardEntityURN.FIRE_BRIGADE).size());
+        agentConfig.setIntValue(StandardConstants.FIRE_STATION_COUNT_KEY, model.getEntitiesOfType(StandardEntityURN.FIRE_STATION).size());
+        agentConfig.setIntValue(StandardConstants.AMBULANCE_TEAM_COUNT_KEY, model.getEntitiesOfType(StandardEntityURN.AMBULANCE_TEAM).size());
+        agentConfig.setIntValue(StandardConstants.AMBULANCE_CENTRE_COUNT_KEY, model.getEntitiesOfType(StandardEntityURN.AMBULANCE_CENTRE).size());
+        agentConfig.setIntValue(StandardConstants.POLICE_FORCE_COUNT_KEY, model.getEntitiesOfType(StandardEntityURN.POLICE_FORCE).size());
+        agentConfig.setIntValue(StandardConstants.POLICE_OFFICE_COUNT_KEY, model.getEntitiesOfType(StandardEntityURN.POLICE_OFFICE).size());
         Set<Entity> initialEntities = new HashSet<Entity>();
         for (Entity e : world) {
             maybeAddInitialEntity(e, initialEntities);
@@ -79,6 +97,13 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             Building b = (Building)e.copy();
             filterBuildingProperties(b);
             initialEntities.add(b);
+        }
+        if (e instanceof Human) {
+            if (!(e instanceof Civilian)) {
+                Human h = (Human)e.copy();
+                filterHumanProperties(h);
+                initialEntities.add(h);
+            }
         }
     }
 
@@ -141,6 +166,21 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             case BUILDING_AREA_TOTAL:
             case IMPORTANCE:
             case ENTRANCES:
+                break;
+            default:
+                next.undefine();
+            }
+        }
+    }
+
+    private void filterHumanProperties(Human h) {
+        for (Property next : h.getProperties()) {
+            // Human properties: POSITION, POSITION_EXTRA
+            // Everything else should be undefined
+            StandardPropertyURN urn = StandardPropertyURN.valueOf(next.getURN());
+            switch (urn) {
+            case POSITION:
+            case POSITION_EXTRA:
                 break;
             default:
                 next.undefine();
