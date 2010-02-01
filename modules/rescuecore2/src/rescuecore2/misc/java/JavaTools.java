@@ -21,10 +21,12 @@ public final class JavaTools {
        @param <T> The desired return type.
        @return A new instance of the given class name cast as the output class, or null if the class cannot be instantiated.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T instantiate(String className, Class<T> outputClass) {
         try {
-            Class<T> clazz = (Class<T>)Class.forName(className);
+            Class<? extends T> clazz = Class.forName(className).asSubclass(outputClass);
+            if (Modifier.isAbstract(clazz.getModifiers())) {
+                return null;
+            }
             return clazz.newInstance();
         }
         catch (ClassNotFoundException e) {
@@ -47,12 +49,16 @@ public final class JavaTools {
        @return The content of the INSTANCE field if it exists; a new instance of the given class name cast as the output class, or null if the class cannot be instantiated.
     */
     public static <T> T instantiateFactory(String classname, Class<T> outputClass) {
-        Class<?> clazz;
+        Class<? extends T> clazz;
         try {
-            clazz = Class.forName(classname);
+            clazz = Class.forName(classname).asSubclass(outputClass);
         }
         catch (ClassNotFoundException e) {
             LOG.info("Could not find class " + classname, e);
+            return null;
+        }
+        catch (ClassCastException e) {
+            LOG.info(classname + " is not a subclass of " + outputClass.getName(), e);
             return null;
         }
         // Is there a singleton instance called INSTANCE?
@@ -78,7 +84,7 @@ public final class JavaTools {
             // No singleton instance. Try instantiating it.
         }
         try {
-            return outputClass.cast(clazz.newInstance());
+            return clazz.newInstance();
         }
         catch (IllegalAccessException e) {
             LOG.info("Could not instantiate class " + classname, e);
