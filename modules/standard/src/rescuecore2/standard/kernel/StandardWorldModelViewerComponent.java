@@ -31,13 +31,16 @@ public class StandardWorldModelViewerComponent extends KernelListenerAdapter imp
     private EntityInspector inspector;
     private JComponent view;
 
+    /**
+       Construct a StandardWorldModelViewerComponent.
+    */
     public StandardWorldModelViewerComponent() {
         viewer = new StandardWorldModelViewer();
         inspector = new EntityInspector();
         viewer.setPreferredSize(new Dimension(SIZE, SIZE));
         viewer.addViewListener(new ViewListener() {
                 @Override
-                public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
+                public void objectsClicked(ViewComponent v, List<RenderedObject> objects) {
                     for (RenderedObject next : objects) {
                         if (next.getObject() instanceof Entity) {
                             inspector.inspect((Entity)next.getObject());
@@ -47,7 +50,7 @@ public class StandardWorldModelViewerComponent extends KernelListenerAdapter imp
                 }
 
                 @Override
-                public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
+                public void objectsRollover(ViewComponent v, List<RenderedObject> objects) {
                 }
             });
         view = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, new JScrollPane(inspector));
