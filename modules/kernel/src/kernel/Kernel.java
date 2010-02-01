@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Map;
 import java.io.IOException;
 import java.io.File;
 
@@ -373,13 +372,13 @@ public class Kernel {
 
     private void sendAgentUpdates(Timestep timestep, Collection<Command> commandsLastTimestep) throws InterruptedException, KernelException, LogException {
         perception.setTime(time);
-        Map<AgentProxy, Collection<Command>> comms = communicationModel.process(time, agents, commandsLastTimestep);
+        communicationModel.process(time, commandsLastTimestep);
         for (AgentProxy next : agents) {
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
             ChangeSet visible = perception.getVisibleEntities(next);
-            Collection<Command> heard = comms.get(next);
+            Collection<Command> heard = communicationModel.getHearing(next.getControlledEntity());
             EntityID id = next.getControlledEntity().getID();
             timestep.registerPerception(id, visible, heard);
             log.writeRecord(new PerceptionRecord(time, id, visible, heard));

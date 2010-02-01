@@ -1,7 +1,6 @@
 package kernel;
 
 import java.util.Collection;
-import java.util.Map;
 
 import rescuecore2.config.Config;
 import rescuecore2.messages.Command;
@@ -13,7 +12,7 @@ import rescuecore2.worldmodel.Entity;
  */
 public interface CommunicationModel {
     /**
-       Initialise this perception object.
+       Initialise this communication model.
        @param config The kernel configuration.
        @param world The world model.
     */
@@ -22,9 +21,14 @@ public interface CommunicationModel {
     /**
        Process a set of agent commands and work out what communications each agent can hear.
        @param time The current time.
-       @param agents The set of agents in the system.
-       @param agentCommands The set of all agent commands last timestep.
-       @return A map from AgentProxy to collection of communication update messages to be sent to the agent. If an agent can hear nothing then it need not be included in this map.
+       @param agentCommands The set of all agent commands this timestep.
      */
-    Map<AgentProxy, Collection<Command>> process(int time, Collection<AgentProxy> agents, Collection<Command> agentCommands);
+    void process(int time, Collection<? extends Command> agentCommands);
+
+    /**
+       Get the set of hear commands an agent can hear.
+       @param agent The agent controlled entity.
+       @return Set set of hear commands the agent can hear.
+    */
+    Collection<Command> getHearing(Entity agent);
 }
