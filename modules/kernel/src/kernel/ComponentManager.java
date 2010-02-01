@@ -101,6 +101,7 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
        @param agentConfig A view of the system configuration that should be shared with the agent.
      */
     public void registerAgentControlledEntity(Entity entity, Collection<? extends Entity> visibleOnStartup, Config agentConfig) {
+        LOG.info("Agent controlled entity registered: " + entity);
         synchronized (agentLock) {
             Queue<ControlledEntityInfo> q = uncontrolledEntities.get(entity.getURN());
             if (q == null) {
@@ -237,8 +238,10 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
     }
 
     private ControlledEntityInfo findEntityToControl(List<String> types) {
+        LOG.debug("Finding entity to control. Requested types: " + types);
         for (String next : types) {
             Queue<ControlledEntityInfo> q = uncontrolledEntities.get(next);
+            LOG.debug("Uncontrolled entities of type " + next + ": " + q);
             if (q != null) {
                 ControlledEntityInfo info = q.poll();
                 if (info != null) {
@@ -320,13 +323,16 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
             List<String> types = connect.getRequestedEntityTypes();
             // See if we can find an entity for this agent to control.
             Message reply = null;
+            LOG.debug("AKConnect received: " + types);
             synchronized (agentLock) {
                 ControlledEntityInfo result = findEntityToControl(types);
                 if (result == null) {
+                    LOG.debug("No suitable entities found");
                     // Send an error
                     reply = new KAConnectError(requestID, "No more agents");
                 }
                 else {
+                    LOG.debug("Found entity to control: " + result);
                     Entity entity = result.entity;
                     AgentProxy agent = new AgentProxy(connect.getAgentName(), entity, connection);
                     agentsToAcknowledge.add(new AgentAck(agent, entity.getID(), requestID, connection));
@@ -476,6 +482,11 @@ public class ComponentManager implements ConnectionManagerListener, GUIComponent
             this.entity = entity;
             this.visibleSet = visibleSet;
             this.config = config;
+        }
+
+        @Override
+        public String toString() {
+            return entity.toString();
         }
     }
 }
