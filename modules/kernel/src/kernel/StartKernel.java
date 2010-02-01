@@ -428,7 +428,7 @@ public final class StartKernel {
                     LOG.info(className + "instance " + (i + 1) + " launched successfully");
                 }
                 catch (ComponentConnectionException e) {
-                    LOG.info(className + "instance " + (i + 1) + " failed", e);
+                    LOG.info(className + "instance " + (i + 1) + " failed: " + e.getMessage());
                     break;
                 }
                 catch (ComponentInitialisationException e) {
