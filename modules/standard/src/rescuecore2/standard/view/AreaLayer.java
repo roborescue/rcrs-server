@@ -7,9 +7,11 @@ import java.awt.Polygon;
 import java.util.List;
 import java.util.Iterator;
 
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.misc.gui.ScreenTransform;
+
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Edge;
-import rescuecore2.misc.gui.ScreenTransform;
 
 /**
    A view layer that renders areas.
@@ -30,23 +32,16 @@ public abstract class AreaLayer<E extends Area> extends StandardEntityViewLayer<
         if (edges.isEmpty()) {
             return null;
         }
-        int count = edges.size() + 1;
+        int count = edges.size();
         int[] xs = new int[count];
         int[] ys = new int[count];
-        Iterator<Edge> it = edges.iterator();
-        Edge e = it.next();
-        paintEdge(e, g, t);
-        xs[0] = t.xToScreen(e.getStartX());
-        ys[0] = t.yToScreen(e.getStartY());
-        int i = 1;
-        while (it.hasNext()) {
-            e = it.next();
+        int i = 0;
+        for (Iterator<Edge> it = edges.iterator(); it.hasNext();) {
+            Edge e = it.next();
             xs[i] = t.xToScreen(e.getStartX());
             ys[i] = t.yToScreen(e.getStartY());
             ++i;
         }
-        xs[i] = t.xToScreen(e.getEndX());
-        ys[i] = t.yToScreen(e.getEndY());
         Polygon shape = new Polygon(xs, ys, count);
         paintShape(area, shape, g);
         for (Edge edge : edges) {

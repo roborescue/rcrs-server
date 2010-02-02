@@ -50,7 +50,7 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
     public void addDefaultLayers() {
         addLayer(new BuildingLayer());
         addLayer(new RoadLayer());
-        //        addLayer(new NodeLayer());
+        addLayer(new AreaNeighboursLayer());
         addLayer(new RoadBlockageLayer());
         addLayer(new BuildingIconLayer());
         humans = new AnimatedHumanLayer();
