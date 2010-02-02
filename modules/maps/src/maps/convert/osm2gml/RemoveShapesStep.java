@@ -1,5 +1,7 @@
 package maps.convert.osm2gml;
 
+import java.awt.Color;
+
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
@@ -33,24 +35,29 @@ public class RemoveShapesStep extends ConvertStep {
 
     @Override
     protected void step() {
+        debug.setBackground(ConvertTools.getAllDebugShapes(map));
+        debug.setAutozoomEnabled(false);
         Collection<TemporaryObject> allObjects = map.getAllObjects();
         setProgressLimit(allObjects.size() * 2);
         Set<TemporaryObject> removed = new HashSet<TemporaryObject>();
         setStatus("Removing duplicate shapes");
         int duplicateCount = 0;
         int interiorCount = 0;
-        //        LOG.debug("Removing building duplicates");
+        LOG.debug("Removing building duplicates");
         duplicateCount += removeDuplicates(map.getBuildings(), removed, allObjects);
-        //        LOG.debug("Removing intersection duplicates");
+        LOG.debug("Removing intersection duplicates");
         duplicateCount += removeDuplicates(map.getIntersections(), removed, allObjects);
-        //        LOG.debug("Removing road duplicates");
+        LOG.debug("Removing road duplicates");
         duplicateCount += removeDuplicates(map.getRoads(), removed, allObjects);
-        //        LOG.debug("Removing interior faces");
+        LOG.debug("Removing interior faces");
         setStatus("Removing interior faces");
         interiorCount += removeInterior(map.getRoads(), removed, allObjects);
         interiorCount += removeInterior(map.getIntersections(), removed, allObjects);
         interiorCount += removeInterior(map.getBuildings(), removed, allObjects);
         setStatus("Removed " + removed.size() + " faces: " + duplicateCount + " duplicates and " + interiorCount + " interior");
+        debug.clearBackground();
+        debug.activate();
+        debug.show("Result", ConvertTools.getAllDebugShapes(map));
     }
 
     /**
@@ -62,12 +69,13 @@ public class RemoveShapesStep extends ConvertStep {
     */
     private int removeDuplicates(Collection<? extends TemporaryObject> test, Set<TemporaryObject> removed, Collection<TemporaryObject> toCheck) {
         int count = 0;
-        //        LOG.debug(test.size() + " test objects, " + toCheck.size() + " to check, " + removed.size() + " already removed");
+        LOG.debug(test.size() + " test objects, " + toCheck.size() + " to check, " + removed.size() + " already removed");
         for (TemporaryObject first : test) {
             bumpProgress();
             if (removed.contains(first)) {
                 continue;
             }
+            LOG.debug("Next test object: " + first);
             for (TemporaryObject second : toCheck) {
                 if (removed.contains(second)) {
                     continue;
@@ -75,12 +83,16 @@ public class RemoveShapesStep extends ConvertStep {
                 if (first == second) {
                     continue;
                 }
+                LOG.debug("Next check object: " + second);
                 if (first.isDuplicate(second)) {
                     map.removeTemporaryObject(second);
                     removed.add(second);
                     ++count;
-                    //                    LOG.debug("Removed duplicate object: " + second + " is same as " + first);
+                    LOG.debug("Removed duplicate object: " + second + " is same as " + first);
                 }
+                debug.show("Checking for duplicates",
+                           new TemporaryObjectInfo(first, "First", Color.WHITE, Constants.TRANSPARENT_LIME),
+                           new TemporaryObjectInfo(second, "Second", Color.WHITE, Constants.TRANSPARENT_BLUE));
             }
         }
         return count;

@@ -79,14 +79,6 @@ public class MakeObjectsStep extends ConvertStep {
             }
             bumpProgress();
         }
-        for (TemporaryRoad r : map.getRoads()) {
-            gmlMap.createRoad(makeEdges(r, edgeMap));
-            bumpProgress();
-        }
-        for (TemporaryIntersection i : map.getIntersections()) {
-            gmlMap.createRoad(makeEdges(i, edgeMap));
-            bumpProgress();
-        }
         setStatus("Created " + gmlMap.getRoads().size() + " roads and " + gmlMap.getBuildings().size() + " buildings");
     }
 
