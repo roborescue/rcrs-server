@@ -77,6 +77,7 @@ public class ShapeDebugFrame extends JFrame {
     private Collection<? extends ShapeInfo> background;
     private boolean backgroundEnabled;
     private JPopupMenu menu;
+    private boolean autoZoom;
 
     /**
        Construct a new ShapeDebugFrame.
@@ -168,6 +169,7 @@ public class ShapeDebugFrame extends JFrame {
         enabled = true;
         clearBackground();
         backgroundEnabled = true;
+        autoZoom = true;
         pack();
         menu = new JPopupMenu();
         menu.add(new BackgroundAction());
@@ -197,6 +199,14 @@ public class ShapeDebugFrame extends JFrame {
     */
     public void setBackgroundEnabled(boolean b) {
         backgroundEnabled = b;
+    }
+
+    /**
+       Set whether autozoom is enabled.
+       @param b True if autozoom should be enabled, false otherwise.
+    */
+    public void setAutozoomEnabled(boolean b) {
+        autoZoom = b;
     }
 
     /**
@@ -242,7 +252,9 @@ public class ShapeDebugFrame extends JFrame {
                     }
                     legend.setShapes(allShapes);
                     viewer.setShapes(allShapes);
-                    viewer.zoomTo(shapes);
+                    if (autoZoom) {
+                        viewer.zoomTo(shapes);
+                    }
                     repaint();
                 }
             });
