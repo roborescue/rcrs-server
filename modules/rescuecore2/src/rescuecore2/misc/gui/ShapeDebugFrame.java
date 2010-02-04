@@ -54,7 +54,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
 
 /**
-   A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a {@link #show(ShapeInfo...)} method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and activated. The "continue" button will hide and {@link #deactivate} the frame so that further calls to show will return immediately.
+   A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a show method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and activated. The "continue" button will hide and {@link #deactivate} the frame so that further calls to show will return immediately.
  */
 public class ShapeDebugFrame extends JFrame {
     private static final Logger LOG = LogManager.getLogger(ShapeDebugFrame.class);
