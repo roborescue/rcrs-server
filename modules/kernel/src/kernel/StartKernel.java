@@ -174,7 +174,7 @@ public final class StartKernel {
                 frame.setVisible(true);
             }
             initialiseKernel(kernelInfo, config, localRegistry);
-            autostartComponents(kernelInfo, config, localRegistry, gui);
+            autostartComponents(kernelInfo, localRegistry, gui);
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo, config);
                 Kernel kernel = kernelInfo.kernel;
@@ -269,11 +269,11 @@ public final class StartKernel {
         }
     }
 
-    private static void autostartComponents(KernelInfo info, Config config, Registry registry, KernelGUI gui) throws InterruptedException {
+    private static void autostartComponents(KernelInfo info, Registry registry, KernelGUI gui) throws InterruptedException {
         KernelChooserDialog chooser = info.choices;
         Collection<Callable<Void>> all = new ArrayList<Callable<Void>>();
         for (Pair<String, Integer> next : chooser.getAllComponents()) {
-            all.add(new ComponentStarter(next.first(), config, info.componentManager, next.second(), registry, gui));
+            all.add(new ComponentStarter(next.first(), info.componentManager, next.second(), registry, gui));
         }
         ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         service.invokeAll(all);
@@ -391,15 +391,13 @@ public final class StartKernel {
 
     private static class ComponentStarter implements Callable<Void> {
         private String className;
-        private Config config;
         private ComponentManager componentManager;
         private int count;
         private Registry registry;
         private KernelGUI gui;
 
-        public ComponentStarter(String className, Config config, ComponentManager componentManager, int count, Registry registry, KernelGUI gui) {
+        public ComponentStarter(String className, ComponentManager componentManager, int count, Registry registry, KernelGUI gui) {
             this.className = className;
-            this.config = config;
             this.componentManager = componentManager;
             this.count = count;
             this.registry = registry;
