@@ -13,6 +13,7 @@ public interface AgentRegistrar {
        @param world The WorldModel.
        @param config The Config.
        @param manager The ComponentManager.
+       @throws KernelException If there is a problem registering agents.
     */
-    void registerAgents(WorldModel<? extends Entity> world, Config config, ComponentManager manager);
+    void registerAgents(WorldModel<? extends Entity> world, Config config, ComponentManager manager) throws KernelException;
 }
