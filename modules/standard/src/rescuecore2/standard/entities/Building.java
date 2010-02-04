@@ -301,6 +301,17 @@ public class Building extends StandardEntity {
     }
 
     /**
+       Get the building code of this building as an enum constant. If building code is not defined then return null.
+       @return The building code property value as a BuildingCode enum, or null if building code is undefined.
+     */
+    public StandardEntityConstants.BuildingCode getBuildingCodeEnum() {
+        if (!code.isDefined()) {
+            return null;
+        }
+        return StandardEntityConstants.BuildingCode.values()[code.getValue()];
+    }
+
+    /**
        Set the building code of this building.
        @param newCode The new building code.
     */
