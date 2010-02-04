@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.regex.Matcher;
 import java.math.BigInteger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -609,6 +612,29 @@ public class Config {
     public void removeExcept(Collection<String> exceptions) {
         data.keySet().retainAll(exceptions);
         noCache.retainAll(exceptions);
+    }
+
+    /**
+       Remove all keys that do not match any of the given regular expressions.
+       @param exceptions The regular expressions describing keys to keep.
+    */
+    public void removeExceptRegex(Collection<String> exceptions) throws PatternSyntaxException {
+        Set<String> toRemove = new HashSet<String>(data.keySet());
+        LOG.debug("Removing all except " + exceptions);
+        for (String exception : exceptions) {
+            Pattern p = Pattern.compile(exception);
+            for (String key : data.keySet()) {
+                if (p.matcher(key).matches()) {
+                    LOG.debug(key + " matches " + exception);
+                    toRemove.remove(key);
+                }
+            }
+        }
+        LOG.debug("Removing " + toRemove);
+        for (String next : toRemove) {
+            data.remove(next);
+            noCache.remove(next);
+        }
     }
 
     /**
