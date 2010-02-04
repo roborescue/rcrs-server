@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import kernel.Kernel;
 import kernel.ComponentManager;
@@ -53,7 +54,12 @@ public class KernelGUI extends JPanel {
        Add a kernel GUI component.
        @param c The GUI component to add.
      */
-    public void addGUIComponent(GUIComponent c) {
-        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent());
+    public void addGUIComponent(final GUIComponent c) {
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    tabs.addTab(c.getGUIComponentName(), c.getGUIComponent());
+                }
+            });
     }
 }
