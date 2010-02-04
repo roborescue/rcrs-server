@@ -411,7 +411,7 @@ public final class StartKernel {
             LOG.debug("ComponentStarter running: " + className + " * " + count);
             Pair<Connection, Connection> connections = StreamConnection.createConnectionPair(registry);
             componentManager.newConnection(connections.first());
-            ComponentLauncher launcher = new ComponentLauncher(connections.second(), config);
+            ComponentLauncher launcher = new ComponentLauncher(connections.second(), new Config());
             LOG.info("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
                 Component c = instantiate(className, Component.class);
