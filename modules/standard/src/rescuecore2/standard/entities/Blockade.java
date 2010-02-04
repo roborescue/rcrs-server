@@ -49,6 +49,9 @@ public class Blockade extends StandardEntity {
 
     @Override
     public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
+        if (!x.isDefined() || !y.isDefined()) {
+            return null;
+        }
         return new Pair<Integer, Integer>(x.getValue(), y.getValue());
     }
 
