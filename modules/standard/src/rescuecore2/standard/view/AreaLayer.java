@@ -7,7 +7,6 @@ import java.awt.Polygon;
 import java.util.List;
 import java.util.Iterator;
 
-import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.gui.ScreenTransform;
 
 import rescuecore2.standard.entities.Area;
