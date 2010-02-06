@@ -58,6 +58,7 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
         CommandLayer commands = new CommandLayer();
         addLayer(commands);
         commands.setRenderMove(false);
+        addLayer(new PositionHistoryLayer());
     }
 
     @Override

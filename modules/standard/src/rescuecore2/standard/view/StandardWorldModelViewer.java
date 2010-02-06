@@ -29,5 +29,6 @@ public class StandardWorldModelViewer extends LayerViewComponent {
         addLayer(new BuildingIconLayer());
         addLayer(new HumanLayer());
         addLayer(new CommandLayer());
+        addLayer(new PositionHistoryLayer());
     }
 }
