@@ -4,6 +4,7 @@ import java.util.List;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.components.EntityIDListComponent;
+import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.AbstractCommand;
 
 import java.io.InputStream;
@@ -14,6 +15,8 @@ import java.io.IOException;
  */
 public class AKMove extends AbstractCommand {
     private EntityIDListComponent path;
+    private IntComponent x;
+    private IntComponent y;
 
     /**
        An AKMove message that populates its data from a stream.
@@ -27,21 +30,44 @@ public class AKMove extends AbstractCommand {
 
     /**
        Construct a move command.
+       @param time The time the command was issued.
        @param agent The ID of the agent issuing the command.
        @param path The path to move.
-       @param time The time the command was issued.
      */
     public AKMove(EntityID agent, int time, List<EntityID> path) {
         this();
         setAgentID(agent);
         setTime(time);
         this.path.setIDs(path);
+        this.x.setValue(-1);
+        this.y.setValue(-1);
+    }
+
+    /**
+       Construct a move command.
+       @param time The time the command was issued.
+       @param agent The ID of the agent issuing the command.
+       @param path The path to move.
+       @param destinationX The X coordinate of the desired destination.
+       @param destinationY The Y coordinate of the desired destination.
+     */
+    public AKMove(EntityID agent, int time, List<EntityID> path, int destinationX, int destinationY) {
+        this();
+        setAgentID(agent);
+        setTime(time);
+        this.path.setIDs(path);
+        this.x.setValue(destinationX);
+        this.y.setValue(destinationY);
     }
 
     private AKMove() {
         super(StandardMessageURN.AK_MOVE);
         path = new EntityIDListComponent("Path");
+        x = new IntComponent("Destination X");
+        y = new IntComponent("Destination Y");
         addMessageComponent(path);
+        addMessageComponent(x);
+        addMessageComponent(y);
     }
 
     /**
@@ -50,5 +76,21 @@ public class AKMove extends AbstractCommand {
      */
     public List<EntityID> getPath() {
         return path.getIDs();
+    }
+
+    /**
+       Get the destination X coordinate.
+       @return The destination X coordination.
+    */
+    public int getDestinationX() {
+        return x.getValue();
+    }
+
+    /**
+       Get the destination Y coordinate.
+       @return The destination Y coordination.
+    */
+    public int getDestinationY() {
+        return y.getValue();
     }
 }
