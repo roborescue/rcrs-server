@@ -1,0 +1,130 @@
+# Static objects
+# Fire stations: 1
+# Police offices: 1
+# Ambulance centers: 1
+# Refuges: 4
+FireStation=518
+PoliceOffice=514
+AmbulanceCenter=545
+Refuge=577
+Refuge=666
+Refuge=699
+Refuge=701
+
+# Moving objects
+# Fire brigades: 8
+# Police forces: 8
+# Ambulance teams: 8
+# Civilians: 80
+FireBrigade=212, 0
+FireBrigade=523, 0
+FireBrigade=537, 0
+FireBrigade=542, 0
+FireBrigade=566, 0
+FireBrigade=616, 0
+FireBrigade=619, 0
+FireBrigade=657, 0
+PoliceForce=124, 0
+PoliceForce=171, 0
+PoliceForce=177, 0
+PoliceForce=183, 0
+PoliceForce=228, 0
+PoliceForce=631, 0
+PoliceForce=677, 0
+PoliceForce=719, 0
+AmbulanceTeam=140, 0
+AmbulanceTeam=166, 0
+AmbulanceTeam=176, 0
+AmbulanceTeam=202, 0
+AmbulanceTeam=230, 0
+AmbulanceTeam=511, 0
+AmbulanceTeam=587, 0
+AmbulanceTeam=615, 0
+Civilian=512, 0
+Civilian=517, 0
+Civilian=518, 0
+Civilian=520, 0
+Civilian=528, 0
+Civilian=529, 0
+Civilian=532, 0
+Civilian=532, 0
+Civilian=539, 0
+Civilian=540, 0
+Civilian=542, 0
+Civilian=542, 0
+Civilian=543, 0
+Civilian=545, 0
+Civilian=546, 0
+Civilian=549, 0
+Civilian=554, 0
+Civilian=557, 0
+Civilian=557, 0
+Civilian=560, 0
+Civilian=567, 0
+Civilian=569, 0
+Civilian=571, 0
+Civilian=574, 0
+Civilian=576, 0
+Civilian=576, 0
+Civilian=577, 0
+Civilian=578, 0
+Civilian=579, 0
+Civilian=580, 0
+Civilian=580, 0
+Civilian=589, 0
+Civilian=598, 0
+Civilian=599, 0
+Civilian=599, 0
+Civilian=603, 0
+Civilian=604, 0
+Civilian=607, 0
+Civilian=607, 0
+Civilian=608, 0
+Civilian=622, 0
+Civilian=623, 0
+Civilian=623, 0
+Civilian=623, 0
+Civilian=623, 0
+Civilian=626, 0
+Civilian=631, 0
+Civilian=633, 0
+Civilian=637, 0
+Civilian=637, 0
+Civilian=641, 0
+Civilian=644, 0
+Civilian=647, 0
+Civilian=651, 0
+Civilian=654, 0
+Civilian=654, 0
+Civilian=661, 0
+Civilian=662, 0
+Civilian=662, 0
+Civilian=662, 0
+Civilian=666, 0
+Civilian=670, 0
+Civilian=671, 0
+Civilian=673, 0
+Civilian=679, 0
+Civilian=681, 0
+Civilian=683, 0
+Civilian=683, 0
+Civilian=685, 0
+Civilian=691, 0
+Civilian=693, 0
+Civilian=695, 0
+Civilian=701, 0
+Civilian=702, 0
+Civilian=704, 0
+Civilian=704, 0
+Civilian=707, 0
+Civilian=708, 0
+Civilian=718, 0
+Civilian=719, 0
+# Fires
+# Ignition points: 6
+FirePoint=527
+FirePoint=530
+FirePoint=569
+FirePoint=579
+FirePoint=656
+FirePoint=689

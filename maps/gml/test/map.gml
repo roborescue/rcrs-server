@@ -1313,7 +1313,6 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#228"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#227"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#209"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#207"/>
       </gml:Face>
     </rcr:building>
     <rcr:building xmlns:gml="http://www.opengis.net/gml" gml:id="255">
@@ -1325,7 +1324,6 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#232"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#178"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#177"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#185"/>
       </gml:Face>
     </rcr:building>
     <rcr:building xmlns:gml="http://www.opengis.net/gml" gml:id="252">
@@ -1345,7 +1343,6 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#196"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#244"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#241"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#234"/>
       </gml:Face>
     </rcr:building>
     <rcr:building xmlns:gml="http://www.opengis.net/gml" gml:id="250">
@@ -1366,7 +1363,6 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#205"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#221"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#222"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#197"/>
       </gml:Face>
     </rcr:building>
     <rcr:building xmlns:gml="http://www.opengis.net/gml" gml:id="248">
@@ -1550,7 +1546,6 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#158"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#159"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#238" rcr:neighbour="265"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#214" rcr:neighbour="265"/>
       </gml:Face>
     </rcr:road>
     <rcr:road xmlns:gml="http://www.opengis.net/gml" gml:id="266">
@@ -1591,7 +1586,6 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#163"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#245"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#246" rcr:neighbour="264"/>
-        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#214" rcr:neighbour="261"/>
       </gml:Face>
     </rcr:road>
     <rcr:road xmlns:gml="http://www.opengis.net/gml" gml:id="270">

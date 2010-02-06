@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<rcr:scenario xmlns:rcr="urn:roborescue:map:scenario">
-  <rcr:refuge rcr:id="254"/>
-  <rcr:civilian rcr:location="275"/>
-</rcr:scenario>
