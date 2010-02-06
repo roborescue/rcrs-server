@@ -1,5 +1,9 @@
 package rescuecore2.misc.geometry;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
    A bunch of useful 2D geometry tools: finding line intersections, closest points and so on.
  */
@@ -217,5 +221,98 @@ public final class GeometryTools2D {
     */
     public static boolean nearlyZero(double d) {
         return d > -THRESHOLD && d < THRESHOLD;
+    }
+
+    /**
+       Compute the area of a simple polygon.
+       @param vertices The vertices of the polygon.
+       @return The area of the polygon.
+    */
+    public static double computeArea(List<Point2D> vertices) {
+        return Math.abs(computeAreaUnsigned(vertices));
+    }
+
+    /**
+       Compute the centroid of a simple polygon.
+       @param vertices The vertices of the polygon.
+       @return The centroid.
+    */
+    public static Point2D computeCentroid(List<Point2D> vertices) {
+        double area = computeAreaUnsigned(vertices);
+        Iterator<Point2D> it = vertices.iterator();
+        Point2D last = it.next();
+        Point2D first = last;
+        double xSum = 0;
+        double ySum = 0;
+        while (it.hasNext()) {
+            Point2D next = it.next();
+            double lastX = last.getX();
+            double lastY = last.getY();
+            double nextX = next.getX();
+            double nextY = next.getY();
+            xSum += (lastX + nextX) * ((lastX * nextY) - (nextX * lastY));
+            ySum += (lastY + nextY) * ((lastX * nextY) - (nextX * lastY));
+            last = next;
+        }
+        double lastX = last.getX();
+        double lastY = last.getY();
+        double nextX = first.getX();
+        double nextY = first.getY();
+        xSum += (lastX + nextX) * ((lastX * nextY) - (nextX * lastY));
+        ySum += (lastY + nextY) * ((lastX * nextY) - (nextX * lastY));
+        // CHECKSTYLE:OFF:MagicNumber
+        xSum /= 6.0 * area;
+        ySum /= 6.0 * area;
+        // CHECKSTYLE:ON:MagicNumber
+        return new Point2D(xSum, ySum);
+    }
+
+    /**
+       Convert a vertex array to a list of Point2D objects.
+       @param vertices The vertices in x, y order.
+       @return A list of Point2D objects.
+    */
+    public static List<Point2D> vertexArrayToPoints(int[] vertices) {
+        List<Point2D> result = new ArrayList<Point2D>();
+        for (int i = 0; i < vertices.length; i += 2) {
+            result.add(new Point2D(vertices[i], vertices[i + 1]));
+        }
+        return result;
+    }
+
+    /**
+       Convert a vertex array to a list of Point2D objects.
+       @param vertices The vertices in x, y order.
+       @return A list of Point2D objects.
+    */
+    public static List<Point2D> vertexArrayToPoints(double[] vertices) {
+        List<Point2D> result = new ArrayList<Point2D>();
+        for (int i = 0; i < vertices.length; i += 2) {
+            result.add(new Point2D(vertices[i], vertices[i + 1]));
+        }
+        return result;
+    }
+
+    private static double computeAreaUnsigned(List<Point2D> vertices) {
+        Iterator<Point2D> it = vertices.iterator();
+        Point2D last = it.next();
+        Point2D first = last;
+        double sum = 0;
+        while (it.hasNext()) {
+            Point2D next = it.next();
+            double lastX = last.getX();
+            double lastY = last.getY();
+            double nextX = next.getX();
+            double nextY = next.getY();
+            sum += (lastX * nextY) - (nextX * lastY);
+            last = next;
+        }
+        double lastX = last.getX();
+        double lastY = last.getY();
+        double nextX = first.getX();
+        double nextY = first.getY();
+        sum += (lastX * nextY) - (nextX * lastY);
+        sum /= 2.0;
+        return sum;
     }
 }
