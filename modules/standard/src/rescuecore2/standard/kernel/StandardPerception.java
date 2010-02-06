@@ -13,6 +13,7 @@ import kernel.Perception;
 import kernel.AgentProxy;
 
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.properties.IntProperty;
@@ -22,6 +23,7 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -184,6 +186,9 @@ public class StandardPerception implements Perception, GUIComponent {
                             addHumanProperties((Human)next, result);
                         }
                         break;
+                    case BLOCKADE:
+                        addBlockadeProperties((Blockade)next, result);
+                        break;
                     default:
                         // Ignore other types
                         break;
@@ -211,6 +216,13 @@ public class StandardPerception implements Perception, GUIComponent {
         addAreaProperties(road, result);
         // Only update blockades
         result.addChange(road, road.getBlockadesProperty());
+        // Also update each blockade
+        if (road.isBlockadesDefined()) {
+            for (EntityID id : road.getBlockades()) {
+                Blockade blockade = (Blockade)world.getEntity(id);
+                addBlockadeProperties(blockade, result);
+            }
+        }
     }
 
     private void addBuildingProperties(Building building, ChangeSet result) {
@@ -222,7 +234,6 @@ public class StandardPerception implements Perception, GUIComponent {
     }
 
     private void addAreaProperties(Area area, ChangeSet result) {
-        // Update TEMPERATURE, FIERYNESS and BROKENNESS
     }
 
     private void addFarBuildingProperties(Building building, ChangeSet result) {
@@ -253,6 +264,14 @@ public class StandardPerception implements Perception, GUIComponent {
         // Un-round hp and damage
         result.addChange(human, human.getHPProperty());
         result.addChange(human, human.getDamageProperty());
+    }
+
+    private void addBlockadeProperties(Blockade blockade, ChangeSet result) {
+        result.addChange(blockade, blockade.getXProperty());
+        result.addChange(blockade, blockade.getYProperty());
+        result.addChange(blockade, blockade.getPositionProperty());
+        result.addChange(blockade, blockade.getApexesProperty());
+        result.addChange(blockade, blockade.getRepairCostProperty());
     }
 
     private void roundProperty(IntProperty p, int precision) {
