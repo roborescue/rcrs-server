@@ -17,6 +17,7 @@
   <property name="modules.misc.depend" value="rescuecore2,standard"/>
   <property name="modules.resq-fire.depend" value="rescuecore2,standard"/>
   <property name="modules.ignition.depend" value="rescuecore2,standard"/>
+  <property name="modules.maps.depend" value="rescuecore2"/>
   <property name="modules.clear.depend" value="rescuecore2,standard"/>
   <property name="modules.traffic3.depend" value="rescuecore2,standard"/>
   <property name="modules.gis2.depend" value="rescuecore2,standard,maps,kernel"/>
@@ -30,13 +31,11 @@
   <import file="${modules.dir}/collapse/build.xml" optional="true"/>
   <import file="${modules.dir}/misc/build.xml" optional="true"/>
   <import file="${modules.dir}/resq-fire/build.xml" optional="true"/>
-  <import file="${modules.dir}/traffic-old/build.xml" optional="true"/>
-  <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
   <import file="${modules.dir}/ignition/build.xml" optional="true"/>
-  <import file="${modules.dir}/clear/build.xml" optional="true"/>
-  <import file="${modules.dir}/gis2/build.xml" optional="true"/>
-  <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
   <import file="${modules.dir}/maps/build.xml" optional="true"/>
+  <import file="${modules.dir}/clear/build.xml" optional="true"/>
+  <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
+  <import file="${modules.dir}/gis2/build.xml" optional="true"/>
 
   <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->

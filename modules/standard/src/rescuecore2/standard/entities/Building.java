@@ -11,14 +11,12 @@ import java.util.EnumSet;
 /**
    The Building object.
  */
-public class Building extends StandardEntity {
+public class Building extends Area {
     /**
        Fieryness levels that indicate burning.
     */
     public static final EnumSet<StandardEntityConstants.Fieryness> BURNING = EnumSet.of(StandardEntityConstants.Fieryness.HEATING, StandardEntityConstants.Fieryness.BURNING, StandardEntityConstants.Fieryness.INFERNO);
 
-    private IntProperty x;
-    private IntProperty y;
     private IntProperty floors;
     private BooleanProperty ignition;
     private IntProperty fieryness;
@@ -29,8 +27,6 @@ public class Building extends StandardEntity {
     private IntProperty totalArea;
     private IntProperty temperature;
     private IntProperty importance;
-    private EntityRefListProperty entrances;
-    private IntArrayProperty apexes;
 
     /**
        Construct a Building object with entirely undefined property values.
@@ -57,8 +53,6 @@ public class Building extends StandardEntity {
      */
     public Building(Building other) {
         super(other);
-        x = new IntProperty(other.x);
-        y = new IntProperty(other.y);
         floors = new IntProperty(other.floors);
         ignition = new BooleanProperty(other.ignition);
         fieryness = new IntProperty(other.fieryness);

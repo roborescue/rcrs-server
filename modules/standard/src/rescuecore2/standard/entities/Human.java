@@ -101,6 +101,7 @@ public abstract class Human extends StandardEntity {
         if (x.isDefined() && y.isDefined()) {
             return new Pair<Integer, Integer>(x.getValue(), y.getValue());
         }
+        return null;
     }
 
     /**
@@ -140,44 +141,6 @@ public abstract class Human extends StandardEntity {
     */
     public void undefinePosition() {
         position.undefine();
-    }
-    /**
-       Get the position extra property.
-       @return The position extra property.
-     */
-    public IntProperty getPositionExtraProperty() {
-        return positionExtra;
-    }
-
-    /**
-       Get the positionExtra of this human.
-       @return The positionExtra of this human.
-     */
-    public int getPositionExtra() {
-        return positionExtra.getValue();
-    }
-
-    /**
-       Set the positionExtra of this human.
-       @param positionExtra The new positionExtra.
-    */
-    public void setPositionExtra(int positionExtra) {
-        this.positionExtra.setValue(positionExtra);
-    }
-
-    /**
-       Find out if the positionExtra property has been defined.
-       @return True if the positionExtra property has been defined, false otherwise.
-     */
-    public boolean isPositionExtraDefined() {
-        return positionExtra.isDefined();
-    }
-
-    /**
-       Undefine the positionExtra property.
-    */
-    public void undefinePositionExtra() {
-        positionExtra.undefine();
     }
 
     /**
