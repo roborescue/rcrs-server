@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
@@ -601,6 +602,14 @@ public class Config {
         floatData.clear();
         booleanData.clear();
         arrayData.clear();
+    }
+
+    /**
+       Remove all except a set of keys.
+       @param exceptions The keys to keep.
+    */
+    public void removeExcept(String... exceptions) {
+        removeExcept(Arrays.asList(exceptions));
     }
 
     /**
