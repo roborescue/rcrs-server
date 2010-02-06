@@ -365,6 +365,9 @@ public class CollapseSimulator extends StandardSimulator {
     }
 
     private Blockade makeBlockade(EntityID id, java.awt.geom.Area area, EntityID roadID) {
+        if (area.isEmpty()) {
+            return null;
+        }
         Blockade result = new Blockade(id);
         int[] apexes = getApexes(area);
         List<Point2D> points = GeometryTools2D.vertexArrayToPoints(apexes);
