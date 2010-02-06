@@ -43,6 +43,7 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Message makeMessage(String urn, InputStream data) throws IOException {
         T t = null;
         if (fromString != null) {

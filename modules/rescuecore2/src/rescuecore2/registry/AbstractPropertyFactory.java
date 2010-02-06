@@ -41,6 +41,7 @@ public abstract class AbstractPropertyFactory<T extends Enum<T>> implements Prop
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Property makeProperty(String urn) {
         T t = null;
         if (fromString != null) {

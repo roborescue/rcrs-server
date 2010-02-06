@@ -42,6 +42,7 @@ public abstract class AbstractEntityFactory<T extends Enum<T>> implements Entity
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Entity makeEntity(String urn, EntityID id) {
         T t = null;
         if (fromString != null) {

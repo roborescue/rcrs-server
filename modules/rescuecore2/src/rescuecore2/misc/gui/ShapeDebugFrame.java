@@ -379,6 +379,7 @@ public class ShapeDebugFrame extends JFrame {
            Set the list of ShapeInfo objects to draw.
            @param s The new list of ShapeInfo objects.
         */
+        @SuppressWarnings("unchecked")
         public void setShapes(Collection<ShapeInfo> s) {
             shapes.clear();
             shapes.addAll(s);
@@ -392,6 +393,7 @@ public class ShapeDebugFrame extends JFrame {
            Zoom to show a set of ShapeInfo objects.
            @param zoom The set of objects to zoom to.
         */
+        @SuppressWarnings("unchecked")
         public void zoomTo(Collection<ShapeInfo> zoom) {
             Rectangle2D bounds = ShapeDebugFrame.this.getBounds(zoom);
             // Increase the bounds by 10%
