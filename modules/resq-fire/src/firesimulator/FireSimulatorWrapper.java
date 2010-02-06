@@ -331,6 +331,8 @@ public class FireSimulatorWrapper extends StandardSimulator {
                     oldB.setFieryness(b.getFieryness());
                     changes.addChange(oldB, oldB.getFierynessProperty());
                 }
+                oldB.setTemperature((int)b.getTemperature());
+                changes.addChange(oldB, oldB.getTemperatureProperty());
             }
             for (Object next : world.getFirebrigades()) {
                 FireBrigade fb = (FireBrigade)next;
