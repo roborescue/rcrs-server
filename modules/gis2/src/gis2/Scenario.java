@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import rescuecore2.worldmodel.EntityID;
 
@@ -44,12 +45,12 @@ public class Scenario {
     private static final QName ID_QNAME = DocumentHelper.createQName("id", RCR_NAMESPACE);
     private static final QName LOCATION_QNAME = DocumentHelper.createQName("location", RCR_NAMESPACE);
 
-    private static final XPath REFUGE_XPATH = DocumentHelper.createXPath("rcr:scenario/rcr:refuge");
-    private static final XPath CIV_XPATH = DocumentHelper.createXPath("rcr:scenario/rcr:civilian");
-    private static final XPath FB_XPATH = DocumentHelper.createXPath("rcr:scenario/rcr:firebrigade");
-    private static final XPath AT_XPATH = DocumentHelper.createXPath("rcr:scenario/rcr:ambulanceteam");
-    private static final XPath PF_XPATH = DocumentHelper.createXPath("rcr:scenario/rcr:policeforce");
-    private static final XPath FIRE_XPATH = DocumentHelper.createXPath("rcr:scenario/rcr:fire");
+    private static final XPath REFUGE_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:refuge");
+    private static final XPath CIV_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:civilian");
+    private static final XPath FB_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:firebrigade");
+    private static final XPath AT_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:ambulanceteam");
+    private static final XPath PF_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:policeforce");
+    private static final XPath FIRE_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:fire");
 
     // Map from uri prefix to uri for XPaths
     private static final Map<String, String> URIS = new HashMap<String, String>();
@@ -79,10 +80,10 @@ public class Scenario {
     public Scenario(Document doc) {
         refugeIDs = new HashSet<Integer>();
         fires = new HashSet<Integer>();
-        civLocations = new HashSet<Integer>();
-        fbLocations = new HashSet<Integer>();
-        pfLocations = new HashSet<Integer>();
-        atLocations = new HashSet<Integer>();
+        civLocations = new ArrayList<Integer>();
+        fbLocations = new ArrayList<Integer>();
+        pfLocations = new ArrayList<Integer>();
+        atLocations = new ArrayList<Integer>();
         for (Object next : REFUGE_XPATH.selectNodes(doc)) {
             Element e = (Element)next;
             refugeIDs.add(Integer.parseInt(e.attributeValue(ID_QNAME)));
