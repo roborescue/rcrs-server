@@ -69,8 +69,9 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
                 return;
             }
             else {
-                System.out.println(me() + " couldn't plan a path to a refuge.");
+                LOG.debug(me() + " couldn't plan a path to a refuge.");
                 path = randomWalk();
+                LOG.debug(me() + " moving: " + path);
                 sendMove(time, path);
                 return;
             }
@@ -93,8 +94,9 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             }
         }
         List<EntityID> path = null;
-        System.out.println(me() + " couldn't plan a path to a fire.");
+        LOG.debug(me() + " couldn't plan a path to a fire.");
         path = randomWalk();
+        LOG.debug(me() + " moving: " + path);
         sendMove(time, path);
     }
 

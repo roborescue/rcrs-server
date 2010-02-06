@@ -14,10 +14,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
    A sample search class.
  */
 public final class SampleSearch {
+    private static final Log LOG = LogFactory.getLog(SampleSearch.class);
+
     private boolean ignoreBlockedRoads;
     private StandardWorldModel world;
 
@@ -90,13 +95,17 @@ public final class SampleSearch {
         // Walk back from goal to start
         StandardEntity current = next;
         List<EntityID> path = new LinkedList<EntityID>();
+        //        LOG.debug("Building path");
+        //        LOG.debug("Goal found: " + current);
         do {
             path.add(0, current.getID());
             current = ancestors.get(current);
+            //            LOG.debug("Parent node: " + current);
             if (current == null) {
                 throw new RuntimeException("Found a node with no ancestor! Something is broken.");
             }
         } while (current != start);
+        //        LOG.debug("Final path: " + path);
         return path;
     }
 

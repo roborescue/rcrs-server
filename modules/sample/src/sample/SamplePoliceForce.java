@@ -42,10 +42,11 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         for (Command next : heard) {
             LOG.debug(me() + " heard " + next);
         }
-        // Am I on a blocked road?
-        EntityID nearest = getNearestBlockade();
-        if (nearest != null) {
-            sendClear(time, nearest);
+        // Am I on (or next to) a blocked road?
+        EntityID target = getTargetBlockade();
+        if (target != null) {
+            LOG.debug(me() + " clearing blockade " + target);
+            sendClear(time, target);
             return;
         }
 
@@ -77,6 +78,33 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         return result;
     }
 
+    private EntityID getTargetBlockade() {
+        Area location = (Area)location();
+        EntityID result = getTargetBlockade(location);
+        if (result != null) {
+            return result;
+        }
+        for (EntityID next : location.getNeighbours()) {
+            location = (Area)model.getEntity(next);
+            result = getTargetBlockade(location);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private EntityID getTargetBlockade(Area area) {
+        if (!area.isBlockadesDefined()) {
+            return null;
+        }
+        List<EntityID> ids = area.getBlockades();
+        if (ids.isEmpty()) {
+            return null;
+        }
+        return ids.get(0);
+    }
+
     /**
        Get the blockade that is nearest this agent.
        @return The EntityID of the nearest blockade, or null if there are no blockades in the agents current location.
@@ -95,10 +123,17 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     public EntityID getNearestBlockade(Area area, int x, int y) {
         double bestDistance = 0;
         EntityID best = null;
+        LOG.debug("Finding nearest blockade");
         if (area.isBlockadesDefined()) {
             for (EntityID blockadeID : area.getBlockades()) {
+                LOG.debug("Checking " + blockadeID);
                 StandardEntity entity = model.getEntity(blockadeID);
+                LOG.debug("Found " + entity);
+                if (entity == null) {
+                    continue;
+                }
                 Pair<Integer, Integer> location = entity.getLocation(model);
+                LOG.debug("Location: " + location);
                 if (location == null) {
                     continue;
                 }
@@ -111,6 +146,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
                 }
             }
         }
+        LOG.debug("Nearest blockade: " + best);
         return best;
     }
 }
