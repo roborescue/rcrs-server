@@ -174,7 +174,7 @@ public final class StartKernel {
                 frame.setVisible(true);
             }
             initialiseKernel(kernelInfo, config, localRegistry);
-            autostartComponents(kernelInfo, localRegistry, gui);
+            autostartComponents(kernelInfo, localRegistry, gui, config);
             if (!showGUI || justRun) {
                 waitForComponentManager(kernelInfo, config);
                 Kernel kernel = kernelInfo.kernel;
@@ -269,11 +269,13 @@ public final class StartKernel {
         }
     }
 
-    private static void autostartComponents(KernelInfo info, Registry registry, KernelGUI gui) throws InterruptedException {
+    private static void autostartComponents(KernelInfo info, Registry registry, KernelGUI gui, Config config) throws InterruptedException {
         KernelChooserDialog chooser = info.choices;
         Collection<Callable<Void>> all = new ArrayList<Callable<Void>>();
+        Config launchConfig = new Config(config);
+        launchConfig.removeExcept(Constants.RANDOM_SEED_KEY, Constants.RANDOM_CLASS_KEY);
         for (Pair<String, Integer> next : chooser.getAllComponents()) {
-            all.add(new ComponentStarter(next.first(), info.componentManager, next.second(), registry, gui));
+            all.add(new ComponentStarter(next.first(), info.componentManager, next.second(), registry, gui, launchConfig));
         }
         ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         service.invokeAll(all);
@@ -395,13 +397,15 @@ public final class StartKernel {
         private int count;
         private Registry registry;
         private KernelGUI gui;
+        private Config config;
 
-        public ComponentStarter(String className, ComponentManager componentManager, int count, Registry registry, KernelGUI gui) {
+        public ComponentStarter(String className, ComponentManager componentManager, int count, Registry registry, KernelGUI gui, Config config) {
             this.className = className;
             this.componentManager = componentManager;
             this.count = count;
             this.registry = registry;
             this.gui = gui;
+            this.config = config;
             LOG.debug("New ComponentStarter: " + className + " * " + count);
         }
 
@@ -409,7 +413,7 @@ public final class StartKernel {
             LOG.debug("ComponentStarter running: " + className + " * " + count);
             Pair<Connection, Connection> connections = StreamConnection.createConnectionPair(registry);
             componentManager.newConnection(connections.first());
-            ComponentLauncher launcher = new ComponentLauncher(connections.second(), new Config());
+            ComponentLauncher launcher = new ComponentLauncher(connections.second(), config);
             LOG.info("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
                 Component c = instantiate(className, Component.class);
