@@ -293,6 +293,38 @@ public final class GeometryTools2D {
         return result;
     }
 
+    /**
+       Find the closest point on a line.
+       @param line The line to check.
+       @param point The point to check against.
+       @return The point on the line that is closest to the reference point.
+    */
+    public static Point2D getClosestPoint(Line2D line, Point2D point) {
+        Point2D p1 = line.getOrigin();
+        Point2D p2 = line.getEndPoint();
+        double u = (((point.getX() - p1.getX()) * (p2.getX() - p1.getX())) + ((point.getY() - p1.getY()) * (p2.getY() - p1.getY()))) / (line.getDirection().getLength() * line.getDirection().getLength());
+        return line.getPoint(u);
+    }
+
+    /**
+       Find the closest point on a line.
+       @param line The line to check.
+       @param point The point to check against.
+       @return The point on the line that is closest to the reference point.
+    */
+    public static Point2D getClosestPointOnSegment(Line2D line, Point2D point) {
+        Point2D p1 = line.getOrigin();
+        Point2D p2 = line.getEndPoint();
+        double u = (((point.getX() - p1.getX()) * (p2.getX() - p1.getX())) + ((point.getY() - p1.getY()) * (p2.getY() - p1.getY()))) / (line.getDirection().getLength()* line.getDirection().getLength());
+        if (u <= 0) {
+            return p1;
+        }
+        if (u >= 1) {
+            return p2;
+        }
+        return line.getPoint(u);
+    }
+
     private static double computeAreaUnsigned(List<Point2D> vertices) {
         Iterator<Point2D> it = vertices.iterator();
         Point2D last = it.next();
