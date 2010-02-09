@@ -1,16 +1,16 @@
 package rescuecore2.standard.entities;
 
 import rescuecore2.worldmodel.EntityID;
-import java.awt.Point;
+import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Line2D;
 
 /**
    An edge is a line segment with an optional neighbouring entity. Edges without neighbours are impassable, edges with neighbours are passable.
  */
 public class Edge {
-    private int startX;
-    private int startY;
-    private int endX;
-    private int endY;
+    private Point2D start;
+    private Point2D end;
+    private Line2D line;
     private EntityID neighbour;
 
     /**
@@ -21,7 +21,16 @@ public class Edge {
        @param endY The Y coordinate of the second endpoint.
      */
     public Edge(int startX, int startY, int endX, int endY) {
-        this(startX, startY, endX, endY, null);
+        this(new Point2D(startX, startY), new Point2D(endX, endY), null);
+    }
+
+    /**
+       Constuct an impassable Edge.
+       @param start The first endpoint coordinates.
+       @param end The second endpoint coordinates.
+     */
+    public Edge(Point2D start, Point2D end) {
+        this(start, end, null);
     }
 
     /**
@@ -33,11 +42,20 @@ public class Edge {
        @param neighbour The ID of the neighbour on the other side of this edge. This may be null to indicate an impassable edge.
      */
     public Edge(int startX, int startY, int endX, int endY, EntityID neighbour) {
-        this.startX = startX;
-        this.startY = startY;
-        this.endX = endX;
-        this.endY = endY;
+        this(new Point2D(startX, startY), new Point2D(endX, endY), neighbour);
+    }
+
+    /**
+       Constuct an Edge. If the neighbour is null then this edge is impassable; if it is non-null then this edge is passable.
+       @param start The first endpoint coordinates.
+       @param end The second endpoint coordinates.
+       @param neighbour The ID of the neighbour on the other side of this edge. This may be null to indicate an impassable edge.
+     */
+    public Edge(Point2D start, Point2D end, EntityID neighbour) {
+        this.start = start;
+        this.end = end;
         this.neighbour = neighbour;
+        line = new Line2D(start, end);
     }
 
     /**
@@ -45,7 +63,7 @@ public class Edge {
        @return The X coordinate of the first endpoint.
     */
     public int getStartX() {
-        return startX;
+        return (int)start.getX();
     }
 
     /**
@@ -53,7 +71,7 @@ public class Edge {
        @return The Y coordinate of the first endpoint.
     */
     public int getStartY() {
-        return startY;
+        return (int)start.getY();
     }
 
     /**
@@ -61,7 +79,7 @@ public class Edge {
        @return The X coordinate of the second endpoint.
     */
     public int getEndX() {
-        return endX;
+        return (int)end.getX();
     }
 
     /**
@@ -69,10 +87,26 @@ public class Edge {
        @return The Y coordinate of the second endpoint.
     */
     public int getEndY() {
-        return endY;
+        return (int)end.getY();
     }
 
     /**
+       Get the start point.
+       @return The start point.
+    */
+    public Point2D getStart() {
+        return start;
+    }
+ 
+    /**
+       Get the end point.
+       @return The end point.
+    */
+    public Point2D getEnd() {
+        return end;
+    }
+
+   /**
        Get the ID of the neighbour.
        @return The ID of the neighbour or null if this edge is impassable.
     */
@@ -89,23 +123,15 @@ public class Edge {
     }
 
     /**
-       Get the start point.
-       @return The start point.
+       Get a line representing this edge.
+       @return A Line2D representing this edge.
     */
-    public Point getStartPoint() {
-        return new Point(startX, startY);
-    }
-
-    /**
-       Get the end point.
-       @return The end point.
-    */
-    public Point getEndPoint() {
-        return new Point(endX, endY);
+    public Line2D getLine() {
+        return line;
     }
 
     @Override
     public String toString() {
-        return "Edge from " + startX + ", " + startY + " to " + endX + ", " + endY + " (" + (neighbour == null ? "impassable" : "neighbour: " + neighbour) + ")";
+        return "Edge from " + start + " to " + end + " (" + (neighbour == null ? "impassable" : "neighbour: " + neighbour) + ")";
     }
 }

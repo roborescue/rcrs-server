@@ -10,6 +10,9 @@ import rescuecore2.worldmodel.Property;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.awt.Shape;
+import java.awt.Polygon;
+
 /**
    The Area object.
  */
@@ -256,5 +259,21 @@ public abstract class Area extends StandardEntity {
             apexes[i++] = next.getStartY();
         }
         return apexes;
+    }
+
+    /**
+       Get this area as a Java Shape object.
+       @return A Shape describing this area.
+    */
+    public Shape getShape() {
+        int[] apexes = getApexList();
+        int count = apexes.length / 2;
+        int[] xs = new int[count];
+        int[] ys = new int[count];
+        for (int i = 0; i < count; ++i) {
+            xs[i] = apexes[i * 2];
+            ys[i] = apexes[i * 2 + 1];
+        }
+        return new Polygon(xs, ys, count);
     }
 }
