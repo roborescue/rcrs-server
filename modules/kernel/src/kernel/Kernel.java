@@ -117,11 +117,15 @@ public class Kernel {
         catch (LogException e) {
             throw new KernelException("Couldn't open log file for writing", e);
         }
-        commandFilter.initialise(config);
         config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
         config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
 
+        // Initialise
+        perception.initialise(config, worldModel);
+        communicationModel.initialise(config, worldModel);
+        commandFilter.initialise(config);
         score.initialise(worldModel, config);
+        termination.initialise(config);
         commandCollector.initialise(config);
 
         isShutdown = false;

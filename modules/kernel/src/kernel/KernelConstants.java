@@ -25,5 +25,8 @@ public final class KernelConstants {
     /** The config key for component implementations. */
     public static final String COMPONENTS_KEY = "kernel.components";
 
+    /** Whether to run the kernel in inline-only mode. */
+    public static final String INLINE_ONLY_KEY = "kernel.inline-only";
+
     private KernelConstants() {}
 }
