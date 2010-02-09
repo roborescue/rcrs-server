@@ -25,7 +25,6 @@ import maps.gml.MapReader;
 import maps.gml.GMLException;
 import maps.CoordinateConversion;
 import maps.ScaleConversion;
-import maps.ConstantConversion;
 import maps.IdentityConversion;
 import maps.MapTools;
 
@@ -195,7 +194,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             double scale = 1000.0 / MapTools.sizeOf1Metre((map.getMinX() + map.getMaxX()) / 2, (map.getMinY() + map.getMaxY()) / 2);
             return new ScaleConversion(map.getMinX(), map.getMinY(), scale, scale);
         case M:
-            return new ConstantConversion(1000);
+            return new ScaleConversion(map.getMinX(), map.getMinY(), 1000, 1000);
         case MM:
             return new IdentityConversion();
         default:
