@@ -3,25 +3,27 @@ package rescuecore2.config;
 /**
    A config value constraint that requires the value to be a list of valid class names.
 */
-public class ClassNameSetConstrainedConfigValue extends AbstractConstrainedConfigValue {
+public class ClassNameSetValueConstraint extends AbstractValueConstraint {
     private Class<?> required;
+    private boolean allowUndefined;
 
     /**
-       Construct a ClassNameSetConstrainedConfigValue that does not require the values to be a particular class.
+       Construct a ClassNameSetValueConstraint that does not require the values to be a particular class.
        @param key The key this constraint applies to.
     */
-    public ClassNameSetConstrainedConfigValue(String key) {
+    public ClassNameSetValueConstraint(String key) {
         this(key, null);
     }
 
     /**
-       Construct a ClassNameSetConstrainedConfigValue that requires the values to be a particular class.
+       Construct a ClassNameSetValueConstraint that requires the values to be a particular class.
        @param key The key this constraint applies to.
        @param required The required class.
     */
-    public ClassNameSetConstrainedConfigValue(String key, Class<?> required) {
+    public ClassNameSetValueConstraint(String key, Class<?> required) {
         super(key);
         this.required = required;
+        allowUndefined = true;
     }
 
     @Override
@@ -46,5 +48,10 @@ public class ClassNameSetConstrainedConfigValue extends AbstractConstrainedConfi
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean undefinedIsValid() {
+        return allowUndefined;
     }
 }

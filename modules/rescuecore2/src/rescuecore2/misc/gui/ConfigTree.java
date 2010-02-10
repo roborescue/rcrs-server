@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.EventObject;
 
 import rescuecore2.config.Config;
-import rescuecore2.config.ConstrainedConfigValue;
+import rescuecore2.config.ConfigConstraint;
 
 /**
    A JTree that knows how to display and edit Config objects.
@@ -126,11 +126,19 @@ public class ConfigTree extends JTree {
             if (o instanceof ConfigEntryNode) {
                 ConfigEntryNode entry = (ConfigEntryNode)o;
                 String key = entry.getKey();
-                if (config.isConstraintViolated(key)) {
-                    ConstrainedConfigValue constraint = config.getConstraint(key);
+                StringBuilder problems = new StringBuilder();
+                for (ConfigConstraint constraint : config.getViolatedConstraints()) {
+                    if (constraint.getKeys().contains(key)) {
+                        if (problems.length() != 0) {
+                            problems.append("\n");
+                        }
+                        problems.append(constraint.getDescription());
+                    }
+                }
+                if (problems.length() != 0) {
                     setBackground(Color.RED);
                     setOpaque(true);
-                    setToolTipText(constraint.getDescription());
+                    setToolTipText(problems.toString());
                 }
             }
             return this;

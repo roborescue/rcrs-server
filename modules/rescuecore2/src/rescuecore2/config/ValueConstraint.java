@@ -3,7 +3,7 @@ package rescuecore2.config;
 /**
    Interface for specifying constraints on a config value.
 */
-public interface ConstrainedConfigValue {
+public interface ValueConstraint extends ConfigConstraint {
     /**
        Get the key this restraint refers to.
        @return The config key.
@@ -19,8 +19,8 @@ public interface ConstrainedConfigValue {
     boolean isValid(String value, Config config);
 
     /**
-       Get a description of this constraint suitable for use in tooltips.
-       @return A description of the constraint.
+       Find out if an undefined value is counted as valid or invalid.
+       @return True if an undefined value should be treated as valid, false if invalid.
     */
-    String getDescription();
+    boolean undefinedIsValid();
 }

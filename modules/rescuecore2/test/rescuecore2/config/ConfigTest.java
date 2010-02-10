@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -440,7 +441,7 @@ public class ConfigTest {
         l = config.getArrayValue("key", "");
         assertEquals(0, l.size());
         l = config.getArrayValue("key", null);
-        assertEquals(0, l.size());
+        assertNull(l);
     }
 
     @Test

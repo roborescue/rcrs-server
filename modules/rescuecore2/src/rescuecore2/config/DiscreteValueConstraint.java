@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
    A config value constraint that requires the value to be one of a discrete set of values.
 */
-public class DiscreteConstrainedConfigValue extends AbstractConstrainedConfigValue {
+public class DiscreteValueConstraint extends AbstractValueConstraint {
     private Set<String> allowed;
 
     /**
@@ -15,7 +15,7 @@ public class DiscreteConstrainedConfigValue extends AbstractConstrainedConfigVal
        @param key The key this constraint applies to.
        @param allowed The set of allowed values.
     */
-    public DiscreteConstrainedConfigValue(String key, Set<String> allowed) {
+    public DiscreteValueConstraint(String key, Set<String> allowed) {
         super(key);
         this.allowed = new HashSet<String>(allowed);
     }

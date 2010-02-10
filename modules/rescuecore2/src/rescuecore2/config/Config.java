@@ -51,8 +51,8 @@ public class Config {
     private Map<String, Boolean> booleanData;
     private Map<String, List<String>> arrayData;
 
-    private Map<String, ConstrainedConfigValue> constraints;
-    private Set<ConstrainedConfigValue> violatedConstraints;
+    private Set<ConfigConstraint> constraints;
+    private Set<ConfigConstraint> violatedConstraints;
 
     private Random random;
 
@@ -66,8 +66,8 @@ public class Config {
         floatData = new HashMap<String, Double>();
         booleanData = new HashMap<String, Boolean>();
         arrayData = new HashMap<String, List<String>>();
-        constraints = new HashMap<String, ConstrainedConfigValue>();
-        violatedConstraints = new HashSet<ConstrainedConfigValue>();
+        constraints = new HashSet<ConfigConstraint>();
+        violatedConstraints = new HashSet<ConfigConstraint>();
     }
 
     /**
@@ -234,17 +234,17 @@ public class Config {
        Add a constraint.
        @param c The constraint to add.
     */
-    public void addConstraint(ConstrainedConfigValue c) {
-        constraints.put(c.getKey(), c);
-        checkConstraint(c.getKey());
+    public void addConstraint(ConfigConstraint c) {
+        constraints.add(c);
+        checkConstraint(c);
     }
 
     /**
        Remove a constraint.
        @param c The constraint to remove.
     */
-    public void removeConstraint(ConstrainedConfigValue c) {
-        constraints.remove(c.getKey());
+    public void removeConstraint(ConfigConstraint c) {
+        constraints.remove(c);
         violatedConstraints.remove(c);
     }
 
@@ -252,19 +252,21 @@ public class Config {
        Remove constraints on a key.
        @param key The key to remove constraints from.
     */
+    /*
     public void removeConstraint(String key) {
         ConstrainedConfigValue c = constraints.get(key);
         if (c != null) {
             removeConstraint(c);
         }
     }
+    */
 
     /**
        Get all violated constraints.
        @return All violated constraints.
     */
-    public Set<ConstrainedConfigValue> getViolatedConstraints() {
-        return violatedConstraints;
+    public Set<ConfigConstraint> getViolatedConstraints() {
+        return Collections.unmodifiableSet(violatedConstraints);
     }
 
     /**
@@ -272,15 +274,18 @@ public class Config {
        @param key The key to look up.
        @return The constraint for that key, or null if there is no constraint.
     */
+    /*
     public ConstrainedConfigValue getConstraint(String key) {
         return constraints.get(key);
     }
+    */
 
     /**
        Find out if a value violates its key's constraints.
        @param key The key to look up.
        @return True if the key's value violates the constraints.
     */
+    /*
     public boolean isConstraintViolated(String key) {
         ConstrainedConfigValue c = getConstraint(key);
         if (c != null) {
@@ -288,6 +293,7 @@ public class Config {
         }
         return false;
     }
+    */
 
     /**
        Get all keys in this config.
@@ -472,7 +478,7 @@ public class Config {
     /**
        Get the value of a key (or a default value) as an array of strings. The value will be split on space and comma characters and the resulting list of tokens is returned.
        @param key The key to look up. Must not be null.
-       @param defaultValue The default value to use if the key is not defined.
+       @param defaultValue The default value to use if the key is not defined. If this is null then null will be returned, otherwise it will be split according to the usual rules.
        @return The value associated with the key (or the default value) interpreted as an array of space or comma-separated tokens.
     */
     public List<String> getArrayValue(String key, String defaultValue) {
@@ -480,18 +486,19 @@ public class Config {
             return getArrayValue(key);
         }
         catch (NoSuchConfigOptionException e) {
+            if (defaultValue == null) {
+                return null;
+            }
             return splitArrayValue(defaultValue);
         }
     }
 
     private List<String> splitArrayValue(String value) {
         List<String> result = new ArrayList<String>();
-        if (value != null) {
-            String[] s = value.split(ARRAY_REGEX);
-            for (String next : s) {
-                if (!"".equals(next)) {
-                    result.add(next);
-                }
+        String[] s = value.split(ARRAY_REGEX);
+        for (String next : s) {
+            if (!"".equals(next)) {
+                result.add(next);
             }
         }
         return result;
@@ -513,7 +520,7 @@ public class Config {
         clearCache(key);
         noCache.remove(key);
         data.put(key, value);
-        checkConstraint(key);
+        checkAllConstraints();
     }
 
     /**
@@ -546,7 +553,7 @@ public class Config {
         else {
             data.put(key, value);
         }
-        checkConstraint(key);
+        checkAllConstraints();
     }
 
     /**
@@ -793,24 +800,21 @@ public class Config {
     }
 
     private void checkAllConstraints() {
-        for (String next : data.keySet()) {
+        violatedConstraints.clear();
+        for (ConfigConstraint next : constraints) {
             checkConstraint(next);
         }
     }
 
-    private void checkConstraint(String key) {
-        ConstrainedConfigValue c = constraints.get(key);
+    private void checkConstraint(ConfigConstraint c) {
         if (c == null) {
             return;
         }
-        if (!isDefined(key)) {
-            return;
-        }
-        if (c.isValid(getValue(key), this)) {
-            violatedConstraints.remove(c);
+        if (c.isViolated(this)) {
+            violatedConstraints.add(c);
         }
         else {
-            violatedConstraints.add(c);
+            violatedConstraints.remove(c);
         }
     }
 

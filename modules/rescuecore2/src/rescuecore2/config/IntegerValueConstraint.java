@@ -3,25 +3,25 @@ package rescuecore2.config;
 /**
    An integer constraint on a config value.
 */
-public class IntegerConstrainedConfigValue extends AbstractConstrainedConfigValue {
+public class IntegerValueConstraint extends AbstractValueConstraint {
     private int min;
     private int max;
 
     /**
-       Construct an IntegerConstrainedConfigValue that has no minimum or maximum.
+       Construct an IntegerValueConstraint that has no minimum or maximum.
        @param key The key this constraint applies to.
     */
-    public IntegerConstrainedConfigValue(String key) {
+    public IntegerValueConstraint(String key) {
         this(key, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     /**
-       Construct an IntegerConstrainedConfigValue that has a particular range.
+       Construct an IntegerValueConstraint that has a particular range.
        @param key The key this constraint applies to.
        @param min The minimum value of the config entry.
        @param max The maximum value of the config entry.
     */
-    public IntegerConstrainedConfigValue(String key, int min, int max) {
+    public IntegerValueConstraint(String key, int min, int max) {
         super(key);
         this.min = min;
         this.max = max;

@@ -3,7 +3,7 @@ package rescuecore2.config;
 /**
    A floating-point number constraint on a config value.
 */
-public class FloatConstrainedConfigValue extends AbstractConstrainedConfigValue {
+public class FloatValueConstraint extends AbstractValueConstraint {
     private double min;
     private double max;
 
@@ -11,7 +11,7 @@ public class FloatConstrainedConfigValue extends AbstractConstrainedConfigValue 
        Construct a FloatConstrainedConfigValue that has no minimum or maximum.
        @param key The key this constraint applies to.
     */
-    public FloatConstrainedConfigValue(String key) {
+    public FloatValueConstraint(String key) {
         this(key, Double.NaN, Double.NaN);
     }
 
@@ -21,7 +21,7 @@ public class FloatConstrainedConfigValue extends AbstractConstrainedConfigValue 
        @param min The minimum value of the config entry.
        @param max The maximum value of the config entry.
     */
-    public FloatConstrainedConfigValue(String key, double min, double max) {
+    public FloatValueConstraint(String key, double min, double max) {
         super(key);
         this.min = min;
         this.max = max;

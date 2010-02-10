@@ -3,14 +3,14 @@ package rescuecore2.config;
 /**
    A config value constraint that requires the value to be a valid class name.
 */
-public class ClassNameConstrainedConfigValue extends AbstractConstrainedConfigValue {
+public class ClassNameValueConstraint extends AbstractValueConstraint {
     private Class<?> required;
 
     /**
        Construct a ClassNameConstrainedConfigValue that does not require the value to be a particular class.
        @param key The key this constraint applies to.
     */
-    public ClassNameConstrainedConfigValue(String key) {
+    public ClassNameValueConstraint(String key) {
         this(key, null);
     }
 
@@ -19,7 +19,7 @@ public class ClassNameConstrainedConfigValue extends AbstractConstrainedConfigVa
        @param key The key this constraint applies to.
        @param required The required class.
     */
-    public ClassNameConstrainedConfigValue(String key, Class<?> required) {
+    public ClassNameValueConstraint(String key, Class<?> required) {
         super(key);
         this.required = required;
     }
