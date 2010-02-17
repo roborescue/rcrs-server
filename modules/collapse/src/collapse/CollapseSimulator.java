@@ -9,6 +9,7 @@ import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
@@ -37,15 +38,10 @@ import java.awt.geom.PathIterator;
 //import rescuecore2.misc.gui.ShapeDebugFrame;
 //import java.awt.Color;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A simple collapse simulator.
  */
 public class CollapseSimulator extends StandardSimulator {
-    private static final Log LOG = LogFactory.getLog(CollapseSimulator.class);
-
     private static final String CONFIG_PREFIX = "collapse.";
     private static final String DESTROYED_SUFFIX = ".p-destroyed";
     private static final String SEVERE_SUFFIX = ".p-severe";
@@ -144,12 +140,12 @@ public class CollapseSimulator extends StandardSimulator {
                     }
                 }
             }
-            LOG.info("Finished collapsing buildings: ");
+            Logger.info("Finished collapsing buildings: ");
             for (StandardEntityConstants.BuildingCode code : StandardEntityConstants.BuildingCode.values()) {
-                LOG.info("Building code " + code + ": " + total.get(code) + " buildings");
+                Logger.info("Building code " + code + ": " + total.get(code) + " buildings");
                 Map<CollapseDegree, Integer> data = count.get(code);
                 for (Map.Entry<CollapseDegree, Integer> entry : data.entrySet()) {
-                    LOG.info("  " + entry.getValue() + " " + entry.getKey().toString().toLowerCase());
+                    Logger.info("  " + entry.getValue() + " " + entry.getKey().toString().toLowerCase());
                 }
             }
         }
@@ -180,7 +176,7 @@ public class CollapseSimulator extends StandardSimulator {
                 minDamage = Maths.restrictRange(minDamage, 0, MAX_COLLAPSE);
                 int damage = b.isBrokennessDefined() ? b.getBrokenness() : 0;
                 if (damage < minDamage) {
-                    LOG.info(b + " damaged by fire. New brokenness: " + minDamage);
+                    Logger.info(b + " damaged by fire. New brokenness: " + minDamage);
                     b.setBrokenness(minDamage);
                     changes.addChange(b, b.getBrokennessProperty());
                     createBlockages(b, newBlockades);
@@ -236,9 +232,9 @@ public class CollapseSimulator extends StandardSimulator {
             count += c.size();
         }
         try {
-            LOG.debug("Requesting " + count + " new IDs");
             List<EntityID> newIDs = requestNewEntityIDs(count);
             Iterator<EntityID> it = newIDs.iterator();
+            Logger.debug("Creating new blockade objects");
             for (Map.Entry<Road, Collection<java.awt.geom.Area>> entry : blockadesForRoad.entrySet()) {
                 Road r = entry.getKey();
                 for (java.awt.geom.Area area : entry.getValue()) {
@@ -252,7 +248,7 @@ public class CollapseSimulator extends StandardSimulator {
             }
         }
         catch (InterruptedException e) {
-            LOG.error("Interrupted while requesting IDs");
+            Logger.error("Interrupted while requesting IDs");
         }
     }
 
@@ -277,7 +273,7 @@ public class CollapseSimulator extends StandardSimulator {
         Ellipse2D ellipse2 = new Ellipse2D.Double(second.getX() - radius, second.getY() - radius, radius * 2, radius * 2);
         areaList.add(new java.awt.geom.Area(ellipse1));
         areaList.add(new java.awt.geom.Area(ellipse2));
-        LOG.info("Edge from " + wallLine + " expanded to " + first + ", " + second + ", " + third + ", " + fourth);
+        Logger.info("Edge from " + wallLine + " expanded to " + first + ", " + second + ", " + third + ", " + fourth);
         //        debug.show("Collapsed building",
         //                   new ShapeDebugFrame.AWTShapeInfo(buildingArea, "Original building area", Color.RED, true),
         //                   new ShapeDebugFrame.Line2DShapeInfo(wallLine, "Wall edge", Color.WHITE, true, true),
@@ -381,12 +377,12 @@ public class CollapseSimulator extends StandardSimulator {
         result.setX((int)centroid.getX());
         result.setY((int)centroid.getY());
         result.setRepairCost((int)cost);
-        LOG.debug("Created new blockade: " + result.getFullDescription());
+        Logger.debug("Created new blockade: " + result.getFullDescription());
         return result;
     }
 
     private int[] getApexes(java.awt.geom.Area area) {
-        LOG.debug("getApexes");
+        Logger.debug("getApexes");
         List<Integer> apexes = new ArrayList<Integer>();
         // CHECKSTYLE:OFF:MagicNumber
         PathIterator it = area.getPathIterator(null, 100);
@@ -398,36 +394,36 @@ public class CollapseSimulator extends StandardSimulator {
             int y = 0;
             switch (it.currentSegment(d)) {
             case PathIterator.SEG_MOVETO:
-                LOG.debug("Move to");
+                Logger.debug("Move to");
                 x = (int)d[0];
                 y = (int)d[1];
                 moveX = x;
                 moveY = y;
                 break;
             case PathIterator.SEG_LINETO:
-                LOG.debug("Line to");
+                Logger.debug("Line to");
                 x = (int)d[0];
                 y = (int)d[1];
                 break;
             case PathIterator.SEG_QUADTO:
-                LOG.debug("Quad to");
+                Logger.debug("Quad to");
                 x = (int)d[2];
                 y = (int)d[3];
                 break;
             case PathIterator.SEG_CUBICTO:
-                LOG.debug("Cubic to");
+                Logger.debug("Cubic to");
                 x = (int)d[4];
                 y = (int)d[5];
                 break;
             case PathIterator.SEG_CLOSE:
-                LOG.debug("Close");
+                Logger.debug("Close");
                 x = moveX;
                 y = moveY;
                 break;
             }
             apexes.add(x);
             apexes.add(y);
-            LOG.debug(x + ", " + y);
+            Logger.debug(x + ", " + y);
             it.next();
         }
         // CHECKSTYLE:ON:MagicNumber
