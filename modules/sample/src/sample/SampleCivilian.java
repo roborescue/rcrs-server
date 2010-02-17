@@ -11,6 +11,8 @@ import rescuecore2.messages.Command;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Civilian;
 
+import rescuecore2.log.Logger;
+
 /**
    A sample civilian agent.
  */
@@ -42,6 +44,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         helpProbability = config.getFloatValue(HELP_PROBABILITY_KEY, DEFAULT_HELP_PROBABILITY);
         ouchProbability = config.getFloatValue(OUCH_PROBABILITY_KEY, DEFAULT_OUCH_PROBABILITY);
         consciousThreshold = config.getIntValue(CONSCIOUS_THRESHOLD_KEY, DEFAULT_CONSCIOUS_THRESHOLD);
+        Logger.info("Civilian " + getID() + " connected");
     }
 
     @Override
@@ -53,26 +56,32 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         int buriedness = me.isBuriednessDefined() ? me.getBuriedness() : 0;
         if (hp <= 0 || hp < consciousThreshold) {
             // Unconscious (or dead): do nothing
+            Logger.info("Unconcious or dead");
             sendRest(time);
             return;
         }
         if (damage > 0 && random.nextDouble() < ouchProbability) {
+            Logger.info("Shouting in pain");
             say(OUCH, time);
         }
         if (buriedness > 0 && random.nextDouble() < helpProbability) {
+            Logger.info("Calling for help");
             say(HELP, time);
         }
         if (damage == 0 && buriedness == 0) {
             // Run for the refuge
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
+                Logger.info("Heading for a refuge");
                 sendMove(time, path);
                 return;
             }
             else {
+                Logger.info("Moving randomly");
                 sendMove(time, randomWalk());
             }
         }
+        Logger.info("Not moving");
         sendRest(time);
     }
 

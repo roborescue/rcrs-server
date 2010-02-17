@@ -5,6 +5,7 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
+//import rescuecore2.log.Logger;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,34 +15,18 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A sample search class.
  */
 public final class SampleSearch {
-    private static final Log LOG = LogFactory.getLog(SampleSearch.class);
-
-    private boolean ignoreBlockedRoads;
     private StandardWorldModel world;
 
     /**
        Construct a new SampleSearch.
        @param world The world model to search.
-       @param ignoreBlockedRoads Whether searches should treat blocked roads as passable or not. If true then blocked roads will be ignored, i.e. not included in the path. If false then blocked roads will be included in the path.
      */
-    public SampleSearch(StandardWorldModel world, boolean ignoreBlockedRoads) {
+    public SampleSearch(StandardWorldModel world) {
         this.world = world;
-        this.ignoreBlockedRoads = ignoreBlockedRoads;
-    }
-
-    /**
-       Set whether searches should treat blocked roads as passable or not. If true then blocked roads will be ignored, i.e. not included in the path. If false then blocked roads will be included in the path.
-       @param b The new ignoreBlockedRoads parameter.
-     */
-    public void setIgnoreBlockedRoads(boolean b) {
-        ignoreBlockedRoads = b;
     }
 
     /**
@@ -95,17 +80,17 @@ public final class SampleSearch {
         // Walk back from goal to start
         StandardEntity current = next;
         List<EntityID> path = new LinkedList<EntityID>();
-        //        LOG.debug("Building path");
-        //        LOG.debug("Goal found: " + current);
+        //        Logger.debug("Building path");
+        //        Logger.debug("Goal found: " + current);
         do {
             path.add(0, current.getID());
             current = ancestors.get(current);
-            //            LOG.debug("Parent node: " + current);
+            //            Logger.debug("Parent node: " + current);
             if (current == null) {
                 throw new RuntimeException("Found a node with no ancestor! Something is broken.");
             }
         } while (current != start);
-        //        LOG.debug("Final path: " + path);
+        //        Logger.debug("Final path: " + path);
         return path;
     }
 

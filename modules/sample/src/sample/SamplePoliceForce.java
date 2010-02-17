@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -16,15 +17,10 @@ import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.misc.Pair;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A sample police force agent.
  */
 public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
-    private static final Log LOG = LogFactory.getLog(SamplePoliceForce.class);
-
     @Override
     public String toString() {
         return "Sample police force";
@@ -34,18 +30,17 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     protected void postConnect() {
         super.postConnect();
         model.indexClass(StandardEntityURN.ROAD);
-        search.setIgnoreBlockedRoads(false);
     }
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         for (Command next : heard) {
-            LOG.debug(me() + " heard " + next);
+            Logger.debug("Heard " + next);
         }
         // Am I on (or next to) a blocked road?
         EntityID target = getTargetBlockade();
         if (target != null) {
-            LOG.debug(me() + " clearing blockade " + target);
+            Logger.info("Clearing blockade " + target);
             sendClear(time, target);
             return;
         }
@@ -53,11 +48,12 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         // Plan a path to a blocked area
         List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
-            LOG.debug(me() + " moving: " + path);
+            Logger.info("Moving to target");
             sendMove(time, path);
             return;
         }
-        LOG.debug(me() + " couldn't plan a path to a blocked road.");
+        Logger.debug("Couldn't plan a path to a blocked road");
+        Logger.info("Moving randomly");
         sendMove(time, randomWalk());
     }
 
@@ -123,17 +119,17 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     public EntityID getNearestBlockade(Area area, int x, int y) {
         double bestDistance = 0;
         EntityID best = null;
-        LOG.debug("Finding nearest blockade");
+        Logger.debug("Finding nearest blockade");
         if (area.isBlockadesDefined()) {
             for (EntityID blockadeID : area.getBlockades()) {
-                LOG.debug("Checking " + blockadeID);
+                Logger.debug("Checking " + blockadeID);
                 StandardEntity entity = model.getEntity(blockadeID);
-                LOG.debug("Found " + entity);
+                Logger.debug("Found " + entity);
                 if (entity == null) {
                     continue;
                 }
                 Pair<Integer, Integer> location = entity.getLocation(model);
-                LOG.debug("Location: " + location);
+                Logger.debug("Location: " + location);
                 if (location == null) {
                     continue;
                 }
@@ -146,7 +142,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
                 }
             }
         }
-        LOG.debug("Nearest blockade: " + best);
+        Logger.debug("Nearest blockade: " + best);
         return best;
     }
 }

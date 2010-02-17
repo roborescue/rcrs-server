@@ -41,7 +41,7 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
     @Override
     protected void postConnect() {
         super.postConnect();
-        search = new SampleSearch(model, true);
+        search = new SampleSearch(model);
         useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
     }
 

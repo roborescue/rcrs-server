@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -16,15 +17,10 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A sample fire brigade agent.
  */
 public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
-    private static final Log LOG = LogFactory.getLog(SampleFireBrigade.class);
-
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
     private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
     private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
@@ -45,18 +41,18 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         maxWater = config.getIntValue(MAX_WATER_KEY);
         maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
         maxPower = config.getIntValue(MAX_POWER_KEY);
-        LOG.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
+        Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
     }
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         for (Command next : heard) {
-            LOG.debug(me() + " heard " + next);
+            Logger.debug("Heard " + next);
         }
         FireBrigade me = me();
         // Are we currently filling with water?
         if (me.isWaterDefined() && me.getWater() < maxWater && location() instanceof Refuge) {
-            LOG.debug(me() + " filling with water at " + location());
+            Logger.info("Filling with water at " + location());
             sendRest(time);
             return;
         }
@@ -65,13 +61,14 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             // Head for a refuge
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
+                Logger.info("Moving to refuge");
                 sendMove(time, path);
                 return;
             }
             else {
-                LOG.debug(me() + " couldn't plan a path to a refuge.");
+                Logger.debug("Couldn't plan a path to a refuge.");
                 path = randomWalk();
-                LOG.debug(me() + " moving: " + path);
+                Logger.info("Moving randomly");
                 sendMove(time, path);
                 return;
             }
@@ -81,6 +78,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         // Can we extinguish any right now?
         for (Building next : all) {
             if (model.getDistance(me, next) <= maxDistance) {
+                Logger.info("Extinguishing " + next);
                 sendExtinguish(time, next.getID(), maxPower);
                 return;
             }
@@ -89,14 +87,15 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         for (Building next : all) {
             List<EntityID> path = planPathToFire(next);
             if (path != null) {
+                Logger.info("Moving to target");
                 sendMove(time, path);
                 return;
             }
         }
         List<EntityID> path = null;
-        LOG.debug(me() + " couldn't plan a path to a fire.");
+        Logger.debug("Couldn't plan a path to a fire.");
         path = randomWalk();
-        LOG.debug(me() + " moving: " + path);
+        Logger.info("Moving randomly");
         sendMove(time, path);
     }
 

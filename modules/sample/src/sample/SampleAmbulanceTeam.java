@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -16,15 +17,10 @@ import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Refuge;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A sample ambulance team agent.
  */
 public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
-    private static final Log LOG = LogFactory.getLog(SampleAmbulanceTeam.class);
-
     private Collection<StandardEntity> unexploredBuildings;
 
     @Override
@@ -42,7 +38,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         for (Command next : heard) {
-            LOG.debug(me() + " heard " + next);
+            Logger.debug("Heard " + next);
         }
         updateUnexploredBuildings(changed);
         // Am I transporting a civilian to a refuge?
@@ -50,6 +46,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             // Am I at a refuge?
             if (location() instanceof Refuge) {
                 // Unload!
+                Logger.info("Unloading");
                 sendUnload(time);
                 return;
             }
@@ -57,6 +54,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                 // Move to a refuge
                 List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
                 if (path != null) {
+                    Logger.info("Moving to refuge");
                     sendMove(time, path);
                     return;
                 }
@@ -69,11 +67,13 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                 // Targets in the same place might need rescueing or loading
                 if (next.getBuriedness() == 0 && next.getDamage() > 0 && !(location() instanceof Refuge)) {
                     // Load
+                    Logger.info("Loading " + next);
                     sendLoad(time, next.getID());
                     return;
                 }
                 if (next.getBuriedness() > 0) {
                     // Rescue
+                    Logger.info("Rescueing " + next);
                     sendRescue(time, next.getID());
                     return;
                 }
@@ -82,6 +82,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                 // Try to move to the target
                 List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(model));
                 if (path != null) {
+                    Logger.info("Moving to target");
                     sendMove(time, path);
                     return;
                 }
@@ -90,9 +91,11 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
         // Nothing to do
         List<EntityID> path = search.breadthFirstSearch(location(), unexploredBuildings);
         if (path != null) {
+            Logger.info("Searching buildings");
             sendMove(time, path);
             return;
         }
+        Logger.info("Moving randomly");
         sendMove(time, randomWalk());
     }
 
