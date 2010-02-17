@@ -156,7 +156,7 @@ public final class StartKernel {
             }
             KernelGUI gui = null;
             if (showGUI) {
-                gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, localRegistry);
+                gui = new KernelGUI(kernelInfo.kernel, kernelInfo.componentManager, config, localRegistry, !autorun);
                 for (GUIComponent next : kernelInfo.guiComponents) {
                     gui.addGUIComponent(next);
                     if (next instanceof KernelListener) {

@@ -31,8 +31,9 @@ public class KernelGUI extends JPanel {
        @param componentManager The kernel component manager.
        @param config The kernel configuration.
        @param registry The registry to use for new connections.
+       @param controls Whether to show the control panel or not.
     */
-    public KernelGUI(Kernel kernel, ComponentManager componentManager, Config config, Registry registry) {
+    public KernelGUI(Kernel kernel, ComponentManager componentManager, Config config, Registry registry, boolean controls) {
         super(new BorderLayout());
         this.kernel = kernel;
         this.config = config;
@@ -41,9 +42,11 @@ public class KernelGUI extends JPanel {
         add(status, BorderLayout.EAST);
         tabs = new JTabbedPane();
         add(tabs, BorderLayout.CENTER);
-        control = new KernelControlPanel(kernel, config, componentManager, registry);
-        add(control, BorderLayout.WEST);
-        control.activate();
+        if (controls) {
+            control = new KernelControlPanel(kernel, config, componentManager, registry);
+            add(control, BorderLayout.WEST);
+            control.activate();
+        }
         addGUIComponent(componentManager);
     }
 
