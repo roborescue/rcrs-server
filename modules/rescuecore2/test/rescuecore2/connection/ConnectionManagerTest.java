@@ -18,7 +18,7 @@ public class ConnectionManagerTest {
     private static final int PORT = 34332;
     private static final int PORT2 = 34333;
     private static final int DELAY = 1000;
-    private static final int LONG_DELAY = 5000;
+    private static final int TIMEOUT = 1000;
     private static final String MESSAGE_1 = "Message 1";
 
     private ConnectionManager manager;
@@ -43,13 +43,17 @@ public class ConnectionManagerTest {
         manager.listen(PORT, registry, listener);
         // Check that connecting to the socket results in a new Connection.
         new Socket("localhost", PORT);
+        assertTrue(listener.waitForCount(1, TIMEOUT));
+        // Sleep for a bit and make a new connection
         Thread.sleep(DELAY);
-        assertEquals(1, listener.getCount());
-        // Check that sleeping for a bit allows new connections in the future
-        Thread.sleep(LONG_DELAY);
         new Socket("localhost", PORT);
-        Thread.sleep(DELAY);
-        assertEquals(2, listener.getCount());
+        assertTrue(listener.waitForCount(2, TIMEOUT));
+        // Make a bunch of new connections and check that they all arrive
+        new Socket("localhost", PORT);
+        new Socket("localhost", PORT);
+        new Socket("localhost", PORT);
+        new Socket("localhost", PORT);
+        assertTrue(listener.waitForCount(6, TIMEOUT));
     }
 
     @Test
@@ -59,8 +63,7 @@ public class ConnectionManagerTest {
         // Check that connecting to each socket results in a new Connection.
         new Socket("localhost", PORT);
         new Socket("localhost", PORT2);
-        Thread.sleep(DELAY);
-        assertEquals(2, listener.getCount());
+        assertTrue(listener.waitForCount(2, TIMEOUT));
     }
 
     @Test
@@ -70,8 +73,7 @@ public class ConnectionManagerTest {
         // Check that connecting to each socket results in a new Connection.
         new Socket("localhost", PORT);
         new Socket("localhost", PORT2);
-        Thread.sleep(DELAY);
-        assertEquals(2, listener.getCount());
+        assertTrue(listener.waitForCount(2, TIMEOUT));
         assertTrue(manager.isAlive());
         manager.shutdown();
         assertFalse(manager.isAlive());
@@ -99,8 +101,7 @@ public class ConnectionManagerTest {
         manager.listen(PORT, registry, listener);
         // Check that connecting to the socket results in a new Connection.
         new Socket("localhost", PORT);
-        Thread.sleep(DELAY);
-        assertEquals(1, listener.getCount());
+        assertTrue(listener.waitForCount(1, TIMEOUT));
         manager.shutdown();
         // Check that attempting to listen again fails
         try {
@@ -126,8 +127,7 @@ public class ConnectionManagerTest {
         manager.listen(PORT, registry, listener);
         // Check that connecting to the socket results in a new Connection.
         new Socket("localhost", PORT);
-        Thread.sleep(DELAY);
-        assertEquals(1, listener.getCount());
+        assertTrue(listener.waitForCount(1, TIMEOUT));
         Thread.currentThread().interrupt();
         manager.shutdown();
         // Check that connecting to the port fails
@@ -138,6 +138,7 @@ public class ConnectionManagerTest {
         catch (IOException e) {
             // Expected
         }
+        Thread.sleep(DELAY);
         assertEquals(1, listener.getCount());
         // Check that attempting to listen again fails
         try {
@@ -168,10 +169,28 @@ public class ConnectionManagerTest {
         @Override
         public synchronized void newConnection(Connection c) {
             ++count;
+            this.notifyAll();
         }
 
         public synchronized int getCount() {
             return count;
+        }
+
+        public synchronized boolean waitForCount(int goal, long timeout) {
+            long end = System.currentTimeMillis() + timeout;
+            while (count < goal) {
+                long now = System.currentTimeMillis();
+                if (now > end) {
+                    return false;
+                }
+                try {
+                    wait(end - now);
+                }
+                catch (InterruptedException e) {
+                    return count >= goal;
+                }
+            }
+            return true;
         }
     }
 }
