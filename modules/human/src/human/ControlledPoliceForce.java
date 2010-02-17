@@ -4,6 +4,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 import rescuecore2.misc.Pair;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -18,15 +19,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.EnumSet;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A basic police force agent that will try to clear a given target. Fully-blocked roads encountered along the way are also cleared. If there is no target then this agent does nothing.
 */
 public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
-    private static final Log LOG = LogFactory.getLog(ControlledPoliceForce.class);
-
     private SampleSearch search;
     private Road target;
 
@@ -49,7 +45,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
             }
         }
         if (target == null) {
-            LOG.info(me() + " has nothing to do.");
+            Logger.info("Nothing to do.");
             return;
         }
         List<EntityID> path = search.breadthFirstSearch(location(), target);
@@ -58,7 +54,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
             return;
         }
         else {
-            LOG.info(me() + " couldn't plan a path to target.");
+            Logger.info("Couldn't plan a path to target.");
         }
     }
 
@@ -79,7 +75,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
     @Override
     protected void postConnect() {
         super.postConnect();
-        search = new SampleSearch(model, false);
+        search = new SampleSearch(model);
     }
 
     @Override

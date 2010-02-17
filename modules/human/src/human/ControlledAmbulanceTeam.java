@@ -3,6 +3,7 @@ package human;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -17,15 +18,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.EnumSet;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A basic ambulance team agent that will try to rescue a given target. Once the target is unburied this agent will attempt to load it and transport it to a refuge. If there is no target then this agent does nothing.
  */
 public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
-    private static final Log LOG = LogFactory.getLog(ControlledAmbulanceTeam.class);
-
     private SampleSearch search;
     private Human target;
 
@@ -40,7 +36,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         if (target == null) {
-            LOG.info(me() + " has nothing to do.");
+            Logger.info("Nothing to do.");
             return;
         }
         else {
@@ -59,7 +55,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
                         return;
                     }
                     else {
-                        LOG.info(me() + " couldn't plan a path to refuge!");
+                        Logger.info("Couldn't plan a path to refuge.");
                         return;
                     }
                 }
@@ -85,7 +81,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
                         return;
                     }
                     else {
-                        LOG.info(me() + " couldn't plan a path to target.");
+                        Logger.info("Couldn't plan a path to target.");
                     }
                 }
             }
@@ -109,7 +105,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
     @Override
     protected void postConnect() {
         super.postConnect();
-        search = new SampleSearch(model, true);
+        search = new SampleSearch(model);
     }
 
     @Override

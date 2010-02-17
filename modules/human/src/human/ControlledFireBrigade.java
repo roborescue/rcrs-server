@@ -3,6 +3,7 @@ package human;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -17,15 +18,10 @@ import java.util.List;
 import java.util.Collection;
 import java.util.EnumSet;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A basic fire brigade agent that will try to extinguish a given target. If the target is a refuge then the fire brigade will attempt to enter the building to replenish water. If there is no target then this agent does nothing.
  */
 public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
-    private static final Log LOG = LogFactory.getLog(ControlledFireBrigade.class);
-
     private static final int MAX_WATER = 15000;
     private static final int EXTINGUISH_DISTANCE = 30000;
     private static final int EXTINGUISH_POWER = 1000;
@@ -44,7 +40,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
         if (target == null) {
-            LOG.info(me() + " has nothing to do");
+            Logger.info("Nothing to do");
             return;
         }
         if (target instanceof Refuge) {
@@ -55,7 +51,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
                 return;
             }
             else {
-                LOG.info(me() + " couldn't plan a path to refuge.");
+                Logger.info("Couldn't plan a path to refuge.");
             }
         }
         // Are we close enough to extinguish?
@@ -72,7 +68,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
                 return;
             }
             else {
-                LOG.info(me() + " couldn't plan a path to target.");
+                Logger.info("Couldn't plan a path to target.");
             }
         }
     }
@@ -103,7 +99,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
     @Override
     protected void postConnect() {
         super.postConnect();
-        search = new SampleSearch(model, true);
+        search = new SampleSearch(model);
     }
 
     @Override
