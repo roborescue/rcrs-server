@@ -181,10 +181,4 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
         }
         return me;
     }
-
-    @Override
-    //    @SuppressWarnings("unchecked")
-    protected E me() {
-        return (E)super.me();
-    }
 }

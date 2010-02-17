@@ -32,4 +32,9 @@ public class PoliceOffice extends Building {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.POLICE_OFFICE;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Police office";
+    }
 }

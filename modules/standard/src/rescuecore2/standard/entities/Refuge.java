@@ -40,4 +40,9 @@ public class Refuge extends Building {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.REFUGE;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Refuge";
+    }
 }

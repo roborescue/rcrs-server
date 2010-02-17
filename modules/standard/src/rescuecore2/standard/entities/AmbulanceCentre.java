@@ -32,4 +32,9 @@ public class AmbulanceCentre extends Building {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.AMBULANCE_CENTRE;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Ambulance centre";
+    }
 }

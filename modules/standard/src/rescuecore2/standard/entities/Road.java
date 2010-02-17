@@ -32,4 +32,9 @@ public class Road extends Area {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.ROAD;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Road";
+    }
 }

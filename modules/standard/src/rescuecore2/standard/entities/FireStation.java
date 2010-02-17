@@ -32,4 +32,9 @@ public class FireStation extends Building {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.FIRE_STATION;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Fire station";
+    }
 }

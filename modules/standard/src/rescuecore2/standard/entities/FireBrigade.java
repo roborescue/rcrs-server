@@ -96,4 +96,9 @@ public class FireBrigade extends Human {
     public void undefineWater() {
         water.undefine();
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Fire brigade";
+    }
 }

@@ -32,4 +32,9 @@ public class Civilian extends Human {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.CIVILIAN;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Civilian";
+    }
 }

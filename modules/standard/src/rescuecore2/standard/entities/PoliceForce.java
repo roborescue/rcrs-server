@@ -32,4 +32,9 @@ public class PoliceForce extends Human {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.POLICE_FORCE;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Police force";
+    }
 }

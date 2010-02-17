@@ -77,6 +77,11 @@ public class Building extends Area {
     }
 
     @Override
+    protected String getEntityName() {
+        return "Building";
+    }
+
+    @Override
     public Property getProperty(String urn) {
         StandardPropertyURN type;
         try {

@@ -32,4 +32,9 @@ public class AmbulanceTeam extends Human {
     public StandardEntityURN getStandardURN() {
         return StandardEntityURN.AMBULANCE_TEAM;
     }
+
+    @Override
+    protected String getEntityName() {
+        return "Ambulance team";
+    }
 }
