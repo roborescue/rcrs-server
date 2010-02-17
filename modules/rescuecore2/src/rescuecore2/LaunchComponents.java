@@ -4,6 +4,8 @@ import static rescuecore2.misc.java.JavaTools.instantiate;
 
 import java.io.IOException;
 import javax.swing.JFrame;
+import java.util.List;
+import java.util.ArrayList;
 
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
@@ -23,6 +25,8 @@ import rescuecore2.log.Logger;
    General launcher for components.
  */
 public final class LaunchComponents {
+    private static final String NO_GUI_FLAG = "--nogui";
+
     private LaunchComponents() {}
 
     /**
@@ -32,16 +36,26 @@ public final class LaunchComponents {
     public static void main(String[] args) {
         Logger.setLogContext("launcher");
         Config config = new Config();
+        boolean gui = true;
         try {
             args = CommandLineOptions.processArgs(args, config);
+            List<String> toLaunch = new ArrayList<String>();
+            for (String next : args) {
+                if (NO_GUI_FLAG.equals(next)) {
+                    gui = false;
+                }
+                else {
+                    toLaunch.add(next);
+                }
+            }
             int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER_KEY, Constants.DEFAULT_KERNEL_PORT_NUMBER);
             String host = config.getValue(Constants.KERNEL_HOST_NAME_KEY, Constants.DEFAULT_KERNEL_HOST_NAME);
             processJarFiles(config);
             Connection c = new TCPConnection(host, port);
             c.startup();
             ComponentLauncher launcher = new ComponentLauncher(c, config);
-            for (String next : args) {
-                connect(launcher, next);
+            for (String next : toLaunch) {
+                connect(launcher, next, gui);
             }
         }
         catch (IOException e) {
@@ -64,7 +78,7 @@ public final class LaunchComponents {
         processor.process();
     }
 
-    private static void connect(ComponentLauncher launcher, String argLine) throws InterruptedException, ConnectionException {
+    private static void connect(ComponentLauncher launcher, String argLine, boolean gui) throws InterruptedException, ConnectionException {
         // Check if this class name has a multiplier
         int index = argLine.indexOf("*");
         int count = 1;
@@ -89,7 +103,7 @@ public final class LaunchComponents {
             try {
                 c.initialise();
                 launcher.connect(c);
-                if (c instanceof GUIComponent) {
+                if (gui && c instanceof GUIComponent) {
                     GUIComponent g = (GUIComponent)c;
                     JFrame frame = new JFrame(g.getGUIComponentName());
                     frame.setContentPane(g.getGUIComponent());
