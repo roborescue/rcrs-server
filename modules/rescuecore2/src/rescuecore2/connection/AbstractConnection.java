@@ -7,6 +7,7 @@ import static rescuecore2.misc.EncodingTools.writeMessage;
 import rescuecore2.messages.Message;
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.registry.Registry;
+import rescuecore2.log.Logger;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -18,17 +19,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    Abstract base class for Connection implementations.
  */
 public abstract class AbstractConnection implements Connection {
     private static final int BROADCAST_WAIT = 10000;
-
-    /** Logger for this connection. */
-    protected Log log;
 
     private List<ConnectionListener> listeners;
     private List<Message> toSend;
@@ -51,7 +46,6 @@ public abstract class AbstractConnection implements Connection {
         state = State.NOT_STARTED;
         broadcast = new MessageBroadcastThread();
         registry = Registry.SYSTEM_REGISTRY;
-        log = LogFactory.getLog(getClass());
     }
 
     @Override
@@ -78,7 +72,7 @@ public abstract class AbstractConnection implements Connection {
                     broadcast.kill();
                 }
                 catch (InterruptedException e) {
-                    log.error("AbstractConnection interrupted while shutting down broadcast thread", e);
+                    Logger.error("AbstractConnection interrupted while shutting down broadcast thread", e);
                 }
                 shutdownImpl();
                 state = State.SHUTDOWN;
@@ -194,17 +188,17 @@ public abstract class AbstractConnection implements Connection {
             } while (m != null);
         }
         catch (IOException e) {
-            log.error("AbstractConnection error reading message", e);
+            Logger.error("AbstractConnection error reading message", e);
             ByteLogger.log(b, this.toString());
         }
         // CHECKSTYLE:OFF:IllegalCatch
         catch (RuntimeException e) {
-            log.error("AbstractConnection error reading message", e);
+            Logger.error("AbstractConnection error reading message", e);
             ByteLogger.log(b, this.toString());
             throw e;
         }
         catch (Error e) {
-            log.error("AbstractConnection error reading message", e);
+            Logger.error("AbstractConnection error reading message", e);
             ByteLogger.log(b, this.toString());
             throw e;
         }

@@ -3,15 +3,12 @@ package rescuecore2.misc.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A set of useful functions related to the Java language.
  */
 public final class JavaTools {
-    private static final Log LOG = LogFactory.getLog(JavaTools.class);
-
     private JavaTools() {}
 
     /**
@@ -30,13 +27,13 @@ public final class JavaTools {
             return clazz.newInstance();
         }
         catch (ClassNotFoundException e) {
-            LOG.info("Could not find class " + className,  e);
+            Logger.info("Could not find class " + className,  e);
         }
         catch (IllegalAccessException e) {
-            LOG.info("Could not instantiate class " + className, e);
+            Logger.info("Could not instantiate class " + className, e);
         }
         catch (InstantiationException e) {
-            LOG.info("Could not instantiate class " + className, e);
+            Logger.info("Could not instantiate class " + className, e);
         }
         return null;
     }
@@ -54,11 +51,11 @@ public final class JavaTools {
             clazz = Class.forName(classname).asSubclass(outputClass);
         }
         catch (ClassNotFoundException e) {
-            LOG.info("Could not find class " + classname, e);
+            Logger.info("Could not find class " + classname, e);
             return null;
         }
         catch (ClassCastException e) {
-            LOG.info(classname + " is not a subclass of " + outputClass.getName(), e);
+            Logger.info(classname + " is not a subclass of " + outputClass.getName(), e);
             return null;
         }
         // Is there a singleton instance called INSTANCE?
@@ -72,25 +69,25 @@ public final class JavaTools {
                     }
                 }
                 catch (IllegalAccessException e) {
-                    LOG.info("Could not access INSTANCE field in class " + classname + ": trying constructor.");
+                    Logger.info("Could not access INSTANCE field in class " + classname + ": trying constructor.");
                 }
                 catch (ClassCastException e) {
-                    LOG.info("Could not cast INSTANCE field to " + outputClass + " in class " + classname + ": trying constructor.");
+                    Logger.info("Could not cast INSTANCE field to " + outputClass + " in class " + classname + ": trying constructor.");
                 }
             }
         }
         catch (NoSuchFieldException e) {
-            LOG.info("No INSTANCE field in class " + classname, e);
+            Logger.info("No INSTANCE field in class " + classname, e);
             // No singleton instance. Try instantiating it.
         }
         try {
             return clazz.newInstance();
         }
         catch (IllegalAccessException e) {
-            LOG.info("Could not instantiate class " + classname, e);
+            Logger.info("Could not instantiate class " + classname, e);
         }
         catch (InstantiationException e) {
-            LOG.info("Could not instantiate class " + classname, e);
+            Logger.info("Could not instantiate class " + classname, e);
         }
         return null;
     }

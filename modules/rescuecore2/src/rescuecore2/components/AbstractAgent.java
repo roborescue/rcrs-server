@@ -16,6 +16,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -62,6 +63,11 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
         // Wait for a reply
         latch.await();
         l.testSuccess();
+    }
+
+    @Override
+    protected void postConnect() {
+        Logger.pushNDC(me().toString());
     }
 
     /**

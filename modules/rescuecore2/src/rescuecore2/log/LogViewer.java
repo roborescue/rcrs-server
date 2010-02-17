@@ -45,15 +45,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A class for viewing log files.
  */
 public class LogViewer extends JPanel {
-    private static final Log LOG = LogFactory.getLog(LogViewer.class);
-
     private static final String VIEWERS_KEY = "log.viewers";
 
     private static final int TICK_STEP_SIZE = 10;
@@ -241,13 +236,13 @@ public class LogViewer extends JPanel {
             frame.setVisible(true);
         }
         catch (IOException e) {
-            LOG.error("Error reading log", e);
+            Logger.error("Error reading log", e);
         }
         catch (ConfigException e) {
-            LOG.error("Configuration error", e);
+            Logger.error("Configuration error", e);
         }
         catch (LogException e) {
-            LOG.error("Error reading log", e);
+            Logger.error("Error reading log", e);
         }
     }
 

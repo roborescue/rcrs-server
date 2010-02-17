@@ -6,12 +6,10 @@ import rescuecore2.connection.ConnectionException;
 import rescuecore2.messages.Message;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.Random;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
    Abstract base class for component implementations.
@@ -41,15 +39,12 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     protected Random random;
 
     /**
-       The logger for this component.
     */
-    protected Log log;
 
     /**
        Create a new AbstractComponent.
     */
     protected AbstractComponent() {
-        log = LogFactory.getLog(getClass());
     }
 
     /**
@@ -59,6 +54,7 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
        @param kernelConfig The config that the kernel sent on startup.
      */
     protected final void postConnect(Connection c, Collection<Entity> entities, Config kernelConfig) {
+        Logger.setLogContext(getPreferredLogContext());
         connection = c;
         model = createWorldModel();
         model.addEntities(entities);
@@ -89,8 +85,16 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
         }
         catch (ConnectionException e) {
             // Ignore and log
-            log.error("Error sending message", e);
+            Logger.error("Error sending message", e);
         }
+    }
+
+    /**
+       Get the preferred log context for this component. Default implementation returns this.getClass().getName().
+       @return The preferred log context for this component.
+    */
+    protected String getPreferredLogContext() {
+        return getClass().getName();
     }
 
     @Override

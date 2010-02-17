@@ -14,6 +14,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -74,7 +75,7 @@ public abstract class AbstractViewer<T extends WorldModel<? extends Entity>> ext
         ChangeSet changes = timestep.getChangeSet();
         int time = timestep.getTime();
         if (time != lastUpdateTime + 1) {
-            log.warn("Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
+            Logger.warn("Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
         }
         lastUpdateTime = time;
         model.merge(changes);

@@ -5,9 +5,7 @@ import java.io.IOException;
 
 import rescuecore2.messages.Message;
 import rescuecore2.registry.AbstractMessageFactory;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A factory for control messages.
@@ -15,8 +13,6 @@ import org.apache.commons.logging.Log;
 public final class ControlMessageFactory extends AbstractMessageFactory<ControlMessageURN> {
     /** Singleton instance. */
     public static final ControlMessageFactory INSTANCE = new ControlMessageFactory();
-
-    private static final Log LOG = LogFactory.getLog(ControlMessageFactory.class);
 
     private ControlMessageFactory() {
         super(ControlMessageURN.class);
@@ -74,7 +70,7 @@ public final class ControlMessageFactory extends AbstractMessageFactory<ControlM
         case ENTITY_ID_RESPONSE:
             return new EntityIDResponse(data);
         default:
-            LOG.warn("Unrecognised message urn: " + urn);
+            Logger.warn("Unrecognised message urn: " + urn);
             return null;
         }
     }

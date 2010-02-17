@@ -3,6 +3,8 @@ package rescuecore2.connection;
 import java.net.Socket;
 import java.io.IOException;
 
+import rescuecore2.log.Logger;
+
 /**
    TCP implementation of a Connection.
  */
@@ -53,7 +55,7 @@ public class TCPConnection extends StreamConnection {
             socket.close();
         }
         catch (IOException e) {
-            log.error("Error closing TCP connection", e);
+            Logger.error("Error closing TCP connection", e);
         }
     }
 }

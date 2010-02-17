@@ -20,6 +20,7 @@ import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
 import rescuecore2.misc.WorkerThread;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.Map;
@@ -105,7 +106,7 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
         ChangeSet changes = u.getChangeSet();
         int time = u.getTime();
         if (time != lastUpdateTime + 1) {
-            log.warn("Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
+            Logger.warn("Recieved an unexpected update from the kernel. Last update: " + lastUpdateTime + ", this update: " + time);
         }
         lastUpdateTime = time;
         model.merge(changes);
@@ -137,10 +138,12 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
     protected List<EntityID> requestNewEntityIDs(int count) throws InterruptedException {
         synchronized (idRequests) {
             int id = nextIDRequest++;
+            Logger.debug("Requesting " + count + " new IDs: request number " + id);
             send(new EntityIDRequest(simulatorID, id, count));
             // Wait for a reply
             Integer key = id;
             while (!idRequests.containsKey(key)) {
+                Logger.debug("Waiting for response");
                 idRequests.wait();
             }
             List<EntityID> result = idRequests.get(key);

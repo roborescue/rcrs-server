@@ -17,16 +17,12 @@ import rescuecore2.config.ConfigException;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.registry.Registry;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    General launcher for components.
  */
 public final class LaunchComponents {
-    private static final Log LOG = LogFactory.getLog(LaunchComponents.class);
-
     private LaunchComponents() {}
 
     /**
@@ -34,6 +30,7 @@ public final class LaunchComponents {
        @param args The arguments should be thus: [-p <port>]? [-h <hostname>]? [-c <config file>]* (fully.qualified.classname[*multiplier])+
      */
     public static void main(String[] args) {
+        Logger.setLogContext("launcher");
         Config config = new Config();
         try {
             args = CommandLineOptions.processArgs(args, config);
@@ -48,16 +45,16 @@ public final class LaunchComponents {
             }
         }
         catch (IOException e) {
-            LOG.error("Error connecting components", e);
+            Logger.error("Error connecting components", e);
         }
         catch (ConfigException e) {
-            LOG.error("Configuration error", e);
+            Logger.error("Configuration error", e);
         }
         catch (ConnectionException e) {
-            LOG.error("Error connecting components", e);
+            Logger.error("Error connecting components", e);
         }
         catch (InterruptedException e) {
-            LOG.error("Error connecting components", e);
+            Logger.error("Error connecting components", e);
         }
     }
 
@@ -82,13 +79,13 @@ public final class LaunchComponents {
             }
             className = argLine.substring(0, index);
         }
-        LOG.info("Launching " + (count == Integer.MAX_VALUE ? "many" : count) + " instances of component '" + className + "'...");
+        Logger.info("Launching " + (count == Integer.MAX_VALUE ? "many" : count) + " instances of component '" + className + "'...");
         for (int i = 0; i < count; ++i) {
             Component c = instantiate(className, Component.class);
             if (c == null) {
                 break;
             }
-            LOG.info("Launching instance " + (i + 1) + "...");
+            Logger.info("Launching instance " + (i + 1) + "...");
             try {
                 c.initialise();
                 launcher.connect(c);
@@ -99,17 +96,17 @@ public final class LaunchComponents {
                     frame.pack();
                     frame.setVisible(true);
                 }
-                LOG.info("success");
+                Logger.info("success");
             }
             catch (ComponentConnectionException e) {
-                LOG.info("failed: " + e.getMessage());
+                Logger.info("failed: " + e.getMessage());
                 break;
             }
             catch (ComponentInitialisationException e) {
-                LOG.info("failed: " + e);
+                Logger.info("failed: " + e);
             }
             catch (ConnectionException e) {
-                LOG.info("failed: " + e);
+                Logger.info("failed: " + e);
             }
         }
     }

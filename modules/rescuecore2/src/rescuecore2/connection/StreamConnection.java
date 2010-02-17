@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.misc.Pair;
 import rescuecore2.registry.Registry;
+import rescuecore2.log.Logger;
 
 /**
    Connection implementation that uses InputStreams and OutputStreams.
@@ -57,36 +58,36 @@ public class StreamConnection extends AbstractConnection {
 
     @Override
     protected void shutdownImpl() {
-        log.info("Shutting down " + this);
+        Logger.info("Shutting down " + this);
         try {
             readThread.kill();
         }
         catch (InterruptedException e) {
-            log.error("StreamConnection interrupted while shutting down read thread", e);
+            Logger.error("StreamConnection interrupted while shutting down read thread", e);
         }
         try {
             writeThread.kill();
         }
         catch (InterruptedException e) {
-            log.error("StreamConnection interrupted while shutting down write thread", e);
+            Logger.error("StreamConnection interrupted while shutting down write thread", e);
         }
         try {
             out.flush();
         }
         catch (IOException e) {
-            log.error("StreamConnection error flushing output buffer", e);
+            Logger.error("StreamConnection error flushing output buffer", e);
         }
         try {
             out.close();
         }
         catch (IOException e) {
-            log.error("StreamConnection error closing output buffer", e);
+            Logger.error("StreamConnection error closing output buffer", e);
         }
         try {
             in.close();
         }
         catch (IOException e) {
-            log.error("StreamConnection error closing input buffer", e);
+            Logger.error("StreamConnection error closing input buffer", e);
         }
     }
 
@@ -119,7 +120,7 @@ public class StreamConnection extends AbstractConnection {
                 return false;
             }
             catch (IOException e) {
-                log.error("Error reading from StreamConnection " + StreamConnection.this, e);
+                Logger.error("Error reading from StreamConnection " + StreamConnection.this, e);
                 return false;
             }
         }
@@ -151,7 +152,7 @@ public class StreamConnection extends AbstractConnection {
                 return true;
             }
             catch (IOException e) {
-                log.error("Error writing to StreamConnection " + StreamConnection.this, e);
+                Logger.error("Error writing to StreamConnection " + StreamConnection.this, e);
                 return false;
             }
         }

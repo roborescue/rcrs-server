@@ -3,15 +3,10 @@ package rescuecore2.log;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A class for writing the kernel log to an output stream.
  */
 public class StreamLogWriter extends AbstractLogWriter {
-    private static final Log LOG = LogFactory.getLog(StreamLogWriter.class);
-
     private OutputStream out;
 
     /**
@@ -38,13 +33,13 @@ public class StreamLogWriter extends AbstractLogWriter {
             out.flush();
         }
         catch (IOException e) {
-            LOG.error("Error flushing log stream", e);
+            Logger.error("Error flushing log stream", e);
         }
         try {
             out.close();
         }
         catch (IOException e) {
-            LOG.error("Error closing log stream", e);
+            Logger.error("Error closing log stream", e);
         }
     }
 }

@@ -50,15 +50,10 @@ import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a show method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and activated. The "continue" button will hide and {@link #deactivate} the frame so that further calls to show will return immediately.
  */
 public class ShapeDebugFrame extends JFrame {
-    private static final Log LOG = LogFactory.getLog(ShapeDebugFrame.class);
-
     private static final int DISPLAY_WIDTH = 500;
     private static final int DISPLAY_HEIGHT = 500;
     private static final int LEGEND_WIDTH = 500;
@@ -364,8 +359,8 @@ public class ShapeDebugFrame extends JFrame {
                     }
                 }
                 //                else {
-                    //                    LOG.debug("Pruned " + next);
-                    //                    LOG.debug("Shape bounds: " + next.getBoundsShape());
+                    //                    Logger.debug("Pruned " + next);
+                    //                    Logger.debug("Shape bounds: " + next.getBoundsShape());
                 //                }
             }
             if (backgroundEnabled) {

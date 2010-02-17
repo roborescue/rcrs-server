@@ -8,6 +8,7 @@ import rescuecore2.registry.EntityFactory;
 import rescuecore2.registry.PropertyFactory;
 import rescuecore2.registry.Registry;
 import rescuecore2.Constants;
+import rescuecore2.log.Logger;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,15 +24,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A utility class for processing loadable types from jar files.
  */
 public class LoadableTypeProcessor {
-    private static final Log LOG = LogFactory.getLog(LoadableTypeProcessor.class);
-
     private List<LoadableTypeCallback> callbacks;
     private Set<LoadableType> types;
     private boolean deep;
@@ -102,7 +98,7 @@ public class LoadableTypeProcessor {
     */
     public void process() throws IOException {
         File baseDir = new File(dir);
-        LOG.info("Processing jar directory: " + baseDir.getAbsolutePath());
+        Logger.info("Processing jar directory: " + baseDir.getAbsolutePath());
         File[] jarFiles = baseDir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dirName, String name) {
@@ -129,10 +125,10 @@ public class LoadableTypeProcessor {
         if (ignore.contains(tail)) {
             return;
         }
-        LOG.info("Processing " + jar.getName());
+        Logger.info("Processing " + jar.getName());
         Manifest mf = jar.getManifest();
         if (mf != null) {
-            LOG.debug("Inspecting manifest...");
+            Logger.debug("Inspecting manifest...");
             for (LoadableType type : types) {
                 for (String next : type.processManifest(mf)) {
                     fireCallback(type, next);
@@ -141,7 +137,7 @@ public class LoadableTypeProcessor {
         }
         if (deep) {
             // Look for well-named classes
-            LOG.debug("Looking for likely class names...");
+            Logger.debug("Looking for likely class names...");
             for (Enumeration<JarEntry> e = jar.entries(); e.hasMoreElements();) {
                 JarEntry next = e.nextElement();
                 for (LoadableType type : types) {
@@ -175,7 +171,7 @@ public class LoadableTypeProcessor {
 
         @Override
         public void classFound(LoadableType otherType, String className) {
-            LOG.info("Adding " + className + " to " + key);
+            Logger.info("Adding " + className + " to " + key);
             if (config.isDefined(key)) {
                 List<String> existing = config.getArrayValue(key);
                 if (!existing.contains(className)) {
@@ -208,7 +204,7 @@ public class LoadableTypeProcessor {
             MessageFactory factory = instantiateFactory(className, MessageFactory.class);
             if (factory != null) {
                 registry.registerMessageFactory(factory);
-                LOG.info("Registered message factory '" + className + "' with registry " + registry.getName());
+                Logger.info("Registered message factory '" + className + "' with registry " + registry.getName());
             }
         }
 
@@ -233,7 +229,7 @@ public class LoadableTypeProcessor {
             EntityFactory factory = instantiateFactory(className, EntityFactory.class);
             if (factory != null) {
                 registry.registerEntityFactory(factory);
-                LOG.info("Registered entity factory '" + className + "' with registry " + registry.getName());
+                Logger.info("Registered entity factory '" + className + "' with registry " + registry.getName());
             }
         }
 
@@ -258,7 +254,7 @@ public class LoadableTypeProcessor {
             PropertyFactory factory = instantiateFactory(className, PropertyFactory.class);
             if (factory != null) {
                 registry.registerPropertyFactory(factory);
-                LOG.info("Registered property factory '" + className + "' with registry " + registry.getName());
+                Logger.info("Registered property factory '" + className + "' with registry " + registry.getName());
             }
         }
 

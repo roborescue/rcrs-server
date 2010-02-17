@@ -9,9 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.Message;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A class for managing the different types of entities, properties, messages and their associated factories.
@@ -21,8 +19,6 @@ public final class Registry {
        The system-(or at least Classloader)-wide Registry.
     */
     public static final Registry SYSTEM_REGISTRY = new Registry("System", null);
-
-    private static final Log LOG = LogFactory.getLog(Registry.class);
 
     private static final ThreadLocal<Registry> CURRENT_REGISTRY = new InheritableThreadLocal<Registry>() {
         @Override
@@ -125,7 +121,7 @@ public final class Registry {
         synchronized (entityFactories) {
             EntityFactory old = entityFactories.get(urn);
             if (old != null && old != factory) {
-                LOG.warn(getName() + ": entity " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
+                Logger.warn(getName() + ": entity " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
             }
             entityFactories.put(urn, factory);
         }
@@ -150,7 +146,7 @@ public final class Registry {
         synchronized (propertyFactories) {
             PropertyFactory old = propertyFactories.get(urn);
             if (old != null && old != factory) {
-                LOG.warn(getName() + ": property " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
+                Logger.warn(getName() + ": property " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
             }
             propertyFactories.put(urn, factory);
         }
@@ -175,7 +171,7 @@ public final class Registry {
         synchronized (messageFactories) {
             MessageFactory old = messageFactories.get(urn);
             if (old != null && old != factory) {
-                LOG.warn(getName() + ": message " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
+                Logger.warn(getName() + ": message " + urn + " is being clobbered by " + factory + ". Old factory: " + old);
             }
             messageFactories.put(urn, factory);
         }
@@ -190,7 +186,7 @@ public final class Registry {
     public Entity createEntity(String urn, EntityID id) {
         EntityFactory factory = getEntityFactory(urn);
         if (factory == null) {
-            LOG.warn(getName() + ": Entity " + urn + " not recognised.");
+            Logger.warn(getName() + ": Entity " + urn + " not recognised.");
             return null;
         }
         return factory.makeEntity(urn, id);
@@ -204,7 +200,7 @@ public final class Registry {
     public Property createProperty(String urn) {
         PropertyFactory factory = getPropertyFactory(urn);
         if (factory == null) {
-            LOG.warn(getName() + ": Property " + urn + " not recognised.");
+            Logger.warn(getName() + ": Property " + urn + " not recognised.");
             return null;
         }
         return factory.makeProperty(urn);
@@ -220,7 +216,7 @@ public final class Registry {
     public Message createMessage(String urn, InputStream data) throws IOException {
         MessageFactory factory = getMessageFactory(urn);
         if (factory == null) {
-            LOG.warn(getName() + ": Message " + urn + " not recognised.");
+            Logger.warn(getName() + ": Message " + urn + " not recognised.");
             return null;
         }
         return factory.makeMessage(urn, data);

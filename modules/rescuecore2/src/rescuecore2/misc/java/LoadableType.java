@@ -15,9 +15,7 @@ import rescuecore2.components.Agent;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
 import rescuecore2.components.Component;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    This class contains information about a type that can be detected in a jar manifest or class file. For example, a MessageFactory implementation in a jar file can be designated in the jar manifest under a "MessageFactory" attribute, or implementation classes could be inferred by looking for a class name regular expression like "(.*MessageFactory).class".
@@ -39,8 +37,6 @@ public class LoadableType {
     public static final LoadableType VIEWER = new LoadableType("Viewer", "(.+Viewer).class", Viewer.class);
     /** A Component loadable type. */
     public static final LoadableType COMPONENT = new LoadableType("Component", null, Component.class);
-
-    private static final Log LOG = LogFactory.getLog(LoadableType.class);
 
     private String manifestKey;
     private Pattern regex;
@@ -72,17 +68,17 @@ public class LoadableType {
                 try {
                     Class<?> testClass = Class.forName(next);
                     if (!clazz.isAssignableFrom(testClass)) {
-                        LOG.warn("Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' is not a subclass of '" + clazz.getName() + "'");
+                        Logger.warn("Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' is not a subclass of '" + clazz.getName() + "'");
                     }
                     else if (testClass.isInterface()) {
-                        LOG.warn("Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' is an interface");
+                        Logger.warn("Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' is an interface");
                     }
                     else {
                         result.add(next);
                     }
                 }
                 catch (ClassNotFoundException e) {
-                    LOG.warn("Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' not found");
+                    Logger.warn("Manifest entry '" + manifestKey + "' contains invalid class name: '" + next + "' not found");
                 }
             }
         }
@@ -109,7 +105,7 @@ public class LoadableType {
                 }
             }
             catch (ClassNotFoundException ex) {
-                LOG.warn("Class " + className + " not found", ex);
+                Logger.warn("Class " + className + " not found", ex);
             }
         }
         return null;
