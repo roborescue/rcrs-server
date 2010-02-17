@@ -1,5 +1,6 @@
 DIR=`pwd`
 BASEDIR="`cd .. && pwd`"
+PIDS=
 
 # Wait for a regular expression to appear in a file.
 # $1 is the log to check
@@ -37,7 +38,7 @@ function waitFor {
 # Make a classpath argument by looking in a directory of jar files.
 # Positional parameters are the directories to look in
 function makeClasspath {
-    RESULT=""
+    RESULT="../supplement"
     while [[ ! -z "$1" ]]; do
         for NEXT in $1/*.jar; do
             RESULT="$RESULT:$NEXT"
@@ -52,7 +53,7 @@ function printUsage {
     echo "Usage: $0 [options]"
     echo "Options"
     echo "======="
-    echo "-m    --map       <mapdir>      Set the map directory. Default is \"$BASEDIR/maps/Kobe\""
+    echo "-m    --map       <mapdir>      Set the map directory. Default is \"$BASEDIR/maps/gml/test\""
     echo "-l    --log       <logdir>      Set the log directory. Default is \"logs\""
     echo "-s    --timestamp               Append a timestamp, the team name and map name to the log directory name"
     echo "-t    --team      <teamname>    Set the team name. Default is \"\""
@@ -61,7 +62,7 @@ function printUsage {
 # Process arguments
 function processArgs {
     LOGDIR="logs"
-    MAP="$BASEDIR/maps/Kobe"
+    MAP="$BASEDIR/maps/gml/test"
     TEAM=""
     TIMESTAMP_LOGS=""
 
@@ -105,11 +106,6 @@ function processArgs {
         printUsage
         exit 1
     fi
-    if [[ ( ! -e $MAP/road.bin ) || ( ! -e $MAP/node.bin ) || ( ! -e $MAP/building.bin ) || ( ! -e $MAP/gisini.txt ) ]]; then
-        echo "$MAP is not a valid map directory"
-        printUsage
-        exit 1
-    fi
 
     if [ ! -z "$TIMESTAMP_LOGS" ] ; then
         TIME="`date +%m%d-%H%M%S`"
@@ -124,21 +120,12 @@ function processArgs {
     mkdir -p $LOGDIR
 }
 
-# Start the GIS
-function startGIS {
-    makeClasspath $BASEDIR/jars $BASEDIR/lib
-    GIS_OPTIONS="./config/gis2.cfg"
-    xterm -T gis2 -e "java -cp $CP gis2.Main $GIS_OPTIONS 2>&1 | tee $LOGDIR/gis2.log" &
-    GIS=$!
-    waitFor $LOGDIR/gis2.log "waiting for the kernel"
-}
-
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewers.auto= --kernel.agents.auto= --kernel.gis.auto=rescuecore2.standard.kernel.StandardWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.StandardPerception --kernel.communication.auto=rescuecore2.standard.kernel.ChannelCommunicationModel --just-run $*"
+    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewers.auto= --kernel.agents.auto= --kernel.gis.auto=gis2.GMLWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.StandardPerception --kernel.communication.auto=rescuecore2.standard.kernel.ChannelCommunicationModel $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
-    xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS 2>&1 | tee $LOGDIR/kernel.log" &
-    KERNEL=$!
+    xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS -Dlog4j.debug=true 2>&1 | tee $LOGDIR/kernel-out.log" &
+    PIDS="$PIDS $!"
     # Wait for the kernel to start
     waitFor $LOGDIR/kernel.log "Listening for connections"
 }
@@ -147,23 +134,22 @@ function startKernel {
 function startSims {
     makeClasspath $BASEDIR/lib
     # Viewer
-    xterm -T viewer -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleViewer 2>&1 | tee $LOGDIR/viewer.log" &
-    VIEWER=$!
+    xterm -T viewer -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleViewer $*" &
+    PIDS="$PIDS $!"
     # Simulators
-    xterm -T misc -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator 2>&1 | tee $LOGDIR/misc.log" &
-    MISC=$!
+    xterm -T misc -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator $*" &
+    PIDS="$PIDS $!"
     #xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic-old.jar rescuecore2.LaunchComponents traffic.TrafficSimulatorWrapper 2>&1 | tee $LOGDIR/traffic.log" &
-    #TRAFFIC=$!
-    xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar traffic3.Launch -log=stdout -mode=rcrs -rcrs.traffic3.setting=./config/traffic3.cfg 2>&1 | tee $LOGDIR/traffic3.log" &
-    TRAFFIC=$!
-    xterm -T fire -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper 2>&1 | tee $LOGDIR/fire.log" &
-    FIRE=$!
-    xterm -T ignition -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar rescuecore2.LaunchComponents ignition.IgnitionSimulator 2>&1 | tee $LOGDIR/ignition.log" &
-    IGNITION=$!
-    xterm -T blockades -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/blockade.jar rescuecore2.LaunchComponents blockade.BlockadeSimulator 2>&1 | tee $LOGDIR/blockades.log" &
-    BLOCKADES=$!
-    xterm -T collapse -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar rescuecore2.LaunchComponents collapse.CollapseSimulator 2>&1 | tee $LOGDIR/collapse.log" &
-    COLLAPSE=$!
-    xterm -T civilian -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleCivilian*n 2>&1 | tee $LOGDIR/civilian.log" &
-    CIVILIAN=$!
+    xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator $* 2>&1 | tee $LOGDIR/traffic-out.log" &
+    PIDS="$PIDS $!"
+    xterm -T fire -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper $* 2>&1 | tee $LOGDIR/fire.log" &
+    PIDS="$PIDS $!"
+    xterm -T ignition -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar rescuecore2.LaunchComponents ignition.IgnitionSimulator $*" &
+    PIDS="$PIDS $!"
+    xterm -T collapse -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar rescuecore2.LaunchComponents collapse.CollapseSimulator $*" &
+    PIDS="$PIDS $!"
+    xterm -T clear -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar rescuecore2.LaunchComponents clear.ClearSimulator $*" &
+    PIDS="$PIDS $!"
+    xterm -T civilian -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleCivilian*n $*" &
+    PIDS="$PIDS $!"
 }
