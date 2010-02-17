@@ -1,6 +1,7 @@
 package rescuecore2.standard.kernel.comms;
 
 import rescuecore2.config.Config;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.messages.AKSpeak;
 
@@ -34,8 +35,14 @@ public class RadioChannel extends AbstractChannel {
         if (usedBandwidth + data.length > bandwidth) {
             throw new InvalidMessageException("Discarding message on channel " + channelID + ": already used " + usedBandwidth + " of " + bandwidth + " bytes, new message is " + data.length + " bytes.");
         }
+        Logger.debug("Channel " + channelID + " accepted message from " + speak.getAgentID());
         addMessageForSubscribers(speak);
         usedBandwidth += data.length;
+    }
+
+    @Override
+    public String toString() {
+        return "Radio channel " + channelID + " (bandwidth = " + bandwidth + ")";
     }
 }
 

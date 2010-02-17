@@ -26,20 +26,16 @@ import rescuecore2.misc.Pair;
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.config.Config;
 import rescuecore2.view.Icons;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.StandardEntityURN;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A view layer that renders humans.
  */
 public class HumanLayer extends StandardEntityViewLayer<Human> {
-    private static final Log LOG = LogFactory.getLog(HumanLayer.class);
-
     private static final int SIZE = 10;
 
     private static final int HP_MAX = 10000;
@@ -137,7 +133,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
             String resourceName = "rescuecore2/standard/view/" + type + "-" + state.toString() + "-" + iconSize + "x" + iconSize + ".png";
             URL resource = HumanLayer.class.getClassLoader().getResource(resourceName);
             if (resource == null) {
-                LOG.warn("Couldn't find resource: " + resourceName);
+                Logger.warn("Couldn't find resource: " + resourceName);
             }
             else {
                 result.put(state, new ImageIcon(resource));

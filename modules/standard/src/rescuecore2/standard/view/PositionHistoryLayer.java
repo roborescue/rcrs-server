@@ -9,15 +9,10 @@ import rescuecore2.config.Config;
 
 import rescuecore2.standard.entities.Human;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A view layer that renders position history.
  */
 public class PositionHistoryLayer extends StandardEntityViewLayer<Human> {
-    private static final Log LOG = LogFactory.getLog(PositionHistoryLayer.class);
-
     private static final Color PATH_COLOUR = Color.RED;
 
     /**

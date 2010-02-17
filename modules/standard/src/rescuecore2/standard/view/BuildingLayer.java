@@ -11,15 +11,10 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Edge;
 import rescuecore2.misc.gui.ScreenTransform;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A view layer that renders buildings.
  */
 public class BuildingLayer extends AreaLayer<Building> {
-    private static final Log LOG = LogFactory.getLog(BuildingLayer.class);
-
     private static final Color HEATING = new Color(176, 176,  56, 128);
     private static final Color BURNING = new Color(204, 122,  50, 128);
     private static final Color INFERNO = new Color(160,  52,  52, 128);

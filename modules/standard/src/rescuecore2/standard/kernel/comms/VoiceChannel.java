@@ -6,6 +6,7 @@ import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.messages.AKSpeak;
 import rescuecore2.standard.entities.StandardWorldModel;
@@ -74,8 +75,14 @@ public class VoiceChannel extends AbstractChannel {
         StandardEntity sender = world.getEntity(agentID);
         for (StandardEntity target : world.getEntitiesOfType(StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.AMBULANCE_TEAM, StandardEntityURN.POLICE_FORCE, StandardEntityURN.CIVILIAN)) {
             if (world.getDistance(sender, target) <= range) {
+                Logger.debug(target + " can hear voice message from " + sender);
                 addMessageForAgent(target, speak);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Voice channel " + channelID + " (range = " + range + ", max " + maxMessages + " messages of size " + maxSize + ")";
     }
 }

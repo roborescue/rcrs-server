@@ -11,6 +11,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -25,15 +26,10 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.messages.AKSay;
 import rescuecore2.standard.messages.AKTell;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    The legacy communication model: fire brigades talk to fire brigades and the fire station, police to police, ambulance to ambulance and centres talk to centres.
  */
 public class StandardCommunicationModel extends AbstractCommunicationModel {
-    private static final Log LOG = LogFactory.getLog(StandardCommunicationModel.class);
-
     private static final String SAY_RANGE_KEY = "comms.standard.say.range";
     private static final String PLATOON_MAX_KEY = "comms.standard.platoon.max";
     private static final String MAX_SIZE_KEY = "comms.standard.size.max";
@@ -98,7 +94,7 @@ public class StandardCommunicationModel extends AbstractCommunicationModel {
                 }
             }
             catch (InvalidMessageException e) {
-                LOG.warn("Invalid message: " + next, e);
+                Logger.warn("Invalid message: " + next, e);
             }
         }
     }

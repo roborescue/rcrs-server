@@ -12,6 +12,7 @@ import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -24,17 +25,12 @@ import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.standard.messages.AKSpeak;
 import rescuecore2.standard.messages.AKSubscribe;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    The channel-based communication model.
  */
 public class ChannelCommunicationModel extends AbstractCommunicationModel {
     /** The prefix for channels config options. */
     public static final String PREFIX = "comms.channels.";
-
-    private static final Log LOG = LogFactory.getLog(ChannelCommunicationModel.class);
 
     private static final String COUNT_KEY = "comms.channels.count";
     private static final String PLATOON_MAX_CHANNELS_KEY = "comms.channels.max.platoon";
@@ -85,7 +81,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
                 channel = new RadioChannel(config, i);
             }
             else {
-                LOG.error("Unrecognised channel type: " + PREFIX + i + TYPE_SUFFIX + " = '" + type + "'");
+                Logger.error("Unrecognised channel type: " + PREFIX + i + TYPE_SUFFIX + " = '" + type + "'");
             }
             if (channel != null) {
                 String key = PREFIX + i + NOISE_SUFFIX;
@@ -94,6 +90,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
                 channel.setInputNoise(input);
                 channel.setOutputNoise(output);
                 channels.put(i, channel);
+                Logger.info("Created channel: " + channel);
             }
         }
         platoonMax = config.getIntValue(PLATOON_MAX_CHANNELS_KEY, 1);
@@ -128,7 +125,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
                     }
                 }
                 catch (InvalidMessageException e) {
-                    LOG.warn("Invalid message: " + next, e);
+                    Logger.warn("Invalid message: " + next, e);
                 }
             }
         }
@@ -176,11 +173,12 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
     }
 
     private void processSubscribe(AKSubscribe sub) {
+        Logger.debug("Processing subscribe message : " + sub);
         List<Integer> requested = sub.getChannels();
         EntityID id = sub.getAgentID();
         Entity entity = world.getEntity(id);
         if (entity == null) {
-            LOG.warn("Couldn't find entity " + id);
+            Logger.warn("Couldn't find entity " + id);
             return;
         }
         int max;
@@ -191,11 +189,11 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
             max = centreMax;
         }
         else {
-            LOG.warn("I don't know how to handle subscriptions for this entity: " + entity);
+            Logger.warn("I don't know how to handle subscriptions for this entity: " + entity);
             return;
         }
         if (requested.size() > max) {
-            LOG.warn("Agent tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
+            Logger.warn("Agent tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
             return;
         }
         // Unsubscribe from all old channels
@@ -206,7 +204,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
         for (int next : requested) {
             Channel channel = channels.get(next);
             if (channel == null) {
-                LOG.warn("Agent tried to subscribe to non-existant channel " + next);
+                Logger.warn("Agent tried to subscribe to non-existant channel " + next);
             }
             else {
                 channel.addSubscriber(entity);

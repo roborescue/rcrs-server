@@ -15,9 +15,7 @@ import rescuecore2.worldmodel.WorldModelListener;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.Pair;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A wrapper around a WorldModel that indexes Entities by location.
@@ -28,8 +26,6 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     /** The default mesh size. */
     public static final int DEFAULT_MESH_SIZE = 10000;
-
-    private static final Log LOG = LogFactory.getLog(StandardWorldModel.class);
 
     private Map<StandardEntityURN, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;
@@ -92,11 +88,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             newMeshSize = DEFAULT_MESH_SIZE;
         }
         if (indexed && unindexedEntities.isEmpty() && meshSize == newMeshSize) {
-            LOG.debug("Not bothering with reindex: new mesh size is same as old and no entities are currently unindexed");
+            Logger.debug("Not bothering with reindex: new mesh size is same as old and no entities are currently unindexed");
             return;
         }
         this.meshSize = newMeshSize;
-        LOG.debug("Re-indexing world model");
+        Logger.debug("Re-indexing world model");
         mobileEntities.clear();
         staticEntities.clear();
         unindexedEntities.clear();
@@ -143,11 +139,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         // Now divide the world into a grid
         int width = maxX - minX;
         int height = maxY - minY;
-        LOG.trace("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
+        Logger.trace("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
         gridWidth = 1 + (int)Math.ceil(width / (double)meshSize);
         gridHeight = 1 + (int)Math.ceil(height / (double)meshSize);
         grid = new ArrayList<List<Collection<StandardEntity>>>(gridWidth);
-        LOG.trace("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
+        Logger.trace("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
         for (int i = 0; i < gridWidth; ++i) {
             List<Collection<StandardEntity>> list = new ArrayList<Collection<StandardEntity>>(gridHeight);
             grid.add(list);
@@ -168,7 +164,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 biggest = Math.max(biggest, getCell(i, j).size());
             }
         }
-        LOG.trace("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
+        Logger.trace("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
         indexed = true;
     }
 
