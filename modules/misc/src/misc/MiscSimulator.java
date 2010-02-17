@@ -14,6 +14,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
@@ -25,9 +26,6 @@ import rescuecore2.standard.components.StandardSimulator;
 
 import rescuecore2.GUIComponent;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 import java.util.Formatter;
 
 /**
@@ -36,8 +34,6 @@ import java.util.Formatter;
  * @author Cameron Skinner
  */
 public class MiscSimulator extends StandardSimulator implements GUIComponent {
-    private static final Log LOG = LogFactory.getLog(MiscSimulator.class);
-
     private Map<EntityID, HumanAttributes> humans;
     private Set<EntityID> newlyBrokenBuildings;
 
@@ -65,7 +61,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         humans = new HashMap<EntityID, HumanAttributes>();
         newlyBrokenBuildings = new HashSet<EntityID>();
 
-        LOG.info("MiscSimulator connected. World has " + model.getAllEntities().size() + " entities.");
+        Logger.info("MiscSimulator connected. World has " + model.getAllEntities().size() + " entities.");
         BuildingChangeListener buildingListener = new BuildingChangeListener();
         //HumanChangeListener humanListener = new HumanChangeListener();
         for (Entity et : model.getAllEntities()) {
@@ -114,7 +110,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             }
             // Human is in a newly collapsed building
             // Check for buriedness
-            LOG.trace("Checking if human should be buried in broken building");
+            Logger.trace("Checking if human should be buried in broken building");
             Building b = (Building)human.getPosition(model);
             if (parameters.shouldBuryAgent(b)) {
                 int buriedness = parameters.getBuriedness(b);
@@ -176,7 +172,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
                               buriedness);
             }
         }
-        LOG.debug(builder.toString());
+        Logger.debug(builder.toString());
     }
 
     private void updateDamage(ChangeSet changes) {
@@ -219,7 +215,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     private boolean checkValidity(Command command) {
         Entity e = model.getEntity(command.getAgentID());
         if (e == null) {
-            LOG.warn("Received a " + command.getURN() + " command from an unknown agent: " + command.getAgentID());
+            Logger.warn("Received a " + command.getURN() + " command from an unknown agent: " + command.getAgentID());
             return false;
         }
         if (command instanceof AKRescue) {
@@ -232,29 +228,29 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         EntityID targetID = rescue.getTarget();
         Entity target = model.getEntity(targetID);
         if (!(agent instanceof AmbulanceTeam)) {
-            LOG.warn("Received a rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            Logger.warn("Received a rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
             return false;
         }
         if (target == null) {
-            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
             return false;
         }
         if (!(target instanceof Human)) {
-            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
+            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
             return false;
         }
         Human h = (Human)target;
         AmbulanceTeam at = (AmbulanceTeam)agent;
         if (!h.isBuriednessDefined() || h.getBuriedness() == 0) {
-            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
+            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
             return false;
         }
         if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
-            LOG.warn("Received a rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
+            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
             return false;
         }
         if (h.getID().equals(at.getID())) {
-            LOG.warn("Agent " + agent.getID() + " tried to rescue itself");
+            Logger.warn("Agent " + agent.getID() + " tried to rescue itself");
             return false;
         }
         return true;
