@@ -10,7 +10,6 @@ import rescuecore2.messages.control.AKConnect;
 import rescuecore2.messages.control.AKAcknowledge;
 import rescuecore2.messages.control.KAConnectOK;
 import rescuecore2.messages.control.KAConnectError;
-import rescuecore2.messages.control.Shutdown;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
@@ -42,7 +41,6 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
     @Override
     public final void postConnect(Connection c, EntityID agentID, Collection<Entity> entities, Config kernelConfig) {
         this.entityID = agentID;
-        c.addConnectionListener(new AgentListener());
         super.postConnect(c, entities, kernelConfig);
     }
 
@@ -100,6 +98,19 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
         return (E)model.getEntity(entityID);
     }
 
+    @Override
+    protected void processMessage(Message msg) {
+        if (msg instanceof KASense) {
+            KASense sense = (KASense)msg;
+            if (entityID.equals(sense.getAgentID())) {
+                processSense(sense);
+            }
+        }
+        else {
+            super.processMessage(msg);
+        }
+    }
+
     private class AgentConnectionListener implements ConnectionListener {
         private int requestID;
         private CountDownLatch latch;
@@ -149,23 +160,6 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
         void testSuccess() throws ComponentConnectionException {
             if (failureReason != null) {
                 throw failureReason;
-            }
-        }
-    }
-
-    private class AgentListener implements ConnectionListener {
-        @Override
-        public void messageReceived(Connection c, Message msg) {
-            if (msg instanceof KASense) {
-                KASense sense = (KASense)msg;
-
-                if (!entityID.equals(sense.getAgentID())) {
-                    return;
-                }
-                processSense(sense);
-            }
-            if (msg instanceof Shutdown) {
-                shutdown();
             }
         }
     }

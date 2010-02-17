@@ -3,13 +3,18 @@ package rescuecore2.components;
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
+import rescuecore2.connection.ConnectionListener;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.control.Shutdown;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.log.Logger;
+import rescuecore2.misc.WorkerThread;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
    Abstract base class for component implementations.
@@ -39,7 +44,9 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     protected Random random;
 
     /**
+       The thread that processes incoming messages.
     */
+    private MessageProcessor processor;
 
     /**
        Create a new AbstractComponent.
@@ -61,6 +68,9 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
         config.merge(kernelConfig);
         random = config.getRandom();
         postConnect();
+        processor = new MessageProcessor();
+        c.addConnectionListener(new MessageListener());
+        processor.start();
     }
 
     /**
@@ -103,10 +113,70 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
 
     @Override
     public void shutdown() {
+        try {
+            processor.kill();
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public String getName() {
         return getClass().getName();
+    }
+
+    /**
+       Process an incoming message.
+       @param msg The incoming message.
+    */
+    protected void processMessage(Message msg) {
+        Logger.info("Unrecognised message type: " + msg);
+    }
+
+    /**
+       Process an incoming message immediately. If the message can be processed quickly then this method should do so and return true. If the message may take some time to process (e.g. if it is a sense message (for agents) or a command message (for simulators) then this method should return false and the message will be processed in a different thread via the {@link #processMessage(Message)} method.
+       @param msg The incoming message.
+       @return true If the message was processed immediately, false if it requires slower processing.
+    */
+    protected boolean processImmediately(Message msg) {
+        if (msg instanceof Shutdown) {
+            shutdown();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private class MessageProcessor extends WorkerThread {
+        private BlockingQueue<Message> queue;
+
+        MessageProcessor() {
+            queue = new LinkedBlockingQueue<Message>();
+        }
+
+        void push(Message m) {
+            queue.add(m);
+        }
+
+        @Override
+        public boolean work() throws InterruptedException {
+            Logger.trace("MessageProcessor working: " + queue.size() + " messages in the queue");
+            Message msg = queue.take();
+            Logger.trace("Next message: " + msg);
+            AbstractComponent.this.processMessage(msg);
+            return true;
+        }
+    }
+
+
+    private class MessageListener implements ConnectionListener {
+        @Override
+        public void messageReceived(Connection c, Message msg) {
+            if (!processImmediately(msg)) {
+                processor.push(msg);
+            }
+        }
     }
 }

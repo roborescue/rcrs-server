@@ -20,8 +20,17 @@ public abstract class WorkerThread extends Thread {
        @throws InterruptedException If the thread that called kill is itself interrupted.
     */
     public void kill() throws InterruptedException {
-        running = false;
-        killed = true;
+        synchronized (this) {
+            if (killed) {
+                return;
+            }
+            killed = true;
+        }
+        if (Thread.currentThread() == this) {
+            // This thread is killing itself. Just return - the run loop will terminate now that "killed" is true.
+            return;
+        }
+        // Interrupt the worker thread
         this.interrupt();
         // Maybe the calling thread is already interrupted
         if (Thread.interrupted()) {
@@ -49,11 +58,13 @@ public abstract class WorkerThread extends Thread {
     }
 
     /**
-       Find out if this thread is still running. If {@link #kill} has been called or if {@link #work} has returned false then this worker thread is not still running.
+       Find out if this thread is still running. If {@link #kill} has been called (and returned) or if {@link #work} has returned false then this worker thread is not still running.
        @return True if it is still running and has not been killed, false otherwise.
      */
     public boolean isRunning() {
-        return running && !killed;
+        synchronized (this) {
+            return !killed && running;
+        }
     }
 
     /**

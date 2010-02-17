@@ -9,7 +9,6 @@ import rescuecore2.messages.control.VKConnect;
 import rescuecore2.messages.control.VKAcknowledge;
 import rescuecore2.messages.control.KVConnectOK;
 import rescuecore2.messages.control.KVConnectError;
-import rescuecore2.messages.control.Shutdown;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.WorldModel;
@@ -48,7 +47,6 @@ public abstract class AbstractViewer<T extends WorldModel<? extends Entity>> ext
     @Override
     public void postConnect(Connection c, int id, Collection<Entity> entities, Config kernelConfig) {
         this.viewerID = id;
-        c.addConnectionListener(new ViewerListener());
         lastUpdateTime = 0;
         super.postConnect(c, entities, kernelConfig);
     }
@@ -79,6 +77,19 @@ public abstract class AbstractViewer<T extends WorldModel<? extends Entity>> ext
         }
         lastUpdateTime = time;
         model.merge(changes);
+    }
+
+    @Override
+    protected void processMessage(Message msg) {
+        if (msg instanceof KVTimestep) {
+            KVTimestep t = (KVTimestep)msg;
+            if (t.getTargetID() == viewerID) {
+                handleTimestep(t);
+            }
+        }
+        else {
+            super.processMessage(msg);
+        }
     }
 
     private class ViewerConnectionListener implements ConnectionListener {
@@ -130,21 +141,6 @@ public abstract class AbstractViewer<T extends WorldModel<? extends Entity>> ext
         void testSuccess() throws ComponentConnectionException {
             if (failureReason != null) {
                 throw failureReason;
-            }
-        }
-    }
-
-    private class ViewerListener implements ConnectionListener {
-        @Override
-        public void messageReceived(Connection c, Message msg) {
-            if (msg instanceof KVTimestep) {
-                KVTimestep t = (KVTimestep)msg;
-                if (t.getTargetID() == viewerID) {
-                    handleTimestep(t);
-                }
-            }
-            if (msg instanceof Shutdown) {
-                shutdown();
             }
         }
     }

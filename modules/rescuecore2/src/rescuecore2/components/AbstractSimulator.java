@@ -11,7 +11,6 @@ import rescuecore2.messages.control.SKConnect;
 import rescuecore2.messages.control.SKAcknowledge;
 import rescuecore2.messages.control.KSConnectOK;
 import rescuecore2.messages.control.KSConnectError;
-import rescuecore2.messages.control.Shutdown;
 import rescuecore2.messages.control.EntityIDRequest;
 import rescuecore2.messages.control.EntityIDResponse;
 import rescuecore2.worldmodel.Entity;
@@ -19,7 +18,6 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.config.Config;
-import rescuecore2.misc.WorkerThread;
 import rescuecore2.log.Logger;
 
 import java.util.Collection;
@@ -27,8 +25,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
    Abstract base class for simulator implementations.
@@ -42,8 +38,6 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
 
     private int lastUpdateTime;
 
-    private ProcessThread processor;
-
     private Map<Integer, List<EntityID>> idRequests;
     private int nextIDRequest;
 
@@ -51,7 +45,6 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
        Create a new AbstractSimulator.
     */
     protected AbstractSimulator() {
-        processor = new ProcessThread();
     }
 
     /**
@@ -65,11 +58,9 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
     @Override
     public void postConnect(Connection c, int id, Collection<Entity> entities, Config kernelConfig) {
         this.simulatorID = id;
-        c.addConnectionListener(new SimulatorListener());
         lastUpdateTime = 0;
         nextIDRequest = 0;
         idRequests = new HashMap<Integer, List<EntityID>>();
-        processor.start();
         super.postConnect(c, entities, kernelConfig);
     }
 
@@ -90,12 +81,6 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
     @Override
     public void shutdown() {
         super.shutdown();
-        try {
-            processor.kill();
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -152,29 +137,41 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
         }
     }
 
-    private class ProcessThread extends WorkerThread {
-        private BlockingQueue<Message> queue;
-
-        ProcessThread() {
-            queue = new LinkedBlockingQueue<Message>();
-        }
-
-        void push(Message m) {
-            queue.add(m);
-        }
-
-        @Override
-        public boolean work() throws InterruptedException {
-            Message msg = queue.take();
-            if (msg instanceof KSUpdate) {
-                KSUpdate u = (KSUpdate)msg;
+    @Override
+    protected void processMessage(Message msg) {
+        if (msg instanceof KSUpdate) {
+            KSUpdate u = (KSUpdate)msg;
+            if (u.getTargetID() == simulatorID) {
                 handleUpdate(u);
             }
-            if (msg instanceof KSCommands) {
-                KSCommands commands = (KSCommands)msg;
+        }
+        else if (msg instanceof KSCommands) {
+            KSCommands commands = (KSCommands)msg;
+            if (commands.getTargetID() == simulatorID) {
                 handleCommands(commands);
             }
+        }
+        else {
+            super.processMessage(msg);
+        }
+    }
+
+    @Override
+    protected boolean processImmediately(Message msg) {
+        if (msg instanceof EntityIDResponse) {
+            EntityIDResponse resp = (EntityIDResponse)msg;
+            Logger.debug("Received " + msg);
+            if (resp.getSimulatorID() == simulatorID) {
+                synchronized (idRequests) {
+                    Logger.debug("ID response: " + resp.getRequestID() + ", " + resp.getEntityIDs());
+                    idRequests.put(resp.getRequestID(), resp.getEntityIDs());
+                    idRequests.notifyAll();
+                }
+            }
             return true;
+        }
+        else {
+            return super.processImmediately(msg);
         }
     }
 
@@ -227,36 +224,6 @@ public abstract class AbstractSimulator<T extends WorldModel<? extends Entity>> 
         void testSuccess() throws ComponentConnectionException {
             if (failureReason != null) {
                 throw failureReason;
-            }
-        }
-    }
-
-    private class SimulatorListener implements ConnectionListener {
-        @Override
-        public void messageReceived(Connection c, Message msg) {
-            if (msg instanceof KSUpdate) {
-                KSUpdate u = (KSUpdate)msg;
-                if (u.getTargetID() == simulatorID) {
-                    processor.push(u);
-                }
-            }
-            if (msg instanceof KSCommands) {
-                KSCommands commands = (KSCommands)msg;
-                if (commands.getTargetID() == simulatorID) {
-                    processor.push(commands);
-                }
-            }
-            if (msg instanceof Shutdown) {
-                shutdown();
-            }
-            if (msg instanceof EntityIDResponse) {
-                EntityIDResponse resp = (EntityIDResponse)msg;
-                if (resp.getSimulatorID() == simulatorID) {
-                    synchronized (idRequests) {
-                        idRequests.put(resp.getRequestID(), resp.getEntityIDs());
-                        idRequests.notifyAll();
-                    }
-                }
             }
         }
     }
