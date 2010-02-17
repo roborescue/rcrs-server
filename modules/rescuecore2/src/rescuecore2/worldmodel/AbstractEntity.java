@@ -115,7 +115,7 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(getURN());
+        result.append(getEntityName());
         result.append(" (");
         result.append(id);
         result.append(")");
@@ -128,7 +128,17 @@ public abstract class AbstractEntity implements Entity {
     */
     public String getFullDescription() {
         StringBuilder result = new StringBuilder();
-        result.append(getURN());
+        String name = getEntityName();
+        String urn = getURN();
+        if (!name.equals(urn)) {
+            result.append(name);
+            result.append(" [");
+            result.append(urn);
+            result.append("]");
+        }
+        else {
+            result.append(name);
+        }
         result.append(" (");
         result.append(id);
         result.append(") [");
@@ -156,6 +166,14 @@ public abstract class AbstractEntity implements Entity {
             return this.id.equals(a.id);
         }
         return false;
+    }
+
+    /**
+       Get the name of this entity. Default implementation returns the entity URN.
+       @return The name of this entity.
+    */
+    protected String getEntityName() {
+        return getURN();
     }
 
     /**
