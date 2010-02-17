@@ -1,7 +1,0 @@
-# Lines starting with # are comments
-# Each line contains one number: the amount of blockage in the nth road (sorted by X co-ordinate of head, Y co-ordinate if there is a tie)
-# e.g:
-0
-0
-5000
-0
