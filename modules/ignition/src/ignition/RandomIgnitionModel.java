@@ -1,6 +1,7 @@
 package ignition;
 
 import rescuecore2.config.Config;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -15,15 +16,10 @@ import java.util.Collections;
 
 import org.uncommons.maths.random.PoissonGenerator;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    An IgnitionModel that ignites unburnt buildings in a random order. The number of ignitions per timestep is drawn from a Poisson distribution.
 */
 public class RandomIgnitionModel implements IgnitionModel {
-    private static final Log LOG = LogFactory.getLog(RandomIgnitionModel.class);
-
     private static final String MEAN_KEY = "ignition.random.lambda";
 
     private PoissonGenerator generator;
@@ -52,7 +48,7 @@ public class RandomIgnitionModel implements IgnitionModel {
         Set<Building> result = new HashSet<Building>();
         if (it.hasNext()) {
             int number = generator.nextValue();
-            LOG.debug("Igniting " + number + " buildings");
+            Logger.debug("Igniting " + number + " buildings");
             for (int i = 0; i < number && it.hasNext(); ++i) {
                 result.add(it.next());
             }
