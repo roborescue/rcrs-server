@@ -9,6 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Building;
@@ -37,17 +38,12 @@ import org.dom4j.io.SAXReader;
 
 import java.io.File;
 
-import rescuecore2.misc.gui.ShapeDebugFrame;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+//import rescuecore2.misc.gui.ShapeDebugFrame;
 
 /**
    A WorldModelCreator that reads a GML file and scenario descriptor.
 */
 public class GMLWorldModelCreator implements WorldModelCreator {
-    private static final Log LOG = LogFactory.getLog(GMLWorldModelCreator.class);
-
     private static final String MAP_DIRECTORY_KEY = "gis.map.dir";
     private static final String MAP_FILE_KEY = "gis.map.file";
     private static final String DEFAULT_MAP_FILE = "map.gml";
@@ -58,7 +54,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     private static final double AREA_SCALE_FACTOR = 1.0 / 10000.0;
     // CHECKSTYLE:ON:MagicNumber
 
-    private ShapeDebugFrame debug;
+    //    private ShapeDebugFrame debug;
 
     private int nextID;
 
@@ -113,9 +109,9 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             double area = GeometryTools2D.computeArea(vertices);
             Point2D centroid = GeometryTools2D.computeCentroid(vertices);
 
-            LOG.debug("Building vertices: " + vertices);
-            LOG.debug("Area: " + area);
-            LOG.debug("Centroid: " + centroid);
+            Logger.debug("Building vertices: " + vertices);
+            Logger.debug("Area: " + area);
+            Logger.debug("Centroid: " + centroid);
 
             // Building properties
             b.setFloors(1);
@@ -131,7 +127,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             b.setX((int)centroid.getX());
             b.setY((int)centroid.getY());
             result.addEntity(b);
-            //                LOG.debug(b.getFullDescription());
+            //                Logger.debug(b.getFullDescription());
         }
         for (GMLRoad next : map.getRoads()) {
             // Create a new Road entity
@@ -143,7 +139,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             r.setY((int)conversion.convertY(next.getCentreY()));
             r.setEdges(createEdges(next, conversion));
             result.addEntity(r);
-            //                LOG.debug(b.getFullDescription());
+            //                Logger.debug(b.getFullDescription());
         }
     }
 
@@ -157,19 +153,19 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     }
 
     private List<Edge> createEdges(GMLShape s, CoordinateConversion conversion) {
-        LOG.debug("Computing edges for " + s);
+        Logger.debug("Computing edges for " + s);
         List<Edge> result = new ArrayList<Edge>();
         for (GMLDirectedEdge edge : s.getEdges()) {
             GMLCoordinates start = edge.getStartCoordinates();
             GMLCoordinates end = edge.getEndCoordinates();
             Integer neighbourID = s.getNeighbour(edge);
             EntityID id = neighbourID == null ? null : new EntityID(neighbourID);
-            //            LOG.debug("Edge: " + start + " -> " + end);
+            //            Logger.debug("Edge: " + start + " -> " + end);
             double sx = conversion.convertX(start.getX());
             double sy = conversion.convertY(start.getY());
             double ex = conversion.convertX(end.getX());
             double ey = conversion.convertY(end.getY());
-            LOG.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
+            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
             result.add(new Edge((int)sx,
                                 (int)sy,
                                 (int)ex,

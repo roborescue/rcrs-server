@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -26,15 +27,10 @@ import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Human;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    This class knows how to read scenario files and apply them to StandardWorldModels.
 */
 public class Scenario {
-    private static final Log LOG = LogFactory.getLog(Scenario.class);
-
     private static final int DEFAULT_HP = 10000;
     private static final int DEFAULT_STAMINA = 10000;
 
@@ -116,7 +112,7 @@ public class Scenario {
     */
     public void apply(StandardWorldModel model) throws ScenarioException {
         for (int next : refugeIDs) {
-            LOG.debug("Coverting building " + next + " to a refuge");
+            Logger.debug("Coverting building " + next + " to a refuge");
             Building b = (Building)model.getEntity(new EntityID(next));
             if (b == null) {
                 throw new ScenarioException("Building " + next + " does not exist");
@@ -124,10 +120,10 @@ public class Scenario {
             Refuge r = new Refuge(b);
             model.removeEntity(b);
             model.addEntity(r);
-            LOG.debug("Converted " + b + " into " + r);
+            Logger.debug("Converted " + b + " into " + r);
         }
         for (int next : fires) {
-            LOG.debug("Igniting " + next);
+            Logger.debug("Igniting " + next);
             Building b = (Building)model.getEntity(new EntityID(next));
             if (b == null) {
                 throw new ScenarioException("Building " + next + " does not exist");
@@ -173,6 +169,6 @@ public class Scenario {
         h.setTravelDistance(0);
         h.setPositionHistory(new int[0]);
         model.addEntity(h);
-        LOG.debug("Created " + h);
+        Logger.debug("Created " + h);
     }
 }
