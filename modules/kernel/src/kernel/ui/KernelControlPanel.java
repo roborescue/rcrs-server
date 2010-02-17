@@ -31,17 +31,13 @@ import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.ComponentInitialisationException;
 import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.log.LogException;
+import rescuecore2.log.Logger;
 import rescuecore2.registry.Registry;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
    A JComponent containing various controls for the kernel GUI.
  */
 public class KernelControlPanel extends JPanel {
-    private static final Log LOG = LogFactory.getLog(KernelControlPanel.class);
-
     private Kernel kernel;
     private Config config;
     private Registry registry;
@@ -266,7 +262,7 @@ public class KernelControlPanel extends JPanel {
         }
         catch (java.lang.reflect.InvocationTargetException e) {
             // Should never happen
-            LOG.error("KernelControlPanel.disableAllButtons", e);
+            Logger.error("KernelControlPanel.disableAllButtons", e);
         }
     }
 
@@ -301,13 +297,13 @@ public class KernelControlPanel extends JPanel {
                         kernel.timestep();
                     }
                     catch (KernelException e) {
-                        LOG.error("Kernel error", e);
+                        Logger.error("Kernel error", e);
                         kernel.shutdown();
                         disableAllButtons();
                         return false;
                     }
                     catch (LogException e) {
-                        LOG.error("Log error", e);
+                        Logger.error("Log error", e);
                         kernel.shutdown();
                         disableAllButtons();
                         return false;

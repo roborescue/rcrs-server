@@ -13,6 +13,7 @@ import rescuecore2.messages.control.KASense;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.log.Logger;
 
 /**
    This class is the kernel interface to an agent.
@@ -82,7 +83,7 @@ public class AgentProxy extends AbstractKernelComponent {
     protected void commandReceived(Command c) {
         // Check that the command is for the right agent
         if (!c.getAgentID().equals(entity.getID())) {
-            log.warn("Ignoring bogus command: Agent " + entity.getID() + " tried to send a command for agent " + c.getAgentID());
+            Logger.warn("Ignoring bogus command: Agent " + entity.getID() + " tried to send a command for agent " + c.getAgentID());
             return;
         }
         int time = c.getTime();

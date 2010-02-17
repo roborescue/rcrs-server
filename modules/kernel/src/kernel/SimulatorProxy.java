@@ -11,6 +11,7 @@ import rescuecore2.messages.control.EntityIDRequest;
 import rescuecore2.messages.control.EntityIDResponse;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        @param name The name of the simulator.
        @param id The ID of the simulator.
        @param c The connection this simulator is using.
-     */
+    */
     public SimulatorProxy(String name, int id, Connection c) {
         super(name, c);
         this.id = id;
@@ -71,7 +72,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        Send a set of agent commands to this simulator.
        @param time The current time.
        @param commands The agent commands to send.
-     */
+    */
     public void sendAgentCommands(int time, Collection<? extends Command> commands) {
         send(new KSCommands(id, time, commands));
     }
@@ -93,7 +94,7 @@ public class SimulatorProxy extends AbstractKernelComponent {
        Register an update from the simulator.
        @param time The timestep of the update.
        @param changes The set of changes.
-     */
+    */
     protected void updateReceived(int time, ChangeSet changes) {
         synchronized (updates) {
             ChangeSet c = updates.get(time);
@@ -109,23 +110,31 @@ public class SimulatorProxy extends AbstractKernelComponent {
     private class SimulatorConnectionListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection connection, Message msg) {
-            if (msg instanceof SKUpdate) {
-                SKUpdate update = (SKUpdate)msg;
-                if (update.getSimulatorID() == id) {
-                    updateReceived(update.getTime(), update.getChangeSet());
+            Logger.pushLogContext(Kernel.KERNEL_LOG_CONTEXT);
+            try {
+                if (msg instanceof SKUpdate) {
+                    SKUpdate update = (SKUpdate)msg;
+                    if (update.getSimulatorID() == id) {
+                        updateReceived(update.getTime(), update.getChangeSet());
+                    }
+                }
+                if (msg instanceof EntityIDRequest) {
+                    EntityIDRequest req = (EntityIDRequest)msg;
+                    Logger.debug("Simulator proxy " + id + " received entity ID request: " + msg);
+                    if (req.getSimulatorID() == id) {
+                        int requestID = req.getRequestID();
+                        int count = req.getCount();
+                        List<EntityID> result = new ArrayList<EntityID>(count);
+                        for (int i = 0; i < count; ++i) {
+                            result.add(idGenerator.generateID());
+                        }
+                        Logger.debug("Simulator proxy " + id + " sending new IDs: " + result);
+                        send(new EntityIDResponse(id, requestID, result));
+                    }
                 }
             }
-            if (msg instanceof EntityIDRequest) {
-                EntityIDRequest req = (EntityIDRequest)msg;
-                if (req.getSimulatorID() == id) {
-                    int requestID = req.getRequestID();
-                    int count = req.getCount();
-                    List<EntityID> result = new ArrayList<EntityID>(count);
-                    for (int i = 0; i < count; ++i) {
-                        result.add(idGenerator.generateID());
-                    }
-                    send(new EntityIDResponse(id, requestID, result));
-                }
+            finally {
+                Logger.popLogContext();
             }
         }
     }

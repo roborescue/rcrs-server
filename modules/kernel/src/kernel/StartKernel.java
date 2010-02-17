@@ -42,15 +42,13 @@ import rescuecore2.misc.java.LoadableType;
 import rescuecore2.Constants;
 import rescuecore2.GUIComponent;
 import rescuecore2.log.LogException;
+import rescuecore2.log.Logger;
 import rescuecore2.score.ScoreFunction;
 
 import kernel.ui.KernelStartupPanel;
 import kernel.ui.KernelGUI;
 import kernel.ui.ScoreTable;
 import kernel.ui.ScoreGraph;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
    A class for launching the kernel.
@@ -82,8 +80,6 @@ public final class StartKernel {
     private static final String AGENT_REGISTRAR_KEY = "kernel.agents.registrar";
     private static final String GUI_COMPONENTS_KEY = "kernel.ui.components";
 
-    private static final Log LOG = LogFactory.getLog(StartKernel.class);
-
     /** Utility class: private constructor. */
     private StartKernel() {}
 
@@ -96,6 +92,7 @@ public final class StartKernel {
         boolean showStartupMenu = true;
         boolean showGUI = true;
         boolean autorun = false;
+        Logger.setLogContext("startup");
         try {
             args = CommandLineOptions.processArgs(args, config);
             int i = 0;
@@ -110,7 +107,7 @@ public final class StartKernel {
                     autorun = true;
                 }
                 else {
-                    LOG.warn("Unrecognised option: " + arg);
+                    Logger.warn("Unrecognised option: " + arg);
                 }
             }
             // Process jar files
@@ -121,21 +118,21 @@ public final class StartKernel {
                 MessageFactory factory = instantiateFactory(next, MessageFactory.class);
                 if (factory != null) {
                     localRegistry.registerMessageFactory(factory);
-                    LOG.info("Registered local message factory: " + next);
+                    Logger.info("Registered local message factory: " + next);
                 }
             }
             for (String next : config.getArrayValue(Constants.ENTITY_FACTORY_KEY, "")) {
                 EntityFactory factory = instantiateFactory(next, EntityFactory.class);
                 if (factory != null) {
                     localRegistry.registerEntityFactory(factory);
-                    LOG.info("Registered local entity factory: " + next);
+                    Logger.info("Registered local entity factory: " + next);
                 }
             }
             for (String next : config.getArrayValue(Constants.PROPERTY_FACTORY_KEY, "")) {
                 PropertyFactory factory = instantiateFactory(next, PropertyFactory.class);
                 if (factory != null) {
                     localRegistry.registerPropertyFactory(factory);
-                    LOG.info("Registered local property factory: " + next);
+                    Logger.info("Registered local property factory: " + next);
                 }
             }
 
@@ -189,19 +186,19 @@ public final class StartKernel {
             }
         }
         catch (ConfigException e) {
-            LOG.fatal("Couldn't start kernel", e);
+            Logger.fatal("Couldn't start kernel", e);
         }
         catch (KernelException e) {
-            LOG.fatal("Couldn't start kernel", e);
+            Logger.fatal("Couldn't start kernel", e);
         }
         catch (IOException e) {
-            LOG.fatal("Couldn't start kernel", e);
+            Logger.fatal("Couldn't start kernel", e);
         }
         catch (LogException e) {
-            LOG.fatal("Couldn't write log", e);
+            Logger.fatal("Couldn't write log", e);
         }
         catch (InterruptedException e) {
-            LOG.fatal("Kernel interrupted");
+            Logger.fatal("Kernel interrupted");
         }
     }
 
@@ -287,9 +284,9 @@ public final class StartKernel {
             timeoutThread.start();
         }
         // Wait at the latch until either everything is connected or the connection timeout expires
-        LOG.info("Waiting for all agents, simulators and viewers to connect.");
+        Logger.info("Waiting for all agents, simulators and viewers to connect.");
         if (timeout > -1) {
-            LOG.info("Connection timeout is " + timeout + "ms");
+            Logger.info("Connection timeout is " + timeout + "ms");
         }
         try {
             latch.await();
@@ -329,7 +326,7 @@ public final class StartKernel {
         ChainedCommandFilter result = new ChainedCommandFilter();
         List<String> classNames = config.getArrayValue(COMMAND_FILTERS_KEY, null);
         for (String next : classNames) {
-            LOG.debug("Command filter found: '" + next + "'");
+            Logger.debug("Command filter found: '" + next + "'");
             CommandFilter f = instantiate(next, CommandFilter.class);
             if (f != null) {
                 result.addFilter(f);
@@ -371,7 +368,7 @@ public final class StartKernel {
         List<GUIComponent> result = new ArrayList<GUIComponent>();
         List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY, null);
         for (String next : classNames) {
-            LOG.debug("GUI component found: '" + next + "'");
+            Logger.debug("GUI component found: '" + next + "'");
             GUIComponent c = instantiate(next, GUIComponent.class);
             if (c != null) {
                 result.add(c);
@@ -395,7 +392,7 @@ public final class StartKernel {
         processor.addConfigUpdater(GIS_LOADABLE_TYPE, config, KernelConstants.GIS_KEY);
         processor.addConfigUpdater(PERCEPTION_LOADABLE_TYPE, config, KernelConstants.PERCEPTION_KEY);
         processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config, KernelConstants.COMMUNICATION_MODEL_KEY);
-        LOG.info("Looking for gis, perception, communication, agent, simulator and viewer implementations");
+        Logger.info("Looking for gis, perception, communication, agent, simulator and viewer implementations");
         processor.process();
     }
 
@@ -414,38 +411,38 @@ public final class StartKernel {
             this.registry = registry;
             this.gui = gui;
             this.config = config;
-            LOG.debug("New ComponentStarter: " + className + " * " + count);
+            Logger.debug("New ComponentStarter: " + className + " * " + count);
         }
 
         public Void call() throws InterruptedException {
-            LOG.debug("ComponentStarter running: " + className + " * " + count);
+            Logger.debug("ComponentStarter running: " + className + " * " + count);
             Pair<Connection, Connection> connections = StreamConnection.createConnectionPair(registry);
             componentManager.newConnection(connections.first());
             ComponentLauncher launcher = new ComponentLauncher(connections.second(), config);
-            LOG.info("Launching " + count + " instances of component '" + className + "'...");
+            Logger.info("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
                 Component c = instantiate(className, Component.class);
                 if (c == null) {
                     break;
                 }
-                LOG.info("Launching " + className + " instance " + (i + 1) + "...");
+                Logger.info("Launching " + className + " instance " + (i + 1) + "...");
                 try {
                     c.initialise();
                     launcher.connect(c);
                     if (gui != null && c instanceof GUIComponent) {
                         gui.addGUIComponent((GUIComponent)c);
                     }
-                    LOG.info(className + "instance " + (i + 1) + " launched successfully");
+                    Logger.info(className + "instance " + (i + 1) + " launched successfully");
                 }
                 catch (ComponentConnectionException e) {
-                    LOG.info(className + "instance " + (i + 1) + " failed: " + e.getMessage());
+                    Logger.info(className + "instance " + (i + 1) + " failed: " + e.getMessage());
                     break;
                 }
                 catch (ComponentInitialisationException e) {
-                    LOG.info(className + "instance " + (i + 1) + " failed", e);
+                    Logger.info(className + "instance " + (i + 1) + " failed", e);
                 }
                 catch (ConnectionException e) {
-                    LOG.info(className + "instance " + (i + 1) + " failed", e);
+                    Logger.info(className + "instance " + (i + 1) + " failed", e);
                 }
             }
             return null;

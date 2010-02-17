@@ -31,15 +31,10 @@ import rescuecore2.config.Config;
 import rescuecore2.components.Component;
 import rescuecore2.misc.gui.ConfigTree;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A JPanel for displaying and editing kernel startup options.
 */
 public class KernelStartupPanel extends JPanel {
-    private static final Log LOG = LogFactory.getLog(KernelStartupPanel.class);
-
     private static final String AUTO_SUFFIX = ".auto";
 
     /**

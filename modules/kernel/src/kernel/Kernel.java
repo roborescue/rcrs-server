@@ -27,15 +27,14 @@ import rescuecore2.log.PerceptionRecord;
 import rescuecore2.log.CommandsRecord;
 import rescuecore2.log.UpdatesRecord;
 import rescuecore2.log.LogException;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    The Robocup Rescue kernel.
  */
 public class Kernel {
-    private static final Log LOG = LogFactory.getLog(Kernel.class);
+    /** The log context for kernel log messages. */
+    public static final String KERNEL_LOG_CONTEXT = "kernel";
 
     private Config config;
     private Perception perception;
@@ -82,61 +81,67 @@ public class Kernel {
                   TerminationCondition termination,
                   ScoreFunction score,
                   CommandCollector collector) throws KernelException {
-        this.config = config;
-        this.perception = perception;
-        this.communicationModel = communicationModel;
-        this.worldModel = worldModel;
-        this.commandFilter = commandFilter;
-        this.score = score;
-        this.termination = termination;
-        this.commandCollector = collector;
-        this.idGenerator = idGenerator;
-        listeners = new HashSet<KernelListener>();
-        agents = new HashSet<AgentProxy>();
-        sims = new HashSet<SimulatorProxy>();
-        viewers = new HashSet<ViewerProxy>();
-        time = 0;
         try {
-            String logName = config.getValue("kernel.logname");
-            LOG.info("Logging to " + logName);
-            File logFile = new File(logName);
-            if (logFile.getParentFile().mkdirs()) {
-                LOG.info("Created log directory: " + logFile.getParentFile().getAbsolutePath());
+            Logger.pushLogContext(KERNEL_LOG_CONTEXT);
+            this.config = config;
+            this.perception = perception;
+            this.communicationModel = communicationModel;
+            this.worldModel = worldModel;
+            this.commandFilter = commandFilter;
+            this.score = score;
+            this.termination = termination;
+            this.commandCollector = collector;
+            this.idGenerator = idGenerator;
+            listeners = new HashSet<KernelListener>();
+            agents = new HashSet<AgentProxy>();
+            sims = new HashSet<SimulatorProxy>();
+            viewers = new HashSet<ViewerProxy>();
+            time = 0;
+            try {
+                String logName = config.getValue("kernel.logname");
+                Logger.info("Logging to " + logName);
+                File logFile = new File(logName);
+                if (logFile.getParentFile().mkdirs()) {
+                    Logger.info("Created log directory: " + logFile.getParentFile().getAbsolutePath());
+                }
+                if (logFile.createNewFile()) {
+                    Logger.info("Created log file: " + logFile.getAbsolutePath());
+                }
+                log = new FileLogWriter(logFile);
+                log.writeRecord(new StartLogRecord());
+                log.writeRecord(new InitialConditionsRecord(worldModel));
+                log.writeRecord(new ConfigRecord(config));
             }
-            if (logFile.createNewFile()) {
-                LOG.info("Created log file: " + logFile.getAbsolutePath());
+            catch (IOException e) {
+                throw new KernelException("Couldn't open log file for writing", e);
             }
-            log = new FileLogWriter(logFile);
-            log.writeRecord(new StartLogRecord());
-            log.writeRecord(new InitialConditionsRecord(worldModel));
-            log.writeRecord(new ConfigRecord(config));
-        }
-        catch (IOException e) {
-            throw new KernelException("Couldn't open log file for writing", e);
-        }
-        catch (LogException e) {
-            throw new KernelException("Couldn't open log file for writing", e);
-        }
-        config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
-        config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
+            catch (LogException e) {
+                throw new KernelException("Couldn't open log file for writing", e);
+            }
+            config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
+            config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
 
-        // Initialise
-        perception.initialise(config, worldModel);
-        communicationModel.initialise(config, worldModel);
-        commandFilter.initialise(config);
-        score.initialise(worldModel, config);
-        termination.initialise(config);
-        commandCollector.initialise(config);
+            // Initialise
+            perception.initialise(config, worldModel);
+            communicationModel.initialise(config, worldModel);
+            commandFilter.initialise(config);
+            score.initialise(worldModel, config);
+            termination.initialise(config);
+            commandCollector.initialise(config);
 
-        isShutdown = false;
+            isShutdown = false;
 
-        LOG.info("Kernel initialised");
-        LOG.info("Perception module: " + perception);
-        LOG.info("Communication module: " + communicationModel);
-        LOG.info("Command filter: " + commandFilter);
-        LOG.info("Score function: " + score);
-        LOG.info("Termination condition: " + termination);
-        LOG.info("Command collector: " + collector);
+            Logger.info("Kernel initialised");
+            Logger.info("Perception module: " + perception);
+            Logger.info("Communication module: " + communicationModel);
+            Logger.info("Command filter: " + commandFilter);
+            Logger.info("Score function: " + score);
+            Logger.info("Termination condition: " + termination);
+            Logger.info("Command collector: " + collector);
+        }
+        finally {
+            Logger.popLogContext();
+        }
     }
 
     /**
@@ -307,57 +312,63 @@ public class Kernel {
        @throws LogException If there is a problem writing the log.
     */
     public void timestep() throws InterruptedException, KernelException, LogException {
-        synchronized (this) {
-            if (time == 0) {
-                fireStarted();
+        try {
+            Logger.pushLogContext(KERNEL_LOG_CONTEXT);
+            synchronized (this) {
+                if (time == 0) {
+                    fireStarted();
+                }
+                if (isShutdown) {
+                    return;
+                }
+                ++time;
+                // Work out what the agents can see and hear (using the commands from the previous timestep).
+                // Wait for new commands
+                // Send commands to simulators and wait for updates
+                // Collate updates and broadcast to simulators
+                // Send perception, commands and updates to viewers
+                Timestep nextTimestep = new Timestep(time);
+                Logger.info("Timestep " + time);
+                Logger.debug("Sending agent updates");
+                long start = System.currentTimeMillis();
+                sendAgentUpdates(nextTimestep, previousTimestep == null ? new HashSet<Command>() : previousTimestep.getCommands());
+                long perceptionTime = System.currentTimeMillis();
+                Logger.debug("Waiting for commands");
+                Collection<Command> commands = waitForCommands(time);
+                nextTimestep.setCommands(commands);
+                log.writeRecord(new CommandsRecord(time, commands));
+                long commandsTime = System.currentTimeMillis();
+                Logger.debug("Broadcasting commands");
+                ChangeSet changes = sendCommandsToSimulators(time, commands);
+                nextTimestep.setChangeSet(changes);
+                log.writeRecord(new UpdatesRecord(time, changes));
+                long updatesTime = System.currentTimeMillis();
+                // Merge updates into world model
+                worldModel.merge(changes);
+                long mergeTime = System.currentTimeMillis();
+                Logger.debug("Broadcasting updates");
+                sendUpdatesToSimulators(time, changes);
+                sendToViewers(nextTimestep);
+                long broadcastTime = System.currentTimeMillis();
+                Logger.debug("Computing score");
+                double s = score.score(worldModel, nextTimestep);
+                long scoreTime = System.currentTimeMillis();
+                nextTimestep.setScore(s);
+                Logger.info("Timestep " + time + " complete");
+                Logger.debug("Score: " + s);
+                Logger.debug("Perception took        : " + (perceptionTime - start) + "ms");
+                Logger.debug("Agent commands took    : " + (commandsTime - perceptionTime) + "ms");
+                Logger.debug("Simulator updates took : " + (updatesTime - commandsTime) + "ms");
+                Logger.debug("World model merge took : " + (mergeTime - updatesTime) + "ms");
+                Logger.debug("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
+                Logger.debug("Score calculation took : " + (scoreTime - broadcastTime) + "ms");
+                Logger.debug("Total time             : " + (scoreTime - start) + "ms");
+                fireTimestepCompleted(nextTimestep);
+                previousTimestep = nextTimestep;
             }
-            if (isShutdown) {
-                return;
-            }
-            ++time;
-            // Work out what the agents can see and hear (using the commands from the previous timestep).
-            // Wait for new commands
-            // Send commands to simulators and wait for updates
-            // Collate updates and broadcast to simulators
-            // Send perception, commands and updates to viewers
-            Timestep nextTimestep = new Timestep(time);
-            LOG.info("Timestep " + time);
-            LOG.debug("Sending agent updates");
-            long start = System.currentTimeMillis();
-            sendAgentUpdates(nextTimestep, previousTimestep == null ? new HashSet<Command>() : previousTimestep.getCommands());
-            long perceptionTime = System.currentTimeMillis();
-            LOG.debug("Waiting for commands");
-            Collection<Command> commands = waitForCommands(time);
-            nextTimestep.setCommands(commands);
-            log.writeRecord(new CommandsRecord(time, commands));
-            long commandsTime = System.currentTimeMillis();
-            LOG.debug("Broadcasting commands");
-            ChangeSet changes = sendCommandsToSimulators(time, commands);
-            nextTimestep.setChangeSet(changes);
-            log.writeRecord(new UpdatesRecord(time, changes));
-            long updatesTime = System.currentTimeMillis();
-            // Merge updates into world model
-            worldModel.merge(changes);
-            long mergeTime = System.currentTimeMillis();
-            LOG.debug("Broadcasting updates");
-            sendUpdatesToSimulators(time, changes);
-            sendToViewers(nextTimestep);
-            long broadcastTime = System.currentTimeMillis();
-            LOG.debug("Computing score");
-            double s = score.score(worldModel, nextTimestep);
-            long scoreTime = System.currentTimeMillis();
-            nextTimestep.setScore(s);
-            LOG.info("Timestep " + time + " complete");
-            LOG.debug("Score: " + s);
-            LOG.debug("Perception took        : " + (perceptionTime - start) + "ms");
-            LOG.debug("Agent commands took    : " + (commandsTime - perceptionTime) + "ms");
-            LOG.debug("Simulator updates took : " + (updatesTime - commandsTime) + "ms");
-            LOG.debug("World model merge took : " + (mergeTime - updatesTime) + "ms");
-            LOG.debug("Update broadcast took  : " + (broadcastTime - mergeTime) + "ms");
-            LOG.debug("Score calculation took : " + (scoreTime - broadcastTime) + "ms");
-            LOG.debug("Total time             : " + (scoreTime - start) + "ms");
-            fireTimestepCompleted(nextTimestep);
-            previousTimestep = nextTimestep;
+        }
+        finally {
+            Logger.popLogContext();
         }
     }
 
@@ -369,7 +380,7 @@ public class Kernel {
             if (isShutdown) {
                 return;
             }
-            LOG.info("Kernel is shutting down");
+            Logger.info("Kernel is shutting down");
             for (AgentProxy next : agents) {
                 next.shutdown();
             }
@@ -384,9 +395,9 @@ public class Kernel {
                 log.close();
             }
             catch (LogException e) {
-                LOG.error("Error closing log", e);
+                Logger.error("Error closing log", e);
             }
-            LOG.info("Kernel has shut down");
+            Logger.info("Kernel has shut down");
             isShutdown = true;
             fireShutdown();
         }
@@ -424,6 +435,7 @@ public class Kernel {
         // Wait until all simulators have sent updates
         ChangeSet result = new ChangeSet();
         for (SimulatorProxy next : sims) {
+            Logger.debug("Fetching updates from " + next);
             result.merge(next.getUpdates(timestep));
         }
         return result;

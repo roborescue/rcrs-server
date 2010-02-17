@@ -17,22 +17,18 @@ import rescuecore2.messages.control.GKConnectOK;
 import rescuecore2.messages.control.GKConnectError;
 import rescuecore2.messages.control.KGConnect;
 import rescuecore2.messages.control.KGAcknowledge;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A WorldModelCreator that talks to a remote GIS.
  */
 public class RemoteGISWorldModelCreator implements WorldModelCreator {
-    private static final Log LOG = LogFactory.getLog(RemoteGISWorldModelCreator.class);
-
     private static final String PORT_KEY = "gis.port";
     private int nextID;
 
     @Override
     public WorldModel<? extends Entity> buildWorldModel(Config config) throws KernelException {
-        LOG.info("Connecting to remote GIS...");
+        Logger.info("Connecting to remote GIS...");
         DefaultWorldModel<Entity> world = DefaultWorldModel.create();
         CountDownLatch latch = new CountDownLatch(1);
         int gisPort = config.getIntValue(PORT_KEY);
@@ -92,7 +88,7 @@ public class RemoteGISWorldModelCreator implements WorldModelCreator {
                     model.addEntities(((GKConnectOK)m).getEntities());
                     // Send an acknowledgement
                     c.sendMessage(new KGAcknowledge());
-                    LOG.info("GIS connected OK");
+                    Logger.info("GIS connected OK");
                     // Trigger the countdown latch
                     latch.countDown();
                     nextID = 0;
@@ -102,11 +98,11 @@ public class RemoteGISWorldModelCreator implements WorldModelCreator {
                     ++nextID;
                 }
                 catch (ConnectionException e) {
-                    LOG.error("RemoteGISWorldModelCreator.messageReceived", e);
+                    Logger.error("RemoteGISWorldModelCreator.messageReceived", e);
                 }
             }
             if (m instanceof GKConnectError) {
-                LOG.error("Error connecting to remote GIS: " + ((GKConnectError)m).getReason());
+                Logger.error("Error connecting to remote GIS: " + ((GKConnectError)m).getReason());
                 latch.countDown();
             }
         }

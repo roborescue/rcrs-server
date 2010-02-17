@@ -12,15 +12,10 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.collections.LazyMap;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    Abstract base class for communication models.
  */
 public abstract class AbstractCommunicationModel implements CommunicationModel {
-    private static final Log LOG = LogFactory.getLog(AbstractCommunicationModel.class);
-
     private Map<Entity, Set<Command>> hearing;
 
     /**

@@ -2,6 +2,7 @@ package kernel;
 
 import rescuecore2.config.Config;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.Set;
@@ -14,15 +15,10 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A CommandCollector that waits for any of a set of child CommandCollectors to return a result.
 */
 public class CompositeCommandCollector implements CommandCollector {
-    private static final Log LOG = LogFactory.getLog(CompositeCommandCollector.class);
-
     private Set<CommandCollector> children;
 
     /**
@@ -56,7 +52,7 @@ public class CompositeCommandCollector implements CommandCollector {
                     return service.take().get();
                 }
                 catch (ExecutionException e) {
-                    LOG.error("Error while getting agent commands", e);
+                    Logger.error("Error while getting agent commands", e);
                 }
             }
         }

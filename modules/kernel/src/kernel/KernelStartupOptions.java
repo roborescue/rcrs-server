@@ -15,16 +15,12 @@ import rescuecore2.components.Component;
 import rescuecore2.components.Simulator;
 import rescuecore2.components.Viewer;
 import rescuecore2.components.Agent;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    Container class for all kernel startup options.
 */
 public class KernelStartupOptions {
-    private static final Log LOG = LogFactory.getLog(KernelStartupOptions.class);
-
     private static final String AUTO_SUFFIX = ".auto";
 
     private List<WorldModelCreator> worldOptions;
@@ -233,11 +229,11 @@ public class KernelStartupOptions {
         List<T> instances = new ArrayList<T>();
         int index = 0;
         int selectedIndex = 0;
-        LOG.trace("Loading options: " + key);
+        Logger.trace("Loading options: " + key);
         List<String> classNames = config.getArrayValue(key);
         String auto = config.getValue(key + AUTO_SUFFIX, null);
         for (String next : classNames) {
-            LOG.trace("Option found: '" + next + "'");
+            Logger.trace("Option found: '" + next + "'");
             T t = instantiate(next, expectedClass);
             if (t != null) {
                 instances.add(t);
