@@ -27,16 +27,12 @@ import java.util.HashMap;
 import java.util.Collection;
 
 import rescuecore2.misc.Pair;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+//import rescuecore2.log.Logger;
 
 /**
    A MapFormat that can handle Robocup Rescue GML maps.
  */
 public final class RobocupFormat implements MapFormat {
-    private static final Log LOG = LogFactory.getLog(RobocupFormat.class);
-
     private static final String RCR_NAMESPACE_URI = "urn:roborescue:map:gml";
     private static final Namespace RCR_NAMESPACE = DocumentHelper.createNamespace("rcr", RCR_NAMESPACE_URI);
 
@@ -197,7 +193,7 @@ public final class RobocupFormat implements MapFormat {
             GMLCoordinates c = new GMLCoordinates(coordinates);
             GMLNode node = new GMLNode(id, c);
             result.addNode(node);
-            //            LOG.debug("Read node " + node);
+            //            Logger.debug("Read node " + node);
         }
     }
 
@@ -209,19 +205,19 @@ public final class RobocupFormat implements MapFormat {
             int endID = Integer.parseInt(((Attribute)EDGE_END_XPATH.evaluate(e)).getValue().substring(1));
             GMLEdge edge = new GMLEdge(id, result.getNode(startID), result.getNode(endID), false);
             result.addEdge(edge);
-            //            LOG.debug("Read edge " + edge);
+            //            Logger.debug("Read edge " + edge);
         }
     }
 
     private void readBuildings(Document doc, GMLMap result) {
-        //        LOG.debug("Reading buildings");
+        //        Logger.debug("Reading buildings");
         for (Object next : BUILDING_XPATH.selectNodes(doc)) {
             Element e = (Element)next;
-            //            LOG.debug("Next element: " + e);
+            //            Logger.debug("Next element: " + e);
             Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
-            //            LOG.debug("Read building: " + edges);
+            //            Logger.debug("Read building: " + edges);
             GMLBuilding b = new GMLBuilding(readID(e), edges.first(), edges.second());
-            //            LOG.debug("New building: " + b);
+            //            Logger.debug("New building: " + b);
             result.addBuilding(b);
         }
     }
@@ -247,10 +243,10 @@ public final class RobocupFormat implements MapFormat {
     private Pair<List<GMLDirectedEdge>, List<Integer>> readEdges(Element e, GMLMap map) {
         List<GMLDirectedEdge> edges = new ArrayList<GMLDirectedEdge>();
         List<Integer> neighbours = new ArrayList<Integer>();
-        //        LOG.debug("Reading edges");
+        //        Logger.debug("Reading edges");
         for (Object nextEdge : SHAPE_EDGE_XPATH.selectNodes(e)) {
             Element directedEdge = (Element)nextEdge;
-            //            LOG.debug("Next directed edge: " + directedEdge);
+            //            Logger.debug("Next directed edge: " + directedEdge);
             int nextID = Integer.parseInt(directedEdge.attributeValue(Common.XLINK_HREF_QNAME).substring(1));
             boolean forward = "+".equals(directedEdge.attributeValue(Common.GML_ORIENTATION_QNAME));
             GMLDirectedEdge dEdge = new GMLDirectedEdge(map.getEdge(nextID), forward);

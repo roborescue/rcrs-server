@@ -16,16 +16,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 import rescuecore2.misc.geometry.Line2D;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+//import rescuecore2.log.Logger;
 
 /**
    This step cleans the OpenStreetMap data by removing duplicate nodes and way, fixing degenerate ways, and fixing building edge orderings.
 */
 public class CleanOSMStep extends ConvertStep {
-    private static final Log LOG = LogFactory.getLog(CleanOSMStep.class);
-
     private TemporaryMap map;
 
     /**
@@ -79,7 +75,7 @@ public class CleanOSMStep extends ConvertStep {
                     // Remove the test node and replace all references to it with 'next'
                     osm.replaceNode(test, next);
                     removed.add(test);
-                    //                    LOG.debug("Removed duplicate node " + test.getID());
+                    //                    Logger.debug("Removed duplicate node " + test.getID());
                     ++count;
                 }
             }
@@ -107,7 +103,7 @@ public class CleanOSMStep extends ConvertStep {
                 if (next == last) {
                     // Duplicate node
                     it.remove();
-                    //                    LOG.debug("Removed node " + next + " from way " + way.getID());
+                    //                    Logger.debug("Removed node " + next + " from way " + way.getID());
                     fixed = true;
                 }
                 last = next;
@@ -142,7 +138,7 @@ public class CleanOSMStep extends ConvertStep {
                     remove(test);
                     removed.add(test);
                     ++count;
-                    //                    LOG.debug("Removed way " + test.getID());
+                    //                    Logger.debug("Removed way " + test.getID());
                 }
                 else {
                     Collections.reverse(testIDs);
@@ -150,7 +146,7 @@ public class CleanOSMStep extends ConvertStep {
                         remove(test);
                         removed.add(test);
                         ++count;
-                        //                        LOG.debug("Removed way " + test.getID());
+                        //                        Logger.debug("Removed way " + test.getID());
                     }
                 }
             }
@@ -168,7 +164,7 @@ public class CleanOSMStep extends ConvertStep {
         // If the total is +360 then order is clockwise, -360 means counterclockwise.
         int count = 0;
         for (OSMBuilding building : buildings) {
-            //            LOG.debug("Building " + building + " angle sum: " + ConvertTools.getAnglesSum(building, osm));
+            //            Logger.debug("Building " + building + " angle sum: " + ConvertTools.getAnglesSum(building, osm));
             if (ConvertTools.isClockwise(building, osm)) {
                 // Reverse the order
                 List<Long> ids = building.getNodeIDs();

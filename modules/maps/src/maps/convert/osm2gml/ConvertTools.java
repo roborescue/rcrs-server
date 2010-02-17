@@ -5,6 +5,7 @@ import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.gui.ShapeDebugFrame;
+//import rescuecore2.log.Logger;
 
 import maps.gml.GMLMap;
 import maps.gml.GMLMapViewer;
@@ -35,15 +36,10 @@ import java.util.Iterator;
 
 import java.awt.Color;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    Useful tools for converting OSM to GML.
  */
 public final class ConvertTools {
-    private static final Log LOG = LogFactory.getLog(ConvertTools.class);
-
     private static final Color BACKGROUND_BUILDING_COLOUR = new Color(0, 255, 0, 32); // Transparent lime
     private static final Color BACKGROUND_INTERSECTION_COLOUR = new Color(192, 192, 192, 32); // Transparent silver
     private static final Color BACKGROUND_ROAD_COLOUR = new Color(128, 128, 128, 32); // Transparent gray
@@ -397,7 +393,7 @@ public final class ConvertTools {
         while (it.hasNext()) {
             long c = it.next();
             double d = getAngle(a, b, c, map);
-            //            LOG.debug("Angle from " + a + ":" + b + ":" + c + " = " + d);
+            //            Logger.debug("Angle from " + a + ":" + b + ":" + c + " = " + d);
             if (!Double.isNaN(d)) {
                 sum += d;
             }
@@ -405,7 +401,7 @@ public final class ConvertTools {
             b = c;
         }
         double d = getAngle(a, first, second, map);
-        //        LOG.debug("Angle from " + a + ":" + first + ":" + second + " = " + d);
+        //        Logger.debug("Angle from " + a + ":" + first + ":" + second + " = " + d);
         if (!Double.isNaN(d)) {
             sum += d;
         }

@@ -8,15 +8,12 @@ import java.util.Collection;
 
 import maps.convert.ConvertStep;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    This step removes shapes that are duplicates or contained entirely inside another shape.
 */
 public class RemoveShapesStep extends ConvertStep {
-    private static final Log LOG = LogFactory.getLog(RemoveShapesStep.class);
-
     private TemporaryMap map;
 
     /**
@@ -43,13 +40,13 @@ public class RemoveShapesStep extends ConvertStep {
         setStatus("Removing duplicate shapes");
         int duplicateCount = 0;
         int interiorCount = 0;
-        LOG.debug("Removing building duplicates");
+        Logger.debug("Removing building duplicates");
         duplicateCount += removeDuplicates(map.getBuildings(), removed, allObjects);
-        LOG.debug("Removing intersection duplicates");
+        Logger.debug("Removing intersection duplicates");
         duplicateCount += removeDuplicates(map.getIntersections(), removed, allObjects);
-        LOG.debug("Removing road duplicates");
+        Logger.debug("Removing road duplicates");
         duplicateCount += removeDuplicates(map.getRoads(), removed, allObjects);
-        LOG.debug("Removing interior faces");
+        Logger.debug("Removing interior faces");
         setStatus("Removing interior faces");
         interiorCount += removeInterior(map.getRoads(), removed, allObjects);
         interiorCount += removeInterior(map.getIntersections(), removed, allObjects);
@@ -69,13 +66,13 @@ public class RemoveShapesStep extends ConvertStep {
     */
     private int removeDuplicates(Collection<? extends TemporaryObject> test, Set<TemporaryObject> removed, Collection<TemporaryObject> toCheck) {
         int count = 0;
-        LOG.debug(test.size() + " test objects, " + toCheck.size() + " to check, " + removed.size() + " already removed");
+        Logger.debug(test.size() + " test objects, " + toCheck.size() + " to check, " + removed.size() + " already removed");
         for (TemporaryObject first : test) {
             bumpProgress();
             if (removed.contains(first)) {
                 continue;
             }
-            LOG.debug("Next test object: " + first);
+            Logger.debug("Next test object: " + first);
             for (TemporaryObject second : toCheck) {
                 if (removed.contains(second)) {
                     continue;
@@ -83,12 +80,12 @@ public class RemoveShapesStep extends ConvertStep {
                 if (first == second) {
                     continue;
                 }
-                LOG.debug("Next check object: " + second);
+                Logger.debug("Next check object: " + second);
                 if (first.isDuplicate(second)) {
                     map.removeTemporaryObject(second);
                     removed.add(second);
                     ++count;
-                    LOG.debug("Removed duplicate object: " + second + " is same as " + first);
+                    Logger.debug("Removed duplicate object: " + second + " is same as " + first);
                 }
                 debug.show("Checking for duplicates",
                            new TemporaryObjectInfo(first, "First", Color.WHITE, Constants.TRANSPARENT_LIME),

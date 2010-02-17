@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import rescuecore2.misc.gui.ShapeDebugFrame;
+import rescuecore2.log.Logger;
 
 /**
    A step in the map conversion process.
@@ -119,25 +120,31 @@ public abstract class ConvertStep {
        Perform the conversion step.
     */
     public final void doStep() {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    progress.setIndeterminate(true);
-                }
-            });
-        step();
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    progress.setIndeterminate(false);
-                    progress.setValue(progress.getMaximum());
-                }
-            });
-        debug.deactivate();
+        try {
+            Logger.pushLogContext(getClass().getName());
+            SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        progress.setIndeterminate(true);
+                    }
+                });
+            step();
+            SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        progress.setIndeterminate(false);
+                        progress.setValue(progress.getMaximum());
+                    }
+                });
+            debug.deactivate();
+        }
+        finally {
+            Logger.popLogContext();
+        }
     }
 
     /**
        Get a user-friendly description of this step.
        @return A description string.
-     */
+    */
     public abstract String getDescription();
 
     /**

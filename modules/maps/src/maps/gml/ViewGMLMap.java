@@ -16,15 +16,12 @@ import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A GML map viewer.
 */
 public final class ViewGMLMap {
-    private static final Log LOG = LogFactory.getLog(ViewGMLMap.class);
-
     private static final int VIEWER_SIZE = 500;
 
     private ViewGMLMap() {
@@ -61,16 +58,16 @@ public final class ViewGMLMap {
     }
 
     private static GMLMap readGMLMap(String file) throws DocumentException, GMLException {
-        LOG.info("Reading GML file: " + file);
+        Logger.info("Reading GML file: " + file);
         SAXReader reader = new SAXReader();
         File f = new File(file);
         Document doc = reader.read(f);
-        LOG.debug("Guessing format");
+        Logger.debug("Guessing format");
         MapFormat format = guessFormat(doc);
         if (format == null) {
             throw new GMLException("Unrecognised format");
         }
-        LOG.debug("Parsing " + format.toString() + " format");
+        Logger.debug("Parsing " + format.toString() + " format");
         return format.read(doc);
     }
 

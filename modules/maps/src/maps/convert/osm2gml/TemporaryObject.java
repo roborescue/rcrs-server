@@ -17,19 +17,15 @@ import java.awt.geom.Area;
 import java.awt.Shape;
 
 import rescuecore2.misc.geometry.Point2D;
+//import rescuecore2.log.Logger;
 
 import maps.gml.GMLCoordinates;
 import maps.gml.GMLTools;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
    Abstract base class for temporary data structures during conversion.
 */
 public abstract class TemporaryObject {
-    private static final Log LOG = LogFactory.getLog(TemporaryObject.class);
-
     private List<DirectedEdge> edges;
     private Map<DirectedEdge, TemporaryObject> neighbours;
     private Path2D path;
@@ -192,8 +188,8 @@ public abstract class TemporaryObject {
        @param replacements The set of replacement edges. These can be in any order.
     */
     protected void replaceEdge(Edge edge, Collection<Edge> replacements) {
-        //        LOG.debug(this + " replacing edge " + edge + " with " + replacements);
-        //        LOG.debug("Old edge list: " + edges);
+        //        Logger.debug(this + " replacing edge " + edge + " with " + replacements);
+        //        Logger.debug("Old edge list: " + edges);
         if (replacements.isEmpty()) {
             // Just remove the edge
             for (Iterator<DirectedEdge> it = edges.iterator(); it.hasNext();) {
@@ -222,7 +218,7 @@ public abstract class TemporaryObject {
                 }
             }
         }
-        //        LOG.debug("New edge list: " + edges);
+        //        Logger.debug("New edge list: " + edges);
         bounds = null;
         path = null;
     }

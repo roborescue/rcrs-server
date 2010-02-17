@@ -8,15 +8,12 @@ import java.util.Collection;
 
 import maps.convert.ConvertStep;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    This step splits any shapes that overlap.
 */
 public class SplitShapesStep extends ConvertStep {
-    private static final Log LOG = LogFactory.getLog(SplitShapesStep.class);
-
     private TemporaryMap map;
 
     /**
@@ -50,13 +47,13 @@ public class SplitShapesStep extends ConvertStep {
         boolean firstShape = true;
         int newShapeCount = 0;
         //        debug.show("Splitting shapes", new TemporaryObjectInfo(shape, "Shape", Constants.BLACK, Constants.TRANSPARENT_ORANGE));
-        //        LOG.debug("Splitting shape " + shape);
-        //        LOG.debug("Edges: ");
+        //        Logger.debug("Splitting shape " + shape);
+        //        Logger.debug("Edges: ");
         //        for (DirectedEdge e : edgesRemaining) {
-        //            LOG.debug("  " + e);
+        //            Logger.debug("  " + e);
         //        }
         while (!edgesRemaining.isEmpty()) {
-            //            LOG.debug(edgesRemaining.size() + " edges remaining");
+            //            Logger.debug(edgesRemaining.size() + " edges remaining");
             DirectedEdge dEdge = edgesRemaining.iterator().next();
             edgesRemaining.remove(dEdge);
             Node start = dEdge.getStartNode();
@@ -64,18 +61,18 @@ public class SplitShapesStep extends ConvertStep {
             List<DirectedEdge> result = new ArrayList<DirectedEdge>();
             result.add(dEdge);
             // Now walk around
-            LOG.debug("Starting walk from " + dEdge);
-            LOG.debug("Start: " + start);
-            LOG.debug("End: " + end);
+            Logger.debug("Starting walk from " + dEdge);
+            Logger.debug("Start: " + start);
+            Logger.debug("End: " + end);
             while (!end.equals(start)) {
                 Set<Edge> candidates = map.getAttachedEdges(end);
-                //                LOG.debug("From edge: " + dEdge);
-                //                LOG.debug("Candidates: ");
+                //                Logger.debug("From edge: " + dEdge);
+                //                Logger.debug("Candidates: ");
                 //                for (Edge e : candidates) {
-                //                    LOG.debug("  " + e);
+                //                    Logger.debug("  " + e);
                 //                }
                 Edge turn = ConvertTools.findLeftTurn(dEdge, candidates);
-                LOG.debug("Best turn: " + turn);
+                Logger.debug("Best turn: " + turn);
                 DirectedEdge newDEdge = new DirectedEdge(turn, end);
                 //                debug.show("Splitting shapes",
                 //                           new TemporaryObjectInfo(shape, "Shape", Constants.BLACK, Constants.TRANSPARENT_ORANGE),
@@ -85,8 +82,8 @@ public class SplitShapesStep extends ConvertStep {
                 end = dEdge.getEndNode();
                 edgesRemaining.remove(dEdge);
                 result.add(dEdge);
-                LOG.debug("Added " + dEdge);
-                LOG.debug("New end: " + end);
+                Logger.debug("Added " + dEdge);
+                Logger.debug("New end: " + end);
             }
             if (!firstShape || !edgesRemaining.isEmpty()) {
                 // Didn't cover all edges so new shapes are needed.

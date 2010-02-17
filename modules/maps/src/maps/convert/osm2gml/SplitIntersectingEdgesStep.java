@@ -9,18 +9,14 @@ import java.util.HashSet;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
+//import rescuecore2.log.Logger;
 
 import maps.convert.ConvertStep;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
    This step splits any edges that intersect.
 */
 public class SplitIntersectingEdgesStep extends ConvertStep {
-    private static final Log LOG = LogFactory.getLog(SplitIntersectingEdgesStep.class);
-
     private TemporaryMap map;
     private int splitCount;
     private int inspectedCount;
@@ -60,7 +56,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
     private void check(Edge e) {
         if (!map.getAllEdges().contains(e)) {
-            //            LOG.debug("Skipped edge " + e);
+            //            Logger.debug("Skipped edge " + e);
             //            debug.show("Skipped edge", new EdgeShapeInfo(e, "Skipped edge", Color.BLUE, true, false));
             return;
         }
@@ -210,7 +206,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
             newEdges.addAll(e);
             ++splitCount;
             /*
-            LOG.debug("Split edge " + first);
+            Logger.debug("Split edge " + first);
             debug.show("Split first line",
                        new ShapeDebugFrame.Line2DShapeInfo(first.getLine(), "Line 1", Color.ORANGE, true, false),
                        new EdgeShapeInfo(e, "New edges", Color.WHITE, false, true),
@@ -224,7 +220,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
             newEdges.addAll(e);
             ++splitCount;
             /*
-            LOG.debug("Split edge " + second);
+            Logger.debug("Split edge " + second);
             debug.show("Split second line",
                        new ShapeDebugFrame.Line2DShapeInfo(second.getLine(), "Line 2", Color.BLUE, true, false),
                        new EdgeShapeInfo(e, "New edges", Color.WHITE, false, true),
@@ -234,12 +230,12 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         }
         //        if (splitFirst || splitSecond) {
             /*
-            LOG.debug("First line: " + first + " -> " + first.getLine());
-            LOG.debug("Second line: " + second + " -> " + second.getLine());
-            LOG.debug("Intersection: " + intersection);
-            LOG.debug("New edges");
+            Logger.debug("First line: " + first + " -> " + first.getLine());
+            Logger.debug("Second line: " + second + " -> " + second.getLine());
+            Logger.debug("Intersection: " + intersection);
+            Logger.debug("New edges");
             for (Edge next : newEdges) {
-                LOG.debug("  " + next + " -> " + next.getLine());
+                Logger.debug("  " + next + " -> " + next.getLine());
             }
             */
             //            debug.show("Split intersection",

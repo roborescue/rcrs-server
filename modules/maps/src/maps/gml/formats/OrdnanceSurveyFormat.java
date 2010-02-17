@@ -26,9 +26,7 @@ import java.util.StringTokenizer;
 import java.awt.Color;
 
 import rescuecore2.misc.gui.ShapeDebugFrame;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 // TO DO: Handle inner boundaries
 
@@ -36,8 +34,6 @@ import org.apache.commons.logging.Log;
    A MapFormat that can handle maps from the UK Ordnance Survey.
  */
 public final class OrdnanceSurveyFormat implements MapFormat {
-    private static final Log LOG = LogFactory.getLog(OrdnanceSurveyFormat.class);
-
     private static final String FEATURE_CODE_BUILDING = "10021";
     private static final String FEATURE_CODE_ROAD = "10172";
     private static final String FEATURE_CODE_FOOTPATH = "10183";
@@ -118,7 +114,7 @@ public final class OrdnanceSurveyFormat implements MapFormat {
 
     private void readBuildings(Document doc, GMLMap result) {
         for (Object next : BUILDING_XPATH.selectNodes(doc)) {
-            LOG.debug("Found building element: " + next);
+            Logger.debug("Found building element: " + next);
             Element e = (Element)next;
             //            String fid = e.attributeValue("fid");
             //            long id = Long.parseLong(fid.substring(FID_PREFIX_LENGTH)); // Strip off the 'osgb' prefix
@@ -133,7 +129,7 @@ public final class OrdnanceSurveyFormat implements MapFormat {
     private void readRoads(Document doc, GMLMap result) {
         debug.activate();
         for (Object next : ROAD_XPATH.selectNodes(doc)) {
-            LOG.debug("Found road element: " + next);
+            Logger.debug("Found road element: " + next);
             Element e = (Element)next;
             //            String fid = e.attributeValue("fid");
             //            long id = Long.parseLong(fid.substring(FID_PREFIX_LENGTH)); // Strip off the 'osgb' prefix
@@ -149,7 +145,7 @@ public final class OrdnanceSurveyFormat implements MapFormat {
     private void readSpaces(Document doc, GMLMap result) {
         /*
         for (Object next : SPACE_XPATH.selectNodes(doc)) {
-            LOG.debug("Found space element: " + next);
+            Logger.debug("Found space element: " + next);
             Element e = (Element)next;
             String fid = e.attributeValue("fid");
             long id = Long.parseLong(fid.substring(4)); // Strip off the 'osgb' prefix

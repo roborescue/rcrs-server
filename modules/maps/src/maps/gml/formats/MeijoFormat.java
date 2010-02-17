@@ -32,16 +32,12 @@ import java.util.Set;
 import java.util.HashSet;
 
 import rescuecore2.misc.Pair;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import rescuecore2.log.Logger;
 
 /**
    A MapFormat that can handle GML maps from Meijo University.
  */
 public final class MeijoFormat implements MapFormat {
-    private static final Log LOG = LogFactory.getLog(MeijoFormat.class);
-
     private static final String MEIJO_NAMESPACE_URI = "http://sakura.meijo-u.ac.jp/rcrs";
     private static final String GML_APP_NAMESPACE_URI = "http://www.opengis.net/app";
     private static final Namespace RCRS_NAMESPACE = DocumentHelper.createNamespace("rcrs", MEIJO_NAMESPACE_URI);
@@ -190,7 +186,7 @@ public final class MeijoFormat implements MapFormat {
             GMLCoordinates c = new GMLCoordinates(coordinates);
             GMLNode node = new GMLNode(id, c);
             result.addNode(node);
-            LOG.debug("Read node " + node);
+            Logger.debug("Read node " + node);
         }
     }
 
@@ -198,30 +194,30 @@ public final class MeijoFormat implements MapFormat {
         for (Object next : EDGE_XPATH.selectNodes(doc)) {
             Element e = (Element)next;
             int id = readID(e);
-            //            LOG.debug("Children: " + e.elements());
-            //            LOG.debug("Start: " + EDGE_START_XPATH.evaluate(e));
+            //            Logger.debug("Children: " + e.elements());
+            //            Logger.debug("Start: " + EDGE_START_XPATH.evaluate(e));
             int startID = Integer.parseInt(((Attribute)EDGE_START_XPATH.evaluate(e)).getValue().substring(1));
             int endID = Integer.parseInt(((Attribute)EDGE_END_XPATH.evaluate(e)).getValue().substring(1));
             GMLEdge edge = new GMLEdge(id, result.getNode(startID), result.getNode(endID), false);
             // Read the edge coordinates
             edge.setPoints(GMLTools.getCoordinatesList(((Element)EDGE_COORDINATES_XPATH.evaluate(e)).getText()));
             result.addEdge(edge);
-            LOG.debug("Read edge " + edge);
+            Logger.debug("Read edge " + edge);
         }
     }
 
     private void readFaces(Document doc, GMLMap result) {
-        //        LOG.debug("Reading buildings");
+        //        Logger.debug("Reading buildings");
         for (Object next : FACE_XPATH.selectNodes(doc)) {
-            //            LOG.debug("Reading " + next);
+            //            Logger.debug("Reading " + next);
             Element e = (Element)next;
             String type = e.attributeValue("type");
             Element gmlFace = e.element(Common.GML_FACE_QNAME);
             int id = readID(gmlFace);
-            //            LOG.debug("ID = " + id);
-            //            LOG.debug("Type = " + type);
+            //            Logger.debug("ID = " + id);
+            //            Logger.debug("Type = " + type);
             Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(gmlFace, result, id);
-            //            LOG.debug("Edges: " + edges);
+            //            Logger.debug("Edges: " + edges);
             GMLShape shape = null;
             if ("building".equals(type)) {
                 shape = new GMLBuilding(id, edges.first(), edges.second());
@@ -229,14 +225,14 @@ public final class MeijoFormat implements MapFormat {
             else {
                 shape = new GMLRoad(id, edges.first(), edges.second());
             }
-            //            LOG.debug("Computing coordinates");
+            //            Logger.debug("Computing coordinates");
             String coordsString = ((Element)FACE_COORDINATES_XPATH.evaluate(gmlFace)).getText();
-            //            LOG.debug("coordsString = " + coordsString);
+            //            Logger.debug("coordsString = " + coordsString);
             List<GMLCoordinates> coords = GMLTools.getCoordinatesList(coordsString);
-            //            LOG.debug("coords = " + coords);
+            //            Logger.debug("coords = " + coords);
             shape.setCoordinates(coords);
             result.add(shape);
-            LOG.debug("Read shape: " + shape);
+            Logger.debug("Read shape: " + shape);
         }
     }
 
@@ -244,19 +240,19 @@ public final class MeijoFormat implements MapFormat {
         List<GMLDirectedEdge> edges = new ArrayList<GMLDirectedEdge>();
         List<Integer> neighbours = new ArrayList<Integer>();
 
-        //        LOG.debug("Reading edges for face " + faceID);
+        //        Logger.debug("Reading edges for face " + faceID);
         for (Object next : e.elements(Common.GML_DIRECTED_EDGE_QNAME)) {
             Element dEdge = (Element)next;
             boolean passable = "+".equals(dEdge.attributeValue(Common.GML_ORIENTATION_QNAME));
             int edgeID = Integer.parseInt(dEdge.attributeValue(Common.XLINK_HREF_QNAME).substring(1));
-            //            LOG.debug("Edge ID: " + edgeID);
-            //            LOG.debug("Passable? " + passable);
+            //            Logger.debug("Edge ID: " + edgeID);
+            //            Logger.debug("Passable? " + passable);
             edges.add(new GMLDirectedEdge(map.getEdge(edgeID), true));
             XPath xpath = makeFaceNeighbourXPath(edgeID, faceID);
             //            FACE_NEIGHBOUR_XPATH_CONTEXT.setVariableValue("edgeid", String.valueOf(edgeID));
             //            FACE_NEIGHBOUR_XPATH_CONTEXT.setVariableValue("faceid", String.valueOf(faceID));
             Object o = xpath.evaluate(e);
-            //            LOG.debug("Neighbours: " + o);
+            //            Logger.debug("Neighbours: " + o);
             if (o == null) {
                 neighbours.add(null);
             }
@@ -267,10 +263,10 @@ public final class MeijoFormat implements MapFormat {
                 int neighbourID = Integer.parseInt(((Attribute)o).getValue().substring(1));
                 neighbours.add(neighbourID);
             }
-            //            LOG.debug("Edge list     : " + edges);
-            //            LOG.debug("Neighbour list: " + neighbours);
+            //            Logger.debug("Edge list     : " + edges);
+            //            Logger.debug("Neighbour list: " + neighbours);
         }
-        //        LOG.debug("Finished reading edges for face " + faceID);
+        //        Logger.debug("Finished reading edges for face " + faceID);
         return new Pair<List<GMLDirectedEdge>, List<Integer>>(edges, neighbours);
     }
 
@@ -280,7 +276,7 @@ public final class MeijoFormat implements MapFormat {
 
     private XPath makeFaceNeighbourXPath(int edgeID, int faceID) {
         String path = FACE_NEIGHBOUR_XPATH_STRING.replace("$edgeid", String.valueOf(edgeID)).replace("$faceid", String.valueOf(faceID));
-        //        LOG.debug("Neighbour XPath: " + path);
+        //        Logger.debug("Neighbour XPath: " + path);
         XPath result = DocumentHelper.createXPath(path);
         result.setNamespaceURIs(URIS);
         return result;
@@ -307,8 +303,8 @@ public final class MeijoFormat implements MapFormat {
                     replaceEdge(shape, edge, newEdges);
                 }
                 map.removeEdge(edge);
-                //                LOG.debug("Split " + edge);
-                //                LOG.debug("New edges: " + newEdges);
+                //                Logger.debug("Split " + edge);
+                //                Logger.debug("New edges: " + newEdges);
             }
         }
     }
@@ -354,12 +350,12 @@ public final class MeijoFormat implements MapFormat {
             //            Iterator<GMLDirectedEdge> it = shape.getEdges().iterator();
             GMLDirectedEdge edge = shape.getEdges().get(0);
             GMLNode start = edge.getEndNode();
-            //            LOG.debug("Reordering " + remaining.size() + " edges for " + shape);
-            //            LOG.debug("Original order");
+            //            Logger.debug("Reordering " + remaining.size() + " edges for " + shape);
+            //            Logger.debug("Original order");
             //            for (GMLDirectedEdge e : shape.getEdges()) {
             //                logEdge(e);
             //            }
-            //            LOG.debug("First edge");
+            //            Logger.debug("First edge");
             //            logEdge(edge);
             remaining.remove(edge);
             reordered.add(edge);
@@ -380,13 +376,13 @@ public final class MeijoFormat implements MapFormat {
                 if (edge == null) {
                     throw new RuntimeException("Failed to reorder edges: found discontinuity in shape outline");
                 }
-                //                LOG.debug("Next edge");
+                //                Logger.debug("Next edge");
                 //                logEdge(edge);
                 remaining.remove(edge);
                 reordered.add(edge);
                 start = edge.getEndNode();
             }
-            //            LOG.debug("Reordered");
+            //            Logger.debug("Reordered");
             //            for (GMLDirectedEdge e : reordered) {
             //                logEdge(e);
             //            }
@@ -395,7 +391,7 @@ public final class MeijoFormat implements MapFormat {
     }
 
     //    private void logEdge(GMLDirectedEdge e) {
-    //        LOG.debug(e.getEdge().getID() + ": " + e.getStartNode().getID() + " -> " + e.getEndNode().getID());
+    //        Logger.debug(e.getEdge().getID() + ": " + e.getStartNode().getID() + " -> " + e.getEndNode().getID());
     //    }
 
     private boolean closeEnough(GMLNode n1, GMLNode n2) {
