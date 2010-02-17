@@ -7,6 +7,7 @@ import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.control.KSCommands;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.components.StandardSimulator;
@@ -36,15 +37,10 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.SynchronousQueue;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    A rescuecore2 Simulator that wraps the ResQ Freiburg fire simulator.
  */
 public class FireSimulatorWrapper extends StandardSimulator {
-    private static final Log LOG = LogFactory.getLog(FireSimulatorWrapper.class);
-
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
 
     private Simulator sim;
@@ -60,11 +56,11 @@ public class FireSimulatorWrapper extends StandardSimulator {
             try {
                 String value = config.getValue(next);
                 Configuration.setProperty(next, value, true);
-                LOG.debug("Setting '" + next + "' to '" + value + "'");
+                Logger.debug("Setting '" + next + "' to '" + value + "'");
             }
             catch (NoSuchConfigOptionException e) {
                 // Ignore
-                LOG.debug("Ignoring property " + next);
+                Logger.debug("Ignoring property " + next);
             }
         }
         world = new World();
@@ -108,7 +104,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
                         // CHECKSTYLE:OFF:MagicNumber
                         if (fieryness == 0 || fieryness == 4) {
                             // CHECKSTYLE:ON:MagicNumber
-                            LOG.debug("Igniting " + b);
+                            Logger.debug("Igniting " + b);
                             b.ignite();
                         }
                     }
@@ -117,7 +113,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
                     mapHumanProperties((rescuecore2.standard.entities.Human)e, (MovingObject)r);
                 }
                 else {
-                    LOG.error("Don't know how to map " + r + " from " + e);
+                    Logger.error("Don't know how to map " + r + " from " + e);
                 }
             }
         }
@@ -141,10 +137,10 @@ public class FireSimulatorWrapper extends StandardSimulator {
             changes.merge(kernel.commandsReceived(c.getTime()));
         }
         catch (InterruptedException e) {
-            LOG.error("FireSimulatorWrapper.handleCommands", e);
+            Logger.error("FireSimulatorWrapper.handleCommands", e);
         }
         catch (BrokenBarrierException e) {
-            LOG.error("FireSimulatorWrapper.handleCommands", e);
+            Logger.error("FireSimulatorWrapper.handleCommands", e);
         }
         if (c.getTime() == 1) {
             // Set initial water quantity for all fire brigades
@@ -212,7 +208,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
         if (e instanceof rescuecore2.standard.entities.Blockade) {
             return null;
         }
-        LOG.error("Don't know how to map this: " + e);
+        Logger.error("Don't know how to map this: " + e);
         return null;
     }
 
