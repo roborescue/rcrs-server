@@ -39,13 +39,12 @@ import traffic3.objects.TrafficBlockade;
 
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.misc.gui.PanZoomListener;
+import rescuecore2.log.Logger;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
+/**
+   A GUI for watching the traffic simulator.
+*/
 public class TrafficSimulatorGUI extends JPanel {
-    private static final Log LOG = LogFactory.getLog(TrafficSimulatorGUI.class);
-
     private static final Color SELECTED_AREA_COLOUR = new Color(0, 0, 255, 128);
     private static final Color AREA_OUTLINE_COLOUR = new Color(0, 0, 0);
     private static final Color BLOCKADE_OUTLINE_COLOUR = new Color(0, 0, 0);
@@ -150,7 +149,7 @@ public class TrafficSimulatorGUI extends JPanel {
                 latch.await();
             }
             catch (InterruptedException e) {
-                LOG.error("Error waiting for continue", e);
+                Logger.error("Error waiting for continue", e);
             }
         }
     }

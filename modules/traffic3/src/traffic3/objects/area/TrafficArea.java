@@ -19,19 +19,16 @@ import traffic3.objects.area.event.TrafficAreaEvent;
 import org.util.xml.element.TagElement;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.log.Logger;
+
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.StandardWorldModel;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
  * Traffic area.
  */
 public class TrafficArea extends TrafficObject {
-    private static final Log LOG = LogFactory.getLog(TrafficArea.class);
-
     private String[] edgeIDs;
     private String type;
     private List<TrafficAreaListener> areaListenerList = new ArrayList<TrafficAreaListener>();
@@ -124,23 +121,23 @@ public class TrafficArea extends TrafficObject {
         try {
             List<TrafficAreaNode> nodeList = new ArrayList<TrafficAreaNode>();
             int apexesLength = xyList.length / 2;
-            LOG.debug("Creating traffic area " + id + " with " + apexesLength + " apexes");
-            LOG.debug("Neighbours: ");
+            Logger.debug("Creating traffic area " + id + " with " + apexesLength + " apexes");
+            Logger.debug("Neighbours: ");
             for (String next : nexts) {
-                LOG.debug("  " + next);
+                Logger.debug("  " + next);
             }
             for (int i = 0; i < apexesLength; i++) {
                 double x = xyList[i * 2];
                 double y = xyList[i * 2 + 1];
                 TrafficAreaNode node = worldManager.createAreaNode(x, y, 0);
                 nodeList.add(node);
-                LOG.debug("Node " + i + ": " + node);
+                Logger.debug("Node " + i + ": " + node);
             }
 
             String tmp = nexts[0];
             List<String> edgeIDList = new ArrayList<String>();
             for (int index = 0; index < nexts.length; ++index) {
-                LOG.debug("Processing edge " + index);
+                Logger.debug("Processing edge " + index);
                 String next = nexts[index];
                 TrafficAreaNode[] nodes = new TrafficAreaNode[2];
                 nodes[0] = nodeList.get(index);
@@ -149,12 +146,12 @@ public class TrafficArea extends TrafficObject {
 
                 TrafficEdge tEdge = new TrafficEdge(line, next != null);
                 edges.add(tEdge);
-                LOG.debug("Traffic edge: " + tEdge);
+                Logger.debug("Traffic edge: " + tEdge);
 
 
                 String eid = worldManager.getUniqueID("_");
                 //                TrafficAreaNode[] nodes = list.toArray(new TrafficAreaNode[0]);
-                //                LOG.debug("Node list: " + list);
+                //                Logger.debug("Node list: " + list);
                 TrafficAreaEdge edge = new TrafficAreaEdge(worldManager, eid, nodes);
                 if (next == null || "rcrs(-1)".equals(next)) {
                     edge.setAreaIDs(getID());
@@ -675,11 +672,11 @@ public class TrafficArea extends TrafficObject {
      */
     public Line2D[] getLines() {
         if (getLinesCACHE == null) {
-            LOG.debug(this + " computing edges");
+            Logger.debug(this + " computing edges");
             List<Line2D> lineList = new ArrayList<Line2D>();
-            LOG.debug(directedEdges.length + " directed edges");
+            Logger.debug(directedEdges.length + " directed edges");
             for (int i = 0; i < directedEdges.length; i++) {
-                LOG.debug("Next directed edge: " + directedEdges[i]);
+                Logger.debug("Next directed edge: " + directedEdges[i]);
                 //                if (directedEdges[i].getAreas().length < 2) {
                 for (Line2D line : directedEdges[i].getLines()) {
                     lineList.add(line);
@@ -691,9 +688,9 @@ public class TrafficArea extends TrafficObject {
                     lineList.add(line);
                 }
             }
-            LOG.debug("Lines");
+            Logger.debug("Lines");
             for (Line2D next : lineList) {
-                LOG.debug(next.getX1() + ", " + next.getY1() + " -> " + next.getX2() + ", " + next.getY2());
+                Logger.debug(next.getX1() + ", " + next.getY1() + " -> " + next.getX2() + ", " + next.getY2());
             }
             getLinesCACHE = lineList.toArray(new Line2D[0]);
         }

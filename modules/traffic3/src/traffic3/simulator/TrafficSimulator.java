@@ -17,14 +17,12 @@ import traffic3.objects.TrafficAgent;
 import traffic3.objects.TrafficBlockade;
 
 import rescuecore2.GUIComponent;
-
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
-
 import rescuecore2.messages.Command;
-
 import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.control.KSCommands;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
@@ -43,15 +41,10 @@ import rescuecore2.standard.components.StandardSimulator;
 import org.uncommons.maths.random.GaussianGenerator;
 import org.uncommons.maths.number.NumberGenerator;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
 /**
    The Area model traffic simulator.
  */
 public class TrafficSimulator extends StandardSimulator implements GUIComponent {
-    private static final Log LOG = LogFactory.getLog(TrafficSimulator.class);
-
     private static final double STEP_TIME_MS = 100; // 100ms
     private static final double REAL_TIME = 60;
     private static final int MICROSTEPS = (int)((1000.0 / STEP_TIME_MS) * REAL_TIME);
@@ -119,7 +112,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             worldManager.notifyInputted(this);
         }
         catch (WorldManagerException e) {
-            LOG.error("Error starting traffic simulator", e);
+            Logger.error("Error starting traffic simulator", e);
         }
         gui.initialise();
     }
@@ -132,7 +125,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
                     handleMove((AKMove)next);
                 }
                 catch (WorldManagerException e) {
-                    LOG.error("Error processing move", e);
+                    Logger.error("Error processing move", e);
                 }
             }
         }
@@ -152,7 +145,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             if (location != null) {
                 String id = location.getID();
                 human.setPosition(new EntityID(Integer.parseInt(id.substring(5, id.indexOf(")")))));
-                //                LOG.debug(human + " new position: " + human.getPosition());
+                //                Logger.debug(human + " new position: " + human.getPosition());
                 changes.addChange(human, human.getPositionProperty());
             }
             human.setX((int)x);
@@ -172,15 +165,15 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     }
 
     private void convertAreaToTrafficArea(Area area) throws WorldManagerException {
-        LOG.debug("Converting area to traffic area");
-        LOG.debug(area.getFullDescription());
+        Logger.debug("Converting area to traffic area");
+        Logger.debug(area.getFullDescription());
         List<Edge> edges = area.getEdges();
         String[] neighbourText = new String[edges.size()];
         for (int i = 0; i < neighbourText.length; i++) {
             EntityID n = edges.get(i).getNeighbour();
             if (n != null) {
                 neighbourText[i] = "rcrs(" + n + ")";
-                LOG.debug("Neighbour " + i + ": " + neighbourText[i]);
+                Logger.debug("Neighbour " + i + ": " + neighbourText[i]);
             }
         }
         double cx = area.getX();
@@ -259,14 +252,14 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         double cy = trafficArea.getCenterY();
         double cz = 0;
         agent.setDestination(worldManager.createAreaNode(cx, cy, cz));
-        LOG.debug("Agent " + agent + " destination set: " + cx + ", " + cy);
+        Logger.debug("Agent " + agent + " destination set: " + cx + ", " + cy);
     }
 
     private void timestep() {
         for (TrafficAgent agent : worldManager.getAgentList()) {
             agent.clearPositionHistory();
         }
-        LOG.debug("Running " + MICROSTEPS + " microsteps");
+        Logger.debug("Running " + MICROSTEPS + " microsteps");
         for (int i = 0; i < MICROSTEPS; i++) {
             microstep();
         }
