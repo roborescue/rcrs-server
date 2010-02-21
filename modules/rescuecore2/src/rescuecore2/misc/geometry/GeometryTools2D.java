@@ -294,6 +294,37 @@ public final class GeometryTools2D {
     }
 
     /**
+       Convert a list of Point2D objects to a list of lines connecting adjacent points. The shape will not be automatically closed.
+       @param points The points to connect.
+       @return A list of Line2D objects.
+    */
+    public static List<Line2D> pointsToLines(List<Point2D> points) {
+        return pointsToLines(points, false);
+    }
+
+    /**
+       Convert a list of Point2D objects to a list of lines connecting adjacent points.
+       @param points The points to connect.
+       @param close Whether to close the shape or not.
+       @return A list of Line2D objects.
+    */
+    public static List<Line2D> pointsToLines(List<Point2D> points, boolean close) {
+        List<Line2D> result = new ArrayList<Line2D>();
+        Iterator<Point2D> it = points.iterator();
+        Point2D first = it.next();
+        Point2D prev = first;
+        while (it.hasNext()) {
+            Point2D next = it.next();
+            result.add(new Line2D(prev, next));
+            prev = next;
+        }
+        if (close && !prev.equals(first)) {
+            result.add(new Line2D(prev, first));
+        }
+        return result;
+    }
+
+    /**
        Find the closest point on a line.
        @param line The line to check.
        @param point The point to check against.
@@ -315,7 +346,7 @@ public final class GeometryTools2D {
     public static Point2D getClosestPointOnSegment(Line2D line, Point2D point) {
         Point2D p1 = line.getOrigin();
         Point2D p2 = line.getEndPoint();
-        double u = (((point.getX() - p1.getX()) * (p2.getX() - p1.getX())) + ((point.getY() - p1.getY()) * (p2.getY() - p1.getY()))) / (line.getDirection().getLength()* line.getDirection().getLength());
+        double u = (((point.getX() - p1.getX()) * (p2.getX() - p1.getX())) + ((point.getY() - p1.getY()) * (p2.getY() - p1.getY()))) / (line.getDirection().getLength() * line.getDirection().getLength());
         if (u <= 0) {
             return p1;
         }
@@ -323,6 +354,16 @@ public final class GeometryTools2D {
             return p2;
         }
         return line.getPoint(u);
+    }
+
+    /**
+       Compute the distance between two points.
+       @param p1 The first point.
+       @param p2 The second point.
+       @return The distance between the two points.
+    */
+    public static double getDistance(Point2D p1, Point2D p2) {
+        return Math.hypot(p1.getX() - p2.getX(), p1.getY() - p2.getY());
     }
 
     private static double computeAreaUnsigned(List<Point2D> vertices) {
