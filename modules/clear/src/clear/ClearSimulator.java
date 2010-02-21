@@ -5,6 +5,9 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSCommands;
 import rescuecore2.log.Logger;
+import rescuecore2.misc.geometry.GeometryTools2D;
+import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Point2D;
 
 import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.Area;
@@ -25,6 +28,7 @@ public class ClearSimulator extends StandardSimulator {
     private static final String SIMULATOR_NAME = "Area model clear simulator";
 
     private static final String REPAIR_RATE_KEY = "clear.repair.rate";
+    private static final String REPAIR_DISTANCE_KEY = "clear.repair.distance";
 
     @Override
     public String getName() {
@@ -139,16 +143,15 @@ public class ClearSimulator extends StandardSimulator {
             return false;
         }
         // Check location
-        EntityID agentPositionID = agentPosition.getID();
-        EntityID targetPositionID = targetBlockade.getPosition();
-        // Same position?
-        if (agentPositionID.equals(targetPositionID)) {
-            return true;
-        }
-        // Neighbouring location?
-        Area targetArea = (Area)model.getEntity(targetPositionID);
-        if (targetArea.getNeighbours().contains(agentPositionID)) {
-            return true;
+        // Find the closest point on the blockade to the agent
+        int range = config.getIntValue(REPAIR_DISTANCE_KEY);
+        Point2D agentLocation = new Point2D(police.getX(), police.getY());
+        for (Line2D line : GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(targetBlockade.getApexes()), true)) {
+            Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, agentLocation);
+            double distance = GeometryTools2D.getDistance(agentLocation, closest);
+            if (distance < range) {
+                return true;
+            }
         }
         Logger.info("Rejecting clear command " + clear + ": agent is not adjacent to target");
         return false;
