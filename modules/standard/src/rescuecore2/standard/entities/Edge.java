@@ -97,7 +97,7 @@ public class Edge {
     public Point2D getStart() {
         return start;
     }
- 
+
     /**
        Get the end point.
        @return The end point.

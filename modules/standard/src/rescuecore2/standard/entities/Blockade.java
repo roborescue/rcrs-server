@@ -3,11 +3,15 @@ package rescuecore2.standard.entities;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.Pair;
+
+import java.awt.Shape;
+import java.awt.Polygon;
 
 /**
    A blockade.
@@ -18,6 +22,8 @@ public class Blockade extends StandardEntity {
     private EntityRefProperty position;
     private IntArrayProperty apexes;
     private IntProperty repairCost;
+
+    private Shape shape;
 
     /**
        Construct a Blockade object with entirely undefined property values.
@@ -31,6 +37,8 @@ public class Blockade extends StandardEntity {
         apexes = new IntArrayProperty(StandardPropertyURN.APEXES);
         repairCost = new IntProperty(StandardPropertyURN.REPAIR_COST);
         registerProperties(x, y, position, apexes, repairCost);
+        shape = null;
+        addEntityListener(new ApexesListener());
     }
 
     /**
@@ -45,6 +53,8 @@ public class Blockade extends StandardEntity {
         apexes = new IntArrayProperty(other.apexes);
         repairCost = new IntProperty(other.repairCost);
         registerProperties(x, y, position, apexes, repairCost);
+        shape = null;
+        addEntityListener(new ApexesListener());
     }
 
     @Override
@@ -282,5 +292,33 @@ public class Blockade extends StandardEntity {
     */
     public void undefineRepairCost() {
         repairCost.undefine();
+    }
+
+    /**
+       Get this area as a Java Shape object.
+       @return A Shape describing this area.
+    */
+    public Shape getShape() {
+        if (shape == null) {
+            int[] allApexes = getApexes();
+            int count = allApexes.length / 2;
+            int[] xs = new int[count];
+            int[] ys = new int[count];
+            for (int i = 0; i < count; ++i) {
+                xs[i] = allApexes[i * 2];
+                ys[i] = allApexes[i * 2 + 1];
+            }
+            shape = new Polygon(xs, ys, count);
+        }
+        return shape;
+    }
+
+    private class ApexesListener implements EntityListener {
+        @Override
+        public void propertyChanged(Entity e, Property p, Object oldValue, Object newValue) {
+            if (p == apexes) {
+                shape = null;
+            }
+        }
     }
 }

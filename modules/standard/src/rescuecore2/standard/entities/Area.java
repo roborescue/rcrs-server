@@ -1,11 +1,13 @@
 package rescuecore2.standard.entities;
 
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.Pair;
-import rescuecore2.worldmodel.Property;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -22,10 +24,14 @@ public abstract class Area extends StandardEntity {
     private EdgeListProperty edges;
     private EntityRefListProperty blockades;
 
+    private Shape shape;
+    private int[] apexList;
+    private List<EntityID> neighbours;
+
     /**
        Construct a subclass of Area with entirely undefined property values.
        @param id The ID of this entity.
-     */
+    */
     protected Area(EntityID id) {
         super(id);
         x = new IntProperty(StandardPropertyURN.X);
@@ -33,12 +39,16 @@ public abstract class Area extends StandardEntity {
         edges = new EdgeListProperty(StandardPropertyURN.EDGES);
         blockades = new EntityRefListProperty(StandardPropertyURN.BLOCKADES);
         registerProperties(x, y, edges, blockades);
+        shape = null;
+        apexList = null;
+        neighbours = null;
+        addEntityListener(new EdgesListener());
     }
 
     /**
        Area copy constructor.
        @param other The Area to copy.
-     */
+    */
     protected Area(Area other) {
         super(other);
         x = new IntProperty(other.x);
@@ -46,6 +56,10 @@ public abstract class Area extends StandardEntity {
         edges = new EdgeListProperty(other.edges);
         blockades = new EntityRefListProperty(other.blockades);
         registerProperties(x, y, edges, blockades);
+        shape = null;
+        apexList = null;
+        neighbours = null;
+        addEntityListener(new EdgesListener());
     }
 
     @Override
@@ -79,7 +93,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the X property.
        @return The X property.
-     */
+    */
     public IntProperty getXProperty() {
         return x;
     }
@@ -87,7 +101,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the X coordinate.
        @return The X coordinate.
-     */
+    */
     public int getX() {
         return x.getValue();
     }
@@ -103,7 +117,7 @@ public abstract class Area extends StandardEntity {
     /**
        Find out if the X property has been defined.
        @return True if the X property has been defined, false otherwise.
-     */
+    */
     public boolean isXDefined() {
         return x.isDefined();
     }
@@ -118,7 +132,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the Y property.
        @return The Y property.
-     */
+    */
     public IntProperty getYProperty() {
         return y;
     }
@@ -126,7 +140,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the Y coordinate.
        @return The Y coordinate.
-     */
+    */
     public int getY() {
         return y.getValue();
     }
@@ -142,7 +156,7 @@ public abstract class Area extends StandardEntity {
     /**
        Find out if the Y property has been defined.
        @return True if the Y property has been defined, false otherwise.
-     */
+    */
     public boolean isYDefined() {
         return y.isDefined();
     }
@@ -157,7 +171,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the edges property.
        @return The edges property.
-     */
+    */
     public EdgeListProperty getEdgesProperty() {
         return edges;
     }
@@ -165,7 +179,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the edges of this area.
        @return The edges.
-     */
+    */
     public List<Edge> getEdges() {
         return edges.getValue();
     }
@@ -181,7 +195,7 @@ public abstract class Area extends StandardEntity {
     /**
        Find out if the edges property has been defined.
        @return True if the edges property has been defined, false otherwise.
-     */
+    */
     public boolean isEdgesDefined() {
         return edges.isDefined();
     }
@@ -196,7 +210,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the blockades property.
        @return The blockades property.
-     */
+    */
     public EntityRefListProperty getBlockadesProperty() {
         return blockades;
     }
@@ -204,7 +218,7 @@ public abstract class Area extends StandardEntity {
     /**
        Get the blockades in this area.
        @return The blockades.
-     */
+    */
     public List<EntityID> getBlockades() {
         return blockades.getValue();
     }
@@ -220,7 +234,7 @@ public abstract class Area extends StandardEntity {
     /**
        Find out if the blockades property has been defined.
        @return True if the blockades property has been defined, false otherwise.
-     */
+    */
     public boolean isBlockadesDefined() {
         return blockades.isDefined();
     }
@@ -235,15 +249,17 @@ public abstract class Area extends StandardEntity {
     /**
        Get the neighbours of this area.
        @return The neighbours.
-     */
+    */
     public List<EntityID> getNeighbours() {
-        List<EntityID> result = new ArrayList<EntityID>();
-        for (Edge next : edges.getValue()) {
-            if (next.isPassable()) {
-                result.add(next.getNeighbour());
+        if (neighbours == null) {
+            neighbours = new ArrayList<EntityID>();
+            for (Edge next : edges.getValue()) {
+                if (next.isPassable()) {
+                    neighbours.add(next.getNeighbour());
+                }
             }
         }
-        return result;
+        return neighbours;
     }
 
     /**
@@ -251,14 +267,16 @@ public abstract class Area extends StandardEntity {
        @return The list of apexes.
     */
     public int[] getApexList() {
-        List<Edge> e = getEdges();
-        int[] apexes = new int[e.size() * 2];
-        int i = 0;
-        for (Edge next : e) {
-            apexes[i++] = next.getStartX();
-            apexes[i++] = next.getStartY();
+        if (apexList == null) {
+            List<Edge> e = getEdges();
+            apexList = new int[e.size() * 2];
+            int i = 0;
+            for (Edge next : e) {
+                apexList[i++] = next.getStartX();
+                apexList[i++] = next.getStartY();
+            }
         }
-        return apexes;
+        return apexList;
     }
 
     /**
@@ -266,14 +284,28 @@ public abstract class Area extends StandardEntity {
        @return A Shape describing this area.
     */
     public Shape getShape() {
-        int[] apexes = getApexList();
-        int count = apexes.length / 2;
-        int[] xs = new int[count];
-        int[] ys = new int[count];
-        for (int i = 0; i < count; ++i) {
-            xs[i] = apexes[i * 2];
-            ys[i] = apexes[i * 2 + 1];
+        if (shape == null) {
+            int[] apexes = getApexList();
+            int count = apexes.length / 2;
+            int[] xs = new int[count];
+            int[] ys = new int[count];
+            for (int i = 0; i < count; ++i) {
+                xs[i] = apexes[i * 2];
+                ys[i] = apexes[i * 2 + 1];
+            }
+            shape = new Polygon(xs, ys, count);
         }
-        return new Polygon(xs, ys, count);
+        return shape;
+    }
+
+    private class EdgesListener implements EntityListener {
+        @Override
+        public void propertyChanged(Entity e, Property p, Object oldValue, Object newValue) {
+            if (p == edges) {
+                shape = null;
+                apexList = null;
+                neighbours = null;
+            }
+        }
     }
 }
