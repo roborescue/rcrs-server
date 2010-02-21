@@ -49,6 +49,7 @@ import java.util.Arrays;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
+//import rescuecore2.log.Logger;
 
 /**
    A JFrame that can be used to debug geometric shape operations. When {@link #enable enabled} this frame will block whenever a show method is called until the user clicks on a button to continue. The "step" button will cause the show method to return and leave the frame visible and activated. The "continue" button will hide and {@link #deactivate} the frame so that further calls to show will return immediately.
@@ -349,6 +350,7 @@ public class ShapeDebugFrame extends JFrame {
             int width = getWidth() - insets.left - insets.right;
             int height = getHeight() - insets.top - insets.bottom;
             transform.rescale(width, height);
+            //            Logger.debug("View bounds: " + transform.getViewBounds());
             for (ShapeInfo next : shapes) {
                 boolean visible = transform.isInView(next.getBoundsShape()) || transform.isInView(next.getBoundsPoint());
                 if (visible) {
@@ -361,7 +363,8 @@ public class ShapeDebugFrame extends JFrame {
                 //                else {
                     //                    Logger.debug("Pruned " + next);
                     //                    Logger.debug("Shape bounds: " + next.getBoundsShape());
-                //                }
+                    //                    Logger.debug("Point bounds: " + next.getBoundsPoint());
+                    //                }
             }
             if (backgroundEnabled) {
                 for (ShapeInfo next : background) {
@@ -700,6 +703,7 @@ public class ShapeDebugFrame extends JFrame {
                 g.drawLine(x - SIZE, y - SIZE, x + SIZE, y + SIZE);
                 g.drawLine(x - SIZE, y + SIZE, x + SIZE, y - SIZE);
             }
+            //            Logger.debug("Painting point " + name + " (" + point + ") at " + x + ", " + y);
             return new Rectangle(x - SIZE, y - SIZE, SIZE * 2, SIZE * 2);
         }
 
@@ -828,6 +832,7 @@ public class ShapeDebugFrame extends JFrame {
                 }
                 result.moveTo(x1, y1);
                 result.lineTo(x2, y2);
+                //                Logger.debug("Painting line " + name + " (" + line + ") from " + x1 + ", " + y1 + " -> " + x2 + ", " + y2);
             }
             return g.getStroke().createStrokedShape(result);
         }
