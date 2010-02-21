@@ -1,6 +1,7 @@
 package rescuecore2.standard.entities;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.EnumMap;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.Shape;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
@@ -37,7 +40,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     private int maxX;
     private int minY;
     private int maxY;
-    private List<List<Collection<StandardEntity>>> grid;
+    private List<List<Cell>> grid;
     private int gridWidth;
     private int gridHeight;
     private boolean indexed;
@@ -142,20 +145,37 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         Logger.trace("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
         gridWidth = 1 + (int)Math.ceil(width / (double)meshSize);
         gridHeight = 1 + (int)Math.ceil(height / (double)meshSize);
-        grid = new ArrayList<List<Collection<StandardEntity>>>(gridWidth);
+        grid = new ArrayList<List<Cell>>(gridWidth);
         Logger.trace("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
         for (int i = 0; i < gridWidth; ++i) {
-            List<Collection<StandardEntity>> list = new ArrayList<Collection<StandardEntity>>(gridHeight);
+            List<Cell> list = new ArrayList<Cell>(gridHeight);
             grid.add(list);
             for (int j = 0; j < gridHeight; ++j) {
-                list.add(new HashSet<StandardEntity>());
+                Cell cell = new Cell(minX + (i * meshSize), minY + (j * meshSize), meshSize, meshSize);
+                list.add(cell);
             }
         }
         for (StandardEntity next : staticEntities) {
-            location = next.getLocation(this);
-            if (location != null) {
-                Collection<StandardEntity> cell = getCell(getXCell(location.first().intValue()), getYCell(location.second().intValue()));
-                cell.add(next);
+            // Find all cells this entity covers
+            if (next instanceof Area) {
+                Logger.debug("Finding cells covered by " + next);
+                for (Cell cell : getCellsCoveredBy(((Area)next).getShape())) {
+                    cell.add(next);
+                }
+            }
+            else if (next instanceof Blockade) {
+                Logger.debug("Finding cells covered by " + next);
+                for (Cell cell : getCellsCoveredBy(((Blockade)next).getShape())) {
+                    cell.add(next);
+                }
+            }
+            else {
+                Logger.debug("Finding cell for " + next);
+                location = next.getLocation(this);
+                if (location != null) {
+                    Cell cell = getCell(getXCell(location.first()), getYCell(location.second()));
+                    cell.add(next);
+                }
             }
         }
         int biggest = 0;
@@ -194,46 +214,60 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         int cellX = getXCell(x);
         int cellY = getYCell(y);
         int cellRange = range / meshSize;
+        Shape visibleRange = new Ellipse2D.Double(x - range, y - range, range * 2, range * 2);
         for (int i = Math.max(0, cellX - cellRange); i <= Math.min(gridWidth - 1, cellX + cellRange); ++i) {
             for (int j = Math.max(0, cellY - cellRange); j <= Math.min(gridHeight - 1, cellY + cellRange); ++j) {
-                Collection<StandardEntity> cell = getCell(i, j);
-                for (StandardEntity next : cell) {
-                    Pair<Integer, Integer> location = next.getLocation(this);
-                    if (location != null) {
-                        int targetX = location.first().intValue();
-                        int targetY = location.second().intValue();
-                        int distance = distance(x, y, targetX, targetY);
-                        if (distance <= range) {
-                            result.add(next);
-                        }
+                Cell cell = getCell(i, j);
+                for (StandardEntity next : cell.getEntities()) {
+                    if (isInside(next, visibleRange)) {
+                        result.add(next);
                     }
                 }
             }
         }
         // Now do mobile and unindexed entities
         for (StandardEntity next : mobileEntities) {
-            Pair<Integer, Integer> location = next.getLocation(this);
-            if (location != null) {
-                int targetX = location.first().intValue();
-                int targetY = location.second().intValue();
-                int distance = distance(x, y, targetX, targetY);
-                if (distance <= range) {
-                    result.add(next);
-                }
+            if (isInside(next, visibleRange)) {
+                result.add(next);
             }
         }
         for (StandardEntity next : unindexedEntities) {
-            Pair<Integer, Integer> location = next.getLocation(this);
-            if (location != null) {
-                int targetX = location.first().intValue();
-                int targetY = location.second().intValue();
-                int distance = distance(x, y, targetX, targetY);
-                if (distance <= range) {
-                    result.add(next);
-                }
+            if (isInside(next, visibleRange)) {
+                result.add(next);
             }
         }
         return result;
+    }
+
+    /**
+       Find out if any part of an entity is inside a shape.
+       @param entity The entity to check.
+       @param shape The shape to check.
+       @return true if any part of the entity is inside the shape.
+    */
+    private boolean isInside(StandardEntity entity, Shape shape) {
+        // If this is an area then check for intersection with the range ellipse
+        if (entity instanceof Area) {
+            java.awt.geom.Area area = new java.awt.geom.Area(shape);
+            java.awt.geom.Area test = new java.awt.geom.Area(((Area)entity).getShape());
+            area.intersect(test);
+            return !area.isEmpty();
+        }
+        else if (entity instanceof Blockade) {
+            java.awt.geom.Area area = new java.awt.geom.Area(shape);
+            java.awt.geom.Area test = new java.awt.geom.Area(((Blockade)entity).getShape());
+            area.intersect(test);
+            return !area.isEmpty();
+        }
+        else {
+            Pair<Integer, Integer> location = entity.getLocation(this);
+            if (location != null) {
+                int targetX = location.first();
+                int targetY = location.second();
+                return shape.contains(targetX, targetY);
+            }
+        }
+        return false;
     }
 
     /**
@@ -355,18 +389,58 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         return (y - minY) / meshSize;
     }
 
-    private Collection<StandardEntity> getCell(int x, int y) {
+    private Cell getCell(int x, int y) {
         return grid.get(x).get(y);
     }
 
     private int distance(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
-        return distance(a.first().intValue(), a.second().intValue(), b.first().intValue(), b.second().intValue());
+        return distance(a.first(), a.second(), b.first(), b.second());
     }
 
     private int distance(int x1, int y1, int x2, int y2) {
         double dx = x1 - x2;
         double dy = y1 - y2;
-        return (int)Math.sqrt((dx * dx) + (dy * dy));
+        return (int)Math.hypot(dx, dy);
+    }
+
+    private Set<Cell> getCellsCoveredBy(Shape shape) {
+        Set<Cell> result = new HashSet<Cell>();
+        for (int x = 0; x < gridWidth; ++x) {
+            for (int y = 0; y < gridHeight; ++y) {
+                Cell cell = getCell(x, y);
+                Rectangle2D cellShape = cell.getShape();
+                if (shape.intersects(cellShape)) {
+                    result.add(cell);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static class Cell {
+        private Collection<StandardEntity> entities;
+        private Rectangle2D shape;
+
+        public Cell(int xMin, int yMin, int width, int height) {
+            shape = new Rectangle2D.Double(xMin, yMin, width, height);
+            entities = new HashSet<StandardEntity>();
+        }
+
+        public Collection<StandardEntity> getEntities() {
+            return entities;
+        }
+
+        public int size() {
+            return entities.size();
+        }
+
+        public void add(StandardEntity e) {
+            entities.add(e);
+        }
+
+        public Rectangle2D getShape() {
+            return shape;
+        }
     }
 
     private class AddRemoveListener implements WorldModelListener<StandardEntity> {
