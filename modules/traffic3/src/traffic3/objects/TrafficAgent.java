@@ -17,8 +17,7 @@ import traffic3.simulator.SimulatorException;
 
 import rescuecore2.standard.entities.Human;
 
-import static traffic3.log.Logger.log;
-import static traffic3.log.Logger.alert;
+import rescuecore2.log.Logger;
 
 /**
  * A TrafficAgent is a mobile object in the world.
@@ -386,7 +385,7 @@ public class TrafficAgent extends TrafficObject {
             }
             if (area == null) {
                 nowArea = null;
-                log("cannot find area of agents: " + this);
+                Logger.warn("cannot find area of agents: " + this);
             }
             else {
                 nowArea = area;
@@ -514,7 +513,7 @@ public class TrafficAgent extends TrafficObject {
                 planDestination();
             }
             catch (WorldManagerException e) {
-                alert(e, "error");
+                Logger.error("Error planning destination", e);
             }
         }
         //if (this.isNetworkMode) {
@@ -547,7 +546,7 @@ public class TrafficAgent extends TrafficObject {
         //forceZ = destBuf[2] + sumopBuf[2];
         
         if (Double.isNaN(force[0]) || Double.isNaN(force[1])) {
-            System.err.println("plan_area(): force is NaN!");
+            Logger.warn("plan_area(): force is NaN!");
             force[0] = 0;
             force[1] = 0;
         }
@@ -711,7 +710,7 @@ public class TrafficAgent extends TrafficObject {
             double opp = r - opdist;
             double tmp = -this.valueAgentA * Math.exp(opp / this.valueAgentB);
             if (Double.isInfinite(tmp)) {
-                System.out.println("calculateAgentsForce(): A result of exp is infinite: exp(" + (opp / this.valueAgentB) + ")");
+                Logger.warn("calculateAgentsForce(): A result of exp is infinite: exp(" + (opp / this.valueAgentB) + ")");
             }
             else {
                 sumopx += tmp * opdxn;
@@ -750,8 +749,7 @@ public class TrafficAgent extends TrafficObject {
         double sumwy = 0;
         double sumwz = 0;
         if (this.nowArea != null) {
-            List<Line2D> lineList = this.nowArea.getBlockingLines();
-            lineList.addAll(this.nowArea.getBlockadeLines());
+            List<Line2D> lineList = this.nowArea.getAllBlockingLines();
             double r = getRadius() + valueWallWidth;
             double dx;
             double dy;
@@ -788,7 +786,7 @@ public class TrafficAgent extends TrafficObject {
                     dx /= dist;
                     dy /= dist;
                     if (Double.isNaN(dist)) {
-                        System.out.println("c: NaN: Math.sqrt(" + (dx * dx + dy * dy) + "): " + dx + "," + dy + ": " + p1p2Dist);
+                        Logger.warn("c: NaN: Math.sqrt(" + (dx * dx + dy * dy) + "): " + dx + "," + dy + ": " + p1p2Dist);
                     }
                 }
                 if (dist > cutoffDistance) {
@@ -802,10 +800,10 @@ public class TrafficAgent extends TrafficObject {
                 else {
                     double tmp = valueWallA * Math.exp(-(dist) / valueWallB);
                     if (Double.isInfinite(tmp)) {
-                        System.out.println("calculateWallForce(): A result of exp is infinite: exp(" + (-dist / valueWallB) + ")");
+                        Logger.warn("calculateWallForce(): A result of exp is infinite: exp(" + (-dist / valueWallB) + ")");
                     }
                     else if (Double.isNaN(tmp)) {
-                        System.out.println("calculateWallForce(): A result of exp is NaN: exp(" + (-(dist) / valueWallB) + ")");
+                        Logger.warn("calculateWallForce(): A result of exp is NaN: exp(" + (-(dist) / valueWallB) + ")");
                     }
                     else {
                         sumwx += tmp * dx;
@@ -880,7 +878,7 @@ public class TrafficAgent extends TrafficObject {
                 sb.append("cannot trace to goal(step>1000).\n");
                 sb.append("start:").append(start).append(";");
                 sb.append("goal:").append(goal).append(";");
-                System.err.println(sb.toString());
+                Logger.debug(sb.toString());
                 setDestination((TrafficAreaNode)null);
                 return ;
                 //throw new RuntimeException("cannot trace to goal.(step>10000)\n" + sb.toString());

@@ -260,9 +260,12 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             agent.clearPositionHistory();
         }
         Logger.debug("Running " + MICROSTEPS + " microsteps");
+        long start = System.currentTimeMillis();
         for (int i = 0; i < MICROSTEPS; i++) {
             microstep();
         }
+        long end = System.currentTimeMillis();
+        Logger.debug("Time: " + (end - start) + "ms (average " + ((end - start) / MICROSTEPS) + "ms)");
     }
 
     private void microstep() {

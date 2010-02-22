@@ -19,6 +19,9 @@ import traffic3.objects.area.event.TrafficAreaEvent;
 import org.util.xml.element.TagElement;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityListener;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.Area;
@@ -45,6 +48,8 @@ public class TrafficArea extends TrafficObject {
 
     private List<TrafficEdge> edges;
     private List<Line2D> blocking;
+    private List<Line2D> blockades;
+    private List<Line2D> allBlockingLines;
 
     private Area area;
     private StandardWorldModel world;
@@ -105,7 +110,7 @@ public class TrafficArea extends TrafficObject {
      * @param xyList apexces of this area
      * @param nexts nexts area it must be correspnds xyList
      */
-    public TrafficArea(WorldManager worldManager, String id, double cx, double cy, int[] xyList, String[] nexts, Area area, StandardWorldModel world) {
+    public TrafficArea(WorldManager worldManager, String id, double cx, double cy, int[] xyList, String[] nexts, final Area area, StandardWorldModel world) {
         super(worldManager, id);
         edges = new ArrayList<TrafficEdge>();
         this.area = area;
@@ -182,6 +187,23 @@ public class TrafficArea extends TrafficObject {
             }
             edgeIDs = edgeIDList.toArray(new String[0]);
 
+            blocking = null;
+            blockades = null;
+            allBlockingLines = null;
+
+            area.addEntityListener(new EntityListener() {
+                    @Override
+                    public void propertyChanged(Entity e, Property p, Object oldValue, Object newValue) {
+                        if (p == area.getBlockadesProperty()) {
+                            blockades = null;
+                            allBlockingLines = null;
+                        }
+                        if (p == area.getEdges()) {
+                            blocking = null;
+                            allBlockingLines = null;
+                        }
+                    }
+                });
             
             //directedEdges
         }
@@ -338,17 +360,30 @@ public class TrafficArea extends TrafficObject {
     }
 
     public List<Line2D> getBlockadeLines() {
-        List<Line2D> result = new ArrayList<Line2D>();
-        if (area.isBlockadesDefined()) {
-            for (EntityID blockadeID : area.getBlockades()) {
-                Blockade b = (Blockade)world.getEntity(blockadeID);
-                int[] apexes = b.getApexes();
-                for (int i = 0; i < apexes.length - 2; i += 2) {
-                    result.add(new Line2D.Double(apexes[i], apexes[i + 1], apexes[i + 2], apexes[i + 3]));
+        if (blockades == null) {
+            blockades = new ArrayList<Line2D>();
+            if (area.isBlockadesDefined()) {
+                for (EntityID blockadeID : area.getBlockades()) {
+                    Blockade b = (Blockade)world.getEntity(blockadeID);
+                    int[] apexes = b.getApexes();
+                    for (int i = 0; i < apexes.length - 2; i += 2) {
+                        blockades.add(new Line2D.Double(apexes[i], apexes[i + 1], apexes[i + 2], apexes[i + 3]));
+                    }
+                    // Close the shape
+                    blockades.add(new Line2D.Double(apexes[apexes.length - 2], apexes[apexes.length - 1], apexes[0], apexes[1]));
                 }
             }
         }
-        return result;
+        return blockades;
+    }
+
+    public List<Line2D> getAllBlockingLines() {
+        if (allBlockingLines == null) {
+            allBlockingLines = new ArrayList<Line2D>();
+            allBlockingLines.addAll(getBlockingLines());
+            allBlockingLines.addAll(getBlockadeLines());
+        }
+        return allBlockingLines;
     }
 
 
