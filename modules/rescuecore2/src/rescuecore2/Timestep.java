@@ -1,10 +1,12 @@
 package rescuecore2;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.ChangeSet;
@@ -29,6 +31,7 @@ public class Timestep {
         this.time = time;
         agentPerception = new HashMap<EntityID, ChangeSet>();
         agentHearing = new HashMap<EntityID, Collection<Command>>();
+        commands = new ArrayList<Command>();
     }
 
     /**
@@ -36,7 +39,8 @@ public class Timestep {
        @param c The commands.
     */
     public void setCommands(Collection<Command> c) {
-        this.commands = c;
+        commands.clear();
+        commands.addAll(c);
     }
 
     /**
@@ -79,7 +83,7 @@ public class Timestep {
        @return The commands.
     */
     public Collection<Command> getCommands() {
-        return commands;
+        return Collections.unmodifiableCollection(commands);
     }
 
     /**
