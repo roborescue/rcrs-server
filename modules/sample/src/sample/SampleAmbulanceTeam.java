@@ -37,6 +37,10 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
+        if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
+            // Subscribe to channel 1
+            sendSubscribe(time, 1);
+        }
         for (Command next : heard) {
             Logger.debug("Heard " + next);
         }

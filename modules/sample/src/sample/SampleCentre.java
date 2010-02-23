@@ -5,6 +5,7 @@ import java.util.EnumSet;
 
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.Building;
@@ -21,6 +22,13 @@ public class SampleCentre extends StandardAgent<Building> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
+        if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
+            // Subscribe to channels 1 and 2
+            sendSubscribe(time, 1, 2);
+        }
+        for (Command next : heard) {
+            Logger.debug("Heard " + next);
+        }
         sendRest(time);
     }
 

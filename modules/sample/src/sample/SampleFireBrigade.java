@@ -46,6 +46,10 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
+        if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
+            // Subscribe to channel 1
+            sendSubscribe(time, 1);
+        }
         for (Command next : heard) {
             Logger.debug("Heard " + next);
         }
@@ -80,6 +84,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             if (model.getDistance(me, next) <= maxDistance) {
                 Logger.info("Extinguishing " + next);
                 sendExtinguish(time, next.getID(), maxPower);
+                sendSpeak(time, 1, ("Extinguishing " + next.getID()).getBytes());
                 return;
             }
         }

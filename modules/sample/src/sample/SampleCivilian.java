@@ -79,6 +79,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
             else {
                 Logger.info("Moving randomly");
                 sendMove(time, randomWalk());
+                return;
             }
         }
         Logger.info("Not moving");

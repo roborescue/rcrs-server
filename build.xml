@@ -11,7 +11,7 @@
   <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,resq-fire,ignition,maps,clear,traffic3,gis2"/>
   <property name="modules.kernel.depend" value="rescuecore2,handy"/>
   <property name="modules.standard.depend" value="rescuecore2,kernel"/>
-  <property name="modules.sample.depend" value="rescuecore2,standard"/>
+  <property name="modules.sample.depend" value="rescuecore2,standard,kernel"/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
   <property name="modules.collapse.depend" value="rescuecore2,standard"/>
   <property name="modules.misc.depend" value="rescuecore2,standard"/>

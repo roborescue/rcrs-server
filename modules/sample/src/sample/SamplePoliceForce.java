@@ -34,6 +34,10 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
 
     @Override
     protected void think(int time, ChangeSet changed, Collection<Command> heard) {
+        if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
+            // Subscribe to channel 1
+            sendSubscribe(time, 1);
+        }
         for (Command next : heard) {
             Logger.debug("Heard " + next);
         }
@@ -41,6 +45,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         EntityID target = getTargetBlockade();
         if (target != null) {
             Logger.info("Clearing blockade " + target);
+            sendSpeak(time, 1, ("Clearing " + target).getBytes());
             sendClear(time, target);
             return;
         }
