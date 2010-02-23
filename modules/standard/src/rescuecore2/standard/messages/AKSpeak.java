@@ -63,9 +63,4 @@ public class AKSpeak extends AbstractCommand {
     public byte[] getContent() {
         return data.getData();
     }
-
-    @Override
-    public String toString() {
-        return "AKSpeak: " + data.getData().length + " bytes to channel " + channel.getValue();
-    }
 }

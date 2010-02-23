@@ -99,6 +99,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
 
     @Override
     public void process(int time, Collection<? extends Command> agentCommands) {
+        Logger.debug("ChannelCommunicationModel processing commands at time " + time + ": " + agentCommands);
         super.process(time, agentCommands);
         // Update all channels
         for (Channel next : channels.values()) {
@@ -117,6 +118,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
                     AKSpeak speak = (AKSpeak)next;
                     int channelNumber = speak.getChannel();
                     Channel channel = channels.get(channelNumber);
+                    Logger.debug("Processing speak: " + speak);
                     if (channel == null) {
                         throw new InvalidMessageException("Unrecognised channel: " + channelNumber);
                     }
