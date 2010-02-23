@@ -2,6 +2,7 @@ package kernel;
 
 import rescuecore2.config.Config;
 import rescuecore2.messages.Command;
+import rescuecore2.log.Logger;
 
 import java.util.Collection;
 
@@ -20,6 +21,7 @@ public class FrozenAgentsCommandFilter implements CommandFilter {
     public void filter(Collection<Command> commands, KernelState state) {
         int time = state.getTime();
         if (time < freezeTime) {
+            Logger.warn("Ignoring early commands: " + time + " < " + freezeTime);
             commands.clear();
         }
     }

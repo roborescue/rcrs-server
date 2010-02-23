@@ -365,6 +365,8 @@ public class Kernel {
                 Logger.debug("Total time             : " + (scoreTime - start) + "ms");
                 fireTimestepCompleted(nextTimestep);
                 previousTimestep = nextTimestep;
+                Logger.debug("Commands: " + commands);
+                Logger.debug("Timestep commands: " + previousTimestep.getCommands());
             }
         }
         finally {
@@ -421,7 +423,9 @@ public class Kernel {
 
     private Collection<Command> waitForCommands(int timestep) throws InterruptedException {
         Collection<Command> commands = commandCollector.getAgentCommands(agents, timestep);
+        Logger.debug("Raw commands: " + commands);
         commandFilter.filter(commands, getState());
+        Logger.debug("Filtered commands: " + commands);
         return commands;
     }
 

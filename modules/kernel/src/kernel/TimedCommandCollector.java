@@ -37,6 +37,7 @@ public class TimedCommandCollector implements CommandCollector {
             result.addAll(commands);
         }
         Logger.trace(this + " returning " + result.size() + " commands");
+        Logger.trace(this + " returning " + result);
         return result;
     }
 
