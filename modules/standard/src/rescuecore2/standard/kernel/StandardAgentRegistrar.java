@@ -40,6 +40,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
 
     static {
         VISIBLE_CONFIG_OPTIONS.add("kernel\\.agents\\.think-time");
+        VISIBLE_CONFIG_OPTIONS.add("kernel\\.agents\\.ignoreuntil");
         VISIBLE_CONFIG_OPTIONS.add("kernel\\.startup\\.connect-time");
         VISIBLE_CONFIG_OPTIONS.add(Constants.COMMUNICATION_MODEL_KEY.replace(".", "\\."));
         VISIBLE_CONFIG_OPTIONS.add(Constants.PERCEPTION_KEY.replace(".", "\\."));
