@@ -28,5 +28,8 @@ public final class KernelConstants {
     /** Whether to run the kernel in inline-only mode. */
     public static final String INLINE_ONLY_KEY = "kernel.inline-only";
 
+    /** The config key for ignoring agent commands at the start of the simulation. */
+    public static final String IGNORE_AGENT_COMMANDS_KEY = "kernel.agents.ignoreuntil";
+
     private KernelConstants() {}
 }
