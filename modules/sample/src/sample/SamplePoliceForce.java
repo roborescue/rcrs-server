@@ -9,18 +9,25 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
 import rescuecore2.log.Logger;
+import rescuecore2.misc.geometry.GeometryTools2D;
+import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Line2D;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Road;
+import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.Area;
-import rescuecore2.misc.Pair;
 
 /**
    A sample police force agent.
  */
 public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
+    private static final String DISTANCE_KEY = "clear.repair.distance";
+
+    private int distance;
+
     @Override
     public String toString() {
         return "Sample police force";
@@ -30,6 +37,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     protected void postConnect() {
         super.postConnect();
         model.indexClass(StandardEntityURN.ROAD);
+        distance = config.getIntValue(DISTANCE_KEY);
     }
 
     @Override
@@ -41,20 +49,21 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         for (Command next : heard) {
             Logger.debug("Heard " + next);
         }
-        // Am I on (or next to) a blocked road?
-        EntityID target = getTargetBlockade();
+        // Am I near a blockade?
+        Blockade target = getTargetBlockade();
         if (target != null) {
             Logger.info("Clearing blockade " + target);
             sendSpeak(time, 1, ("Clearing " + target).getBytes());
-            sendClear(time, target);
+            sendClear(time, target.getID());
             return;
         }
-
         // Plan a path to a blocked area
         List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
         if (path != null) {
             Logger.info("Moving to target");
-            sendMove(time, path);
+            Road r = (Road)model.getEntity(path.get(path.size() - 1));
+            Blockade b = getTargetBlockade(r, -1);
+            sendMove(time, path, b.getX(), b.getY());
             return;
         }
         Logger.debug("Couldn't plan a path to a blocked road");
@@ -79,15 +88,18 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         return result;
     }
 
-    private EntityID getTargetBlockade() {
+    private Blockade getTargetBlockade() {
+        Logger.debug("Looking for target blockade");
         Area location = (Area)location();
-        EntityID result = getTargetBlockade(location);
+        Logger.debug("Looking in current location");
+        Blockade result = getTargetBlockade(location, distance);
         if (result != null) {
             return result;
         }
+        Logger.debug("Looking in neighbouring locations");
         for (EntityID next : location.getNeighbours()) {
             location = (Area)model.getEntity(next);
-            result = getTargetBlockade(location);
+            result = getTargetBlockade(location, distance);
             if (result != null) {
                 return result;
             }
@@ -95,24 +107,56 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         return null;
     }
 
-    private EntityID getTargetBlockade(Area area) {
+    private Blockade getTargetBlockade(Area area, int maxDistance) {
+        Logger.debug("Looking for nearest blockade in " + area);
         if (!area.isBlockadesDefined()) {
+            Logger.debug("Blockades undefined");
             return null;
         }
         List<EntityID> ids = area.getBlockades();
-        if (ids.isEmpty()) {
-            return null;
+        // Find the first blockade that is in range.
+        int x = me().getX();
+        int y = me().getY();
+        for (EntityID next : ids) {
+            Blockade b = (Blockade)model.getEntity(next);
+            double d = findDistanceTo(b, x, y);
+            Logger.debug("Distance to " + b + " = " + d);
+            if (maxDistance > 0 && d < maxDistance) {
+                Logger.debug("In range");
+                return b;
+            }
         }
-        return ids.get(0);
+        Logger.debug("No blockades in range");
+        return null;
+    }
+
+    private int findDistanceTo(Blockade b, int x, int y) {
+        Logger.debug("Finding distance to " + b + " from " + x + ", " + y);
+        List<Line2D> lines = GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(b.getApexes()), true);
+        double best = Double.MAX_VALUE;
+        Point2D origin = new Point2D(x, y);
+        for (Line2D next : lines) {
+            Point2D closest = GeometryTools2D.getClosestPointOnSegment(next, origin);
+            double d = GeometryTools2D.getDistance(origin, closest);
+            Logger.debug("Next line: " + next + ", closest point: " + closest + ", distance: " + d);
+            if (d < best) {
+                best = d;
+                Logger.debug("New best distance");
+            }
+
+        }
+        return (int)best;
     }
 
     /**
        Get the blockade that is nearest this agent.
        @return The EntityID of the nearest blockade, or null if there are no blockades in the agents current location.
     */
+    /*
     public EntityID getNearestBlockade() {
         return getNearestBlockade((Area)location(), me().getX(), me().getY());
     }
+    */
 
     /**
        Get the blockade that is nearest a point.
@@ -121,6 +165,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
        @param y The X coordinate to look up.
        @return The EntityID of the nearest blockade, or null if there are no blockades in this area.
     */
+    /*
     public EntityID getNearestBlockade(Area area, int x, int y) {
         double bestDistance = 0;
         EntityID best = null;
@@ -150,4 +195,5 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         Logger.debug("Nearest blockade: " + best);
         return best;
     }
+    */
 }
