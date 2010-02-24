@@ -75,6 +75,17 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
     }
 
     /**
+       Send a move command to the kernel.
+       @param time The current time.
+       @param path The path to send.
+       @param destX The destination X coordinate.
+       @param destY The destination Y coordinate.
+    */
+    protected void sendMove(int time, List<EntityID> path, int destX, int destY) {
+        send(new AKMove(getID(), time, path, destX, destY));
+    }
+
+    /**
        Send an extinguish command to the kernel.
        @param time The current time.
        @param target The target building.
