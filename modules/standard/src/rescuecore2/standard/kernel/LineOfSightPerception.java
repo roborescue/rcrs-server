@@ -212,9 +212,10 @@ public class LineOfSightPerception implements Perception, GUIComponent {
     }
 
     private void addHumanProperties(Human human, ChangeSet result) {
-        // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
+        // Update POSITION, X, Y, DIRECTION, STAMINA, BURIEDNESS, HP, DAMAGE
         result.addChange(human, human.getPositionProperty());
-        //result.addChange(human, human.getPositionExtraProperty());
+        result.addChange(human, human.getXProperty());
+        result.addChange(human, human.getYProperty());
         result.addChange(human, human.getDirectionProperty());
         result.addChange(human, human.getStaminaProperty());
         result.addChange(human, human.getBuriednessProperty());
@@ -305,6 +306,8 @@ public class LineOfSightPerception implements Perception, GUIComponent {
                 }
             }
         }
+        // Add self
+        result.add(agentEntity);
         Logger.debug(agentEntity + " can see " + result);
         return result;
     }
