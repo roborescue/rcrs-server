@@ -389,6 +389,8 @@ public class CollapseSimulator extends StandardSimulator {
         double[] d = new double[6];
         int moveX = 0;
         int moveY = 0;
+        int lastX = 0;
+        int lastY = 0;
         while (!it.isDone()) {
             int x = 0;
             int y = 0;
@@ -421,9 +423,13 @@ public class CollapseSimulator extends StandardSimulator {
                 y = moveY;
                 break;
             }
-            apexes.add(x);
-            apexes.add(y);
             Logger.debug(x + ", " + y);
+            if (x != lastX || y != lastY) {
+                apexes.add(x);
+                apexes.add(y);
+            }
+            lastX = x;
+            lastY = y;
             it.next();
         }
         // CHECKSTYLE:ON:MagicNumber
