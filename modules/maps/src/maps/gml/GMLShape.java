@@ -42,6 +42,7 @@ public abstract class GMLShape extends GMLObject {
     protected GMLShape(int id, List<GMLDirectedEdge> edges) {
         this(id);
         this.edges.addAll(edges);
+        points = getUnderlyingCoordinates();
     }
 
     /**
