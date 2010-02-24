@@ -63,6 +63,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         VISIBLE_CONFIG_OPTIONS.add("comms\\.channels\\.\\d+\\.messages\\.max");
         VISIBLE_CONFIG_OPTIONS.add("comms\\.channels\\.\\d+\\.bandwidth");
         VISIBLE_CONFIG_OPTIONS.add("clear\\.repair\\.rate");
+        VISIBLE_CONFIG_OPTIONS.add("clear\\.repair\\.distance");
     }
 
     @Override
