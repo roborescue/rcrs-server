@@ -146,14 +146,18 @@ public class ClearSimulator extends StandardSimulator {
         // Find the closest point on the blockade to the agent
         int range = config.getIntValue(REPAIR_DISTANCE_KEY);
         Point2D agentLocation = new Point2D(police.getX(), police.getY());
+        double bestDistance = Double.MAX_VALUE;
         for (Line2D line : GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(targetBlockade.getApexes()), true)) {
             Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, agentLocation);
             double distance = GeometryTools2D.getDistance(agentLocation, closest);
             if (distance < range) {
                 return true;
             }
+            if (bestDistance > distance) {
+                bestDistance = distance;
+            }
         }
-        Logger.info("Rejecting clear command " + clear + ": agent is not adjacent to target");
+        Logger.info("Rejecting clear command " + clear + ": agent is not adjacent to target: distance is " + bestDistance);
         return false;
     }
 }
