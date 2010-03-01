@@ -1,6 +1,8 @@
 package traffic3.simulator;
 
 import java.util.List;
+import java.util.ArrayList;
+
 import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.geom.Point2D;
@@ -13,10 +15,12 @@ import traffic3.manager.WorldManager;
 import traffic3.manager.WorldManagerException;
 import traffic3.manager.gui.WorldManagerGUI;
 import traffic3.objects.area.TrafficArea;
+import traffic3.objects.area.TrafficAreaNode;
 import traffic3.objects.TrafficAgent;
 import traffic3.objects.TrafficBlockade;
 
 import rescuecore2.GUIComponent;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
@@ -243,16 +247,35 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     }
 
     private void handleMove(AKMove move) throws WorldManagerException {
-        List<EntityID> list = move.getPath();
-        EntityID destinationID = list.get(list.size() - 1);
-        TrafficArea trafficArea = (TrafficArea)worldManager.getTrafficObject("rcrs(" + destinationID + ")");
         Human human = (Human)model.getEntity(move.getAgentID());
         TrafficAgent agent = (TrafficAgent)worldManager.getTrafficObject("rcrs(" + human.getID() + ")");
-        double cx = trafficArea.getCenterX();
-        double cy = trafficArea.getCenterY();
-        double cz = 0;
-        agent.setDestination(worldManager.createAreaNode(cx, cy, cz));
-        Logger.debug("Agent " + agent + " destination set: " + cx + ", " + cy);
+        EntityID current = human.getPosition();
+        List<EntityID> list = move.getPath();
+        List<TrafficAreaNode> nodes = new ArrayList<TrafficAreaNode>();
+        // Check that all elements refer to Area instances and build the list of target nodes
+        // Skip the first entry if it is the agent's current position
+        boolean first = true;
+        for (EntityID next : list) {
+            if (first && next.equals(current)) {
+                first = false;
+                continue;
+            }
+            first = false;
+            Entity e = model.getEntity(next);
+            if (!(e instanceof Area)) {
+                Logger.warn("Rejecting move: Entity ID " + next + " is not an area: " + e);
+                return;
+            }
+            Area a = (Area)e;
+            nodes.add(worldManager.createAreaNode(a.getX(), a.getY(), 0));
+        }
+        int targetX = move.getDestinationX();
+        int targetY = move.getDestinationY();
+        if (targetX != -1 && targetY != -1) {
+            nodes.add(worldManager.createAreaNode(targetX, targetY, 0));
+        }
+        agent.setDestination(nodes);
+        Logger.debug("Agent " + agent + " path set: " + nodes);
     }
 
     private void timestep() {

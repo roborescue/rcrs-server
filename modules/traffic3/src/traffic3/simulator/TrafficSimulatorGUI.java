@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
 import java.awt.geom.Line2D;
@@ -34,6 +35,7 @@ import java.awt.geom.Line2D;
 import traffic3.manager.WorldManager;
 import traffic3.objects.area.TrafficArea;
 import traffic3.objects.area.TrafficEdge;
+import traffic3.objects.area.TrafficAreaNode;
 import traffic3.objects.TrafficAgent;
 import traffic3.objects.TrafficBlockade;
 
@@ -161,7 +163,9 @@ public class TrafficSimulatorGUI extends JPanel {
     private class WorldView extends JComponent {
         private ScreenTransform transform;
         private TrafficArea selectedArea;
+        private TrafficAgent selectedAgent;
         private Map<Shape, TrafficArea> areas;
+        private Map<Shape, TrafficAgent> agents;
 
         public WorldView() {
         }
@@ -181,14 +185,21 @@ public class TrafficSimulatorGUI extends JPanel {
             new PanZoomListener(this).setScreenTransform(transform);
             selectedArea = null;
             areas = new HashMap<Shape, TrafficArea>();
+            agents = new HashMap<Shape, TrafficAgent>();
             addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         Point p = e.getPoint();
                         selectedArea = null;
+                        selectedAgent = null;
                         for (Map.Entry<Shape, TrafficArea> next : areas.entrySet()) {
                             if (next.getKey().contains(p)) {
                                 selectedArea = next.getValue();
+                            }
+                        }
+                        for (Map.Entry<Shape, TrafficAgent> next : agents.entrySet()) {
+                            if (next.getKey().contains(p)) {
+                                selectedAgent = next.getValue();
                             }
                         }
                         repaint();
@@ -257,31 +268,11 @@ public class TrafficSimulatorGUI extends JPanel {
         private void drawBlockades(Graphics2D g) {
             for (TrafficBlockade b : manager.getBlockadeList()) {
                 Path2D shape = b.getShape();
-                /*
-                  if (area == selectedArea) {
-                  g.setColor(SELECTED_AREA_COLOUR);
-                  g.fill(shape);
-                  g.setStroke(SELECTED_AREA_OUTLINE_STROKE);
-                  g.setColor(AREA_OUTLINE_COLOUR);
-                  g.draw(shape);
-                  g.setStroke(NEIGHBOUR_LINE_STROKE);
-                  g.setColor(NEIGHBOUR_LINE_COLOUR);
-                  for (Line2D line : area.getNeighborLines()) {
-                  g.drawLine(transform.xToScreen(line.getX1()),
-                  transform.yToScreen(line.getY1()),
-                  transform.xToScreen(line.getX2()),
-                  transform.yToScreen(line.getY2()));
-                  }
-                  }
-                  else {
-                */
                 g.setColor(BLOCKADE_FILL_COLOUR);
                 g.fill(shape);
                 g.setStroke(BLOCKADE_STROKE);
                 g.setColor(BLOCKADE_OUTLINE_COLOUR);
                 g.draw(shape);
-                //                }
-                //                areas.put(shape, area);
             }
         }
 
@@ -311,12 +302,49 @@ public class TrafficSimulatorGUI extends JPanel {
                 int ellipseWidth = x2 - x1;
                 int ellipseHeight = y2 - y1;
 
-                g.setColor(Color.red);
+                g.setColor(agent == selectedAgent ? Color.orange : Color.red);
                 g.fillOval(x1, y1, ellipseWidth, ellipseHeight);
                 g.setColor(Color.blue);
                 g.drawLine(x, y, vx, vy);
                 g.setColor(Color.green);
                 g.drawLine(x, y, fx, fy);
+
+                Shape shape = new Ellipse2D.Double(x1, y1, ellipseWidth, ellipseHeight);
+                agents.put(shape, agent);
+
+                // Draw the path of the selected agent
+                if (agent == selectedAgent) {
+                    Queue<TrafficAreaNode> path = selectedAgent.getDestinationList();
+                    if (path != null) {
+                        TrafficAreaNode goal = selectedAgent.getFinalDestination();
+                        TrafficAreaNode current = selectedAgent.getNowDestination();
+                        g.setColor(Color.gray);
+                        int lastX = x;
+                        int lastY = y;
+                        for (TrafficAreaNode next : path) {
+                            if (next != null) {
+                                int nodeX = transform.xToScreen(next.getX());
+                                int nodeY = transform.yToScreen(next.getY());
+                                g.fillOval(nodeX - 2, nodeY - 2, 5, 5);
+                                g.drawLine(lastX, lastY, nodeX, nodeY);
+                                lastX = nodeX;
+                                lastY = nodeY;
+                            }
+                        }
+                        if (current != null) {
+                            g.setColor(Color.YELLOW);
+                            int nodeX = transform.xToScreen(current.getX());
+                            int nodeY = transform.yToScreen(current.getY());
+                            g.fillOval(nodeX - 4, nodeY - 4, 9, 9);
+                        }
+                        if (goal != null) {
+                            g.setColor(Color.WHITE);
+                            int nodeX = transform.xToScreen(goal.getX());
+                            int nodeY = transform.yToScreen(goal.getY());
+                            g.fillOval(nodeX - 4, nodeY - 4, 9, 9);
+                        }
+                    }
+                }
             }
         }
     }

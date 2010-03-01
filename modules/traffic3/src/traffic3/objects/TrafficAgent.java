@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Queue;
+import java.util.LinkedList;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Line2D;
@@ -109,7 +112,7 @@ public class TrafficAgent extends TrafficObject {
     /**
      * The destination that this agent wants to go.
      */
-    private List<TrafficAreaNode> destinationList;
+    private Queue<TrafficAreaNode> destinationList;
     
     /**
      * now destination.
@@ -474,17 +477,26 @@ public class TrafficAgent extends TrafficObject {
      */
     public void setDestination(TrafficAreaNode... dl) {
         if (dl == null) {
-            this.finalDestination = null;
-            this.nowDestination = null;
+            setDestination(new ArrayList<TrafficAreaNode>());
+        }
+        else {
+            setDestination(Arrays.asList(dl));
+        }
+    }
+
+    public void setDestination(List<? extends TrafficAreaNode> dl) {
+        if (dl == null || dl.isEmpty()) {
+            finalDestination = null;
+            nowDestination = null;
+            destinationList = null;
             return;
         }
-        this.destinationList = new ArrayList<TrafficAreaNode>();
-        for (TrafficAreaNode tan : dl) {
-            this.destinationList.add(tan);
-        }
-        this.finalDestination = dl[dl.length-1];
-        this.nowDestination = null;
+        destinationList = new LinkedList<TrafficAreaNode>(dl);
+        finalDestination = dl.get(dl.size() - 1);
+        nowDestination = null;
         //TrafficArea goal = getManager().findArea(destination.getX(), destination.getY());
+        Logger.debug(this + " destination set: " + destinationList);
+        Logger.debug(this + " final destination set: " + finalDestination);
         plan();
     }
     
@@ -502,6 +514,10 @@ public class TrafficAgent extends TrafficObject {
      */
     public TrafficAreaNode getNowDestination() {
         return this.nowDestination;
+    }
+
+    public Queue<TrafficAreaNode> getDestinationList() {
+        return destinationList;
     }
     
     /**
@@ -825,27 +841,29 @@ public class TrafficAgent extends TrafficObject {
     
     private void planDestination() throws WorldManagerException {
         if (this.finalDestination == null) {
+            this.nowDestination = null;
+            return;
+        }
+        TrafficAreaNode current = destinationList.peek();
+        if (current == null) {
+            this.nowDestination = finalDestination;
             return;
         }
         TrafficArea start = getManager().findArea(getX(), getY());
-        TrafficArea goal = getManager().findArea(this.finalDestination.getX(), this.finalDestination.getY());
+        TrafficArea goal = getManager().findArea(current.getX(), current.getY());
         
         // this block should be changed!
         if (start == null || goal == null) {
+            Logger.error("start = " + start + ", goal = " + goal);
             this.nowDestination = this.finalDestination;
             return;
         }
         
         if (start.equals(goal)) {
-            if (destinationList.size() > 0) {
-                this.nowDestination = destinationList.remove(destinationList.size() - 1);
-                planDestination();
-                return;
-            }
-            else {
-                nowDestination = finalDestination;
-                return;
-            }
+            // Pop the destination queue and recurse
+            destinationList.poll();
+            planDestination();
+            return;
         }
         
         Map<TrafficArea, Double> traceAreaMap = new HashMap<TrafficArea, Double>();
@@ -854,22 +872,35 @@ public class TrafficAgent extends TrafficObject {
         traceAreaMap.put(start, 0.0);
         buf.add(start);
         
+        Logger.debug("Tracing to goal");
+        Logger.debug("Current position: " + start);
+        Logger.debug("Goal: " + goal);
+
         for (int i = 0; traceTransfer.get(goal) == null; i++) {
             TrafficArea[] tmp = buf.toArray(new TrafficArea[0]);
             buf.clear();
+            //            Logger.debug("i = " + i);
             for (TrafficArea target : tmp) {
                 double distance = traceAreaMap.get(target);
+                Logger.debug("Next target: " + target);
+                Logger.debug("Distance: " + distance);
                 List<TrafficArea> neighbors = new ArrayList<TrafficArea>();
                 for (TrafficArea t : target.getNeighborAreas()) {
                     neighbors.add(t);
                 }
+                Logger.debug("Neighbours: " + neighbors);
                 
                 for (TrafficArea n : neighbors) {
                     double newDistance = distance + target.getDistance(n);
+                    Logger.debug("Neighbour " + n);
+                    Logger.debug("Distance: " + newDistance);
+                    Logger.debug("Existing parent: " + traceTransfer.get(n));
+                    Logger.debug("Existing distance: " + traceAreaMap.get(n));
                     if (traceAreaMap.get(n) == null || newDistance < traceAreaMap.get(n)) {
                         traceAreaMap.put(n, newDistance);
                         traceTransfer.put(n, target);
                         buf.add(n);
+                        Logger.debug("Added " + n);
                     }
                 }
             }
@@ -891,13 +922,13 @@ public class TrafficAgent extends TrafficObject {
             last = traceTransfer.get(last);
             buf.add(last);
         }
-        StringBuffer sblog = new StringBuffer("[");
+        StringBuffer sblog = new StringBuffer();
         for (int i = 0; i < buf.size(); i++) {
-            sblog.append(buf.get(i).getID() + ",");
+            sblog.append(buf.get(i).getID());
+            sblog.append(", ");
         }
-        sblog.append("]\n");
-        //alert(sblog, "error");
-        //log(sblog.toString());
+        Logger.debug("Path traced: " + sblog.toString());
+
         TrafficArea tnn = buf.get(buf.size() - 2);
         TrafficAreaEdge[] edgeList = tnn.getConnector(buf.get(buf.size() - 1));
         TrafficAreaEdge selected = edgeList[0];
@@ -915,6 +946,7 @@ public class TrafficAgent extends TrafficObject {
         double y = (cons[0].getY() + cons[1].getY()) / 2;
         TrafficAreaNode tan = getManager().createAreaNode(x, y, 0);
         this.nowDestination = tan;
+        Logger.debug("nowDestination is now " + tan);
     }
     
     /**
