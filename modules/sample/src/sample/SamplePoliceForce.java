@@ -121,7 +121,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
             Blockade b = (Blockade)model.getEntity(next);
             double d = findDistanceTo(b, x, y);
             Logger.debug("Distance to " + b + " = " + d);
-            if (maxDistance > 0 && d < maxDistance) {
+            if (maxDistance < 0 || d < maxDistance) {
                 Logger.debug("In range");
                 return b;
             }
