@@ -3,6 +3,7 @@ package kernel;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+import rescuecore2.Constants;
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
@@ -23,7 +24,6 @@ import rescuecore2.log.Logger;
    A WorldModelCreator that talks to a remote GIS.
  */
 public class RemoteGISWorldModelCreator implements WorldModelCreator {
-    private static final String PORT_KEY = "gis.port";
     private int nextID;
 
     @Override
@@ -31,7 +31,7 @@ public class RemoteGISWorldModelCreator implements WorldModelCreator {
         Logger.info("Connecting to remote GIS...");
         DefaultWorldModel<Entity> world = DefaultWorldModel.create();
         CountDownLatch latch = new CountDownLatch(1);
-        int gisPort = config.getIntValue(PORT_KEY);
+        int gisPort = config.getIntValue(Constants.GIS_PORT_NUMBER_KEY, Constants.DEFAULT_GIS_PORT_NUMBER);
         Connection conn;
         try {
             conn = new TCPConnection(gisPort);
