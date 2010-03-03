@@ -8,6 +8,8 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.StandardEntityConstants;
 
 /**
    A CommandFilter that discards commands from dead agents.
@@ -17,9 +19,19 @@ public class DeadAgentsCommandFilter extends AbstractCommandFilter {
     protected boolean allowed(Command c, KernelState state) {
         EntityID id = c.getAgentID();
         Entity e = state.getWorldModel().getEntity(id);
-        if ((e instanceof Human) && ((Human)e).isHPDefined() && ((Human)e).getHP() <= 0) {
-            Logger.info("Ignoring command from dead agent " + e);
-            return false;
+        if (e instanceof Human) {
+            Human h = (Human)e;
+            if (h.isHPDefined() && h.getHP() <= 0) {
+                Logger.info("Ignoring command from dead agent " + h);
+                return false;
+            }
+        }
+        if (e instanceof Building) {
+            Building b = (Building)e;
+            if (b.isFierynessDefined() && b.getFierynessEnum() == StandardEntityConstants.Fieryness.BURNT_OUT) {
+                Logger.info("Ignoring command from burnt out centre " + b);
+                return false;
+            }
         }
         return true;
     }
