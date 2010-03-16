@@ -264,6 +264,12 @@ public class FireSimulatorWrapper extends StandardSimulator {
         if (oldH.isPositionDefined()) {
             newH.setPositionId(oldH.getPosition().getValue());
         }
+        if (oldH.isXDefined()) {
+            newH.setX(oldH.getX());
+        }
+        if (oldH.isYDefined()) {
+            newH.setY(oldH.getY());
+        }
         if (oldH instanceof rescuecore2.standard.entities.FireBrigade && newH instanceof FireBrigade) {
             rescuecore2.standard.entities.FireBrigade oldFB = (rescuecore2.standard.entities.FireBrigade)oldH;
             FireBrigade newFB = (FireBrigade)newH;
@@ -293,18 +299,22 @@ public class FireSimulatorWrapper extends StandardSimulator {
 
         @Override
         public void register(Simulator s) {
+            Logger.debug("register");
         }
 
         @Override
         public void establishConnection() {
+            Logger.debug("establishConnection");
         }
 
         @Override
         public void signalReadyness() {
+            Logger.debug("signalReadyness");
         }
 
         @Override
         public boolean waitForNextCycle() {
+            Logger.debug("waitForNextCycle");
             try {
                 commandsBarrier.await();
                 return true;
@@ -319,6 +329,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
 
         @Override
         public void sendUpdate() {
+            Logger.debug("sendUpdate");
             ChangeSet changes = new ChangeSet();
             for (Object next : world.getBuildings()) {
                 Building b = (Building)next;
@@ -342,9 +353,11 @@ public class FireSimulatorWrapper extends StandardSimulator {
 
         @Override
         public void receiveUpdate() {
+            Logger.debug("receiveUpdate");
         }
 
         ChangeSet commandsReceived(int newTime) throws InterruptedException, BrokenBarrierException {
+            Logger.debug("Waiting for simulator: time " + newTime);
             commandsBarrier.await();
             ChangeSet result = queue.take();
             return result;

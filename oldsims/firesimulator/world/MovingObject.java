@@ -16,6 +16,8 @@ public abstract class MovingObject extends RealObject {
     private World world = null;
     private String currentAction;
     private int currentActionLastChange;
+    private int x;
+    private int y;
 	
     public MovingObject(int id) {
         super(id);
@@ -70,34 +72,19 @@ public abstract class MovingObject extends RealObject {
     }
 
     public int getX() {
-        if (getLocation() == null)
-            return -1;
-        if (getLocation() instanceof Edge) {
-
-            Edge e = (Edge) getLocation();
-            Node head = (Node) world.getObject(e.getHeadID());
-            Node tail = (Node) world.getObject(e.getTailID());
-            int x = head.getX() + (tail.getX() - head.getX()) * positionExtra / e.length();
-            return x;
-        }
-        else
-            return getLocation().getX();
-		
+        return x;
     }
 
     public int getY() {
-        if (getLocation() == null)
-            return -1;
-        if (getLocation() instanceof Edge) {
+        return y;
+    }
 
-            Edge e = (Edge) getLocation();
-            Node head = (Node) world.getObject(e.getHeadID());
-            Node tail = (Node) world.getObject(e.getTailID());
-            int y = head.getY() + (tail.getY() - head.getY()) * positionExtra / e.length();
-            return y;
-        }
-        else
-            return getLocation().getY();
+    public void setX(int x) {
+        this.x = x;
+    }
+	
+    public void setY(int y) {
+        this.y = y;
     }
 	
     public void setStamina(int stamina){
