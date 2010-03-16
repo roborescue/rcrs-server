@@ -136,62 +136,62 @@ voice			: 30000
 
 
 #[Parameters]
-#Ä‚¯—‚¿ŠÔi–Ø‘¢,–h‰Î,‘Ï‰Îj
+#ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôiï¿½Ø‘ï¿½,ï¿½hï¿½ï¿½,ï¿½Ï‰Îj
 TSL1	:	50
 TSL2	:	80
 TSL3	:	120
 
-#‰Î‰Šo‚µŠÔi–Ø‘¢,–h‰Î,‘Ï‰Îj
+#ï¿½Î‰ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Ôiï¿½Ø‘ï¿½,ï¿½hï¿½ï¿½,ï¿½Ï‰Îj
 TS11	:	15
 TS12	:	60
 TS13	:	60
 
-#Å·Šú‚Ü‚Å‚ÌŠÔ”ä—¦‚b
+#ï¿½Åï¿½ï¿½ï¿½Ü‚Å‚Ìï¿½ï¿½Ô”ä—¦ï¿½b
 PRC	:	-0.4
 
-#ƒƒWƒXƒ`ƒbƒNŠÖ”‚ÌŒX‚«ŒW”
+#ï¿½ï¿½ï¿½Wï¿½Xï¿½`ï¿½bï¿½Nï¿½Öï¿½ï¿½ÌŒXï¿½ï¿½ï¿½Wï¿½ï¿½
 PRA	:	7.8
 
-#•—‘¬•â³ŒW”
+#ï¿½ï¿½ï¿½ï¿½ï¿½â³ï¿½Wï¿½ï¿½
 PRV1	:	-0.4
 
-#Œš•¨\‘¢•ÊƒEƒGƒCƒg
+#ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ÊƒEï¿½Gï¿½Cï¿½g
 CWW1	:	1
 CWW2	:	0.7
 CWW3	:	0.02
 
-#Šî€‚P‚e–ÊÏ(m2)
+#ï¿½î€ï¿½Pï¿½eï¿½Êï¿½(m2)
 STA1	:	100.0
 
-#Šî€‰„‚×°–ÊÏ(m2)
+#ï¿½î€ï¿½ï¿½ï¿½×ï¿½ï¿½Êï¿½(m2)
 STAL	:	100.0
 
-#Šî€‚P‚eŒš•¨‚‚³(m)
+#ï¿½î€ï¿½Pï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(m)
 STF1	:	3
 
-#Šî€‰ÎĞ‰×d(Kg/m2)
+#ï¿½î€ï¿½ÎĞ‰×d(Kg/m2)
 STQW	:	120.0
 
-#Šî€Œ©’Ê‚µŠp“x
+#ï¿½î€ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½pï¿½x
 STS	:	2.94
 
-#Šî€‹——£(m)
+#ï¿½î€ï¿½ï¿½ï¿½ï¿½(m)
 STD	:	1.0
 
-#–Ø‘¢Œš•¨’…‰ÎŠî€’l(—İÏ‰„Ä‰e‹¿—Ê,’PˆÊŠÔ‰„Ä‰e‹¿—Ê,’PˆÊŠÔÅ‘å‰„Ä‰e‹¿—Ê)
+#ï¿½Ø‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎŠî€ï¿½l(ï¿½İÏ‰ï¿½ï¿½Ä‰eï¿½ï¿½ï¿½ï¿½,ï¿½Pï¿½Êï¿½ï¿½Ô‰ï¿½ï¿½Ä‰eï¿½ï¿½ï¿½ï¿½,ï¿½Pï¿½Êï¿½ï¿½ÔÅ‘å‰„ï¿½Ä‰eï¿½ï¿½ï¿½ï¿½)
 CTW1	:	0.02
 CTW2	:	0.015
 CTW3	:	0.01
 
 
-#ƒ¢tŠÔ‚İ(•b)
+#ï¿½ï¿½tï¿½ï¿½ï¿½Ôï¿½ï¿½ï¿½(ï¿½b)
 DT	:	60
 
 #[System]
-#’ÊMƒƒO‚ğƒtƒ@ƒCƒ‹‚É‘‚«o‚·(ON)A‘‚«o‚³‚È‚¢(OFF)
+#ï¿½ÊMï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½oï¿½ï¿½(ON)ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½È‚ï¿½(OFF)
 #WRITELOG	:	OFF
 
-#’ÊMƒƒO‚ğ‰æ–Ê‚É‘‚«o‚·(ON)A‘‚«o‚³‚È‚¢(OFF)
+#ï¿½ÊMï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½Ê‚Éï¿½ï¿½ï¿½ï¿½oï¿½ï¿½(ON)ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½È‚ï¿½(OFF)
 #DISPLOG	:	ON
 
 
@@ -204,211 +204,211 @@ DT	:	60
 #misc_random_seed : 829594
 misc_random_seed : -1
 
-# Dice ‚Ì‘å‚«‚³
+# Dice ï¿½Ì‘å‚«ï¿½ï¿½
 magnitude_dice : 10000
 
-# DamageBury ‚Ìƒ_ƒ[ƒWisŠÖ”‚Ìƒpƒ‰ƒ[ƒ^ k * damage^2 + l + mutation
+# DamageBury ï¿½Ìƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½iï¿½sï¿½Öï¿½ï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ k * damage^2 + l + mutation
 # parameter for progress DamageBury function
 parameter_damage_bury_k :         0.000035         # 0.00055
 parameter_damage_bury_l :         0.01		  # 0.1
 probability_mutation_damage_bury : 0.05        
 
-# DamageBroken ‚Ìƒ_ƒ[ƒWisŠÖ”‚Ìƒpƒ‰ƒ[ƒ^ k * damage^2 + l + mutation
+# DamageBroken ï¿½Ìƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½iï¿½sï¿½Öï¿½ï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ k * damage^2 + l + mutation
 # parameter for progress DamageBroken function
 parameter_damage_broken_k         0.00025
 parameter_damage_broken_l         0.01
 probability_mutation_damage_broken : 0.05           
 
-# DamageFiery ‚Ìƒ_ƒ[ƒWisŠÖ”‚Ìƒpƒ‰ƒ[ƒ^ k * damage^2 + l + mutation
+# DamageFiery ï¿½Ìƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½iï¿½sï¿½Öï¿½ï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ k * damage^2 + l + mutation
 # parameter for progress DamageFiery function
 parameter_damage_fiery_k          0.00025
 parameter_damage_fiery_l          0.03
 probability_mutation_damage_fiery : 0.05
 
-# DamageBlock ‚Ìƒ_ƒ[ƒWisŠÖ”‚Ìƒpƒ‰ƒ[ƒ^ k * damage^2 + l + mutation
+# DamageBlock ï¿½Ìƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½iï¿½sï¿½Öï¿½ï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ k * damage^2 + l + mutation
 # parameter for progress DamageBlock function
 parameter_damage_block_k          0.00025
 parameter_damage_block_l          0.03
 probability_mutation_damage_block : 0.05
 
-# ‰Æ‰®“|‰ó‚Ì“x‡ (don't change. relative to collapse-simulator)
+# ï¿½Æ‰ï¿½ï¿½|ï¿½ï¿½Ì“xï¿½ï¿½ (don't change. relative to collapse-simulator)
 brokenness_partial_collapsed :    25
 brokenness_half_collapsed :       50
 brokenness_all_collapsed :        100
 
-# –„–v“x (–„–v“x_\‘¢_“|‰ó“x_k“x_)             
-#   –Ø‘¢, ˆê•”‘¹‰ó
+# ï¿½ï¿½ï¿½vï¿½x (ï¿½ï¿½ï¿½vï¿½x_ï¿½\ï¿½ï¿½_ï¿½|ï¿½ï¿½x_ï¿½kï¿½x_)             
+#   ï¿½Ø‘ï¿½, ï¿½ê•”ï¿½ï¿½ï¿½ï¿½
 buriedness_wood_partial_5seismic : 20  # less than seismic 5
 buriedness_wood_partial_6seismic : 20  # seismic 6
 buriedness_wood_partial_7seismic : 20  # seismic 7
 buriedness_wood_partial_8seismic : 20  # more than seismic 7
-#   –Ø‘¢, ”¼‰ó
+#   ï¿½Ø‘ï¿½, ï¿½ï¿½ï¿½ï¿½
 buriedness_wood_half_5seismic : 30
 buriedness_wood_half_6seismic : 30
 buriedness_wood_half_7seismic : 30
 buriedness_wood_half_8seismic : 30
-#   –Ø‘¢, ‘S‰ó
+#   ï¿½Ø‘ï¿½, ï¿½Sï¿½ï¿½
 buriedness_wood_all_5seismic : 60
 buriedness_wood_all_6seismic : 60
 buriedness_wood_all_7seismic : 60
 buriedness_wood_all_8seismic : 60
 
-#   “Sœ‘¢, ˆê•”‘¹‰ó
+#   ï¿½Sï¿½ï¿½ï¿½ï¿½, ï¿½ê•”ï¿½ï¿½ï¿½ï¿½
 buriedness_steel_partial_5seismic : 20  # less than seismic 5
 buriedness_steel_partial_6seismic : 20  # seismic 6
 buriedness_steel_partial_7seismic : 20  # seismic 7
 buriedness_steel_partial_8seismic : 20  # more than seismic 7
-#   “Sœ‘¢, ”¼‰ó
+#   ï¿½Sï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½
 buriedness_steel_half_5seismic : 35
 buriedness_steel_half_6seismic : 35
 buriedness_steel_half_7seismic : 35
 buriedness_steel_half_8seismic : 50
-#   “Sœ‘¢, ‘S‰ó
+#   ï¿½Sï¿½ï¿½ï¿½ï¿½, ï¿½Sï¿½ï¿½
 buriedness_steel_all_5seismic : 70
 buriedness_steel_all_6seismic : 70
 buriedness_steel_all_7seismic : 70
 buriedness_steel_all_8seismic : 70
 
-#   ƒRƒ“ƒNƒŠ[ƒg‘¢, ˆê•”‘¹‰ó
+#   ï¿½Rï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½, ï¿½ê•”ï¿½ï¿½ï¿½ï¿½
 buriedness_rc_partial_5seismic : 35
 buriedness_rc_partial_6seismic : 35
 buriedness_rc_partial_7seismic : 35
 buriedness_rc_partial_8seismic : 35
-#   ƒRƒ“ƒNƒŠ[ƒg‘¢, ”¼‰ó
+#   ï¿½Rï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½
 buriedness_rc_half_5seismic : 60
 buriedness_rc_half_6seismic : 60
 buriedness_rc_half_7seismic : 60
 buriedness_rc_half_8seismic : 60
-#   ƒRƒ“ƒNƒŠ[ƒg‘¢, ‘S‰ó
+#   ï¿½Rï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½gï¿½ï¿½, ï¿½Sï¿½ï¿½
 buriedness_rc_all_5seismic : 80
 buriedness_rc_all_6seismic : 80
 buriedness_rc_all_7seismic : 80
 buriedness_rc_all_8seismic : 80
 
-# €—¦ (\‘¢_•‰’ö“x_k“x)
+# ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½\ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½x_ï¿½kï¿½x)
 # occurrence rate ( victims / indoor [wood] people)
 rate_wood_death_5seismic :     0.0
 rate_wood_death_6seismic :     0.0024917
 rate_wood_death_7seismic :     0.0092440
-rate_wood_death_8seismic :     0.0200000  # b’è: “Œvƒf[ƒ^–³‚µ
+rate_wood_death_8seismic :     0.0200000  # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_wood_serious_5seismic :  0.3 # 0.0
 rate_wood_serious_6seismic :  0.3 # 0.0027906
 rate_wood_serious_7seismic :  0.3 # 0.0096705
-rate_wood_serious_8seismic :  0.3 # 0.0200000  # b’è: “Œvƒf[ƒ^–³‚µ
+rate_wood_serious_8seismic :  0.3 # 0.0200000  # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_wood_slight_5seismic :   0.5 # 0.0
 rate_wood_slight_6seismic :   0.5 # 0.0080275
 rate_wood_slight_7seismic :   0.5 # 0.0258145
-rate_wood_slight_8seismic :   0.5 # 0.0600000  # b’è: “Œvƒf[ƒ^–³‚µ
+rate_wood_slight_8seismic :   0.5 # 0.0600000  # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_steel_death_5seismic :   0.00000535
 rate_steel_death_6seismic :   0.00012521
 rate_steel_death_7seismic :   0.0007503
-rate_steel_death_8seismic :   0.005 # b’è: “Œvƒf[ƒ^–³‚µ
+rate_steel_death_8seismic :   0.005 # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_steel_serious_5seismic :   0.0001275427
 rate_steel_serious_6seismic :   0.000279061
 rate_steel_serious_7seismic :   0.0096705
-rate_steel_serious_8seismic :   0.03 # b’è: “Œvƒf[ƒ^–³‚µ
+rate_steel_serious_8seismic :   0.03 # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_steel_slight_5seismic :    0.0005437693
 rate_steel_slight_6seismic :    0.00798749
 rate_steel_slight_7seismic :    0.0257665
-rate_steel_slight_8seismic :    0.1 # b’è: “Œvƒf[ƒ^–³‚µ
+rate_steel_slight_8seismic :    0.1 # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_rc_death_5seismic :   0.00000535
 rate_rc_death_6seismic :   0.00012521
 rate_rc_death_7seismic :   0.0007503
-rate_rc_death_8seismic :   0.005 # b’è: “Œvƒf[ƒ^–³‚µ
+rate_rc_death_8seismic :   0.005 # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_rc_serious_5seismic :   0.0001275427
 rate_rc_serious_6seismic :   0.000279061
 rate_rc_serious_7seismic :   0.0096705
-rate_rc_serious_8seismic :   0.03 # b’è: “Œvƒf[ƒ^–³‚µ
+rate_rc_serious_8seismic :   0.03 # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
 rate_rc_slight_5seismic :    0.0005437693
 rate_rc_slight_6seismic :    0.00798749
 rate_rc_slight_7seismic :    0.0257665
-rate_rc_slight_8seismic :    0.1 # b’è: “Œvƒf[ƒ^–³‚µ
+rate_rc_slight_8seismic :    0.1 # ï¿½bï¿½ï¿½: ï¿½ï¿½ï¿½vï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½
 
-# –„–v—¦
+# ï¿½ï¿½ï¿½vï¿½ï¿½
 rate_bury_wood_5seismic:    1.0 # 0.00001
 rate_bury_wood_6seismic:    1.0 # 0.0292
 rate_bury_wood_7seismic:    1.0 # 0.1
-rate_bury_wood_8seismic:    1.0 # 0.2 # “Œv‘—¿‚È‚µ
+rate_bury_wood_8seismic:    1.0 # 0.2 # ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 
 rate_bury_steel_5seismic:   0.0
 rate_bury_steel_6seismic:   0.001782
 rate_bury_steel_7seismic:   0.0040
-rate_bury_steel_8seismic:   0.008 # “Œv‘—¿‚È‚µ
+rate_bury_steel_8seismic:   0.008 # ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 
 rate_bury_rc_5seismic:   0.0
 rate_bury_rc_6seismic:   0.001782
 rate_bury_rc_7seismic:   0.0040
-rate_bury_rc_8seismic:   0.008 # “Œv‘—¿‚È‚µ
+rate_bury_rc_8seismic:   0.008 # ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½
 
-# –„–v‚Éƒ_ƒ[ƒW‚ğó‚¯‚éŠm—¦ (these sumation <= 1.0)
+# ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Éƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½ï¿½ó‚¯‚ï¿½mï¿½ï¿½ (these sumation <= 1.0)
 prob_bury_slight:        0.4
 prob_bury_serious:       0.5
 prob_bury_dying:         0.1
 
-# ‰„Ä‚µ‚Ä‚¢‚éŒš•¨“à‚Åƒ_ƒ[ƒW‚ğó‚¯‚éŠm—¦ (these sumation <= 1.0)
+# ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ä‚ï¿½ï¿½éŒšï¿½ï¿½ï¿½ï¿½ï¿½Åƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½ï¿½ó‚¯‚ï¿½mï¿½ï¿½ (these sumation <= 1.0)
 prob_fiery_slight:       0.4 # 0.4
 prob_fiery_serious:      0.2 # 0.5
 prob_fiery_dying:        0.1 # 0.1
 
-# “¹˜H•ÂÇ‚Åƒ_ƒ[ƒW‚ğó‚¯‚éŠm—¦ (these sumation <= 1.0)
+# ï¿½ï¿½ï¿½Hï¿½ÂÇ‚Åƒ_ï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½ï¿½ó‚¯‚ï¿½mï¿½ï¿½ (these sumation <= 1.0)
 prob_block_slight:       0.4 # 0.5
 prob_block_serious:      0.2 # 0.4
 prob_block_dying:        0.1 # 0.1
 
-# “|‰ó‚É‚æ‚éƒ_ƒ[ƒW
-# –³
+# ï¿½|ï¿½ï¿½É‚ï¿½ï¿½_ï¿½ï¿½ï¿½[ï¿½W
+# ï¿½ï¿½ï¿½ï¿½
 damage_broken_unhurt:      0
-# Œy
+# ï¿½yï¿½ï¿½
 damage_broken_slight:      2
-# d
+# ï¿½dï¿½ï¿½
 damage_broken_serious:     10
-# €–S
+# ï¿½ï¿½ï¿½S
 damage_broken_death:	   10000
 
-# –„–v‚É‚æ‚éƒ_ƒ[ƒW
-# –³
+# ï¿½ï¿½ï¿½vï¿½É‚ï¿½ï¿½_ï¿½ï¿½ï¿½[ï¿½W
+# ï¿½ï¿½ï¿½ï¿½
 damage_bury_unhurt :   0
-# Œy
+# ï¿½yï¿½ï¿½
 damage_bury_slight :   3
-# d
+# ï¿½dï¿½ï¿½
 damage_bury_serious:   15
-# •m€
+# ï¿½mï¿½ï¿½
 damage_bury_dying:     100
 
-# ‰ÎĞ‚É‚æ‚éƒ_ƒ[ƒW
-# –³
+# ï¿½ÎĞ‚É‚ï¿½ï¿½_ï¿½ï¿½ï¿½[ï¿½W
+# ï¿½ï¿½ï¿½ï¿½
 damage_fiery_unhurt :   0
-# Œy
+# ï¿½yï¿½ï¿½
 damage_fiery_slight :   5
-# d
+# ï¿½dï¿½ï¿½
 damage_fiery_serious:   20
-# •m€
+# ï¿½mï¿½ï¿½
 damage_fiery_dying:     100
-# €–S
+# ï¿½ï¿½ï¿½S
 damage_fiery_death:     10000
 
-# “¹˜H•ÂÇ‚É‚æ‚éƒ_ƒ[ƒW
-# –³
+# ï¿½ï¿½ï¿½Hï¿½ÂÇ‚É‚ï¿½ï¿½_ï¿½ï¿½ï¿½[ï¿½W
+# ï¿½ï¿½ï¿½ï¿½
 damage_block_unhurt :   0
-# Œy
+# ï¿½yï¿½ï¿½
 damage_block_slight :   3
-# d
+# ï¿½dï¿½ï¿½
 damage_block_serious:   8
-# •m€
+# ï¿½mï¿½ï¿½
 damage_block_dying:     15
-# €–S
+# ï¿½ï¿½ï¿½S
 damage_block_death:     10000
 
-# Civilian ‚É—^‚¦‚éƒ_ƒ[ƒW‚É‘Î‚·‚é”{—¦
-# Civilian ˆÈŠO‚ÌƒG[ƒWƒFƒ“ƒg‚É“K—p
+# Civilian ï¿½É—^ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½[ï¿½Wï¿½É‘Î‚ï¿½ï¿½ï¿½{ï¿½ï¿½
+# Civilian ï¿½ÈŠOï¿½ÌƒGï¿½[ï¿½Wï¿½Fï¿½ï¿½ï¿½gï¿½É“Kï¿½p
 # for AmbulanceTeam
 magnification_damage_bury_ambulance:      0.2
 magnification_damage_broken_ambulance:    0.2

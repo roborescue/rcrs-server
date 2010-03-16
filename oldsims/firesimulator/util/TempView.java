@@ -40,7 +40,7 @@ public class TempView extends JFrame{
 			g.setColor(Color.BLACK);
 			for(int x=0;x<=200;x+=40){
 				g.drawLine(105,250-x,110,250-x);
-				g.drawString(""+x*5+"°C",115,255-x);
+				g.drawString(""+x*5+"ï¿½C",115,255-x);
 			}
 		}
 		

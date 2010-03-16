@@ -153,7 +153,7 @@ public class Configuration {
 	private void printHelpAndExit(){
 		System.out.println("ResQ Firesimulator");
 		System.out.println(VERSION);
-		System.out.println("author: Timo Nüssle\nemail: nuessle@informatik.uni-freiburg.de\n");
+		System.out.println("author: Timo Nï¿½ssle\nemail: nuessle@informatik.uni-freiburg.de\n");
 		System.out.println("java Main [-<option> <value>]*");
 		for(Iterator i=Props.iterator();i.hasNext();)
 			System.out.print(((Prop)i.next()).getDescription());

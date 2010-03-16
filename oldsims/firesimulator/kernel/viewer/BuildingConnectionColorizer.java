@@ -6,7 +6,7 @@ import firesimulator.world.Building;
 import firesimulator.world.RescueObject;
 
 /**
- * @author Timo Nüssle
+ * @author Timo Nï¿½ssle
  *
  */
 public class BuildingConnectionColorizer	implements BuildingColorizer, SelectorListener 

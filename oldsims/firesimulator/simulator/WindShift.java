@@ -1,7 +1,7 @@
 package firesimulator.simulator;
 
 /**
- * @author Timo Nüssle
+ * @author Timo Nï¿½ssle
  *
  */
 public class WindShift{	

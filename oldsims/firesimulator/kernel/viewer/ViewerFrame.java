@@ -398,7 +398,7 @@ public class ViewerFrame extends JFrame implements SelectorListener{
 		flowpanel.add(compcon.getComponent(),compcon.getConstrains());
 		JPanel windpanel=new JPanel(new GridLayout(2,1));		
 		windpanel.setBorder(BorderFactory.createTitledBorder(windpanel.getBorder(),"wind"));
-		compcon=ComponentFactory.createField(0,360,ComponentFactory.FLOAT,1,"direction","°","wind_direction");		
+		compcon=ComponentFactory.createField(0,360,ComponentFactory.FLOAT,1,"direction","ï¿½","wind_direction");		
 		controllSetters.add(compcon.getSetter());
 		windpanel.add(compcon.getComponent(),compcon.getConstrains());
 		compcon=ComponentFactory.createField(0,5000,ComponentFactory.INT,0,"speed","mm","wind_speed");		
