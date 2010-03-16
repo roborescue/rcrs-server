@@ -140,7 +140,6 @@ public class LineOfSightPerception implements Perception, GUIComponent {
             Point2D point = new Point2D(location.first(), location.second());
             Collection<StandardEntity> nearby = world.getObjectsInRange(location.first(), location.second(), viewDistance);
             Collection<StandardEntity> visible = findVisible(agentEntity, point, nearby);
-            // Copy entities and set property values
             for (StandardEntity next : visible) {
                 StandardEntityURN urn = next.getStandardURN();
                 switch (urn) {
@@ -190,7 +189,13 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         if (road.isBlockadesDefined()) {
             for (EntityID id : road.getBlockades()) {
                 Blockade blockade = (Blockade)world.getEntity(id);
-                addBlockadeProperties(blockade, result);
+                if (blockade == null) {
+                    Logger.error("Blockade " + id + " is null!");
+                    Logger.error(road.getFullDescription());
+                }
+                else {
+                    addBlockadeProperties(blockade, result);
+                }
             }
         }
     }
