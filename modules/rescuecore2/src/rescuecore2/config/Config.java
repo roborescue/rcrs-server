@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.math.BigInteger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +34,6 @@ import org.uncommons.maths.random.SeedGenerator;
    This class represents a config file and any other config files that might have been included with a !include directive. Config files must be defined relative to a base directory so that includes can be resolved.
  */
 public class Config {
-    private static final String INCLUDE = "!include";
     private static final String ARRAY_REGEX = " |,";
 
     /**
@@ -139,54 +139,17 @@ public class Config {
                 }
                 ++lineNumber;
                 if (line != null) {
-                    line = line.trim();
                     // Strip off everything after a #
                     int hashIndex = line.indexOf("#");
                     if (hashIndex != -1) {
                         line = line.substring(0, hashIndex).trim();
                     }
+                    line = line.trim();
                     // Ignore empty lines
                     if ("".equals(line)) {
                         continue;
                     }
-                    // Look for a !include
-                    else if (line.startsWith(INCLUDE)) {
-                        if (INCLUDE.equals(line)) {
-                            throw new ConfigException(name, "Line " + lineNumber + ": Empty include directive");
-                        }
-                        String includeName = line.substring(INCLUDE.length() + 1).trim();
-                        // includeName cannot be the empty string because the line was trimmed when it was read from the stream.
-                        Context newContext = context.include(includeName);
-                        newContext.process(this);
-                    }
-                    else {
-                        int index1 = line.indexOf(':');
-                        int index2 = line.indexOf('=');
-                        if (index1 == -1 && index2 == -1) {
-                            throw new ConfigException(name, "Line " + lineNumber + ": No ':' or '=' found");
-                        }
-                        int index;
-                        if (index1 == -1) {
-                            index = index2;
-                        }
-                        else if (index2 == -1) {
-                            index = index1;
-                        }
-                        else {
-                            index = Math.min(index1, index2);
-                        }
-                        if (index == line.length() - 1) {
-                            throw new ConfigException(name, "Line " + lineNumber + ": No value found");
-                        }
-                        if (index == 0) {
-                            throw new ConfigException(name, "Line " + lineNumber + ": No key found");
-                        }
-                        String key = line.substring(0, index).trim();
-                        String value = line.substring(index + 1).trim();
-                        data.put(key, value);
-                        noCache.remove(key);
-                        clearCache(key);
-                    }
+                    LineType.process(line, context, this, lineNumber);
                 }
             }
         }
@@ -249,12 +212,12 @@ public class Config {
        @param key The key to remove constraints from.
     */
     /*
-    public void removeConstraint(String key) {
-        ConstrainedConfigValue c = constraints.get(key);
-        if (c != null) {
-            removeConstraint(c);
-        }
-    }
+      public void removeConstraint(String key) {
+      ConstrainedConfigValue c = constraints.get(key);
+      if (c != null) {
+      removeConstraint(c);
+      }
+      }
     */
 
     /**
@@ -271,9 +234,9 @@ public class Config {
        @return The constraint for that key, or null if there is no constraint.
     */
     /*
-    public ConstrainedConfigValue getConstraint(String key) {
-        return constraints.get(key);
-    }
+      public ConstrainedConfigValue getConstraint(String key) {
+      return constraints.get(key);
+      }
     */
 
     /**
@@ -282,13 +245,13 @@ public class Config {
        @return True if the key's value violates the constraints.
     */
     /*
-    public boolean isConstraintViolated(String key) {
-        ConstrainedConfigValue c = getConstraint(key);
-        if (c != null) {
-            return violatedConstraints.contains(c);
-        }
-        return false;
-    }
+      public boolean isConstraintViolated(String key) {
+      ConstrainedConfigValue c = getConstraint(key);
+      if (c != null) {
+      return violatedConstraints.contains(c);
+      }
+      return false;
+      }
     */
 
     /**
@@ -946,6 +909,102 @@ public class Config {
             byte[] result = new byte[length];
             System.arraycopy(data, 0, result, 0, Math.min(data.length, result.length));
             return result;
+        }
+    }
+
+    private enum LineType {
+        INCLUDE {
+            @Override
+            public void process(Matcher matcher, Context context, Config config, int lineNumber) throws ConfigException {
+                String includeName = matcher.group(1).trim();
+                if ("".equals(includeName)) {
+                    throw new ConfigException(context.getName(), lineNumber, "Empty include directive");
+                }
+                Logger.trace("Reading included config '" + includeName + "'");
+                Context newContext = context.include(includeName);
+                newContext.process(config);
+            }
+
+            @Override
+            protected String getRegex() {
+                return "^!include\\s*(.*)";
+            }
+        },
+
+        ADDITIVE {
+            @Override
+            public void process(Matcher matcher, Context context, Config config, int lineNumber) throws ConfigException {
+                String key = matcher.group(1).trim();
+                String value = matcher.group(2).trim();
+                if ("".equals(key)) {
+                    throw new ConfigException(context.getName(), lineNumber, "Empty key");
+                }
+                if ("".equals(value)) {
+                    throw new ConfigException(context.getName(), lineNumber, "Empty value");
+                }
+                String existing = config.getValue(key, null);
+                if (existing != null && !"".equals(existing)) {
+                    Logger.trace("Appending '" + value + "' to '" + key + "'");
+                    value = existing + " " + value;
+                }
+                else {
+                    Logger.trace("Setting '" + key + "' to '" + value + "'");
+                }
+                config.setValue(key, value);
+            }
+
+            @Override
+            protected String getRegex() {
+                return "^([^+]*)(?:\\+:|=)(.*)";
+            }
+        },
+
+        NORMAL {
+            @Override
+            public void process(Matcher matcher, Context context, Config config, int lineNumber) throws ConfigException {
+                String key = matcher.group(1).trim();
+                String value = matcher.group(2).trim();
+                if ("".equals(key)) {
+                    throw new ConfigException(context.getName(), lineNumber, "Empty key");
+                }
+                if ("".equals(value)) {
+                    throw new ConfigException(context.getName(), lineNumber, "Empty value");
+                }
+                Logger.trace("Setting '" + key + "' to '" + value + "'");
+                if (config.isDefined(key)) {
+                    Logger.warn("Redefining config key '" + key + "' as '" + value + "'");
+                }
+                config.setValue(key, value);
+            }
+
+            @Override
+            protected String getRegex() {
+                return "^([^:=]*)(?::|=)(.*)";
+            }
+        };
+
+        private Pattern pattern;
+
+        private LineType() {
+            pattern = Pattern.compile(getRegex());
+        }
+
+        public Pattern getPattern() {
+            return pattern;
+        }
+
+        protected abstract String getRegex();
+        protected abstract void process(Matcher matcher, Context context, Config config, int lineNumber) throws ConfigException;
+
+        public static void process(String line, Context context, Config config, int lineNumber) throws ConfigException {
+            for (LineType next : values()) {
+                Matcher matcher = next.getPattern().matcher(line);
+                if (matcher.matches()) {
+                    next.process(matcher, context, config, lineNumber);
+                    return;
+                }
+            }
+            throw new ConfigException(context.getName(), lineNumber, "Unrecognised config option: '" + line + "'");
         }
     }
 }

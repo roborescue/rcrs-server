@@ -546,7 +546,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No value found"));
+            assertTrue(e.getMessage().contains("Empty value"));
         }
         try {
             read(MALFORMED_2);
@@ -554,7 +554,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No key found"));
+            assertTrue(e.getMessage().contains("Empty key"));
         }
         try {
             read(MALFORMED_3);
@@ -562,7 +562,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No ':' or '=' found"));
+            assertTrue(e.getMessage().contains("Unrecognised config option"));
         }
         try {
             read(MALFORMED_4);
@@ -570,7 +570,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No ':' or '=' found"));
+            assertTrue(e.getMessage().contains("Unrecognised config option"));
         }
         try {
             read(MALFORMED_5);
@@ -578,7 +578,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No key found"));
+            assertTrue(e.getMessage().contains("Empty key"));
         }
         try {
             read(MALFORMED_6);
@@ -586,7 +586,7 @@ public class ConfigTest {
         }
         catch (ConfigException e) {
             // Expected
-            assertTrue(e.getMessage().contains("No value found"));
+            assertTrue(e.getMessage().contains("Empty value"));
         }
     }
 
