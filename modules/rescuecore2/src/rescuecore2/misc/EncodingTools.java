@@ -308,7 +308,7 @@ public final class EncodingTools {
     }
 
     /**
-       Write a double integer to a byte array.
+       Write a double to a byte array.
        @param d The double to write.
        @param out The buffer to write it to.
        @param offset Where in the buffer to write it.
@@ -391,6 +391,78 @@ public final class EncodingTools {
      */
     public static double readDouble(byte[] in) {
         return readDouble(in, 0);
+    }
+
+    /**
+       Write a boolean to an OutputStream.
+       @param b The boolean to write.
+       @param out The OutputStream to write it to.
+       @throws IOException If the OutputStream blows up.
+     */
+    public static void writeBoolean(boolean b, OutputStream out) throws IOException {
+        out.write(b ? 1 : 0);
+    }
+
+    /**
+       Write a boolean to a DataOutput.
+       @param b The boolean to write.
+       @param out The DataOutput to write it to.
+       @throws IOException If the DataOutput blows up.
+     */
+    public static void writeBoolean(boolean b, DataOutput out) throws IOException {
+        out.writeBoolean(b);
+    }
+
+    /**
+       Write a boolean to a byte array.
+       @param b The boolean to write.
+       @param out The buffer to write it to.
+       @param offset Where in the buffer to write it.
+     */
+    public static void writeBoolean(boolean b, byte[] out, int offset) {
+        out[offset] = (byte)(b ? 1 : 0);
+    }
+
+    /**
+       Read a boolean from an input stream.
+       @param in The InputStream to read from.
+       @return The next boolean in the stream.
+       @throws IOException If the InputStream blows up.
+       @throws EOFException If the end of the stream is reached.
+     */
+    public static boolean readBoolean(InputStream in) throws IOException {
+        int b = in.read();
+        return b == 1;
+    }
+
+    /**
+       Read a boolean from a DataInput.
+       @param in The DataInput to read from.
+       @return The next boolean in the stream.
+       @throws IOException If the DataInput blows up.
+       @throws EOFException If the end of the stream is reached.
+     */
+    public static boolean readBoolean(DataInput in) throws IOException {
+        return in.readBoolean();
+    }
+
+    /**
+       Read a boolean from a byte array.
+       @param in The buffer to read from.
+       @param offset Where to begin reading.
+       @return The next boolean in the buffer.
+     */
+    public static boolean readBoolean(byte[] in, int offset) {
+        return in[offset] == 1;
+    }
+
+    /**
+       Read a boolean from a byte array. This is equivalent to calling {@link #readBoolean(byte[], int) readBoolean(in, 0)}.
+       @param in The buffer to read from.
+       @return The first boolean in the buffer.
+     */
+    public static boolean readBoolean(byte[] in) {
+        return readBoolean(in, 0);
     }
 
     /**
@@ -481,6 +553,7 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Entity readEntity(InputStream in, Registry registry) throws IOException {
+        Registry.setCurrentRegistry(registry);
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
@@ -488,7 +561,6 @@ public final class EncodingTools {
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Registry.setCurrentRegistry(registry);
         Entity result = registry.createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
@@ -504,6 +576,7 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Entity readEntity(DataInput in, Registry registry) throws IOException {
+        Registry.setCurrentRegistry(registry);
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
@@ -511,7 +584,6 @@ public final class EncodingTools {
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Registry.setCurrentRegistry(registry);
         Entity result = registry.createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
@@ -526,15 +598,18 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeProperty(Property p, OutputStream out) throws IOException {
-        ByteArrayOutputStream gather = new ByteArrayOutputStream();
-        p.write(gather);
-        byte[] bytes = gather.toByteArray();
         //   Type
         writeString(p.getURN(), out);
-        //   Size
-        writeInt32(bytes.length, out);
-        //   Data
-        out.write(bytes);
+        writeBoolean(p.isDefined(), out);
+        if (p.isDefined()) {
+            ByteArrayOutputStream gather = new ByteArrayOutputStream();
+            p.write(gather);
+            byte[] bytes = gather.toByteArray();
+            //   Size
+            writeInt32(bytes.length, out);
+            //   Data
+            out.write(bytes);
+        }
     }
 
     /**
@@ -544,15 +619,18 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeProperty(Property p, DataOutput out) throws IOException {
-        ByteArrayOutputStream gather = new ByteArrayOutputStream();
-        p.write(gather);
-        byte[] bytes = gather.toByteArray();
         //   Type
         writeString(p.getURN(), out);
-        //   Size
-        writeInt32(bytes.length, out);
-        //   Data
-        out.write(bytes);
+        writeBoolean(p.isDefined(), out);
+        if (p.isDefined()) {        
+            ByteArrayOutputStream gather = new ByteArrayOutputStream();
+            p.write(gather);
+            byte[] bytes = gather.toByteArray();
+            //   Size
+            writeInt32(bytes.length, out);
+            //   Data
+            out.write(bytes);
+        }
     }
 
     /**
@@ -563,15 +641,19 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Property readProperty(InputStream in, Registry registry) throws IOException {
+        Registry.setCurrentRegistry(registry);
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
-        int size = readInt32(in);
-        byte[] content = readBytes(size, in);
-        Registry.setCurrentRegistry(registry);
+        boolean defined = readBoolean(in);
         Property result = registry.createProperty(urn);
-        if (result != null) {
+        if (result == null) {
+            return null;
+        }
+        if (defined) {
+            int size = readInt32(in);
+            byte[] content = readBytes(size, in);
             result.read(new ByteArrayInputStream(content));
         }
         return result;
@@ -585,15 +667,19 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Property readProperty(DataInput in, Registry registry) throws IOException {
+        Registry.setCurrentRegistry(registry);
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
-        int size = readInt32(in);
-        byte[] content = readBytes(size, in);
-        Registry.setCurrentRegistry(registry);
+        boolean defined = readBoolean(in);
         Property result = registry.createProperty(urn);
-        if (result != null) {
+        if (result == null) {
+            return null;
+        }
+        if (defined) {
+            int size = readInt32(in);
+            byte[] content = readBytes(size, in);
             result.read(new ByteArrayInputStream(content));
         }
         return result;
@@ -649,13 +735,13 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(InputStream in, Registry registry) throws IOException {
+        Registry.setCurrentRegistry(registry);
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Registry.setCurrentRegistry(registry);
         Message result = registry.createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
@@ -668,13 +754,13 @@ public final class EncodingTools {
        @throws IOException If there is a problem reading from the stream.
     */
     public static Message readMessage(DataInput in, Registry registry) throws IOException {
+        Registry.setCurrentRegistry(registry);
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Registry.setCurrentRegistry(registry);
         Message result = registry.createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
