@@ -58,6 +58,8 @@ public class CollapseSimulator extends StandardSimulator {
     private static final String SLIGHT_MEAN_SUFFIX = "slight.mean";
     private static final String SLIGHT_SD_SUFFIX = "slight.sd";
 
+    private static final String BLOCK_KEY = "collapse.create-road-blockages";
+
     private static final int MAX_COLLAPSE = 100;
 
     private static final double FLOOR_HEIGHT = 7000;
@@ -68,6 +70,8 @@ public class CollapseSimulator extends StandardSimulator {
     private GaussianGenerator severe;
     private GaussianGenerator moderate;
     private GaussianGenerator slight;
+
+    private boolean block;
 
     private Map<StandardEntityConstants.BuildingCode, CollapseStats> stats;
 
@@ -98,6 +102,7 @@ public class CollapseSimulator extends StandardSimulator {
         destroyed = new GaussianGenerator(config.getFloatValue(CONFIG_PREFIX + DESTROYED_MEAN_SUFFIX),
                                           config.getFloatValue(CONFIG_PREFIX + DESTROYED_SD_SUFFIX),
                                           config.getRandom());
+        block = config.getBooleanValue(BLOCK_KEY);
     }
 
     @Override
@@ -201,6 +206,9 @@ public class CollapseSimulator extends StandardSimulator {
     }
 
     private void createBlockages(Building b, Map<Road, Collection<Blockade>> roadBlockages) {
+        if (!block) {
+            return;
+        }
         // CHECKSTYLE:OFF:MagicNumber
         double d = FLOOR_HEIGHT * b.getFloors() * (1.0 + (b.getBrokenness() / 100.0));
         // CHECKSTYLE:ON:MagicNumber
