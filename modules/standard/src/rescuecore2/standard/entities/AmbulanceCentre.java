@@ -23,6 +23,14 @@ public class AmbulanceCentre extends Building {
         super(other);
     }
 
+    /**
+       Create an ambulance centre based on another Building.
+       @param other The Building to copy.
+     */
+    public AmbulanceCentre(Building other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new AmbulanceCentre(getID());

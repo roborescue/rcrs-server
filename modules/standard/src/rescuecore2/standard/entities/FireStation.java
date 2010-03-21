@@ -23,6 +23,14 @@ public class FireStation extends Building {
         super(other);
     }
 
+    /**
+       Create a fire station based on another Building.
+       @param other The Building to copy.
+     */
+    public FireStation(Building other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new FireStation(getID());

@@ -23,6 +23,14 @@ public class PoliceOffice extends Building {
         super(other);
     }
 
+    /**
+       Create a police office based on another Building.
+       @param other The Building to copy.
+     */
+    public PoliceOffice(Building other) {
+        super(other);
+    }
+
     @Override
     protected Entity copyImpl() {
         return new PoliceOffice(getID());
