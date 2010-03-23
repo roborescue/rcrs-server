@@ -6,6 +6,7 @@ import static rescuecore2.misc.EncodingTools.reallySkip;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.EOFException;
 import java.io.RandomAccessFile;
 import java.io.ByteArrayInputStream;
 
@@ -186,6 +187,9 @@ public class FileLogReader extends AbstractLogReader {
                 }
                 indexRecord(type);
             } while (!RecordType.END_OF_LOG.equals(type));
+        }
+        catch (EOFException e) {
+            Logger.debug("EOF found");
         }
         catch (IOException e) {
             throw new LogException(e);
