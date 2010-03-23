@@ -1308,9 +1308,9 @@
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#207"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#208"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#126"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#123"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#223"/>
-        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#228"/>
+        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#123" rcr:neighbour="267"/>
+        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#223" rcr:neighbour="267"/>
+        <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#228" rcr:neighbour="267"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#227"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#209"/>
       </gml:Face>
@@ -1559,9 +1559,9 @@
     <rcr:road xmlns:gml="http://www.opengis.net/gml" gml:id="267">
       <gml:Face>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#104"/>
-        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#228"/>
-        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#223"/>
-        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#123"/>
+        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#228" rcr:neighbour="254"/>
+        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#223" rcr:neighbour="254"/>
+        <gml:directedEdge orientation="-" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#123" rcr:neighbour="254"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#129"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#144" rcr:neighbour="262"/>
         <gml:directedEdge orientation="+" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#143"/>
