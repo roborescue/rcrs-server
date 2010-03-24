@@ -101,6 +101,11 @@ public abstract class Human extends StandardEntity {
         if (x.isDefined() && y.isDefined()) {
             return new Pair<Integer, Integer>(x.getValue(), y.getValue());
         }
+        if (position.isDefined()) {
+            EntityID pos = getPosition();
+            StandardEntity e = world.getEntity(pos);
+            return e.getLocation(world);
+        }
         return null;
     }
 
