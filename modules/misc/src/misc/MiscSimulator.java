@@ -19,9 +19,14 @@ import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardPropertyURN;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.messages.AKRescue;
+import rescuecore2.standard.messages.AKLoad;
+import rescuecore2.standard.messages.AKUnload;
 import rescuecore2.standard.components.StandardSimulator;
 
 import rescuecore2.GUIComponent;
@@ -87,6 +92,18 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
                     Human human = (Human)(model.getEntity(((AKRescue)com).getTarget()));
                     handleRescue(human, changes);
                 }
+                if (com instanceof AKLoad) {
+                    Civilian target = (Civilian)(model.getEntity(((AKLoad)com).getTarget()));
+                    AmbulanceTeam at = (AmbulanceTeam)model.getEntity(com.getAgentID());
+                    handleLoad(target, at, changes);
+                }
+                if (com instanceof AKUnload) {
+                    AmbulanceTeam at = (AmbulanceTeam)model.getEntity(com.getAgentID());
+                    handleUnload(at, changes);
+                }
+            }
+            else {
+                Logger.debug("Ignoring " + com);
             }
         }
 
@@ -221,6 +238,12 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         if (command instanceof AKRescue) {
             return checkRescue((AKRescue)command, e);
         }
+        if (command instanceof AKLoad) {
+            return checkLoad((AKLoad)command, e);
+        }
+        if (command instanceof AKUnload) {
+            return checkUnload((AKUnload)command, e);
+        }
         return false;
     }
 
@@ -228,37 +251,163 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         EntityID targetID = rescue.getTarget();
         Entity target = model.getEntity(targetID);
         if (!(agent instanceof AmbulanceTeam)) {
-            Logger.warn("Received a rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + " who is of type " + agent.getURN());
             return false;
         }
         if (target == null) {
-            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + " for a non-existant target " + targetID);
             return false;
         }
         if (!(target instanceof Human)) {
-            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + " for a non-human target: " + targetID + " is of type " + target.getURN());
             return false;
         }
         Human h = (Human)target;
         AmbulanceTeam at = (AmbulanceTeam)agent;
+        if (at.isHPDefined() && at.getHP() <= 0) {
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + ": agent is dead");
+            return false;
+        }
+        if (at.isBuriednessDefined() && at.getBuriedness() > 0) {
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + ": agent is buried");
+            return false;
+        }
         if (!h.isBuriednessDefined() || h.getBuriedness() == 0) {
-            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + " for a non-buried target " + targetID);
             return false;
         }
         if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
-            Logger.warn("Received a rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
             return false;
         }
         if (h.getID().equals(at.getID())) {
-            Logger.warn("Agent " + agent.getID() + " tried to rescue itself");
+            Logger.warn("Rejecting rescue command from agent " + agent.getID() + ": tried to rescue self");
             return false;
         }
         return true;
     }
 
+    private boolean checkLoad(AKLoad load, Entity agent) {
+        EntityID targetID = load.getTarget();
+        Entity target = model.getEntity(targetID);
+        if (!(agent instanceof AmbulanceTeam)) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            return false;
+        }
+        if (target == null) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + " for a non-existant target " + targetID);
+            return false;
+        }
+        if (!(target instanceof Civilian)) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + " for a non-civilian target: " + targetID + " is of type " + target.getURN());
+            return false;
+        }
+        AmbulanceTeam at = (AmbulanceTeam)agent;
+        Civilian h = (Civilian)target;
+        if (at.isHPDefined() && at.getHP() <= 0) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + ": agent is dead");
+            return false;
+        }
+        if (at.isBuriednessDefined() && at.getBuriedness() > 0) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + ": agent is buried");
+            return false;
+        }
+        if (h.isBuriednessDefined() && h.getBuriedness() > 0) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + ": target " + targetID + " is buried");
+            return false;
+        }
+        if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + " for a non-adjacent target " + targetID);
+            return false;
+        }
+        if (h.getID().equals(at.getID())) {
+            Logger.warn("Rejecting load command from agent " + agent.getID() + ": tried to load self");
+            return false;
+        }
+        // Is there something already loaded?
+        EntityID agentID = agent.getID();
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+            Civilian c = (Civilian)e;
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
+                Logger.warn("Rejecting load command from agent " + agent.getID() + ": agent already has civilian " + c.getID() + " loaded");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkUnload(AKUnload unload, Entity agent) {
+        if (!(agent instanceof AmbulanceTeam)) {
+            Logger.warn("Rejecting unload command from agent " + agent.getID() + " who is of type " + agent.getURN());
+            return false;
+        }
+        EntityID agentID = agent.getID();
+        AmbulanceTeam ambulance = (AmbulanceTeam)agent;
+        StandardEntity agentPosition = ambulance.getPosition(model);
+        if (agentPosition == null) {
+            Logger.warn("Rejecting unload command from agent " + agent.getID() + ": could not locate agent");
+            return false;
+        }
+        if (ambulance.isHPDefined() && ambulance.getHP() <= 0) {
+            Logger.warn("Rejecting unload command from agent " + agent.getID() + ": agent is dead");
+            return false;
+        }
+        if (ambulance.isBuriednessDefined() && ambulance.getBuriedness() > 0) {
+            Logger.warn("Rejecting unload command from agent " + agent.getID() + ": agent is buried");
+            return false;
+        }
+        // Is there something loaded?
+        Civilian target = null;
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+            Civilian c = (Civilian)e;
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
+                target = c;
+                break;
+            }
+        }
+        if (target == null) {
+            Logger.warn("Rejecting unload command from agent " + agent.getID() + ": agent is not carrying any civilians");
+            return false;
+        }
+        return true;
+     }
+
     private void handleRescue(Human target, ChangeSet changes) {
         target.setBuriedness(Math.max(0, target.getBuriedness() - 1));
         changes.addChange(target, target.getBuriednessProperty());
+    }
+
+    private void handleLoad(Civilian target, AmbulanceTeam ambulance, ChangeSet changes) {
+        target.setPosition(ambulance.getID());
+        target.undefineX();
+        target.undefineY();
+        changes.addChange(target, target.getPositionProperty());
+        Logger.debug(ambulance + " loaded " + target);
+        Logger.debug(target.getFullDescription());
+        Logger.debug(changes.toString());
+    }
+
+    private void handleUnload(AmbulanceTeam ambulance, ChangeSet changes) {
+        Civilian target = null;
+        EntityID agentID = ambulance.getID();
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+            Civilian c = (Civilian)e;
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
+                target = c;
+                break;
+            }
+        }
+        if (target == null) {
+            Logger.error("Tried to unload ambulance with no civilian loaded");
+            return;
+        }
+        target.setPosition(ambulance.getPosition());
+        target.setX(ambulance.getX());
+        target.setY(ambulance.getY());
+        changes.addChange(target, target.getPositionProperty());
+        changes.addChange(target, target.getXProperty());
+        changes.addChange(target, target.getYProperty());
+        Logger.debug(ambulance + " unloaded " + target);
     }
 
     private class BuildingChangeListener implements EntityListener {
