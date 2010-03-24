@@ -15,6 +15,7 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Refuge;
 
 /**
@@ -69,7 +70,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
         for (Human next : getTargets()) {
             if (next.getPosition().equals(location().getID())) {
                 // Targets in the same place might need rescueing or loading
-                if (next.getBuriedness() == 0 && next.getDamage() > 0 && !(location() instanceof Refuge)) {
+                if ((next instanceof Civilian) && next.getBuriedness() == 0 && !(location() instanceof Refuge)) {
                     // Load
                     Logger.info("Loading " + next);
                     sendLoad(time, next.getID());
@@ -109,8 +110,9 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     }
 
     private boolean someoneOnBoard() {
-        for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
+        for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             if (((Human)next).getPosition().equals(getID())) {
+                Logger.debug(next + " is on board");
                 return true;
             }
         }
@@ -121,6 +123,9 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
         List<Human> targets = new ArrayList<Human>();
         for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM)) {
             Human h = (Human)next;
+            if (h == me()) {
+                continue;
+            }
             if (h.isHPDefined()
                 && h.isBuriednessDefined()
                 && h.isDamageDefined()
