@@ -16,6 +16,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.Constants;
 import rescuecore2.Timestep;
 import rescuecore2.score.ScoreFunction;
+import rescuecore2.misc.gui.ChangeSetComponent;
 
 import rescuecore2.log.LogWriter;
 import rescuecore2.log.FileLogWriter;
@@ -58,6 +59,8 @@ public class Kernel {
     private CommandCollector commandCollector;
 
     private boolean isShutdown;
+
+    private ChangeSetComponent simulatorChanges;
 
     /**
        Construct a kernel.
@@ -120,6 +123,8 @@ public class Kernel {
             }
             config.setValue(Constants.COMMUNICATION_MODEL_KEY, communicationModel.getClass().getName());
             config.setValue(Constants.PERCEPTION_KEY, perception.getClass().getName());
+
+            simulatorChanges = new ChangeSetComponent();
 
             // Initialise
             perception.initialise(config, worldModel);
@@ -340,6 +345,7 @@ public class Kernel {
                 long commandsTime = System.currentTimeMillis();
                 Logger.debug("Broadcasting commands");
                 ChangeSet changes = sendCommandsToSimulators(time, commands);
+                simulatorUpdates.show(changes);
                 nextTimestep.setChangeSet(changes);
                 log.writeRecord(new UpdatesRecord(time, changes));
                 long updatesTime = System.currentTimeMillis();
