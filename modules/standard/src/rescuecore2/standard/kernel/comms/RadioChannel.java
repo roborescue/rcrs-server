@@ -26,6 +26,7 @@ public class RadioChannel extends AbstractChannel {
 
     @Override
     public void timestep() {
+        super.timestep();
         usedBandwidth = 0;
     }
 

@@ -1,6 +1,7 @@
 package rescuecore2.standard.kernel.comms;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.FireStation;
 import rescuecore2.standard.entities.PoliceForce;
@@ -145,6 +147,14 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
         }
     }
 
+    /**
+       Get a view of all registered channels.
+       @return All channels.
+    */
+    public Collection<Channel> getAllChannels() {
+        return Collections.unmodifiableCollection(channels.values());
+    }
+
     private Noise createNoiseObjects(Config config, String key) {
         ChainedNoise result = new ChainedNoise();
         result.addChild(lookForFailure(config, key));
@@ -184,7 +194,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
             return;
         }
         int max;
-        if (entity instanceof FireBrigade || entity instanceof PoliceForce || entity instanceof AmbulanceTeam) {
+        if (entity instanceof FireBrigade || entity instanceof PoliceForce || entity instanceof AmbulanceTeam || entity instanceof Civilian) {
             max = platoonMax;
         }
         else if (entity instanceof FireStation || entity instanceof PoliceOffice || entity instanceof AmbulanceCentre) {
@@ -195,7 +205,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
             return;
         }
         if (requested.size() > max) {
-            Logger.warn("Agent tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
+            Logger.warn("Agent " + id + " tried to subscribe to " + requested.size() + " channels but only " + max + " allowed");
             return;
         }
         // Unsubscribe from all old channels
@@ -206,7 +216,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
         for (int next : requested) {
             Channel channel = channels.get(next);
             if (channel == null) {
-                Logger.warn("Agent tried to subscribe to non-existant channel " + next);
+                Logger.warn("Agent " + id + " tried to subscribe to non-existant channel " + next);
             }
             else {
                 channel.addSubscriber(entity);
