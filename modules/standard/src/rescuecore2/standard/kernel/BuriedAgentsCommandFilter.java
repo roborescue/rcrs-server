@@ -8,7 +8,6 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.StandardEntityConstants;
 
 /**
    A CommandFilter that discards commands from buried agents.
