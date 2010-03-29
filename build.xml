@@ -369,7 +369,10 @@
     </findbugs>
   </target>
 
-  <target name="junit-report" depends="_init, cobertura-instrument, junit" description="Run the junit tests for all packages and generate a report">
+  <target name="junit-report" depends="_init, cobertura-instrument, junit, junit-generate-report" description="Run the junit tests for all packages and generate a report">
+  </target>
+
+  <target name="junit-generate-report" description="Generate the JUnit report on already-run unit tests">
     <junitreport todir="${junit.output.dir}">
       <fileset dir="${junit.output.dir}">
         <include name="TEST-*.xml"/>
@@ -390,7 +393,10 @@
     </cobertura-instrument>
   </target>
 
-  <target name="cobertura-report" depends="cobertura-instrument, junit" description="Generate the cobertura test coverage report for all packages">
+  <target name="cobertura-report" depends="cobertura-instrument, junit, cobertura-generate-report" description="Generate the cobertura test coverage report for all modules">
+  </target>
+
+  <target name="cobertura-generate-report" description="Generate the cobertura test coverage report for all modules using existing data">
     <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}" srcdir="${modules.dir}"/>
   </target>
 
