@@ -20,19 +20,25 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+   A JPanel for displaying ChangeSet objects.
+*/
 public class ChangeSetComponent extends JPanel {
     private PropertyTableModel propertiesModel;
     private EntityListModel changedModel;
     private EntityListModel deletedModel;
     private ChangeSet changes;
 
+    /**
+       Construct an empty ChangeSetComponent.
+    */
     public ChangeSetComponent() {
         super(new BorderLayout());
         propertiesModel = new PropertyTableModel();
         changedModel = new EntityListModel();
         deletedModel = new EntityListModel();
         JTable propsTable = new JTable(propertiesModel);
-        JList changedList = new JList(changedModel);
+        final JList changedList = new JList(changedModel);
         JList deletedList = new JList(deletedModel);
 
         JScrollPane scroll = new JScrollPane(propsTable);
@@ -40,7 +46,7 @@ public class ChangeSetComponent extends JPanel {
         add(scroll, BorderLayout.EAST);
         scroll = new JScrollPane(changedList);
         scroll.setBorder(BorderFactory.createTitledBorder("Changed entities"));
-        add(scroll, BorderLayout.CENTRE);
+        add(scroll, BorderLayout.CENTER);
         scroll = new JScrollPane(deletedList);
         scroll.setBorder(BorderFactory.createTitledBorder("Deleted entities"));
         add(scroll, BorderLayout.WEST);
@@ -48,15 +54,19 @@ public class ChangeSetComponent extends JPanel {
         changedList.addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
-                    EntityID id = changedList.getSelectedItem();
+                    EntityID id = (EntityID)changedList.getSelectedValue();
                     if (id != null) {
-                        Set<Property> changes = getChangedProperties(id);
-                        propertiesModel.show(changes);
+                        Set<Property> cs = changes.getChangedProperties(id);
+                        propertiesModel.show(cs);
                     }
                 }
             });
     }
 
+    /**
+       Display a ChangeSet.
+       @param newChanges The ChangeSet to show.
+    */
     public void show(ChangeSet newChanges) {
         changes = newChanges;
         propertiesModel.show(new HashSet<Property>());
@@ -64,7 +74,7 @@ public class ChangeSetComponent extends JPanel {
         deletedModel.show(changes.getDeletedEntities());
     }
 
-    private class EntityListModel extends AbstractListModel {
+    private static class EntityListModel extends AbstractListModel {
         private List<EntityID> ids;
 
         public EntityListModel() {
@@ -85,7 +95,7 @@ public class ChangeSetComponent extends JPanel {
         }
     }
 
-    private class PropertyTableModel extends AbstractTableModel {
+    private static class PropertyTableModel extends AbstractTableModel {
         private List<Property> properties;
 
         public PropertyTableModel() {
@@ -115,8 +125,9 @@ public class ChangeSetComponent extends JPanel {
                 return p.getURN();
             case 1:
                 return p.isDefined() ? "undefined" : p.getValue().toString();
+            default:
+                throw new IllegalArgumentException("Illegal column: " + col);
             }
-            throw new IllegalArgumentException("Illegal column: " + col);            
         }
 
         public String getColumnName(int col) {
@@ -125,8 +136,9 @@ public class ChangeSetComponent extends JPanel {
                 return "URN";
             case 1:
                 return "Value";
+            default:
+                throw new IllegalArgumentException("Illegal column: " + col);
             }
-            throw new IllegalArgumentException("Illegal column: " + col);
         }
     }
 }
