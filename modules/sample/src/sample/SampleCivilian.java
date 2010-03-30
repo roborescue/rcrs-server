@@ -10,6 +10,7 @@ import rescuecore2.messages.Command;
 
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.Area;
 
 import rescuecore2.log.Logger;
 
@@ -68,7 +69,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
             Logger.info("Calling for help");
             say(HELP, time);
         }
-        if (damage == 0 && buriedness == 0) {
+        if (damage == 0 && buriedness == 0 && (location() instanceof Area)) {
             // Run for the refuge
             List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
             if (path != null) {
