@@ -56,8 +56,8 @@ public class ChangeSetComponent extends JPanel {
                 public void valueChanged(ListSelectionEvent e) {
                     EntityID id = (EntityID)changedList.getSelectedValue();
                     if (id != null) {
-                        Set<Property> cs = changes.getChangedProperties(id);
-                        propertiesModel.show(cs);
+                        Set<Property> changedProperties = changes.getChangedProperties(id);
+                        propertiesModel.show(changedProperties);
                     }
                 }
             });
