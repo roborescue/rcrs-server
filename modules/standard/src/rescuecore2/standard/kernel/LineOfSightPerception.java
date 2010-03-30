@@ -299,15 +299,21 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         // Now look for humans
         for (StandardEntity next : nearby) {
             if (next instanceof Human) {
-                int x = ((Human)next).getX();
-                int y = ((Human)next).getY();
-                Point2D humanLocation = new Point2D(x, y);
-                Ray ray = new Ray(new Line2D(location, humanLocation), lines);
-                if (ray.getVisibleLength() >= 1) {
-                    result.add(next);
-                    if (view != null) {
-                        view.addRay(agentEntity, ray);
+                Human h = (Human)next;
+                if (h.isXDefined() && h.isYDefined()) {
+                    int x = ((Human)next).getX();
+                    int y = ((Human)next).getY();
+                    Point2D humanLocation = new Point2D(x, y);
+                    Ray ray = new Ray(new Line2D(location, humanLocation), lines);
+                    if (ray.getVisibleLength() >= 1) {
+                        result.add(next);
+                        if (view != null) {
+                            view.addRay(agentEntity, ray);
+                        }
                     }
+                }
+                else if (h.isPositionDefined() && h.getPosition().equals(agentEntity.getID())) {
+                    result.add(next);
                 }
             }
         }
