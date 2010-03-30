@@ -2,6 +2,8 @@ package traffic3.simulator;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.awt.Color;
 import java.awt.BorderLayout;
@@ -39,7 +41,10 @@ import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Edge;
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.messages.AKMove;
+import rescuecore2.standard.messages.AKLoad;
+import rescuecore2.standard.messages.AKUnload;
 import rescuecore2.standard.components.StandardSimulator;
 
 import org.uncommons.maths.random.GaussianGenerator;
@@ -68,6 +73,8 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     private WorldManager worldManager;
     private TrafficSimulatorGUI gui;
 
+    private Set<Civilian> ignore;
+
     public TrafficSimulator() {
         worldManager = new WorldManager();
         //        try {
@@ -80,6 +87,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         //            gui = new JLabel(e.toString());
         //        }
         gui = new TrafficSimulatorGUI(worldManager);
+        ignore = new HashSet<Civilian>();
     }
 
     @Override
@@ -119,10 +127,15 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             Logger.error("Error starting traffic simulator", e);
         }
         gui.initialise();
+        ignore.clear();
     }
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
+        // Clear all destinations
+        for (TrafficAgent agent : worldManager.getAgentList()) {
+            agent.setDestination(new TrafficAreaNode[0]);
+        }
         for (Command next : c.getCommands()) {
             if (next instanceof AKMove) {
                 try {
@@ -132,11 +145,30 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
                     Logger.error("Error processing move", e);
                 }
             }
+            if (next instanceof AKLoad) {
+                Civilian civ = handleLoad((AKLoad)next, changes);
+                if (civ != null) {
+                    ignore.add(civ);
+                }
+            }
+            if (next instanceof AKUnload) {
+                Civilian civ = handleUnload((AKUnload)next, changes);
+                if (civ != null) {
+                    ignore.remove(civ);
+                }
+            }
         }
         timestep();
         for (TrafficAgent agent : worldManager.getAgentList()) {
-            // Update position and positionHistory
+            // Update position and positionHistory for agents that were not loaded or unloaded
             Human human = agent.getHuman();
+            if (ignore.contains(human)) {
+                human.undefinePositionHistory();
+                human.setTravelDistance(0);
+                changes.addChange(human, human.getPositionHistoryProperty());
+                changes.addChange(human, human.getTravelDistanceProperty());
+                continue;
+            }
             Point2D[] history = agent.getPositionHistory();
             int[] historyArray = new int[history.length * 2];
             for (int i = 0; i < history.length; ++i) {
@@ -278,6 +310,127 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Logger.debug("Agent " + agent + " path set: " + nodes);
     }
 
+    // Return the loaded civilian (if any)
+    private Civilian handleLoad(AKLoad load, ChangeSet changes) {
+        EntityID agentID = load.getAgentID();
+        EntityID targetID = load.getTarget();
+        Entity agent = model.getEntity(agentID);
+        Entity target = model.getEntity(targetID);
+        if (agent == null) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": agent does not exist");
+            return null;
+        }
+        if (!(agent instanceof AmbulanceTeam)) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": agent type is " + agent.getURN());
+            return null;
+        }
+        if (target == null) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": target does not exist " + targetID);
+            return null;
+        }
+        if (!(target instanceof Civilian)) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": target " + targetID + " is of type " + target.getURN());
+            return null;
+        }
+        AmbulanceTeam at = (AmbulanceTeam)agent;
+        Civilian h = (Civilian)target;
+        if (at.isHPDefined() && at.getHP() <= 0) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": agent is dead");
+            return null;
+        }
+        if (at.isBuriednessDefined() && at.getBuriedness() > 0) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": agent is buried");
+            return null;
+        }
+        if (h.isBuriednessDefined() && h.getBuriedness() > 0) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": target " + targetID + " is buried");
+            return null;
+        }
+        if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": target is non-adjacent " + targetID);
+            return null;
+        }
+        if (h.getID().equals(at.getID())) {
+            Logger.warn("Rejecting load command from agent " + agentID + ": tried to load self");
+            return null;
+        }
+        // Is there something already loaded?
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+            Civilian c = (Civilian)e;
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
+                Logger.warn("Rejecting load command from agent " + agentID + ": agent already has civilian " + c.getID() + " loaded");
+                return null;
+            }
+        }
+        // All checks passed: do the load
+        h.setPosition(agentID);
+        h.undefineX();
+        h.undefineY();
+        changes.addChange(h, h.getPositionProperty());
+        changes.addChange(h, h.getXProperty());
+        changes.addChange(h, h.getYProperty());
+        Logger.debug(at + " loaded " + h);
+        return h;
+    }
+
+    // Return the unloaded civilian (if any)
+    private Civilian handleUnload(AKUnload unload, ChangeSet changes) {
+        EntityID agentID = unload.getAgentID();
+        Entity agent = model.getEntity(agentID);
+        if (agent == null) {
+            Logger.warn("Rejecting unload command from agent " + agentID + ": agent does not exist");
+            return null;
+        }
+        if (!(agent instanceof AmbulanceTeam)) {
+            Logger.warn("Rejecting unload command from agent " + agentID + ": agent type is " + agent.getURN());
+            return null;
+        }
+        AmbulanceTeam at = (AmbulanceTeam)agent;
+        if (!at.isPositionDefined() || !at.isXDefined() || !at.isYDefined()) {
+            Logger.warn("Rejecting unload command from agent " + agentID + ": could not locate agent");
+            return null;
+        }
+        if (at.isHPDefined() && at.getHP() <= 0) {
+            Logger.warn("Rejecting unload command from agent " + agentID + ": agent is dead");
+            return null;
+        }
+        if (at.isBuriednessDefined() && at.getBuriedness() > 0) {
+            Logger.warn("Rejecting unload command from agent " + agentID + ": agent is buried");
+            return null;
+        }
+        // Is there something loaded?
+        Civilian target = null;
+        Logger.debug("Looking for civilian carried by " + agentID);
+        for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+            Civilian c = (Civilian)e;
+            Logger.debug(c + " is at " + c.getPosition());
+            if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
+                target = c;
+                Logger.debug("Found civilian " + c);
+                break;
+            }
+        }
+        if (target == null) {
+            Logger.warn("Rejecting unload command from agent " + agentID + ": agent is not carrying any civilians");
+            return null;
+        }
+        // All checks passed
+        target.setPosition(at.getPosition());
+        target.setX(at.getX());
+        target.setY(at.getY());
+        changes.addChange(target, target.getPositionProperty());
+        changes.addChange(target, target.getXProperty());
+        changes.addChange(target, target.getYProperty());
+        for (TrafficAgent trafficAgent : worldManager.getAgentList()) {
+            if (trafficAgent.getHuman() == target) {
+                trafficAgent.setLocation(at.getX(), at.getY(), 0);
+                trafficAgent.setDestination(new TrafficAreaNode[0]);
+            }
+        }
+        Logger.debug(at + " unloaded " + target);
+        return target;
+    }
+
     private void timestep() {
         for (TrafficAgent agent : worldManager.getAgentList()) {
             agent.clearPositionHistory();
@@ -293,10 +446,14 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
     private void microstep() {
         for (TrafficAgent agent : worldManager.getAgentList()) {
-            agent.plan();
+            if (!ignore.contains(agent.getHuman())) {
+                agent.plan();
+            }
         }
         for (TrafficAgent agent : worldManager.getAgentList()) {
-            agent.step(STEP_TIME_MS);
+            if (!ignore.contains(agent.getHuman())) {
+                agent.step(STEP_TIME_MS);
+            }
         }
         worldManager.stepFinished(this);
         gui.refresh();
