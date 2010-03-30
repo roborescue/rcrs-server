@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import rescuecore2.misc.collections.LazyMap;
 import rescuecore2.registry.Registry;
+import rescuecore2.log.Logger;
 
 /**
    This class is used for accumulating changes to entities.
@@ -237,5 +238,21 @@ public class ChangeSet {
         }
         result.append("}");
         return result.toString();
+    }
+
+    /**
+       Write this changeset to Logger.debug in a readable form.
+    */
+    public void debug() {
+        Logger.debug("ChangeSet");
+        for (Map.Entry<EntityID, Map<String, Property>> next : changes.entrySet()) {
+            Logger.debug("  Entity " + next.getKey() + "(" + getEntityURN(next.getKey()) + ")");
+            for (Iterator<Property> it = next.getValue().values().iterator(); it.hasNext();) {
+                Logger.debug("    " + it.next());
+            }
+        }
+        for (Iterator<EntityID> it = deleted.iterator(); it.hasNext();) {
+            Logger.debug("  Deleted: " + it.next());
+        }
     }
 }
