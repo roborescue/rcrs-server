@@ -19,11 +19,8 @@ import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardPropertyURN;
-import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.components.StandardSimulator;
 
