@@ -64,6 +64,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                     return;
                 }
                 // What do I do now? Might as well carry on and see if we can dig someone else out.
+                Logger.debug("Failed to plan path to refuge");
             }
         }
         // Go through targets (sorted by distance) and check for things we can do
