@@ -50,6 +50,8 @@ public class ClearSimulator extends StandardSimulator {
                 Area area = (Area)model.getEntity(blockade.getPosition());
                 int cost = blockade.getRepairCost();
                 int rate = config.getIntValue(REPAIR_RATE_KEY);
+                Logger.debug("Blockade repair cost: " + cost);
+                Logger.debug("Blockade repair rate: " + rate);
                 if (rate > cost) {
                     // Remove the blockade entirely
                     List<EntityID> ids = new ArrayList<EntityID>(area.getBlockades());
@@ -79,7 +81,10 @@ public class ClearSimulator extends StandardSimulator {
             double current = b.getRepairCost();
             // d is the new size relative to the old size
             double d = current / original;
-            Logger.debug("Partially cleared " + b + ": " + d);
+            Logger.debug("Partially cleared " + b);
+            Logger.debug("Original repair cost: " + original);
+            Logger.debug("New repair cost: " + current);
+            Logger.debug("Proportion left: " + d);
             int[] apexes = b.getApexes();
             double cx = b.getX();
             double cy = b.getY();
