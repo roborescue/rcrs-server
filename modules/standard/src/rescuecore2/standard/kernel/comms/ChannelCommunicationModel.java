@@ -129,7 +129,7 @@ public class ChannelCommunicationModel extends AbstractCommunicationModel {
                     }
                 }
                 catch (InvalidMessageException e) {
-                    Logger.warn("Invalid message: " + next, e);
+                    Logger.warn("Invalid message: " + next + ": " + e.getMessage());
                 }
             }
         }
