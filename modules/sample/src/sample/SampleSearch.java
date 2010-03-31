@@ -51,9 +51,13 @@ public final class SampleSearch {
         open.add(start);
         StandardEntity next = null;
         boolean found = false;
-        ancestors.put(start, null);
+        ancestors.put(start, start);
         do {
             next = open.remove(0);
+            if (isGoal(next, goals)) {
+                found = true;
+                break;
+            }
             Collection<StandardEntity> neighbours = findNeighbours(next);
             if (neighbours.isEmpty()) {
                 continue;

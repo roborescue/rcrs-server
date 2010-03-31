@@ -64,6 +64,8 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
             Road r = (Road)model.getEntity(path.get(path.size() - 1));
             Blockade b = getTargetBlockade(r, -1);
             sendMove(time, path, b.getX(), b.getY());
+            Logger.debug("Path: " + path);
+            Logger.debug("Target coordinates: " + b.getX() + ", " + b.getY());
             return;
         }
         Logger.debug("Couldn't plan a path to a blocked road");
