@@ -15,7 +15,6 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.config.Config;
-import rescuecore2.log.Logger;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -65,7 +64,15 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
 
     @Override
     protected void postConnect() {
-        Logger.pushNDC(me().toString());
+        super.postConnect();
+    }
+
+    @Override
+    protected String getPreferredNDC() {
+        if (me() != null) {
+            return me().toString();
+        }
+        return null;
     }
 
     /**
@@ -93,6 +100,9 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
     @SuppressWarnings("unchecked")
     protected E me() {
         if (entityID == null) {
+            return null;
+        }
+        if (model == null) {
             return null;
         }
         return (E)model.getEntity(entityID);

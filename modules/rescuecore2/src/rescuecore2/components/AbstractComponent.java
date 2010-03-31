@@ -30,7 +30,7 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
 
     /**
        The configuration. This will be automatically updated by the postConnect method to include config information from the kernel.
-     */
+    */
     protected Config config;
 
     /**
@@ -59,7 +59,7 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
        @param c The kernel connection.
        @param entities The entities that the kernel sent on startup.
        @param kernelConfig The config that the kernel sent on startup.
-     */
+    */
     protected final void postConnect(Connection c, Collection<Entity> entities, Config kernelConfig) {
         Logger.setLogContext(getPreferredLogContext());
         connection = c;
@@ -67,15 +67,26 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
         model.addEntities(entities);
         config.merge(kernelConfig);
         random = config.getRandom();
-        postConnect();
-        processor = new MessageProcessor();
-        c.addConnectionListener(new MessageListener());
-        processor.start();
+        String ndc = getPreferredNDC();
+        if (ndc != null) {
+            Logger.pushNDC(ndc);
+        }
+        try {
+            postConnect();
+            processor = new MessageProcessor();
+            c.addConnectionListener(new MessageListener());
+            processor.start();
+        }
+        finally {
+            if (ndc != null) {
+                Logger.popNDC();
+            }
+        }
     }
 
     /**
        Perform any post-connection work required before acknowledgement of the connection is made. The default implementation does nothing.
-     */
+    */
     protected void postConnect() {
     }
 
@@ -105,6 +116,14 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     */
     protected String getPreferredLogContext() {
         return getClass().getName();
+    }
+
+    /**
+       Get the preferred nested diagnostic context to use when processing messages for this component. Default implementation returns null.
+       @return The preferred NDC for this component, or null if no context is required.
+    */
+    protected String getPreferredNDC() {
+        return null;
     }
 
     @Override
@@ -162,11 +181,22 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
 
         @Override
         public boolean work() throws InterruptedException {
-            Logger.trace("MessageProcessor working: " + queue.size() + " messages in the queue");
-            Message msg = queue.take();
-            Logger.trace("Next message: " + msg);
-            AbstractComponent.this.processMessage(msg);
-            return true;
+            String ndc = getPreferredNDC();
+            if (ndc != null) {
+                Logger.pushNDC(ndc);
+            }
+            try {
+                Logger.trace("MessageProcessor working: " + queue.size() + " messages in the queue");
+                Message msg = queue.take();
+                Logger.trace("Next message: " + msg);
+                AbstractComponent.this.processMessage(msg);
+                return true;
+            }
+            finally {
+                if (ndc != null) {
+                    Logger.popNDC();
+                }
+            }
         }
     }
 
@@ -174,8 +204,19 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     private class MessageListener implements ConnectionListener {
         @Override
         public void messageReceived(Connection c, Message msg) {
-            if (!processImmediately(msg)) {
-                processor.push(msg);
+            String ndc = getPreferredNDC();
+            if (ndc != null) {
+                Logger.pushNDC(ndc);
+            }
+            try {
+                if (!processImmediately(msg)) {
+                    processor.push(msg);
+                }
+            }
+            finally {
+                if (ndc != null) {
+                    Logger.popNDC();
+                }
             }
         }
     }
