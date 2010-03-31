@@ -73,7 +73,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     private WorldManager worldManager;
     private TrafficSimulatorGUI gui;
 
-    private Set<Civilian> ignore;
+    private Set<Human> ignore;
 
     public TrafficSimulator() {
         worldManager = new WorldManager();
@@ -87,7 +87,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         //            gui = new JLabel(e.toString());
         //        }
         gui = new TrafficSimulatorGUI(worldManager);
-        ignore = new HashSet<Civilian>();
+        ignore = new HashSet<Human>();
     }
 
     @Override
@@ -136,6 +136,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         for (TrafficAgent agent : worldManager.getAgentList()) {
             agent.setDestination(new TrafficAreaNode[0]);
         }
+        ignore.clear();
         for (Command next : c.getCommands()) {
             if (next instanceof AKMove) {
                 try {
@@ -144,17 +145,25 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
                 catch (WorldManagerException e) {
                     Logger.error("Error processing move", e);
                 }
+                continue;
             }
             if (next instanceof AKLoad) {
-                Civilian civ = handleLoad((AKLoad)next, changes);
-                if (civ != null) {
-                    ignore.add(civ);
-                }
+                handleLoad((AKLoad)next, changes);
             }
             if (next instanceof AKUnload) {
-                Civilian civ = handleUnload((AKUnload)next, changes);
-                if (civ != null) {
-                    ignore.remove(civ);
+                handleUnload((AKUnload)next, changes);
+            }
+            ignore.add((Human)model.getEntity(next.getAgentID()));
+        }
+        // Ignore any agents that are dead or in ambulances
+        for (StandardEntity next : model) {
+            if (next instanceof Human) {
+                Human h = (Human)next;
+                if (h.isHPDefined() && h.getHP() <= 0) {
+                    ignore.add(h);
+                }
+                if (h.isPositionDefined() && (model.getEntity(h.getPosition()) instanceof AmbulanceTeam)) {
+                    ignore.add(h);
                 }
             }
         }
@@ -446,12 +455,12 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
     private void microstep() {
         for (TrafficAgent agent : worldManager.getAgentList()) {
-            if (!ignore.contains(agent.getHuman())) {
+            if (agent.getHuman().isHPDefined() && agent.getHuman().getHP() > 0 && !ignore.contains(agent.getHuman())) {
                 agent.plan();
             }
         }
         for (TrafficAgent agent : worldManager.getAgentList()) {
-            if (!ignore.contains(agent.getHuman())) {
+            if (agent.getHuman().isHPDefined() && agent.getHuman().getHP() > 0 && !ignore.contains(agent.getHuman())) {
                 agent.step(STEP_TIME_MS);
             }
         }
