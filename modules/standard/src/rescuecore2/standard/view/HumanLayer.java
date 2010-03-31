@@ -29,6 +29,7 @@ import rescuecore2.view.Icons;
 import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.StandardEntityURN;
 
@@ -87,7 +88,14 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     @Override
     public Shape render(Human h, Graphics2D g, ScreenTransform t) {
+        // Don't draw humans in ambulances
+        if (h.isPositionDefined() && (world.getEntity(h.getPosition()) instanceof AmbulanceTeam)) {
+            return null;
+        }
         Pair<Integer, Integer> location = getLocation(h);
+        if (location == null) {
+            return null;
+        }
         int x = t.xToScreen(location.first());
         int y = t.yToScreen(location.second());
         Shape shape;
