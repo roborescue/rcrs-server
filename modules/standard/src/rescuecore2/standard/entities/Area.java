@@ -263,6 +263,20 @@ public abstract class Area extends StandardEntity {
     }
 
     /**
+       Get the edge that crosses to a particular neighbour.
+       @param neighbour The neighbour ID.
+       @return The edge that crosses to the given neighbour, or null if no edges border that neighbour.
+    */
+    public Edge getEdgeTo(EntityID neighbour) {
+        for (Edge next : getEdges()) {
+            if (neighbour.equals(next.getNeighbour())) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    /**
        Get the list of apexes for this area.
        @return The list of apexes.
     */
