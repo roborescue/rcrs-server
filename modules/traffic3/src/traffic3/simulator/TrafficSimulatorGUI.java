@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import javax.swing.JButton;
@@ -27,21 +26,20 @@ import javax.swing.SwingUtilities;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
-import java.awt.geom.Line2D;
-
-import traffic3.manager.WorldManager;
-import traffic3.objects.area.TrafficArea;
-import traffic3.objects.area.TrafficEdge;
-import traffic3.objects.area.TrafficAreaNode;
+import traffic3.objects.TrafficArea;
 import traffic3.objects.TrafficAgent;
-import traffic3.objects.TrafficBlockade;
+//import traffic3.objects.TrafficBlockade;
+import traffic3.manager.TrafficManager;
 
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.misc.gui.PanZoomListener;
+import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.log.Logger;
+
+import rescuecore2.standard.entities.Edge;
 
 /**
    A GUI for watching the traffic simulator.
@@ -57,7 +55,11 @@ public class TrafficSimulatorGUI extends JPanel {
     private static final Stroke SELECTED_AREA_OUTLINE_STROKE = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     private static final Stroke BLOCKADE_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 
-    private WorldManager manager;
+    private static final int PATH_NODE_SIZE = 5;
+    private static final int PATH_SPECIAL_NODE_SIZE = 9;
+    private static final int TICK_TIME_MS = 10;
+
+    private TrafficManager manager;
 
     private volatile boolean waitOnRefresh;
     private final Object lock = new Object();
@@ -69,7 +71,11 @@ public class TrafficSimulatorGUI extends JPanel {
     private JCheckBox animate;
     private Timer timer;
 
-    public TrafficSimulatorGUI(WorldManager manager) {
+    /**
+       Construct a TrafficSimulatorGUI.
+       @param manager The traffic manager.
+    */
+    public TrafficSimulatorGUI(TrafficManager manager) {
         super(new BorderLayout());
         this.manager = manager;
         waitOnRefresh = false;
@@ -117,7 +123,7 @@ public class TrafficSimulatorGUI extends JPanel {
         add(view, BorderLayout.CENTER);
         add(buttons, BorderLayout.SOUTH);
 
-        timer = new Timer(10, new ActionListener() {
+        timer = new Timer(TICK_TIME_MS, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     synchronized (lock) {
@@ -129,10 +135,17 @@ public class TrafficSimulatorGUI extends JPanel {
             });
     }
 
+    /**
+       Initialise the GUI.
+    */
     public void initialise() {
         view.initialise();
     }
 
+    /**
+       Refresh the view and wait for user input if required.
+       @see #setWaitOnRefresh(boolean).
+    */
     public void refresh() {
         repaint();
         if (waitOnRefresh) {
@@ -156,6 +169,10 @@ public class TrafficSimulatorGUI extends JPanel {
         }
     }
 
+    /**
+       Set whether to wait for the user before returning from a call to {@link #refresh()}.
+       @param b Whether to wait on future calls to refresh.
+    */
     public void setWaitOnRefresh(boolean b) {
         waitOnRefresh = b;
     }
@@ -172,8 +189,8 @@ public class TrafficSimulatorGUI extends JPanel {
 
         public void initialise() {
             Rectangle2D bounds = null;
-            for (TrafficArea area : manager.getAreaList()) {
-                Rectangle2D r = area.getShape().getBounds2D();
+            for (TrafficArea area : manager.getAreas()) {
+                Rectangle2D r = area.getArea().getShape().getBounds2D();
                 if (bounds == null) {
                     bounds = new Rectangle2D.Double(r.getX(), r.getY(), r.getWidth(), r.getHeight());
                 }
@@ -227,13 +244,13 @@ public class TrafficSimulatorGUI extends JPanel {
 
         private void drawAreas(Graphics2D g) {
             areas.clear();
-            for (TrafficArea area : manager.getAreaList()) {
+            for (TrafficArea area : manager.getAreas()) {
                 Path2D shape = new Path2D.Double();
-                List<TrafficEdge> edges = area.getEdges();
-                TrafficEdge e = edges.get(0);
-                shape.moveTo(transform.xToScreen(e.getLine().getX1()), transform.yToScreen(e.getLine().getY1()));
-                for (TrafficEdge edge : edges) {
-                    shape.lineTo(transform.xToScreen(edge.getLine().getX2()), transform.yToScreen(edge.getLine().getY2()));
+                List<Edge> edges = area.getArea().getEdges();
+                Edge e = edges.get(0);
+                shape.moveTo(transform.xToScreen(e.getStartX()), transform.yToScreen(e.getStartY()));
+                for (Edge edge : edges) {
+                    shape.lineTo(transform.xToScreen(edge.getEndX()), transform.yToScreen(edge.getEndY()));
                 }
                 if (area == selectedArea) {
                     g.setColor(SELECTED_AREA_COLOUR);
@@ -249,8 +266,8 @@ public class TrafficSimulatorGUI extends JPanel {
             }
         }
 
-        private void paintEdges(List<TrafficEdge> edges, Graphics2D g) {
-            for (TrafficEdge edge : edges) {
+        private void paintEdges(List<Edge> edges, Graphics2D g) {
+            for (Edge edge : edges) {
                 if (edge.isPassable()) {
                     g.setStroke(PASSABLE_EDGE_STROKE);
                 }
@@ -258,14 +275,15 @@ public class TrafficSimulatorGUI extends JPanel {
                     g.setStroke(IMPASSABLE_EDGE_STROKE);
                 }
                 Line2D line = edge.getLine();
-                g.drawLine(transform.xToScreen(line.getX1()),
-                           transform.yToScreen(line.getY1()),
-                           transform.xToScreen(line.getX2()),
-                           transform.yToScreen(line.getY2()));
+                g.drawLine(transform.xToScreen(line.getOrigin().getX()),
+                           transform.yToScreen(line.getOrigin().getY()),
+                           transform.xToScreen(line.getEndPoint().getX()),
+                           transform.yToScreen(line.getEndPoint().getY()));
             }
         }
 
         private void drawBlockades(Graphics2D g) {
+            /*
             for (TrafficBlockade b : manager.getBlockadeList()) {
                 Path2D shape = b.getShape();
                 g.setColor(BLOCKADE_FILL_COLOUR);
@@ -274,10 +292,11 @@ public class TrafficSimulatorGUI extends JPanel {
                 g.setColor(BLOCKADE_OUTLINE_COLOUR);
                 g.draw(shape);
             }
+            */
         }
 
         private void drawAgents(Graphics2D g) {
-            for (TrafficAgent agent : manager.getAgentList()) {
+            for (TrafficAgent agent : manager.getAgents()) {
                 double agentX = agent.getX();
                 double agentY = agent.getY();
                 double ellipseX1 = agentX - agent.getRadius();
@@ -314,34 +333,32 @@ public class TrafficSimulatorGUI extends JPanel {
 
                 // Draw the path of the selected agent
                 if (agent == selectedAgent) {
-                    Queue<TrafficAreaNode> path = selectedAgent.getDestinationList();
+                    List<Point2D> path = selectedAgent.getPath();
                     if (path != null) {
-                        TrafficAreaNode goal = selectedAgent.getFinalDestination();
-                        TrafficAreaNode current = selectedAgent.getNowDestination();
+                        Point2D goal = selectedAgent.getFinalDestination();
+                        Point2D current = selectedAgent.getCurrentDestination();
                         g.setColor(Color.gray);
                         int lastX = x;
                         int lastY = y;
-                        for (TrafficAreaNode next : path) {
-                            if (next != null) {
-                                int nodeX = transform.xToScreen(next.getX());
-                                int nodeY = transform.yToScreen(next.getY());
-                                g.fillOval(nodeX - 2, nodeY - 2, 5, 5);
-                                g.drawLine(lastX, lastY, nodeX, nodeY);
-                                lastX = nodeX;
-                                lastY = nodeY;
-                            }
+                        for (Point2D next : path) {
+                            int nodeX = transform.xToScreen(next.getX());
+                            int nodeY = transform.yToScreen(next.getY());
+                            g.fillOval(nodeX - (PATH_NODE_SIZE / 2), nodeY - (PATH_NODE_SIZE / 2), PATH_NODE_SIZE, PATH_NODE_SIZE);
+                            g.drawLine(lastX, lastY, nodeX, nodeY);
+                            lastX = nodeX;
+                            lastY = nodeY;
                         }
                         if (current != null) {
                             g.setColor(Color.YELLOW);
                             int nodeX = transform.xToScreen(current.getX());
                             int nodeY = transform.yToScreen(current.getY());
-                            g.fillOval(nodeX - 4, nodeY - 4, 9, 9);
+                            g.fillOval(nodeX - (PATH_SPECIAL_NODE_SIZE / 2), nodeY - (PATH_SPECIAL_NODE_SIZE / 2), PATH_SPECIAL_NODE_SIZE, PATH_SPECIAL_NODE_SIZE);
                         }
                         if (goal != null) {
                             g.setColor(Color.WHITE);
                             int nodeX = transform.xToScreen(goal.getX());
                             int nodeY = transform.yToScreen(goal.getY());
-                            g.fillOval(nodeX - 4, nodeY - 4, 9, 9);
+                            g.fillOval(nodeX - (PATH_SPECIAL_NODE_SIZE / 2), nodeY - (PATH_SPECIAL_NODE_SIZE / 2), PATH_SPECIAL_NODE_SIZE, PATH_SPECIAL_NODE_SIZE);
                         }
                     }
                 }

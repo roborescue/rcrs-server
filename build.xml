@@ -170,9 +170,7 @@
         var fileset = new FileSet();
         fileset.setDir(new File(project.getProperty("modules.dir")));
         for (var i = 0; i < modules.length; ++i) {
-          if (modules[i] != "traffic3") {
-            fileset.setIncludes(modules[i] + "/src/**/*.java");
-          }
+          fileset.setIncludes(modules[i] + "/src/**/*.java");
         }
         project.addReference("checkstyle.files", fileset);
         project.setProjectReference(fileset);
@@ -362,7 +360,6 @@
     <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}" excludeFilter="${findbugs.output.dir}/exclude.xml" jvmargs="-Xmx1024m">
       <fileset dir="${jar.dir}">
 	<include name="**/*.jar"/>
-        <exclude name="traffic3.jar"/>
       </fileset>
       <auxClasspath refid="path.lib"/>
       <auxClasspath refid="path.allmodules.lib"/>
