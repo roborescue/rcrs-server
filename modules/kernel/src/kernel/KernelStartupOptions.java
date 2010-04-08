@@ -232,6 +232,7 @@ public class KernelStartupOptions {
         Logger.trace("Loading options: " + key);
         List<String> classNames = config.getArrayValue(key);
         String auto = config.getValue(key + AUTO_SUFFIX, null);
+        boolean autoFound = false;
         for (String next : classNames) {
             Logger.trace("Option found: '" + next + "'");
             T t = instantiate(next, expectedClass);
@@ -239,9 +240,13 @@ public class KernelStartupOptions {
                 instances.add(t);
                 if (next.equals(auto)) {
                     selectedIndex = index;
+                    autoFound = true;
                 }
                 ++index;
             }
+        }
+        if (auto != null && !autoFound) {
+            Logger.warn("Could not find class " + auto + " in config key " + key + ". Values found: " + classNames);
         }
         return new Pair<List<T>, Integer>(instances, selectedIndex);
     }
