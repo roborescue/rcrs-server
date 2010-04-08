@@ -133,7 +133,7 @@ public final class RobocupFormat implements MapFormat {
 
     @Override
     public GMLMap read(Document doc) {
-        GMLMap result = new GMLMap(CoordinateSystem.LATLON);
+        GMLMap result = new GMLMap(CoordinateSystem.M);
         readNodes(doc, result);
         readEdges(doc, result);
         readBuildings(doc, result);
