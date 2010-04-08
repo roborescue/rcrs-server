@@ -24,26 +24,26 @@ import rescuecore2.log.Logger;
    A wrapper around a WorldModel that indexes Entities by location.
  */
 public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
-    /** Config key entry for specifying the grid mesh size. */
-    public static final String MESH_SIZE_KEY = "worldmodel.standard.mesh-size";
+    /** Config key entry for specifying the grid size. */
+    public static final String GRID_SIZE_KEY = "worldmodel.standard.grid-size";
 
-    /** The default mesh size. */
-    public static final int DEFAULT_MESH_SIZE = 10000;
+    /** The default number of grid cells along each axis. */
+    public static final int DEFAULT_GRID_SIZE = 100;
 
     private Map<StandardEntityURN, Collection<StandardEntity>> storedTypes;
     private Collection<StandardEntity> mobileEntities;
     private Collection<StandardEntity> staticEntities;
     private Collection<StandardEntity> unindexedEntities;
 
-    private int meshSize;
+    private int gridSize;
     private int minX;
     private int maxX;
     private int minY;
     private int maxY;
     private List<List<Cell>> grid;
-    private int gridWidth;
-    private int gridHeight;
     private boolean indexed;
+    private int cellWidth;
+    private int cellHeight;
 
     /**
        Create a StandardWorldModel.
@@ -55,7 +55,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         staticEntities = new HashSet<StandardEntity>();
         unindexedEntities = new HashSet<StandardEntity>();
         addWorldModelListener(new AddRemoveListener());
-        meshSize = DEFAULT_MESH_SIZE;
+        gridSize = DEFAULT_GRID_SIZE;
         indexed = false;
     }
 
@@ -76,25 +76,25 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     }
 
     /**
-       Re-index the world model with a default mesh size.
+       Re-index the world model with a default grid size.
     */
     public void index() {
-        index(DEFAULT_MESH_SIZE);
+        index(DEFAULT_GRID_SIZE);
     }
 
     /**
        Re-index the world model.
-       @param newMeshSize The size of the mesh to create. A zero or negative value will result in a default mesh size being used.
+       @param newGridSize The size of the grid to create. A zero or negative value will result in a default grid size being used.
     */
-    public void index(int newMeshSize) {
-        if (newMeshSize <= 0) {
-            newMeshSize = DEFAULT_MESH_SIZE;
+    public void index(int newGridSize) {
+        if (newGridSize <= 0) {
+            newGridSize = DEFAULT_GRID_SIZE;
         }
-        if (indexed && unindexedEntities.isEmpty() && meshSize == newMeshSize) {
-            Logger.debug("Not bothering with reindex: new mesh size is same as old and no entities are currently unindexed");
+        if (indexed && unindexedEntities.isEmpty() && gridSize == newGridSize) {
+            Logger.debug("Not bothering with reindex: new grid size is same as old and no entities are currently unindexed");
             return;
         }
-        this.meshSize = newMeshSize;
+        this.gridSize = newGridSize;
         Logger.debug("Re-indexing world model");
         mobileEntities.clear();
         staticEntities.clear();
@@ -143,15 +143,15 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         int width = maxX - minX;
         int height = maxY - minY;
         Logger.trace("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
-        gridWidth = 1 + (int)Math.ceil(width / (double)meshSize);
-        gridHeight = 1 + (int)Math.ceil(height / (double)meshSize);
-        grid = new ArrayList<List<Cell>>(gridWidth);
-        Logger.trace("Creating a mesh " + gridWidth + " cells wide and " + gridHeight + " cells high.");
-        for (int i = 0; i < gridWidth; ++i) {
-            List<Cell> list = new ArrayList<Cell>(gridHeight);
+        grid = new ArrayList<List<Cell>>(gridSize);
+        Logger.trace("Creating a " + gridSize + " x " + gridSize + " grid");
+        cellWidth = (int)Math.ceil((double)width / (double)gridSize);
+        cellHeight = (int)Math.ceil((double)height / (double)gridSize);
+        for (int i = 0; i < gridSize; ++i) {
+            List<Cell> list = new ArrayList<Cell>(gridSize);
             grid.add(list);
-            for (int j = 0; j < gridHeight; ++j) {
-                Cell cell = new Cell(minX + (i * meshSize), minY + (j * meshSize), meshSize, meshSize);
+            for (int j = 0; j < gridSize; ++j) {
+                Cell cell = new Cell(minX + (i * cellWidth), minY + (j * cellHeight), cellWidth, cellHeight);
                 list.add(cell);
             }
         }
@@ -179,8 +179,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             }
         }
         int biggest = 0;
-        for (int i = 0; i < gridWidth; ++i) {
-            for (int j = 0; j < gridHeight; ++j) {
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
                 biggest = Math.max(biggest, getCell(i, j).size());
             }
         }
@@ -213,10 +213,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         Collection<StandardEntity> result = new HashSet<StandardEntity>();
         int cellX = getXCell(x);
         int cellY = getYCell(y);
-        int cellRange = range / meshSize;
+        int cellRangeX = (int)Math.ceil((double)range / (double)cellWidth);
+        int cellRangeY = (int)Math.ceil((double)range / (double)cellHeight);
         Shape visibleRange = new Ellipse2D.Double(x - range, y - range, range * 2, range * 2);
-        for (int i = Math.max(0, cellX - cellRange); i <= Math.min(gridWidth - 1, cellX + cellRange); ++i) {
-            for (int j = Math.max(0, cellY - cellRange); j <= Math.min(gridHeight - 1, cellY + cellRange); ++j) {
+        for (int i = Math.max(0, cellX - cellRangeX); i <= Math.min(gridSize - 1, cellX + cellRangeX); ++i) {
+            for (int j = Math.max(0, cellY - cellRangeY); j <= Math.min(gridSize - 1, cellY + cellRangeY); ++j) {
                 Cell cell = getCell(i, j);
                 for (StandardEntity next : cell.getEntities()) {
                     if (isInside(next, visibleRange)) {
@@ -382,11 +383,11 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     }
 
     private int getXCell(int x) {
-        return (x - minX) / meshSize;
+        return (x - minX) / cellWidth;
     }
 
     private int getYCell(int y) {
-        return (y - minY) / meshSize;
+        return (y - minY) / cellHeight;
     }
 
     private Cell getCell(int x, int y) {
@@ -405,8 +406,8 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
 
     private Set<Cell> getCellsCoveredBy(Shape shape) {
         Set<Cell> result = new HashSet<Cell>();
-        for (int x = 0; x < gridWidth; ++x) {
-            for (int y = 0; y < gridHeight; ++y) {
+        for (int x = 0; x < gridSize; ++x) {
+            for (int y = 0; y < gridSize; ++y) {
                 Cell cell = getCell(x, y);
                 Rectangle2D cellShape = cell.getShape();
                 if (shape.intersects(cellShape)) {
