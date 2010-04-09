@@ -6,9 +6,13 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import maps.CoordinateConversion;
 
 /**
-   A GML map.
+   A GML map. All coordinates are specified in m.
 */
 public class GMLMap {
     private double minX;
@@ -16,8 +20,6 @@ public class GMLMap {
     private double minY;
     private double maxY;
     private boolean boundsKnown;
-
-    private CoordinateSystem cs;
 
     private Map<Integer, GMLNode> nodes;
     private Map<Integer, GMLEdge> edges;
@@ -30,9 +32,8 @@ public class GMLMap {
 
     /**
        Construct an empty GML map.
-       @param system The coordinate system of this map.
      */
-    public GMLMap(CoordinateSystem system) {
+    public GMLMap() {
         nodes = new HashMap<Integer, GMLNode>();
         edges = new HashMap<Integer, GMLEdge>();
         buildings = new HashMap<Integer, GMLBuilding>();
@@ -41,21 +42,12 @@ public class GMLMap {
         allShapes = new HashSet<GMLShape>();
         boundsKnown = false;
         nextID = 0;
-        cs = system;
-    }
-
-    /**
-       Get the coordinate system of this map.
-       @return The coordinate system.
-    */
-    public CoordinateSystem getCoordinateSystem() {
-        return cs;
     }
 
     /**
        Create a new GMLNode.
-       @param x The X coordinate of the node.
-       @param y The Y coordinate of the node.
+       @param x The X coordinate of the node in m.
+       @param y The Y coordinate of the node in m.
        @return A new GMLNode with a unique ID.
     */
     public GMLNode createNode(double x, double y) {
@@ -88,6 +80,36 @@ public class GMLMap {
     }
 
     /**
+       Turn a list of apexes into a list of directed edges.
+       @param apexes The apexes to convert.
+       @return A list of directed edges.
+    */
+    public List<GMLDirectedEdge> apexesToEdges(List<GMLNode> apexes) {
+        List<GMLDirectedEdge> edgeList = new ArrayList<GMLDirectedEdge>(apexes.size());
+        Iterator<GMLNode> it = apexes.iterator();
+        GMLNode first = it.next();
+        GMLNode previous = first;
+        while (it.hasNext()) {
+            GMLNode next = it.next();
+            GMLEdge edge = ensureEdge(previous, next);
+            edgeList.add(new GMLDirectedEdge(edge, previous));
+            previous = next;
+        }
+        GMLEdge edge = ensureEdge(previous, first);
+        edgeList.add(new GMLDirectedEdge(edge, previous));
+        return edgeList;
+    }
+
+    /**
+       Create new GMLBuilding.
+       @param apexes The apexes of the building.
+       @return A new GMLBuilding with a unique ID.
+    */
+    public GMLBuilding createBuildingFromNodes(List<GMLNode> apexes) {
+        return createBuilding(apexesToEdges(apexes));
+    }
+
+    /**
        Create new GMLBuilding.
        @param bEdges The edges of the building.
        @return A new GMLBuilding with a unique ID.
@@ -100,6 +122,15 @@ public class GMLMap {
 
     /**
        Create new GMLRoad.
+       @param apexes The apexes of the road.
+       @return A new GMLRoad with a unique ID.
+    */
+    public GMLRoad createRoadFromNodes(List<GMLNode> apexes) {
+        return createRoad(apexesToEdges(apexes));
+    }
+
+    /**
+       Create new GMLRoad.
        @param rEdges The edges of the road.
        @return A new GMLRoad with a unique ID.
     */
@@ -107,6 +138,15 @@ public class GMLMap {
         GMLRoad r = new GMLRoad(nextID++, rEdges);
         addRoad(r);
         return r;
+    }
+
+    /**
+       Create new GMLSpace.
+       @param apexes The apexes of the space.
+       @return A new GMLSpace with a unique ID.
+    */
+    public GMLSpace createSpaceFromNodes(List<GMLNode> apexes) {
+        return createSpace(apexesToEdges(apexes));
     }
 
     /**
@@ -203,6 +243,23 @@ public class GMLMap {
     */
     public void removeAllEdges() {
         edges.clear();
+    }
+
+    /**
+       Create or retrieve an existing edge between two nodes.
+       @param first The 'start' node.
+       @param second The 'end' node.
+       @return A new GMLEdge with a unique ID or an existing edge. The returned edge may be reversed with respect to first and second.
+    */
+    public GMLEdge ensureEdge(GMLNode first, GMLNode second) {
+        for (GMLEdge next : edges.values()) {
+            if ((next.getStart().equals(first) && next.getEnd().equals(second))
+                || (next.getStart().equals(second) && next.getEnd().equals(first))
+                ) {
+                return next;
+            }
+        }
+        return createEdge(first, second);
     }
 
     /**
@@ -404,6 +461,16 @@ public class GMLMap {
     public double getMaxY() {
         calculateBounds();
         return maxY;
+    }
+
+    /**
+       Rescale the map coordinates.
+       @param conversion The coordinate conversion to apply.
+    */
+    public void convertCoordinates(CoordinateConversion conversion) {
+        for (GMLNode next : nodes.values()) {
+            next.convert(conversion);
+        }
     }
 
     private void calculateBounds() {

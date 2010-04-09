@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 import maps.gml.GMLDirectedEdge;
-import maps.gml.GMLFace;
+import maps.gml.GMLShape;
 import maps.gml.GMLMap;
 
 /**
@@ -40,8 +40,8 @@ public class ThinDuplexRowFiller implements RowFiller {
     }
 
     @Override
-    public Set<GMLFace> fillRow(GMLDirectedEdge edge, GMLMap map) {
-        Set<GMLFace> result = new HashSet<GMLFace>();
+    public Set<GMLShape> fillRow(GMLDirectedEdge edge, GMLMap map) {
+        Set<GMLShape> result = new HashSet<GMLShape>();
         /*
         Line2D edgeLine = ConvertTools.gmlDirectedEdgeToLine(edge);
         Vector2D normal = edgeLine.getDirection().getNormal().normalised();

@@ -26,8 +26,6 @@ import maps.gml.MapReader;
 import maps.gml.GMLException;
 import maps.CoordinateConversion;
 import maps.ScaleConversion;
-import maps.IdentityConversion;
-import maps.MapTools;
 
 import java.util.List;
 import java.util.ArrayList;

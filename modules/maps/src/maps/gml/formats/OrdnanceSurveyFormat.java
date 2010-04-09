@@ -7,7 +7,6 @@ import maps.gml.GMLCoordinates;
 import maps.gml.GMLBuilding;
 import maps.gml.GMLRoad;
 import maps.gml.MapFormat;
-import maps.gml.CoordinateSystem;
 import maps.gml.debug.GMLShapeInfo;
 
 import org.dom4j.Document;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.Collection;
 
 import java.awt.Color;
 
@@ -49,9 +49,11 @@ public final class OrdnanceSurveyFormat implements MapFormat {
     private static final QName TOPOGRAPHIC_AREA_QNAME = DocumentHelper.createQName("TopographicArea", OSGB_NAMESPACE);
 
     private static final XPath BUILDING_XPATH = DocumentHelper.createXPath("//osgb:topographicMember/osgb:TopographicArea[osgb:featureCode[text()='" + FEATURE_CODE_BUILDING + "']]");
-    private static final XPath ROAD_XPATH = DocumentHelper.createXPath("//osgb:topographicMember/osgb:TopographicArea[osgb:featureCode[text()='" + FEATURE_CODE_ROAD + "' or text()='" + FEATURE_CODE_FOOTPATH + "']]");
+    //    private static final XPath ROAD_XPATH = DocumentHelper.createXPath("//osgb:topographicMember/osgb:TopographicArea[osgb:featureCode[text()='" + FEATURE_CODE_ROAD + "' or text()='" + FEATURE_CODE_FOOTPATH + "']]");
+    private static final XPath ROAD_XPATH = DocumentHelper.createXPath("//osgb:topographicMember/osgb:TopographicArea[osgb:featureCode[text()='" + FEATURE_CODE_ROAD + "']]");
     private static final XPath SPACE_XPATH = DocumentHelper.createXPath("//osgb:topographicMember/osgb:TopographicArea[osgb:featureCode[text()='" + FEATURE_CODE_OPEN_SPACE + "' or text()='" + FEATURE_CODE_GENERAL_SPACE + "']]");
     private static final XPath SHAPE_XPATH = DocumentHelper.createXPath("osgb:polygon/gml:Polygon/gml:outerBoundaryIs/gml:LinearRing/gml:coordinates");
+    private static final XPath INNER_RING_XPATH = DocumentHelper.createXPath("osgb:polygon/gml:Polygon/gml:innerBoundaryIs/gml:LinearRing/gml:coordinates");
 
     // Map from uri prefix to uri for XPath expressions
     private static final Map<String, String> URIS = new HashMap<String, String>();
@@ -75,6 +77,7 @@ public final class OrdnanceSurveyFormat implements MapFormat {
         ROAD_XPATH.setNamespaceURIs(URIS);
         SPACE_XPATH.setNamespaceURIs(URIS);
         SHAPE_XPATH.setNamespaceURIs(URIS);
+        INNER_RING_XPATH.setNamespaceURIs(URIS);
     }
 
     /**
@@ -99,7 +102,7 @@ public final class OrdnanceSurveyFormat implements MapFormat {
 
     @Override
     public GMLMap read(Document doc) {
-        GMLMap result = new GMLMap(CoordinateSystem.M);
+        GMLMap result = new GMLMap();
         readBuildings(doc, result);
         readRoads(doc, result);
         readSpaces(doc, result);
@@ -134,10 +137,17 @@ public final class OrdnanceSurveyFormat implements MapFormat {
             //            String fid = e.attributeValue("fid");
             //            long id = Long.parseLong(fid.substring(FID_PREFIX_LENGTH)); // Strip off the 'osgb' prefix
             String coordinatesString = ((Element)SHAPE_XPATH.evaluate(e)).getText();
-            List<GMLDirectedEdge> edges = readEdges(coordinatesString, result);
-            GMLRoad road = result.createRoad(edges);
-            debug.show("New road", new GMLShapeInfo(road, "New road", Color.BLACK, NEW_ROAD_COLOUR));
-            background.add(new GMLShapeInfo(road, "Roads", Color.BLACK, ROAD_COLOUR));
+            Object inner = INNER_RING_XPATH.evaluate(e);
+            if ((inner instanceof Collection) && ((Collection)inner).isEmpty()) {
+                List<GMLDirectedEdge> edges = readEdges(coordinatesString, result);
+                GMLRoad road = result.createRoad(edges);
+                debug.show("New road", new GMLShapeInfo(road, "New road", Color.BLACK, NEW_ROAD_COLOUR));
+                background.add(new GMLShapeInfo(road, "Roads", Color.BLACK, ROAD_COLOUR));
+            }
+            else {
+                Logger.debug("Inner ring found: ignoring");
+                Logger.debug("Found: " + inner);
+            }
         }
         debug.deactivate();
     }

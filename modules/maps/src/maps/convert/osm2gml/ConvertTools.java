@@ -13,8 +13,8 @@ import maps.gml.GMLNode;
 import maps.gml.debug.GMLNodeShapeInfo;
 import maps.gml.GMLEdge;
 import maps.gml.debug.GMLEdgeShapeInfo;
-import maps.gml.GMLFace;
-import maps.gml.debug.GMLFaceShapeInfo;
+//import maps.gml.GMLFace;
+//import maps.gml.debug.GMLFaceShapeInfo;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLObject;
 import maps.gml.GMLRoad;
@@ -270,12 +270,14 @@ public final class ConvertTools {
             if (object instanceof GMLEdge) {
                 allShapes.add(new GMLEdgeShapeInfo((GMLEdge)object, "Edges", Constants.BLACK, false));
             }
+            /*
             if (object instanceof GMLFace) {
                 GMLFace face = (GMLFace)object;
                 Color c = Constants.TRANSPARENT_RED;
                 String name = "Unknown";
                 allShapes.add(new GMLFaceShapeInfo(face, "Faces", Constants.BLACK, Constants.TRANSPARENT_AQUA, false));
             }
+            */
         }
         return allShapes;
     }
@@ -357,6 +359,7 @@ public final class ConvertTools {
        @param face The face to check.
        @return The sum of angles in the face.
     */
+    /*
     public static double getAnglesSum(GMLFace face) {
         double sum = 0;
         Iterator<GMLDirectedEdge> it = face.getEdges().iterator();
@@ -376,6 +379,7 @@ public final class ConvertTools {
         }
         return sum;
     }
+    */
 
     /**
        Sum the angles of all turns in an OSMBuilding.
@@ -413,9 +417,11 @@ public final class ConvertTools {
        @param face The GMLFace to check.
        @return True if the face is defined clockwise, false if anti-clockwise.
     */
+    /*
     public static boolean isClockwise(GMLFace face) {
         return nearlyEqual(getAnglesSum(face), CLOCKWISE_SUM, THRESHOLD);
     }
+    */
 
     /**
        Find out if an OSMBuilding is defined clockwise or not.
@@ -427,6 +433,7 @@ public final class ConvertTools {
         return nearlyEqual(getAnglesSum(building, map), CLOCKWISE_SUM, THRESHOLD);
     }
 
+    /*
     private static double getAngle(GMLDirectedEdge a, GMLDirectedEdge b) {
         Vector2D v1 = new Vector2D(a.getEndNode().getX() - a.getStartNode().getX(), a.getEndNode().getY() - a.getStartNode().getY());
         Vector2D v2 = new Vector2D(b.getEndNode().getX() - b.getStartNode().getX(), b.getEndNode().getY() - b.getStartNode().getY());
@@ -436,6 +443,7 @@ public final class ConvertTools {
         }
         return d;
     }
+    */
 
     private static double getAngle(long first, long second, long third, OSMMap map) {
         OSMNode n1 = map.getNode(first);

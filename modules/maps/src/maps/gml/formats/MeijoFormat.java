@@ -10,7 +10,8 @@ import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLTools;
 import maps.gml.MapFormat;
-import maps.gml.CoordinateSystem;
+
+import maps.ConstantConversion;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -114,8 +115,12 @@ public final class MeijoFormat implements MapFormat {
 
     @Override
     public GMLMap read(Document doc) {
-        GMLMap result = new GMLMap(CoordinateSystem.MM);
+        GMLMap result = new GMLMap();
         readNodes(doc, result);
+        // This format has coordinates in mm, so divide by 1000 to convert to m.
+        // CHECKSTYLE:OFF:MagicNumber
+        result.convertCoordinates(new ConstantConversion(0.001));
+        // CHECKSTYLE:ON:MagicNumber
         readEdges(doc, result);
         readFaces(doc, result);
         splitMultipleEdges(result);

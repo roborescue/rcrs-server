@@ -1,6 +1,6 @@
 package maps.convert.osm2gml.buildings;
 
-import maps.gml.GMLFace;
+import maps.gml.GMLShape;
 import maps.gml.GMLMap;
 
 /**
@@ -12,5 +12,5 @@ public interface BuildingSpaceFiller {
        @param space The space to fill.
        @param map The GMLMap to populate.
      */
-    void createBuildings(GMLFace space, GMLMap map);
+    void createBuildings(GMLShape space, GMLMap map);
 }

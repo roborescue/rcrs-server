@@ -1,7 +1,7 @@
 package maps.gml;
 
 /**
-   A set of GML coordinates. These coordinates can be any unit.
+   A set of GML coordinates. These coordinates are in m.
 */
 public class GMLCoordinates {
     private double x;

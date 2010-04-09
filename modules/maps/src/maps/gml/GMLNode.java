@@ -1,5 +1,7 @@
 package maps.gml;
 
+import maps.CoordinateConversion;
+
 /**
    A GML node object.
  */
@@ -35,19 +37,31 @@ public class GMLNode extends GMLObject {
     }
 
     /**
-       Get the X (longitude) coordinate.
-       @return The longitude coordinate.
+       Get the X coordinate.
+       @return The X coordinate.
      */
     public double getX() {
         return coordinates.getX();
     }
 
     /**
-       Get the Y (latitude) coordinate.
-       @return The latitude coordinate.
+       Get the Y coordinate.
+       @return The Y coordinate.
      */
     public double getY() {
         return coordinates.getY();
+    }
+
+    /**
+       Apply a CoordinateConversion to this node.
+       @param c The conversion to apply.
+    */
+    public void convert(CoordinateConversion c) {
+        double oldX = coordinates.getX();
+        double oldY = coordinates.getY();
+        double newX = c.convertX(oldX);
+        double newY = c.convertY(oldY);
+        coordinates = new GMLCoordinates(newX, newY);
     }
 
     @Override

@@ -2,7 +2,7 @@ package maps.convert.osm2gml.buildings.row;
 
 import java.util.Set;
 
-import maps.gml.GMLFace;
+import maps.gml.GMLShape;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLMap;
 
@@ -16,5 +16,5 @@ public interface RowFiller {
        @param map The map.
        @return The set of new faces.
     */
-    Set<GMLFace> fillRow(GMLDirectedEdge edge, GMLMap map);
+    Set<GMLShape> fillRow(GMLDirectedEdge edge, GMLMap map);
 }

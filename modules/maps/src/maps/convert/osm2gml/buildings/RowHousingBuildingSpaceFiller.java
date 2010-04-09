@@ -1,6 +1,6 @@
 package maps.convert.osm2gml.buildings;
 
-import maps.gml.GMLFace;
+import maps.gml.GMLShape;
 import maps.gml.GMLMap;
 import maps.gml.GMLNode;
 import maps.gml.GMLDirectedEdge;
@@ -32,7 +32,7 @@ public class RowHousingBuildingSpaceFiller implements BuildingSpaceFiller {
     }
 
     @Override
-    public void createBuildings(GMLFace space, GMLMap map) {
+    public void createBuildings(GMLShape space, GMLMap map) {
         // Sort the edges of the space by length
         /*
         List<GMLDirectedEdge> allEdges = space.getEdges();
