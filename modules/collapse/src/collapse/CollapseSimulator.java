@@ -240,17 +240,19 @@ public class CollapseSimulator extends StandardSimulator {
             count += c.size();
         }
         try {
-            List<EntityID> newIDs = requestNewEntityIDs(count);
-            Iterator<EntityID> it = newIDs.iterator();
-            Logger.debug("Creating new blockade objects");
-            for (Map.Entry<Road, Collection<java.awt.geom.Area>> entry : blockadesForRoad.entrySet()) {
-                Road r = entry.getKey();
-                for (java.awt.geom.Area area : entry.getValue()) {
-                    EntityID id = it.next();
-                    Collection<Blockade> c = roadBlockages.get(r);
-                    Blockade blockade = makeBlockade(id, area, r.getID());
-                    if (blockade != null) {
-                        c.add(blockade);
+            if (count != 0) {
+                List<EntityID> newIDs = requestNewEntityIDs(count);
+                Iterator<EntityID> it = newIDs.iterator();
+                Logger.debug("Creating new blockade objects");
+                for (Map.Entry<Road, Collection<java.awt.geom.Area>> entry : blockadesForRoad.entrySet()) {
+                    Road r = entry.getKey();
+                    for (java.awt.geom.Area area : entry.getValue()) {
+                        EntityID id = it.next();
+                        Collection<Blockade> c = roadBlockages.get(r);
+                        Blockade blockade = makeBlockade(id, area, r.getID());
+                        if (blockade != null) {
+                            c.add(blockade);
+                        }
                     }
                 }
             }
