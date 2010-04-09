@@ -184,17 +184,6 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     }
 
     private CoordinateConversion getCoordinateConversion(GMLMap map) {
-        switch (map.getCoordinateSystem()) {
-        case LATLON:
-            // Convert lat/lon to millimeters
-            double scale = 1000.0 / MapTools.sizeOf1Metre((map.getMinX() + map.getMaxX()) / 2, (map.getMinY() + map.getMaxY()) / 2);
-            return new ScaleConversion(map.getMinX(), map.getMinY(), scale, scale);
-        case M:
-            return new ScaleConversion(map.getMinX(), map.getMinY(), 1000, 1000);
-        case MM:
-            return new IdentityConversion();
-        default:
-            throw new IllegalArgumentException("Unrecognised coordinate system: " + map.getCoordinateSystem());
-        }
+        return new ScaleConversion(map.getMinX(), map.getMinY(), 1000, 1000);
     }
 }
