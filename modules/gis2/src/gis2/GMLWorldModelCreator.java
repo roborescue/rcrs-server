@@ -49,7 +49,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     private static final String DEFAULT_SCENARIO_FILE = "scenario.xml";
 
     // CHECKSTYLE:OFF:MagicNumber
-    private static final double AREA_SCALE_FACTOR = 1.0 / 10000.0;
+    //    private static final double AREA_SCALE_FACTOR = 1.0 / 1000000.0;
     // CHECKSTYLE:ON:MagicNumber
 
     //    private ShapeDebugFrame debug;
@@ -117,8 +117,8 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             b.setBrokenness(0);
             b.setBuildingCode(0);
             b.setBuildingAttributes(0);
-            b.setGroundArea((int)Math.abs(area * AREA_SCALE_FACTOR));
-            b.setTotalArea((int)Math.abs(area * AREA_SCALE_FACTOR));
+            b.setGroundArea((int)Math.abs(area));
+            b.setTotalArea((int)Math.abs(area));
             b.setImportance(1);
             // Area properties
             b.setEdges(createEdges(next, conversion));
