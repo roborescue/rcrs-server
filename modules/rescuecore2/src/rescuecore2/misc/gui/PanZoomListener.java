@@ -3,6 +3,7 @@ package rescuecore2.misc.gui;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.Point;
@@ -18,6 +19,8 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
     private boolean dragging;
     private ScreenTransform transform;
     private JComponent component;
+    private boolean enabled;
+    private int panTriggerModifiers;
 
     /**
        Construct a PanZoomListener that listens for events on a JComponent.
@@ -28,6 +31,8 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         component.addMouseListener(this);
         component.addMouseMotionListener(this);
         component.addMouseWheelListener(this);
+        panTriggerModifiers = InputEvent.BUTTON1_DOWN_MASK;
+        enabled = true;
     }
 
     /**
@@ -38,12 +43,49 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         this.transform = t;
     }
 
+    /**
+       Enable or disable this PanZoomListener.
+       @param b Whether to process events or not.
+    */
+    public void setEnabled(boolean b) {
+        enabled = b;
+        if (!enabled) {
+            dragging = false;
+        }
+    }
+
+    /**
+       Set the modifiers that will trigger panning.
+       @param modifiers The modifiers mask that must be set for panning to begin.
+    */
+    public void setPanTriggerModifiers(int modifiers) {
+        panTriggerModifiers = modifiers;
+        dragging = false;
+    }
+
+    /**
+       Set the pan trigger modifiers so that pressing the left mouse button triggers panning.
+    */
+    public void setPanOnLeftMouse() {
+        setPanTriggerModifiers(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
+    /**
+       Set the pan trigger modifiers so that pressing the right mouse button triggers panning.
+    */
+    public void setPanOnRightMouse() {
+        setPanTriggerModifiers(InputEvent.BUTTON3_DOWN_MASK);
+    }
+
     @Override
     public void mousePressed(MouseEvent e) {
+        if (!enabled) {
+            return;
+        }
         if (transform == null) {
             return;
         }
-        if (e.getButton() == MouseEvent.BUTTON1) {
+        if ((e.getModifiersEx() & panTriggerModifiers) == panTriggerModifiers) {
             Point p = fixEventPoint(e.getPoint());
             mouseDownX = transform.screenToX(p.x);
             mouseDownY = transform.screenToY(p.y);
@@ -53,13 +95,19 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1) {
+        if (!enabled) {
+            return;
+        }
+        if ((e.getModifiersEx() & panTriggerModifiers) != panTriggerModifiers) {
             dragging = false;
         }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (!enabled) {
+            return;
+        }
         if (transform == null || !dragging) {
             return;
         }
@@ -70,6 +118,9 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        if (!enabled) {
+            return;
+        }
         if (transform == null) {
             return;
         }
