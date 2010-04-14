@@ -99,26 +99,52 @@ public final class MapReader {
             Logger.info("Reading GML file");
             SAXReader reader = new SAXReader();
             Document doc = reader.read(in);
-            if (format == null) {
-                Logger.debug("Guessing format");
-                format = guessFormat(doc);
-            }
-            if (format == null) {
-                throw new GMLException("Unrecognised format");
-            }
-            Logger.debug("Parsing " + format.toString() + " format");
-            return format.read(doc);
+            return readGMLMap(doc, format);
         }
         catch (DocumentException e) {
             throw new GMLException(e);
         }
     }
 
-    private static MapFormat guessFormat(Document doc) {
+    /**
+       Read a GMLMap from an XML Docment.
+       @param doc The Document to read.
+       @return A GMLMap.
+       @throws GMLException If there is a problem reading the map.
+    */
+    public static GMLMap readGMLMap(Document doc) throws GMLException {
+        return readGMLMap(doc, null);
+    }
+
+    /**
+       Read a GMLMap from an XML Document using a particular format.
+       @param doc The Document to read.
+       @param format The format to use. If this is null then the format will be guessed.
+       @return A GMLMap.
+       @throws GMLException If there is a problem reading the map.
+    */
+    public static GMLMap readGMLMap(Document doc, MapFormat format) throws GMLException {
+        if (format == null) {
+            Logger.debug("Guessing format");
+            format = guessFormat(doc);
+        }
+        if (format == null) {
+            throw new GMLException("Unrecognised format");
+        }
+        Logger.debug("Parsing " + format.toString() + " format");
+        return format.read(doc);
+    }
+
+    /**
+       Guess the format for a GMLMap.
+       @param doc The Document to guess the format of.
+       @return The most likely format or null if the document is unrecognised.
+    */
+    public static MapFormat guessFormat(Document doc) {
         List<MapFormat> all = new ArrayList<MapFormat>();
-        all.add(new RobocupFormat());
-        all.add(new MeijoFormat());
-        all.add(new OrdnanceSurveyFormat());
+        all.add(RobocupFormat.INSTANCE);
+        all.add(MeijoFormat.INSTANCE);
+        all.add(OrdnanceSurveyFormat.INSTANCE);
         for (MapFormat next : all) {
             if (next.looksValid(doc)) {
                 return next;

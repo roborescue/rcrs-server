@@ -4,15 +4,13 @@ import maps.osm.OSMMap;
 import maps.osm.OSMMapViewer;
 import maps.osm.OSMException;
 import maps.gml.GMLMap;
-import maps.gml.GMLMapViewer;
+import maps.gml.MapWriter;
+import maps.gml.view.GMLMapViewer;
 
 import maps.convert.osm2gml.Convertor;
 import maps.gml.formats.RobocupFormat;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
 
 import java.awt.GridLayout;
 import java.awt.Dimension;
@@ -22,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.BorderFactory;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -60,11 +57,7 @@ public final class Convert {
             OSMMapViewer osmViewer = new OSMMapViewer(osmMap);
             Convertor convert = new Convertor();
             GMLMap gmlMap = convert.convert(osmMap);
-            Document output = new RobocupFormat().write(gmlMap);
-            XMLWriter writer = new XMLWriter(new FileOutputStream(new File(args[1])), OutputFormat.createPrettyPrint());
-            writer.write(output);
-            writer.flush();
-            writer.close();
+            MapWriter.writeGMLMap(gmlMap, args[1], RobocupFormat.INSTANCE);
             GMLMapViewer gmlViewer = new GMLMapViewer(gmlMap);
             JFrame frame = new JFrame("Convertor");
             JPanel main = new JPanel(new GridLayout(1, 2));

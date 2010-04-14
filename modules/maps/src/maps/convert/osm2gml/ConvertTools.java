@@ -8,7 +8,6 @@ import rescuecore2.misc.gui.ShapeDebugFrame;
 //import rescuecore2.log.Logger;
 
 import maps.gml.GMLMap;
-import maps.gml.GMLMapViewer;
 import maps.gml.GMLNode;
 import maps.gml.debug.GMLNodeShapeInfo;
 import maps.gml.GMLEdge;
@@ -242,7 +241,7 @@ public final class ConvertTools {
                 c = BACKGROUND_SPACE_COLOUR;
                 name = "Spaces";
             }
-            allShapes.add(new GMLShapeInfo(next, name, GMLMapViewer.OUTLINE_COLOUR, c));
+            allShapes.add(new GMLShapeInfo(next, name, Color.BLACK, c));
         }
         return allShapes;
     }
@@ -313,7 +312,7 @@ public final class ConvertTools {
                 c = BACKGROUND_INTERSECTION_COLOUR;
                 name = "Intersections";
             }
-            allShapes.add(new TemporaryObjectInfo(next, name, GMLMapViewer.OUTLINE_COLOUR, c));
+            allShapes.add(new TemporaryObjectInfo(next, name, Color.BLACK, c));
         }
         return allShapes;
     }

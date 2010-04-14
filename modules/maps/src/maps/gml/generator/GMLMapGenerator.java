@@ -1,23 +1,16 @@
 package maps.gml.generator;
 
 import maps.gml.GMLMap;
-import maps.gml.GMLNode;
-import maps.gml.GMLEdge;
-import maps.gml.GMLDirectedEdge;
-import maps.gml.GMLBuilding;
-import maps.gml.GMLRoad;
+import maps.gml.GMLException;
+import maps.gml.MapWriter;
 import maps.gml.formats.RobocupFormat;
 
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.log.Logger;
 
-import org.dom4j.Document;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
-
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
    A tool for generating GML maps.
@@ -26,6 +19,14 @@ public class GMLMapGenerator {
     private static final String OUTPUT_FILE_KEY = "generator.output";
 
     private Config config;
+
+    /**
+       Construct a GMLMapGenerator.
+       @param config The configuration to use.
+    */
+    public GMLMapGenerator(Config config) {
+        this.config = config;
+    }
 
     /**
        Entry point.
@@ -38,25 +39,19 @@ public class GMLMapGenerator {
                 config.read(new File(args[i]));
             }
             GMLMap map = new GMLMapGenerator(config).generateMap();
-            Document doc = new RobocupFormat().write(map);
             String outFile = config.getValue(OUTPUT_FILE_KEY);
             Logger.debug("Writing generated map to " + outFile);
-            XMLWriter writer = new XMLWriter(new FileOutputStream(new File(outFile)), OutputFormat.createPrettyPrint());
-            writer.write(doc);
-            writer.flush();
-            writer.close();
+            MapWriter.writeGMLMap(map, outFile, RobocupFormat.INSTANCE);
         }
-        catch (Exception e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-       Construct a GMLMapGenerator.
-       @param config The configuration to use.
-    */
-    public GMLMapGenerator(Config config) {
-        this.config = config;
+        catch (GMLException e) {
+            e.printStackTrace();
+        }
+        catch (ConfigException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

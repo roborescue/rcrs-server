@@ -2,10 +2,10 @@ package maps.gml.generator;
 
 import maps.gml.GMLMap;
 import maps.gml.GMLNode;
-import maps.gml.GMLEdge;
+//import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLBuilding;
-import maps.gml.GMLRoad;
+//import maps.gml.GMLRoad;
 import maps.gml.GMLCoordinates;
 
 import rescuecore2.config.Config;
@@ -70,8 +70,8 @@ public class ManhattanGenerator implements MapGenerator {
     }
 
     @Override
-    public void populate(GMLMap map) {
-        this.map = map;
+    public void populate(GMLMap gmlMap) {
+        this.map = gmlMap;
         int gridWidth = config.getIntValue(GRID_WIDTH_KEY);
         int gridHeight = config.getIntValue(GRID_HEIGHT_KEY);
         double gridSize = config.getIntValue(GRID_SIZE_KEY);

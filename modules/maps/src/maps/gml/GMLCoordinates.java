@@ -1,9 +1,14 @@
 package maps.gml;
 
+import java.text.NumberFormat;
+import java.text.DecimalFormat;
+
 /**
    A set of GML coordinates. These coordinates are in m.
 */
 public class GMLCoordinates {
+    private static final NumberFormat FORMAT = new DecimalFormat("#0.000");
+
     private double x;
     private double y;
 
@@ -15,6 +20,15 @@ public class GMLCoordinates {
     public GMLCoordinates(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+       Copy constructor.
+       @param other The GMLCoordinates to copy.
+     */
+    public GMLCoordinates(GMLCoordinates other) {
+        this.x = other.x;
+        this.y = other.y;
     }
 
     /**
@@ -52,12 +66,28 @@ public class GMLCoordinates {
         return y;
     }
 
+    /**
+       Set the X coordinate.
+       @param newX The new X coordinate.
+     */
+    public void setX(double newX) {
+        x = newX;
+    }
+
+    /**
+       Set the Y coordinate.
+       @param newY The new Y coordinate.
+     */
+    public void setY(double newY) {
+        y = newY;
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append(x);
+        result.append(FORMAT.format(x));
         result.append(",");
-        result.append(y);
+        result.append(FORMAT.format(y));
         return result.toString();
     }
 }

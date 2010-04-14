@@ -7,7 +7,6 @@ import maps.gml.GMLCoordinates;
 import maps.gml.GMLBuilding;
 import maps.gml.GMLRoad;
 import maps.gml.MapFormat;
-import maps.gml.debug.GMLShapeInfo;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -22,10 +21,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Collection;
+import java.util.Collections;
 
-import java.awt.Color;
-
-import rescuecore2.misc.gui.ShapeDebugFrame;
 import rescuecore2.log.Logger;
 
 // TO DO: Handle inner boundaries
@@ -34,6 +31,9 @@ import rescuecore2.log.Logger;
    A MapFormat that can handle maps from the UK Ordnance Survey.
  */
 public final class OrdnanceSurveyFormat implements MapFormat {
+    /** Singleton instance. */
+    public static final OrdnanceSurveyFormat INSTANCE = new OrdnanceSurveyFormat();
+
     private static final String FEATURE_CODE_BUILDING = "10021";
     private static final String FEATURE_CODE_ROAD = "10172";
     private static final String FEATURE_CODE_FOOTPATH = "10183";
@@ -58,15 +58,7 @@ public final class OrdnanceSurveyFormat implements MapFormat {
     // Map from uri prefix to uri for XPath expressions
     private static final Map<String, String> URIS = new HashMap<String, String>();
 
-    private static final Color NEW_BUILDING_COLOUR = new Color(255, 0, 0, 128);
-    private static final Color NEW_ROAD_COLOUR = new Color(255, 0, 0, 128);
-    private static final Color BUILDING_COLOUR = new Color(0, 128, 0, 128);
-    private static final Color ROAD_COLOUR = new Color(128, 128, 128, 128);
-
     private static final int FID_PREFIX_LENGTH = 4;
-
-    private ShapeDebugFrame debug;
-    private List<GMLShapeInfo> background;
 
     static {
         URIS.put("gml", Common.GML_NAMESPACE_URI);
@@ -80,18 +72,17 @@ public final class OrdnanceSurveyFormat implements MapFormat {
         INNER_RING_XPATH.setNamespaceURIs(URIS);
     }
 
-    /**
-       Construct a new OrdnanceSurveyFormat instance.
-    */
-    public OrdnanceSurveyFormat() {
-        debug = new ShapeDebugFrame();
-        background = new ArrayList<GMLShapeInfo>();
-        debug.setBackground(background);
+    private OrdnanceSurveyFormat() {
     }
 
     @Override
     public String toString() {
         return "Ordnance survey";
+    }
+
+    @Override
+    public Map<String, String> getNamespaces() {
+        return Collections.unmodifiableMap(URIS);
     }
 
     @Override
@@ -124,13 +115,10 @@ public final class OrdnanceSurveyFormat implements MapFormat {
             String coordinatesString = ((Element)SHAPE_XPATH.evaluate(e)).getText();
             List<GMLDirectedEdge> edges = readEdges(coordinatesString, result);
             GMLBuilding b = result.createBuilding(edges);
-            debug.show("New building", new GMLShapeInfo(b, "New building", Color.BLACK, NEW_BUILDING_COLOUR));
-            background.add(new GMLShapeInfo(b, "Buildings", Color.BLACK, BUILDING_COLOUR));
         }
     }
 
     private void readRoads(Document doc, GMLMap result) {
-        debug.activate();
         for (Object next : ROAD_XPATH.selectNodes(doc)) {
             Logger.debug("Found road element: " + next);
             Element e = (Element)next;
@@ -141,15 +129,12 @@ public final class OrdnanceSurveyFormat implements MapFormat {
             if ((inner instanceof Collection) && ((Collection)inner).isEmpty()) {
                 List<GMLDirectedEdge> edges = readEdges(coordinatesString, result);
                 GMLRoad road = result.createRoad(edges);
-                debug.show("New road", new GMLShapeInfo(road, "New road", Color.BLACK, NEW_ROAD_COLOUR));
-                background.add(new GMLShapeInfo(road, "Roads", Color.BLACK, ROAD_COLOUR));
             }
             else {
                 Logger.debug("Inner ring found: ignoring");
                 Logger.debug("Found: " + inner);
             }
         }
-        debug.deactivate();
     }
 
     private void readSpaces(Document doc, GMLMap result) {

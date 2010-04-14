@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 
 import rescuecore2.misc.Pair;
 import rescuecore2.log.Logger;
@@ -39,6 +40,9 @@ import rescuecore2.log.Logger;
    A MapFormat that can handle GML maps from Meijo University.
  */
 public final class MeijoFormat implements MapFormat {
+    /** Singleton instance. */
+    public static final MeijoFormat INSTANCE = new MeijoFormat();
+
     private static final String MEIJO_NAMESPACE_URI = "http://sakura.meijo-u.ac.jp/rcrs";
     private static final String GML_APP_NAMESPACE_URI = "http://www.opengis.net/app";
     private static final Namespace RCRS_NAMESPACE = DocumentHelper.createNamespace("rcrs", MEIJO_NAMESPACE_URI);
@@ -96,10 +100,12 @@ public final class MeijoFormat implements MapFormat {
         //        FACE_NEIGHBOUR_XPATH.setNamespaceURIs(URIS);
     }
 
-    /**
-       Construct a new MeijoFormat instance.
-    */
-    public MeijoFormat() {
+    private MeijoFormat() {
+    }
+
+    @Override
+    public Map<String, String> getNamespaces() {
+        return Collections.unmodifiableMap(URIS);
     }
 
     @Override

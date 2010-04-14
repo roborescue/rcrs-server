@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.Collections;
 
 import rescuecore2.misc.Pair;
 //import rescuecore2.log.Logger;
@@ -32,6 +33,9 @@ import rescuecore2.misc.Pair;
    A MapFormat that can handle Robocup Rescue GML maps.
  */
 public final class RobocupFormat implements MapFormat {
+    /** Singleton instance. */
+    public static final RobocupFormat INSTANCE = new RobocupFormat();
+
     private static final String RCR_NAMESPACE_URI = "urn:roborescue:map:gml";
     private static final Namespace RCR_NAMESPACE = DocumentHelper.createNamespace("rcr", RCR_NAMESPACE_URI);
 
@@ -113,10 +117,12 @@ public final class RobocupFormat implements MapFormat {
         */
     }
 
-    /**
-       Construct a new RobocupFormat instance.
-    */
-    public RobocupFormat() {
+    private RobocupFormat() {
+    }
+
+    @Override
+    public Map<String, String> getNamespaces() {
+        return Collections.unmodifiableMap(URIS);
     }
 
     @Override

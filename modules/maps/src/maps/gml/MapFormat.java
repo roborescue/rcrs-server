@@ -2,6 +2,8 @@ package maps.gml;
 
 import org.dom4j.Document;
 
+import java.util.Map;
+
 /**
    Interface for different types of GML map format.
 */
@@ -26,4 +28,10 @@ public interface MapFormat {
        @return True if this format can probably parse the document, false otherwise.
     */
     boolean looksValid(Document doc);
+
+    /**
+       Get the uris and preferred prefixes for all namespaces this format cares about.
+       @return A map from prefix to uri for all relevant namespaces.
+    */
+    Map<String, String> getNamespaces();
 }

@@ -56,11 +56,27 @@ public class GMLEdge extends GMLObject {
     }
 
     /**
+       Set the start node.
+       @param s The new start node.
+    */
+    public void setStart(GMLNode s) {
+        start = s;
+    }
+
+    /**
        Get the end node.
        @return The end node.
     */
     public GMLNode getEnd() {
         return end;
+    }
+
+    /**
+       Set the end node.
+       @param e The new end node.
+    */
+    public void setEnd(GMLNode e) {
+        end = e;
     }
 
     /**

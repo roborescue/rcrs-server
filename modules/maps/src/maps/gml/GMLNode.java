@@ -37,6 +37,17 @@ public class GMLNode extends GMLObject {
     }
 
     /**
+       Set the coordinates of this node.
+       @param c The new coordinates.
+    */
+    public void setCoordinates(GMLCoordinates c) {
+        if (c == null) {
+            throw new IllegalArgumentException("Coordinates cannot be null");
+        }
+        this.coordinates = c;
+    }
+
+    /**
        Get the X coordinate.
        @return The X coordinate.
      */
