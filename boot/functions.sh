@@ -122,9 +122,9 @@ function processArgs {
 
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewers.auto= --kernel.agents.auto= --kernel.gis.auto=gis2.GMLWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.StandardPerception --kernel.communication.auto=rescuecore2.standard.kernel.ChannelCommunicationModel $*"
+    KERNEL_OPTIONS="-c $DIR/config --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log --kernel.simulators.auto= --kernel.viewers.auto= --kernel.agents.auto= --kernel.gis.auto=gis2.GMLWorldModelCreator --kernel.perception.auto=rescuecore2.standard.kernel.LineOfSightPerception --kernel.communication.auto=rescuecore2.standard.kernel.comms.ChannelCommunicationModel $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
-    xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS -Dlog4j.debug=true 2>&1 | tee $LOGDIR/kernel-out.log" &
+    xterm -T kernel -e "java -cp $CP kernel.StartKernel $KERNEL_OPTIONS 2>&1 | tee $LOGDIR/kernel-out.log" &
     PIDS="$PIDS $!"
     # Wait for the kernel to start
     waitFor $LOGDIR/kernel.log "Listening for connections"
@@ -139,7 +139,6 @@ function startSims {
     # Simulators
     xterm -T misc -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator $*" &
     PIDS="$PIDS $!"
-    #xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic-old.jar rescuecore2.LaunchComponents traffic.TrafficSimulatorWrapper 2>&1 | tee $LOGDIR/traffic.log" &
     xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator $* 2>&1 | tee $LOGDIR/traffic-out.log" &
     PIDS="$PIDS $!"
     xterm -T fire -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper $* 2>&1 | tee $LOGDIR/fire.log" &
