@@ -21,6 +21,8 @@ import rescuecore2.standard.entities.Edge;
 import rescuecore2.standard.entities.Blockade;
 
 import org.uncommons.maths.random.GaussianGenerator;
+import org.uncommons.maths.random.ContinuousUniformGenerator;
+import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.Maths;
 
 import java.util.Map;
@@ -60,18 +62,23 @@ public class CollapseSimulator extends StandardSimulator {
 
     private static final String BLOCK_KEY = "collapse.create-road-blockages";
 
+    private static final String FLOOR_HEIGHT_KEY = "collapse.floor-height";
+    private static final String WALL_COLLAPSE_EXTENT_MIN_KEY = "collapse.wall-extent.min";
+    private static final String WALL_COLLAPSE_EXTENT_MAX_KEY = "collapse.wall-extent.max";
+
     private static final int MAX_COLLAPSE = 100;
 
-    private static final double FLOOR_HEIGHT = 7000;
+    private static final double REPAIR_COST_FACTOR = 0.000001; // Converts square mm to square m.
 
-    private static final double REPAIR_COST_FACTOR = 0.000001;
-
-    private GaussianGenerator destroyed;
-    private GaussianGenerator severe;
-    private GaussianGenerator moderate;
-    private GaussianGenerator slight;
+    private NumberGenerator<Double> destroyed;
+    private NumberGenerator<Double> severe;
+    private NumberGenerator<Double> moderate;
+    private NumberGenerator<Double> slight;
 
     private boolean block;
+
+    private double floorHeight;
+    private NumberGenerator<Double> extent;
 
     private Map<StandardEntityConstants.BuildingCode, CollapseStats> stats;
 
@@ -103,6 +110,10 @@ public class CollapseSimulator extends StandardSimulator {
                                           config.getFloatValue(CONFIG_PREFIX + DESTROYED_SD_SUFFIX),
                                           config.getRandom());
         block = config.getBooleanValue(BLOCK_KEY);
+        floorHeight = config.getFloatValue(FLOOR_HEIGHT_KEY) * 1000;
+        extent = new ContinuousUniformGenerator(config.getFloatValue(WALL_COLLAPSE_EXTENT_MIN_KEY),
+                                                config.getFloatValue(WALL_COLLAPSE_EXTENT_MAX_KEY),
+                                                config.getRandom());
     }
 
     @Override
@@ -209,9 +220,7 @@ public class CollapseSimulator extends StandardSimulator {
         if (!block) {
             return;
         }
-        // CHECKSTYLE:OFF:MagicNumber
-        double d = FLOOR_HEIGHT * b.getFloors() * (1.0 + (b.getBrokenness() / 100.0));
-        // CHECKSTYLE:ON:MagicNumber
+        double d = floorHeight * b.getFloors() * ((double)b.getBrokenness() / (double)MAX_COLLAPSE) * extent.nextValue();
         // Place some blockages on surrounding roads
         List<java.awt.geom.Area> wallAreas = new ArrayList<java.awt.geom.Area>();
         // Project each wall out and build a list of wall areas
@@ -223,7 +232,7 @@ public class CollapseSimulator extends StandardSimulator {
             fullArea.add(wallArea);
         }
         //        debug.show("Collapsed building",
-        //                   new ShapeDebugFrame.AWTShapeInfo(buildingArea, "Original building area", Color.RED, true),
+        //                   new ShapeDebugFrame.AWTShapeInfo(b.getShape(), "Original building area", Color.RED, true),
         //                   new ShapeDebugFrame.AWTShapeInfo(fullArea, "Expanded building area (d = " + d + ")", Color.BLACK, false)
         //                   );
         // Find existing blockade areas
@@ -283,14 +292,14 @@ public class CollapseSimulator extends StandardSimulator {
         Ellipse2D ellipse2 = new Ellipse2D.Double(second.getX() - radius, second.getY() - radius, radius * 2, radius * 2);
         areaList.add(new java.awt.geom.Area(ellipse1));
         areaList.add(new java.awt.geom.Area(ellipse2));
-        Logger.info("Edge from " + wallLine + " expanded to " + first + ", " + second + ", " + third + ", " + fourth);
-        //        debug.show("Collapsed building",
-        //                   new ShapeDebugFrame.AWTShapeInfo(buildingArea, "Original building area", Color.RED, true),
-        //                   new ShapeDebugFrame.Line2DShapeInfo(wallLine, "Wall edge", Color.WHITE, true, true),
-        //                   new ShapeDebugFrame.AWTShapeInfo(wallArea, "Wall area (d = " + d + ")", Color.GREEN, false),
-        //                   new ShapeDebugFrame.AWTShapeInfo(ellipse1, "Ellipse 1", Color.BLUE, false),
-        //                   new ShapeDebugFrame.AWTShapeInfo(ellipse2, "Ellipse 2", Color.ORANGE, false)
-        //                   );
+        //        Logger.info("Edge from " + wallLine + " expanded to " + first + ", " + second + ", " + third + ", " + fourth);
+        //                debug.show("Collapsed building",
+        //                           new ShapeDebugFrame.AWTShapeInfo(buildingArea, "Original building area", Color.RED, true),
+        //                           new ShapeDebugFrame.Line2DShapeInfo(wallLine, "Wall edge", Color.WHITE, true, true),
+        //                           new ShapeDebugFrame.AWTShapeInfo(wallArea, "Wall area (d = " + d + ")", Color.GREEN, false),
+        //                           new ShapeDebugFrame.AWTShapeInfo(ellipse1, "Ellipse 1", Color.BLUE, false),
+        //                           new ShapeDebugFrame.AWTShapeInfo(ellipse2, "Ellipse 2", Color.ORANGE, false)
+        //                           );
     }
 
     private Map<Road, Collection<java.awt.geom.Area>> createRoadBlockades(java.awt.geom.Area buildingArea, java.awt.geom.Area existing) {
@@ -307,11 +316,11 @@ public class CollapseSimulator extends StandardSimulator {
             existing.add(intersection);
             List<java.awt.geom.Area> blockadeAreas = fix(intersection);
             result.put(r, blockadeAreas);
-            //            debug.show("Road blockage",
-            //                       new ShapeDebugFrame.AWTShapeInfo(buildingArea, "Building area", Color.BLACK, false),
-            //                       new ShapeDebugFrame.AWTShapeInfo(roadArea, "Road area", Color.BLUE, false),
-            //                       new ShapeDebugFrame.AWTShapeInfo(intersection, "Intersection", Color.GREEN, true)
-            //                       );
+            //                        debug.show("Road blockage",
+            //                                   new ShapeDebugFrame.AWTShapeInfo(buildingArea, "Building area", Color.BLACK, false),
+            //                                   new ShapeDebugFrame.AWTShapeInfo(roadArea, "Road area", Color.BLUE, false),
+            //                                   new ShapeDebugFrame.AWTShapeInfo(intersection, "Intersection", Color.GREEN, true)
+            //                                   );
         }
         return result;
     }
@@ -392,7 +401,7 @@ public class CollapseSimulator extends StandardSimulator {
     }
 
     private int[] getApexes(java.awt.geom.Area area) {
-        Logger.debug("getApexes");
+        //        Logger.debug("getApexes");
         List<Integer> apexes = new ArrayList<Integer>();
         // CHECKSTYLE:OFF:MagicNumber
         PathIterator it = area.getPathIterator(null, 100);
@@ -406,34 +415,34 @@ public class CollapseSimulator extends StandardSimulator {
             int y = 0;
             switch (it.currentSegment(d)) {
             case PathIterator.SEG_MOVETO:
-                Logger.debug("Move to");
+                //                Logger.debug("Move to");
                 x = (int)d[0];
                 y = (int)d[1];
                 moveX = x;
                 moveY = y;
                 break;
             case PathIterator.SEG_LINETO:
-                Logger.debug("Line to");
+                //                Logger.debug("Line to");
                 x = (int)d[0];
                 y = (int)d[1];
                 break;
             case PathIterator.SEG_QUADTO:
-                Logger.debug("Quad to");
+                //                Logger.debug("Quad to");
                 x = (int)d[2];
                 y = (int)d[3];
                 break;
             case PathIterator.SEG_CUBICTO:
-                Logger.debug("Cubic to");
+                //                Logger.debug("Cubic to");
                 x = (int)d[4];
                 y = (int)d[5];
                 break;
             case PathIterator.SEG_CLOSE:
-                Logger.debug("Close");
+                //                Logger.debug("Close");
                 x = moveX;
                 y = moveY;
                 break;
             }
-            Logger.debug(x + ", " + y);
+            //            Logger.debug(x + ", " + y);
             if (x != lastX || y != lastY) {
                 apexes.add(x);
                 apexes.add(y);
