@@ -33,4 +33,14 @@
       <arg value="${osm2gml.osmmap}.new"/>
     </java>
   </target>
+
+  <target name="map-generator" depends="maps-jar" description="Run the map generator">
+    <java classname="maps.gml.generator.GMLMapGenerator" fork="yes" dir="boot" maxmemory="2048m">
+      <classpath>
+        <path refid="path.common"/>
+        <path refid="path.maps.lib"/>
+      </classpath>
+      <arg value="config"/>
+    </java>
+  </target>
 </project>
