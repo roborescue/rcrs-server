@@ -88,6 +88,7 @@ public class Configuration {
 		Props.add(new Prop(PREFIX + "help","help","Prints this text and exits",null,false,null));				
 		//hidden parameters		
 		Props.add(new Prop(PREFIX + "cell_size","cell_size",null,null,true,null));
+                Props.add(new Prop(PREFIX + "max_ray_distance","max_ray_distance",null,null,true,null));
 		Props.add(new Prop(PREFIX + "energy_loss","energy_loss",null,null,true,null));
 		Props.add(new Prop(PREFIX + "air_to_air_flow","air_to_air_flow",null,null,true,null));
 		Props.add(new Prop(PREFIX + "air_to_building_flow","air_to_building_flow",null,null,true,null));
@@ -122,6 +123,8 @@ public class Configuration {
 		Props.add(new Prop(PREFIX + "ambulance_center_inflammable","ambulancecenter_inflammable",null,null,true,null));
 		Props.add(new Prop(PREFIX + "gamma","gamma",null,null,true,null));
 		Props.add(new Prop(PREFIX + "rays.dir","rays",null,null,true,"rays"));
+		Props.add(new Prop(PREFIX + "burn-rate-average","burn-rate-average",null,null,true,"0.2"));
+		Props.add(new Prop(PREFIX + "burn-rate-variance","burn-rate-variance",null,null,true,"0"));
 	}
 	
 	public void parse(String cmdLine){

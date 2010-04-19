@@ -69,22 +69,4 @@ public class Road extends Edge {
     public void setLinesToTail(int lines){
         linesToTail=lines;
     }
-	
-    public void input(String property, int[] value) {
-        if ("WIDTH".equals(property)) {
-            setWidth(value[0]);
-        }
-        else if ("BLOCK".equals(property)) {
-            setBlock(value[0]);
-        }
-        else if ("LINES_TO_HEAD".equals(property)) {
-            setLinesToHead(value[0]);
-        }
-        else if ("LINES_TO_TAIL".equals(property)) {
-            setLinesToTail(value[0]);
-        }
-        else {
-            super.input(property, value); 
-        }
-    }
 }

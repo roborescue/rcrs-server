@@ -29,19 +29,6 @@ public abstract class StationaryObject extends RealObject {
 		this.y=y;
 	}
 	
-	public void input(String property, int[] value) {
-            if ("X".equals(property)) {
-                setX(value[0]);		
-            }
-            else if ("Y".equals(property)) {
-                setY(value[0]);
-            }
-            else {
-                super.input(property, value);
-            }
-	}
-
-	
 	public boolean isRefuge() {
 		return false;
 	}

@@ -232,7 +232,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
             newB.setCode(oldB.getBuildingCode());
         }
         if (oldB.isGroundAreaDefined()) {
-            newB.setBuildingAreaGround(oldB.getGroundArea());
+            newB.setBuildingAreaGround((float)(oldB.getGroundArea() / 1000000.0));
         }
         if (oldB.isTotalAreaDefined()) {
             newB.setBuildingAreaTotal(oldB.getTotalArea());
@@ -338,14 +338,19 @@ public class FireSimulatorWrapper extends StandardSimulator {
                     oldB.setFieryness(b.getFieryness());
                     changes.addChange(oldB, oldB.getFierynessProperty());
                 }
-                oldB.setTemperature((int)b.getTemperature());
-                changes.addChange(oldB, oldB.getTemperatureProperty());
+                if ((!oldB.isTemperatureDefined()) || (oldB.getTemperature() != (int)b.getTemperature())) {
+                    oldB.setTemperature((int)b.getTemperature());
+                    changes.addChange(oldB, oldB.getTemperatureProperty());
+                }
             }
             for (Object next : world.getFirebrigades()) {
                 FireBrigade fb = (FireBrigade)next;
                 if (fb.hasChanged()) {
                     rescuecore2.standard.entities.FireBrigade oldFB = (rescuecore2.standard.entities.FireBrigade)model.getEntity(new EntityID(fb.getID()));
-                    changes.addChange(oldFB, oldFB.getWaterProperty());
+                    if ((!oldFB.isWaterDefined()) || (oldFB.getWater() != fb.getWaterQuantity())) {
+                        oldFB.setWater(fb.getWaterQuantity());
+                        changes.addChange(oldFB, oldFB.getWaterProperty());
+                    }
                 }
             }
             queue.add(changes);

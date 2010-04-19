@@ -17,12 +17,22 @@ import firesimulator.util.Geometry;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
+import java.util.List;
+import java.util.ArrayList;
+import rescuecore2.misc.gui.ShapeDebugFrame;
+import rescuecore2.misc.geometry.Point2D;
+import java.awt.Color;
+
+import org.uncommons.maths.number.NumberGenerator;
+
 /**
  * @author tn
  *
  */
 public class Building extends StationaryObject {
     private static final Log LOG = LogFactory.getLog(Building.class);
+
+    private static final double STEFAN_BOLTZMANN_CONSTANT = 0.000000056704;
 
     public static int WATER_EXTINGUISH_PARAM;
     public static float woodSpeed;
@@ -33,6 +43,7 @@ public class Building extends StationaryObject {
     public static boolean AMBULANCE_INFALMEABLE=false;
     public static boolean FIRE_INFALMEABLE=false;
     public static boolean REFUGE_INFALMEABLE=false;
+    public static NumberGenerator<Double> burnRate;
     public boolean fierynessChanged;
     private int waterQuantity;
     private int floors=1;
@@ -43,8 +54,8 @@ public class Building extends StationaryObject {
     public int[][] cells;
     private int[] entrances;
     private int code=0;
-    private int buildingAreaGround=0;
-    private int buildingAreaTotal=0;
+    private float buildingAreaGround=0;
+    private float buildingAreaTotal=0;
     private int[] apexes;
     private Polygon polygon;	
     public float fuel;
@@ -121,7 +132,7 @@ public class Building extends StationaryObject {
         energy=getCapacity()*getIgnitionPoint()*1.5;
     }
 
-    public int getBuildingAreaGround(){
+    public float getBuildingAreaGround(){
         return buildingAreaGround;
     }
 	
@@ -139,15 +150,16 @@ public class Building extends StationaryObject {
             for(int n=0;n<apexes.length;n++)
                 polygon.addPoint(apexes[n],apexes[++n]);
         }
-        volume=(buildingAreaGround*floors*FLOOR_HEIGHT)/10;
+        volume=buildingAreaGround*floors*FLOOR_HEIGHT;
         fuel=getInitialFuel();
         setCapacity(volume*getThermoCapacity());
-        energy=world.INITIAL_TEMP*getCapacity();
+        energy=0;
         initFuel=-1;
         prevBurned=0;
         lwTime = -1;
         lwater = 0;	        
         wasEverWatered = false;
+        LOG.debug("Initialised building " + id + ": ground area = " + buildingAreaGround + ", floors = " + floors + ", volume = " + volume + ", initial fuel = " + fuel + ", energy capacity = " + getCapacity());
     }
 	
     public void reset(World w) {
@@ -216,7 +228,7 @@ public class Building extends StationaryObject {
 	
     public float getInitialFuel(){
         if(initFuel<0){
-            initFuel = (float)(getFuelDensity()*buildingAreaGround*floors*FLOOR_HEIGHT)/10;
+            initFuel = (float)(getFuelDensity()*volume);
         }
         return initFuel;
     }
@@ -312,11 +324,11 @@ public class Building extends StationaryObject {
         this.code=code;
     }
 	
-    public void setBuildingAreaGround(int area){
+    public void setBuildingAreaGround(float area){
         this.buildingAreaGround=area;
     }
 
-    public void setBuildingAreaTotal(int area){
+    public void setBuildingAreaTotal(float area){
         this.buildingAreaTotal=area;
     }
 	
@@ -330,52 +342,6 @@ public class Building extends StationaryObject {
 		
     public void setFloors(int floors){
         this.floors=floors;
-    }
-
-    public void input(String property, int[] value) {
-        if ("FLOORS".equals(property)) {
-            setFloors(value[0]);
-        }
-        else if ("BUILDING_ATTRIBUTES".equals(property)) {
-            setAttributes(value[0]);
-        }
-        else if ("IGNITION".equals(property)) {
-            setIgnition(value[0]);
-        }
-        else if ("FIERYNESS".equals(property)) {
-            setFieryness(value[0]);
-        }
-        else if ("BROKENNESS".equals(property)) {
-            setBrokenness(value[0]);
-        }
-        else if ("ENTRANCES".equals(property)) {
-            setEntrances(value);
-        }
-        else if ("BUILDING_CODE".equals(property)) {
-            setCode(value[0]);
-        }
-        else if ("BUILDING_AREA_GROUND".equals(property)) {
-            setBuildingAreaGround(value[0]);
-        }
-        else if ("BUILDING_AREA_TOTAL".equals(property)) {
-            setBuildingAreaTotal(value[0]);
-        }
-        else if ("BUILDING_APEXES".equals(property)) {
-            setApexes(value);
-        }
-        else {
-            super.input(property, value);
-        }
-    }
-	  
-    public void encode(OutputBuffer dos){
-        dos.writeString(getType());
-        dos.writeInt(getID());
-        dos.writeInt(25); // Size of building data: 9 bytes of FIERYNESS string, 2x4 bytes for string lengths, 4 bytes for fieryness size, 4 bytes for fieryness data.
-        dos.writeString("FIERYNESS");
-        dos.writeInt(4); // Size of FIERYNESS
-        dos.writeInt(getFieryness());
-        dos.writeString("");
     }
 
     public void findCells(World w) {
@@ -403,13 +369,68 @@ public class Building extends StationaryObject {
                 cells[c][1]=((Integer)i.next()).intValue();
                 cells[c][2]=((Integer)i.next()).intValue();
             }
-        }else LOG.warn(getID()+" has no cell");
+        }
+        else {
+            LOG.warn(getID()+" has no cell");
+            LOG.warn("Sample size: " + w.SAMPLE_SIZE);
+            LOG.warn("World min X, Y: " + w.getMinX() + ", " + w.getMinY());
+            LOG.warn("Air grid size: " + w.getAirTemp().length + " x " + w.getAirTemp()[0].length);
+            LOG.warn("Building polygon: ");
+            for (int i = 0; i < apexes.length; i += 2) {
+                LOG.warn(apexes[i] + ", " + apexes[i + 1]);
+            }
+            int expectedCellX = (apexes[0] - w.getMinX()) / w.SAMPLE_SIZE;
+            int expectedCellY = (apexes[1] - w.getMinY()) / w.SAMPLE_SIZE;
+            LOG.warn("Building should be in cell " + expectedCellX + ", " + expectedCellY);
+            for(int x=0;x<w.getAirTemp().length;x++) {
+                for(int y=0;y<w.getAirTemp()[0].length;y++){
+                    int xv=x*w.SAMPLE_SIZE+w.getMinX();
+                    int yv=y*w.SAMPLE_SIZE+w.getMinY();
+                    if (Geometry.boundingTest(polygon,xv,yv,w.SAMPLE_SIZE,w.SAMPLE_SIZE)) {
+                        LOG.warn("Cell " + x + ", " + y);
+                        LOG.warn("boundingTest(polygon, " + xv + ", " + yv + ", " + w.SAMPLE_SIZE + ", " + w.SAMPLE_SIZE + ") = " + Geometry.boundingTest(polygon,xv,yv,w.SAMPLE_SIZE,w.SAMPLE_SIZE));
+                        LOG.warn("pc = " + Geometry.percent((float)xv,(float)yv,(float)w.SAMPLE_SIZE,(float)w.SAMPLE_SIZE,polygon));
+                        int counter=0;
+                        double dx=w.SAMPLE_SIZE/100;
+                        double dy=w.SAMPLE_SIZE/100;
+                        List<ShapeDebugFrame.ShapeInfo> shapes = new ArrayList<ShapeDebugFrame.ShapeInfo>();
+                        shapes.add(new ShapeDebugFrame.AWTShapeInfo(polygon, "Polygon", Color.BLACK, false));
+                        for(int i=0;i<100;i++) {
+                            for(int j=0;j<100;j++){
+                                double testX = dx*i+xv;
+                                double testY = dy*j+yv;
+				if(polygon.contains(dx*i+xv,dy*j+yv)) {
+                                    counter++;
+                                    LOG.warn("Point " + testX + ", " + testY + " is inside");
+                                    shapes.add(new ShapeDebugFrame.Point2DShapeInfo(new Point2D(testX, testY), "Test point", Color.BLACK, true));
+                                }
+                                else {
+                                    shapes.add(new ShapeDebugFrame.Point2DShapeInfo(new Point2D(testX, testY), "Test point", Color.BLACK, false));
+                                }
+                            }
+                        }
+                        LOG.warn("Counted " + counter + " interior points");
+                        new ShapeDebugFrame().show("Cell test", shapes);
+                    }
+                }
+            }
+        }
     }
 
 
 
     public double getTemperature() {
         double rv=energy/getCapacity();
+        if (Double.isNaN(rv)) {
+            LOG.warn("Building " + id + " getTemperature returned NaN");
+            new RuntimeException().printStackTrace();
+            LOG.warn("Energy: " + energy);
+            LOG.warn("Capacity: " + getCapacity());
+            LOG.warn("Volume: " + volume);
+            LOG.warn("Thermal capacity: " + getThermoCapacity());
+            LOG.warn("Ground area: " + buildingAreaGround);
+            LOG.warn("Floors: " + floors);
+        }
         if(rv==Double.NaN||rv==Double.POSITIVE_INFINITY||rv==Double.NEGATIVE_INFINITY)
             rv=Double.MAX_VALUE*0.75;
         return rv;
@@ -460,28 +481,6 @@ public class Building extends StationaryObject {
         capacity = f;
     }
 
-    public float getEnergieDensity() {
-        switch(code){
-        case 0:
-            return woodEnergie;
-        case 1:
-            return steelEnergie;
-        default:
-            return concreteEnergie;
-        }
-    }
-
-    public float getReationSpeed() {
-        switch(code){
-        case 0:
-            return woodSpeed;
-        case 1:
-            return steelSpeed;
-        default:
-            return concreteSpeed;
-        }		
-    }
-	
     public String toString(){
         String rv="building "+getID()+"\n";
         for(Iterator i=walls.iterator();i.hasNext();rv+=i.next()+"\n");
@@ -489,10 +488,23 @@ public class Building extends StationaryObject {
     }
 
     public double getRadiationEnergy() {
-        double t=getTemperature()+273;
-        double radEn=(t*0.01)*(t*0.01)*(t*Simulator.RADIATION_COEFFICENT)*(t*Simulator.RADIATION_COEFFICENT)*totalWallArea;
+        double t=getTemperature()+293; // Assume ambient temperature is 293 Kelvin.
+        double radEn = (t * t * t * t) * totalWallArea * Simulator.RADIATION_COEFFICENT * STEFAN_BOLTZMANN_CONSTANT;
+        /*
+        LOG.debug("Getting radiation energy for building " + id);
+        LOG.debug("t = " + t);
+        LOG.debug("t^4 = " + (t * t * t * t));
+        LOG.debug("Total wall area: " + totalWallArea);
+        LOG.debug("Radiation coefficient: " + Simulator.RADIATION_COEFFICENT);
+        LOG.debug("Stefan-Boltzmann constant: " + STEFAN_BOLTZMANN_CONSTANT);
+        LOG.debug("Radiation energy: " + radEn);
+        LOG.debug("Building energy: " + getEnergy());
+        */
         if(radEn==Double.NaN||radEn==Double.POSITIVE_INFINITY||radEn==Double.NEGATIVE_INFINITY)
             radEn=Double.MAX_VALUE*0.75;
+        if (radEn > getEnergy()) {
+            radEn = getEnergy();
+        }
         return radEn;
     }
 
@@ -518,7 +530,7 @@ public class Building extends StationaryObject {
         }
         float tf = (float) (getTemperature()/1000f);
         float lf = getFuel()/getInitialFuel();
-        float f = tf*lf*0.2f;
+        float f = (float)(tf*lf*burnRate.nextValue());
         if(f<0.005f)
             f=0.005f;
         return getInitialFuel()*f;

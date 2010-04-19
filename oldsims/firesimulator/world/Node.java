@@ -17,13 +17,4 @@ public abstract class Node extends StationaryObject {
     public void setEdges(int[] value){
         edgesID=value;	
     }
-	
-    public void input(String property, int[] value) {
-        if ("EDGES".equals(property)) {
-            setEdges(value);  
-        }
-        else {
-            super.input(property, value); 
-        }
-    }
 }

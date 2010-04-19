@@ -27,21 +27,6 @@ public abstract class Edge extends StationaryObject {
 	public void setLength(int length){
 		this.Length=length;
 	}
-	
-	public void input(String property, int[] value) {
-            if ("HEAD".equals(property)) {
-                setHead(value[0]);    
-            }
-            else if ("TAIL".equals(property)) {
-                setTail(value[0]);    
-            }
-            else if ("LENGTH".equals(property)) {
-                setLength(value[0]);  
-            }
-            else {
-                super.input(property, value);      
-            }
-	}
 
 	protected int getTailID() {	
 		return tailID;

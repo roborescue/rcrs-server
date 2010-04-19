@@ -14,7 +14,6 @@ import java.util.HashSet;
 
 import firesimulator.simulator.ExtinguishRequest;
 import firesimulator.util.Configuration;
-import firesimulator.io.IOConstans;
 
 import rescuecore.InputBuffer;
 
@@ -43,7 +42,7 @@ public class World implements WorldConstants {
     private double[][] airTemp;
     public ArrayList[][] gridToBuilding;
     public int SAMPLE_SIZE=5000;
-    public float INITIAL_TEMP=20;
+    //    public float INITIAL_TEMP=20;
     public float AIR_CAPACITY=0.2f;
     public float AIR_HEIGHT=30;	
     public int CAPACITY;	
@@ -132,12 +131,14 @@ public class World implements WorldConstants {
         Building.AMBULANCE_INFALMEABLE=new Boolean(Configuration.getValue("resq-fire.ambulance_center_inflammable")).booleanValue();
         Building.POLICE_INFALMEABLE=new Boolean(Configuration.getValue("resq-fire.police_office_inflammable")).booleanValue();
         Building.REFUGE_INFALMEABLE=new Boolean(Configuration.getValue("resq-fire.refuge_inflammable")).booleanValue();
-        Wall.RAY_RATE=new Float(Configuration.getValue("resq-fire.ray_rate")).floatValue();		
+        Wall.RAY_RATE=new Float(Configuration.getValue("resq-fire.ray_rate")).floatValue();
+        Wall.MAX_SAMPLE_DISTANCE=new Integer(Configuration.getValue("resq-fire.max_ray_distance")).intValue();
         FireBrigade.REFILL_QUANTITY=new Integer(Configuration.getValue("resq-fire.water_refill_rate")).intValue();
         FireBrigade.MAX_WATER_QUANTITY=new Integer(Configuration.getValue("resq-fire.water_capacity")).intValue();
     }
 	
     public void initialize(){	
+        LOG.info("World initialising");
         loadVars();
         allWalls.clear();
         clearExtinguishRequests();
@@ -146,6 +147,7 @@ public class World implements WorldConstants {
         initializeAir();
         igniteGISFires();
         isInitialized=true;		
+        LOG.info("World initialised");
     }
 	
 
@@ -269,7 +271,7 @@ public class World implements WorldConstants {
         airTemp=new double[xSamples][ySamples];
         for(int x=0;x<airTemp.length;x++)
             for(int y=0;y<airTemp[x].length;y++)
-                airTemp[x][y]=INITIAL_TEMP;
+                airTemp[x][y]=0;
         CAPACITY=(int)(SAMPLE_SIZE*SAMPLE_SIZE*AIR_HEIGHT*AIR_CAPACITY)/1000000;
         //assign buildings
         gridToBuilding=new ArrayList[xSamples][ySamples];
@@ -341,31 +343,7 @@ public class World implements WorldConstants {
         this.time=time;
     }
 	
-    public void processConnectOK(InputBuffer data){
-        setTime(IOConstans.INIT_TIME);
-        int count = data.readInt();
-        for (int i = 0; i < count; ++i) {
-            String urn = data.readString();
-            if ("".equals(urn)) break;
-            int id   = data.readInt();
-            int size = data.readInt();
-            RescueObject obj = getObject(id);
-            if (obj == null) {
-                obj = createObject(urn, id);
-                if (obj != null){
-                    putObject(obj);
-                }else LOG.warn("Unknown object (type:"+urn+")");
-            }
-            if(obj!=null){
-                String propUrn = data.readString();
-                while (!"".equals(propUrn)) {
-                    setProperty(data, obj, propUrn);
-                    propUrn = data.readString();
-                }				
-            }
-        }
-    }
-	
+    /*
     public void processChangeSet(InputBuffer data, int time){
         setTime(time);
         int count = data.readInt();
@@ -460,6 +438,7 @@ public class World implements WorldConstants {
             ((MovingObject) obj).setWorld(this);
         return obj;
     }
+    */
 
 
     //    public Collection getRoads() {
@@ -484,7 +463,7 @@ public class World implements WorldConstants {
     private void resetAir() {
         for(int x=0;x<airTemp.length;x++)
             for(int y=0;y<airTemp[x].length;y++)
-                airTemp[x][y]=INITIAL_TEMP;
+                airTemp[x][y]=0;
     }
 
     public void igniteGISFires(){
@@ -507,7 +486,7 @@ public class World implements WorldConstants {
         firebrigades = collection;
     }
 
-
+    /*
     public void processCommands(InputBuffer data) {								
         LOG.info("processing commands...");
         data.readInt(); // Skip the size
@@ -545,6 +524,7 @@ public class World implements WorldConstants {
             }
         }	
     }
+    */
 
     public void printSummary() {		
         LOG.debug("objects total: "+countObjects());

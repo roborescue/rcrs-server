@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 public class Wall {
     private static final Log LOG = LogFactory.getLog(Wall.class);
 	
-	public static final int MAX_SAMPLE_DISTANCE = 50000;
+	public static int MAX_SAMPLE_DISTANCE = 50000;
     public int x1;
 	public int y1;
 	public int x2;

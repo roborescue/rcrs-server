@@ -103,30 +103,6 @@ public abstract class MovingObject extends RealObject {
         this.buriedness=buriedness;
     }
 	
-    public void input(String property, int[] value) {
-        if ("STAMINA".equals(property)) {
-            setStamina(value[0]);
-        }
-        else if ("HP".equals(property)) {
-            setHp(value[0]);	        
-        }
-        else if ("DAMAGE".equals(property)) {
-            setDamage(value[0]);      
-        }
-        else if ("BURIEDNSS".equals(property)) {
-            setBuriedness(value[0]);  
-        }
-        else if ("POSITION".equals(property)) {
-            setPositionId(value[0]);
-        }
-        else if ("POSITION_EXTRA".equals(property)) {
-            setPositionExtra(value[0]);
-        }
-        else {
-            super.input(property, value); 
-        }
-    }
-
     public String getCurrentAction() {
         if(world.getTime()>currentActionLastChange)
             return "AK_REST";
