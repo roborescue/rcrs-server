@@ -43,6 +43,8 @@ import java.util.concurrent.SynchronousQueue;
 public class FireSimulatorWrapper extends StandardSimulator {
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
 
+    private static final double AREA_SCALE_FACTOR = 1000000.0;
+
     private Simulator sim;
     private World world;
     private WrapperKernel kernel;
@@ -232,7 +234,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
             newB.setCode(oldB.getBuildingCode());
         }
         if (oldB.isGroundAreaDefined()) {
-            newB.setBuildingAreaGround((float)(oldB.getGroundArea() / 1000000.0));
+            newB.setBuildingAreaGround((float)(oldB.getGroundArea() / AREA_SCALE_FACTOR));
         }
         if (oldB.isTotalAreaDefined()) {
             newB.setBuildingAreaTotal(oldB.getTotalArea());

@@ -17,12 +17,6 @@ import firesimulator.util.Geometry;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
-import java.util.List;
-import java.util.ArrayList;
-import rescuecore2.misc.gui.ShapeDebugFrame;
-import rescuecore2.misc.geometry.Point2D;
-import java.awt.Color;
-
 import org.uncommons.maths.number.NumberGenerator;
 
 /**
@@ -393,8 +387,6 @@ public class Building extends StationaryObject {
                         int counter=0;
                         double dx=w.SAMPLE_SIZE/100;
                         double dy=w.SAMPLE_SIZE/100;
-                        List<ShapeDebugFrame.ShapeInfo> shapes = new ArrayList<ShapeDebugFrame.ShapeInfo>();
-                        shapes.add(new ShapeDebugFrame.AWTShapeInfo(polygon, "Polygon", Color.BLACK, false));
                         for(int i=0;i<100;i++) {
                             for(int j=0;j<100;j++){
                                 double testX = dx*i+xv;
@@ -402,15 +394,10 @@ public class Building extends StationaryObject {
 				if(polygon.contains(dx*i+xv,dy*j+yv)) {
                                     counter++;
                                     LOG.warn("Point " + testX + ", " + testY + " is inside");
-                                    shapes.add(new ShapeDebugFrame.Point2DShapeInfo(new Point2D(testX, testY), "Test point", Color.BLACK, true));
-                                }
-                                else {
-                                    shapes.add(new ShapeDebugFrame.Point2DShapeInfo(new Point2D(testX, testY), "Test point", Color.BLACK, false));
                                 }
                             }
                         }
                         LOG.warn("Counted " + counter + " interior points");
-                        new ShapeDebugFrame().show("Cell test", shapes);
                     }
                 }
             }
