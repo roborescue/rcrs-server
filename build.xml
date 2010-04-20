@@ -443,6 +443,7 @@
     <exclude name="boot/logs/"/>
     <include name="docs/**/*"/>
     <include name="maps/**/*"/>
+    <include name="supplement/**/*"/>
     <!-- These need executable permissions -->
     <exclude name="boot/start.sh"/>
     <exclude name="boot/demo.sh"/>
