@@ -4,12 +4,15 @@ import rescuecore2.config.Config;
 import rescuecore2.messages.control.KSCommands;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.WorldModelListener;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.collections.LazyMap;
 import rescuecore2.log.Logger;
+import rescuecore2.GUIComponent;
 
 import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
@@ -27,6 +30,7 @@ import org.uncommons.maths.Maths;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,13 +41,12 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.PathIterator;
 
-//import rescuecore2.misc.gui.ShapeDebugFrame;
-//import java.awt.Color;
+import javax.swing.JComponent;
 
 /**
    A simple collapse simulator.
  */
-public class CollapseSimulator extends StandardSimulator {
+public class CollapseSimulator extends StandardSimulator implements GUIComponent {
     private static final String CONFIG_PREFIX = "collapse.";
     private static final String DESTROYED_SUFFIX = ".p-destroyed";
     private static final String SEVERE_SUFFIX = ".p-severe";
@@ -82,7 +85,21 @@ public class CollapseSimulator extends StandardSimulator {
 
     private Map<StandardEntityConstants.BuildingCode, CollapseStats> stats;
 
-    //    private ShapeDebugFrame debug;
+    private CollapseSimulatorGUI gui;
+    private Collection<Building> buildingCache;
+
+    @Override
+    public JComponent getGUIComponent() {
+        if (gui == null) {
+            gui = new CollapseSimulatorGUI();
+        }
+        return gui;
+    }
+
+    @Override
+    public String getGUIComponentName() {
+        return "Collapse simulator";
+    }
 
     @Override
     public String getName() {
@@ -92,7 +109,6 @@ public class CollapseSimulator extends StandardSimulator {
     @Override
     protected void postConnect() {
         super.postConnect();
-        //        debug = new ShapeDebugFrame();
         stats = new EnumMap<StandardEntityConstants.BuildingCode, CollapseStats>(StandardEntityConstants.BuildingCode.class);
         for (StandardEntityConstants.BuildingCode code : StandardEntityConstants.BuildingCode.values()) {
             stats.put(code, new CollapseStats(code, config));
@@ -114,92 +130,40 @@ public class CollapseSimulator extends StandardSimulator {
         extent = new ContinuousUniformGenerator(config.getFloatValue(WALL_COLLAPSE_EXTENT_MIN_KEY),
                                                 config.getFloatValue(WALL_COLLAPSE_EXTENT_MAX_KEY),
                                                 config.getRandom());
+        buildingCache = new HashSet<Building>();
+        for (StandardEntity next : model) {
+            if (next instanceof Building) {
+                buildingCache.add((Building)next);
+            }
+        }
+        model.addWorldModelListener(new WorldModelListener<StandardEntity>() {
+                @Override
+                public void entityAdded(WorldModel<? extends StandardEntity> model, StandardEntity e) {
+                    if (e instanceof Building) {
+                        buildingCache.add((Building)e);
+                    }
+                }
+
+                @Override
+                public void entityRemoved(WorldModel<? extends StandardEntity> model, StandardEntity e) {
+                    if (e instanceof Building) {
+                        buildingCache.remove((Building)e);
+                    }
+                }
+            });
     }
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
-        //        debug.activate();
         int time = c.getTime();
-        Map<StandardEntityConstants.BuildingCode, Map<CollapseDegree, Integer>> count = new EnumMap<StandardEntityConstants.BuildingCode, Map<CollapseDegree, Integer>>(StandardEntityConstants.BuildingCode.class);
-        Map<StandardEntityConstants.BuildingCode, Integer> total = new EnumMap<StandardEntityConstants.BuildingCode, Integer>(StandardEntityConstants.BuildingCode.class);
-        for (StandardEntityConstants.BuildingCode code : StandardEntityConstants.BuildingCode.values()) {
-            Map<CollapseDegree, Integer> next = new EnumMap<CollapseDegree, Integer>(CollapseDegree.class);
-            for (CollapseDegree cd : CollapseDegree.values()) {
-                next.put(cd, 0);
-            }
-            count.put(code, next);
-            total.put(code, 0);
+        if (gui != null) {
+            gui.timestep(time);
         }
-        Map<Road, Collection<Blockade>> newBlockades = new LazyMap<Road, Collection<Blockade>>() {
-            @Override
-            public Collection<Blockade> createValue() {
-                return new ArrayList<Blockade>();
-            }
-        };
-        if (time == 1) {
-            // Work out what has collapsed
-            for (StandardEntity next : model) {
-                if (next instanceof Building) {
-                    Building b = (Building)next;
-                    StandardEntityConstants.BuildingCode code = b.getBuildingCodeEnum();
-                    int damage = code == null ? 0 : stats.get(code).damage();
-                    damage = Maths.restrictRange(damage, 0, MAX_COLLAPSE);
-                    b.setBrokenness(damage);
-                    changes.addChange(b, b.getBrokennessProperty());
-
-                    CollapseDegree degree = CollapseDegree.get(damage);
-                    count.get(code).put(degree, count.get(code).get(degree) + 1);
-                    total.put(code, total.get(code) + 1);
-
-                    if (damage > 0) {
-                        createBlockages(b, newBlockades);
-                    }
-                }
-            }
-            Logger.info("Finished collapsing buildings: ");
-            for (StandardEntityConstants.BuildingCode code : StandardEntityConstants.BuildingCode.values()) {
-                Logger.info("Building code " + code + ": " + total.get(code) + " buildings");
-                Map<CollapseDegree, Integer> data = count.get(code);
-                for (Map.Entry<CollapseDegree, Integer> entry : data.entrySet()) {
-                    Logger.info("  " + entry.getValue() + " " + entry.getKey().toString().toLowerCase());
-                }
-            }
-        }
-        // Check for fire
-        for (StandardEntity next : model) {
-            if (next instanceof Building) {
-                Building b = (Building)next;
-                if (!b.isFierynessDefined()) {
-                    continue;
-                }
-                int minDamage = 0;
-                switch (b.getFierynessEnum()) {
-                case HEATING:
-                    minDamage = slight.nextValue().intValue();
-                    break;
-                case BURNING:
-                    minDamage = moderate.nextValue().intValue();
-                    break;
-                case INFERNO:
-                    minDamage = severe.nextValue().intValue();
-                    break;
-                case BURNT_OUT:
-                    minDamage = destroyed.nextValue().intValue();
-                    break;
-                default:
-                    break;
-                }
-                minDamage = Maths.restrictRange(minDamage, 0, MAX_COLLAPSE);
-                int damage = b.isBrokennessDefined() ? b.getBrokenness() : 0;
-                if (damage < minDamage) {
-                    Logger.info(b + " damaged by fire. New brokenness: " + minDamage);
-                    b.setBrokenness(minDamage);
-                    changes.addChange(b, b.getBrokennessProperty());
-                    createBlockages(b, newBlockades);
-                }
-            }
-        }
-        for (Map.Entry<Road, Collection<Blockade>> entry : newBlockades.entrySet()) {
+        Collection<Building> collapsed = doCollapse(changes, time);
+        Map<Road, Collection<java.awt.geom.Area>> newBlock = doBlock(collapsed);
+        // Create blockade objects
+        Map<Road, Collection<Blockade>> blockades = createBlockadeObjects(newBlock);
+        for (Map.Entry<Road, Collection<Blockade>> entry : blockades.entrySet()) {
             Road r = entry.getKey();
             List<EntityID> existing = r.getBlockades();
             List<EntityID> ids = new ArrayList<EntityID>();
@@ -213,13 +177,175 @@ public class CollapseSimulator extends StandardSimulator {
             changes.addAll(entry.getValue());
             changes.addChange(r, r.getBlockadesProperty());
         }
-        //        debug.deactivate();
     }
 
-    private void createBlockages(Building b, Map<Road, Collection<Blockade>> roadBlockages) {
-        if (!block) {
-            return;
+    private Collection<Building> doCollapse(ChangeSet changes, int time) {
+        Collection<Building> result = new HashSet<Building>();
+        if (gui != null) {
+            gui.startCollapse(buildingCache.size());
         }
+        if (time == 1) {
+            result.addAll(doEarthquakeCollapse(changes));
+        }
+        if (gui != null) {
+            gui.endCollapse();
+        }
+        if (gui != null) {
+            gui.startFire(buildingCache.size());
+        }
+        result.addAll(doFireCollapse(changes));
+        if (gui != null) {
+            gui.endFire();
+        }
+        return result;
+    }
+
+    private Map<Road, Collection<java.awt.geom.Area>> doBlock(Collection<Building> collapsed) {
+        Map<Road, Collection<java.awt.geom.Area>> result = new LazyMap<Road, Collection<java.awt.geom.Area>>() {
+            @Override
+            public Collection<java.awt.geom.Area> createValue() {
+                return new ArrayList<java.awt.geom.Area>();
+            }
+        };
+        if (!block) {
+            return result;
+        }
+        if (gui != null) {
+            gui.startBlock(collapsed.size());
+        }
+        for (Building b : collapsed) {
+            createBlockages(b, result);
+            if (gui != null) {
+                gui.bumpBlock();
+            }
+        }
+        if (gui != null) {
+            gui.endBlock();
+        }
+        return result;
+    }
+
+    private Collection<Building> doEarthquakeCollapse(ChangeSet changes) {
+        Map<StandardEntityConstants.BuildingCode, Map<CollapseDegree, Integer>> count = new EnumMap<StandardEntityConstants.BuildingCode, Map<CollapseDegree, Integer>>(StandardEntityConstants.BuildingCode.class);
+        Map<StandardEntityConstants.BuildingCode, Integer> total = new EnumMap<StandardEntityConstants.BuildingCode, Integer>(StandardEntityConstants.BuildingCode.class);
+        for (StandardEntityConstants.BuildingCode code : StandardEntityConstants.BuildingCode.values()) {
+            Map<CollapseDegree, Integer> next = new EnumMap<CollapseDegree, Integer>(CollapseDegree.class);
+            for (CollapseDegree cd : CollapseDegree.values()) {
+                next.put(cd, 0);
+            }
+            count.put(code, next);
+            total.put(code, 0);
+        }
+        Logger.debug("Collapsing buildings");
+        Collection<Building> result = new HashSet<Building>();
+        for (Building b : buildingCache) {
+            StandardEntityConstants.BuildingCode code = b.getBuildingCodeEnum();
+            int damage = code == null ? 0 : stats.get(code).damage();
+            damage = Maths.restrictRange(damage, 0, MAX_COLLAPSE);
+            b.setBrokenness(damage);
+            changes.addChange(b, b.getBrokennessProperty());
+
+            CollapseDegree degree = CollapseDegree.get(damage);
+            count.get(code).put(degree, count.get(code).get(degree) + 1);
+            total.put(code, total.get(code) + 1);
+
+            if (damage > 0) {
+                result.add(b);
+            }
+            if (gui != null) {
+                gui.bumpCollapse();
+            }
+        }
+        Logger.info("Finished collapsing buildings: ");
+        for (StandardEntityConstants.BuildingCode code : StandardEntityConstants.BuildingCode.values()) {
+            Logger.info("Building code " + code + ": " + total.get(code) + " buildings");
+            Map<CollapseDegree, Integer> data = count.get(code);
+            for (Map.Entry<CollapseDegree, Integer> entry : data.entrySet()) {
+                Logger.info("  " + entry.getValue() + " " + entry.getKey().toString().toLowerCase());
+            }
+        }
+        return result;
+    }
+
+    private Collection<Building> doFireCollapse(ChangeSet changes) {
+        Logger.debug("Checking fire damage");
+        Collection<Building> result = new HashSet<Building>();
+        for (Building b : buildingCache) {
+            if (!b.isFierynessDefined()) {
+                if (gui != null) {
+                    gui.bumpFire();
+                }
+                continue;
+            }
+            int minDamage = 0;
+            switch (b.getFierynessEnum()) {
+            case HEATING:
+                minDamage = slight.nextValue().intValue();
+                break;
+            case BURNING:
+                minDamage = moderate.nextValue().intValue();
+                break;
+            case INFERNO:
+                minDamage = severe.nextValue().intValue();
+                break;
+            case BURNT_OUT:
+                minDamage = destroyed.nextValue().intValue();
+                break;
+            default:
+                break;
+            }
+            minDamage = Maths.restrictRange(minDamage, 0, MAX_COLLAPSE);
+            int damage = b.isBrokennessDefined() ? b.getBrokenness() : 0;
+            if (damage < minDamage) {
+                Logger.info(b + " damaged by fire. New brokenness: " + minDamage);
+                b.setBrokenness(minDamage);
+                changes.addChange(b, b.getBrokennessProperty());
+                result.add(b);
+            }
+            if (gui != null) {
+                gui.bumpFire();
+            }
+        }
+        Logger.debug("Finished checking fire damage");
+        return result;
+    }
+
+    private Map<Road, Collection<Blockade>> createBlockadeObjects(Map<Road, Collection<java.awt.geom.Area>> blocks) {
+        Map<Road, Collection<Blockade>> result = new LazyMap<Road, Collection<Blockade>>() {
+            @Override
+            public Collection<Blockade> createValue() {
+                return new ArrayList<Blockade>();
+            }
+        };
+        int count = 0;
+        for (Collection<java.awt.geom.Area> c : blocks.values()) {
+            count += c.size();
+        }
+        try {
+            if (count != 0) {
+                List<EntityID> newIDs = requestNewEntityIDs(count);
+                Iterator<EntityID> it = newIDs.iterator();
+                Logger.debug("Creating new blockade objects");
+                for (Map.Entry<Road, Collection<java.awt.geom.Area>> entry : blocks.entrySet()) {
+                    Road r = entry.getKey();
+                    for (java.awt.geom.Area area : entry.getValue()) {
+                        EntityID id = it.next();
+                        Blockade blockade = makeBlockade(id, area, r.getID());
+                        if (blockade != null) {
+                            result.get(r).add(blockade);
+                        }
+                    }
+                }
+            }
+        }
+        catch (InterruptedException e) {
+            Logger.error("Interrupted while requesting IDs");
+        }
+        return result;
+    }
+
+    private void createBlockages(Building b, Map<Road, Collection<java.awt.geom.Area>> roadBlockages) {
+        Logger.debug("Creating blockages for " + b);
         double d = floorHeight * b.getFloors() * ((double)b.getBrokenness() / (double)MAX_COLLAPSE) * extent.nextValue();
         // Place some blockages on surrounding roads
         List<java.awt.geom.Area> wallAreas = new ArrayList<java.awt.geom.Area>();
@@ -231,10 +357,12 @@ public class CollapseSimulator extends StandardSimulator {
         for (java.awt.geom.Area wallArea : wallAreas) {
             fullArea.add(wallArea);
         }
-        //        debug.show("Collapsed building",
-        //                   new ShapeDebugFrame.AWTShapeInfo(b.getShape(), "Original building area", Color.RED, true),
-        //                   new ShapeDebugFrame.AWTShapeInfo(fullArea, "Expanded building area (d = " + d + ")", Color.BLACK, false)
-        //                   );
+        /*
+        new ShapeDebugFrame().show("Collapsed building",
+                   new ShapeDebugFrame.AWTShapeInfo(b.getShape(), "Original building area", Color.RED, true),
+                   new ShapeDebugFrame.AWTShapeInfo(fullArea, "Expanded building area (d = " + d + ")", Color.BLACK, false)
+                   );
+        */
         // Find existing blockade areas
         java.awt.geom.Area existing = new java.awt.geom.Area();
         for (StandardEntity e : model.getEntitiesOfType(StandardEntityURN.BLOCKADE)) {
@@ -242,32 +370,12 @@ public class CollapseSimulator extends StandardSimulator {
             existing.add(blockadeToArea(blockade));
         }
         // Intersect wall areas with roads
-        Map<Road, Collection<java.awt.geom.Area>> blockadesForRoad = createRoadBlockades(fullArea, existing);
-        // Create blockades
-        int count = 0;
-        for (Collection<java.awt.geom.Area> c : blockadesForRoad.values()) {
-            count += c.size();
-        }
-        try {
-            if (count != 0) {
-                List<EntityID> newIDs = requestNewEntityIDs(count);
-                Iterator<EntityID> it = newIDs.iterator();
-                Logger.debug("Creating new blockade objects");
-                for (Map.Entry<Road, Collection<java.awt.geom.Area>> entry : blockadesForRoad.entrySet()) {
-                    Road r = entry.getKey();
-                    for (java.awt.geom.Area area : entry.getValue()) {
-                        EntityID id = it.next();
-                        Collection<Blockade> c = roadBlockages.get(r);
-                        Blockade blockade = makeBlockade(id, area, r.getID());
-                        if (blockade != null) {
-                            c.add(blockade);
-                        }
-                    }
-                }
-            }
-        }
-        catch (InterruptedException e) {
-            Logger.error("Interrupted while requesting IDs");
+        Map<Road, Collection<java.awt.geom.Area>> blockadesForRoads = createRoadBlockades(fullArea, existing);
+        // Add to roadBlockages
+        for (Map.Entry<Road, Collection<java.awt.geom.Area>> entry : blockadesForRoads.entrySet()) {
+            Road r = entry.getKey();
+            Collection<java.awt.geom.Area> c = entry.getValue();
+            roadBlockages.get(r).addAll(c);
         }
     }
 
@@ -505,10 +613,10 @@ public class CollapseSimulator extends StandardSimulator {
 
     private enum CollapseDegree {
         NONE(0),
-        SLIGHT(25),
-        MODERATE(50),
-        SEVERE(75),
-        DESTROYED(100);
+            SLIGHT(25),
+            MODERATE(50),
+            SEVERE(75),
+            DESTROYED(100);
 
         private int max;
 
