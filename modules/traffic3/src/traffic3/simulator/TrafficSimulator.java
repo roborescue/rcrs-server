@@ -33,6 +33,8 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
+import rescuecore2.standard.messages.AKClear;
+import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.components.StandardSimulator;
 
 import org.uncommons.maths.random.GaussianGenerator;
@@ -117,6 +119,12 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             }
             if (next instanceof AKUnload) {
                 handleUnload((AKUnload)next, changes);
+            }
+            if (next instanceof AKClear) {
+                handleClear((AKClear)next, changes);
+            }
+            if (next instanceof AKExtinguish) {
+                handleExtinguish((AKExtinguish)next, changes);
             }
         }
         // Any agents that are dead or in ambulances are immobile
@@ -363,6 +371,24 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         manager.getTrafficAgent(target).setMobile(false);
         Logger.debug(at + " unloaded " + target);
         return target;
+    }
+
+    private void handleClear(AKClear clear, ChangeSet changes) {
+        // Agents clearing roads are not mobile
+        EntityID agentID = clear.getAgentID();
+        Entity agent = model.getEntity(agentID);
+        if (agent instanceof Human) {
+            manager.getTrafficAgent((Human)agent).setMobile(false);
+        }
+    }
+
+    private void handleExtinguish(AKExtinguish ex, ChangeSet changes) {
+        // Agents extinguishing fires are not mobile
+        EntityID agentID = ex.getAgentID();
+        Entity agent = model.getEntity(agentID);
+        if (agent instanceof Human) {
+            manager.getTrafficAgent((Human)agent).setMobile(false);
+        }
     }
 
     private void timestep() {
