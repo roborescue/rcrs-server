@@ -2,8 +2,6 @@ package traffic3.simulator;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 import java.awt.Color;
 
@@ -62,15 +60,12 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
     private TrafficSimulatorGUI gui;
 
-    private Set<Human> ignore;
-
     private TrafficManager manager;
 
     /**
        Construct a new TrafficSimulator.
     */
     public TrafficSimulator() {
-        ignore = new HashSet<Human>();
         manager = new TrafficManager();
         gui = new TrafficSimulatorGUI(manager);
     }
@@ -102,7 +97,6 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             }
         }
         gui.initialise();
-        ignore.clear();
         manager.cacheInformation(model);
     }
 
@@ -112,12 +106,11 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         for (TrafficAgent agent : manager.getAgents()) {
             agent.clearPath();
             agent.clearPositionHistory();
+            agent.setMobile(true);
         }
-        ignore.clear();
         for (Command next : c.getCommands()) {
             if (next instanceof AKMove) {
                 handleMove((AKMove)next);
-                continue;
             }
             if (next instanceof AKLoad) {
                 handleLoad((AKLoad)next, changes);
@@ -125,17 +118,16 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             if (next instanceof AKUnload) {
                 handleUnload((AKUnload)next, changes);
             }
-            ignore.add((Human)model.getEntity(next.getAgentID()));
         }
-        // Ignore any agents that are dead or in ambulances
+        // Any agents that are dead or in ambulances are immobile
         for (StandardEntity next : model) {
             if (next instanceof Human) {
                 Human h = (Human)next;
                 if (h.isHPDefined() && h.getHP() <= 0) {
-                    ignore.add(h);
+                    manager.getTrafficAgent(h).setMobile(false);
                 }
                 if (h.isPositionDefined() && (model.getEntity(h.getPosition()) instanceof AmbulanceTeam)) {
-                    ignore.add(h);
+                    manager.getTrafficAgent(h).setMobile(false);
                 }
             }
         }
@@ -143,7 +135,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         for (TrafficAgent agent : manager.getAgents()) {
             // Update position and positionHistory for agents that were not loaded or unloaded
             Human human = agent.getHuman();
-            if (ignore.contains(human)) {
+            if (!agent.isMobile()) {
                 human.undefinePositionHistory();
                 human.setTravelDistance(0);
                 changes.addChange(human, human.getPositionHistoryProperty());
@@ -307,6 +299,8 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         changes.addChange(h, h.getPositionProperty());
         changes.addChange(h, h.getXProperty());
         changes.addChange(h, h.getYProperty());
+        manager.getTrafficAgent(at).setMobile(false);
+        manager.getTrafficAgent(h).setMobile(false);
         Logger.debug(at + " loaded " + h);
         return h;
     }
@@ -365,6 +359,8 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
                 trafficAgent.clearPath();
             }
         }
+        manager.getTrafficAgent(at).setMobile(false);
+        manager.getTrafficAgent(target).setMobile(false);
         Logger.debug(at + " unloaded " + target);
         return target;
     }
@@ -380,17 +376,8 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     }
 
     private void microstep() {
-        /*
-          for (TrafficAgent agent : agents.values()) {
-          if (agent.getHuman().isHPDefined() && agent.getHuman().getHP() > 0 && !ignore.contains(agent.getHuman())) {
-          agent.plan();
-          }
-          }
-        */
         for (TrafficAgent agent : manager.getAgents()) {
-            if (agent.getHuman().isHPDefined() && agent.getHuman().getHP() > 0 && !ignore.contains(agent.getHuman())) {
-                agent.step(STEP_TIME_MS);
-            }
+            agent.step(STEP_TIME_MS);
         }
         gui.refresh();
     }

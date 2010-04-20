@@ -68,6 +68,8 @@ public class TrafficAgent {
     private Human human;
     private TrafficManager manager;
 
+    private boolean mobile;
+
     /**
        Construct a TrafficAgent.
        @param human The Human wrapped by this object.
@@ -85,6 +87,7 @@ public class TrafficAgent {
         savePositionHistory = true;
         historyCount = 0;
         positionHistoryFrequency = DEFAULT_POSITION_HISTORY_FREQUENCY;
+        mobile = true;
     }
 
     /**
@@ -317,9 +320,27 @@ public class TrafficAgent {
        @param dt The amount of time to simulate in ms.
     */
     public void step(double dt) {
-        updateGoals();
-        computeForces();
-        updatePosition(dt);
+        if (mobile) {
+            updateGoals();
+            computeForces();
+            updatePosition(dt);
+        }
+    }
+
+    /**
+       Set whether this agent is mobile or not.
+       @param m True if this agent is mobile, false otherwise.
+    */
+    public void setMobile(boolean m) {
+        mobile = m;
+    }
+
+    /**
+       Find out if this agent is mobile.
+       @return True if this agent is mobile.
+    */
+    public boolean isMobile() {
+        return mobile;
     }
 
     private void updateGoals() {
