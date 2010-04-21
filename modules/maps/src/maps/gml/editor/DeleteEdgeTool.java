@@ -22,7 +22,6 @@ import java.util.Collection;
 */
 public class DeleteEdgeTool extends AbstractTool {
     private static final Color HIGHLIGHT_COLOUR = Color.BLUE;
-    private static final int HIGHLIGHT_SIZE = 6;
 
     private Listener listener;
     private EdgeDecorator edgeHighlight;
