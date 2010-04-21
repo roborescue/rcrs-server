@@ -518,18 +518,6 @@ public class GMLMapViewer extends JComponent {
         int height = getHeight() - insets.top - insets.bottom;
         Graphics2D g = (Graphics2D)graphics.create(insets.left, insets.top, width + 1 , height + 1);
         transform.rescale(width, height);
-        for (GMLNode next : map.getNodes()) {
-            NodeDecorator n = getNodeDecorator(next);
-            if (n != null) {
-                n.decorate(next, g, transform);
-            }
-        }
-        for (GMLEdge next : map.getEdges()) {
-            EdgeDecorator e = getEdgeDecorator(next);
-            if (e != null) {
-                e.decorate(next, g, transform);
-            }
-        }
         for (GMLRoad next : map.getRoads()) {
             RoadDecorator d = getRoadDecorator(next);
             if (d != null) {
@@ -546,6 +534,18 @@ public class GMLMapViewer extends JComponent {
             SpaceDecorator d = getSpaceDecorator(next);
             if (d != null) {
                 d.decorate(next, g, transform);
+            }
+        }
+        for (GMLEdge next : map.getEdges()) {
+            EdgeDecorator e = getEdgeDecorator(next);
+            if (e != null) {
+                e.decorate(next, g, transform);
+            }
+        }
+        for (GMLNode next : map.getNodes()) {
+            NodeDecorator n = getNodeDecorator(next);
+            if (n != null) {
+                n.decorate(next, g, transform);
             }
         }
         if (grid) {

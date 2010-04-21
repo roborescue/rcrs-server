@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import java.awt.geom.Rectangle2D;
 
 import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Line2D;
 
 /**
    Useful tools for manipulating GML.
@@ -82,5 +83,23 @@ public final class GMLTools {
             maxY = Math.max(maxY, next.getY());
         }
         return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    /**
+       Turn a GMLNode into a Point2D.
+       @param node The node to convert.
+       @return A new Point2D.
+    */
+    public static Point2D toPoint(GMLNode node) {
+        return new Point2D(node.getX(), node.getY());
+    }
+
+    /**
+       Turn a GMLEdge into a Line2D.
+       @param edge The edge to convert.
+       @return A new Line2D.
+    */
+    public static Line2D toLine(GMLEdge edge) {
+        return new Line2D(toPoint(edge.getStart()), toPoint(edge.getEnd()));
     }
 }

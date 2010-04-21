@@ -342,6 +342,7 @@ public class GMLEditor extends JPanel {
         result.add(new MergeLinesTool(this));
         result.add(null);
         result.add(new CreateEdgeTool(this));
+        result.add(new DeleteEdgeTool(this));
         result.add(null);
         return result;
     }

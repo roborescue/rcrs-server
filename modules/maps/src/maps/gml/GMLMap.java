@@ -12,6 +12,10 @@ import java.util.Iterator;
 
 import maps.CoordinateConversion;
 
+import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.GeometryTools2D;
+
 /**
    A GML map. All coordinates are specified in m.
 */
@@ -650,6 +654,28 @@ public class GMLMap {
             double dx = x - next.getX();
             double dy = y - next.getY();
             double d = (dx * dx) + (dy * dy);
+            if (best == null || d < bestDistance) {
+                best = next;
+                bestDistance = d;
+            }
+        }
+        return best;
+    }
+
+    /**
+       Find the GMLEdge nearest a point.
+       @param x The X coordinate.
+       @param y The Y coordinate.
+       @return The nearest GMLEdge.
+    */
+    public GMLEdge findNearestEdge(double x, double y) {
+        GMLEdge best = null;
+        double bestDistance = Double.NaN;
+        Point2D test = new Point2D(x, y);
+        for (GMLEdge next : edges.values()) {
+            Line2D line = GMLTools.toLine(next);
+            Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, test);
+            double d = GeometryTools2D.getDistance(test, closest);
             if (best == null || d < bestDistance) {
                 best = next;
                 bestDistance = d;
