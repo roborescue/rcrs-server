@@ -41,16 +41,19 @@ public class LayerViewComponent extends ViewComponent {
         layerActions = new HashMap<ViewLayer, Action>();
         addMouseListener(new MouseListener() {
                 @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON3) {
+                public void mousePressed(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
                         showPopupMenu(e.getX(), e.getY());
                     }
                 }
                 @Override
-                public void mousePressed(MouseEvent e) {
+                public void mouseReleased(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        showPopupMenu(e.getX(), e.getY());
+                    }
                 }
                 @Override
-                public void mouseReleased(MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                 }
                 @Override
                 public void mouseEntered(MouseEvent e) {
