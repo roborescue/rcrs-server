@@ -347,6 +347,7 @@ public class GMLEditor extends JPanel {
         result.add(new CreateRoadTool(this));
         result.add(new CreateBuildingTool(this));
         result.add(new CreateSpaceTool(this));
+        result.add(new DeleteShapeTool(this));
         result.add(null);
         return result;
     }

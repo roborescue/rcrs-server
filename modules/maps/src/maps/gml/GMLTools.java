@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Path2D;
+import java.awt.Shape;
 
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
@@ -83,6 +85,24 @@ public final class GMLTools {
             maxY = Math.max(maxY, next.getY());
         }
         return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    /**
+       Turn a list of coordinates into a shape.
+       @param coords The coordinates.
+       @return A new shape.
+    */
+    public static Shape coordsToShape(List<GMLCoordinates> coords) {
+        Path2D path = new Path2D.Double();
+        Iterator<GMLCoordinates> it = coords.iterator();
+        GMLCoordinates c = it.next();
+        path.moveTo(c.getX(), c.getY());
+        while (it.hasNext()) {
+            c = it.next();
+            path.lineTo(c.getX(), c.getY());
+        }
+        path.closePath();
+        return path;
     }
 
     /**

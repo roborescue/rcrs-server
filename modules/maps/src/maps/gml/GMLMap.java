@@ -685,6 +685,21 @@ public class GMLMap {
     }
 
     /**
+       Find the GMLShape under a point.
+       @param x The X coordinate.
+       @param y The Y coordinate.
+       @return The shape under the point or null if no shapes are found.
+    */
+    public GMLShape findShapeUnder(double x, double y) {
+        for (GMLShape next : allShapes) {
+            if (GMLTools.coordsToShape(next.getUnderlyingCoordinates()).contains(x, y)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    /**
        Get all GMLEdges that are attached to a GMLNode.
        @param node The GMLNode to look up.
        @return All attached GMLEdges.
