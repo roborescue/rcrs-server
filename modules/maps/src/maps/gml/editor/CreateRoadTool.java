@@ -12,9 +12,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 import java.util.List;
 import java.util.ArrayList;
 
-import maps.gml.view.NodeDecorator;
 import maps.gml.view.EdgeDecorator;
-import maps.gml.view.SquareNodeDecorator;
 import maps.gml.view.LineEdgeDecorator;
 import maps.gml.GMLNode;
 import maps.gml.GMLEdge;

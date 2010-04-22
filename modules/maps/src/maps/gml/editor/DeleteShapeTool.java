@@ -15,9 +15,6 @@ import maps.gml.GMLBuilding;
 import maps.gml.GMLSpace;
 import maps.gml.GMLShape;
 import maps.gml.GMLCoordinates;
-import maps.gml.GMLObject;
-
-import java.util.Collection;
 
 /**
    A tool for deleting shapes.

@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Collections;
 
 import java.awt.geom.Rectangle2D;
-import java.awt.Shape;
 
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
