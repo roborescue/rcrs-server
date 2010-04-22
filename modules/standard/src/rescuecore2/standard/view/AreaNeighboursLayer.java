@@ -40,7 +40,9 @@ public class AreaNeighboursLayer extends StandardEntityViewLayer<Area> {
             EntityID neighbour = edge.getNeighbour();
             if (neighbour != null) {
                 Area a = (Area)world.getEntity(neighbour);
-                g.drawLine(t.xToScreen(area.getX()), t.yToScreen(area.getY()), t.xToScreen(a.getX()), t.yToScreen(a.getY()));
+                if (a != null) {
+                    g.drawLine(t.xToScreen(area.getX()), t.yToScreen(area.getY()), t.xToScreen(a.getX()), t.yToScreen(a.getY()));
+                }
             }
         }
         return null;
