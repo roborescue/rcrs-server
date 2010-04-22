@@ -394,7 +394,11 @@
   </target>
 
   <target name="cobertura-generate-report" description="Generate the cobertura test coverage report for all modules using existing data">
-    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}" srcdir="${modules.dir}"/>
+    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}">
+      <dirset dir="${basedir}">
+        <include name="modules/**/src"/>
+      </dirset>
+    </cobertura-report>
   </target>
 
   <target name="javadoc" depends="_generate-javadoc-fileset, _generate-module-lib-paths" description="Generate Javadoc for all modules">
