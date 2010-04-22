@@ -12,12 +12,14 @@ import rescuecore2.registry.Registry;
 */
 public abstract class AbstractWorldModel<T extends Entity> implements WorldModel<T> {
     private Set<WorldModelListener<? super T>> listeners;
+    private Collection<Class<? extends T>> allowedClasses;
 
     /**
        Construct a new abstract world model.
     */
     protected AbstractWorldModel() {
         listeners = new HashSet<WorldModelListener<? super T>>();
+        allowedClasses = new HashSet<Class<? extends T>>();
     }
 
     @Override
@@ -39,6 +41,9 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
     public final void addEntity(Entity e) {
         if (isAllowed(e)) {
             addEntityImpl((T)e);
+        }
+        else {
+            throw new IllegalArgumentException(this + " does not accept entities of type " + e.getClass().getName());
         }
     }
 
@@ -119,17 +124,25 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
     }
 
     /**
-       Find out if a particular Entity is allowed into this world model. The default implementation checks that the object is assignable to at least one class returned by {@link #getAllowedClasses}.
+       Find out if a particular Entity is allowed into this world model. The default implementation checks that the object is assignable to at least one class previously registered with {@link #registerAllowedClass(Class)}.
        @param e The entity to check.
        @return True if the entity is allowed, false otherwise.
      */
     protected boolean isAllowed(Entity e) {
-        for (Class<? extends T> next : getAllowedClasses()) {
+        for (Class<? extends T> next : allowedClasses) {
             if (next.isAssignableFrom(e.getClass())) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+       Register an allowed class.
+       @param clazz The subclass of Entity that is allowed in this world model.
+    */
+    protected void registerAllowedClass(Class<? extends T> clazz) {
+        allowedClasses.add(clazz);
     }
 
     private Collection<WorldModelListener<? super T>> getListeners() {

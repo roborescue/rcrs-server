@@ -62,20 +62,14 @@ public interface WorldModel<T extends Entity> extends Iterable<T> {
     T getEntity(EntityID id);
 
     /**
-       Merge a set of entities into this world. New entities will be added; existing entities will have properties replaced with those taken from the given objects. Note that this method is not parameterised by T.
+       Merge a set of entities into this world. New entities will be added; existing entities will have properties replaced with those taken from the given objects. Any undefined properties in the given objects will NOT cause existing properties to become undefined. Note that this method is not parameterised by T.
        @param toMerge The set of entities to merge into this world model.
     */
     void merge(Collection<? extends Entity> toMerge);
 
     /**
-       Merge a set of changes into this world.
+       Merge a set of changes into this world. If the ChangeSet specifies that a property has become undefined then the existing property WILL become undefined. This behaviour is different to the {@link #merge(Collection)} method because an undefined value inside a ChangeSet means that the property value has become undefined, whereas in the other version of merge an undefined property means there is no value for that property.
        @param changeSet The set of changes to merge into this world model.
     */
     void merge(ChangeSet changeSet);
-
-    /**
-       Get the classes that specify what is allowed into this world model. This is to work around some of the limitations of Java generics, and also allows fine-grained control of what goes into the model.
-       @return A collection of Class objects.
-     */
-    Collection<Class<? extends T>> getAllowedClasses();
 }

@@ -14,7 +14,6 @@ import java.util.Iterator;
 */
 public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
     private Map<EntityID, T> entities;
-    private Collection<Class<? extends T>> allowedClasses;
 
     /**
        Construct an empty world model.
@@ -22,8 +21,7 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
     */
     public DefaultWorldModel(Class<? extends T> clazz) {
         entities = new HashMap<EntityID, T>();
-        allowedClasses = new HashSet<Class<? extends T>>();
-        allowedClasses.add(clazz);
+        registerAllowedClass(clazz);
     }
 
     /**
@@ -32,11 +30,6 @@ public class DefaultWorldModel<T extends Entity> extends AbstractWorldModel<T> {
     */
     public static DefaultWorldModel<Entity> create() {
         return new DefaultWorldModel<Entity>(Entity.class);
-    }
-
-    @Override
-    public final Collection<Class<? extends T>> getAllowedClasses() {
-        return allowedClasses;
     }
 
     @Override
