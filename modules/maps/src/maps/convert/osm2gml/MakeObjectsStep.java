@@ -6,6 +6,7 @@ import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLShape;
 import maps.convert.ConvertStep;
+import maps.ScaleConversion;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -38,6 +39,15 @@ public class MakeObjectsStep extends ConvertStep {
 
     @Override
     protected void step() {
+        double xMin = Double.POSITIVE_INFINITY;
+        double yMin = Double.POSITIVE_INFINITY;
+        for (Node next : map.getAllNodes()) {
+            xMin = Math.min(xMin, next.getX());
+            yMin = Math.min(yMin, next.getY());
+        }
+        double sizeOf1m = ConvertTools.sizeOf1Metre(map.getOSMMap());
+        double scale = 1.0 / sizeOf1m;
+        ScaleConversion conversion = new ScaleConversion(xMin, yMin, scale, scale);
         Collection<Node> nodes = map.getAllNodes();
         Collection<Edge> edges = map.getAllEdges();
         setProgressLimit(nodes.size() + edges.size() + (map.getAllObjects().size() * 2));
@@ -45,7 +55,7 @@ public class MakeObjectsStep extends ConvertStep {
         Map<Edge, GMLEdge> edgeMap = new HashMap<Edge, GMLEdge>();
         Map<TemporaryObject, GMLShape> shapeMap = new HashMap<TemporaryObject, GMLShape>();
         for (Node n : nodes) {
-            GMLNode node = gmlMap.createNode(n.getX(), n.getY());
+            GMLNode node = gmlMap.createNode(conversion.convertX(n.getX()), conversion.convertY(n.getY()));
             nodeMap.put(n, node);
             bumpProgress();
         }
