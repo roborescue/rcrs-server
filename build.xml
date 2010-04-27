@@ -1,4 +1,4 @@
-<project default="jars" name="Robocup rescue simulation software">
+<project default="complete-build" name="Robocup rescue simulation software">
   <property name="version" value="1.0-prealpha"/>
 
   <!-- Third party tool version numbers -->
