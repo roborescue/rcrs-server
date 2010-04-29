@@ -13,8 +13,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JDialog;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
@@ -36,6 +43,7 @@ import rescuecore2.registry.PropertyFactory;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.Pair;
+import rescuecore2.misc.MutableBoolean;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.misc.java.LoadableType;
@@ -152,7 +160,7 @@ public final class StartKernel {
 
             final KernelInfo kernelInfo = createKernel(config, showStartupMenu);
             if (kernelInfo == null) {
-                return;
+                System.exit(0);
             }
             KernelGUI gui = null;
             if (showGUI) {
@@ -206,7 +214,35 @@ public final class StartKernel {
         KernelStartupOptions options = new KernelStartupOptions(config);
         // Show the chooser GUI
         if (showMenu) {
-            if (JOptionPane.showConfirmDialog(null, new KernelStartupPanel(config, options), "Setup kernel options", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) {
+            final JDialog dialog = new JDialog((Frame)null, "Setup kernel options", true);
+            KernelStartupPanel panel = new KernelStartupPanel(config, options);
+            JButton okButton = new JButton("OK");
+            JButton cancelButton = new JButton("Cancel");
+            JPanel buttons = new JPanel(new FlowLayout());
+            buttons.add(okButton);
+            buttons.add(cancelButton);
+            dialog.getContentPane().add(panel, BorderLayout.CENTER);
+            dialog.getContentPane().add(buttons, BorderLayout.SOUTH);
+            final MutableBoolean ok = new MutableBoolean(true);
+            okButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ok.set(true);
+                        dialog.setVisible(false);
+                        dialog.dispose();
+                    }
+                });
+            cancelButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        ok.set(false);
+                        dialog.setVisible(false);
+                        dialog.dispose();
+                    }
+                });
+            dialog.pack();
+            dialog.setVisible(true);
+            if (!ok.get()) {
                 return null;
             }
         }
