@@ -14,7 +14,6 @@ import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 
-import firesimulator.kernel.Kernel;
 import firesimulator.world.World;
 import firesimulator.world.WorldInfo;
 import firesimulator.world.Refuge;
@@ -33,9 +32,6 @@ import firesimulator.simulator.ExtinguishRequest;
 import firesimulator.util.Configuration;
 
 import java.util.Collection;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.SynchronousQueue;
 
 /**
    A rescuecore2 Simulator that wraps the ResQ Freiburg fire simulator.
@@ -47,7 +43,6 @@ public class FireSimulatorWrapper extends StandardSimulator {
 
     private Simulator sim;
     private World world;
-    private WrapperKernel kernel;
 
     @Override
     protected void postConnect() {
@@ -66,8 +61,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
             }
         }
         world = new World();
-        kernel = new WrapperKernel();
-        sim = new Simulator(kernel, world);
+        sim = new Simulator(world);
         // Map each entity to a fire simulator object
         for (Entity next : model) {
             RescueObject r = mapEntity(next);
@@ -75,12 +69,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
                 world.putObject(r);
             }
         }
-        Thread t = new Thread() {
-                public void run() {
-                    sim.run();
-                }
-            };
-        t.start();
+        sim.initialize();
     }
 
     @Override
@@ -123,6 +112,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
+        long start = System.currentTimeMillis();
         for (Command next : c.getCommands()) {
             if (next instanceof AKExtinguish) {
                 AKExtinguish ex = (AKExtinguish)next;
@@ -135,14 +125,33 @@ public class FireSimulatorWrapper extends StandardSimulator {
                 world.addExtinguishRequest(req);
             }
         }
-        try {
-            changes.merge(kernel.commandsReceived(c.getTime()));
+        sim.step(c.getTime());
+        // Get changes
+        for (Object next : world.getBuildings()) {
+            Building b = (Building)next;
+            rescuecore2.standard.entities.Building oldB = (rescuecore2.standard.entities.Building)model.getEntity(new EntityID(b.getID()));
+            if ((!oldB.isFierynessDefined()) || (oldB.getFieryness() != b.getFieryness())) {
+                oldB.setFieryness(b.getFieryness());
+                changes.addChange(oldB, oldB.getFierynessProperty());
+            }
+            if ((!oldB.isTemperatureDefined()) || (oldB.getTemperature() != (int)b.getTemperature())) {
+                oldB.setTemperature((int)b.getTemperature());
+                changes.addChange(oldB, oldB.getTemperatureProperty());
+            }
         }
-        catch (InterruptedException e) {
-            Logger.error("FireSimulatorWrapper.handleCommands", e);
-        }
-        catch (BrokenBarrierException e) {
-            Logger.error("FireSimulatorWrapper.handleCommands", e);
+        for (Object next : world.getFirebrigades()) {
+            FireBrigade fb = (FireBrigade)next;
+            //            Logger.debug("Updating water for " + fb);
+            //            Logger.debug(fb.hasChanged() ? "Changed" : "Unchanged");
+            //            if (fb.hasChanged()) {
+                rescuecore2.standard.entities.FireBrigade oldFB = (rescuecore2.standard.entities.FireBrigade)model.getEntity(new EntityID(fb.getID()));
+                //                Logger.debug("Old water: " + oldFB.getWaterProperty());
+                //                Logger.debug("New water: " + fb.getWaterQuantity());
+                if ((!oldFB.isWaterDefined()) || (oldFB.getWater() != fb.getWaterQuantity())) {
+                    oldFB.setWater(fb.getWaterQuantity());
+                    changes.addChange(oldFB, oldFB.getWaterProperty());
+                }
+                //            }
         }
         if (c.getTime() == 1) {
             // Set initial water quantity for all fire brigades
@@ -152,6 +161,8 @@ public class FireSimulatorWrapper extends StandardSimulator {
                 changes.addChange(fb, fb.getWaterProperty());
             }
         }
+        long end = System.currentTimeMillis();
+        Logger.info("Time " + c.getTime() + " took " + (end - start) + "ms");
     }
 
     private RescueObject mapEntity(Entity e) {
@@ -288,86 +299,5 @@ public class FireSimulatorWrapper extends StandardSimulator {
             ids[i++] = next.getValue();
         }
         return ids;
-    }
-
-    private class WrapperKernel implements Kernel {
-        private CyclicBarrier commandsBarrier;
-        private SynchronousQueue<ChangeSet> queue;
-
-        public WrapperKernel() {
-            commandsBarrier = new CyclicBarrier(2);
-            queue = new SynchronousQueue<ChangeSet>();
-        }
-
-        @Override
-        public void register(Simulator s) {
-            Logger.debug("register");
-        }
-
-        @Override
-        public void establishConnection() {
-            Logger.debug("establishConnection");
-        }
-
-        @Override
-        public void signalReadyness() {
-            Logger.debug("signalReadyness");
-        }
-
-        @Override
-        public boolean waitForNextCycle() {
-            Logger.debug("waitForNextCycle");
-            try {
-                commandsBarrier.await();
-                return true;
-            }
-            catch (InterruptedException e) {
-                return false;
-            }
-            catch (BrokenBarrierException e) {
-                return false;
-            }
-        }
-
-        @Override
-        public void sendUpdate() {
-            Logger.debug("sendUpdate");
-            ChangeSet changes = new ChangeSet();
-            for (Object next : world.getBuildings()) {
-                Building b = (Building)next;
-                rescuecore2.standard.entities.Building oldB = (rescuecore2.standard.entities.Building)model.getEntity(new EntityID(b.getID()));
-                if ((!oldB.isFierynessDefined()) || (oldB.getFieryness() != b.getFieryness())) {
-                    oldB.setFieryness(b.getFieryness());
-                    changes.addChange(oldB, oldB.getFierynessProperty());
-                }
-                if ((!oldB.isTemperatureDefined()) || (oldB.getTemperature() != (int)b.getTemperature())) {
-                    oldB.setTemperature((int)b.getTemperature());
-                    changes.addChange(oldB, oldB.getTemperatureProperty());
-                }
-            }
-            for (Object next : world.getFirebrigades()) {
-                FireBrigade fb = (FireBrigade)next;
-                if (fb.hasChanged()) {
-                    rescuecore2.standard.entities.FireBrigade oldFB = (rescuecore2.standard.entities.FireBrigade)model.getEntity(new EntityID(fb.getID()));
-                    if ((!oldFB.isWaterDefined()) || (oldFB.getWater() != fb.getWaterQuantity())) {
-                        oldFB.setWater(fb.getWaterQuantity());
-                        changes.addChange(oldFB, oldFB.getWaterProperty());
-                    }
-                }
-            }
-            queue.add(changes);
-        }
-
-        @Override
-        public void receiveUpdate() {
-            Logger.debug("receiveUpdate");
-        }
-
-        ChangeSet commandsReceived(int newTime) throws InterruptedException, BrokenBarrierException {
-            Logger.debug("Waiting for simulator: time " + newTime);
-            commandsBarrier.await();
-            ChangeSet result = queue.take();
-            return result;
-        }
     }
 }

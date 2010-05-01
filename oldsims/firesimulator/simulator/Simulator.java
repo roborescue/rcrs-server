@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 
-import firesimulator.kernel.Kernel;
 import firesimulator.util.Configuration;
 import firesimulator.util.Rnd;
 import firesimulator.world.Building;
@@ -21,7 +20,6 @@ import org.uncommons.maths.random.GaussianGenerator;
 public class Simulator {
     private static final Log LOG = LogFactory.getLog(Simulator.class);
 	
-    private Kernel kernel;
     private World world;
     private WindShift windShift;
 
@@ -43,13 +41,13 @@ public class Simulator {
 
     private EnergyHistory energyHistory;
 
-    public Simulator(Kernel kernel,World world){
+    public Simulator(World world){
         me = this;
         monitors=new HashSet();
         verbose = true;
-        this.kernel=kernel;
+        //        this.kernel=kernel;
         this.world=world;
-        kernel.register(this);
+        //        kernel.register(this);
         windShift=null;
     }
 	
@@ -82,30 +80,8 @@ public class Simulator {
             ((Monitor)i.next()).reset(world);
         }
     }
-
-    public void run(){
-        kernel.establishConnection();
-        initialize();		
-        kernel.signalReadyness();
-        goLoop();
-    }
-
-    public void goLoop(){
-        int timestep = 0;
-        for(int i=0;i<1000;i++){			
-            if(!kernel.waitForNextCycle()) break;
-            ++timestep;
-            long t=System.currentTimeMillis();
-            step(timestep);
-            LOG.info("t="+timestep+" ("+(System.currentTimeMillis()-t)+"ms)");
-            kernel.sendUpdate();						
-            kernel.receiveUpdate();
-            informStep();
-        }
-        informDone();
-    }
 	
-    private void step(int timestep){	
+    public void step(int timestep){	
         energyHistory = new EnergyHistory(world, timestep);
         refill();
         executeExtinguishRequests();
@@ -428,7 +404,7 @@ public class Simulator {
                                                   random);
     }
 	
-    private void initialize(){		
+    public void initialize(){		
         try{
             loadVars();
         }catch (Exception e) {
