@@ -104,6 +104,8 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
+        long start = System.currentTimeMillis();
+        Logger.info("Timestep " + c.getTime());
         // Clear all destinations and position history
         for (TrafficAgent agent : manager.getAgents()) {
             agent.clearPath();
@@ -173,7 +175,9 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             changes.addChange(human, human.getPositionHistoryProperty());
             changes.addChange(human, human.getTravelDistanceProperty());
         }
-    }
+        long end = System.currentTimeMillis();
+        Logger.info("Timestep " + c.getTime() + " took " + (end - start) + " ms");
+   }
 
     @Override
     protected void handleUpdate(KSUpdate u) {
