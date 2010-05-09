@@ -79,7 +79,9 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
-        super.processCommands(c, changes);
+        long start = System.currentTimeMillis();
+        int time = c.getTime();
+        Logger.info("Timestep " + time);
 
         for (Command com : c.getCommands()) {
             if (checkValidity(com)) {
@@ -102,6 +104,8 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         if (gui != null) {
             gui.refresh(humans.values());
         }
+        long end = System.currentTimeMillis();
+        Logger.info("Timestep " + time + " took " + (end - start) + " ms");
     }
 
     private void processBrokenBuildings(ChangeSet changes) {
