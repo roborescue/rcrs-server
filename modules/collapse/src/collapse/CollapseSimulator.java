@@ -73,6 +73,9 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
 
     private static final double REPAIR_COST_FACTOR = 0.000001; // Converts square mm to square m.
 
+
+    private static final List<EntityID> EMPTY_ID_LIST = new ArrayList<EntityID>(0);
+
     private NumberGenerator<Double> destroyed;
     private NumberGenerator<Double> severe;
     private NumberGenerator<Double> moderate;
@@ -87,6 +90,7 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
 
     private CollapseSimulatorGUI gui;
     private Collection<Building> buildingCache;
+    private Collection<Road> roadCache;
 
     @Override
     public JComponent getGUIComponent() {
@@ -131,9 +135,13 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
                                                 config.getFloatValue(WALL_COLLAPSE_EXTENT_MAX_KEY),
                                                 config.getRandom());
         buildingCache = new HashSet<Building>();
+        roadCache = new HashSet<Road>();
         for (StandardEntity next : model) {
             if (next instanceof Building) {
                 buildingCache.add((Building)next);
+            }
+            if (next instanceof Road) {
+                roadCache.add((Road)next);
             }
         }
         model.addWorldModelListener(new WorldModelListener<StandardEntity>() {
@@ -142,12 +150,18 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
                     if (e instanceof Building) {
                         buildingCache.add((Building)e);
                     }
+                    if (e instanceof Road) {
+                        roadCache.add((Road)e);
+                    }
                 }
 
                 @Override
                 public void entityRemoved(WorldModel<? extends StandardEntity> model, StandardEntity e) {
                     if (e instanceof Building) {
                         buildingCache.remove((Building)e);
+                    }
+                    if (e instanceof Road) {
+                        roadCache.remove((Road)e);
                     }
                 }
             });
@@ -178,6 +192,13 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
             r.setBlockades(ids);
             changes.addAll(entry.getValue());
             changes.addChange(r, r.getBlockadesProperty());
+        }
+        // If any roads have undefined blockades then set the blockades property to the empty list
+        for (Road next : roadCache) {
+            if (!next.isBlockadesDefined()) {
+                next.setBlockades(EMPTY_ID_LIST);
+                changes.addChange(next, next.getBlockadesProperty());
+            }
         }
         long end = System.currentTimeMillis();
         Logger.info("Timestep " + time + " took " + (end - start) + " ms");
