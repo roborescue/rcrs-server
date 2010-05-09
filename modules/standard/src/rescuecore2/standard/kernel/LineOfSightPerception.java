@@ -43,6 +43,7 @@ import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.view.StandardWorldModelViewer;
 import rescuecore2.standard.view.StandardViewLayer;
@@ -240,6 +241,10 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         // Un-round hp and damage
         result.addChange(human, human.getHPProperty());
         result.addChange(human, human.getDamageProperty());
+        if (human instanceof FireBrigade) {
+            FireBrigade fb = (FireBrigade)human;
+            result.addChange(fb, fb.getWaterProperty());
+        }
     }
 
     private void addBlockadeProperties(Blockade blockade, ChangeSet result) {

@@ -155,13 +155,14 @@ public class StandardAgentRegistrar implements AgentRegistrar {
 
     private void filterHumanProperties(Human h) {
         for (Property next : h.getProperties()) {
-            // Human properties: POSITION, X, Y
+            // Human properties: POSITION, X, Y, WATER_QUANTITY
             // Everything else should be undefined
             StandardPropertyURN urn = StandardPropertyURN.fromString(next.getURN());
             switch (urn) {
             case X:
             case Y:
             case POSITION:
+            case WATER_QUANTITY:
                 break;
             default:
                 next.undefine();
