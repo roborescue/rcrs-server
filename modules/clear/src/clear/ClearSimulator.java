@@ -37,6 +37,9 @@ public class ClearSimulator extends StandardSimulator {
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
+        long start = System.currentTimeMillis();
+        int time = c.getTime();
+        Logger.info("Timestep " + time);
         Map<Blockade, Integer> partiallyCleared = new HashMap<Blockade, Integer>();
         for (Command command : c.getCommands()) {
             if (command instanceof AKClear) {
@@ -103,6 +106,8 @@ public class ClearSimulator extends StandardSimulator {
             b.setApexes(apexes);
             changes.addChange(b, b.getApexesProperty());
         }
+        long end = System.currentTimeMillis();
+        Logger.info("Timestep " + time + " took " + (end - start) + " ms");
     }
 
     private boolean isValid(AKClear clear) {
