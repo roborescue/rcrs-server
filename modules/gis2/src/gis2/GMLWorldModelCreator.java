@@ -9,7 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
-import rescuecore2.log.Logger;
+//import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Building;
@@ -107,9 +107,9 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             double area = GeometryTools2D.computeArea(vertices);
             Point2D centroid = GeometryTools2D.computeCentroid(vertices);
 
-            Logger.debug("Building vertices: " + vertices);
-            Logger.debug("Area: " + area);
-            Logger.debug("Centroid: " + centroid);
+            //            Logger.debug("Building vertices: " + vertices);
+            //            Logger.debug("Area: " + area);
+            //            Logger.debug("Centroid: " + centroid);
 
             // Building properties
             b.setFloors(1);
@@ -151,7 +151,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     }
 
     private List<Edge> createEdges(GMLShape s, CoordinateConversion conversion) {
-        Logger.debug("Computing edges for " + s);
+        //        Logger.debug("Computing edges for " + s);
         List<Edge> result = new ArrayList<Edge>();
         for (GMLDirectedEdge edge : s.getEdges()) {
             GMLCoordinates start = edge.getStartCoordinates();
@@ -163,7 +163,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             double sy = conversion.convertY(start.getY());
             double ex = conversion.convertX(end.getX());
             double ey = conversion.convertY(end.getY());
-            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
+            //            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
             result.add(new Edge((int)sx,
                                 (int)sy,
                                 (int)ex,
