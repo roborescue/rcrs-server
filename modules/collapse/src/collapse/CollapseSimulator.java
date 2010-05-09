@@ -155,7 +155,9 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
+        long start = System.currentTimeMillis();
         int time = c.getTime();
+        Logger.info("Timestep " + time);
         if (gui != null) {
             gui.timestep(time);
         }
@@ -177,6 +179,8 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
             changes.addAll(entry.getValue());
             changes.addChange(r, r.getBlockadesProperty());
         }
+        long end = System.currentTimeMillis();
+        Logger.info("Timestep " + time + " took " + (end - start) + " ms");
     }
 
     private Collection<Building> doCollapse(ChangeSet changes, int time) {
