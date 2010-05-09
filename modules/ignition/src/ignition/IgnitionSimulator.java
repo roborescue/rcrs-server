@@ -23,6 +23,9 @@ public class IgnitionSimulator extends StandardSimulator {
 
     @Override
     protected void processCommands(KSCommands c, ChangeSet changes) {
+        long start = System.currentTimeMillis();
+        int time = c.getTime();
+        Logger.info("Timestep " + time);
         // Find out which buildings have ignited.
         Set<Building> buildings = ignitionModel.findIgnitionPoints(model, c.getTime());
         for (Building next : buildings) {
@@ -30,6 +33,8 @@ public class IgnitionSimulator extends StandardSimulator {
             next.setIgnition(true);
             changes.addChange(next, next.getIgnitionProperty());
         }
+        long end = System.currentTimeMillis();
+        Logger.info("Timestep " + time + " took " + (end - start) + " ms");
     }
 
     @Override
