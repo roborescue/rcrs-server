@@ -69,7 +69,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             File mapFile = new File(dir, config.getValue(MAP_FILE_KEY, DEFAULT_MAP_FILE));
             File scenarioFile = new File(dir, config.getValue(SCENARIO_FILE_KEY, DEFAULT_SCENARIO_FILE));
             readMapData(mapFile, result);
-            readScenarioData(scenarioFile, result);
+            readScenarioData(scenarioFile, result, config);
             for (Entity e : result) {
                 nextID = Math.max(nextID, e.getID().getValue());
             }
@@ -141,12 +141,12 @@ public class GMLWorldModelCreator implements WorldModelCreator {
         }
     }
 
-    private void readScenarioData(File scenarioFile, StandardWorldModel result) throws DocumentException, ScenarioException {
+    private void readScenarioData(File scenarioFile, StandardWorldModel result, Config config) throws DocumentException, ScenarioException {
         if (scenarioFile.exists()) {
             SAXReader reader = new SAXReader();
             Document doc = reader.read(scenarioFile);
             Scenario scenario = new Scenario(doc);
-            scenario.apply(result);
+            scenario.apply(result, config);
         }
     }
 

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.log.Logger;
+import rescuecore2.config.Config;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
@@ -36,6 +37,7 @@ import rescuecore2.standard.entities.Human;
 public class Scenario {
     private static final int DEFAULT_HP = 10000;
     private static final int DEFAULT_STAMINA = 10000;
+    private static final String WATER_QUANTITY_KEY = "fire.tank.maximum";
 
     private static final String RCR_NAMESPACE_URI = "urn:roborescue:map:scenario";
     private static final Namespace RCR_NAMESPACE = DocumentHelper.createNamespace("rcr", RCR_NAMESPACE_URI);
@@ -136,8 +138,9 @@ public class Scenario {
     /**
        Apply this scenario to a world model.
        @param model The world model to alter.
+       @param config The configuration.
     */
-    public void apply(StandardWorldModel model) throws ScenarioException {
+    public void apply(StandardWorldModel model, Config config) throws ScenarioException {
         for (int next : refugeIDs) {
             Logger.debug("Coverting building " + next + " to a refuge");
             Building b = (Building)model.getEntity(new EntityID(next));
@@ -164,22 +167,22 @@ public class Scenario {
         for (int next : civLocations) {
             EntityID id = new EntityID(next);
             Civilian c = new Civilian(new EntityID(++nextID));
-            setupAgent(c, id, model);
+            setupAgent(c, id, model, config);
         }
         for (int next : fbLocations) {
             EntityID id = new EntityID(next);
             FireBrigade f = new FireBrigade(new EntityID(++nextID));
-            setupAgent(f, id, model);
+            setupAgent(f, id, model, config);
        }
         for (int next : pfLocations) {
             EntityID id = new EntityID(next);
             PoliceForce p = new PoliceForce(new EntityID(++nextID));
-            setupAgent(p, id, model);
+            setupAgent(p, id, model, config);
         }
         for (int next : atLocations) {
             EntityID id = new EntityID(next);
             AmbulanceTeam a = new AmbulanceTeam(new EntityID(++nextID));
-            setupAgent(a, id, model);
+            setupAgent(a, id, model, config);
         }
         for (int next : fsLocations) {
             EntityID id = new EntityID(next);
@@ -219,7 +222,7 @@ public class Scenario {
         }
     }
 
-    private void setupAgent(Human h, EntityID position, StandardWorldModel model) {
+    private void setupAgent(Human h, EntityID position, StandardWorldModel model, Config config) {
         Area area = (Area)model.getEntity(position);
         h.setX(area.getX());
         h.setY(area.getY());
@@ -231,6 +234,9 @@ public class Scenario {
         h.setDirection(0);
         h.setTravelDistance(0);
         h.setPositionHistory(new int[0]);
+        if (h instanceof FireBrigade) {
+            ((FireBrigade)h).setWater(config.getIntValue(WATER_QUANTITY_KEY));
+        }
         model.addEntity(h);
         Logger.debug("Created " + h);
     }
