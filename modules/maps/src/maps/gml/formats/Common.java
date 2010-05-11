@@ -10,9 +10,11 @@ import org.dom4j.QName;
 public final class Common {
     // CHECKSTYLE:OFF:JavadocVariable
     public static final String GML_NAMESPACE_URI = "http://www.opengis.net/gml";
+    public static final String GML_3_2_NAMESPACE_URI = "http://www.opengis.net/gml/3.2";
     public static final String XLINK_NAMESPACE_URI = "http://www.w3.org/1999/xlink";
 
     public static final Namespace GML_NAMESPACE = DocumentHelper.createNamespace("gml", GML_NAMESPACE_URI);
+    public static final Namespace GML_3_2_NAMESPACE = DocumentHelper.createNamespace("gml32", GML_3_2_NAMESPACE_URI);
     public static final Namespace XLINK_NAMESPACE = DocumentHelper.createNamespace("xlink", XLINK_NAMESPACE_URI);
 
     public static final QName GML_ID_QNAME = DocumentHelper.createQName("id", GML_NAMESPACE);

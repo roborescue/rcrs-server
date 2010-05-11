@@ -3,6 +3,7 @@ package maps.gml;
 import maps.gml.formats.RobocupFormat;
 import maps.gml.formats.OrdnanceSurveyFormat;
 import maps.gml.formats.MeijoFormat;
+import maps.gml.formats.GeospatialInformationAuthorityFormat;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -145,6 +146,7 @@ public final class MapReader {
         all.add(RobocupFormat.INSTANCE);
         all.add(MeijoFormat.INSTANCE);
         all.add(OrdnanceSurveyFormat.INSTANCE);
+        all.add(GeospatialInformationAuthorityFormat.INSTANCE);
         for (MapFormat next : all) {
             if (next.looksValid(doc)) {
                 return next;
