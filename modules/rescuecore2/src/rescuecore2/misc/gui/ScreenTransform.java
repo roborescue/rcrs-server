@@ -24,6 +24,8 @@ public class ScreenTransform {
     private int lastScreenHeight;
     private Rectangle2D viewBounds;
 
+    private boolean fixedAspectRatio;
+
     /**
        Create a ScreenTransform that covers a particular world coordinate range.
        @param minX The minimum X world coordinate.
@@ -39,6 +41,7 @@ public class ScreenTransform {
         this.centreX = (minX + maxX) / 2;
         this.centreY = (minY + maxY) / 2;
         this.zoom = 1;
+        fixedAspectRatio = true;
     }
 
     /**
@@ -64,6 +67,15 @@ public class ScreenTransform {
         int dy = screenY - (lastScreenHeight / 2);
         centreX = x - (dx / pixelsPerX);
         centreY = y + (dy / pixelsPerY);
+        rescale(lastScreenWidth, lastScreenHeight);
+    }
+
+    /**
+       Set whether to use a fixed aspect ratio or not.
+       @param b True to use a fixed aspect ratio, false otherwise.
+    */
+    public void setFixedAspectRatio(boolean b) {
+        fixedAspectRatio = b;
         rescale(lastScreenWidth, lastScreenHeight);
     }
 
@@ -116,6 +128,14 @@ public class ScreenTransform {
         yOffset = height;
         pixelsPerX = (width / xRange) * zoom;
         pixelsPerY = (height / yRange) * zoom;
+        if (fixedAspectRatio) {
+            if (pixelsPerX < pixelsPerY) {
+                pixelsPerY = pixelsPerX;
+            }
+            else if (pixelsPerY < pixelsPerX) {
+                pixelsPerX = pixelsPerY;
+            }
+        }
         // Work out how to offset points so that the centre point is in the right place
         //        System.out.println("pixelsPerX = " + pixelsPerX + ", pixelsPerY = " + pixelsPerY);
         //        System.out.println("Before adjustment: fixed point " + fixedX + ", " + fixedY + " should be at " + fixedScreenX + ", " + fixedScreenY + "; actually at " + xToScreen(fixedX) + ", " + yToScreen(fixedY));
