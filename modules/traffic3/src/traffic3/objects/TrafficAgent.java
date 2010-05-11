@@ -345,17 +345,23 @@ public class TrafficAgent {
 
     private void updateGoals() {
         if (currentDestination == null) {
+            Logger.debug(this + ": Current destination is null");
             if (path.isEmpty()) {
                 currentDestination = finalDestination;
+                Logger.debug(this + ": Path is empty, current destination set to " + currentDestination);
             }
             else {
                 currentDestination = path.remove();
+                Logger.debug(this + ": Current destination set to " + currentDestination);
             }
         }
         // Check to see if we can move to the next destination on the path
+        /*
         if (!path.isEmpty() && los(path.peek())) {
             currentDestination = path.remove();
+            Logger.debug(this + ": Have LOS to next target. New destination is " + currentDestination);
         }
+        */
     }
 
     private void computeForces() {
