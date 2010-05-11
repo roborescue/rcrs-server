@@ -249,6 +249,10 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             steps.add(new Point2D(targetX, targetY));
         }
         else {
+            if (list.isEmpty()) {
+                Logger.warn("Rejecting move: Path is empty");
+                return;
+            }
             Area target = (Area)model.getEntity(list.get(list.size() - 1));
             steps.add(new Point2D(target.getX(), target.getY()));
         }
