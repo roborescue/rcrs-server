@@ -213,7 +213,11 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Human human = (Human)model.getEntity(move.getAgentID());
         TrafficAgent agent = manager.getTrafficAgent(human);
         EntityID current = human.getPosition();
-        Area currentArea = (Area)model.getEntity(human.getPosition());
+        Entity currentEntity = model.getEntity(human.getPosition());
+        if (!(currentEntity instanceof Area)) {
+            Logger.warn("Rejecting move: Agent position is not an area: " + currentEntity);
+        }
+        Area currentArea = (Area)currentEntity;
         List<EntityID> list = move.getPath();
         List<Point2D> steps = new ArrayList<Point2D>();
         // Check that all elements refer to Area instances and build the list of target points
