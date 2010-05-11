@@ -213,9 +213,14 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Human human = (Human)model.getEntity(move.getAgentID());
         TrafficAgent agent = manager.getTrafficAgent(human);
         EntityID current = human.getPosition();
+        if (current == null) {
+            Logger.warn("Rejecting move: Agent position is not defined");
+            return;
+        }
         Entity currentEntity = model.getEntity(human.getPosition());
         if (!(currentEntity instanceof Area)) {
             Logger.warn("Rejecting move: Agent position is not an area: " + currentEntity);
+            return;
         }
         Area currentArea = (Area)currentEntity;
         List<EntityID> list = move.getPath();
