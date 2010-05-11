@@ -335,6 +335,7 @@ public class GMLEditor extends JPanel {
         //        result.add(new PanZoomTool(this));
         //        result.add(new ScaleTool(this));
         result.add(new InspectTool(this));
+        result.add(new FixNearbyNodesTool(this));
         result.add(null);
         result.add(new CreateNodeTool(this));
         result.add(new MoveNodeTool(this));

@@ -16,6 +16,8 @@ import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 
+import rescuecore2.misc.collections.LazyMap;
+
 /**
    A GML map. All coordinates are specified in m.
 */
@@ -34,6 +36,9 @@ public class GMLMap {
     private Set<GMLShape> allShapes;
     private Set<GMLObject> allObjects;
 
+    private Map<GMLNode, Collection<GMLEdge>> attachedEdges;
+    private Map<GMLEdge, Collection<GMLShape>> attachedShapes;
+
     private int nextID;
 
     /**
@@ -47,6 +52,18 @@ public class GMLMap {
         spaces = new HashMap<Integer, GMLSpace>();
         allShapes = new HashSet<GMLShape>();
         allObjects = new HashSet<GMLObject>();
+        attachedEdges = new LazyMap<GMLNode, Collection<GMLEdge>>() {
+            @Override
+            public Collection<GMLEdge> createValue() {
+                return new HashSet<GMLEdge>();
+            }
+        };
+        attachedShapes = new LazyMap<GMLEdge, Collection<GMLShape>>() {
+            @Override
+            public Collection<GMLShape> createValue() {
+                return new HashSet<GMLShape>();
+            }
+        };
         boundsKnown = false;
         nextID = 0;
     }
@@ -154,10 +171,9 @@ public class GMLMap {
         if (nodes.containsKey(n.getID())) {
             return;
         }
+        addObject(n);
         nodes.put(n.getID(), n);
-        allObjects.add(n);
         boundsKnown = false;
-        nextID = Math.max(nextID, n.getID() + 1);
     }
 
     /**
@@ -168,11 +184,12 @@ public class GMLMap {
         if (edges.containsKey(e.getID())) {
             return;
         }
+        addObject(e);
         edges.put(e.getID(), e);
-        allObjects.add(e);
-        nextID = Math.max(nextID, e.getID() + 1);
         addNode(e.getStart());
         addNode(e.getEnd());
+        attachedEdges.get(e.getStart()).add(e);
+        attachedEdges.get(e.getEnd()).add(e);
     }
 
     /**
@@ -183,13 +200,8 @@ public class GMLMap {
         if (buildings.containsKey(b.getID())) {
             return;
         }
+        addShape(b);
         buildings.put(b.getID(), b);
-        allShapes.add(b);
-        allObjects.add(b);
-        nextID = Math.max(nextID, b.getID() + 1);
-        for (GMLDirectedEdge edge : b.getEdges()) {
-            addEdge(edge.getEdge());
-        }
     }
 
     /**
@@ -200,13 +212,8 @@ public class GMLMap {
         if (roads.containsKey(r.getID())) {
             return;
         }
+        addShape(r);
         roads.put(r.getID(), r);
-        allShapes.add(r);
-        allObjects.add(r);
-        nextID = Math.max(nextID, r.getID() + 1);
-        for (GMLDirectedEdge edge : r.getEdges()) {
-            addEdge(edge.getEdge());
-        }
     }
 
     /**
@@ -217,13 +224,8 @@ public class GMLMap {
         if (spaces.containsKey(s.getID())) {
             return;
         }
+        addShape(s);
         spaces.put(s.getID(), s);
-        allShapes.add(s);
-        allObjects.add(s);
-        nextID = Math.max(nextID, s.getID() + 1);
-        for (GMLDirectedEdge edge : s.getEdges()) {
-            addEdge(edge.getEdge());
-        }
     }
 
     /**
@@ -279,9 +281,10 @@ public class GMLMap {
     public Collection<GMLObject> removeNode(GMLNode n) {
         Collection<GMLObject> result = new HashSet<GMLObject>();
         if (nodes.containsKey(n.getID())) {
+            removeObject(n);
             nodes.remove(n.getID());
-            allObjects.remove(n);
-            for (GMLEdge next : getAttachedEdges(n)) {
+            Collection<GMLEdge> attached = new HashSet<GMLEdge>(getAttachedEdges(n));
+            for (GMLEdge next : attached) {
                 result.add(next);
                 result.addAll(removeEdge(next));
             }
@@ -298,12 +301,15 @@ public class GMLMap {
     public Collection<GMLObject> removeEdge(GMLEdge e) {
         Collection<GMLObject> result = new HashSet<GMLObject>();
         if (edges.containsKey(e.getID())) {
+            removeObject(e);
             edges.remove(e.getID());
-            allObjects.remove(e);
-            for (GMLShape next : getAttachedShapes(e)) {
+            Collection<GMLShape> attached = new HashSet<GMLShape>(getAttachedShapes(e));
+            for (GMLShape next : attached) {
                 result.add(next);
                 remove(next);
             }
+            attachedEdges.get(e.getStart()).remove(e);
+            attachedEdges.get(e.getEnd()).remove(e);
         }
         return result;
     }
@@ -313,9 +319,10 @@ public class GMLMap {
        @param b The building to remove.
     */
     public void removeBuilding(GMLBuilding b) {
-        buildings.remove(b.getID());
-        allShapes.remove(b);
-        allObjects.remove(b);
+        if (buildings.containsKey(b.getID())) {
+            removeShape(b);
+            buildings.remove(b.getID());
+        }
     }
 
     /**
@@ -323,9 +330,10 @@ public class GMLMap {
        @param r The road to remove.
     */
     public void removeRoad(GMLRoad r) {
-        roads.remove(r.getID());
-        allShapes.remove(r);
-        allObjects.remove(r);
+        if (roads.containsKey(r.getID())) {
+            removeShape(r);
+            roads.remove(r.getID());
+        }
     }
 
     /**
@@ -333,9 +341,10 @@ public class GMLMap {
        @param s The space to remove.
     */
     public void removeSpace(GMLSpace s) {
-        spaces.remove(s.getID());
-        allShapes.remove(s);
-        allObjects.remove(s);
+        if (spaces.containsKey(s.getID())) {
+            removeShape(s);
+            spaces.remove(s.getID());
+        }
     }
 
     /**
@@ -394,6 +403,8 @@ public class GMLMap {
         spaces.clear();
         allShapes.clear();
         allObjects.clear();
+        attachedEdges.clear();
+        attachedShapes.clear();
         boundsKnown = false;
     }
 
@@ -407,12 +418,17 @@ public class GMLMap {
         spaces.clear();
         allShapes.clear();
         allObjects.retainAll(nodes.values());
+        attachedEdges.clear();
+        attachedShapes.clear();
     }
 
     /**
        Remove all buildings.
     */
     public void removeAllBuildings() {
+        for (Map.Entry<GMLEdge, Collection<GMLShape>> entry : attachedShapes.entrySet()) {
+            entry.getValue().removeAll(buildings.values());
+        }
         allShapes.removeAll(buildings.values());
         allObjects.removeAll(buildings.values());
         buildings.clear();
@@ -422,6 +438,9 @@ public class GMLMap {
        Remove all roads.
     */
     public void removeAllRoads() {
+        for (Map.Entry<GMLEdge, Collection<GMLShape>> entry : attachedShapes.entrySet()) {
+            entry.getValue().removeAll(buildings.values());
+        }
         allShapes.removeAll(roads.values());
         allObjects.removeAll(roads.values());
         roads.clear();
@@ -431,6 +450,9 @@ public class GMLMap {
        Remove all spaces.
     */
     public void removeAllSpaces() {
+        for (Map.Entry<GMLEdge, Collection<GMLShape>> entry : attachedShapes.entrySet()) {
+            entry.getValue().removeAll(buildings.values());
+        }
         allShapes.removeAll(spaces.values());
         allObjects.removeAll(spaces.values());
         spaces.clear();
@@ -581,6 +603,7 @@ public class GMLMap {
         for (GMLNode next : nodes.values()) {
             next.convert(conversion);
         }
+        boundsKnown = false;
     }
 
     /**
@@ -669,10 +692,21 @@ public class GMLMap {
        @return The nearest GMLEdge.
     */
     public GMLEdge findNearestEdge(double x, double y) {
+        return findNearestEdge(x, y, edges.values());
+    }
+
+    /**
+       Find the GMLEdge nearest a point from a set of possible edges.
+       @param x The X coordinate.
+       @param y The Y coordinate.
+       @param possible The set of possible edges.
+       @return The nearest GMLEdge.
+    */
+    public GMLEdge findNearestEdge(double x, double y, Collection<? extends GMLEdge> possible) {
         GMLEdge best = null;
         double bestDistance = Double.NaN;
         Point2D test = new Point2D(x, y);
-        for (GMLEdge next : edges.values()) {
+        for (GMLEdge next : possible) {
             Line2D line = GMLTools.toLine(next);
             Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, test);
             double d = GeometryTools2D.getDistance(test, closest);
@@ -705,13 +739,7 @@ public class GMLMap {
        @return All attached GMLEdges.
     */
     public Collection<GMLEdge> getAttachedEdges(GMLNode node) {
-        Collection<GMLEdge> result = new HashSet<GMLEdge>();
-        for (GMLEdge next : edges.values()) {
-            if (next.getStart().equals(node) || next.getEnd().equals(node)) {
-                result.add(next);
-            }
-        }
-        return result;
+        return Collections.unmodifiableCollection(attachedEdges.get(node));
     }
 
     /**
@@ -720,16 +748,7 @@ public class GMLMap {
        @return All attached GMLShapes.
     */
     public Collection<GMLShape> getAttachedShapes(GMLEdge edge) {
-        Collection<GMLShape> result = new HashSet<GMLShape>();
-        for (GMLShape next : allShapes) {
-            for (GMLDirectedEdge nextEdge : next.getEdges()) {
-                if (nextEdge.getEdge().equals(edge)) {
-                    result.add(next);
-                    break;
-                }
-            }
-        }
-        return result;
+        return Collections.unmodifiableCollection(attachedShapes.get(edge));
     }
 
     /**
@@ -749,6 +768,52 @@ public class GMLMap {
         GMLNode start = commonNode.equals(edge1.getStart()) ? edge1.getEnd() : edge1.getStart();
         GMLNode end = commonNode.equals(edge2.getStart()) ? edge2.getEnd() : edge2.getStart();
         return ensureEdge(start, end);
+    }
+
+    /**
+       Replace all references to a node with another node.
+       @param oldNode The node to replace.
+       @param newNode The new node.
+    */
+    public void replaceNode(GMLNode oldNode, GMLNode newNode) {
+        for (GMLEdge next : edges.values()) {
+            if (next.getStart().equals(oldNode)) {
+                next.setStart(newNode);
+                attachedEdges.get(oldNode).remove(next);
+                attachedEdges.get(newNode).add(next);
+            }
+            if (next.getEnd().equals(oldNode)) {
+                next.setEnd(newNode);
+                attachedEdges.get(oldNode).remove(next);
+                attachedEdges.get(newNode).add(next);
+            }
+        }
+    }
+
+    private void addShape(GMLShape shape) {
+        addObject(shape);
+        allShapes.add(shape);
+        for (GMLDirectedEdge edge : shape.getEdges()) {
+            addEdge(edge.getEdge());
+            attachedShapes.get(edge.getEdge()).add(shape);
+        }
+    }
+
+    private void addObject(GMLObject object) {
+        allObjects.add(object);
+        nextID = Math.max(nextID, object.getID() + 1);
+    }
+
+    private void removeShape(GMLShape shape) {
+        removeObject(shape);
+        allShapes.remove(shape);
+        for (GMLDirectedEdge edge : shape.getEdges()) {
+            attachedShapes.get(edge.getEdge()).remove(shape);
+        }
+    }
+
+    private void removeObject(GMLObject object) {
+        allObjects.remove(object);
     }
 
     private void calculateBounds() {

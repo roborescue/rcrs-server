@@ -9,11 +9,14 @@ import java.awt.Insets;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 import maps.gml.view.NodeDecorator;
 import maps.gml.view.SquareNodeDecorator;
 import maps.gml.view.EdgeDecorator;
 import maps.gml.view.LineEdgeDecorator;
+import maps.gml.view.RectangleOverlay;
 import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
 import maps.gml.GMLCoordinates;
@@ -28,11 +31,18 @@ public class DeleteNodeTool extends AbstractTool {
     private static final Color HIGHLIGHT_COLOUR = Color.BLUE;
     private static final int HIGHLIGHT_SIZE = 6;
 
+    private static final Color OVERLAY_COLOUR = new Color(0, 0, 128, 128);
+
     private Listener listener;
     private NodeDecorator nodeHighlight;
     private EdgeDecorator edgeHighlight;
     private GMLNode selected;
     private Collection<GMLEdge> attachedEdges;
+
+    private GMLCoordinates pressPoint;
+    private GMLCoordinates dragPoint;
+
+    private RectangleOverlay overlay;
 
     /**
        Construct a DeleteNodeTool.
@@ -45,6 +55,7 @@ public class DeleteNodeTool extends AbstractTool {
         edgeHighlight = new LineEdgeDecorator(HIGHLIGHT_COLOUR);
         selected = null;
         attachedEdges = new HashSet<GMLEdge>();
+        overlay = new RectangleOverlay(OVERLAY_COLOUR, true);
     }
 
     @Override
@@ -66,6 +77,7 @@ public class DeleteNodeTool extends AbstractTool {
         editor.getViewer().removeMouseMotionListener(listener);
         editor.getViewer().clearAllNodeDecorators();
         editor.getViewer().clearAllEdgeDecorators();
+        editor.getViewer().removeOverlay(overlay);
         editor.getViewer().repaint();
     }
 
@@ -85,6 +97,21 @@ public class DeleteNodeTool extends AbstractTool {
             editor.getViewer().setEdgeDecorator(edgeHighlight, attachedEdges);
         }
         editor.getViewer().repaint();
+    }
+
+    private void removeNodes() {
+        double xMin = Math.min(pressPoint.getX(), dragPoint.getX());
+        double xMax = Math.max(pressPoint.getX(), dragPoint.getX());
+        double yMin = Math.min(pressPoint.getY(), dragPoint.getY());
+        double yMax = Math.max(pressPoint.getY(), dragPoint.getY());
+        Collection<GMLNode> nodes = editor.getMap().getNodesInRegion(xMin, yMin, xMax, yMax);
+        Map<GMLNode, Collection<GMLObject>> deleted = new HashMap<GMLNode, Collection<GMLObject>>();
+        for (GMLNode next : nodes) {
+            deleted.put(next, editor.getMap().removeNode(next));
+        }
+        editor.getViewer().repaint();
+        editor.setChanged();
+        editor.addEdit(new DeleteNodesEdit(nodes, deleted));
     }
 
     private class Listener implements MouseListener, MouseMotionListener {
@@ -111,13 +138,45 @@ public class DeleteNodeTool extends AbstractTool {
 
         @Override
         public void mousePressed(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                Point p = fixEventPoint(e.getPoint());
+                pressPoint = editor.getViewer().getCoordinatesAtPoint(p.x, p.y);
+                overlay.setLeft(pressPoint.getX());
+                overlay.setBottom(pressPoint.getY());
+                editor.getViewer().addOverlay(overlay);
+                editor.getViewer().repaint();
+            }
         }
+
         @Override
         public void mouseReleased(MouseEvent e) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                Point p = fixEventPoint(e.getPoint());
+                dragPoint = editor.getViewer().getCoordinatesAtPoint(p.x, p.y);
+                overlay.setLeft(Double.NaN);
+                overlay.setRight(Double.NaN);
+                overlay.setBottom(Double.NaN);
+                overlay.setTop(Double.NaN);
+                editor.getViewer().removeOverlay(overlay);
+                editor.getViewer().repaint();
+                removeNodes();
+                pressPoint = null;
+                dragPoint = null;
+            }
         }
+
         @Override
         public void mouseDragged(MouseEvent e) {
+            if (pressPoint != null) {
+                Point p = fixEventPoint(e.getPoint());
+                dragPoint = editor.getViewer().getCoordinatesAtPoint(p.x, p.y);
+                overlay.setRight(dragPoint.getX());
+                overlay.setTop(dragPoint.getY());
+                editor.getViewer().repaint();
+                highlightNode(null);
+            }
         }
+
         @Override
         public void mouseEntered(MouseEvent e) {
         }
@@ -153,6 +212,38 @@ public class DeleteNodeTool extends AbstractTool {
             super.redo();
             editor.getMap().removeNode(node);
             editor.getMap().remove(deletedObjects);
+            editor.getViewer().repaint();
+        }
+    }
+
+    private class DeleteNodesEdit extends AbstractUndoableEdit {
+        private Collection<GMLNode> nodes;
+        private Map<GMLNode, Collection<GMLObject>> deletedObjects;
+
+        public DeleteNodesEdit(Collection<GMLNode> nodes, Map<GMLNode, Collection<GMLObject>> deletedObjects) {
+            this.nodes = nodes;
+            this.deletedObjects = deletedObjects;
+        }
+
+        @Override
+        public void undo() {
+            super.undo();
+            for (GMLNode next : nodes) {
+                Collection<GMLObject> deleted = deletedObjects.get(next);
+                editor.getMap().addNode(next);
+                editor.getMap().add(deleted);
+            }
+            editor.getViewer().repaint();
+        }
+
+        @Override
+        public void redo() {
+            super.redo();
+            for (GMLNode next : nodes) {
+                Collection<GMLObject> deleted = deletedObjects.get(next);
+                editor.getMap().removeNode(next);
+                editor.getMap().remove(deleted);
+            }
             editor.getViewer().repaint();
         }
     }

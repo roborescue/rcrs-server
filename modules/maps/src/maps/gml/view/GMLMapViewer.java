@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.misc.gui.PanZoomListener;
@@ -65,6 +67,8 @@ public class GMLMapViewer extends JComponent {
     private transient SpaceDecorator defaultSpaceDecorator;
     private transient Map<GMLSpace, SpaceDecorator> spaceDecorators;
 
+    private transient List<Overlay> overlays;
+
     private boolean grid;
     private double gridResolution;
 
@@ -94,6 +98,7 @@ public class GMLMapViewer extends JComponent {
         spaceDecorators = new HashMap<GMLSpace, SpaceDecorator>();
         grid = false;
         gridResolution = 1;
+        overlays = new ArrayList<Overlay>();
         setMap(map);
     }
 
@@ -504,6 +509,22 @@ public class GMLMapViewer extends JComponent {
         gridResolution = resolution;
     }
 
+    /**
+       Add an overlay to the view.
+       @param overlay The overlay to add.
+    */
+    public void addOverlay(Overlay overlay) {
+        overlays.add(overlay);
+    }
+
+    /**
+       Remove an overlay from the view.
+       @param overlay The overlay to remove.
+    */
+    public void removeOverlay(Overlay overlay) {
+        overlays.remove(overlay);
+    }
+
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -547,6 +568,9 @@ public class GMLMapViewer extends JComponent {
             if (n != null) {
                 n.decorate(next, g, transform);
             }
+        }
+        for (Overlay next : overlays) {
+            next.render(g, transform);
         }
         if (grid) {
             double xMin = roundDownToGrid(transform.screenToX(0));
@@ -597,27 +621,4 @@ public class GMLMapViewer extends JComponent {
         double cy = transform.screenToY(y);
         return new GMLCoordinates(cx, cy);
     }
-
-    /*
-    private void paint(GMLShape shape, Graphics2D g, Color fill) {
-        Polygon p = makePolygon(shape);
-        g.setColor(OUTLINE_COLOUR);
-        g.draw(p);
-        g.setColor(fill);
-        g.fill(p);
-    }
-
-    private Polygon makePolygon(GMLShape shape) {
-        List<GMLCoordinates> c = shape.getCoordinates();
-        int[] xs = new int[c.size()];
-        int[] ys = new int[c.size()];
-        int i = 0;
-        for (GMLCoordinates next : c) {
-            xs[i] = transform.xToScreen(next.getX());
-            ys[i] = transform.yToScreen(next.getY());
-            ++i;
-        }
-        return new Polygon(xs, ys, c.size());
-    }
-    */
 }
