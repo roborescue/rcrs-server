@@ -202,6 +202,9 @@ public class CommandLayer extends StandardViewLayer {
     private void renderMove(AKMove move) {
         g.setColor(Color.BLACK);
         List<EntityID> path = move.getPath();
+        if (path.isEmpty()) {
+            return;
+        }
         Iterator<EntityID> it = path.iterator();
         StandardEntity first = world.getEntity(it.next());
         Pair<Integer, Integer> firstLocation = first.getLocation(world);
