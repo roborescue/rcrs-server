@@ -88,14 +88,18 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
     public void merge(ChangeSet changeSet) {
         for (EntityID e : changeSet.getChangedEntities()) {
             Entity existingEntity = getEntity(e);
+            boolean add = false;
             if (existingEntity == null) {
                 // Construct a new entity
                 existingEntity = Registry.getCurrentRegistry().createEntity(changeSet.getEntityURN(e), e);
-                addEntity(existingEntity);
+                add = true;
             }
             for (Property p : changeSet.getChangedProperties(e)) {
                 Property existingProperty = existingEntity.getProperty(p.getURN());
                 existingProperty.takeValue(p);
+            }
+            if (add) {
+                addEntity(existingEntity);
             }
         }
         for (EntityID next : changeSet.getDeletedEntities()) {
