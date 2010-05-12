@@ -36,7 +36,7 @@ public class RadioChannel extends AbstractChannel {
         if (usedBandwidth + data.length > bandwidth) {
             throw new InvalidMessageException("Discarding message on channel " + channelID + ": already used " + usedBandwidth + " of " + bandwidth + " bytes, new message is " + data.length + " bytes.");
         }
-        Logger.debug("Channel " + channelID + " accepted message from " + speak.getAgentID());
+        Logger.debug(this + " accepted message from " + speak.getAgentID());
         addMessageForSubscribers(speak);
         usedBandwidth += data.length;
     }

@@ -65,7 +65,7 @@ public class VoiceChannel extends AbstractChannel {
         byte[] data = speak.getContent();
         int count = uttered.get(agentID);
         if (count >= maxMessages) {
-            throw new InvalidMessageException("Agent " + agentID + " has uttered too many voice messages on channel " + channelID + ": limit is " + maxMessages);
+            throw new InvalidMessageException("Agent " + agentID + " has uttered too many voice messages on " + this);
         }
         if (data.length > maxSize) {
             throw new InvalidMessageException("Agent " + agentID + " tried to send an oversize voice message: " + data.length + " bytes but the limit is " + maxSize);

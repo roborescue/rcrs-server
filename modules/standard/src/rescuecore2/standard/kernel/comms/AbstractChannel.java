@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.messages.AKSpeak;
 
@@ -83,7 +84,9 @@ public abstract class AbstractChannel implements Channel {
         if (channel != channelID) {
             throw new InvalidMessageException("Tried to push '" + speak + "' to channel " + channelID);
         }
+        Logger.debug("Pushing " + speak + " through channel " + channelID);
         speak = applyInputNoise(speak);
+        Logger.debug("Input noise result: " + speak);
         if (speak != null) {
             pushImpl(speak);
         }
@@ -102,7 +105,9 @@ public abstract class AbstractChannel implements Channel {
        @param msg The message.
      */
     protected void addMessageForAgent(Entity a, AKSpeak msg) {
+        Logger.debug("Adding message " + msg + " for agent " + a);
         msg = applyOutputNoise(msg);
+        Logger.debug("Output noise result: " + msg);
         if (msg != null) {
             Collection<AKSpeak> c = messagesForAgents.get(a);
             c.add(msg);
