@@ -218,7 +218,7 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
         if (gui != null) {
             gui.startFire(buildingCache.size());
         }
-        result.addAll(doFireCollapse(changes));
+        //        result.addAll(doFireCollapse(changes));
         if (gui != null) {
             gui.endFire();
         }
