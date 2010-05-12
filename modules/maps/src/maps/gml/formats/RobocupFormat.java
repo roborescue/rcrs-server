@@ -254,11 +254,13 @@ public final class RobocupFormat implements MapFormat {
             //            Logger.debug("Next directed edge: " + directedEdge);
             int nextID = Integer.parseInt(directedEdge.attributeValue(Common.XLINK_HREF_QNAME).substring(1));
             boolean forward = "+".equals(directedEdge.attributeValue(Common.GML_ORIENTATION_QNAME));
-            GMLDirectedEdge dEdge = new GMLDirectedEdge(map.getEdge(nextID), forward);
+            GMLEdge edge = map.getEdge(nextID);
+            GMLDirectedEdge dEdge = new GMLDirectedEdge(edge, forward);
             String neighbourString = directedEdge.attributeValue(RCR_NEIGHBOUR_QNAME);
             Integer neighbourID = null;
             if (neighbourString != null) {
                 neighbourID = Integer.valueOf(neighbourString);
+                edge.setPassable(true);
             }
             edges.add(dEdge);
             neighbours.add(neighbourID);
