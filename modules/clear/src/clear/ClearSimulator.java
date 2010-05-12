@@ -55,7 +55,7 @@ public class ClearSimulator extends StandardSimulator {
                 int rate = config.getIntValue(REPAIR_RATE_KEY);
                 Logger.debug("Blockade repair cost: " + cost);
                 Logger.debug("Blockade repair rate: " + rate);
-                if (rate > cost) {
+                if (rate >= cost) {
                     // Remove the blockade entirely
                     List<EntityID> ids = new ArrayList<EntityID>(area.getBlockades());
                     ids.remove(blockadeID);
