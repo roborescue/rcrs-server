@@ -110,9 +110,9 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     }
 
     private Blockade getTargetBlockade(Area area, int maxDistance) {
-        Logger.debug("Looking for nearest blockade in " + area);
+        //        Logger.debug("Looking for nearest blockade in " + area);
         if (!area.isBlockadesDefined()) {
-            Logger.debug("Blockades undefined");
+            //            Logger.debug("Blockades undefined");
             return null;
         }
         List<EntityID> ids = area.getBlockades();
@@ -122,28 +122,28 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         for (EntityID next : ids) {
             Blockade b = (Blockade)model.getEntity(next);
             double d = findDistanceTo(b, x, y);
-            Logger.debug("Distance to " + b + " = " + d);
+            //            Logger.debug("Distance to " + b + " = " + d);
             if (maxDistance < 0 || d < maxDistance) {
-                Logger.debug("In range");
+                //                Logger.debug("In range");
                 return b;
             }
         }
-        Logger.debug("No blockades in range");
+        //        Logger.debug("No blockades in range");
         return null;
     }
 
     private int findDistanceTo(Blockade b, int x, int y) {
-        Logger.debug("Finding distance to " + b + " from " + x + ", " + y);
+        //        Logger.debug("Finding distance to " + b + " from " + x + ", " + y);
         List<Line2D> lines = GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(b.getApexes()), true);
         double best = Double.MAX_VALUE;
         Point2D origin = new Point2D(x, y);
         for (Line2D next : lines) {
             Point2D closest = GeometryTools2D.getClosestPointOnSegment(next, origin);
             double d = GeometryTools2D.getDistance(origin, closest);
-            Logger.debug("Next line: " + next + ", closest point: " + closest + ", distance: " + d);
+            //            Logger.debug("Next line: " + next + ", closest point: " + closest + ", distance: " + d);
             if (d < best) {
                 best = d;
-                Logger.debug("New best distance");
+                //                Logger.debug("New best distance");
             }
 
         }
