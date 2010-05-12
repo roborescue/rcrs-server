@@ -1306,12 +1306,12 @@
     </rcr:building>
     <rcr:building gml:id="253">
       <gml:Face>
-        <gml:directedEdge orientation="+" xlink:href="#234"/>
+        <gml:directedEdge orientation="+" xlink:href="#234" rcr:neighbour="277"/>
         <gml:directedEdge orientation="+" xlink:href="#115"/>
         <gml:directedEdge orientation="+" xlink:href="#200"/>
         <gml:directedEdge orientation="+" xlink:href="#196"/>
         <gml:directedEdge orientation="+" xlink:href="#244"/>
-        <gml:directedEdge orientation="+" xlink:href="#241"/>
+        <gml:directedEdge orientation="+" xlink:href="#241" rcr:neighbour="277"/>
       </gml:Face>
     </rcr:building>
     <rcr:building gml:id="250">
@@ -1328,9 +1328,9 @@
       <gml:Face>
         <gml:directedEdge orientation="+" xlink:href="#197"/>
         <gml:directedEdge orientation="+" xlink:href="#120"/>
-        <gml:directedEdge orientation="+" xlink:href="#122"/>
-        <gml:directedEdge orientation="+" xlink:href="#205"/>
-        <gml:directedEdge orientation="+" xlink:href="#221"/>
+        <gml:directedEdge orientation="+" xlink:href="#122" rcr:neighbour="276"/>
+        <gml:directedEdge orientation="+" xlink:href="#205" rcr:neighbour="276"/>
+        <gml:directedEdge orientation="+" xlink:href="#221" rcr:neighbour="276"/>
         <gml:directedEdge orientation="+" xlink:href="#222"/>
       </gml:Face>
     </rcr:building>
@@ -1414,8 +1414,8 @@
     <rcr:road gml:id="277">
       <gml:Face>
         <gml:directedEdge orientation="+" xlink:href="#117"/>
-        <gml:directedEdge orientation="-" xlink:href="#234"/>
-        <gml:directedEdge orientation="-" xlink:href="#241"/>
+        <gml:directedEdge orientation="-" xlink:href="#234" rcr:neighbour="253"/>
+        <gml:directedEdge orientation="-" xlink:href="#241" rcr:neighbour="253"/>
         <gml:directedEdge orientation="+" xlink:href="#243"/>
         <gml:directedEdge orientation="+" xlink:href="#151" rcr:neighbour="272"/>
         <gml:directedEdge orientation="+" xlink:href="#152"/>
@@ -1429,9 +1429,9 @@
         <gml:directedEdge orientation="+" xlink:href="#111"/>
         <gml:directedEdge orientation="+" xlink:href="#109" rcr:neighbour="273"/>
         <gml:directedEdge orientation="+" xlink:href="#224"/>
-        <gml:directedEdge orientation="-" xlink:href="#221"/>
-        <gml:directedEdge orientation="-" xlink:href="#205"/>
-        <gml:directedEdge orientation="-" xlink:href="#122"/>
+        <gml:directedEdge orientation="-" xlink:href="#221" rcr:neighbour="251"/>
+        <gml:directedEdge orientation="-" xlink:href="#205" rcr:neighbour="251"/>
+        <gml:directedEdge orientation="-" xlink:href="#122" rcr:neighbour="251"/>
       </gml:Face>
     </rcr:road>
     <rcr:road gml:id="283">
@@ -1439,15 +1439,15 @@
         <gml:directedEdge orientation="+" xlink:href="#220"/>
         <gml:directedEdge orientation="+" xlink:href="#158"/>
         <gml:directedEdge orientation="+" xlink:href="#159"/>
-        <gml:directedEdge orientation="+" xlink:href="#238"/>
-        <gml:directedEdge orientation="-" xlink:href="#218"/>
+        <gml:directedEdge orientation="+" xlink:href="#238" rcr:neighbour="285"/>
+        <gml:directedEdge orientation="-" xlink:href="#218" rcr:neighbour="282"/>
       </gml:Face>
     </rcr:road>
     <rcr:road gml:id="282">
       <gml:Face>
-        <gml:directedEdge orientation="+" xlink:href="#219"/>
-        <gml:directedEdge orientation="+" xlink:href="#218"/>
-        <gml:directedEdge orientation="+" xlink:href="#214"/>
+        <gml:directedEdge orientation="+" xlink:href="#219" rcr:neighbour="260"/>
+        <gml:directedEdge orientation="+" xlink:href="#218" rcr:neighbour="283"/>
+        <gml:directedEdge orientation="+" xlink:href="#214" rcr:neighbour="284"/>
       </gml:Face>
     </rcr:road>
     <rcr:road gml:id="281">
@@ -1466,8 +1466,8 @@
     </rcr:road>
     <rcr:road gml:id="285">
       <gml:Face>
-        <gml:directedEdge orientation="-" xlink:href="#226"/>
-        <gml:directedEdge orientation="-" xlink:href="#238"/>
+        <gml:directedEdge orientation="-" xlink:href="#226" rcr:neighbour="284"/>
+        <gml:directedEdge orientation="-" xlink:href="#238" rcr:neighbour="283"/>
         <gml:directedEdge orientation="+" xlink:href="#164"/>
         <gml:directedEdge orientation="+" xlink:href="#163"/>
         <gml:directedEdge orientation="+" xlink:href="#245"/>
@@ -1475,9 +1475,9 @@
     </rcr:road>
     <rcr:road gml:id="284">
       <gml:Face>
-        <gml:directedEdge orientation="+" xlink:href="#246"/>
-        <gml:directedEdge orientation="-" xlink:href="#214"/>
-        <gml:directedEdge orientation="+" xlink:href="#226"/>
+        <gml:directedEdge orientation="+" xlink:href="#246" rcr:neighbour="264"/>
+        <gml:directedEdge orientation="-" xlink:href="#214" rcr:neighbour="282"/>
+        <gml:directedEdge orientation="+" xlink:href="#226" rcr:neighbour="285"/>
       </gml:Face>
     </rcr:road>
     <rcr:road gml:id="258">
@@ -1536,7 +1536,7 @@
         <gml:directedEdge orientation="+" xlink:href="#125"/>
         <gml:directedEdge orientation="+" xlink:href="#121"/>
         <gml:directedEdge orientation="+" xlink:href="#217"/>
-        <gml:directedEdge orientation="-" xlink:href="#219" rcr:neighbour="261"/>
+        <gml:directedEdge orientation="-" xlink:href="#219" rcr:neighbour="282"/>
       </gml:Face>
     </rcr:road>
     <rcr:road gml:id="266">
@@ -1566,7 +1566,7 @@
         <gml:directedEdge orientation="+" xlink:href="#150"/>
         <gml:directedEdge orientation="+" xlink:href="#156"/>
         <gml:directedEdge orientation="-" xlink:href="#215" rcr:neighbour="260"/>
-        <gml:directedEdge orientation="-" xlink:href="#246" rcr:neighbour="265"/>
+        <gml:directedEdge orientation="-" xlink:href="#246" rcr:neighbour="284"/>
       </gml:Face>
     </rcr:road>
     <rcr:road gml:id="270">
