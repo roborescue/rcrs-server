@@ -2,8 +2,7 @@ package kernel;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
@@ -14,6 +13,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.log.Logger;
+import rescuecore2.misc.collections.LazyMap;
 
 /**
    This class is the kernel interface to an agent.
@@ -31,7 +31,12 @@ public class AgentProxy extends AbstractKernelComponent {
     public AgentProxy(String name, Entity e, Connection c) {
         super(name, c);
         this.entity = e;
-        commands = new HashMap<Integer, Collection<Command>>();
+        commands = new LazyMap<Integer, Collection<Command>>() {
+            @Override
+            public Collection<Command> createValue() {
+                return new ArrayList<Command>();
+            }
+        };
         c.addConnectionListener(new AgentConnectionListener());
     }
 
@@ -57,10 +62,6 @@ public class AgentProxy extends AbstractKernelComponent {
         Collection<Command> result;
         synchronized (commands) {
             result = commands.get(timestep);
-            if (result == null) {
-                result = new HashSet<Command>();
-                commands.put(timestep, result);
-            }
         }
         Logger.trace(entity.toString() + " getAgentCommands(" + timestep + ") returning " + result);
         return result;
@@ -91,10 +92,6 @@ public class AgentProxy extends AbstractKernelComponent {
         Logger.trace("AgentProxy " + entity + " received " + c);
         synchronized (commands) {
             Collection<Command> result = commands.get(time);
-            if (result == null) {
-                result = new HashSet<Command>();
-                commands.put(time, result);
-            }
             result.add(c);
             commands.notifyAll();
         }

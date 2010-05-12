@@ -5,7 +5,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.log.Logger;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
    A CommandCollector that waits for a certain amount of time before returning agent commands.
@@ -31,7 +31,7 @@ public class TimedCommandCollector implements CommandCollector {
             Thread.sleep(diff);
             now = System.currentTimeMillis();
         }
-        Collection<Command> result = new HashSet<Command>();
+        Collection<Command> result = new ArrayList<Command>();
         for (AgentProxy next : agents) {
             Collection<Command> commands = next.getAgentCommands(timestep);
             result.addAll(commands);
