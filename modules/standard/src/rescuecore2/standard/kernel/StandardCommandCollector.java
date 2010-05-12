@@ -18,6 +18,7 @@ import kernel.AgentProxy;
 import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
    A CommandCollector that will wait until a non-communication command has been received from each agent.
@@ -45,7 +46,7 @@ public class StandardCommandCollector implements CommandCollector {
             Logger.info(this + " waiting for commands from " + waiting.size() + " agents");
             Thread.sleep(WAIT_TIME);
         }
-        Collection<Command> result = new HashSet<Command>();
+        Collection<Command> result = new ArrayList<Command>();
         for (AgentProxy next : agents) {
             result.addAll(next.getAgentCommands(timestep));
         }
