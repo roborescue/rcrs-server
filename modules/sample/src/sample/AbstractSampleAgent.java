@@ -8,9 +8,12 @@ import java.util.Collections;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.Constants;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.kernel.comms.ChannelCommunicationModel;
+import rescuecore2.standard.kernel.comms.StandardCommunicationModel;
 
 /**
    Abstract base class for sample agents.
@@ -19,8 +22,8 @@ import rescuecore2.standard.entities.StandardEntity;
 public abstract class AbstractSampleAgent<E extends StandardEntity> extends StandardAgent<E> {
     private static final int RANDOM_WALK_LENGTH = 50;
 
-    private static final String SAY_COMMUNICATION_MODEL = "kernel.standard.StandardCommunicationModel";
-    private static final String SPEAK_COMMUNICATION_MODEL = "kernel.standard.ChannelCommunicationModel";
+    private static final String SAY_COMMUNICATION_MODEL = StandardCommunicationModel.class.getName();
+    private static final String SPEAK_COMMUNICATION_MODEL = ChannelCommunicationModel.class.getName();
 
     /**
        The search algorithm.
@@ -43,6 +46,8 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
         super.postConnect();
         search = new SampleSearch(model);
         useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
+        Logger.debug("Communcation model: " + config.getValue(Constants.COMMUNICATION_MODEL_KEY));
+        Logger.debug(useSpeak ? "Using speak model" : "Using say model");
     }
 
     /**
