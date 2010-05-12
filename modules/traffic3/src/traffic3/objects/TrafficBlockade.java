@@ -18,14 +18,17 @@ import rescuecore2.standard.entities.Blockade;
 */
 public class TrafficBlockade {
     private Blockade blockade;
+    private TrafficArea area;
     private List<Line2D> lines = new ArrayList<Line2D>();
 
     /**
        Construct a TrafficBlockade object.
        @param blockade The wrapped blockade.
+       @param area The area containing this blockade.
     */
-    public TrafficBlockade(final Blockade blockade) {
+    public TrafficBlockade(final Blockade blockade, TrafficArea area) {
         this.blockade = blockade;
+        this.area = area;
         lines = null;
         blockade.addEntityListener(new EntityListener() {
                 @Override
@@ -56,5 +59,31 @@ public class TrafficBlockade {
             lines.add(new Line2D(new Point2D(apexes[apexes.length - 2], apexes[apexes.length - 1]), new Point2D(apexes[0], apexes[1])));
         }
         return Collections.unmodifiableList(lines);
+    }
+
+    /**
+       Get the wrapped Blockade.
+       @return The Blockade.
+    */
+    public Blockade getBlockade() {
+        return blockade;
+    }
+
+    /**
+       Get the containing TrafficArea.
+       @return The TrafficArea.
+    */
+    public TrafficArea getArea() {
+        return area;
+    }
+
+    /**
+       Find out whether this blockade contains a point (x, y).
+       @param x The X coordinate to test.
+       @param y The Y coordinate to test.
+       @return True if and only if this blockade contains the specified point.
+    */
+    public boolean contains(double x, double y) {
+        return blockade.getShape().contains(x, y);
     }
 }

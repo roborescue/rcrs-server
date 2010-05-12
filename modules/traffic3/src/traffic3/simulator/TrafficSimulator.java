@@ -8,6 +8,7 @@ import java.awt.Color;
 import javax.swing.JComponent;
 
 import traffic3.objects.TrafficArea;
+import traffic3.objects.TrafficBlockade;
 import traffic3.objects.TrafficAgent;
 import traffic3.manager.TrafficManager;
 
@@ -15,6 +16,8 @@ import rescuecore2.GUIComponent;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.WorldModelListener;
+import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.control.KSCommands;
@@ -22,6 +25,7 @@ import rescuecore2.log.Logger;
 import rescuecore2.misc.geometry.Point2D;
 
 import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.AmbulanceTeam;
@@ -33,6 +37,7 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
+import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.messages.AKClear;
 import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.components.StandardSimulator;
@@ -97,7 +102,28 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             if (next instanceof Human) {
                 convertHuman((Human)next, agentVelocityGenerator, civilianVelocityGenerator);
             }
+            if (next instanceof Blockade) {
+                convertBlockade((Blockade)next);
+            }
         }
+        model.addWorldModelListener(new WorldModelListener<StandardEntity>() {
+                @Override
+                public void entityAdded(WorldModel<? extends StandardEntity> model, StandardEntity e) {
+                    if (e instanceof Blockade) {
+                        convertBlockade((Blockade)e);
+                    }
+                }
+
+                @Override
+                public void entityRemoved(WorldModel<? extends StandardEntity> model, StandardEntity e) {
+                    if (e instanceof Blockade) {
+                        Blockade b = (Blockade)e;
+                        TrafficBlockade block = manager.getTrafficBlockade(b);
+                        block.getArea().removeBlockade(block);
+                        manager.remove(block);
+                    }
+                }
+            });
         gui.initialise();
         manager.cacheInformation(model);
     }
@@ -106,6 +132,10 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     protected void processCommands(KSCommands c, ChangeSet changes) {
         long start = System.currentTimeMillis();
         Logger.info("Timestep " + c.getTime());
+        // Clear all cached blockade information
+        for (TrafficArea next : manager.getAreas()) {
+            next.clearBlockadeCache();
+        }
         // Clear all destinations and position history
         for (TrafficAgent agent : manager.getAgents()) {
             agent.clearPath();
@@ -121,6 +151,9 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             }
             if (next instanceof AKUnload) {
                 handleUnload((AKUnload)next, changes);
+            }
+            if (next instanceof AKRescue) {
+                handleRescue((AKRescue)next, changes);
             }
             if (next instanceof AKClear) {
                 handleClear((AKClear)next, changes);
@@ -185,7 +218,18 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     }
 
     private void convertAreaToTrafficArea(Area area) {
-        manager.register(new TrafficArea(area, model));
+        manager.register(new TrafficArea(area));
+    }
+
+    private void convertBlockade(Blockade b) {
+        Logger.debug("Converting blockade: " + b.getFullDescription());
+        Area a = (Area)model.getEntity(b.getPosition());
+        Logger.debug("Area: " + a);
+        TrafficArea area = manager.getTrafficArea(a);
+        Logger.debug("Traffic area: " + area);
+        TrafficBlockade block = new TrafficBlockade(b, area);
+        manager.register(block);
+        area.addBlockade(block);
     }
 
     private void convertHuman(Human h, NumberGenerator<Double> agentVelocityGenerator, NumberGenerator<Double> civilianVelocityGenerator) {
@@ -393,6 +437,15 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     private void handleClear(AKClear clear, ChangeSet changes) {
         // Agents clearing roads are not mobile
         EntityID agentID = clear.getAgentID();
+        Entity agent = model.getEntity(agentID);
+        if (agent instanceof Human) {
+            manager.getTrafficAgent((Human)agent).setMobile(false);
+        }
+    }
+
+    private void handleRescue(AKRescue rescue, ChangeSet changes) {
+        // Agents rescueing civilians are not mobile
+        EntityID agentID = rescue.getAgentID();
         Entity agent = model.getEntity(agentID);
         if (agent instanceof Human) {
             manager.getTrafficAgent((Human)agent).setMobile(false);

@@ -6,19 +6,12 @@ import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
 
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityListener;
-import rescuecore2.worldmodel.Property;
 //import rescuecore2.log.Logger;
 
-import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Edge;
-import rescuecore2.standard.entities.Blockade;
-import rescuecore2.standard.entities.StandardWorldModel;
 
 /**
    This class wraps an Area object with some extra information.
@@ -26,26 +19,26 @@ import rescuecore2.standard.entities.StandardWorldModel;
 public class TrafficArea {
     //    private List<TrafficAreaListener> areaListenerList = new ArrayList<TrafficAreaListener>();
     private Collection<TrafficAgent> agents;
+    private Collection<TrafficBlockade> blocks;
 
     private List<Line2D> blockingLines;
     private List<Line2D> blockadeLines;
     private List<Line2D> allBlockingLines;
 
     private Area area;
-    private StandardWorldModel world;
 
     /**
        Construct a TrafficArea.
        @param area The Area to wrap.
-       @param world The world model.
     */
-    public TrafficArea(final Area area, StandardWorldModel world) {
+    public TrafficArea(final Area area) {
         this.area = area;
-        this.world = world;
         agents = new HashSet<TrafficAgent>();
+        blocks = new HashSet<TrafficBlockade>();
         blockingLines = null;
         blockadeLines = null;
         allBlockingLines = null;
+        /*
         area.addEntityListener(new EntityListener() {
                 @Override
                 public void propertyChanged(Entity e, Property p, Object oldValue, Object newValue) {
@@ -59,6 +52,7 @@ public class TrafficArea {
                     }
                 }
             });
+        */
     }
 
     /**
@@ -92,18 +86,8 @@ public class TrafficArea {
     public List<Line2D> getBlockadeLines() {
         if (blockadeLines == null) {
             blockadeLines = new ArrayList<Line2D>();
-            if (area.isBlockadesDefined()) {
-                for (EntityID blockadeID : area.getBlockades()) {
-                    Blockade b = (Blockade)world.getEntity(blockadeID);
-                    int[] apexes = b.getApexes();
-                    for (int i = 0; i < apexes.length - 2; i += 2) {
-                        // CHECKSTYLE:OFF:MagicNumber
-                        blockadeLines.add(new Line2D(new Point2D(apexes[i], apexes[i + 1]), new Point2D(apexes[i + 2], apexes[i + 3])));
-                        // CHECKSTYLE:ON:MagicNumber
-                    }
-                    // Close the shape
-                    blockadeLines.add(new Line2D(new Point2D(apexes[apexes.length - 2], apexes[apexes.length - 1]), new Point2D(apexes[0], apexes[1])));
-                }
+            for (TrafficBlockade block : blocks) {
+                blockadeLines.addAll(block.getLines());
             }
         }
         return Collections.unmodifiableList(blockadeLines);
@@ -154,6 +138,40 @@ public class TrafficArea {
     */
     public Collection<TrafficAgent> getAgents() {
         return Collections.unmodifiableCollection(agents);
+    }
+
+    /**
+       Add a TrafficBlockade.
+       @param block The blockade to add.
+    */
+    public void addBlockade(TrafficBlockade block) {
+        blocks.add(block);
+        clearBlockadeCache();
+    }
+
+    /**
+       Remove a TrafficBlockade.
+       @param block The blockade to remove.
+    */
+    public void removeBlockade(TrafficBlockade block) {
+        blocks.remove(block);
+        clearBlockadeCache();
+    }
+
+    /**
+       Clear any cached blockade information.
+    */
+    public void clearBlockadeCache() {
+        blockadeLines = null;
+        allBlockingLines = null;
+    }
+
+    /**
+       Get all TrafficBlockades inside this area.
+       @return All TrafficBlockades in this area.
+    */
+    public Collection<TrafficBlockade> getBlockades() {
+        return Collections.unmodifiableCollection(blocks);
     }
 
     @Override

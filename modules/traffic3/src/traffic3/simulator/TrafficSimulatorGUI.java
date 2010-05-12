@@ -30,7 +30,7 @@ import java.util.concurrent.CountDownLatch;
 
 import traffic3.objects.TrafficArea;
 import traffic3.objects.TrafficAgent;
-//import traffic3.objects.TrafficBlockade;
+import traffic3.objects.TrafficBlockade;
 import traffic3.manager.TrafficManager;
 
 import rescuecore2.misc.gui.ScreenTransform;
@@ -47,8 +47,8 @@ import rescuecore2.standard.entities.Edge;
 public class TrafficSimulatorGUI extends JPanel {
     private static final Color SELECTED_AREA_COLOUR = new Color(0, 0, 255, 128);
     private static final Color AREA_OUTLINE_COLOUR = new Color(0, 0, 0);
-    private static final Color BLOCKADE_OUTLINE_COLOUR = new Color(0, 0, 0);
-    private static final Color BLOCKADE_FILL_COLOUR = new Color(255, 0, 0, 128);
+    private static final Color BLOCKADE_OUTLINE_COLOUR = new Color(128, 0, 0);
+    //    private static final Color BLOCKADE_FILL_COLOUR = new Color(255, 0, 0, 128);
 
     private static final Stroke PASSABLE_EDGE_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
     private static final Stroke IMPASSABLE_EDGE_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
@@ -283,16 +283,17 @@ public class TrafficSimulatorGUI extends JPanel {
         }
 
         private void drawBlockades(Graphics2D g) {
-            /*
-            for (TrafficBlockade b : manager.getBlockadeList()) {
-                Path2D shape = b.getShape();
-                g.setColor(BLOCKADE_FILL_COLOUR);
-                g.fill(shape);
-                g.setStroke(BLOCKADE_STROKE);
-                g.setColor(BLOCKADE_OUTLINE_COLOUR);
-                g.draw(shape);
+            g.setStroke(BLOCKADE_STROKE);
+            g.setColor(BLOCKADE_OUTLINE_COLOUR);
+            for (TrafficBlockade b : manager.getBlockades()) {
+                for (Line2D line : b.getLines()) {
+                    int x1 = transform.xToScreen(line.getOrigin().getX());
+                    int y1 = transform.yToScreen(line.getOrigin().getY());
+                    int x2 = transform.xToScreen(line.getEndPoint().getX());
+                    int y2 = transform.yToScreen(line.getEndPoint().getY());
+                    g.drawLine(x1, y1, x2, y2);
+                }
             }
-            */
         }
 
         private void drawAgents(Graphics2D g) {

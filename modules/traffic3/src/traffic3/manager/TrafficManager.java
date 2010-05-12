@@ -1,6 +1,7 @@
 package traffic3.manager;
 
 import traffic3.objects.TrafficArea;
+import traffic3.objects.TrafficBlockade;
 import traffic3.objects.TrafficAgent;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 
@@ -24,6 +26,7 @@ import rescuecore2.misc.collections.LazyMap;
 */
 public class TrafficManager {
     private Map<Area, TrafficArea> areas;
+    private Map<Blockade, TrafficBlockade> blocks;
     private Map<Human, TrafficAgent> agents;
     private Map<TrafficArea, Collection<TrafficArea>> areaNeighbours;
 
@@ -32,6 +35,7 @@ public class TrafficManager {
     */
     public TrafficManager() {
         areas = new HashMap<Area, TrafficArea>();
+        blocks = new HashMap<Blockade, TrafficBlockade>();
         agents = new HashMap<Human, TrafficAgent>();
         areaNeighbours = new LazyMap<TrafficArea, Collection<TrafficArea>>() {
             @Override
@@ -85,6 +89,7 @@ public class TrafficManager {
     */
     public void clear() {
         areas.clear();
+        blocks.clear();
         agents.clear();
         areaNeighbours.clear();
     }
@@ -106,6 +111,30 @@ public class TrafficManager {
     }
 
     /**
+       Register a new TrafficBlockade.
+       @param block The TrafficBlockade to register.
+    */
+    public void register(TrafficBlockade block) {
+        blocks.put(block.getBlockade(), block);
+    }
+
+    /**
+       Remove a blockade.
+       @param block The TrafficBlockade to remove.
+    */
+    public void remove(TrafficBlockade block) {
+        blocks.remove(block.getBlockade());
+    }
+
+    /**
+       Remove a blockade.
+       @param block The Blockade to remove.
+    */
+    public void remove(Blockade block) {
+        blocks.remove(block);
+    }
+
+    /**
        Get all TrafficAgents.
        @return All TrafficAgents.
     */
@@ -119,6 +148,14 @@ public class TrafficManager {
     */
     public Collection<TrafficArea> getAreas() {
         return Collections.unmodifiableCollection(areas.values());
+    }
+
+    /**
+       Get all TrafficBlockades.
+       @return All TrafficBlockades.
+    */
+    public Collection<TrafficBlockade> getBlockades() {
+        return Collections.unmodifiableCollection(blocks.values());
     }
 
     /**
@@ -141,6 +178,15 @@ public class TrafficManager {
     */
     public TrafficArea getTrafficArea(Area a) {
         return areas.get(a);
+    }
+
+    /**
+       Get the TrafficBlockade that wraps a given Blockade.
+       @param b The blockade to look up.
+       @return The TrafficBlockade that wraps the given blockade or null if no such TrafficBlockade exists.
+    */
+    public TrafficBlockade getTrafficBlockade(Blockade b) {
+        return blocks.get(b);
     }
 
     /**

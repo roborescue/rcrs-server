@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 import traffic3.manager.TrafficManager;
 import traffic3.simulator.TrafficConstants;
@@ -43,6 +44,9 @@ public class TrafficAgent {
 
     // Force
     private final double[] force = new double[D];
+
+    // List of blocking lines this microstep
+    private Collection<Line2D> blockingLines;
 
     private double radius;
     private double velocityLimit;
@@ -88,6 +92,7 @@ public class TrafficAgent {
         historyCount = 0;
         positionHistoryFrequency = DEFAULT_POSITION_HISTORY_FREQUENCY;
         mobile = true;
+        blockingLines = new HashSet<Line2D>();
     }
 
     /**
@@ -283,6 +288,19 @@ public class TrafficAgent {
        @param y location y
     */
     public void setLocation(double x, double y) {
+        if (currentArea == null || !currentArea.contains(x, y)) {
+            if (currentArea != null) {
+                currentArea.removeAgent(this);
+            }
+            TrafficArea newArea = manager.findArea(x, y);
+            if (newArea == null) {
+                Logger.warn("Agent moved outside area: " + this);
+                return;
+            }
+            currentArea = newArea;
+            currentDestination = null;
+            currentArea.addAgent(this);
+        }
         // Save position history
         if (savePositionHistory) {
             if (historyCount % positionHistoryFrequency == 0) {
@@ -295,24 +313,8 @@ public class TrafficAgent {
             double dy = y - location[1];
             totalDistance += Math.hypot(dx, dy);
         }
-
         location[0] = x;
         location[1] = y;
-
-        if (currentArea == null || !currentArea.contains(x, y)) {
-            if (currentArea != null) {
-                currentArea.removeAgent(this);
-            }
-            TrafficArea newArea = manager.findArea(x, y);
-            if (newArea == null) {
-                Logger.warn("Cannot find area for agent: " + this);
-            }
-            else {
-                currentArea = newArea;
-                currentDestination = null;
-                currentArea.addAgent(this);
-            }
-        }
     }
 
     /**
@@ -321,6 +323,7 @@ public class TrafficAgent {
     */
     public void step(double dt) {
         if (mobile) {
+            blockingLines.clear();
             updateGoals();
             computeForces();
             updatePosition(dt);
@@ -380,17 +383,27 @@ public class TrafficAgent {
     }
 
     private void updatePosition(double dt) {
+        if (insideBlockade()) {
+            Logger.debug(this + " inside a blockade");
+            return;
+        }
         double x = location[0] + dt * velocity[0];
         double y = location[1] + dt * velocity[1];
-        velocity[0] += dt * force[0];
-        velocity[1] += dt * force[1];
-        double v = Math.hypot(velocity[0], velocity[1]);
+        double newVX = velocity[0] + dt * force[0];
+        double newVY = velocity[1] + dt * force[1];
+        double v = Math.hypot(newVX, newVY);
         if (v > this.velocityLimit) {
             //System.err.println("velocity exceeded velocityLimit");
             v /= this.velocityLimit;
-            velocity[0] /= v;
-            velocity[1] /= v;
+            newVX /= v;
+            newVY /= v;
         }
+        if (crossedWall(location[0], location[1], x, y)) {
+            Logger.warn(this + " crossed a wall");
+            return;
+        }
+        velocity[0] = newVX;
+        velocity[1] = newVY;
         setLocation(x, y);
     }
 
@@ -415,6 +428,28 @@ public class TrafficAgent {
     private boolean intersectsWalls(Line2D test, TrafficArea area) {
         for (Line2D next : area.getBlockingLines()) {
             if (GeometryTools2D.getSegmentIntersectionPoint(test, next) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean insideBlockade() {
+        if (currentArea == null) {
+            return false;
+        }
+        for (TrafficBlockade block : currentArea.getBlockades()) {
+            if (block.contains(location[0], location[1])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean crossedWall(double oldX, double oldY, double newX, double newY) {
+        Line2D moved = new Line2D(oldX, oldY, newX - oldX, newY - oldY);
+        for (Line2D test : blockingLines) {
+            if (GeometryTools2D.getSegmentIntersectionPoint(moved, test) != null) {
                 return true;
             }
         }
@@ -544,7 +579,10 @@ public class TrafficAgent {
         double xSum = 0;
         double ySum = 0;
         if (currentArea != null) {
-            List<Line2D> lineList = currentArea.getAllBlockingLines();
+            blockingLines.addAll(currentArea.getAllBlockingLines());
+            for (TrafficArea neighbour : manager.getNeighbours(currentArea)) {
+                blockingLines.addAll(neighbour.getAllBlockingLines());
+            }
             double r = getRadius();
             double dx;
             double dy;
@@ -554,7 +592,7 @@ public class TrafficAgent {
             double b = TrafficConstants.getWallForceCoefficientB();
             double k = TrafficConstants.getWallForceCoefficientK();
             Point2D position = new Point2D(location[0], location[1]);
-            for (Line2D line : lineList) {
+            for (Line2D line : blockingLines) {
                 Point2D p1 = line.getOrigin();
                 Point2D p2 = line.getEndPoint();
                 double p1p2X = p2.getX() - p1.getX();
