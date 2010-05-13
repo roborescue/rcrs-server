@@ -9,11 +9,10 @@ import java.util.ArrayList;
 
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
+import rescuecore2.components.TCPComponentLauncher;
 import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.components.ComponentInitialisationException;
-import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
-import rescuecore2.connection.TCPConnection;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.misc.java.LoadableTypeProcessor;
@@ -51,9 +50,7 @@ public final class LaunchComponents {
             int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER_KEY, Constants.DEFAULT_KERNEL_PORT_NUMBER);
             String host = config.getValue(Constants.KERNEL_HOST_NAME_KEY, Constants.DEFAULT_KERNEL_HOST_NAME);
             processJarFiles(config);
-            Connection c = new TCPConnection(host, port);
-            c.startup();
-            ComponentLauncher launcher = new ComponentLauncher(c, config);
+            ComponentLauncher launcher = new TCPComponentLauncher(host, port, config);
             for (String next : toLaunch) {
                 connect(launcher, next, gui);
             }

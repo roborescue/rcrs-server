@@ -7,18 +7,15 @@ import rescuecore2.connection.ConnectionException;
 /**
    A class that knows how to connect components to the kernel.
  */
-public class ComponentLauncher implements RequestIDGenerator {
-    private Connection connection;
+public abstract class ComponentLauncher implements RequestIDGenerator {
     private Config config;
     private int nextRequestID;
 
     /**
-       Construct a new ComponentLauncher that will use a particular connection to connect components. The same connection will be re-used for all components.
-       @param connection The Connection to use.
+       Construct a new ComponentLauncher.
        @param config The system configuration.
     */
-    public ComponentLauncher(Connection connection, Config config) {
-        this.connection = connection;
+    public ComponentLauncher(Config config) {
         this.config = config;
         nextRequestID = 1;
     }
@@ -31,6 +28,8 @@ public class ComponentLauncher implements RequestIDGenerator {
        @throws ComponentConnectionException If the connection fails.
     */
     public void connect(Component c) throws InterruptedException, ConnectionException, ComponentConnectionException {
+        Connection connection = makeConnection();
+        connection.startup();
         c.connect(connection, this, config);
     }
 
@@ -40,4 +39,11 @@ public class ComponentLauncher implements RequestIDGenerator {
             return nextRequestID++;
         }
     }
+
+    /**
+       Make a new connection.
+       @return The new connection.
+       @throws ConnectionException If there is a problem creating the connection.
+    */
+    protected abstract Connection makeConnection() throws ConnectionException;
 }
