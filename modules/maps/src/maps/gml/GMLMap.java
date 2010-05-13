@@ -790,6 +790,43 @@ public class GMLMap {
         }
     }
 
+    /**
+       Insert a node into an edge.
+       @param edge The edge to split.
+       @param node The node to insert.
+       @return The two new edges.
+    */
+    public Collection<GMLEdge> splitEdge(GMLEdge edge, GMLNode node) {
+        Collection<GMLEdge> result = new ArrayList<GMLEdge>(2);
+        GMLEdge first = ensureEdge(edge.getStart(), node);
+        GMLEdge second = ensureEdge(node, edge.getEnd());
+        result.add(first);
+        result.add(second);
+        // Update any attached edges
+        for (GMLShape shape : getAttachedShapes(edge)) {
+            for (GMLDirectedEdge dEdge : shape.getEdges()) {
+                if (dEdge.getEdge() == edge) {
+                    // Create two new directed edges
+                    GMLDirectedEdge d1;
+                    GMLDirectedEdge d2;
+                    if (dEdge.isForward()) {
+                        d1 = new GMLDirectedEdge(first, true);
+                        d2 = new GMLDirectedEdge(second, true);
+                    }
+                    else {
+                        d1 = new GMLDirectedEdge(second, false);
+                        d2 = new GMLDirectedEdge(first, false);
+                    }
+                    shape.replaceEdge(dEdge, d1, d2);
+                    attachedShapes.get(edge).remove(shape);
+                    attachedShapes.get(first).add(shape);
+                    attachedShapes.get(second).add(shape);
+                }
+            }
+        }
+        return result;
+    }
+
     private void addShape(GMLShape shape) {
         addObject(shape);
         allShapes.add(shape);

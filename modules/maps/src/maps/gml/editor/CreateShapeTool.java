@@ -56,7 +56,7 @@ public abstract class CreateShapeTool extends AbstractTool {
     public void activate() {
         editor.getViewer().addMouseListener(listener);
         editor.getViewer().addMouseMotionListener(listener);
-        edges.clear();
+        clearData();
     }
 
     @Override
@@ -64,6 +64,7 @@ public abstract class CreateShapeTool extends AbstractTool {
         editor.getViewer().removeMouseListener(listener);
         editor.getViewer().removeMouseMotionListener(listener);
         editor.getViewer().clearAllEdgeDecorators();
+        clearData();
     }
 
     /**
@@ -110,8 +111,7 @@ public abstract class CreateShapeTool extends AbstractTool {
                 // We're done
                 editor.addEdit(finished(nodes));
                 editor.setChanged();
-                nodes.clear();
-                edges.clear();
+                clearData();
                 editor.getViewer().clearAllEdgeDecorators();
                 editor.getViewer().repaint();
             }
@@ -121,7 +121,19 @@ public abstract class CreateShapeTool extends AbstractTool {
             }
         }
         possible.removeAll(edges);
+        if (possible.size() == 1) {
+            addEdge(possible.iterator().next());
+        }
         editor.getViewer().repaint();
+    }
+
+    private void clearData() {
+        nodes.clear();
+        edges.clear();
+        possible.clear();
+        startNode = null;
+        currentNode = null;
+        hover = null;
     }
 
     private void hover(GMLEdge edge) {

@@ -468,7 +468,6 @@ public class GMLEditor extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     viewer.setGridEnabled((Boolean)getValue(Action.SELECTED_KEY));
                     viewer.repaint();
-                    System.out.println("Show grid? " + ((Boolean)getValue(Action.SELECTED_KEY)));
                 }
             };
         gridAction.putValue(Action.SELECTED_KEY, false);
@@ -533,6 +532,7 @@ public class GMLEditor extends JPanel {
         toolbar.addSeparator();
         addTool(new MoveNodeTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new MergeLinesTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new SplitEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
     }
 
     private void createFunctionActions(JMenu menu, JToolBar toolbar) {

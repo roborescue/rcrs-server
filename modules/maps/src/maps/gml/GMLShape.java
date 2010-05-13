@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Collections;
 
 import java.awt.geom.Rectangle2D;
@@ -91,6 +92,23 @@ public abstract class GMLShape extends GMLObject {
         edges.addAll(newEdges);
         points = getUnderlyingCoordinates();
         centroid = null;
+    }
+
+    /**
+       Replace a GMLDirectedEdge with a set of new edges. The neighbour of the old edge will be set for each of the new edges.
+       @param oldEdge The edge to replace.
+       @param newEdges The new edges.
+    */
+    public void replaceEdge(GMLDirectedEdge oldEdge, GMLDirectedEdge... newEdges) {
+        ListIterator<GMLDirectedEdge> it = edges.listIterator();
+        while (it.hasNext()) {
+            if (it.next() == oldEdge) {
+                it.remove();
+                for (GMLDirectedEdge e : newEdges) {
+                    it.add(e);
+                }
+            }
+        }
     }
 
     /**
