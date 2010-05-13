@@ -7,8 +7,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.Insets;
 
-import java.util.Collection;
-
 import maps.gml.view.NodeDecorator;
 import maps.gml.view.SquareNodeDecorator;
 import maps.gml.view.EdgeDecorator;
