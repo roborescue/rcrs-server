@@ -5,14 +5,14 @@ import javax.swing.JOptionPane;
 import maps.ConstantConversion;
 
 /**
-   A tool for scaling the map.
+   A function for scaling the map.
 */
-public class ScaleTool extends AbstractTool {
+public class ScaleFunction extends AbstractFunction {
     /**
-       Construct a ScaleTool.
+       Construct a ScaleFunction.
        @param editor The editor instance.
     */
-    public ScaleTool(GMLEditor editor) {
+    public ScaleFunction(GMLEditor editor) {
         super(editor);
     }
 
@@ -22,7 +22,7 @@ public class ScaleTool extends AbstractTool {
     }
 
     @Override
-    public void activate() {
+    public void execute() {
         String s = JOptionPane.showInputDialog("Enter scale factor");
         if (s != null) {
             try {
@@ -34,9 +34,5 @@ public class ScaleTool extends AbstractTool {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void deactivate() {
     }
 }

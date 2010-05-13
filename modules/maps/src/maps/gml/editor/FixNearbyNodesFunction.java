@@ -14,16 +14,16 @@ import maps.gml.GMLNode;
 import rescuecore2.log.Logger;
 
 /**
-   A tool for fixing nearby nodes.
+   A function for fixing nearby nodes.
 */
-public class FixNearbyNodesTool extends AbstractTool {
+public class FixNearbyNodesFunction extends AbstractFunction {
     private static final double TOLERANCE = 0.001;
 
     /**
-       Construct a FixNearbyNodesTool.
+       Construct a FixNearbyNodesFunction.
        @param editor The editor instance.
     */
-    public FixNearbyNodesTool(GMLEditor editor) {
+    public FixNearbyNodesFunction(GMLEditor editor) {
         super(editor);
     }
 
@@ -33,7 +33,7 @@ public class FixNearbyNodesTool extends AbstractTool {
     }
 
     @Override
-    public void activate() {
+    public void execute() {
         // Go through all nodes and replace any nearby ones.
         final JDialog dialog = new JDialog((Window)editor.getViewer().getTopLevelAncestor(), "Fixing nearby nodes", Dialog.ModalityType.APPLICATION_MODAL);
         final Set<GMLNode> remaining = new HashSet<GMLNode>(editor.getMap().getNodes());
@@ -76,9 +76,5 @@ public class FixNearbyNodesTool extends AbstractTool {
         t.start();
         dialog.pack();
         dialog.setVisible(true);
-    }
-
-    @Override
-    public void deactivate() {
     }
 }

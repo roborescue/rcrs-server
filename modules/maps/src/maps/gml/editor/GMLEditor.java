@@ -1,5 +1,6 @@
 package maps.gml.editor;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,6 +13,9 @@ import javax.swing.JToolBar;
 import javax.swing.JToggleButton;
 import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 import javax.swing.undo.UndoManager;
@@ -36,9 +40,6 @@ import java.text.NumberFormat;
 import java.io.File;
 import java.io.Reader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
 
 import org.dom4j.Document;
 
@@ -73,7 +74,6 @@ public class GMLEditor extends JPanel {
     private JLabel y;
     private boolean changed;
     private ViewerMouseListener viewerMouseListener;
-    private JToolBar toolbar;
     private Tool currentTool;
 
     private UndoManager undoManager;
@@ -87,8 +87,9 @@ public class GMLEditor extends JPanel {
 
     /**
        Construct a new GMLEditor.
+       @param menuBar The menu bar to add menus to.
     */
-    public GMLEditor() {
+    public GMLEditor(JMenuBar menuBar) {
         super(new BorderLayout());
         map = new GMLMap();
         viewer = new GMLMapViewer(map);
@@ -102,26 +103,22 @@ public class GMLEditor extends JPanel {
         changed = false;
         x = new JLabel("X: ");
         y = new JLabel("Y: ");
-        toolbar = new JToolBar("Tools");
-        createActions();
-        createToolButtons();
-        toolbar.addSeparator();
-        final JCheckBox snapBox = new JCheckBox("Snap to grid", snap.isEnabled());
-        final JSpinner snapSpinner = new JSpinner(new SpinnerNumberModel(snap.getResolution(), SNAP_MIN_RESOLUTION, SNAP_MAX_RESOLUTION, SNAP_MIN_RESOLUTION));
-        snapSpinner.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    snap.setResolution((Double)snapSpinner.getValue());
-                }
-            });
-        snapBox.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    snap.setEnabled(snapBox.isSelected());
-                }
-            });
-        toolbar.add(snapSpinner);
-        toolbar.add(snapBox);
+        JToolBar fileToolbar = new JToolBar("File");
+        JToolBar viewToolbar = new JToolBar("View");
+        JToolBar editToolbar = new JToolBar("Edit");
+        JToolBar toolsToolbar = new JToolBar("Tools");
+        JToolBar functionsToolbar = new JToolBar("Functions");
+        JMenu fileMenu = new JMenu("File", false);
+        JMenu viewMenu = new JMenu("View", false);
+        JMenu editMenu = new JMenu("Edit", false);
+        JMenu toolsMenu = new JMenu("Tools", false);
+        JMenu functionsMenu = new JMenu("Functions", false);
+
+        createFileActions(fileMenu, fileToolbar);
+        createViewActions(viewMenu, viewToolbar);
+        createEditActions(editMenu, editToolbar);
+        createToolActions(toolsMenu, toolsToolbar);
+        createFunctionActions(functionsMenu, functionsToolbar);
 
         JPanel main = new JPanel(new BorderLayout());
         JPanel labels = new JPanel(new GridLayout(1, 2));
@@ -131,7 +128,18 @@ public class GMLEditor extends JPanel {
         main.add(labels, BorderLayout.SOUTH);
         main.add(inspector, BorderLayout.EAST);
         add(main, BorderLayout.CENTER);
-        add(toolbar, BorderLayout.NORTH);
+        JPanel toolbars = new JPanel(new GridLayout(0, 1));
+        toolbars.add(fileToolbar);
+        toolbars.add(viewToolbar);
+        toolbars.add(editToolbar);
+        toolbars.add(toolsToolbar);
+        toolbars.add(functionsToolbar);
+        add(toolbars, BorderLayout.NORTH);
+        menuBar.add(fileMenu);
+        menuBar.add(viewMenu);
+        menuBar.add(editMenu);
+        menuBar.add(toolsMenu);
+        menuBar.add(functionsMenu);
 
         viewerMouseListener = new ViewerMouseListener();
         viewer.addMouseListener(viewerMouseListener);
@@ -144,7 +152,8 @@ public class GMLEditor extends JPanel {
     */
     public static void main(String[] args) {
         final JFrame frame = new JFrame("GMLEditor");
-        final GMLEditor editor = new GMLEditor();
+        JMenuBar menuBar = new JMenuBar();
+        final GMLEditor editor = new GMLEditor(menuBar);
         if (args.length > 0) {
             try {
                 editor.load(args[0]);
@@ -160,6 +169,7 @@ public class GMLEditor extends JPanel {
             }
         }
 
+        frame.setJMenuBar(menuBar);
         frame.setContentPane(editor);
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.pack();
@@ -330,30 +340,6 @@ public class GMLEditor extends JPanel {
         return c;
     }
 
-    private Collection<Tool> createTools() {
-        List<Tool> result = new ArrayList<Tool>();
-        //        result.add(new PanZoomTool(this));
-        //        result.add(new ScaleTool(this));
-        result.add(new InspectTool(this));
-        result.add(new FixNearbyNodesTool(this));
-        result.add(new ComputePassableEdgesTool(this));
-        result.add(null);
-        result.add(new CreateNodeTool(this));
-        result.add(new MoveNodeTool(this));
-        result.add(new DeleteNodeTool(this));
-        result.add(new MergeLinesTool(this));
-        result.add(null);
-        result.add(new CreateEdgeTool(this));
-        result.add(new DeleteEdgeTool(this));
-        result.add(null);
-        result.add(new CreateRoadTool(this));
-        result.add(new CreateBuildingTool(this));
-        result.add(new CreateSpaceTool(this));
-        result.add(new DeleteShapeTool(this));
-        result.add(null);
-        return result;
-    }
-
     private void updatePositionLabels(final Point p) {
         SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -392,7 +378,7 @@ public class GMLEditor extends JPanel {
         }
     }
 
-    private void createActions() {
+    private void createFileActions(JMenu menu, JToolBar toolbar) {
         Action newAction = new AbstractAction("New") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -452,6 +438,47 @@ public class GMLEditor extends JPanel {
                     }
                 }
             };
+        toolbar.add(newAction);
+        toolbar.add(loadAction);
+        toolbar.add(saveAction);
+        toolbar.add(saveAsAction);
+        menu.add(newAction);
+        menu.add(loadAction);
+        menu.add(saveAction);
+        menu.add(saveAsAction);
+    }
+
+    private void createViewActions(JMenu menu, JToolBar toolbar) {
+        final JCheckBox snapBox = new JCheckBox("Snap to grid", snap.isEnabled());
+        final JSpinner snapSpinner = new JSpinner(new SpinnerNumberModel(snap.getResolution(), SNAP_MIN_RESOLUTION, SNAP_MAX_RESOLUTION, SNAP_MIN_RESOLUTION));
+        snapSpinner.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    snap.setResolution((Double)snapSpinner.getValue());
+                }
+            });
+        snapBox.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    snap.setEnabled(snapBox.isSelected());
+                }
+            });
+        Action gridAction = new AbstractAction("Show grid") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    viewer.setGridEnabled((Boolean)getValue(Action.SELECTED_KEY));
+                    viewer.repaint();
+                    System.out.println("Show grid? " + ((Boolean)getValue(Action.SELECTED_KEY)));
+                }
+            };
+        gridAction.putValue(Action.SELECTED_KEY, false);
+        toolbar.add(snapSpinner);
+        toolbar.add(snapBox);
+        toolbar.add(new JToggleButton(gridAction));
+        menu.add(new JCheckBoxMenuItem(gridAction));
+    }
+
+    private void createEditActions(JMenu menu, JToolBar toolbar) {
         undoAction = new AbstractAction("Undo") {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -480,60 +507,72 @@ public class GMLEditor extends JPanel {
             };
         undoAction.setEnabled(false);
         redoAction.setEnabled(false);
-        Action gridAction = new AbstractAction("Show grid") {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    viewer.setGridEnabled((Boolean)getValue(Action.SELECTED_KEY));
-                    viewer.repaint();
-                }
-            };
-        gridAction.putValue(Action.SELECTED_KEY, false);
-        toolbar.add(newAction);
-        toolbar.add(loadAction);
-        toolbar.add(saveAction);
-        toolbar.add(saveAsAction);
-        toolbar.addSeparator();
         toolbar.add(undoAction);
         toolbar.add(redoAction);
-        toolbar.addSeparator();
-        toolbar.add(new JCheckBox(gridAction));
-        toolbar.addSeparator();
+        menu.add(undoAction);
+        menu.add(redoAction);
     }
 
-    private void createToolButtons() {
-        final Collection<JToggleButton> buttons = new ArrayList<JToggleButton>();
-        boolean first = true;
-        for (Tool tool : createTools()) {
-            if (tool == null) {
-                toolbar.addSeparator();
-                continue;
-            }
-            final Tool fTool = tool;
-            final JToggleButton button = new JToggleButton();
-            Action action = new AbstractAction(fTool.getName()) {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (currentTool != null) {
-                            currentTool.deactivate();
-                        }
-                        currentTool = fTool;
-                        currentTool.activate();
-                        for (JToggleButton next : buttons) {
-                            next.setSelected(false);
-                        }
-                        button.setSelected(true);
+    private void createToolActions(JMenu menu, JToolBar toolbar) {
+        ButtonGroup toolbarGroup = new ButtonGroup();
+        ButtonGroup menuGroup = new ButtonGroup();
+        addTool(new InspectTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        menu.addSeparator();
+        toolbar.addSeparator();
+        addTool(new CreateNodeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new CreateEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new CreateRoadTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new CreateBuildingTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new CreateSpaceTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        menu.addSeparator();
+        toolbar.addSeparator();
+        addTool(new DeleteNodeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new DeleteEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new DeleteShapeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        menu.addSeparator();
+        toolbar.addSeparator();
+        addTool(new MoveNodeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new MergeLinesTool(this), menu, toolbar, menuGroup, toolbarGroup);
+    }
+
+    private void createFunctionActions(JMenu menu, JToolBar toolbar) {
+        addFunction(new ScaleFunction(this), menu, toolbar);
+        addFunction(new FixNearbyNodesFunction(this), menu, toolbar);
+        addFunction(new ComputePassableEdgesFunction(this), menu, toolbar);
+    }
+
+    private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {
+        final JToggleButton toggle = new JToggleButton();
+        final JCheckBoxMenuItem check = new JCheckBoxMenuItem();
+        Action action = new AbstractAction(t.getName()) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (currentTool != null) {
+                        currentTool.deactivate();
                     }
-                };
-            button.setAction(action);
-            buttons.add(button);
-            toolbar.add(button);
-            if (first) {
-                fTool.activate();
-                currentTool = fTool;
-                button.setSelected(true);
-                first = false;
-            }
-        }
+                    currentTool = t;
+                    toggle.setSelected(true);
+                    check.setSelected(true);
+                    currentTool.activate();
+                }
+            };
+        toggle.setAction(action);
+        check.setAction(action);
+        menu.add(check);
+        toolbar.add(toggle);
+        menuGroup.add(check);
+        toolbarGroup.add(toggle);
+    }
+
+    private void addFunction(final Function f, JMenu menu, JToolBar toolbar) {
+        Action action = new AbstractAction(f.getName()) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    f.execute();
+                }
+            };
+        toolbar.add(action);
+        menu.add(action);
     }
 
     private class ViewerMouseListener implements MouseListener, MouseMotionListener {

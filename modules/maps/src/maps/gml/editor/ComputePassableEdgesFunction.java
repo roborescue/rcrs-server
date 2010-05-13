@@ -17,14 +17,14 @@ import maps.gml.GMLShape;
 import rescuecore2.log.Logger;
 
 /**
-   A tool for computing passable edges.
+   A function for computing passable edges.
 */
-public class ComputePassableEdgesTool extends AbstractTool {
+public class ComputePassableEdgesFunction extends AbstractFunction {
     /**
-       Construct a ComputePassableEdgesTool.
+       Construct a ComputePassableEdgesFunction.
        @param editor The editor instance.
     */
-    public ComputePassableEdgesTool(GMLEditor editor) {
+    public ComputePassableEdgesFunction(GMLEditor editor) {
         super(editor);
     }
 
@@ -34,7 +34,7 @@ public class ComputePassableEdgesTool extends AbstractTool {
     }
 
     @Override
-    public void activate() {
+    public void execute() {
         final JDialog dialog = new JDialog((Window)editor.getViewer().getTopLevelAncestor(), "Finding neighbours", Dialog.ModalityType.APPLICATION_MODAL);
         final Collection<GMLEdge> edges = editor.getMap().getEdges();
         final JProgressBar progress = new JProgressBar(0, edges.size());
@@ -69,10 +69,6 @@ public class ComputePassableEdgesTool extends AbstractTool {
         t.start();
         dialog.pack();
         dialog.setVisible(true);
-    }
-
-    @Override
-    public void deactivate() {
     }
 
     private GMLDirectedEdge findDirectedEdge(List<GMLDirectedEdge> possible, GMLEdge target) {
