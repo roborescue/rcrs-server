@@ -23,10 +23,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 
-import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.connection.ConnectionManager;
-import rescuecore2.connection.StreamConnection;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.config.IntegerValueConstraint;
@@ -452,9 +450,7 @@ public final class StartKernel {
 
         public Void call() throws InterruptedException {
             Logger.debug("ComponentStarter running: " + className + " * " + count);
-            Pair<Connection, Connection> connections = StreamConnection.createConnectionPair(registry);
-            componentManager.newConnection(connections.first());
-            ComponentLauncher launcher = new ComponentLauncher(connections.second(), config);
+            ComponentLauncher launcher = new InlineComponentLauncher(componentManager, registry, config);
             Logger.info("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
                 Component c = instantiate(className, Component.class);

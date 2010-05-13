@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import kernel.Kernel;
 import kernel.KernelException;
 import kernel.ComponentManager;
+import kernel.InlineComponentLauncher;
 
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.misc.Pair;
@@ -138,9 +139,7 @@ public class KernelControlPanel extends JPanel {
     */
     public void activate() {
         runThread.start();
-        Pair<Connection, Connection> connections = createConnectionPair();
-        componentManager.newConnection(connections.first());
-        launcher = new ComponentLauncher(connections.second(), config);
+        launcher = new InlineComponentLauncher(componentManager, Registry.getCurrentRegistry(), config);
     }
 
     private void addAgent() {
