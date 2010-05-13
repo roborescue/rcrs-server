@@ -1,13 +1,19 @@
 package human;
 
+import rescuecore2.Constants;
+import rescuecore2.misc.CommandLineOptions;
+import rescuecore2.config.Config;
+import rescuecore2.config.ConfigException;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.Agent;
 import rescuecore2.components.ComponentLauncher;
+import rescuecore2.components.TCPComponentLauncher;
 import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.view.ViewComponent;
 import rescuecore2.view.ViewListener;
 import rescuecore2.view.RenderedObject;
 import rescuecore2.messages.control.KVTimestep;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Building;
@@ -28,11 +34,14 @@ import javax.swing.AbstractListModel;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.io.IOException;
+
 /**
-   A viewer that also connects a bunch of human-controlled fire brigades, ambulance teams and police forces.
+   GUI for controlled agents.
  */
-public class ControlledAgentGUI extends StandardViewer {
-    private StandardWorldModelViewer viewer;
+public class ControlledAgentGUI extends JPanel {
+    private static final int VIEW_SIZE = 500;
+
     private List<ControlledFireBrigade> fbs;
     private ListListModel fbListModel;
     private JList fbList;
@@ -43,20 +52,12 @@ public class ControlledAgentGUI extends StandardViewer {
     private ListListModel atListModel;
     private JList atList;
 
-    @Override
-    public String toString() {
-        return "Human controlled agents";
-    }
-
-    @Override
-    protected void postConnect() {
-        super.postConnect();
-        JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + model.getAllEntities().size() + " entities)");
-        viewer = new StandardWorldModelViewer();
-        viewer.view(model);
-        // CHECKSTYLE:OFF:MagicNumber
-        viewer.setPreferredSize(new Dimension(500, 500));
-        // CHECKSTYLE:ON:MagicNumber
+    /**
+       Construct a ControlledAgentGUI.
+       @param view The view of the world.
+    */
+    public ControlledAgentGUI(StandardWorldModelViewer view) {
+        super(new BorderLayout());
         fbs = new ArrayList<ControlledFireBrigade>();
         fbListModel = new ListListModel(fbs);
         fbList = new JList(fbListModel);
@@ -66,7 +67,6 @@ public class ControlledAgentGUI extends StandardViewer {
         ats = new ArrayList<ControlledAmbulanceTeam>();
         atListModel = new ListListModel(ats);
         atList = new JList(atListModel);
-        JPanel main = new JPanel(new BorderLayout());
         // CHECKSTYLE:OFF:MagicNumber
         JPanel agents = new JPanel(new GridLayout(3, 1));
         // CHECKSTYLE:ON:MagicNumber
@@ -79,9 +79,9 @@ public class ControlledAgentGUI extends StandardViewer {
         scroll = new JScrollPane(atList);
         scroll.setBorder(BorderFactory.createTitledBorder("Ambulance teams"));
         agents.add(scroll);
-        main.add(agents, BorderLayout.WEST);
-        main.add(viewer, BorderLayout.CENTER);
-        viewer.addViewListener(new ViewListener() {
+        add(agents, BorderLayout.WEST);
+        add(view, BorderLayout.CENTER);
+        view.addViewListener(new ViewListener() {
                 @Override
                 public void objectsClicked(ViewComponent view, List<RenderedObject> objects) {
                     handleClick(objects);
@@ -90,17 +90,62 @@ public class ControlledAgentGUI extends StandardViewer {
                 public void objectsRollover(ViewComponent view, List<RenderedObject> objects) {
                 }
             });
-        frame.add(main);
-        frame.pack();
-        frame.setVisible(true);
-        // Connect as many fire brigades, police forces and ambulance teams as possible, but do it in a new thread.
-        new AgentConnector().start();
     }
 
-    @Override
-    protected void handleTimestep(KVTimestep t) {
-        super.handleTimestep(t);
-        viewer.repaint();
+    /**
+       Entry point.
+       @param args Command-line arguments.
+    */
+    public static void main(String[] args) {
+        Config config = new Config();
+        try {
+            CommandLineOptions.processArgs(args, config);
+        }
+        catch (ConfigException e) {
+            Logger.error("Configuration error", e);
+            System.exit(-1);
+        }
+        catch (IOException e) {
+            Logger.error("Configuration error", e);
+            System.exit(-1);
+        }
+        StandardWorldModelViewer view = new StandardWorldModelViewer();
+        view.setPreferredSize(new Dimension(VIEW_SIZE, VIEW_SIZE));
+        ControlledAgentGUI gui = new ControlledAgentGUI(view);
+        JFrame frame = new JFrame("Controlled agents");
+        frame.add(gui);
+        frame.pack();
+        frame.setVisible(true);
+
+        // Connect a viewer and agents
+        int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER_KEY, Constants.DEFAULT_KERNEL_PORT_NUMBER);
+        String host = config.getValue(Constants.KERNEL_HOST_NAME_KEY, Constants.DEFAULT_KERNEL_HOST_NAME);
+        ComponentLauncher launcher = new TCPComponentLauncher(host, port, config);
+        ControlViewer viewer = new ControlViewer(view, gui);
+        try {
+            launcher.connect(viewer);
+        }
+        catch (InterruptedException e) {
+            Logger.error("Interrupted", e);
+            System.exit(-1);
+        }
+        catch (ConnectionException e) {
+            Logger.error("Viewer connection failed", e);
+            System.exit(-1);
+        }
+        catch (ComponentConnectionException e) {
+            Logger.error("Viewer connection failed", e);
+            System.exit(-1);
+        }
+        gui.launchAgents(launcher);
+    }
+
+    private void launchAgents(ComponentLauncher launcher) {
+        // Connect as many fire brigades, police forces and ambulance teams as possible, but do it in a new thread.
+        new AgentConnector(launcher).start();
+    }
+
+    private void refreshLists() {
         fbListModel.refresh();
         pfListModel.refresh();
         atListModel.refresh();
@@ -178,6 +223,28 @@ public class ControlledAgentGUI extends StandardViewer {
         return agents;
     }
 
+    private static class ControlViewer extends StandardViewer {
+        private StandardWorldModelViewer view;
+        private ControlledAgentGUI gui;
+
+        public ControlViewer(StandardWorldModelViewer view, ControlledAgentGUI gui) {
+            this.view = view;
+            this.gui = gui;
+        }
+
+        @Override
+        protected void postConnect() {
+            view.view(model);
+        }
+
+        @Override
+        protected void handleTimestep(KVTimestep t) {
+            super.handleTimestep(t);
+            view.repaint();
+            gui.refreshLists();
+        }
+    }
+
     private static class ListListModel extends AbstractListModel {
         private List<?> data;
 
@@ -201,6 +268,12 @@ public class ControlledAgentGUI extends StandardViewer {
     }
 
     private class AgentConnector extends Thread {
+        private ComponentLauncher launcher;
+
+        public AgentConnector(ComponentLauncher launcher) {
+            this.launcher = launcher;
+        }
+
         @Override
         public void run() {
             connectAgents(new FireBrigadeAgentType(), fbs, fbListModel);
@@ -209,7 +282,6 @@ public class ControlledAgentGUI extends StandardViewer {
         }
 
         private <T extends Agent> void connectAgents(AgentType<T> type, List<? super T> list, ListListModel model) {
-            ComponentLauncher launcher = new ComponentLauncher(connection, config);
             int count = 0;
             while (true) {
                 ++count;
