@@ -6,7 +6,7 @@ import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLCoordinates;
 import maps.gml.GMLBuilding;
 import maps.gml.GMLRoad;
-import maps.gml.MapFormat;
+import maps.gml.GMLMapFormat;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -30,7 +30,7 @@ import rescuecore2.log.Logger;
 /**
    A MapFormat that can handle maps from the UK Ordnance Survey.
  */
-public final class OrdnanceSurveyFormat implements MapFormat {
+public final class OrdnanceSurveyFormat extends GMLMapFormat {
     /** Singleton instance. */
     public static final OrdnanceSurveyFormat INSTANCE = new OrdnanceSurveyFormat();
 
@@ -86,9 +86,8 @@ public final class OrdnanceSurveyFormat implements MapFormat {
     }
 
     @Override
-    public boolean looksValid(Document doc) {
-        Element root = doc.getRootElement();
-        return root.getQName().equals(FEATURE_COLLECTION_QNAME);
+    public boolean isCorrectRootElement(String uri, String localName) {
+        return OSGB_NAMESPACE_URI.equals(uri) && "FeatureCollection".equals(localName);
     }
 
     @Override

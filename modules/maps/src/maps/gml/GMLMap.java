@@ -21,7 +21,7 @@ import rescuecore2.misc.collections.LazyMap;
 /**
    A GML map. All coordinates are specified in m.
 */
-public class GMLMap {
+public class GMLMap implements maps.Map {
     private double minX;
     private double maxX;
     private double minY;
@@ -771,12 +771,13 @@ public class GMLMap {
     }
 
     /**
-       Replace all references to a node with another node.
+       Replace all references to a node with another node. This does not delete the old node from the map.
        @param oldNode The node to replace.
        @param newNode The new node.
     */
     public void replaceNode(GMLNode oldNode, GMLNode newNode) {
-        for (GMLEdge next : edges.values()) {
+        List<GMLEdge> attached = new ArrayList<GMLEdge>(getAttachedEdges(oldNode));
+        for (GMLEdge next : attached) {
             if (next.getStart().equals(oldNode)) {
                 next.setStart(newNode);
                 attachedEdges.get(oldNode).remove(next);
@@ -786,6 +787,35 @@ public class GMLMap {
                 next.setEnd(newNode);
                 attachedEdges.get(oldNode).remove(next);
                 attachedEdges.get(newNode).add(next);
+            }
+        }
+    }
+
+    /**
+       Replace all references to an edge with another edge. This does not delete the old edge from the map. The two edges must have the same pair of start and end nodes but may be in different directions.
+       @param oldEdge The edge to replace.
+       @param newEdge The new edge.
+    */
+    public void replaceEdge(GMLEdge oldEdge, GMLEdge newEdge) {
+        if ((oldEdge.getStart() != newEdge.getStart() && oldEdge.getStart() != newEdge.getEnd())
+            || (oldEdge.getEnd() != newEdge.getStart() && oldEdge.getEnd() != newEdge.getEnd())) {
+            throw new IllegalArgumentException("oldEdge and newEdge do not share start and end nodes");
+        }
+        for (GMLShape next : getAttachedShapes(oldEdge)) {
+            for (GMLDirectedEdge dEdge : next.getEdges()) {
+                if (dEdge.getEdge() == oldEdge) {
+                    boolean forward;
+                    if (oldEdge.getStart() == newEdge.getStart()) {
+                        forward = dEdge.isForward();
+                    }
+                    else {
+                        forward = !dEdge.isForward();
+                    }
+                    GMLDirectedEdge replacement = new GMLDirectedEdge(newEdge, forward);
+                    next.replaceEdge(dEdge, replacement);
+                    attachedShapes.get(oldEdge).remove(next);
+                    attachedShapes.get(newEdge).add(next);
+                }
             }
         }
     }

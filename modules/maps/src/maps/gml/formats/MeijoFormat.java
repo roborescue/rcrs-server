@@ -9,7 +9,7 @@ import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLTools;
-import maps.gml.MapFormat;
+import maps.gml.GMLMapFormat;
 
 import maps.ConstantConversion;
 
@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
 
 import rescuecore2.misc.Pair;
@@ -39,7 +37,7 @@ import rescuecore2.log.Logger;
 /**
    A MapFormat that can handle GML maps from Meijo University.
  */
-public final class MeijoFormat implements MapFormat {
+public final class MeijoFormat extends GMLMapFormat {
     /** Singleton instance. */
     public static final MeijoFormat INSTANCE = new MeijoFormat();
 
@@ -114,9 +112,8 @@ public final class MeijoFormat implements MapFormat {
     }
 
     @Override
-    public boolean looksValid(Document doc) {
-        Element root = doc.getRootElement();
-        return root.getQName().equals(ROOT_QNAME);
+    public boolean isCorrectRootElement(String uri, String localName) {
+        return MEIJO_NAMESPACE_URI.equals(uri) && "Topology".equals(localName);
     }
 
     @Override
@@ -130,7 +127,7 @@ public final class MeijoFormat implements MapFormat {
         readEdges(doc, result);
         readFaces(doc, result);
         splitMultipleEdges(result);
-        checkEdgeOrderAndDirection(result);
+        //        checkEdgeOrderAndDirection(result);
         return result;
     }
 
@@ -351,6 +348,7 @@ public final class MeijoFormat implements MapFormat {
         }
     }
 
+    /*
     private void checkEdgeOrderAndDirection(GMLMap map) {
         Set<GMLDirectedEdge> remaining = new HashSet<GMLDirectedEdge>();
         List<GMLDirectedEdge> reordered = new ArrayList<GMLDirectedEdge>();
@@ -400,6 +398,7 @@ public final class MeijoFormat implements MapFormat {
             shape.reorderEdges(reordered);
         }
     }
+    */
 
     //    private void logEdge(GMLDirectedEdge e) {
     //        Logger.debug(e.getEdge().getID() + ": " + e.getStartNode().getID() + " -> " + e.getEndNode().getID());

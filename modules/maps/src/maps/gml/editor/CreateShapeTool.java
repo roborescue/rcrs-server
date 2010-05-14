@@ -26,10 +26,12 @@ import maps.gml.GMLCoordinates;
 public abstract class CreateShapeTool extends AbstractTool {
     private static final Color HOVER_COLOUR = Color.BLUE;
     private static final Color SELECTED_COLOUR = Color.GREEN;
+    private static final Color POSSIBLE_COLOUR = Color.WHITE;
 
     private Listener listener;
     private EdgeDecorator hoverHighlight;
     private EdgeDecorator selectedHighlight;
+    private EdgeDecorator possibleHighlight;
 
     private List<GMLEdge> edges;
     private List<GMLNode> nodes;
@@ -47,6 +49,7 @@ public abstract class CreateShapeTool extends AbstractTool {
         listener = new Listener();
         hoverHighlight = new LineEdgeDecorator(HOVER_COLOUR);
         selectedHighlight = new LineEdgeDecorator(SELECTED_COLOUR);
+        possibleHighlight = new LineEdgeDecorator(POSSIBLE_COLOUR);
         edges = new ArrayList<GMLEdge>();
         nodes = new ArrayList<GMLNode>();
         possible = new HashSet<GMLEdge>();
@@ -75,6 +78,7 @@ public abstract class CreateShapeTool extends AbstractTool {
     protected abstract UndoableEdit finished(List<GMLNode> shapeNodes);
 
     private void addEdge(GMLEdge edge) {
+        editor.getViewer().clearEdgeDecorator(possible);
         edges.add(edge);
         possible.clear();
         editor.getViewer().setEdgeDecorator(selectedHighlight, edge);
@@ -121,6 +125,7 @@ public abstract class CreateShapeTool extends AbstractTool {
             }
         }
         possible.removeAll(edges);
+        editor.getViewer().setEdgeDecorator(possibleHighlight, possible);
         if (possible.size() == 1) {
             addEdge(possible.iterator().next());
         }

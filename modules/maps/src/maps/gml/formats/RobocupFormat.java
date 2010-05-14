@@ -9,7 +9,7 @@ import maps.gml.GMLSpace;
 import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
-import maps.gml.MapFormat;
+import maps.gml.GMLMapFormat;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -32,7 +32,7 @@ import rescuecore2.misc.Pair;
 /**
    A MapFormat that can handle Robocup Rescue GML maps.
  */
-public final class RobocupFormat implements MapFormat {
+public final class RobocupFormat extends GMLMapFormat {
     /** Singleton instance. */
     public static final RobocupFormat INSTANCE = new RobocupFormat();
 
@@ -131,9 +131,8 @@ public final class RobocupFormat implements MapFormat {
     }
 
     @Override
-    public boolean looksValid(Document doc) {
-        Element root = doc.getRootElement();
-        return root.getQName().equals(RCR_ROOT_QNAME);
+    public boolean isCorrectRootElement(String uri, String localName) {
+        return RCR_NAMESPACE_URI.equals(uri) && "map".equals(localName);
     }
 
     @Override

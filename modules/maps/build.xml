@@ -1,7 +1,9 @@
 <project>
   <property name="osm2gml.osmmap" value="../maps/osm/southampton.osm"/>
   <property name="osm2gml.gmlmap" value="../maps/gml/southampton/map.gml"/>
-  <property name="editor.gmlmap" value="../maps/gml/test/map.gml"/>
+  <property name="editor.gmlmap" value="../maps/gml/legacy/Kobe/map.gml"/>
+  <property name="legacy2gml.legacymap" value="../maps/legacy/Kobe/"/>
+  <property name="legacy2gml.gmlmap" value="../maps/gml/legacy/Kobe/map.gml"/>
 
   <target name="osm2gml" depends="maps-jar" description="Run the osm2gml tool">
     <java classname="maps.convert.Convert" fork="yes" dir="boot" maxmemory="2048m">
@@ -11,6 +13,17 @@
       </classpath>
       <arg value="${osm2gml.osmmap}"/>
       <arg value="${osm2gml.gmlmap}"/>
+    </java>
+  </target>
+
+  <target name="legacy2gml" depends="maps-jar" description="Run the legacy2gml tool">
+    <java classname="maps.convert.LegacyToGML" fork="yes" dir="boot" maxmemory="2048m">
+      <classpath>
+        <path refid="path.common"/>
+        <path refid="path.maps.lib"/>
+      </classpath>
+      <arg value="${legacy2gml.legacymap}"/>
+      <arg value="${legacy2gml.gmlmap}"/>
     </java>
   </target>
 

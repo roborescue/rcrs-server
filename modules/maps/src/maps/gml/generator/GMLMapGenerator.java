@@ -1,16 +1,15 @@
 package maps.gml.generator;
 
 import maps.gml.GMLMap;
-import maps.gml.GMLException;
-import maps.gml.MapWriter;
 import maps.gml.formats.RobocupFormat;
+import maps.MapWriter;
+import maps.MapException;
 
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.log.Logger;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
    A tool for generating GML maps.
@@ -41,12 +40,9 @@ public class GMLMapGenerator {
             GMLMap map = new GMLMapGenerator(config).generateMap();
             String outFile = config.getValue(OUTPUT_FILE_KEY);
             Logger.debug("Writing generated map to " + outFile);
-            MapWriter.writeGMLMap(map, outFile, RobocupFormat.INSTANCE);
+            MapWriter.writeMap(map, outFile, RobocupFormat.INSTANCE);
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (GMLException e) {
+        catch (MapException e) {
             e.printStackTrace();
         }
         catch (ConfigException e) {

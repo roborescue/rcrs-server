@@ -4,7 +4,7 @@ import maps.gml.GMLMap;
 import maps.gml.GMLNode;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLCoordinates;
-import maps.gml.MapFormat;
+import maps.gml.GMLMapFormat;
 import maps.MapTools;
 import maps.CoordinateConversion;
 import maps.ScaleConversion;
@@ -27,7 +27,7 @@ import rescuecore2.log.Logger;
 /**
    A MapFormat that can handle maps from Japan's Geospatial Information Authority.
  */
-public final class GeospatialInformationAuthorityFormat implements MapFormat {
+public final class GeospatialInformationAuthorityFormat extends GMLMapFormat {
     /** Singleton instance. */
     public static final GeospatialInformationAuthorityFormat INSTANCE = new GeospatialInformationAuthorityFormat();
 
@@ -67,9 +67,8 @@ public final class GeospatialInformationAuthorityFormat implements MapFormat {
     }
 
     @Override
-    public boolean looksValid(Document doc) {
-        Element root = doc.getRootElement();
-        return root.getQName().equals(DATASET_QNAME);
+    public boolean isCorrectRootElement(String uri, String localName) {
+        return FGD_NAMESPACE_URI.equals(uri) && "Dataset".equals(localName);
     }
 
     @Override

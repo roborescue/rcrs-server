@@ -1,10 +1,10 @@
 package maps.convert;
 
+import maps.MapWriter;
 import maps.osm.OSMMap;
 import maps.osm.OSMMapViewer;
 import maps.osm.OSMException;
 import maps.gml.GMLMap;
-import maps.gml.MapWriter;
 import maps.gml.view.GMLMapViewer;
 
 import maps.convert.osm2gml.Convertor;
@@ -57,7 +57,7 @@ public final class Convert {
             OSMMapViewer osmViewer = new OSMMapViewer(osmMap);
             Convertor convert = new Convertor();
             GMLMap gmlMap = convert.convert(osmMap);
-            MapWriter.writeGMLMap(gmlMap, args[1], RobocupFormat.INSTANCE);
+            MapWriter.writeMap(gmlMap, args[1], RobocupFormat.INSTANCE);
             GMLMapViewer gmlViewer = new GMLMapViewer(gmlMap);
             JFrame frame = new JFrame("Convertor");
             JPanel main = new JPanel(new GridLayout(1, 2));

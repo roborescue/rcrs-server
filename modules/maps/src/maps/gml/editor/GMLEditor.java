@@ -38,16 +38,12 @@ import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.io.File;
-import java.io.Reader;
-import java.io.IOException;
 
-import org.dom4j.Document;
-
+import maps.MapReader;
+import maps.MapWriter;
+import maps.MapException;
 import maps.gml.GMLMap;
 import maps.gml.GMLCoordinates;
-import maps.gml.GMLException;
-import maps.gml.MapReader;
-import maps.gml.MapWriter;
 import maps.gml.view.GMLMapViewer;
 import maps.gml.view.GMLObjectInspector;
 import maps.gml.formats.RobocupFormat;
@@ -161,10 +157,7 @@ public class GMLEditor extends JPanel {
             catch (CancelledByUserException e) {
                 return;
             }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            catch (GMLException e) {
+            catch (MapException e) {
                 e.printStackTrace();
             }
         }
@@ -193,10 +186,9 @@ public class GMLEditor extends JPanel {
     /**
        Load a map by showing a file chooser dialog.
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
-       @throws IOException If there is a problem reading the map.
-       @throws GMLException If there is a problem reading the map.
+       @throws MapException If there is a problem reading the map.
     */
-    public void load() throws CancelledByUserException, IOException, GMLException {
+    public void load() throws CancelledByUserException, MapException {
         JFileChooser chooser = new JFileChooser(baseDir);
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             load(chooser.getSelectedFile());
@@ -207,10 +199,9 @@ public class GMLEditor extends JPanel {
        Load a map from a file.
        @param filename The name of the file to read.
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
-       @throws IOException If there is a problem reading the map.
-       @throws GMLException If there is a problem reading the map.
+       @throws MapException If there is a problem reading the map.
     */
-    public void load(String filename) throws CancelledByUserException, IOException, GMLException {
+    public void load(String filename) throws CancelledByUserException, MapException {
         load(new File(filename));
     }
 
@@ -218,11 +209,10 @@ public class GMLEditor extends JPanel {
        Load a map from a file.
        @param file The file to read.
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
-       @throws IOException If there is a problem reading the map.
-       @throws GMLException If there is a problem reading the map.
+       @throws MapException If there is a problem reading the map.
     */
-    public void load(File file) throws CancelledByUserException, IOException, GMLException {
-        setMap(MapReader.readGMLMap(file));
+    public void load(File file) throws CancelledByUserException, MapException {
+        setMap((GMLMap)MapReader.readMap(file));
         saveFile = file;
         baseDir = saveFile.getParentFile();
     }
@@ -234,9 +224,9 @@ public class GMLEditor extends JPanel {
        @throws IOException If there is a problem reading the map.
        @throws GMLException If there is a problem reading the map.
     */
-    public void load(Reader reader) throws CancelledByUserException, IOException, GMLException {
-        setMap(MapReader.readGMLMap(reader));
-    }
+    //    public void load(Reader reader) throws CancelledByUserException, IOException, GMLException {
+    //        setMap((GMLMap)MapReader.readGMLMap(reader));
+    //    }
 
     /**
        Load a map from an XML document.
@@ -244,9 +234,9 @@ public class GMLEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws GMLException If there is a problem reading the map.
     */
-    public void load(Document document) throws CancelledByUserException, GMLException {
-        setMap(MapReader.readGMLMap(document));
-    }
+    //    public void load(Document document) throws CancelledByUserException, GMLException {
+    //        setMap(MapReader.readGMLMap(document));
+    //    }
 
     /**
        Set the map.
@@ -271,10 +261,9 @@ public class GMLEditor extends JPanel {
 
     /**
        Save the map.
-       @throws IOException If there is a problem saving the map.
-       @throws GMLException If there is a problem saving the map.
+       @throws MapException If there is a problem saving the map.
     */
-    public void save() throws IOException, GMLException {
+    public void save() throws MapException {
         if (saveFile == null) {
             JFileChooser chooser = new JFileChooser(baseDir);
             if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -283,7 +272,7 @@ public class GMLEditor extends JPanel {
         }
         if (saveFile != null) {
             Logger.debug("Saving to " + saveFile.getAbsolutePath());
-            MapWriter.writeGMLMap(map, saveFile, RobocupFormat.INSTANCE);
+            MapWriter.writeMap(map, saveFile, RobocupFormat.INSTANCE);
             baseDir = saveFile.getParentFile();
             changed = false;
         }
@@ -358,12 +347,8 @@ public class GMLEditor extends JPanel {
                 try {
                     save();
                 }
-                catch (IOException e) {
+                catch (MapException e) {
                     JOptionPane.showMessageDialog(null, e);
-                    throw new CancelledByUserException();
-                }
-                catch (GMLException ex) {
-                    JOptionPane.showMessageDialog(null, ex);
                     throw new CancelledByUserException();
                 }
                 break;
@@ -401,10 +386,7 @@ public class GMLEditor extends JPanel {
                     catch (CancelledByUserException ex) {
                         return;
                     }
-                    catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, ex);
-                    }
-                    catch (GMLException ex) {
+                    catch (MapException ex) {
                         JOptionPane.showMessageDialog(null, ex);
                     }
                 }
@@ -415,10 +397,7 @@ public class GMLEditor extends JPanel {
                     try {
                         save();
                     }
-                    catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, ex);
-                    }
-                    catch (GMLException ex) {
+                    catch (MapException ex) {
                         JOptionPane.showMessageDialog(null, ex);
                     }
                 }
@@ -430,10 +409,7 @@ public class GMLEditor extends JPanel {
                         saveFile = null;
                         save();
                     }
-                    catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, ex);
-                    }
-                    catch (GMLException ex) {
+                    catch (MapException ex) {
                         JOptionPane.showMessageDialog(null, ex);
                     }
                 }
@@ -531,6 +507,7 @@ public class GMLEditor extends JPanel {
         menu.addSeparator();
         toolbar.addSeparator();
         addTool(new MoveNodeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new MergeNodesTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new MergeLinesTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new SplitEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
     }
@@ -538,6 +515,7 @@ public class GMLEditor extends JPanel {
     private void createFunctionActions(JMenu menu, JToolBar toolbar) {
         addFunction(new ScaleFunction(this), menu, toolbar);
         addFunction(new FixNearbyNodesFunction(this), menu, toolbar);
+        addFunction(new FixDuplicateEdgesFunction(this), menu, toolbar);
         addFunction(new ComputePassableEdgesFunction(this), menu, toolbar);
     }
 

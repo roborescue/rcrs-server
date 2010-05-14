@@ -1,5 +1,6 @@
 package maps.gml;
 
+import maps.MapReader;
 import maps.gml.view.GMLMapViewer;
 
 import java.awt.Dimension;
@@ -26,7 +27,7 @@ public final class ViewGMLMap {
             return;
         }
         try {
-            GMLMap map = MapReader.readGMLMap(args[0]);
+            GMLMap map = (GMLMap)MapReader.readMap(args[0]);
             GMLMapViewer gmlViewer = new GMLMapViewer(map);
             JFrame frame = new JFrame("GML Map");
             gmlViewer.setPreferredSize(new Dimension(VIEWER_SIZE, VIEWER_SIZE));
