@@ -16,14 +16,14 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Edge;
 
+import maps.MapReader;
+import maps.MapException;
 import maps.gml.GMLMap;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLBuilding;
 import maps.gml.GMLRoad;
 import maps.gml.GMLShape;
 import maps.gml.GMLCoordinates;
-import maps.gml.MapReader;
-import maps.gml.GMLException;
 import maps.CoordinateConversion;
 import maps.ScaleConversion;
 
@@ -76,7 +76,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             ++nextID;
             return result;
         }
-        catch (GMLException e) {
+        catch (MapException e) {
             throw new KernelException("Couldn't read GML file", e);
         }
         catch (DocumentException e) {
@@ -92,12 +92,8 @@ public class GMLWorldModelCreator implements WorldModelCreator {
         return new EntityID(nextID++);
     }
 
-    private GMLMap readMap(String fileName) throws GMLException {
-        return MapReader.readGMLMap(fileName);
-    }
-
-    private void readMapData(File mapFile, StandardWorldModel result) throws GMLException {
-        GMLMap map = MapReader.readGMLMap(mapFile);
+    private void readMapData(File mapFile, StandardWorldModel result) throws MapException {
+        GMLMap map = (GMLMap)MapReader.readMap(mapFile);
         CoordinateConversion conversion = getCoordinateConversion(map);
         for (GMLBuilding next : map.getBuildings()) {
             // Create a new Building entity
