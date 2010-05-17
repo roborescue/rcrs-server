@@ -27,6 +27,8 @@ public class TrafficAgent {
 
     private static final int DEFAULT_POSITION_HISTORY_FREQUENCY = 60;
 
+    private static final double NEARBY_THRESHOLD_SQUARED = 1000000;
+
     // Force towards destination
     private final double[] destinationForce = new double[D];
 
@@ -45,7 +47,7 @@ public class TrafficAgent {
     // Force
     private final double[] force = new double[D];
 
-    // List of blocking lines this microstep
+    // List of blocking lines near the agent.
     private Collection<Line2D> blockingLines;
 
     private double radius;
@@ -298,8 +300,18 @@ public class TrafficAgent {
                 return;
             }
             currentArea = newArea;
-            currentDestination = null;
+            findBlockingLines();
             currentArea.addAgent(this);
+        }
+        // Check current destination
+        if (currentDestination != null) {
+            double dx = currentDestination.getX() - location[0];
+            double dy = currentDestination.getY() - location[1];
+            double dSquared = (dx * dx) + (dy * dy);
+            if (dSquared < NEARBY_THRESHOLD_SQUARED) {
+                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
+                currentDestination = null;
+            }
         }
         // Save position history
         if (savePositionHistory) {
@@ -318,16 +330,31 @@ public class TrafficAgent {
     }
 
     /**
+       Perform any pre-timestep activities required.
+    */
+    public void beginTimestep() {
+        findBlockingLines();
+        if (insideBlockade()) {
+            setMobile(false);
+        }
+    }
+
+    /**
        Execute a microstep.
        @param dt The amount of time to simulate in ms.
     */
     public void step(double dt) {
         if (mobile) {
-            blockingLines.clear();
             updateGoals();
             computeForces();
             updatePosition(dt);
         }
+    }
+
+    /**
+       Perform any post-timestep activities required.
+    */
+    public void endTimestep() {
     }
 
     /**
@@ -348,23 +375,16 @@ public class TrafficAgent {
 
     private void updateGoals() {
         if (currentDestination == null) {
-            Logger.debug(this + ": Current destination is null");
+            //            Logger.debug(this + ": Current destination is null");
             if (path.isEmpty()) {
                 currentDestination = finalDestination;
-                Logger.debug(this + ": Path is empty, current destination set to " + currentDestination);
+                //                Logger.debug(this + ": Path is empty, current destination set to " + currentDestination);
             }
             else {
                 currentDestination = path.remove();
-                Logger.debug(this + ": Current destination set to " + currentDestination);
+                //                Logger.debug(this + ": Current destination set to " + currentDestination);
             }
         }
-        // Check to see if we can move to the next destination on the path
-        /*
-        if (!path.isEmpty() && los(path.peek())) {
-            currentDestination = path.remove();
-            Logger.debug(this + ": Have LOS to next target. New destination is " + currentDestination);
-        }
-        */
     }
 
     private void computeForces() {
@@ -383,10 +403,6 @@ public class TrafficAgent {
     }
 
     private void updatePosition(double dt) {
-        if (insideBlockade()) {
-            Logger.debug(this + " inside a blockade");
-            return;
-        }
         double x = location[0] + dt * velocity[0];
         double y = location[1] + dt * velocity[1];
         double newVX = velocity[0] + dt * force[0];
@@ -407,31 +423,17 @@ public class TrafficAgent {
         setLocation(x, y);
     }
 
-    /**
-       Find out if this agent has line-of-sight to a point.
-       @param target The target point.
-       @return True if no blocking walls intersect the line from this agent to the target point, false otherwise.
-    */
-    private boolean los(Point2D target) {
-        Line2D test = new Line2D(new Point2D(location[0], location[1]), target);
-        if (intersectsWalls(test, getArea())) {
-            return false;
-        }
-        for (TrafficArea area : manager.getNeighbours(getArea())) {
-            if (intersectsWalls(test, area)) {
+    private boolean hasLos(Point2D source, Point2D target, Collection<Line2D> blocking, Line2D ignore) {
+        Line2D line = new Line2D(source, target);
+        for (Line2D next : blocking) {
+            if (next == ignore) {
+                continue;
+            }
+            if (GeometryTools2D.getSegmentIntersectionPoint(line, next) != null) {
                 return false;
             }
         }
         return true;
-    }
-
-    private boolean intersectsWalls(Line2D test, TrafficArea area) {
-        for (Line2D next : area.getBlockingLines()) {
-            if (GeometryTools2D.getSegmentIntersectionPoint(test, next) != null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean insideBlockade() {
@@ -454,6 +456,16 @@ public class TrafficAgent {
             }
         }
         return false;
+    }
+
+    private void findBlockingLines() {
+        blockingLines.clear();
+        if (currentArea != null) {
+            blockingLines.addAll(currentArea.getAllBlockingLines());
+            for (TrafficArea neighbour : manager.getNeighbours(currentArea)) {
+                blockingLines.addAll(neighbour.getAllBlockingLines());
+            }
+        }
     }
 
     private void computeDestinationForce(double[] result) {
@@ -579,10 +591,6 @@ public class TrafficAgent {
         double xSum = 0;
         double ySum = 0;
         if (currentArea != null) {
-            blockingLines.addAll(currentArea.getAllBlockingLines());
-            for (TrafficArea neighbour : manager.getNeighbours(currentArea)) {
-                blockingLines.addAll(neighbour.getAllBlockingLines());
-            }
             double r = getRadius();
             double dx;
             double dy;
@@ -593,6 +601,15 @@ public class TrafficAgent {
             double k = TrafficConstants.getWallForceCoefficientK();
             Point2D position = new Point2D(location[0], location[1]);
             for (Line2D line : blockingLines) {
+                Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, position);
+                if (closest == line.getOrigin() || closest == line.getEndPoint()) {
+                    // Closest point is an endpoint - we're outside the influence of this line.
+                    continue;
+                }
+                if (!hasLos(position, closest, blockingLines, line)) {
+                    // No line-of-sight to closest point
+                    continue;
+                }
                 Point2D p1 = line.getOrigin();
                 Point2D p2 = line.getEndPoint();
                 double p1p2X = p2.getX() - p1.getX();
