@@ -9,7 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
-//import rescuecore2.log.Logger;
+import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.Building;
@@ -47,6 +47,8 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     private static final String DEFAULT_MAP_FILE = "map.gml";
     private static final String SCENARIO_FILE_KEY = "gis.map.scenario";
     private static final String DEFAULT_SCENARIO_FILE = "scenario.xml";
+
+    private static final double SQ_MM_TO_SQ_M = 0.000001;
 
     // CHECKSTYLE:OFF:MagicNumber
     //    private static final double AREA_SCALE_FACTOR = 1.0 / 1000000.0;
@@ -95,12 +97,15 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     private void readMapData(File mapFile, StandardWorldModel result) throws MapException {
         GMLMap map = (GMLMap)MapReader.readMap(mapFile);
         CoordinateConversion conversion = getCoordinateConversion(map);
+        Logger.debug("Creating entities");
+        Logger.debug(map.getBuildings().size() + " buildings");
+        Logger.debug(map.getRoads().size() + " roads");
         for (GMLBuilding next : map.getBuildings()) {
             // Create a new Building entity
             EntityID id = new EntityID(next.getID());
             Building b = new Building(id);
             List<Point2D> vertices = convertShapeToPoints(next, conversion);
-            double area = GeometryTools2D.computeArea(vertices);
+            double area = GeometryTools2D.computeArea(vertices) * SQ_MM_TO_SQ_M;
             Point2D centroid = GeometryTools2D.computeCentroid(vertices);
 
             //            Logger.debug("Building vertices: " + vertices);
@@ -140,26 +145,28 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     private void readScenarioData(File scenarioFile, StandardWorldModel result, Config config) throws DocumentException, ScenarioException {
         if (scenarioFile.exists()) {
             SAXReader reader = new SAXReader();
+            Logger.debug("Reading scenario");
             Document doc = reader.read(scenarioFile);
             Scenario scenario = new Scenario(doc);
+            Logger.debug("Applying scenario");
             scenario.apply(result, config);
         }
     }
 
     private List<Edge> createEdges(GMLShape s, CoordinateConversion conversion) {
-        //        Logger.debug("Computing edges for " + s);
+        Logger.debug("Computing edges for " + s);
         List<Edge> result = new ArrayList<Edge>();
         for (GMLDirectedEdge edge : s.getEdges()) {
             GMLCoordinates start = edge.getStartCoordinates();
             GMLCoordinates end = edge.getEndCoordinates();
             Integer neighbourID = s.getNeighbour(edge);
             EntityID id = neighbourID == null ? null : new EntityID(neighbourID);
-            //            Logger.debug("Edge: " + start + " -> " + end);
+            Logger.debug("Edge: " + start + " -> " + end);
             double sx = conversion.convertX(start.getX());
             double sy = conversion.convertY(start.getY());
             double ex = conversion.convertX(end.getX());
             double ey = conversion.convertY(end.getY());
-            //            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
+            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
             result.add(new Edge((int)sx,
                                 (int)sy,
                                 (int)ex,

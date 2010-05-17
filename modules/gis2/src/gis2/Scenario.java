@@ -141,8 +141,9 @@ public class Scenario {
        @param config The configuration.
     */
     public void apply(StandardWorldModel model, Config config) throws ScenarioException {
+        Logger.debug("Creating " + refugeIDs.size() + " refuges");
         for (int next : refugeIDs) {
-            Logger.debug("Coverting building " + next + " to a refuge");
+            Logger.debug("Converting building " + next + " to a refuge");
             Building b = (Building)model.getEntity(new EntityID(next));
             if (b == null) {
                 throw new ScenarioException("Building " + next + " does not exist");
@@ -152,6 +153,7 @@ public class Scenario {
             model.addEntity(r);
             Logger.debug("Converted " + b + " into " + r);
         }
+        Logger.debug("Igniting " + fires.size() + " fires");
         for (int next : fires) {
             Logger.debug("Igniting " + next);
             Building b = (Building)model.getEntity(new EntityID(next));
@@ -164,26 +166,31 @@ public class Scenario {
         for (StandardEntity next : model) {
             nextID = Math.max(nextID, next.getID().getValue());
         }
+        Logger.debug("Creating " + civLocations.size() + " civilians");
         for (int next : civLocations) {
             EntityID id = new EntityID(next);
             Civilian c = new Civilian(new EntityID(++nextID));
             setupAgent(c, id, model, config);
         }
+        Logger.debug("Creating " + fbLocations.size() + " fire brigades");
         for (int next : fbLocations) {
             EntityID id = new EntityID(next);
             FireBrigade f = new FireBrigade(new EntityID(++nextID));
             setupAgent(f, id, model, config);
-       }
+        }
+        Logger.debug("Creating " + pfLocations.size() + " police forces");
         for (int next : pfLocations) {
             EntityID id = new EntityID(next);
             PoliceForce p = new PoliceForce(new EntityID(++nextID));
             setupAgent(p, id, model, config);
         }
+        Logger.debug("Creating " + atLocations.size() + " ambulance teams");
         for (int next : atLocations) {
             EntityID id = new EntityID(next);
             AmbulanceTeam a = new AmbulanceTeam(new EntityID(++nextID));
             setupAgent(a, id, model, config);
         }
+        Logger.debug("Creating " + fsLocations.size() + " fire stations");
         for (int next : fsLocations) {
             EntityID id = new EntityID(next);
             Logger.debug("Coverting building " + next + " to a fire station");
@@ -196,6 +203,7 @@ public class Scenario {
             model.addEntity(f);
             Logger.debug("Converted " + b + " into " + f);
         }
+        Logger.debug("Creating " + poLocations.size() + " police offices");
         for (int next : poLocations) {
             EntityID id = new EntityID(next);
             Logger.debug("Coverting building " + next + " to a police office");
@@ -208,6 +216,7 @@ public class Scenario {
             model.addEntity(p);
             Logger.debug("Converted " + b + " into " + p);
         }
+        Logger.debug("Creating " + acLocations.size() + " ambulance centres");
         for (int next : acLocations) {
             EntityID id = new EntityID(next);
             Logger.debug("Coverting building " + next + " to an ambulance centre");
