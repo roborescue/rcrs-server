@@ -39,8 +39,6 @@ import java.util.Collection;
 public class FireSimulatorWrapper extends StandardSimulator {
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
 
-    private static final double AREA_SCALE_FACTOR = 1000000.0;
-
     private Simulator sim;
     private World world;
 
@@ -245,7 +243,7 @@ public class FireSimulatorWrapper extends StandardSimulator {
             newB.setCode(oldB.getBuildingCode());
         }
         if (oldB.isGroundAreaDefined()) {
-            newB.setBuildingAreaGround((float)(oldB.getGroundArea() / AREA_SCALE_FACTOR));
+            newB.setBuildingAreaGround(oldB.getGroundArea());
         }
         if (oldB.isTotalAreaDefined()) {
             newB.setBuildingAreaTotal(oldB.getTotalArea());
