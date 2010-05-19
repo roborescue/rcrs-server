@@ -516,6 +516,7 @@ public class GMLEditor extends JPanel {
         addFunction(new ScaleFunction(this), menu, toolbar);
         addFunction(new FixNearbyNodesFunction(this), menu, toolbar);
         addFunction(new FixDuplicateEdgesFunction(this), menu, toolbar);
+        addFunction(new SplitEdgesFunction(this), menu, toolbar);
         addFunction(new ComputePassableEdgesFunction(this), menu, toolbar);
     }
 

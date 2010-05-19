@@ -6,6 +6,10 @@ import java.util.List;
    A building in GML space.
 */
 public class GMLBuilding extends GMLShape {
+    private int floors;
+    private int code;
+    private int importance;
+
     /**
        Construct a GMLBuilding.
        @param id The ID of the building.
@@ -36,5 +40,53 @@ public class GMLBuilding extends GMLShape {
     @Override
     public String toString() {
         return "GMLBuilding " + getID();
+    }
+
+    /**
+       Set the number of floors in this building.
+       @param newFloors The new number of floors.
+    */
+    public void setFloors(int newFloors) {
+        floors = newFloors;
+    }
+
+    /**
+       Get the number of floors in this building.
+       @return The number of floors.
+    */
+    public int getFloors() {
+        return floors;
+    }
+
+    /**
+       Set the building code of this building.
+       @param newCode The new building code.
+    */
+    public void setCode(int newCode) {
+        code = newCode;
+    }
+
+    /**
+       Get the building code of this building.
+       @return The building code.
+    */
+    public int getCode() {
+        return code;
+    }
+
+    /**
+       Set the importance of this building.
+       @param newImportance The new importance.
+    */
+    public void setImportance(int newImportance) {
+        importance = newImportance;
+    }
+
+    /**
+       Get the importance of this building.
+       @return The importance.
+    */
+    public int getImportance() {
+        return importance;
     }
 }

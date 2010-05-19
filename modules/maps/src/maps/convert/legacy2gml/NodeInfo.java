@@ -1,20 +1,16 @@
-package maps.convert;
+package maps.convert.legacy2gml;
+
 
 import maps.legacy.LegacyMap;
-import maps.legacy.LegacyMapFormat;
 import maps.legacy.LegacyRoad;
 import maps.legacy.LegacyNode;
-import maps.legacy.LegacyBuilding;
 import maps.gml.GMLMap;
 import maps.gml.GMLNode;
-import maps.gml.formats.RobocupFormat;
-
-import java.io.File;
+import maps.gml.GMLRoad;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.Iterator;
@@ -23,103 +19,89 @@ import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Vector2D;
-import rescuecore2.log.Logger;
 
 /**
-   This class converts maps from the legacy format to GML.
+   Container for node information during conversion.
 */
-public final class LegacyToGML {
-    private LegacyToGML() {}
+public class NodeInfo {
+    private LegacyNode node;
+    private Point2D centre;
+    private List<GMLNode> apexes;
+    private GMLRoad road;
 
     /**
-       Run the map convertor.
-       @param args Command line arguments: legacy-mapdir gml-mapname.
+       Construct a NodeInfo object.
+       @param node The LegacyNode to store info about.
     */
-    public static void main(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Usage: LegacyToGML <legacy-mapdir> <gml-mapname>");
-            return;
-        }
-        try {
-            Logger.info("Reading legacy map");
-            LegacyMap legacy = LegacyMapFormat.INSTANCE.read(new File(args[0]));
-            GMLMap gml = new GMLMap();
-            Logger.info("Converting");
-            convert(legacy, gml);
-            Logger.info("Writing GML map");
-            RobocupFormat.INSTANCE.write(gml, new File(args[1]));
-            Logger.info("Done");
-        }
-        // CHECKSTYLE:OFF:IllegalCatch
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        // CHECKSTYLE:ON:IllegalCatch
-        System.exit(0);
+    public NodeInfo(LegacyNode node) {
+        this.node = node;
+        centre = new Point2D(node.getX(), node.getY());
     }
 
-    private static void convert(LegacyMap legacy, GMLMap gml) {
-        Map<Integer, RoadInfo> roadInfo = new HashMap<Integer, RoadInfo>();
-        for (LegacyRoad r : legacy.getRoads()) {
-            roadInfo.put(r.getID(), new RoadInfo());
+    /**
+       Get the LegacyNode.
+       @return The LegacyNode.
+    */
+    public LegacyNode getNode() {
+        return node;
+    }
+
+    /**
+       Get the node location.
+       @return The node location.
+    */
+    public Point2D getLocation() {
+        return centre;
+    }
+
+    /**
+       Get the generated GMLRoad.
+       @return The generated road or null if this node did not generate a road segment.
+    */
+    public GMLRoad getRoad() {
+        return road;
+    }
+
+    /**
+       Process the node and create GMLRoad objects if required.
+       @param legacy The legacy map.
+       @param gml The GML map.
+       @param roadInfo A map from road ID to RoadInfo.
+    */
+    public void process(LegacyMap legacy, GMLMap gml, Map<Integer, RoadInfo> roadInfo) {
+        apexes = new ArrayList<GMLNode>();
+        List<RoadAspect> roads = new ArrayList<RoadAspect>();
+        for (int id : node.getEdges()) {
+            LegacyRoad lRoad = legacy.getRoad(id);
+            if (lRoad == null) {
+                continue;
+            }
+            roads.add(new RoadAspect(lRoad, node, legacy, roadInfo.get(id)));
         }
-        Logger.debug("Converting buildings");
-        for (LegacyBuilding b : legacy.getBuildings()) {
-            List<GMLNode> apexes = new ArrayList<GMLNode>();
-            int[] coords = b.getApexes();
-            for (int i = 0; i < coords.length; i += 2) {
-                int x = coords[i];
-                int y = coords[i + 1];
-                GMLNode node = gml.createNode(x, y);
-                apexes.add(node);
-            }
-            gml.createBuildingFromNodes(apexes);
+        if (roads.size() == 1) {
+            RoadAspect aspect = roads.get(0);
+            findRoadEdges(aspect, centre);
         }
-        Logger.debug("Converting nodes");
-        for (LegacyNode n : legacy.getNodes()) {
-            List<GMLNode> apexes = new ArrayList<GMLNode>();
-            List<RoadAspect> roads = new ArrayList<RoadAspect>();
-            for (int id : n.getEdges()) {
-                LegacyRoad road = legacy.getRoad(id);
-                if (road == null) {
-                    continue;
-                }
-                roads.add(new RoadAspect(road, n, legacy, roadInfo.get(id)));
-            }
-            Point2D centrePoint = new Point2D(n.getX(), n.getY());
-            if (roads.size() == 1) {
-                RoadAspect aspect = roads.get(0);
-                findRoadEdges(aspect, centrePoint);
-            }
-            else {
-                // Sort the roads
-                CounterClockwiseSort sort = new CounterClockwiseSort(centrePoint);
-                Collections.sort(roads, sort);
-                // Now build the apex list
-                Iterator<RoadAspect> it = roads.iterator();
-                RoadAspect first = it.next();
-                RoadAspect prev = first;
-                RoadAspect next;
-                while (it.hasNext()) {
-                    next = it.next();
-                    Point2D apex = findIncomingRoadIntersection(prev, next, centrePoint);
-                    apexes.add(gml.createNode(apex.getX(), apex.getY()));
-                    prev = next;
-                }
-                Point2D apex = findIncomingRoadIntersection(prev, first, centrePoint);
+        else {
+            // Sort the roads
+            CounterClockwiseSort sort = new CounterClockwiseSort(centre);
+            Collections.sort(roads, sort);
+            // Now build the apex list
+            Iterator<RoadAspect> it = roads.iterator();
+            RoadAspect first = it.next();
+            RoadAspect prev = first;
+            RoadAspect next;
+            while (it.hasNext()) {
+                next = it.next();
+                Point2D apex = findIncomingRoadIntersection(prev, next, centre);
                 apexes.add(gml.createNode(apex.getX(), apex.getY()));
-                gml.createRoadFromNodes(apexes);
+                prev = next;
             }
+            Point2D apex = findIncomingRoadIntersection(prev, first, centre);
+            apexes.add(gml.createNode(apex.getX(), apex.getY()));
         }
-        Logger.debug("Converting roads");
-        for (LegacyRoad r : legacy.getRoads()) {
-            RoadInfo info = roadInfo.get(r.getID());
-            List<GMLNode> apexes = new ArrayList<GMLNode>();
-            apexes.add(gml.createNode(info.headLeft.getX(), info.headLeft.getY()));
-            apexes.add(gml.createNode(info.tailLeft.getX(), info.tailLeft.getY()));
-            apexes.add(gml.createNode(info.tailRight.getX(), info.tailRight.getY()));
-            apexes.add(gml.createNode(info.headRight.getX(), info.headRight.getY()));
-            gml.createRoadFromNodes(apexes);
+        if (apexes.size() > 2) {
+            road = gml.createRoadFromNodes(apexes);
         }
     }
 
@@ -130,7 +112,7 @@ public final class LegacyToGML {
        @param centrePoint The centre of the intersection.
        @return The intersection of the two roads.
     */
-    private static Point2D findIncomingRoadIntersection(RoadAspect first, RoadAspect second, Point2D centrePoint) {
+    private Point2D findIncomingRoadIntersection(RoadAspect first, RoadAspect second, Point2D centrePoint) {
         LegacyNode firstNode = first.getFarNode();
         LegacyNode secondNode = second.getFarNode();
         Point2D firstPoint = new Point2D(firstNode.getX(), firstNode.getY());
@@ -155,9 +137,9 @@ public final class LegacyToGML {
         return intersection;
     }
 
-    private static void findRoadEdges(RoadAspect aspect, Point2D centrePoint) {
-        LegacyNode node = aspect.getFarNode();
-        Point2D roadPoint = new Point2D(node.getX(), node.getY());
+    private void findRoadEdges(RoadAspect aspect, Point2D centrePoint) {
+        LegacyNode farNode = aspect.getFarNode();
+        Point2D roadPoint = new Point2D(farNode.getX(), farNode.getY());
         Vector2D vector = centrePoint.minus(roadPoint);
         Vector2D leftNormal = vector.getNormal().normalised().scale(aspect.getRoadWidth() / 2.0);
         Vector2D rightNormal = leftNormal.scale(-1);
@@ -165,13 +147,6 @@ public final class LegacyToGML {
         Point2D right = roadPoint.plus(rightNormal);
         aspect.setLeftEnd(left);
         aspect.setRightEnd(right);
-    }
-
-    private static class RoadInfo {
-        Point2D headLeft;
-        Point2D headRight;
-        Point2D tailLeft;
-        Point2D tailRight;
     }
 
     private static class RoadAspect {
@@ -197,19 +172,19 @@ public final class LegacyToGML {
 
         void setLeftEnd(Point2D p) {
             if (forward) {
-                info.headLeft = p;
+                info.setHeadLeft(p);
             }
             else {
-                info.tailRight = p;
+                info.setTailRight(p);
             }
         }
 
         void setRightEnd(Point2D p) {
             if (forward) {
-                info.headRight = p;
+                info.setHeadRight(p);
             }
             else {
-                info.tailLeft = p;
+                info.setTailLeft(p);
             }
         }
     }
@@ -277,3 +252,4 @@ public final class LegacyToGML {
         // CHECKSTYLE:ON:MagicNumber
     }
 }
+

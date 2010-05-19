@@ -110,7 +110,14 @@ public class GMLMapViewer extends JComponent {
         this.map = map;
         transform = null;
         if (map != null) {
-            transform = new ScreenTransform(map.getMinX(), map.getMinY(), map.getMaxX(), map.getMaxY());
+            if (!map.hasSize()) {
+                // CHECKSTYLE:OFF:MagicNumber
+                transform = new ScreenTransform(0, 0, 100, 100);
+                // CHECKSTYLE:ON:MagicNumber
+            }
+            else {
+                transform = new ScreenTransform(map.getMinX(), map.getMinY(), map.getMaxX(), map.getMaxY());
+            }
         }
         panZoom.setScreenTransform(transform);
     }

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
@@ -89,6 +90,36 @@ public class GMLMap implements maps.Map {
         GMLNode n = new GMLNode(nextID++, coords);
         addNode(n);
         return n;
+    }
+
+    /**
+       Create a set of new GMLNodes.
+       @param coords The coordinates of the new nodes.
+       @return A set of new GMLNodes with unique IDs.
+    */
+    public List<GMLNode> createNodes(List<GMLCoordinates> coords) {
+        List<GMLNode> result = new ArrayList<GMLNode>(coords.size());
+        for (GMLCoordinates c : coords) {
+            GMLNode n = new GMLNode(nextID++, c);
+            addNode(n);
+            result.add(n);
+        }
+        return result;
+    }
+
+    /**
+       Create a set of new GMLNodes.
+       @param coords The coordinates of the new nodes.
+       @return A set of new GMLNodes with unique IDs.
+    */
+    public List<GMLNode> createNodesFromPoints(List<Point2D> coords) {
+        List<GMLNode> result = new ArrayList<GMLNode>(coords.size());
+        for (Point2D p : coords) {
+            GMLNode n = new GMLNode(nextID++, p.getX(), p.getY());
+            addNode(n);
+            result.add(n);
+        }
+        return result;
     }
 
     /**
@@ -596,6 +627,14 @@ public class GMLMap implements maps.Map {
     }
 
     /**
+       Find out if this map has a real size or not. Maps with zero or one nodes do not have a real size.
+       @return True if this map has two or more nodes.
+    */
+    public boolean hasSize() {
+        return nodes.size() > 1;
+    }
+
+    /**
        Rescale the map coordinates.
        @param conversion The coordinate conversion to apply.
     */
@@ -621,6 +660,15 @@ public class GMLMap implements maps.Map {
             }
         }
         return createEdge(first, second);
+    }
+
+    /**
+       Turn a list of apexes into a list of directed edges.
+       @param apexes The apexes to convert.
+       @return A list of directed edges.
+    */
+    public List<GMLDirectedEdge> apexesToEdges(GMLNode... apexes) {
+        return apexesToEdges(Arrays.asList(apexes));
     }
 
     /**
@@ -801,7 +849,8 @@ public class GMLMap implements maps.Map {
             || (oldEdge.getEnd() != newEdge.getStart() && oldEdge.getEnd() != newEdge.getEnd())) {
             throw new IllegalArgumentException("oldEdge and newEdge do not share start and end nodes");
         }
-        for (GMLShape next : getAttachedShapes(oldEdge)) {
+        Collection<GMLShape> attached = new HashSet<GMLShape>(getAttachedShapes(oldEdge));
+        for (GMLShape next : attached) {
             for (GMLDirectedEdge dEdge : next.getEdges()) {
                 if (dEdge.getEdge() == oldEdge) {
                     boolean forward;
@@ -821,7 +870,7 @@ public class GMLMap implements maps.Map {
     }
 
     /**
-       Insert a node into an edge.
+       Insert a node into an edge. This method updates attached edges but does not delete the old edge.
        @param edge The edge to split.
        @param node The node to insert.
        @return The two new edges.
@@ -833,7 +882,8 @@ public class GMLMap implements maps.Map {
         result.add(first);
         result.add(second);
         // Update any attached edges
-        for (GMLShape shape : getAttachedShapes(edge)) {
+        Collection<GMLShape> attached = new HashSet<GMLShape>(getAttachedShapes(edge));
+        for (GMLShape shape : attached) {
             for (GMLDirectedEdge dEdge : shape.getEdges()) {
                 if (dEdge.getEdge() == edge) {
                     // Create two new directed edges

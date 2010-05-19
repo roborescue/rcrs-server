@@ -135,8 +135,10 @@ public abstract class GMLMapFormat implements MapFormat {
        Read a GMLMap from a Reader.
        @param reader The Reader to read.
        @return A new GMLMap.
+       @throws DocumentException If there is a problem parsing the XML.
+       @throws MapException If there is a problem reading the map.
     */
-    public GMLMap read(Reader reader) throws DocumentException {
+    public GMLMap read(Reader reader) throws DocumentException, MapException {
         Logger.debug("Parsing GML");
         SAXReader saxReader = new SAXReader();
         Document doc = saxReader.read(reader);
@@ -156,8 +158,9 @@ public abstract class GMLMapFormat implements MapFormat {
        Read a Document and return a GMLMap.
        @param doc The document to read.
        @return A new GMLMap.
+       @throws MapException If there is a problem reading the map.
     */
-    protected abstract GMLMap read(Document doc);
+    protected abstract GMLMap read(Document doc) throws MapException;
 
     /**
        Turn a GMLMap into an xml document.

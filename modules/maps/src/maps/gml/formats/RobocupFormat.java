@@ -10,13 +10,12 @@ import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLMapFormat;
+import maps.MapException;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.Attribute;
 import org.dom4j.QName;
 import org.dom4j.Namespace;
-import org.dom4j.XPath;
 import org.dom4j.DocumentHelper;
 
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import rescuecore2.misc.Pair;
-//import rescuecore2.log.Logger;
+import rescuecore2.log.Logger;
 
 /**
    A MapFormat that can handle Robocup Rescue GML maps.
@@ -52,69 +51,17 @@ public final class RobocupFormat extends GMLMapFormat {
     private static final QName RCR_SPACE_QNAME = DocumentHelper.createQName("space", RCR_NAMESPACE);
     private static final QName RCR_NEIGHBOUR_QNAME = DocumentHelper.createQName("neighbour", RCR_NAMESPACE);
 
-    //    private static final QName RCR_TYPE_QNAME = DocumentHelper.createQName("type", RCR_NAMESPACE);
-    //    private static final QName RCR_PASSABLE_QNAME = DocumentHelper.createQName("passable", RCR_NAMESPACE);
+    private static final QName RCR_FLOORS_QNAME = DocumentHelper.createQName("floors", RCR_NAMESPACE);
+    private static final QName RCR_BUILDING_CODE_QNAME = DocumentHelper.createQName("buildingcode", RCR_NAMESPACE);
+    private static final QName RCR_IMPORTANCE_QNAME = DocumentHelper.createQName("importance", RCR_NAMESPACE);
 
     // Map from uri prefix to uri for writing XML documents
     private static final Map<String, String> URIS = new HashMap<String, String>();
-
-    private static final XPath NODE_XPATH = DocumentHelper.createXPath("//rcr:nodelist/gml:Node");
-    private static final XPath EDGE_XPATH = DocumentHelper.createXPath("//rcr:edgelist/gml:Edge");
-    private static final XPath BUILDING_XPATH = DocumentHelper.createXPath("//rcr:buildinglist/rcr:building");
-    private static final XPath ROAD_XPATH = DocumentHelper.createXPath("//rcr:roadlist/rcr:road");
-    private static final XPath SPACE_XPATH = DocumentHelper.createXPath("//rcr:spacelist/rcr:space");
-
-    //    private static final XPath EDGE_REF_XPATH = DocumentHelper.createXPath("rcr:edge/@xlink:href");
-
-    private static final XPath NODE_COORDINATES_XPATH = DocumentHelper.createXPath("gml:pointProperty/gml:Point/gml:coordinates");
-
-    private static final XPath EDGE_START_XPATH = DocumentHelper.createXPath("gml:directedNode[@orientation='-']/@xlink:href");
-    private static final XPath EDGE_END_XPATH = DocumentHelper.createXPath("gml:directedNode[@orientation='+']/@xlink:href");
-
-    private static final XPath SHAPE_EDGE_XPATH = DocumentHelper.createXPath("gml:Face/gml:directedEdge");
-
-    //    private static final XPath SHAPE_XPATH = DocumentHelper.createXPath("gml:polygon/gml:LinearRing/gml:coordinates/text()");
-
-    /*
-    // Node-related XPath expressions
-    private static final XPath NODE_PATH = DocumentHelper.createXPath("//gml:Node");
-
-    // Edge-related XPath expressions
-    private static final XPath EDGE_PATH = DocumentHelper.createXPath("//gml:Edge");
-    private static final XPath EDGE_COORDINATES_PATH = DocumentHelper.createXPath("gml:centerLineOf/gml:LineString/gml:coordinates/text()");
-
-    // Face-related XPath expressions
-    private static final XPath FACE_PATH = DocumentHelper.createXPath("gml:Face");
-    */
 
     static {
         URIS.put("gml", Common.GML_NAMESPACE_URI);
         URIS.put("xlink", Common.XLINK_NAMESPACE_URI);
         URIS.put("rcr", RCR_NAMESPACE_URI);
-
-        NODE_XPATH.setNamespaceURIs(URIS);
-        EDGE_XPATH.setNamespaceURIs(URIS);
-        BUILDING_XPATH.setNamespaceURIs(URIS);
-        ROAD_XPATH.setNamespaceURIs(URIS);
-        SPACE_XPATH.setNamespaceURIs(URIS);
-
-        NODE_COORDINATES_XPATH.setNamespaceURIs(URIS);
-
-        EDGE_START_XPATH.setNamespaceURIs(URIS);
-        EDGE_END_XPATH.setNamespaceURIs(URIS);
-
-        SHAPE_EDGE_XPATH.setNamespaceURIs(URIS);
-
-        /*
-          NODE_PATH.setNamespaceURIs(URIS);
-          NODE_COORDINATES_PATH.setNamespaceURIs(URIS);
-          EDGE_PATH.setNamespaceURIs(URIS);
-          EDGE_START_PATH.setNamespaceURIs(URIS);
-          EDGE_END_PATH.setNamespaceURIs(URIS);
-          EDGE_COORDINATES_PATH.setNamespaceURIs(URIS);
-          FACE_PATH.setNamespaceURIs(URIS);
-          FACE_EDGE_PATH.setNamespaceURIs(URIS);
-        */
     }
 
     private RobocupFormat() {
@@ -136,7 +83,7 @@ public final class RobocupFormat extends GMLMapFormat {
     }
 
     @Override
-    public GMLMap read(Document doc) {
+    public GMLMap read(Document doc) throws MapException {
         GMLMap result = new GMLMap();
         readNodes(doc, result);
         readEdges(doc, result);
@@ -189,85 +136,200 @@ public final class RobocupFormat extends GMLMapFormat {
         }
     }
 
-    private void readNodes(Document doc, GMLMap result) {
-        for (Object next : NODE_XPATH.selectNodes(doc)) {
-            Element e = (Element)next;
-            int id = readID(e);
-            String coordinates = ((Element)NODE_COORDINATES_XPATH.evaluate(e)).getText();
-            GMLCoordinates c = new GMLCoordinates(coordinates);
-            GMLNode node = new GMLNode(id, c);
-            result.addNode(node);
-            //            Logger.debug("Read node " + node);
+    private void readNodes(Document doc, GMLMap result) throws MapException {
+        Logger.debug("Reading nodes");
+        for (Object next : doc.getRootElement().elements(RCR_NODE_LIST_QNAME)) {
+            Element nodeList = (Element)next;
+            for (Object nextNode : nodeList.elements(Common.GML_NODE_QNAME)) {
+                Element e = (Element)nextNode;
+                int id = readID(e);
+                String coordinates = readNodeCoordinates(e);
+                GMLCoordinates c = new GMLCoordinates(coordinates);
+                GMLNode node = new GMLNode(id, c);
+                result.addNode(node);
+            }
         }
+        Logger.debug("Read " + result.getNodes().size() + " nodes");
     }
 
-    private void readEdges(Document doc, GMLMap result) {
-        for (Object next : EDGE_XPATH.selectNodes(doc)) {
-            Element e = (Element)next;
-            int id = readID(e);
-            int startID = Integer.parseInt(((Attribute)EDGE_START_XPATH.evaluate(e)).getValue().substring(1));
-            int endID = Integer.parseInt(((Attribute)EDGE_END_XPATH.evaluate(e)).getValue().substring(1));
-            GMLEdge edge = new GMLEdge(id, result.getNode(startID), result.getNode(endID), false);
-            result.addEdge(edge);
-            //            Logger.debug("Read edge " + edge);
+    private void readEdges(Document doc, GMLMap result) throws MapException {
+        Logger.debug("Reading edges");
+        for (Object next : doc.getRootElement().elements(RCR_EDGE_LIST_QNAME)) {
+            Element edgeList = (Element)next;
+            for (Object nextEdge : edgeList.elements(Common.GML_EDGE_QNAME)) {
+                Element e = (Element)nextEdge;
+                int id = readID(e);
+                int startID = -1;
+                int endID = -1;
+                for (Object directedNode : e.elements(Common.GML_DIRECTED_NODE_QNAME)) {
+                    Element directedNodeElement = (Element)directedNode;
+                    if ("-".equals(directedNodeElement.attributeValue(Common.GML_ORIENTATION_QNAME))) {
+                        if (startID != -1) {
+                            throw new MapException("Edge has multiple start nodes: " + e);
+                        }
+                        startID = readHref(directedNodeElement, "start node");
+                    }
+                    if ("+".equals(directedNodeElement.attributeValue(Common.GML_ORIENTATION_QNAME))) {
+                        if (endID != -1) {
+                            throw new MapException("Edge has multiple end nodes: " + e);
+                        }
+                        endID = readHref(directedNodeElement, "end node");
+                    }
+                }
+                GMLEdge edge = new GMLEdge(id, result.getNode(startID), result.getNode(endID), false);
+                result.addEdge(edge);
+            }
         }
+        Logger.debug("Read " + result.getEdges().size() + " edges");
     }
 
-    private void readBuildings(Document doc, GMLMap result) {
-        //        Logger.debug("Reading buildings");
-        for (Object next : BUILDING_XPATH.selectNodes(doc)) {
-            Element e = (Element)next;
-            //            Logger.debug("Next element: " + e);
-            Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
-            //            Logger.debug("Read building: " + edges);
-            GMLBuilding b = new GMLBuilding(readID(e), edges.first(), edges.second());
-            //            Logger.debug("New building: " + b);
-            result.addBuilding(b);
+    private void readBuildings(Document doc, GMLMap result) throws MapException {
+        Logger.debug("Reading buildings");
+        for (Object next : doc.getRootElement().elements(RCR_BUILDING_LIST_QNAME)) {
+            Element buildingList = (Element)next;
+            for (Object nextBuilding : buildingList.elements(RCR_BUILDING_QNAME)) {
+                Element e = (Element)nextBuilding;
+                Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
+                GMLBuilding b = new GMLBuilding(readID(e), edges.first(), edges.second());
+                int floors = readInt(e, RCR_FLOORS_QNAME, 1);
+                int code = readInt(e, RCR_BUILDING_CODE_QNAME, 0);
+                int importance = readInt(e, RCR_IMPORTANCE_QNAME, 1);
+                b.setFloors(floors);
+                b.setCode(code);
+                b.setImportance(importance);
+                result.addBuilding(b);
+            }
         }
+        Logger.debug("Read " + result.getBuildings().size() + " buildings");
     }
 
-    private void readRoads(Document doc, GMLMap result) {
-        for (Object next : ROAD_XPATH.selectNodes(doc)) {
-            Element e = (Element)next;
-            Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
-            GMLRoad r = new GMLRoad(readID(e), edges.first(), edges.second());
-            result.addRoad(r);
+    private void readRoads(Document doc, GMLMap result) throws MapException {
+        Logger.debug("Reading roads");
+        for (Object next : doc.getRootElement().elements(RCR_ROAD_LIST_QNAME)) {
+            Element roadList = (Element)next;
+            for (Object nextRoad : roadList.elements(RCR_ROAD_QNAME)) {
+                Element e = (Element)nextRoad;
+                Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
+                GMLRoad r = new GMLRoad(readID(e), edges.first(), edges.second());
+                result.addRoad(r);
+            }
         }
+        Logger.debug("Read " + result.getRoads().size() + " roads");
     }
 
-    private void readSpaces(Document doc, GMLMap result) {
-        for (Object next : SPACE_XPATH.selectNodes(doc)) {
-            Element e = (Element)next;
-            Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
-            GMLSpace s = new GMLSpace(readID(e), edges.first(), edges.second());
-            result.addSpace(s);
+    private void readSpaces(Document doc, GMLMap result) throws MapException {
+        Logger.debug("Reading spaces");
+        for (Object next : doc.getRootElement().elements(RCR_SPACE_LIST_QNAME)) {
+            Element spaceList = (Element)next;
+            for (Object nextSpace : spaceList.elements(RCR_SPACE_QNAME)) {
+                Element e = (Element)nextSpace;
+                Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
+                GMLSpace s = new GMLSpace(readID(e), edges.first(), edges.second());
+                result.addSpace(s);
+            }
         }
+        Logger.debug("Read " + result.getSpaces().size() + " spaces");
     }
 
-    private Pair<List<GMLDirectedEdge>, List<Integer>> readEdges(Element e, GMLMap map) {
+    private Pair<List<GMLDirectedEdge>, List<Integer>> readEdges(Element e, GMLMap map) throws MapException {
         List<GMLDirectedEdge> edges = new ArrayList<GMLDirectedEdge>();
         List<Integer> neighbours = new ArrayList<Integer>();
-        //        Logger.debug("Reading edges");
-        for (Object nextEdge : SHAPE_EDGE_XPATH.selectNodes(e)) {
+        Element faceElement =  e.element(Common.GML_FACE_QNAME);
+        if (faceElement == null) {
+            throw new MapException("Shape does not contain a gml:Face: " + e);
+        }
+        for (Object nextEdge : faceElement.elements(Common.GML_DIRECTED_EDGE_QNAME)) {
             Element directedEdge = (Element)nextEdge;
             //            Logger.debug("Next directed edge: " + directedEdge);
-            int nextID = Integer.parseInt(directedEdge.attributeValue(Common.XLINK_HREF_QNAME).substring(1));
-            boolean forward = "+".equals(directedEdge.attributeValue(Common.GML_ORIENTATION_QNAME));
+            int nextID = readHref(directedEdge, "underlying edge");
+            String orientation = directedEdge.attributeValue(Common.GML_ORIENTATION_QNAME);
+            boolean forward;
+            if (orientation == null) {
+                throw new MapException("Directed edge has no orientation attribute: " + e);
+            }
+            if ("+".equals(orientation)) {
+                forward = true;
+            }
+            else if ("-".equals(orientation)) {
+                forward = false;
+            }
+            else {
+                throw new MapException("Directed edge has invalid orientation attribute: " + e);
+            }
             GMLEdge edge = map.getEdge(nextID);
             GMLDirectedEdge dEdge = new GMLDirectedEdge(edge, forward);
             String neighbourString = directedEdge.attributeValue(RCR_NEIGHBOUR_QNAME);
             Integer neighbourID = null;
             if (neighbourString != null) {
-                neighbourID = Integer.valueOf(neighbourString);
+                try {
+                    neighbourID = Integer.valueOf(neighbourString);
+                }
+                catch (NumberFormatException ex) {
+                    throw new MapException("Directed edge has invalid neighbour: " + e, ex);
+                }
                 edge.setPassable(true);
             }
             edges.add(dEdge);
             neighbours.add(neighbourID);
         }
+        if (edges.isEmpty()) {
+            throw new MapException("Shape contains no edges: " + e);
+        }
         return new Pair<List<GMLDirectedEdge>, List<Integer>>(edges, neighbours);
     }
 
-    private int readID(Element e) {
-        return Integer.parseInt(e.attributeValue(Common.GML_ID_QNAME));
+    private int readID(Element e) throws MapException {
+        String s = e.attributeValue(Common.GML_ID_QNAME);
+        if (s == null) {
+            throw new MapException("No ID attribute found: " + e);
+        }
+        try {
+            return Integer.parseInt(s);
+        }
+        catch (NumberFormatException ex) {
+            throw new MapException("Couldn't parse ID attribute", ex);
+        }
+    }
+
+    private String readNodeCoordinates(Element node) throws MapException {
+        Element pointProperty = node.element(Common.GML_POINT_PROPERTY_QNAME);
+        if (pointProperty == null) {
+            throw new MapException("Couldn't find gml:pointProperty child of node");
+        }
+        Element point = pointProperty.element(Common.GML_POINT_QNAME);
+        if (point == null) {
+            throw new MapException("Couldn't find gml:Point child of node");
+        }
+        Element coords = point.element(Common.GML_COORDINATES_QNAME);
+        if (coords == null) {
+            throw new MapException("Couldn't find gml:coordinates child of node");
+        }
+        return coords.getText();
+    }
+
+    private int readHref(Element e, String type) throws MapException {
+        String href = e.attributeValue(Common.XLINK_HREF_QNAME);
+        if (href == null || href.length() == 0) {
+            throw new MapException("Edge has no " + type + " ID");
+        }
+        try {
+            return Integer.parseInt(href.substring(1));
+        }
+        catch (NumberFormatException ex) {
+            throw new MapException("Edge has invalid " + type + " ID");
+        }
+    }
+
+    private int readInt(Element e, QName attributeName, int defaultValue) throws MapException {
+        String s = e.attributeValue(attributeName);
+        if (s == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(s);
+        }
+        catch (NumberFormatException ex) {
+            throw new MapException("Attribute " + attributeName + " is not an integer: " + e);
+        }
     }
 }
