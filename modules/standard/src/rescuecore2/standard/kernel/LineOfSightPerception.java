@@ -43,6 +43,7 @@ import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.view.StandardWorldModelViewer;
@@ -305,20 +306,8 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         for (StandardEntity next : nearby) {
             if (next instanceof Human) {
                 Human h = (Human)next;
-                if (h.isXDefined() && h.isYDefined()) {
-                    int x = ((Human)next).getX();
-                    int y = ((Human)next).getY();
-                    Point2D humanLocation = new Point2D(x, y);
-                    Ray ray = new Ray(new Line2D(location, humanLocation), lines);
-                    if (ray.getVisibleLength() >= 1) {
-                        result.add(next);
-                        if (view != null) {
-                            view.addRay(agentEntity, ray);
-                        }
-                    }
-                }
-                else if (h.isPositionDefined() && h.getPosition().equals(agentEntity.getID())) {
-                    result.add(next);
+                if (canSee(agentEntity, location, h, lines)) {
+                    result.add(h);
                 }
             }
         }
@@ -326,6 +315,31 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         result.add(agentEntity);
         Logger.debug(agentEntity + " can see " + result);
         return result;
+    }
+
+    private boolean canSee(StandardEntity agent, Point2D location, Human h, Collection<LineInfo> lines) {
+        if (h.isXDefined() && h.isYDefined()) {
+            int x = h.getX();
+            int y = h.getY();
+            Point2D humanLocation = new Point2D(x, y);
+            Ray ray = new Ray(new Line2D(location, humanLocation), lines);
+            if (ray.getVisibleLength() >= 1) {
+                if (view != null) {
+                    view.addRay(agent, ray);
+                }
+                return true;
+            }
+        }
+        else if (h.isPositionDefined()) {
+            if (h.getPosition().equals(agent.getID())) {
+                return true;
+            }
+            Entity e = world.getEntity(h.getPosition());
+            if (e instanceof AmbulanceTeam) {
+                return canSee(agent, location, (Human)e, lines);
+            }
+        }
+        return false;
     }
 
     private Collection<LineInfo> getAllLines(Collection<StandardEntity> entities) {
