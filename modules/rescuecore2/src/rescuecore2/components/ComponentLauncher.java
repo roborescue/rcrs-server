@@ -3,6 +3,7 @@ package rescuecore2.components;
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
+import rescuecore2.registry.Registry;
 
 /**
    A class that knows how to connect components to the kernel.
@@ -10,6 +11,7 @@ import rescuecore2.connection.ConnectionException;
 public abstract class ComponentLauncher implements RequestIDGenerator {
     private Config config;
     private int nextRequestID;
+    private Registry defaultRegistry;
 
     /**
        Construct a new ComponentLauncher.
@@ -18,6 +20,7 @@ public abstract class ComponentLauncher implements RequestIDGenerator {
     public ComponentLauncher(Config config) {
         this.config = config;
         nextRequestID = 1;
+        defaultRegistry = Registry.SYSTEM_REGISTRY;
     }
 
     /**
@@ -29,6 +32,7 @@ public abstract class ComponentLauncher implements RequestIDGenerator {
     */
     public void connect(Component c) throws InterruptedException, ConnectionException, ComponentConnectionException {
         Connection connection = makeConnection();
+        connection.setRegistry(c.getPreferredRegistry(defaultRegistry));
         connection.startup();
         c.connect(connection, this, config);
     }
@@ -38,6 +42,14 @@ public abstract class ComponentLauncher implements RequestIDGenerator {
         synchronized (this) {
             return nextRequestID++;
         }
+    }
+
+    /**
+       Set the default registry for new connections.
+       @param registry The new default registry.
+    */
+    public void setDefaultRegistry(Registry registry) {
+        defaultRegistry = registry;
     }
 
     /**

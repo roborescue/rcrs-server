@@ -3,6 +3,7 @@ package rescuecore2.components;
 import rescuecore2.config.Config;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionException;
+import rescuecore2.registry.Registry;
 
 /**
    Top-level interface for components of the Robocup Rescue simulation. Agents, simulators and viewers are all components.
@@ -24,6 +25,13 @@ public interface Component {
        @return A name.
     */
     String getName();
+
+    /**
+       Get the registry this component would like to use for its connection.
+       @param parent The parent registry.
+       @return The preferred registry.
+    */
+    Registry getPreferredRegistry(Registry parent);
 
     /**
        Connect this component to the kernel.

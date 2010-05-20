@@ -10,6 +10,7 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.log.Logger;
 import rescuecore2.misc.WorkerThread;
+import rescuecore2.registry.Registry;
 
 import java.util.Collection;
 import java.util.Random;
@@ -143,6 +144,11 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
     @Override
     public String getName() {
         return getClass().getName();
+    }
+
+    @Override
+    public Registry getPreferredRegistry(Registry parent) {
+        return parent;
     }
 
     /**
