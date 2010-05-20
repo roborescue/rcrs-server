@@ -76,6 +76,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
                 nextID = Math.max(nextID, e.getID().getValue());
             }
             ++nextID;
+            result.index();
             return result;
         }
         catch (MapException e) {
