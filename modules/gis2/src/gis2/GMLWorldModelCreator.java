@@ -133,10 +133,16 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             // Create a new Road entity
             EntityID id = new EntityID(next.getID());
             Road r = new Road(id);
+            List<Point2D> vertices = convertShapeToPoints(next, conversion);
+            Point2D centroid = GeometryTools2D.computeCentroid(vertices);
+
+            //            Logger.debug("Road vertices: " + vertices);
+            //            Logger.debug("Centroid: " + centroid);
+
             // Road properties: None
             // Area properties
-            r.setX((int)conversion.convertX(next.getCentreX()));
-            r.setY((int)conversion.convertY(next.getCentreY()));
+            r.setX((int)centroid.getX());
+            r.setY((int)centroid.getY());
             r.setEdges(createEdges(next, conversion));
             result.addEntity(r);
             //                Logger.debug(b.getFullDescription());
@@ -155,19 +161,19 @@ public class GMLWorldModelCreator implements WorldModelCreator {
     }
 
     private List<Edge> createEdges(GMLShape s, CoordinateConversion conversion) {
-        Logger.debug("Computing edges for " + s);
+        //        Logger.debug("Computing edges for " + s);
         List<Edge> result = new ArrayList<Edge>();
         for (GMLDirectedEdge edge : s.getEdges()) {
             GMLCoordinates start = edge.getStartCoordinates();
             GMLCoordinates end = edge.getEndCoordinates();
             Integer neighbourID = s.getNeighbour(edge);
             EntityID id = neighbourID == null ? null : new EntityID(neighbourID);
-            Logger.debug("Edge: " + start + " -> " + end);
+            //            Logger.debug("Edge: " + start + " -> " + end);
             double sx = conversion.convertX(start.getX());
             double sy = conversion.convertY(start.getY());
             double ex = conversion.convertX(end.getX());
             double ey = conversion.convertY(end.getY());
-            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
+            //            Logger.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex + "," + ey);
             result.add(new Edge((int)sx,
                                 (int)sy,
                                 (int)ex,
