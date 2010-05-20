@@ -210,6 +210,9 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @return A collection of StandardEntitys that are within range.
     */
     public Collection<StandardEntity> getObjectsInRange(int x, int y, int range) {
+        if (!indexed) {
+            index();
+        }
         Collection<StandardEntity> result = new HashSet<StandardEntity>();
         int cellX = getXCell(x);
         int cellY = getYCell(y);
