@@ -69,6 +69,9 @@ public class ChangeSet {
        @param p The property that has changed.
      */
     public void addChange(EntityID e, String urn, Property p) {
+        if (deleted.contains(e)) {
+            return;
+        }
         Property prop = p.copy();
         changes.get(e).put(prop.getURN(), prop);
         entityURNs.put(e, urn);
@@ -80,6 +83,7 @@ public class ChangeSet {
     */
     public void entityDeleted(EntityID e) {
         deleted.add(e);
+        changes.remove(e);
     }
 
     /**
