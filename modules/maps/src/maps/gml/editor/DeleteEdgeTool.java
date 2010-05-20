@@ -55,6 +55,7 @@ public class DeleteEdgeTool extends AbstractTool {
         editor.getViewer().removeMouseListener(listener);
         editor.getViewer().removeMouseMotionListener(listener);
         editor.getViewer().clearAllEdgeDecorators();
+        editor.getViewer().repaint();
     }
 
     private void highlightEdge(GMLEdge newEdge) {

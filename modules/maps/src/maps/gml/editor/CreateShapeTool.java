@@ -67,6 +67,7 @@ public abstract class CreateShapeTool extends AbstractTool {
         editor.getViewer().removeMouseListener(listener);
         editor.getViewer().removeMouseMotionListener(listener);
         editor.getViewer().clearAllEdgeDecorators();
+        editor.getViewer().repaint();
         clearData();
     }
 
@@ -147,6 +148,9 @@ public abstract class CreateShapeTool extends AbstractTool {
         }
         if (hover != null) {
             editor.getViewer().clearEdgeDecorator(hover);
+            if (possible.contains(hover)) {
+                editor.getViewer().setEdgeDecorator(possibleHighlight, hover);
+            }
         }
         hover = edge;
         if (hover != null) {

@@ -10,12 +10,13 @@ import java.awt.Insets;
 import javax.swing.undo.AbstractUndoableEdit;
 
 import maps.gml.view.NodeDecorator;
-import maps.gml.view.EdgeDecorator;
 import maps.gml.view.SquareNodeDecorator;
-import maps.gml.view.LineEdgeDecorator;
+import maps.gml.view.LineOverlay;
 import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
 import maps.gml.GMLCoordinates;
+
+import rescuecore2.misc.geometry.Point2D;
 
 /**
    A tool for creating edges.
@@ -26,12 +27,12 @@ public class CreateEdgeTool extends AbstractTool {
 
     private Listener listener;
     private NodeDecorator nodeHighlight;
-    private EdgeDecorator edgeHighlight;
+    private LineOverlay overlay;
 
     private GMLNode hover;
     private GMLNode start;
     private GMLNode end;
-    private GMLEdge edge;
+    //    private GMLEdge edge;
 
     /**
        Construct a CreateEdgeTool.
@@ -41,7 +42,7 @@ public class CreateEdgeTool extends AbstractTool {
         super(editor);
         listener = new Listener();
         nodeHighlight = new SquareNodeDecorator(HIGHLIGHT_COLOUR, HIGHLIGHT_SIZE);
-        edgeHighlight = new LineEdgeDecorator(HIGHLIGHT_COLOUR);
+        overlay = new LineOverlay(HIGHLIGHT_COLOUR, true);
     }
 
     @Override
@@ -53,10 +54,11 @@ public class CreateEdgeTool extends AbstractTool {
     public void activate() {
         editor.getViewer().addMouseListener(listener);
         editor.getViewer().addMouseMotionListener(listener);
+        editor.getViewer().addOverlay(overlay);
         hover = null;
         start = null;
         end = null;
-        edge = null;
+        //        edge = null;
     }
 
     @Override
@@ -64,35 +66,11 @@ public class CreateEdgeTool extends AbstractTool {
         editor.getViewer().removeMouseListener(listener);
         editor.getViewer().removeMouseMotionListener(listener);
         editor.getViewer().clearAllNodeDecorators();
-        editor.getViewer().clearAllEdgeDecorators();
-    }
-
-    private void createTempEdge(GMLNode startNode) {
-        start = startNode;
-        end = startNode;
-        edge = editor.getMap().createEdge(start, end);
-        if (hover != null) {
-            editor.getViewer().clearNodeDecorator(hover);
-            hover = null;
-        }
-        editor.getViewer().setNodeDecorator(nodeHighlight, start);
-        editor.getViewer().setNodeDecorator(nodeHighlight, end);
-        editor.getViewer().setEdgeDecorator(edgeHighlight, edge);
+        editor.getViewer().removeOverlay(overlay);
         editor.getViewer().repaint();
     }
 
-    private void moveTempEdge(GMLNode newEnd) {
-        if (end == newEnd) {
-            return;
-        }
-        editor.getViewer().clearNodeDecorator(end);
-        end = newEnd;
-        edge.setEnd(newEnd);
-        editor.getViewer().setNodeDecorator(nodeHighlight, end);
-        editor.getViewer().repaint();
-    }
-
-    private void highlightNode(GMLNode node) {
+    private void setHover(GMLNode node) {
         if (hover == node) {
             return;
         }
@@ -106,6 +84,34 @@ public class CreateEdgeTool extends AbstractTool {
         editor.getViewer().repaint();
     }
 
+    private void setStart(GMLNode node) {
+        if (start == node) {
+            return;
+        }
+        if (start != null) {
+            editor.getViewer().clearNodeDecorator(start);
+        }
+        start = node;
+        if (start != null) {
+            editor.getViewer().setNodeDecorator(nodeHighlight, start);
+        }
+        editor.getViewer().repaint();
+    }
+
+    private void setEnd(GMLNode node) {
+        if (start == node || end == node) {
+            return;
+        }
+        if (end != null) {
+            editor.getViewer().clearNodeDecorator(end);
+        }
+        end = node;
+        if (end != null) {
+            editor.getViewer().setNodeDecorator(nodeHighlight, end);
+        }
+        editor.getViewer().repaint();
+    }
+
     private class Listener implements MouseListener, MouseMotionListener {
         @Override
         public void mousePressed(MouseEvent e) {
@@ -113,23 +119,26 @@ public class CreateEdgeTool extends AbstractTool {
                 Point p = fixEventPoint(e.getPoint());
                 GMLCoordinates c = editor.getViewer().getCoordinatesAtPoint(p.x, p.y);
                 GMLNode node = editor.getMap().findNearestNode(c.getX(), c.getY());
-                createTempEdge(node);
+                overlay.setStart(new Point2D(node.getX(), node.getY()));
+                setStart(node);
+                setHover(null);
             }
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (start != null) {
+                if (start != null && end != null) {
+                    GMLEdge edge = editor.getMap().createEdge(start, end);
                     editor.setChanged();
                     editor.addEdit(new CreateEdgeEdit(edge));
-                    editor.getViewer().clearNodeDecorator(start);
-                    editor.getViewer().clearNodeDecorator(end);
-                    editor.getViewer().clearEdgeDecorator(edge);
+                    editor.getViewer().clearAllNodeDecorators();
+                    overlay.setStart(null);
+                    overlay.setEnd(null);
                     editor.getViewer().repaint();
                     start = null;
                     end = null;
-                    edge = null;
+                    hover = null;
                 }
             }
         }
@@ -140,7 +149,8 @@ public class CreateEdgeTool extends AbstractTool {
                 Point p = fixEventPoint(e.getPoint());
                 GMLCoordinates c = editor.getViewer().getCoordinatesAtPoint(p.x, p.y);
                 GMLNode node = editor.getMap().findNearestNode(c.getX(), c.getY());
-                moveTempEdge(node);
+                overlay.setEnd(new Point2D(node.getX(), node.getY()));
+                setEnd(node);
             }
         }
 
@@ -149,7 +159,7 @@ public class CreateEdgeTool extends AbstractTool {
             Point p = fixEventPoint(e.getPoint());
             GMLCoordinates c = editor.snap(editor.getViewer().getCoordinatesAtPoint(p.x, p.y));
             GMLNode node = editor.getMap().findNearestNode(c.getX(), c.getY());
-            highlightNode(node);
+            setHover(node);
         }
 
         @Override

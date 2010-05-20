@@ -150,7 +150,7 @@ public class GMLEditor extends JPanel {
         final JFrame frame = new JFrame("GMLEditor");
         JMenuBar menuBar = new JMenuBar();
         final GMLEditor editor = new GMLEditor(menuBar);
-        if (args.length > 0) {
+        if (args.length > 0 && args[0].length() > 0) {
             try {
                 editor.load(args[0]);
             }

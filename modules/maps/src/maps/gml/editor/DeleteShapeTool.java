@@ -56,6 +56,7 @@ public class DeleteShapeTool extends AbstractTool {
         editor.getViewer().clearAllBuildingDecorators();
         editor.getViewer().clearAllRoadDecorators();
         editor.getViewer().clearAllSpaceDecorators();
+        editor.getViewer().repaint();
     }
 
     private void highlightShape(GMLShape newShape) {

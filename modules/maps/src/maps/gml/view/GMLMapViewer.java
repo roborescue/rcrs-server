@@ -549,35 +549,35 @@ public class GMLMapViewer extends JComponent {
         for (GMLRoad next : map.getRoads()) {
             RoadDecorator d = getRoadDecorator(next);
             if (d != null) {
-                d.decorate(next, g, transform);
+                d.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
         for (GMLBuilding next : map.getBuildings()) {
             BuildingDecorator d = getBuildingDecorator(next);
             if (d != null) {
-                d.decorate(next, g, transform);
+                d.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
         for (GMLSpace next : map.getSpaces()) {
             SpaceDecorator d = getSpaceDecorator(next);
             if (d != null) {
-                d.decorate(next, g, transform);
+                d.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
         for (GMLEdge next : map.getEdges()) {
             EdgeDecorator e = getEdgeDecorator(next);
             if (e != null) {
-                e.decorate(next, g, transform);
+                e.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
         for (GMLNode next : map.getNodes()) {
             NodeDecorator n = getNodeDecorator(next);
             if (n != null) {
-                n.decorate(next, g, transform);
+                n.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
         for (Overlay next : overlays) {
-            next.render(g, transform);
+            next.render((Graphics2D)g.create(), transform);
         }
         if (grid) {
             double xMin = roundDownToGrid(transform.screenToX(0));
