@@ -59,6 +59,8 @@ public class TrafficSimulatorGUI extends JPanel {
     private static final int PATH_SPECIAL_NODE_SIZE = 9;
     private static final int TICK_TIME_MS = 10;
 
+    private static final double FORCE_GUI_FACTOR = 10000000;
+
     private TrafficManager manager;
 
     private volatile boolean waitOnRefresh;
@@ -305,9 +307,9 @@ public class TrafficSimulatorGUI extends JPanel {
                 double ellipseX2 = agentX + agent.getRadius();
                 double ellipseY2 = agentY - agent.getRadius();
                 double velocityX = agentX + (agent.getVX() * 1000);
-                double velocityY = agentY + (agent.getVX() * 1000);
-                double forceX = agentX + (agent.getFX() * 1000);
-                double forceY = agentY + (agent.getFX() * 1000);
+                double velocityY = agentY + (agent.getVY() * 1000);
+                double forceX = agentX + (agent.getFX() * FORCE_GUI_FACTOR);
+                double forceY = agentY - (agent.getFY() * FORCE_GUI_FACTOR);
 
                 int x = transform.xToScreen(agentX);
                 int y = transform.yToScreen(agentY);
@@ -324,10 +326,12 @@ public class TrafficSimulatorGUI extends JPanel {
 
                 g.setColor(agent == selectedAgent ? Color.orange : Color.red);
                 g.fillOval(x1, y1, ellipseWidth, ellipseHeight);
-                g.setColor(Color.blue);
-                g.drawLine(x, y, vx, vy);
-                g.setColor(Color.green);
-                g.drawLine(x, y, fx, fy);
+
+                /*
+                Logger.debug("Agent position on screen: " + x + ", " + y);
+                Logger.debug("Force: " + agent.getFX() + ", " + agent.getFY());
+                Logger.debug("Force position          : " + fx + ", " + fy);
+                */
 
                 Shape shape = new Ellipse2D.Double(x1, y1, ellipseWidth, ellipseHeight);
                 agents.put(shape, agent);
@@ -341,6 +345,13 @@ public class TrafficSimulatorGUI extends JPanel {
                         g.setColor(Color.gray);
                         int lastX = x;
                         int lastY = y;
+                        if (current != null) {
+                            int nodeX = transform.xToScreen(current.getX());
+                            int nodeY = transform.yToScreen(current.getY());
+                            g.drawLine(lastX, lastY, nodeX, nodeY);
+                            lastX = nodeX;
+                            lastY = nodeY;
+                        }
                         for (Point2D next : path) {
                             int nodeX = transform.xToScreen(next.getX());
                             int nodeY = transform.yToScreen(next.getY());
@@ -363,6 +374,12 @@ public class TrafficSimulatorGUI extends JPanel {
                         }
                     }
                 }
+
+                // Draw force and velocity lines
+                g.setColor(Color.blue);
+                g.drawLine(x, y, vx, vy);
+                g.setColor(Color.green);
+                g.drawLine(x, y, fx, fy);
             }
         }
     }

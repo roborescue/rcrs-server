@@ -2,6 +2,7 @@ package traffic3.simulator;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import java.awt.Color;
 
@@ -271,7 +272,8 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         List<Point2D> steps = new ArrayList<Point2D>();
         // Check that all elements refer to Area instances and build the list of target points
         // Target points between areas are the midpoint of the shared edge
-        for (EntityID next : list) {
+        for (Iterator<EntityID> it = list.iterator(); it.hasNext();) {
+            EntityID next = it.next();
             if (next.equals(current)) {
                 continue;
             }
@@ -289,6 +291,10 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             int x = (edge.getStartX() + edge.getEndX()) / 2;
             int y = (edge.getStartY() + edge.getEndY()) / 2;
             steps.add(new Point2D(x, y));
+            if (it.hasNext()) {
+                // Add a point in the centre of the next area - but not for the last area.
+                steps.add(new Point2D(a.getX(), a.getY()));
+            }
             current = next;
             currentArea = a;
         }
