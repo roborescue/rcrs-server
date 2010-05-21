@@ -648,13 +648,12 @@ public final class EncodingTools {
         }
         boolean defined = readBoolean(in);
         Property result = registry.createProperty(urn);
-        if (result == null) {
-            return null;
-        }
         if (defined) {
             int size = readInt32(in);
             byte[] content = readBytes(size, in);
-            result.read(new ByteArrayInputStream(content));
+            if (result != null) {
+                result.read(new ByteArrayInputStream(content));
+            }
         }
         return result;
     }
@@ -674,13 +673,12 @@ public final class EncodingTools {
         }
         boolean defined = readBoolean(in);
         Property result = registry.createProperty(urn);
-        if (result == null) {
-            return null;
-        }
         if (defined) {
             int size = readInt32(in);
             byte[] content = readBytes(size, in);
-            result.read(new ByteArrayInputStream(content));
+            if (result != null) {
+                result.read(new ByteArrayInputStream(content));
+            }
         }
         return result;
     }

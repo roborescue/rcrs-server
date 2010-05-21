@@ -63,6 +63,6 @@ public class EntityIDComponent extends AbstractMessageComponent {
 
     @Override
     public String toString() {
-        return getName() + " = " + value.toString();
+        return getName() + " = " + value;
     }
 }

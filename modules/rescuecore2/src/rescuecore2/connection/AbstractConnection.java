@@ -17,6 +17,7 @@ import java.util.Collections;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 
 /**
@@ -177,7 +178,7 @@ public abstract class AbstractConnection implements Connection {
        @param b The received bytes.
     */
     protected void bytesReceived(byte[] b) {
-        ByteArrayInputStream decode = new ByteArrayInputStream(b);
+        InputStream decode = new ByteArrayInputStream(b);
         Message m = null;
         try {
             do {
