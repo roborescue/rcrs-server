@@ -140,6 +140,8 @@ public class GMLEditor extends JPanel {
         viewerMouseListener = new ViewerMouseListener();
         viewer.addMouseListener(viewerMouseListener);
         viewer.addMouseMotionListener(viewerMouseListener);
+
+        baseDir = new File(System.getProperty("user.dir"));
     }
 
     /**
@@ -510,6 +512,7 @@ public class GMLEditor extends JPanel {
         addTool(new MergeNodesTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new MergeLinesTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new SplitEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new TogglePassableTool(this), menu, toolbar, menuGroup, toolbarGroup);
     }
 
     private void createFunctionActions(JMenu menu, JToolBar toolbar) {
@@ -518,6 +521,8 @@ public class GMLEditor extends JPanel {
         addFunction(new FixDuplicateEdgesFunction(this), menu, toolbar);
         addFunction(new SplitEdgesFunction(this), menu, toolbar);
         addFunction(new ComputePassableEdgesFunction(this), menu, toolbar);
+        addFunction(new PruneOrphanNodesFunction(this), menu, toolbar);
+        addFunction(new PruneOrphanEdgesFunction(this), menu, toolbar);
     }
 
     private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {

@@ -2,7 +2,7 @@ package maps.gml.editor;
 
 import javax.swing.JOptionPane;
 
-import maps.ConstantConversion;
+import maps.ScaleConversion;
 
 /**
    A function for scaling the map.
@@ -27,7 +27,7 @@ public class ScaleFunction extends AbstractFunction {
         if (s != null) {
             try {
                 double factor = Double.parseDouble(s);
-                editor.getMap().convertCoordinates(new ConstantConversion(factor));
+                editor.getMap().convertCoordinates(new ScaleConversion(editor.getMap().getMinX(), editor.getMap().getMinY(), factor, factor));
                 editor.setChanged();
             }
             catch (NumberFormatException e) {
