@@ -482,9 +482,11 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             agent.endTimestep();
         }
         long end = System.currentTimeMillis();
-        Logger.debug("Pre-timestep took " + (pre - start) + " ms (average " + ((pre - start) / manager.getAgents().size()) + "ms per agent)");
-        Logger.debug("Microsteps took: " + (post - pre) + "ms (average " + ((post - pre) / MICROSTEPS) + "ms)");
-        Logger.debug("Post-timestep took " + (end - post) + " ms (average " + ((end - post) / manager.getAgents().size()) + "ms per agent)");
+        if (manager.getAgents().size() != 0) {
+            Logger.debug("Pre-timestep took " + (pre - start) + " ms (average " + ((pre - start) / manager.getAgents().size()) + "ms per agent)");
+            Logger.debug("Microsteps took: " + (post - pre) + "ms (average " + ((post - pre) / MICROSTEPS) + "ms)");
+            Logger.debug("Post-timestep took " + (end - post) + " ms (average " + ((end - post) / manager.getAgents().size()) + "ms per agent)");
+        }
         Logger.debug("Total time: " + (end - start) + "ms");
     }
 
