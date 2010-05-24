@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Insets;
+import java.awt.Point;
 import javax.swing.JComponent;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.misc.gui.PanZoomListener;
@@ -546,31 +548,43 @@ public class GMLMapViewer extends JComponent {
         int height = getHeight() - insets.top - insets.bottom;
         Graphics2D g = (Graphics2D)graphics.create(insets.left, insets.top, width + 1 , height + 1);
         transform.rescale(width, height);
-        for (GMLRoad next : map.getRoads()) {
+        Collection<GMLRoad> roads;
+        Collection<GMLBuilding> buildings;
+        Collection<GMLSpace> spaces;
+        Collection<GMLEdge> edges;
+        Collection<GMLNode> nodes;
+        synchronized (map) {
+            roads = new HashSet<GMLRoad>(map.getRoads());
+            buildings = new HashSet<GMLBuilding>(map.getBuildings());
+            spaces = new HashSet<GMLSpace>(map.getSpaces());
+            edges = new HashSet<GMLEdge>(map.getEdges());
+            nodes = new HashSet<GMLNode>(map.getNodes());
+        }
+        for (GMLRoad next : roads) {
             RoadDecorator d = getRoadDecorator(next);
             if (d != null) {
                 d.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
-        for (GMLBuilding next : map.getBuildings()) {
+        for (GMLBuilding next : buildings) {
             BuildingDecorator d = getBuildingDecorator(next);
             if (d != null) {
                 d.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
-        for (GMLSpace next : map.getSpaces()) {
+        for (GMLSpace next : spaces) {
             SpaceDecorator d = getSpaceDecorator(next);
             if (d != null) {
                 d.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
-        for (GMLEdge next : map.getEdges()) {
+        for (GMLEdge next : edges) {
             EdgeDecorator e = getEdgeDecorator(next);
             if (e != null) {
                 e.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
-        for (GMLNode next : map.getNodes()) {
+        for (GMLNode next : nodes) {
             NodeDecorator n = getNodeDecorator(next);
             if (n != null) {
                 n.decorate(next, (Graphics2D)g.create(), transform);
@@ -627,5 +641,16 @@ public class GMLMapViewer extends JComponent {
         double cx = transform.screenToX(x);
         double cy = transform.screenToY(y);
         return new GMLCoordinates(cx, cy);
+    }
+
+    /**
+       Get the on-screen coordinates for a point.
+       @param c The GML coordinates to look up.
+       @return The on-screen coordinates of the point.
+    */
+    public Point getScreenCoordinates(GMLCoordinates c) {
+        int x = transform.xToScreen(c.getX());
+        int y = transform.yToScreen(c.getY());
+        return new Point(x, y);
     }
 }

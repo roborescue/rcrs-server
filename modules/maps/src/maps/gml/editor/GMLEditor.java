@@ -523,6 +523,7 @@ public class GMLEditor extends JPanel {
         addFunction(new ComputePassableEdgesFunction(this), menu, toolbar);
         addFunction(new PruneOrphanNodesFunction(this), menu, toolbar);
         addFunction(new PruneOrphanEdgesFunction(this), menu, toolbar);
+        addFunction(new FixDegenerateShapesFunction(this), menu, toolbar);
     }
 
     private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {

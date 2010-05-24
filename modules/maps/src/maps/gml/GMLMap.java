@@ -800,7 +800,7 @@ public class GMLMap implements maps.Map {
     }
 
     /**
-       Merge a pair of edges and form a new edge. The node and existing edges are NOT removed from the map.
+       Merge a pair of edges and form a new edge. The node and existing edges are not removed from the map.
        @param edge1 The first edge.
        @param edge2 The second edge.
        @return The new edge.

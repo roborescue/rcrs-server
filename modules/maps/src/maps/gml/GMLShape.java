@@ -109,6 +109,26 @@ public abstract class GMLShape extends GMLObject {
                 }
             }
         }
+        bounds = null;
+        centroid = null;
+        points = getUnderlyingCoordinates();
+    }
+
+    /**
+       Remove an edge from this shape.
+       @param edge The underlying edge to remove.
+    */
+    public void removeEdge(GMLEdge edge) {
+        for (Iterator<GMLDirectedEdge> it = edges.iterator(); it.hasNext();) {
+            GMLDirectedEdge dEdge = it.next();
+            if (dEdge.getEdge().equals(edge)) {
+                it.remove();
+                neighbours.remove(dEdge);
+            }
+        }
+        bounds = null;
+        centroid = null;
+        points = getUnderlyingCoordinates();
     }
 
     /**

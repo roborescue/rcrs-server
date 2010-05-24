@@ -5,10 +5,12 @@ import java.awt.Dialog;
 import java.awt.BorderLayout;
 import javax.swing.JDialog;
 import javax.swing.JProgressBar;
+import javax.swing.JOptionPane;
 
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
@@ -23,7 +25,7 @@ import rescuecore2.misc.geometry.GeometryTools2D;
    A function for splitting edges that cover nearby nodes.
 */
 public class SplitEdgesFunction extends AbstractFunction {
-    private static final double THRESHOLD = 0.001;
+    private static final double DEFAULT_THRESHOLD = 0.001;
 
     /**
        Construct a SplitEdgesFunction.
@@ -40,9 +42,19 @@ public class SplitEdgesFunction extends AbstractFunction {
 
     @Override
     public void execute() {
+        String s = JOptionPane.showInputDialog(editor.getViewer(), "Enter the desired distance threshold (in m)", DEFAULT_THRESHOLD);
+        if (s == null) {
+            return;
+        }
+        final double threshold = Double.parseDouble(s);
         // Go through all edges and split any that cover nearby nodes
         final JDialog dialog = new JDialog((Window)editor.getViewer().getTopLevelAncestor(), "Splitting edges", Dialog.ModalityType.APPLICATION_MODAL);
-        final Queue<GMLEdge> remaining = new LinkedList<GMLEdge>(editor.getMap().getEdges());
+        final Queue<GMLEdge> remaining = new LinkedList<GMLEdge>();
+        final Collection<GMLNode> nodes = new HashSet<GMLNode>();
+        synchronized (editor.getMap()) {
+            remaining.addAll(editor.getMap().getEdges());
+            nodes.addAll(editor.getMap().getNodes());
+        }
         final JProgressBar progress = new JProgressBar(0, remaining.size());
         progress.setStringPainted(true);
         dialog.getContentPane().add(progress, BorderLayout.CENTER);
@@ -56,17 +68,21 @@ public class SplitEdgesFunction extends AbstractFunction {
                         GMLEdge next = remaining.remove();
                         Line2D line = GMLTools.toLine(next);
                         // Look for nodes that are close to the line
-                        for (GMLNode node : editor.getMap().getNodes()) {
+                        for (GMLNode node : nodes) {
                             if (node == next.getStart() || node == next.getEnd()) {
                                 continue;
                             }
                             Point2D p = GMLTools.toPoint(node);
                             Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, p);
-                            if (GeometryTools2D.getDistance(p, closest) < THRESHOLD) {
+                            if (GeometryTools2D.getDistance(p, closest) < threshold) {
                                 // Split the edge
-                                Collection<GMLEdge> newEdges = editor.getMap().splitEdge(next, node);
+                                Collection<GMLEdge> newEdges;
+                                synchronized (editor.getMap()) {
+                                    newEdges = editor.getMap().splitEdge(next, node);
+                                    editor.getMap().removeEdge(next);
+                                    newEdges.removeAll(editor.getMap().getEdges());
+                                }
                                 remaining.addAll(newEdges);
-                                editor.getMap().removeEdge(next);
                                 total += newEdges.size();
                                 progress.setMaximum(total);
                                 ++count;

@@ -5,6 +5,7 @@ import java.awt.Dialog;
 import java.awt.BorderLayout;
 import javax.swing.JDialog;
 import javax.swing.JProgressBar;
+import javax.swing.JOptionPane;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import rescuecore2.log.Logger;
    A function for fixing nearby nodes.
 */
 public class FixNearbyNodesFunction extends AbstractFunction {
-    private static final double TOLERANCE = 0.001;
+    private static final double DEFAULT_TOLERANCE = 0.001;
 
     /**
        Construct a FixNearbyNodesFunction.
@@ -34,6 +35,11 @@ public class FixNearbyNodesFunction extends AbstractFunction {
 
     @Override
     public void execute() {
+        String s = JOptionPane.showInputDialog(editor.getViewer(), "Enter the desired tolerance (in m)", DEFAULT_TOLERANCE);
+        if (s == null) {
+            return;
+        }
+        final double tolerance = Double.parseDouble(s);
         // Go through all nodes and replace any nearby ones.
         final JDialog dialog = new JDialog((Window)editor.getViewer().getTopLevelAncestor(), "Fixing nearby nodes", Dialog.ModalityType.APPLICATION_MODAL);
         final Set<GMLNode> remaining = new HashSet<GMLNode>(editor.getMap().getNodes());
@@ -52,7 +58,7 @@ public class FixNearbyNodesFunction extends AbstractFunction {
                         //                        Logger.debug("Next node: " + next);
                         //                        Logger.debug("Finding nodes near " + x + ", " + y);
                         progress.setValue(progress.getValue() + 1);
-                        for (GMLNode replaced : editor.getMap().getNodesInRegion(x - TOLERANCE, y - TOLERANCE, x + TOLERANCE, y + TOLERANCE)) {
+                        for (GMLNode replaced : editor.getMap().getNodesInRegion(x - tolerance, y - tolerance, x + tolerance, y + tolerance)) {
                             if (replaced == next) {
                                 continue;
                             }
