@@ -192,7 +192,7 @@ public class ScreenTransform {
        @return The screen coordinate.
     */
     public int xToScreen(double x) {
-        return xOffset + (int)((x - minX) * pixelsPerX);
+        return xOffset + (int)Math.round((x - minX) * pixelsPerX);
     }
 
     /**
@@ -201,7 +201,7 @@ public class ScreenTransform {
        @return The screen coordinate.
     */
     public int yToScreen(double y) {
-        return yOffset - (int)((y - minY) * pixelsPerY);
+        return yOffset - (int)Math.round((y - minY) * pixelsPerY);
     }
 
     /**
