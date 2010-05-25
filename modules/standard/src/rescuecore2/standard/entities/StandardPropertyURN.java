@@ -26,7 +26,6 @@ public enum StandardPropertyURN {
     IGNITION(PROPERTY_URN_PREFIX + "ignition"),
     FIERYNESS(PROPERTY_URN_PREFIX + "fieryness"),
     BROKENNESS(PROPERTY_URN_PREFIX + "brokenness"),
-    ENTRANCES(PROPERTY_URN_PREFIX + "entrances"),
     BUILDING_CODE(PROPERTY_URN_PREFIX + "buildingcode"),
     BUILDING_AREA_GROUND(PROPERTY_URN_PREFIX + "buildingareaground"),
     BUILDING_AREA_TOTAL(PROPERTY_URN_PREFIX + "buildingareatotal"),
