@@ -10,6 +10,7 @@ import java.util.HashSet;
 
 import traffic3.manager.TrafficManager;
 import traffic3.simulator.TrafficConstants;
+import traffic3.simulator.PathElement;
 
 import rescuecore2.standard.entities.Human;
 
@@ -57,9 +58,10 @@ public class TrafficAgent {
     private Point2D finalDestination;
 
     // The path this agent wants to take.
-    private Queue<Point2D> path;
+    private Queue<PathElement> path;
 
     // The current (possibly intermediate) destination.
+    private PathElement currentPathElement;
     private Point2D currentDestination;
 
     // The area the agent is currently in.
@@ -88,7 +90,7 @@ public class TrafficAgent {
         this.manager = manager;
         this.radius = radius;
         this.velocityLimit = velocityLimit;
-        path = new LinkedList<Point2D>();
+        path = new LinkedList<PathElement>();
         positionHistory = new ArrayList<Point2D>();
         savePositionHistory = true;
         historyCount = 0;
@@ -238,15 +240,16 @@ public class TrafficAgent {
        Set the path this agent wants to take.
        @param steps The new path.
     */
-    public void setPath(List<Point2D> steps) {
+    public void setPath(List<PathElement> steps) {
         if (steps == null || steps.isEmpty()) {
             clearPath();
             return;
         }
         path.clear();
         path.addAll(steps);
-        finalDestination = steps.get(steps.size() - 1);
+        finalDestination = steps.get(steps.size() - 1).getGoal();
         currentDestination = null;
+        currentPathElement = null;
         Logger.debug(this + " destination set: " + path);
         Logger.debug(this + " final destination set: " + finalDestination);
     }
@@ -257,6 +260,7 @@ public class TrafficAgent {
     public void clearPath() {
         finalDestination = null;
         currentDestination = null;
+        currentPathElement = null;
         path.clear();
     }
 
@@ -277,11 +281,19 @@ public class TrafficAgent {
     }
 
     /**
+       Get the current (possibly intermediate) path element.
+       @return The current path element.
+    */
+    public PathElement getCurrentElement() {
+        return currentPathElement;
+    }
+
+    /**
        Get the current path.
        @return The path.
     */
-    public List<Point2D> getPath() {
-        return Collections.unmodifiableList((List<Point2D>)path);
+    public List<PathElement> getPath() {
+        return Collections.unmodifiableList((List<PathElement>)path);
     }
 
     /**
@@ -304,13 +316,13 @@ public class TrafficAgent {
             currentArea.addAgent(this);
         }
         // Check current destination
-        if (currentDestination != null) {
-            double dx = currentDestination.getX() - location[0];
-            double dy = currentDestination.getY() - location[1];
+        if (currentPathElement != null) {
+            double dx = currentPathElement.getGoal().getX() - location[0];
+            double dy = currentPathElement.getGoal().getY() - location[1];
             double dSquared = (dx * dx) + (dy * dy);
             if (dSquared < NEARBY_THRESHOLD_SQUARED) {
                 Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
-                currentDestination = null;
+                currentPathElement = null;
             }
         }
         // Save position history
@@ -374,16 +386,26 @@ public class TrafficAgent {
     }
 
     private void updateGoals() {
-        if (currentDestination == null) {
-            //            Logger.debug(this + ": Current destination is null");
+        if (currentPathElement == null) {
             if (path.isEmpty()) {
                 currentDestination = finalDestination;
-                //                Logger.debug(this + ": Path is empty, current destination set to " + currentDestination);
+                currentPathElement = null;
             }
             else {
-                currentDestination = path.remove();
-                //                Logger.debug(this + ": Current destination set to " + currentDestination);
+                currentPathElement = path.remove();
+                Logger.debug(this + " updated path: " + path);
             }
+        }
+        // Head for the best point in the current path element
+        if (currentPathElement != null) {
+            Point2D current = new Point2D(location[0], location[1]);
+            for (Point2D next : currentPathElement.getWaypoints()) {
+                if (hasLos(current, next, currentArea.getAllBlockingLines(), null)) {
+                    currentDestination = next;
+                    break;
+                }
+            }
+            Logger.debug(this + " current destination: " + currentDestination);
         }
     }
 

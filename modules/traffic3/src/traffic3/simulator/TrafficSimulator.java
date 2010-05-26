@@ -269,7 +269,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         }
         Area currentArea = (Area)currentEntity;
         List<EntityID> list = move.getPath();
-        List<Point2D> steps = new ArrayList<Point2D>();
+        List<PathElement> steps = new ArrayList<PathElement>();
         // Check that all elements refer to Area instances and build the list of target points
         // Target points between areas are the midpoint of the shared edge
         for (Iterator<EntityID> it = list.iterator(); it.hasNext();) {
@@ -290,29 +290,24 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             Area a = (Area)e;
             int x = (edge.getStartX() + edge.getEndX()) / 2;
             int y = (edge.getStartY() + edge.getEndY()) / 2;
-            steps.add(new Point2D(x, y));
-            if (it.hasNext()) {
-                // Add a point in the centre of the next area - but not for the last area.
-                steps.add(new Point2D(a.getX(), a.getY()));
-            }
+            Point2D edgePoint = new Point2D(x, y);
+            Point2D centrePoint = new Point2D(currentArea.getX(), currentArea.getY());
+            steps.add(new PathElement(next, edgePoint, centrePoint));
             current = next;
             currentArea = a;
         }
         int targetX = move.getDestinationX();
         int targetY = move.getDestinationY();
-        if (targetX != -1 && targetY != -1) {
-            steps.add(new Point2D(targetX, targetY));
+        if (targetX == -1 && targetY == -1) {
+            targetX = currentArea.getX();
+            targetY = currentArea.getY();
         }
-        else {
-            if (list.isEmpty()) {
-                Logger.warn("Rejecting move: Path is empty");
-                return;
-            }
-            Area target = (Area)model.getEntity(list.get(list.size() - 1));
-            steps.add(new Point2D(target.getX(), target.getY()));
+        else if (list.isEmpty()) {
+            Logger.warn("Rejecting move: Path is empty");
+            return;
         }
+        steps.add(new PathElement(current, new Point2D(targetX, targetY)));
         agent.setPath(steps);
-        Logger.debug("Agent " + agent + " path set: " + steps);
     }
 
     // Return the loaded civilian (if any)

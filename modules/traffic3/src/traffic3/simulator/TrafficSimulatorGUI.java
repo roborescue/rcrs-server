@@ -26,6 +26,8 @@ import javax.swing.SwingUtilities;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import traffic3.objects.TrafficArea;
@@ -338,7 +340,10 @@ public class TrafficSimulatorGUI extends JPanel {
 
                 // Draw the path of the selected agent
                 if (agent == selectedAgent) {
-                    List<Point2D> path = selectedAgent.getPath();
+                    List<PathElement> path = new ArrayList<PathElement>(selectedAgent.getPath());
+                    if (selectedAgent.getCurrentElement() != null) {
+                        path.add(0, selectedAgent.getCurrentElement());
+                    }
                     if (path != null) {
                         Point2D goal = selectedAgent.getFinalDestination();
                         Point2D current = selectedAgent.getCurrentDestination();
@@ -352,13 +357,17 @@ public class TrafficSimulatorGUI extends JPanel {
                             lastX = nodeX;
                             lastY = nodeY;
                         }
-                        for (Point2D next : path) {
-                            int nodeX = transform.xToScreen(next.getX());
-                            int nodeY = transform.yToScreen(next.getY());
-                            g.fillOval(nodeX - (PATH_NODE_SIZE / 2), nodeY - (PATH_NODE_SIZE / 2), PATH_NODE_SIZE, PATH_NODE_SIZE);
-                            g.drawLine(lastX, lastY, nodeX, nodeY);
-                            lastX = nodeX;
-                            lastY = nodeY;
+                        for (PathElement next : path) {
+                            List<Point2D> waypoints = new ArrayList<Point2D>(next.getWaypoints());
+                            Collections.reverse(waypoints);
+                            for (Point2D p : waypoints) {
+                                int nodeX = transform.xToScreen(p.getX());
+                                int nodeY = transform.yToScreen(p.getY());
+                                g.fillOval(nodeX - (PATH_NODE_SIZE / 2), nodeY - (PATH_NODE_SIZE / 2), PATH_NODE_SIZE, PATH_NODE_SIZE);
+                                g.drawLine(lastX, lastY, nodeX, nodeY);
+                                lastX = nodeX;
+                                lastY = nodeY;
+                            }
                         }
                         if (current != null) {
                             g.setColor(Color.YELLOW);
