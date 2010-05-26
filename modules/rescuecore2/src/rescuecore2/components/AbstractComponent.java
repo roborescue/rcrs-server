@@ -62,7 +62,6 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
        @param kernelConfig The config that the kernel sent on startup.
     */
     protected final void postConnect(Connection c, Collection<Entity> entities, Config kernelConfig) {
-        Logger.setLogContext(getPreferredLogContext());
         connection = c;
         model = createWorldModel();
         model.addEntities(entities);
@@ -111,11 +110,8 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
         }
     }
 
-    /**
-       Get the preferred log context for this component. Default implementation returns this.getClass().getName().
-       @return The preferred log context for this component.
-    */
-    protected String getPreferredLogContext() {
+    @Override
+    public String getPreferredLogContext() {
         return getClass().getName();
     }
 

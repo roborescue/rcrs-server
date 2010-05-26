@@ -13,8 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import rescuecore2.registry.Registry;
-
 /**
    Abstract base class for concrete Entity implementations.
  */
@@ -103,7 +101,7 @@ public abstract class AbstractEntity implements Entity {
     public void read(InputStream in) throws IOException {
         Property prop = null;
         while (true) {
-            prop = readProperty(in, Registry.getCurrentRegistry());
+            prop = readProperty(in);
             if (prop == null) {
                 return;
             }

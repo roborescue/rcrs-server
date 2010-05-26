@@ -32,6 +32,7 @@ public abstract class AbstractConnection implements Connection {
     private Registry registry;
 
     private boolean logBytes;
+    private String name;
 
     private volatile State state;
 
@@ -45,8 +46,8 @@ public abstract class AbstractConnection implements Connection {
         toSend = new LinkedList<Message>();
         logBytes = false;
         state = State.NOT_STARTED;
-        broadcast = new MessageBroadcastThread();
         registry = Registry.SYSTEM_REGISTRY;
+        name = toString();
     }
 
     @Override
@@ -58,9 +59,17 @@ public abstract class AbstractConnection implements Connection {
     public final void startup() {
         synchronized (stateLock) {
             if (state == State.NOT_STARTED) {
-                broadcast.start();
-                startupImpl();
-                state = State.STARTED;
+                Registry old = Registry.getCurrentRegistry();
+                Registry.setCurrentRegistry(registry);
+                try {
+                    broadcast = new MessageBroadcastThread();
+                    broadcast.start();
+                    startupImpl();
+                    state = State.STARTED;
+                }
+                finally {
+                    Registry.setCurrentRegistry(old);
+                }
             }
         }
     }
@@ -156,6 +165,24 @@ public abstract class AbstractConnection implements Connection {
         return registry;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String newName) {
+        this.name = newName;
+    }
+
+    @Override
+    public String toString() {
+        if (name == null) {
+            return super.toString();
+        }
+        return name;
+    }
+
     /**
        Send some bytes to the other end of the connection.
        @param b The bytes to send.
@@ -182,7 +209,7 @@ public abstract class AbstractConnection implements Connection {
         Message m = null;
         try {
             do {
-                m = readMessage(decode, registry);
+                m = readMessage(decode);
                 if (m != null) {
                     fireMessageReceived(m);
                 }

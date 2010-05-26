@@ -10,7 +10,6 @@ import rescuecore2.log.Logger;
  */
 public class TCPConnection extends StreamConnection {
     private Socket socket;
-    private String name;
 
     /**
        Make a connection to the local host on a given port.
@@ -40,12 +39,7 @@ public class TCPConnection extends StreamConnection {
         super(socket.getInputStream(), socket.getOutputStream());
         this.socket = socket;
         socket.setSoTimeout(1000);
-        name = "TCPConnection: local port " + socket.getLocalPort() + ", endpoint = " + socket.getInetAddress() + ":" + socket.getPort();
-    }
-
-    @Override
-    public String toString() {
-        return name;
+        setName("TCPConnection: local port " + socket.getLocalPort() + ", endpoint = " + socket.getInetAddress() + ":" + socket.getPort());
     }
 
     @Override

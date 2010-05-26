@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.misc.collections.LazyMap;
-import rescuecore2.registry.Registry;
 import rescuecore2.log.Logger;
 
 /**
@@ -202,7 +201,7 @@ public class ChangeSet {
             String urn = readString(in);
             int propCount = readInt32(in);
             for (int j = 0; j < propCount; ++j) {
-                Property p = readProperty(in, Registry.getCurrentRegistry());
+                Property p = readProperty(in);
                 if (p != null) {
                     addChange(id, urn, p);
                 }

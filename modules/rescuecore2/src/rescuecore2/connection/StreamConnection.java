@@ -40,13 +40,14 @@ public class StreamConnection extends AbstractConnection {
         super();
         this.in = in;
         this.out = out;
-        readThread = new ReadThread();
-        writeThread = new WriteThread();
         toWrite = new LinkedList<byte[]>();
     }
 
     @Override
     protected void startupImpl() {
+        Logger.debug("Starting " + this + ". Registry: " + Registry.getCurrentRegistry());
+        readThread = new ReadThread();
+        writeThread = new WriteThread();
         readThread.start();
         writeThread.start();
     }
@@ -160,10 +161,9 @@ public class StreamConnection extends AbstractConnection {
 
     /**
        Create and start a pair of connections that pipe input to each other.
-       @param registry The registry to install in the two connections.
        @return A pair of connections.
     */
-    public static Pair<Connection, Connection> createConnectionPair(Registry registry) {
+    public static Pair<Connection, Connection> createConnectionPair() {
         try {
             PipedInputStream in1 = new PipedInputStream();
             PipedInputStream in2 = new PipedInputStream();
@@ -171,10 +171,6 @@ public class StreamConnection extends AbstractConnection {
             PipedOutputStream out2 = new PipedOutputStream(in1);
             Connection c1 = new StreamConnection(in1, out1);
             Connection c2 = new StreamConnection(in2, out2);
-            c1.setRegistry(registry);
-            c2.setRegistry(registry);
-            c1.startup();
-            c2.startup();
             return new Pair<Connection, Connection>(c1, c2);
         }
         catch (IOException e) {

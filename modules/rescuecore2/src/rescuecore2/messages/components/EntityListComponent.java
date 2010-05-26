@@ -6,7 +6,6 @@ import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.writeEntity;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.registry.Registry;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class EntityListComponent extends AbstractMessageComponent {
         entities.clear();
         int size = readInt32(in);
         for (int i = 0; i < size; ++i) {
-            Entity e = readEntity(in, Registry.getCurrentRegistry());
+            Entity e = readEntity(in);
             if (e != null) {
                 entities.add(e);
             }

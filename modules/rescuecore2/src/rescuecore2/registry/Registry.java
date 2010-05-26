@@ -91,13 +91,18 @@ public final class Registry {
         CURRENT_REGISTRY.set(r);
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     /**
        Get the name of this registry.
        @return The name of this registry.
     */
     public String getName() {
         if (name == null) {
-            return this.toString();
+            return super.toString();
         }
         return name;
     }

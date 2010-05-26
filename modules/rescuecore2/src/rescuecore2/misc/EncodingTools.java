@@ -548,12 +548,10 @@ public final class EncodingTools {
     /**
        Read an entity from a stream.
        @param in The InputStream to read from.
-       @param registry The Registry to use for decoding entity URNs.
        @return A new Entity, or null if the entity URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Entity readEntity(InputStream in, Registry registry) throws IOException {
-        Registry.setCurrentRegistry(registry);
+    public static Entity readEntity(InputStream in) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
@@ -561,7 +559,7 @@ public final class EncodingTools {
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Entity result = registry.createEntity(urn, new EntityID(entityID));
+        Entity result = Registry.getCurrentRegistry().createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -571,12 +569,10 @@ public final class EncodingTools {
     /**
        Read an entity from a DataInput.
        @param in The DataInput to read from.
-       @param registry The Registry to use for decoding entity URNs.
        @return A new Entity, or null if the entity URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Entity readEntity(DataInput in, Registry registry) throws IOException {
-        Registry.setCurrentRegistry(registry);
+    public static Entity readEntity(DataInput in) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
@@ -584,7 +580,7 @@ public final class EncodingTools {
         int entityID = readInt32(in);
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Entity result = registry.createEntity(urn, new EntityID(entityID));
+        Entity result = Registry.getCurrentRegistry().createEntity(urn, new EntityID(entityID));
         if (result != null) {
             result.read(new ByteArrayInputStream(content));
         }
@@ -636,18 +632,16 @@ public final class EncodingTools {
     /**
        Read a property from a stream.
        @param in The InputStream to read from.
-       @param registry The Registry to use for decoding property URNs.
        @return A new Property, or null if the property URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Property readProperty(InputStream in, Registry registry) throws IOException {
-        Registry.setCurrentRegistry(registry);
+    public static Property readProperty(InputStream in) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         boolean defined = readBoolean(in);
-        Property result = registry.createProperty(urn);
+        Property result = Registry.getCurrentRegistry().createProperty(urn);
         if (defined) {
             int size = readInt32(in);
             byte[] content = readBytes(size, in);
@@ -661,18 +655,16 @@ public final class EncodingTools {
     /**
        Read a property from a DataInput.
        @param in The DataInput to read from.
-       @param registry The Registry to use for decoding property URNs.
        @return A new Property, or null if the property URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Property readProperty(DataInput in, Registry registry) throws IOException {
-        Registry.setCurrentRegistry(registry);
+    public static Property readProperty(DataInput in) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         boolean defined = readBoolean(in);
-        Property result = registry.createProperty(urn);
+        Property result = Registry.getCurrentRegistry().createProperty(urn);
         if (defined) {
             int size = readInt32(in);
             byte[] content = readBytes(size, in);
@@ -728,38 +720,34 @@ public final class EncodingTools {
     /**
        Read a message from a stream.
        @param in The InputStream to read from.
-       @param registry The Registry to use for decoding message URNs.
        @return A new Message, or null if the message URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Message readMessage(InputStream in, Registry registry) throws IOException {
-        Registry.setCurrentRegistry(registry);
+    public static Message readMessage(InputStream in) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Message result = registry.createMessage(urn, new ByteArrayInputStream(content));
+        Message result = Registry.getCurrentRegistry().createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
 
     /**
        Read a message from a DataInput.
        @param in The DataInput to read from.
-       @param registry The Registry to use for decoding message URNs.
        @return A new Message, or null if the message URN is not recognised.
        @throws IOException If there is a problem reading from the stream.
     */
-    public static Message readMessage(DataInput in, Registry registry) throws IOException {
-        Registry.setCurrentRegistry(registry);
+    public static Message readMessage(DataInput in) throws IOException {
         String urn = readString(in);
         if ("".equals(urn)) {
             return null;
         }
         int size = readInt32(in);
         byte[] content = readBytes(size, in);
-        Message result = registry.createMessage(urn, new ByteArrayInputStream(content));
+        Message result = Registry.getCurrentRegistry().createMessage(urn, new ByteArrayInputStream(content));
         return result;
     }
 

@@ -58,6 +58,18 @@ public interface Connection {
     void setLogBytes(boolean enabled);
 
     /**
+       Set the name for this connection.
+       @param name The new name.
+    */
+    void setName(String name);
+
+    /**
+       Get the name for this connection.
+       @return The name.
+    */
+    String getName();
+
+    /**
        Set the Registry that this connection should use for decoding messages and entities.
        @param registry The new Registry to use.
     */

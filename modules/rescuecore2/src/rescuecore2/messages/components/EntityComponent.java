@@ -5,7 +5,6 @@ import static rescuecore2.misc.EncodingTools.writeEntity;
 
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.registry.Registry;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,7 +58,7 @@ public class EntityComponent extends AbstractMessageComponent {
 
     @Override
     public void read(InputStream in) throws IOException {
-        entity = readEntity(in, Registry.getCurrentRegistry());
+        entity = readEntity(in);
     }
 
     @Override

@@ -34,6 +34,12 @@ public interface Component {
     Registry getPreferredRegistry(Registry parent);
 
     /**
+       Get the preferred log context for this component.
+       @return The preferred log context for this component.
+    */
+    String getPreferredLogContext();
+
+    /**
        Connect this component to the kernel.
        @param connection The Connection to use.
        @param generator The RequestIDGenerator to use.

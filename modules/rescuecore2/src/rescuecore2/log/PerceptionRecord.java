@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
-import rescuecore2.registry.Registry;
 
 /**
    A perception record.
@@ -75,7 +74,7 @@ public class PerceptionRecord implements LogRecord {
         communications = new ArrayList<Command>();
         int count = readInt32(in);
         for (int i = 0; i < count; ++i) {
-            Command c = (Command)readMessage(in, Registry.getCurrentRegistry());
+            Command c = (Command)readMessage(in);
             if (c == null) {
                 throw new LogException("Could not read message from stream");
             }
