@@ -4,10 +4,13 @@ import static rescuecore2.misc.java.JavaTools.instantiate;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ListIterator;
 
 import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
@@ -252,10 +255,14 @@ public class KernelStartupOptions {
     }
 
     private <T> Map<T, Integer> createComponentOptions(Config config, String key, Class<T> expectedClass) {
+        Logger.trace("Loading component options: " + key);
         Map<T, Integer> result = new HashMap<T, Integer>();
         List<String> classNames = config.getArrayValue(key, "");
         List<String> autoClassNames = config.getArrayValue(key + AUTO_SUFFIX, "");
-        for (String next : classNames) {
+        Set<String> allClassNames = new HashSet<String>(classNames);
+        allClassNames.addAll(strip(autoClassNames));
+        for (String next : allClassNames) {
+            Logger.trace("Option found: '" + next + "'");
             T t = instantiate(next, expectedClass);
             if (t != null) {
                 int count = getStartCount(next, autoClassNames);
@@ -280,5 +287,20 @@ public class KernelStartupOptions {
             }
         }
         return 0;
+    }
+
+    private List<String> strip(List<String> autoClassNames) {
+        // Remove any trailing *n
+        for (ListIterator<String> it = autoClassNames.listIterator(); it.hasNext();) {
+            String s = it.next();
+            int index = s.indexOf("*");
+            if (index == -1) {
+                continue;
+            }
+            s = s.substring(0, index);
+            it.remove();
+            it.add(s);
+        }
+        return autoClassNames;
     }
 }
