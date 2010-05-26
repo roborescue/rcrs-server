@@ -1,11 +1,16 @@
 package rescuecore2.misc.geometry;
 
+import rescuecore2.misc.geometry.spatialindex.Indexable;
+import rescuecore2.misc.geometry.spatialindex.Region;
+import rescuecore2.misc.geometry.spatialindex.PointRegion;
+
 /**
    A point in 2D space. Points are immutable.
  */
-public class Point2D {
+public class Point2D implements Indexable {
     private double x;
     private double y;
+    private PointRegion region;
 
     /**
        Create a new Point2D.
@@ -15,6 +20,7 @@ public class Point2D {
     public Point2D(double x, double y) {
         this.x = x;
         this.y = y;
+        region = null;
     }
 
     /**
@@ -64,5 +70,13 @@ public class Point2D {
     @Override
     public String toString() {
         return x + " , " + y;
+    }
+
+    @Override
+    public Region getBoundingRegion() {
+        if (region == null) {
+            region = new PointRegion(x, y);
+        }
+        return region;
     }
 }

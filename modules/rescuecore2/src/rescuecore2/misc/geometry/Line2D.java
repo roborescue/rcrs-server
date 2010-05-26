@@ -2,13 +2,18 @@ package rescuecore2.misc.geometry;
 
 import static rescuecore2.misc.geometry.GeometryTools2D.nearlyZero;
 
+import rescuecore2.misc.geometry.spatialindex.Indexable;
+import rescuecore2.misc.geometry.spatialindex.Region;
+import rescuecore2.misc.geometry.spatialindex.LineRegion;
+
 /**
    A line segment in 2D space. Lines are immutable.
  */
-public class Line2D {
+public class Line2D implements Indexable {
     private Point2D origin;
     private Point2D end;
     private Vector2D direction;
+    private LineRegion region;
 
     /**
        Create a new line segment.
@@ -100,5 +105,13 @@ public class Line2D {
             return Double.NaN;
         }
         return t / d;
+    }
+
+    @Override
+    public Region getBoundingRegion() {
+        if (region == null) {
+            region = new LineRegion(origin.getX(), origin.getY(), end.getX(), end.getY());
+        }
+        return region;
     }
 }
