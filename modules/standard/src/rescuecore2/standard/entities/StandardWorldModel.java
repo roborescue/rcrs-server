@@ -223,6 +223,9 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             for (int j = Math.max(0, cellY - cellRangeY); j <= Math.min(gridSize - 1, cellY + cellRangeY); ++j) {
                 Cell cell = getCell(i, j);
                 for (StandardEntity next : cell.getEntities()) {
+                    if (result.contains(next)) {
+                        continue;
+                    }
                     if (isInside(next, visibleRange)) {
                         result.add(next);
                     }
