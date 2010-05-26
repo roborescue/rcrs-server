@@ -459,10 +459,10 @@ public class LineOfSightPerception implements Perception, GUIComponent {
     }
 
     private class LOSView extends JPanel {
-        private StandardWorldModelViewer viewer;
-        private Collection<Ray> rays;
-        private Map<StandardEntity, Collection<Ray>> sources;
-        private StandardEntity selected;
+        private transient StandardWorldModelViewer viewer;
+        private transient Collection<Ray> rays;
+        private transient Map<StandardEntity, Collection<Ray>> sources;
+        private transient StandardEntity selected;
 
         public LOSView() {
             super(new BorderLayout());

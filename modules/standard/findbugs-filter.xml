@@ -4,9 +4,4 @@
     <Bug pattern="EI_EXPOSE_REP"/>
     <Method name="getApexList"/>
   </Match>
-  <Match>
-    <Class name="rescuecore2.standard.kernel.LineOfSightPerception$LOSView"/>
-    <Bug pattern="SE_BAD_FIELD_STORE"/>
-    <Field name="sources"/>
-  </Match>
 </FindBugsFilter>
