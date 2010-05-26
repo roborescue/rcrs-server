@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ListIterator;
 
 import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
@@ -290,17 +289,17 @@ public class KernelStartupOptions {
     }
 
     private List<String> strip(List<String> autoClassNames) {
+        List<String> result = new ArrayList<String>(autoClassNames.size());
         // Remove any trailing *n
-        for (ListIterator<String> it = autoClassNames.listIterator(); it.hasNext();) {
-            String s = it.next();
+        for (String s : autoClassNames) {
             int index = s.indexOf("*");
-            if (index == -1) {
-                continue;
+            if (index != -1) {
+                result.add(s.substring(0, index));
             }
-            s = s.substring(0, index);
-            it.remove();
-            it.add(s);
+            else {
+                result.add(s);
+            }
         }
-        return autoClassNames;
+        return result;
     }
 }
