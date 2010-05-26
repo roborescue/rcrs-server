@@ -21,11 +21,8 @@ import kernel.ComponentManager;
 import kernel.InlineComponentLauncher;
 
 import rescuecore2.misc.WorkerThread;
-import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
 import rescuecore2.config.NoSuchConfigOptionException;
-import rescuecore2.connection.Connection;
-import rescuecore2.connection.StreamConnection;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.components.Component;
 import rescuecore2.components.ComponentLauncher;
@@ -139,7 +136,8 @@ public class KernelControlPanel extends JPanel {
     */
     public void activate() {
         runThread.start();
-        launcher = new InlineComponentLauncher(componentManager, Registry.getCurrentRegistry(), config);
+        launcher = new InlineComponentLauncher(componentManager, config);
+        launcher.setDefaultRegistry(Registry.getCurrentRegistry());
     }
 
     private void addAgent() {
@@ -269,10 +267,6 @@ public class KernelControlPanel extends JPanel {
         synchronized (runLock) {
             return running || step;
         }
-    }
-
-    private Pair<Connection, Connection> createConnectionPair() {
-        return StreamConnection.createConnectionPair(registry);
     }
 
     private Component[] createComponents(String type) {

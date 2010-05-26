@@ -450,7 +450,8 @@ public final class StartKernel {
 
         public Void call() throws InterruptedException {
             Logger.debug("ComponentStarter running: " + className + " * " + count);
-            ComponentLauncher launcher = new InlineComponentLauncher(componentManager, registry, config);
+            ComponentLauncher launcher = new InlineComponentLauncher(componentManager, config);
+            launcher.setDefaultRegistry(registry);
             Logger.info("Launching " + count + " instances of component '" + className + "'...");
             for (int i = 0; i < count; ++i) {
                 Component c = instantiate(className, Component.class);

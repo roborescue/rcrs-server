@@ -5,7 +5,6 @@ import rescuecore2.components.ComponentLauncher;
 import rescuecore2.connection.Connection;
 import rescuecore2.connection.StreamConnection;
 import rescuecore2.connection.ConnectionException;
-import rescuecore2.registry.Registry;
 import rescuecore2.misc.Pair;
 
 /**
@@ -13,23 +12,22 @@ import rescuecore2.misc.Pair;
  */
 public class InlineComponentLauncher extends ComponentLauncher {
     private ComponentManager manager;
-    private Registry registry;
 
     /**
        Construct a new InlineComponentLauncher.
        @param manager The component manager.
-       @param registry The registry.
        @param config The system configuration.
     */
-    public InlineComponentLauncher(ComponentManager manager, Registry registry, Config config) {
+    public InlineComponentLauncher(ComponentManager manager, Config config) {
         super(config);
         this.manager = manager;
-        this.registry = registry;
     }
 
     @Override
     protected Connection makeConnection() throws ConnectionException {
-        Pair<Connection, Connection> connections = StreamConnection.createConnectionPair(registry);
+        Pair<Connection, Connection> connections = StreamConnection.createConnectionPair();
+        connections.first().setRegistry(getDefaultRegistry());
+        connections.first().startup();
         manager.newConnection(connections.first());
         return connections.second();
     }
