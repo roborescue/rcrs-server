@@ -53,8 +53,6 @@ import rescuecore2.standard.view.RoadLayer;
 import rescuecore2.standard.view.RoadBlockageLayer;
 import rescuecore2.standard.view.HumanLayer;
 
-import rescuecore2.misc.gui.ShapeDebugFrame;
-
 /**
    Line of sight perception.
  */
@@ -81,14 +79,10 @@ public class LineOfSightPerception implements Perception, GUIComponent {
 
     private LOSView view;
 
-    private ShapeDebugFrame debug;
-
     /**
        Create a LineOfSightPerception object.
     */
     public LineOfSightPerception() {
-        debug = new ShapeDebugFrame();
-        debug.deactivate();
     }
 
     @Override
@@ -127,12 +121,10 @@ public class LineOfSightPerception implements Perception, GUIComponent {
             view.clear();
             view.refresh();
         }
-        debug.setBackground(createBackground());
     }
 
     @Override
     public ChangeSet getVisibleEntities(AgentProxy agent) {
-        //        debug.activate();
         StandardEntity agentEntity = (StandardEntity)agent.getControlledEntity();
         Logger.debug("Finding visible entities for " + agentEntity);
         ChangeSet result = new ChangeSet();
@@ -179,7 +171,6 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         if (view != null) {
             view.repaint();
         }
-        //        debug.deactivate();
         return result;
     }
 
@@ -284,23 +275,13 @@ public class LineOfSightPerception implements Perception, GUIComponent {
             double angle = i * dAngle;
             Vector2D vector = new Vector2D(Math.sin(angle), Math.cos(angle)).scale(viewDistance);
             Ray ray = new Ray(new Line2D(location, vector), lines);
-            List<ShapeDebugFrame.ShapeInfo> shapes = new ArrayList<ShapeDebugFrame.ShapeInfo>();
             for (LineInfo hit : ray.getLinesHit()) {
                 StandardEntity e = hit.getEntity();
                 result.add(e);
-                if (e instanceof Area) {
-                    shapes.add(new ShapeDebugFrame.AWTShapeInfo(((Area)e).getShape(), "Hit", Color.RED, true));
-                }
-                if (e instanceof Blockade) {
-                    shapes.add(new ShapeDebugFrame.AWTShapeInfo(((Blockade)e).getShape(), "Hit", Color.ORANGE, true));
-                }
             }
-            shapes.add(new ShapeDebugFrame.Line2DShapeInfo(ray.getRay(), "Ray", Color.CYAN, true, true));
-            shapes.add(new ShapeDebugFrame.Point2DShapeInfo(ray.getRay().getPoint(ray.getVisibleLength()), "End", Color.YELLOW, true));
             if (view != null) {
                 view.addRay(agentEntity, ray);
             }
-            debug.show("Ray", shapes);
         }
         // Now look for humans
         for (StandardEntity next : nearby) {
@@ -361,15 +342,6 @@ public class LineOfSightPerception implements Perception, GUIComponent {
             for (Line2D line : lines) {
                 result.add(new LineInfo(line, next, blocking));
             }
-        }
-        return result;
-    }
-
-    private List<ShapeDebugFrame.ShapeInfo> createBackground() {
-        Collection<LineInfo> lines = getAllLines(world.getAllEntities());
-        List<ShapeDebugFrame.ShapeInfo> result = new ArrayList<ShapeDebugFrame.ShapeInfo>(lines.size());
-        for (LineInfo next : lines) {
-            result.add(new ShapeDebugFrame.Line2DShapeInfo(next.getLine(), "Wall", next.isBlocking() ? Color.BLACK : Color.GRAY, false, false));
         }
         return result;
     }
