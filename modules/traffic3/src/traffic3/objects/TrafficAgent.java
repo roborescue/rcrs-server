@@ -398,12 +398,16 @@ public class TrafficAgent {
         }
         // Head for the best point in the current path element
         if (currentPathElement != null) {
+            currentDestination = null;
             Point2D current = new Point2D(location[0], location[1]);
             for (Point2D next : currentPathElement.getWaypoints()) {
                 if (hasLos(current, next, currentArea.getAllBlockingLines(), null)) {
                     currentDestination = next;
                     break;
                 }
+            }
+            if (currentDestination == null) {
+                currentDestination = currentPathElement.getGoal();
             }
             Logger.debug(this + " current destination: " + currentDestination);
         }
