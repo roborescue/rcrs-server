@@ -77,6 +77,7 @@ public class TrafficAgent {
     private TrafficManager manager;
 
     private boolean mobile;
+    private boolean colocated;
 
     /**
        Construct a TrafficAgent.
@@ -250,8 +251,8 @@ public class TrafficAgent {
         finalDestination = steps.get(steps.size() - 1).getGoal();
         currentDestination = null;
         currentPathElement = null;
-        Logger.debug(this + " destination set: " + path);
-        Logger.debug(this + " final destination set: " + finalDestination);
+        //        Logger.debug(this + " destination set: " + path);
+        //        Logger.debug(this + " final destination set: " + finalDestination);
     }
 
     /**
@@ -321,7 +322,7 @@ public class TrafficAgent {
             double dy = currentPathElement.getGoal().getY() - location[1];
             double dSquared = (dx * dx) + (dy * dy);
             if (dSquared < NEARBY_THRESHOLD_SQUARED) {
-                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
+                //                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
                 currentPathElement = null;
             }
         }
@@ -393,7 +394,7 @@ public class TrafficAgent {
             }
             else {
                 currentPathElement = path.remove();
-                Logger.debug(this + " updated path: " + path);
+                //                Logger.debug(this + " updated path: " + path);
             }
         }
         // Head for the best point in the current path element
@@ -409,14 +410,17 @@ public class TrafficAgent {
             if (currentDestination == null) {
                 currentDestination = currentPathElement.getGoal();
             }
-            Logger.debug(this + " current destination: " + currentDestination);
+            //            Logger.debug(this + " current destination: " + currentDestination);
         }
     }
 
     private void computeForces() {
-        computeDestinationForce(destinationForce);
+        colocated = false;
         computeAgentsForce(agentsForce);
-        computeWallsForce(wallsForce);
+        if (!colocated) {
+            computeDestinationForce(destinationForce);
+            computeWallsForce(wallsForce);
+        }
 
         force[0] = destinationForce[0] + agentsForce[0] + wallsForce[0];
         force[1] = destinationForce[1] + agentsForce[1] + wallsForce[1];
@@ -572,9 +576,10 @@ public class TrafficAgent {
             double distanceSquared = dx * dx + dy * dy;
 
             if (distanceSquared == 0) {
-                xSum += TrafficConstants.getColocatedAgentNudge();
-                ySum += TrafficConstants.getColocatedAgentNudge();
-                continue;
+                xSum = TrafficConstants.getColocatedAgentNudge();
+                ySum = TrafficConstants.getColocatedAgentNudge();
+                colocated = true;
+                break;
             }
             double distance = Math.sqrt(distanceSquared);
             double dxN = dx / distance;
