@@ -54,7 +54,9 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
     @Override
     protected void postConnect() {
         super.postConnect();
-        model.index(config.getIntValue(StandardWorldModel.GRID_SIZE_KEY, StandardWorldModel.DEFAULT_GRID_SIZE));
+        if (shouldIndex()) {
+            model.index(config.getIntValue(StandardWorldModel.GRID_SIZE_KEY, StandardWorldModel.DEFAULT_GRID_SIZE));
+        }
     }
 
     /**
@@ -191,5 +193,13 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
             return ((Human)me).getPosition(model);
         }
         return me;
+    }
+
+    /**
+       Should the world model be automatically indexed?
+       @return True if the world model should be automatically indexed, false otherwise. Default implementation returns true.
+    */
+    protected boolean shouldIndex() {
+        return true;
     }
 }
