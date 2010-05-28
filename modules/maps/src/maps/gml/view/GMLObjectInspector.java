@@ -7,8 +7,13 @@ import javax.swing.table.TableModel;
 import javax.swing.table.AbstractTableModel;
 import java.awt.BorderLayout;
 
+import java.util.Collection;
+import java.util.List;
+
+import maps.gml.GMLMap;
 import maps.gml.GMLNode;
 import maps.gml.GMLEdge;
+import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLShape;
 import maps.gml.GMLObject;
 
@@ -19,17 +24,19 @@ public class GMLObjectInspector extends JPanel {
     private static final int NODE_ROW_ID = 0;
     private static final int NODE_ROW_X = 1;
     private static final int NODE_ROW_Y = 2;
-    private static final int NODE_ROWS = 3;
+    private static final int NODE_ROW_ATTACHED_EDGES = 3;
+    private static final int NODE_ROWS = 4;
 
     private static final int EDGE_ROW_ID = 0;
     private static final int EDGE_ROW_START = 1;
     private static final int EDGE_ROW_END = 2;
     private static final int EDGE_ROW_PASSABLE = 3;
-    private static final int EDGE_ROWS = 4;
+    private static final int EDGE_ROW_ATTACHED_SHAPES = 4;
+    private static final int EDGE_ROWS = 5;
 
     private static final int SHAPE_ROW_ID = 0;
-    private static final int SHAPE_ROW_EDGES = 1;
-    private static final int SHAPE_ROWS = 2;
+    private static final int SHAPE_ROW_EDGE_COUNT = 1;
+    private static final int SHAPE_BASE_ROWS = 2;
 
     private static final TableModel EMPTY_MODEL = new AbstractTableModel() {
         @Override
@@ -48,6 +55,7 @@ public class GMLObjectInspector extends JPanel {
         }
         };
 
+    private GMLMap map;
     private JTable table;
     private NodeTableModel nodeModel;
     private EdgeTableModel edgeModel;
@@ -55,15 +63,25 @@ public class GMLObjectInspector extends JPanel {
 
     /**
        Construct a new GMLObjectInspector.
+       @param map The GMLMap to consult for geometry information.
     */
-    public GMLObjectInspector() {
+    public GMLObjectInspector(GMLMap map) {
         super(new BorderLayout());
+        this.map = map;
         nodeModel = new NodeTableModel();
         edgeModel = new EdgeTableModel();
         shapeModel = new ShapeTableModel();
         table = new JTable();
         JScrollPane scroll = new JScrollPane(table);
         add(scroll, BorderLayout.CENTER);
+    }
+
+    /**
+       Set the map this inspector should consult for geometry information.
+       @param newMap The new map.
+    */
+    public void setMap(GMLMap newMap) {
+        map = newMap;
     }
 
     /**
@@ -115,7 +133,7 @@ public class GMLObjectInspector extends JPanel {
         }
     }
 
-    private static class NodeTableModel extends AbstractTableModel {
+    private class NodeTableModel extends AbstractTableModel {
         private GMLNode node;
 
         void show(GMLNode n) {
@@ -143,6 +161,8 @@ public class GMLObjectInspector extends JPanel {
                     return "X";
                 case NODE_ROW_Y:
                     return "Y";
+                case NODE_ROW_ATTACHED_EDGES:
+                    return "Attached edges";
                 default:
                     throw new IllegalArgumentException("Unrecognised row: " + row);
                 }
@@ -158,6 +178,17 @@ public class GMLObjectInspector extends JPanel {
                     return node.getX();
                 case NODE_ROW_Y:
                     return node.getY();
+                case NODE_ROW_ATTACHED_EDGES:
+                    if (map == null) {
+                        return "";
+                    }
+                    Collection<GMLEdge> attached = map.getAttachedEdges(node);
+                    StringBuilder result = new StringBuilder();
+                    for (GMLEdge next : attached) {
+                        result.append(next.toString());
+                        result.append("  ");
+                    }
+                    return result.toString();
                 default:
                     throw new IllegalArgumentException("Unrecognised row: " + row);
                 }
@@ -168,7 +199,7 @@ public class GMLObjectInspector extends JPanel {
         }
     }
 
-    private static class EdgeTableModel extends AbstractTableModel {
+    private class EdgeTableModel extends AbstractTableModel {
         private GMLEdge edge;
 
         void show(GMLEdge e) {
@@ -198,6 +229,8 @@ public class GMLObjectInspector extends JPanel {
                     return "End node";
                 case EDGE_ROW_PASSABLE:
                     return "Passable";
+                case EDGE_ROW_ATTACHED_SHAPES:
+                    return "Attached shapes";
                 default:
                     throw new IllegalArgumentException("Unrecognised row: " + row);
                 }
@@ -215,6 +248,17 @@ public class GMLObjectInspector extends JPanel {
                     return edge.getEnd().getID();
                 case EDGE_ROW_PASSABLE:
                     return edge.isPassable();
+                case EDGE_ROW_ATTACHED_SHAPES:
+                    if (map == null) {
+                        return "";
+                    }
+                    Collection<GMLShape> attached = map.getAttachedShapes(edge);
+                    StringBuilder result = new StringBuilder();
+                    for (GMLShape next : attached) {
+                        result.append(next.toString());
+                        result.append("  ");
+                    }
+                    return result.toString();
                 default:
                     throw new IllegalArgumentException("Unrecognised row: " + row);
                 }
@@ -235,7 +279,7 @@ public class GMLObjectInspector extends JPanel {
 
         @Override
         public int getRowCount() {
-            return SHAPE_ROWS;
+            return SHAPE_BASE_ROWS + (shape == null ? 0 : shape.getEdges().size());
         }
 
         @Override
@@ -249,10 +293,10 @@ public class GMLObjectInspector extends JPanel {
                 switch (row) {
                 case SHAPE_ROW_ID:
                     return "Shape ID";
-                case SHAPE_ROW_EDGES:
-                    return "Edges";
+                case SHAPE_ROW_EDGE_COUNT:
+                    return "Number of edges";
                 default:
-                    throw new IllegalArgumentException("Unrecognised row: " + row);
+                    return "Edge " + (row - SHAPE_BASE_ROWS + 1);
                 }
             }
             else if (col == 1) {
@@ -262,10 +306,15 @@ public class GMLObjectInspector extends JPanel {
                 switch (row) {
                 case SHAPE_ROW_ID:
                     return shape.getID();
-                case SHAPE_ROW_EDGES:
-                    return shape.getEdges().toString();
+                case SHAPE_ROW_EDGE_COUNT:
+                    return shape.getEdges().size();
                 default:
-                    throw new IllegalArgumentException("Unrecognised row: " + row);
+                    List<GMLDirectedEdge> edges = shape.getEdges();
+                    int index = row - SHAPE_BASE_ROWS;
+                    if (index < 0 || index >= edges.size()) {
+                        throw new IllegalArgumentException("Invalid row: " + row);
+                    }
+                    return edges.get(index);
                 }
             }
             else {

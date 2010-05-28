@@ -10,9 +10,12 @@ import javax.swing.JFileChooser;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JToolBar;
+import javax.swing.JButton;
 import javax.swing.JToggleButton;
+import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JCheckBoxMenuItem;
@@ -28,6 +31,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -38,11 +42,14 @@ import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 import maps.MapReader;
 import maps.MapWriter;
 import maps.MapException;
 import maps.gml.GMLMap;
+import maps.gml.GMLObject;
 import maps.gml.GMLCoordinates;
 import maps.gml.view.GMLMapViewer;
 import maps.gml.view.GMLObjectInspector;
@@ -89,7 +96,7 @@ public class GMLEditor extends JPanel {
         super(new BorderLayout());
         map = new GMLMap();
         viewer = new GMLMapViewer(map);
-        inspector = new GMLObjectInspector();
+        inspector = new GMLObjectInspector(map);
         undoManager = new UndoManager();
         viewer.setPreferredSize(new Dimension(VIEWER_PREFERRED_SIZE, VIEWER_PREFERRED_SIZE));
         inspector.setPreferredSize(new Dimension(INSPECTOR_PREFERRED_WIDTH, INSPECTOR_PREFERRED_HEIGHT));
@@ -120,9 +127,9 @@ public class GMLEditor extends JPanel {
         JPanel labels = new JPanel(new GridLayout(1, 2));
         labels.add(x);
         labels.add(y);
-        main.add(viewer, BorderLayout.CENTER);
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, inspector);
+        main.add(split, BorderLayout.CENTER);
         main.add(labels, BorderLayout.SOUTH);
-        main.add(inspector, BorderLayout.EAST);
         add(main, BorderLayout.CENTER);
         JPanel toolbars = new JPanel(new GridLayout(0, 1));
         toolbars.add(fileToolbar);
@@ -250,6 +257,7 @@ public class GMLEditor extends JPanel {
         map = newMap;
         changed = false;
         viewer.setMap(map);
+        inspector.setMap(map);
         viewer.repaint();
     }
 
@@ -283,7 +291,7 @@ public class GMLEditor extends JPanel {
     /**
        Close the editor.
        @throws CancelledByUserException If the user cancels the close due to unsaved changes."
-     */
+    */
     public void close() throws CancelledByUserException {
         checkForChanges();
     }
@@ -453,6 +461,42 @@ public class GMLEditor extends JPanel {
         toolbar.add(snapBox);
         toolbar.add(new JToggleButton(gridAction));
         menu.add(new JCheckBoxMenuItem(gridAction));
+
+        // Create the "show objects" button and textfield
+        final JTextField showField = new JTextField();
+        JButton showButton = new JButton("Show");
+        showButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String s = showField.getText();
+                    List<GMLObject> objects = new ArrayList<GMLObject>();
+                    for (String next : s.split(",")) {
+                        int id = Integer.parseInt(next.trim());
+                        GMLObject o = map.getObject(id);
+                        if (o != null) {
+                            objects.add(o);
+                        }
+                    }
+                    viewer.view(objects);
+                    viewer.repaint();
+                }
+            });
+        toolbar.addSeparator();
+        toolbar.add(showField);
+        toolbar.add(showButton);
+
+        // Add the reset zoom action
+        Action resetZoom = new AbstractAction("Reset zoom") {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    viewer.viewAll();
+                    viewer.repaint();
+                }
+            };
+        toolbar.addSeparator();
+        menu.addSeparator();
+        toolbar.add(resetZoom);
+        menu.add(resetZoom);
     }
 
     private void createEditActions(JMenu menu, JToolBar toolbar) {
@@ -524,6 +568,7 @@ public class GMLEditor extends JPanel {
         addFunction(new PruneOrphanNodesFunction(this), menu, toolbar);
         addFunction(new PruneOrphanEdgesFunction(this), menu, toolbar);
         addFunction(new FixDegenerateShapesFunction(this), menu, toolbar);
+        addFunction(new FixAttachedObjectsFunction(this), menu, toolbar);
     }
 
     private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {

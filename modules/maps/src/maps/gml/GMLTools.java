@@ -88,6 +88,19 @@ public final class GMLTools {
     }
 
     /**
+       Get the bounds of a set of gml objects.
+       @param objects The object list.
+       @return The bounds of the objects.
+    */
+    public static Rectangle2D getObjectBounds(List<? extends GMLObject> objects) {
+        Rectangle2D result = null;
+        for (GMLObject next : objects) {
+            result = expand(result, next);
+        }
+        return result;
+    }
+
+    /**
        Turn a list of coordinates into a shape.
        @param coords The coordinates.
        @return A new shape.
@@ -121,5 +134,45 @@ public final class GMLTools {
     */
     public static Line2D toLine(GMLEdge edge) {
         return new Line2D(toPoint(edge.getStart()), toPoint(edge.getEnd()));
+    }
+
+    private static Rectangle2D expand(Rectangle2D rect, double x, double y) {
+        if (rect == null) {
+            return new Rectangle2D.Double(x, y, 0, 0);
+        }
+        double newMinX = Math.min(x, rect.getX());
+        double newMaxX = Math.max(x, rect.getX() + rect.getWidth());
+        double newMinY = Math.min(y, rect.getY());
+        double newMaxY = Math.max(y, rect.getY() + rect.getHeight());
+        rect.setRect(newMinX, newMinY, newMaxX - newMinX, newMaxY - newMinY);
+        return rect;
+    }
+
+    private static Rectangle2D expand(Rectangle2D rect, GMLNode node) {
+        return expand(rect, node.getX(), node.getY());
+    }
+
+    private static Rectangle2D expand(Rectangle2D rect, GMLEdge edge) {
+        return expand(expand(rect, edge.getStart()), edge.getEnd());
+    }
+
+    private static Rectangle2D expand(Rectangle2D rect, GMLShape shape) {
+        for (GMLDirectedEdge next : shape.getEdges()) {
+            rect = expand(rect, next.getEdge());
+        }
+        return rect;
+    }
+
+    private static Rectangle2D expand(Rectangle2D rect, GMLObject object) {
+        if (object instanceof GMLNode) {
+            return expand(rect, (GMLNode)object);
+        }
+        if (object instanceof GMLEdge) {
+            return expand(rect, (GMLEdge)object);
+        }
+        if (object instanceof GMLShape) {
+            return expand(rect, (GMLShape)object);
+        }
+        return rect;
     }
 }

@@ -1,11 +1,5 @@
 package maps.gml.editor;
 
-import java.awt.Window;
-import java.awt.Dialog;
-import java.awt.BorderLayout;
-import javax.swing.JDialog;
-import javax.swing.JProgressBar;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
@@ -13,13 +7,14 @@ import java.util.Iterator;
 import maps.gml.GMLEdge;
 import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLShape;
+import maps.gml.GMLRoad;
 
 import rescuecore2.log.Logger;
 
 /**
    A function for computing passable edges.
 */
-public class ComputePassableEdgesFunction extends AbstractFunction {
+public class ComputePassableEdgesFunction extends ProgressFunction {
     /**
        Construct a ComputePassableEdgesFunction.
        @param editor The editor instance.
@@ -34,41 +29,51 @@ public class ComputePassableEdgesFunction extends AbstractFunction {
     }
 
     @Override
-    public void execute() {
-        final JDialog dialog = new JDialog((Window)editor.getViewer().getTopLevelAncestor(), "Finding neighbours", Dialog.ModalityType.APPLICATION_MODAL);
+    protected String getTitle() {
+        return "Finding neighbours";
+    }
+
+    @Override
+    protected void executeImpl() {
         final Collection<GMLEdge> edges = editor.getMap().getEdges();
-        final JProgressBar progress = new JProgressBar(0, edges.size());
-        progress.setStringPainted(true);
-        dialog.getContentPane().add(progress, BorderLayout.CENTER);
-        Thread t = new Thread() {
-                @Override
-                public void run() {
-                    int count = 0;
-                    for (GMLEdge next : edges) {
-                        Collection<GMLShape> shapes = editor.getMap().getAttachedShapes(next);
-                        if (shapes.size() == 2) {
-                            next.setPassable(true);
-                            Iterator<GMLShape> it = shapes.iterator();
-                            GMLShape first = it.next();
-                            GMLShape second = it.next();
-                            GMLDirectedEdge firstEdge = findDirectedEdge(first.getEdges(), next);
-                            GMLDirectedEdge secondEdge = findDirectedEdge(second.getEdges(), next);
-                            first.setNeighbour(firstEdge, second.getID());
-                            second.setNeighbour(secondEdge, first.getID());
-                            ++count;
-                        }
-                        progress.setValue(progress.getValue() + 1);
-                    }
-                    editor.setChanged();
-                    editor.getViewer().repaint();
-                    Logger.debug("Made " + count + " edges passable");
-                    dialog.setVisible(false);
-                    dialog.dispose();
+        setProgressLimit(edges.size());
+        int passable = 0;
+        int impassable = 0;
+        for (GMLEdge next : edges) {
+            Collection<GMLShape> shapes = editor.getMap().getAttachedShapes(next);
+            if (shapes.size() == 2) {
+                Iterator<GMLShape> it = shapes.iterator();
+                GMLShape first = it.next();
+                GMLShape second = it.next();
+                if (first instanceof GMLRoad || second instanceof GMLRoad) {
+                    next.setPassable(true);
+                    GMLDirectedEdge firstEdge = findDirectedEdge(first.getEdges(), next);
+                    GMLDirectedEdge secondEdge = findDirectedEdge(second.getEdges(), next);
+                    first.setNeighbour(firstEdge, second.getID());
+                    second.setNeighbour(secondEdge, first.getID());
+                    ++passable;
                 }
-            };
-        t.start();
-        dialog.pack();
-        dialog.setVisible(true);
+                else {
+                    makeImpassable(next, shapes);
+                    ++impassable;
+                }
+            }
+            else {
+                makeImpassable(next, shapes);
+                ++impassable;
+            }
+            bumpProgress();
+        }
+        editor.setChanged();
+        editor.getViewer().repaint();
+        Logger.debug("Made " + passable + " edges passable and " + impassable + " impassable");
+    }
+
+    private void makeImpassable(GMLEdge edge, Collection<GMLShape> attached) {
+        edge.setPassable(false);
+        for (GMLShape shape : attached) {
+            shape.setNeighbour(edge, null);
+        }
     }
 
     private GMLDirectedEdge findDirectedEdge(List<GMLDirectedEdge> possible, GMLEdge target) {

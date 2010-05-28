@@ -1,10 +1,5 @@
 package maps.gml.editor;
 
-import java.awt.Window;
-import java.awt.Dialog;
-import java.awt.BorderLayout;
-import javax.swing.JDialog;
-import javax.swing.JProgressBar;
 import javax.swing.undo.AbstractUndoableEdit;
 
 import java.util.HashSet;
@@ -34,35 +29,20 @@ public class PruneOrphanNodesFunction extends AbstractFunction {
     @Override
     public void execute() {
         // Go through all nodes and remove any that are not attached to edges.
-        final JDialog dialog = new JDialog((Window)editor.getViewer().getTopLevelAncestor(), "Pruning orphaned nodes", Dialog.ModalityType.APPLICATION_MODAL);
         final Collection<GMLNode> remaining = new HashSet<GMLNode>(editor.getMap().getNodes());
         final Collection<GMLNode> deleted = new HashSet<GMLNode>();
-        final JProgressBar progress = new JProgressBar(0, remaining.size());
-        progress.setStringPainted(true);
-        dialog.getContentPane().add(progress, BorderLayout.CENTER);
-        Thread t = new Thread() {
-                @Override
-                public void run() {
-                    for (GMLNode next : remaining) {
-                        if (editor.getMap().getAttachedEdges(next).isEmpty()) {
-                            editor.getMap().removeNode(next);
-                            deleted.add(next);
-                        }
-                        progress.setValue(progress.getValue() + 1);
-                    }
-                    if (!deleted.isEmpty()) {
-                        editor.setChanged();
-                        editor.getViewer().repaint();
-                    }
-                    Logger.debug("Removed " + deleted.size() + " nodes");
-                    editor.addEdit(new DeleteNodesEdit(deleted));
-                    dialog.setVisible(false);
-                    dialog.dispose();
-                }
-            };
-        t.start();
-        dialog.pack();
-        dialog.setVisible(true);
+        for (GMLNode next : remaining) {
+            if (editor.getMap().getAttachedEdges(next).isEmpty()) {
+                editor.getMap().removeNode(next);
+                deleted.add(next);
+            }
+        }
+        if (!deleted.isEmpty()) {
+            editor.setChanged();
+            editor.getViewer().repaint();
+        }
+        Logger.debug("Removed " + deleted.size() + " nodes");
+        editor.addEdit(new DeleteNodesEdit(deleted));
     }
 
     private class DeleteNodesEdit extends AbstractUndoableEdit {

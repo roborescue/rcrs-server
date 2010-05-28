@@ -535,6 +535,56 @@ public class GMLMap implements maps.Map {
     }
 
     /**
+       Get a shape by ID.
+       @param id The ID to look up.
+       @return The shape with that ID or null if the ID is not found.
+    */
+    public GMLShape getShape(int id) {
+        GMLBuilding b = getBuilding(id);
+        if (b != null) {
+            return b;
+        }
+        GMLRoad r = getRoad(id);
+        if (r != null) {
+            return r;
+        }
+        GMLSpace s = getSpace(id);
+        if (s != null) {
+            return s;
+        }
+        return null;
+    }
+
+    /**
+       Get an object by ID.
+       @param id The ID to look up.
+       @return The object with that ID or null if the ID is not found.
+    */
+    public GMLObject getObject(int id) {
+        GMLNode n = getNode(id);
+        if (n != null) {
+            return n;
+        }
+        GMLEdge e = getEdge(id);
+        if (e != null) {
+            return e;
+        }
+        GMLBuilding b = getBuilding(id);
+        if (b != null) {
+            return b;
+        }
+        GMLRoad r = getRoad(id);
+        if (r != null) {
+            return r;
+        }
+        GMLSpace s = getSpace(id);
+        if (s != null) {
+            return s;
+        }
+        return null;
+    }
+
+    /**
        Get all nodes in the map.
        @return All nodes.
     */

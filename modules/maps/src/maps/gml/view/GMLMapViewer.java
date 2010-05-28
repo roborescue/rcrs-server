@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 
 import java.util.Map;
@@ -24,7 +25,9 @@ import maps.gml.GMLEdge;
 import maps.gml.GMLBuilding;
 import maps.gml.GMLRoad;
 import maps.gml.GMLSpace;
+import maps.gml.GMLObject;
 import maps.gml.GMLCoordinates;
+import maps.gml.GMLTools;
 
 /**
    A component for viewing GML maps.
@@ -36,19 +39,10 @@ public class GMLMapViewer extends JComponent {
 
     private static final Color GRID_COLOUR = new Color(64, 64, 64, 64); // Transparent dark gray
 
-    //    public static final Color OUTLINE_COLOUR = Color.BLACK;
-
     private static final Color NODE_COLOUR = Color.BLACK;
     private static final int NODE_SIZE = 3;
 
     private static final Color EDGE_COLOUR = Color.BLACK;
-
-    //    private static final Stroke PASSABLE_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float[] {1, 1}, 0);
-    //    private static final Stroke PASSABLE_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-    //    private static final Stroke IMPASSABLE_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-
-    //    private static final Color PASSABLE_COLOUR = new Color(0, 0, 255); // Blue
-    //    private static final Color IMPASSABLE_COLOUR = new Color(0, 0, 128); // Navy
 
     private GMLMap map;
     private ScreenTransform transform;
@@ -122,6 +116,33 @@ public class GMLMapViewer extends JComponent {
             }
         }
         panZoom.setScreenTransform(transform);
+    }
+
+    /**
+       View a particular set of objects.
+       @param objects The objects to view.
+    */
+    public void view(GMLObject... objects) {
+        view(Arrays.asList(objects));
+    }
+
+    /**
+       View a particular set of objects.
+       @param objects The objects to view.
+    */
+    public void view(List<? extends GMLObject> objects) {
+        if (objects == null || objects.isEmpty()) {
+            return;
+        }
+        Rectangle2D bounds = GMLTools.getObjectBounds(objects);
+        transform.show(bounds);
+    }
+
+    /**
+       View all objects.
+    */
+    public void viewAll() {
+        transform.resetZoom();
     }
 
     /**
@@ -610,14 +631,6 @@ public class GMLMapViewer extends JComponent {
         }
     }
 
-    private double roundDownToGrid(double d) {
-        return Math.floor(d / gridResolution) * gridResolution;
-    }
-
-    private double roundUpToGrid(double d) {
-        return Math.ceil(d / gridResolution) * gridResolution;
-    }
-
     @Override
     public boolean isOpaque() {
         return true;
@@ -652,5 +665,13 @@ public class GMLMapViewer extends JComponent {
         int x = transform.xToScreen(c.getX());
         int y = transform.yToScreen(c.getY());
         return new Point(x, y);
+    }
+
+    private double roundDownToGrid(double d) {
+        return Math.floor(d / gridResolution) * gridResolution;
+    }
+
+    private double roundUpToGrid(double d) {
+        return Math.ceil(d / gridResolution) * gridResolution;
     }
 }

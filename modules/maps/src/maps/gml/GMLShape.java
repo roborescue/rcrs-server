@@ -92,6 +92,7 @@ public abstract class GMLShape extends GMLObject {
         edges.addAll(newEdges);
         points = getUnderlyingCoordinates();
         centroid = null;
+        neighbours.keySet().retainAll(newEdges);
     }
 
     /**
@@ -265,6 +266,6 @@ public abstract class GMLShape extends GMLObject {
                 return next;
             }
         }
-        throw new IllegalArgumentException("Edge " + e + " not found");
+        throw new IllegalArgumentException(this + ": Edge " + e + " not found");
     }
 }
