@@ -92,6 +92,11 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         return EnumSet.of(StandardEntityURN.CIVILIAN);
     }
 
+    @Override
+    protected boolean shouldIndex() {
+        return false;
+    }
+
     private void say(String message, int time) {
         try {
             if (useSpeak) {
