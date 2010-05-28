@@ -133,6 +133,12 @@ public final class RobocupFormat extends GMLMapFormat {
                     dEdgeElement.addAttribute(RCR_NEIGHBOUR_QNAME, String.valueOf(neighbour));
                 }
             }
+            if (next instanceof GMLBuilding) {
+                GMLBuilding b = (GMLBuilding)next;
+                e.addAttribute(RCR_FLOORS_QNAME, String.valueOf(b.getFloors()));
+                e.addAttribute(RCR_BUILDING_CODE_QNAME, String.valueOf(b.getCode()));
+                e.addAttribute(RCR_IMPORTANCE_QNAME, String.valueOf(b.getImportance()));
+            }
         }
     }
 

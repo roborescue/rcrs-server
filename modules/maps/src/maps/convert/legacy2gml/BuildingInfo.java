@@ -53,6 +53,8 @@ public class BuildingInfo {
             apexes.add(node);
         }
         GMLBuilding b = gml.createBuildingFromNodes(apexes);
+        b.setFloors(building.getFloors());
+        b.setCode(building.getCode());
         // Create an entrance
         //        Logger.debug("Creating entrance for " + building);
         Point2D entrancePoint = nodeInfo.get(building.getEntrances()[0]).getLocation();
