@@ -502,6 +502,8 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
             case PathIterator.SEG_CLOSE:
                 current.closePath();
                 break;
+            default:
+                throw new RuntimeException("Unexpected result from PathIterator.currentSegment: " + it.currentSegment(d));
             }
             it.next();
         }
@@ -574,6 +576,8 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
                 x = moveX;
                 y = moveY;
                 break;
+            default:
+                throw new RuntimeException("Unexpected result from PathIterator.currentSegment: " + it.currentSegment(d));
             }
             //            Logger.debug(x + ", " + y);
             if (x != lastX || y != lastY) {

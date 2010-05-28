@@ -13,11 +13,10 @@
 
   <!-- Allow suppression of checks -->
   <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLE:OFF:(\w)+"/>
-    <property name="onCommentFormat" value="CHECKSTYLE:ON:(\w)+"/>
+    <property name="offCommentFormat" value="CHECKSTYLE:OFF:([\w\|]+)"/>
+    <property name="onCommentFormat" value="CHECKSTYLE:ON:([\w\|]+)"/>
     <property name="checkFormat" value="$1"/>
   </module>
-
 
   <module name="TreeWalker">
     <module name="FileContentsHolder"/>

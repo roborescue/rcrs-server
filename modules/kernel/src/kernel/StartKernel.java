@@ -290,11 +290,11 @@ public final class StartKernel {
                             Thread.sleep(timeout);
                             latch.countDown();
                         }
-                        // CHECKSTYLE:OFF:EmptyStatement is OK here
+                        // CHECKSTYLE:OFF:EmptyBlock
                         catch (InterruptedException e) {
                             // Ignore
                         }
-                        // CHECKSTYLE:ON:EmptyStatement
+                        // CHECKSTYLE:ON:EmptyBlock
                     }
                 };
         }
@@ -305,11 +305,11 @@ public final class StartKernel {
                         kernel.componentManager.waitForAllSimulators();
                         kernel.componentManager.waitForAllViewers();
                     }
-                    // CHECKSTYLE:OFF:EmptyStatement is OK here
+                    // CHECKSTYLE:OFF:EmptyBlock
                     catch (InterruptedException e) {
                         // Ignore
                     }
-                    // CHECKSTYLE:ON:EmptyStatement
+                    // CHECKSTYLE:ON:EmptyBlock
                     latch.countDown();
                 }
             };

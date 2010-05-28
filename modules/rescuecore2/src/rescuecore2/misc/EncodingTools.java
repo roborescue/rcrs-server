@@ -196,6 +196,7 @@ public final class EncodingTools {
     /**
        Read a String from an InputStream.
        @param in The InputStream to read.
+       @return The string that was read.
        @throws IOException If the InputStream blows up.
        @throws EOFException If the end of the stream is reached.
     */
@@ -216,6 +217,7 @@ public final class EncodingTools {
     /**
        Read a String from a DataInput.
        @param in The DataInput to read.
+       @return The string that was read.
        @throws IOException If the DataInput blows up.
        @throws EOFException If the end of the stream is reached.
     */
@@ -229,6 +231,7 @@ public final class EncodingTools {
     /**
        Read a String from a byte array. This is equivalent to calling {@link #readString(byte[], int) readString(in, 0)}.
        @param in The byte array to read.
+       @return The string that was read.
     */
     public static String readString(byte[] in) {
         return readString(in, 0);
@@ -238,6 +241,7 @@ public final class EncodingTools {
        Read a String from a byte array.
        @param in The byte array to read.
        @param offset The index in the array to read from.
+       @return The string that was read.
     */
     public static String readString(byte[] in, int offset) {
         int length = readInt32(in, offset);
@@ -334,7 +338,7 @@ public final class EncodingTools {
      */
     public static double readDouble(InputStream in) throws IOException {
         long[] data = new long[8];
-        for (int i = 0; i < data.length; ++i ) {
+        for (int i = 0; i < data.length; ++i) {
             data[i] = in.read();
             if (data[i] == -1) {
                 throw new EOFException("Broken input pipe. Read " + i + " bytes of 8.");
@@ -615,10 +619,10 @@ public final class EncodingTools {
        @throws IOException If there is a problem writing to the stream.
     */
     public static void writeProperty(Property p, DataOutput out) throws IOException {
-        //   Type
+        // Type
         writeString(p.getURN(), out);
         writeBoolean(p.isDefined(), out);
-        if (p.isDefined()) {        
+        if (p.isDefined()) {
             ByteArrayOutputStream gather = new ByteArrayOutputStream();
             p.write(gather);
             byte[] bytes = gather.toByteArray();
@@ -687,7 +691,7 @@ public final class EncodingTools {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         m.write(bytes);
         byte[] content = bytes.toByteArray();
-        
+
         // Type URN
         writeString(m.getURN(), out);
         // Size
@@ -708,7 +712,7 @@ public final class EncodingTools {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         m.write(bytes);
         byte[] content = bytes.toByteArray();
-        
+
         // Type URN
         writeString(m.getURN(), out);
         // Size
