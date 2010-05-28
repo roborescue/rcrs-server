@@ -166,12 +166,6 @@ public class Scenario {
         for (StandardEntity next : model) {
             nextID = Math.max(nextID, next.getID().getValue());
         }
-        Logger.debug("Creating " + civLocations.size() + " civilians");
-        for (int next : civLocations) {
-            EntityID id = new EntityID(next);
-            Civilian c = new Civilian(new EntityID(++nextID));
-            setupAgent(c, id, model, config);
-        }
         Logger.debug("Creating " + fbLocations.size() + " fire brigades");
         for (int next : fbLocations) {
             EntityID id = new EntityID(next);
@@ -228,6 +222,12 @@ public class Scenario {
             model.removeEntity(b);
             model.addEntity(a);
             Logger.debug("Converted " + b + " into " + a);
+        }
+        Logger.debug("Creating " + civLocations.size() + " civilians");
+        for (int next : civLocations) {
+            EntityID id = new EntityID(next);
+            Civilian c = new Civilian(new EntityID(++nextID));
+            setupAgent(c, id, model, config);
         }
     }
 
