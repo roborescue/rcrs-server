@@ -420,7 +420,7 @@
   </target>
 
   <target name="fix-crlf">
-    <fixcrlf srcDir="${basedir}" eol="lf" eof="remove">
+    <fixcrlf srcDir="${basedir}" eol="lf" eof="remove" tab="remove" tablength="4">
       <include name="modules/**/*.java"/>
       <include name="modules/**/*.xml"/>
       <include name="modules/**/*.txt"/>
