@@ -50,4 +50,12 @@ public class PathElement {
     public List<Point2D> getWaypoints() {
         return Collections.unmodifiableList(allPoints);
     }
+
+    /**
+       Remove a waypoint.
+       @param p The waypoint to remove.
+    */
+    public void removeWaypoint(Point2D p) {
+        allPoints.remove(p);
+    }
 }

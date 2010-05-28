@@ -325,6 +325,19 @@ public class TrafficAgent {
                 //                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
                 currentPathElement = null;
             }
+            else {
+                // Remove any waypoints that we're near to
+                List<Point2D> waypoints = new ArrayList<Point2D>(currentPathElement.getWaypoints());
+                for (Point2D next : waypoints) {
+                    dx = next.getX() - location[0];
+                    dy = next.getY() - location[1];
+                    dSquared = (dx * dx) + (dy * dy);
+                    if (dSquared < NEARBY_THRESHOLD_SQUARED) {
+                        //                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
+                        currentPathElement.removeWaypoint(next);
+                    }
+                }
+            }
         }
         // Save position history
         if (savePositionHistory) {
@@ -348,6 +361,7 @@ public class TrafficAgent {
     public void beginTimestep() {
         findBlockingLines();
         if (insideBlockade()) {
+            Logger.debug(this + " inside blockade");
             setMobile(false);
         }
     }
@@ -579,6 +593,7 @@ public class TrafficAgent {
                 xSum = TrafficConstants.getColocatedAgentNudge();
                 ySum = TrafficConstants.getColocatedAgentNudge();
                 colocated = true;
+                Logger.debug(this + " is co-located with " + agent);
                 break;
             }
             double distance = Math.sqrt(distanceSquared);

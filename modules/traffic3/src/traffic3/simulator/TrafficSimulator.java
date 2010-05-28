@@ -168,9 +168,11 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             if (next instanceof Human) {
                 Human h = (Human)next;
                 if (h.isHPDefined() && h.getHP() <= 0) {
+                    Logger.debug("Agent " + h + " is dead");
                     manager.getTrafficAgent(h).setMobile(false);
                 }
                 if (h.isPositionDefined() && (model.getEntity(h.getPosition()) instanceof AmbulanceTeam)) {
+                    Logger.debug("Agent " + h + " is in an ambulance");
                     manager.getTrafficAgent(h).setMobile(false);
                 }
             }
@@ -441,6 +443,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Entity agent = model.getEntity(agentID);
         if (agent instanceof Human) {
             manager.getTrafficAgent((Human)agent).setMobile(false);
+            Logger.debug(agent + " is clearing");
         }
     }
 
@@ -450,6 +453,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Entity agent = model.getEntity(agentID);
         if (agent instanceof Human) {
             manager.getTrafficAgent((Human)agent).setMobile(false);
+            Logger.debug(agent + " is rescueing");
         }
     }
 
@@ -459,6 +463,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Entity agent = model.getEntity(agentID);
         if (agent instanceof Human) {
             manager.getTrafficAgent((Human)agent).setMobile(false);
+            Logger.debug(agent + " is extinguishing");
         }
     }
 
