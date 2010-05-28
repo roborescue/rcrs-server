@@ -105,7 +105,7 @@ public class LoadableType {
                 }
             }
             catch (ClassNotFoundException ex) {
-                Logger.warn("Class " + className + " not found", ex);
+                Logger.warn("Class " + className + " not found");
             }
         }
         return null;

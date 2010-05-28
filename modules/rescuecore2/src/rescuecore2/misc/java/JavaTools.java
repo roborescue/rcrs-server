@@ -27,13 +27,13 @@ public final class JavaTools {
             return clazz.newInstance();
         }
         catch (ClassNotFoundException e) {
-            Logger.info("Could not find class " + className,  e);
+            Logger.info("Could not find class " + className);
         }
         catch (IllegalAccessException e) {
-            Logger.info("Could not instantiate class " + className, e);
+            Logger.info("Could not instantiate class " + className);
         }
         catch (InstantiationException e) {
-            Logger.info("Could not instantiate class " + className, e);
+            Logger.info("Could not instantiate class " + className);
         }
         return null;
     }
@@ -51,7 +51,7 @@ public final class JavaTools {
             clazz = Class.forName(classname).asSubclass(outputClass);
         }
         catch (ClassNotFoundException e) {
-            Logger.info("Could not find class " + classname, e);
+            Logger.info("Could not find class " + classname);
             return null;
         }
         catch (ClassCastException e) {
@@ -77,17 +77,17 @@ public final class JavaTools {
             }
         }
         catch (NoSuchFieldException e) {
-            Logger.info("No INSTANCE field in class " + classname, e);
+            Logger.info("No INSTANCE field in class " + classname);
             // No singleton instance. Try instantiating it.
         }
         try {
             return clazz.newInstance();
         }
         catch (IllegalAccessException e) {
-            Logger.info("Could not instantiate class " + classname, e);
+            Logger.info("Could not instantiate class " + classname);
         }
         catch (InstantiationException e) {
-            Logger.info("Could not instantiate class " + classname, e);
+            Logger.info("Could not instantiate class " + classname);
         }
         return null;
     }
