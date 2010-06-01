@@ -35,6 +35,8 @@ import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
 import javax.swing.BorderFactory;
+import javax.swing.JToggleButton;
+import javax.swing.Box;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
@@ -54,6 +56,7 @@ public class LogViewer extends JPanel {
     private static final int TICK_STEP_SIZE = 10;
 
     private static final int VIEWER_SIZE = 500;
+    private static final int FRAME_DELAY = 200;
 
     private LogReader log;
     private JLabel timestep;
@@ -117,6 +120,33 @@ public class LogViewer extends JPanel {
                     }
                 }
             });
+        final JToggleButton play = new JToggleButton(">>");
+        play.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (play.isSelected()) {
+                                    int value = slider.getValue() + 1;
+                                    if (value <= maxTime) {
+                                        slider.setValue(value);
+                                    }
+                                    else {
+                                        play.setSelected(false);
+                                    }
+                                    try {
+                                        Thread.sleep(FRAME_DELAY);
+                                    }
+                                    catch (InterruptedException e1) {
+                                        Logger.warn("Player interrupted", e1);
+                                    }
+                                }
+                            }
+                        });
+                    t.start();
+                }
+            });
         JPanel lists = new JPanel(new GridLayout(0, 1));
         commands = new ListModelList<Command>();
         commandsList = new JList(commands);
@@ -152,10 +182,11 @@ public class LogViewer extends JPanel {
         JSplitPane split1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inspector, tabs);
         JSplitPane split2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, split1, lists);
         add(split2, BorderLayout.CENTER);
-        JPanel bottom = new JPanel(new BorderLayout());
-        bottom.add(down, BorderLayout.WEST);
-        bottom.add(slider, BorderLayout.CENTER);
-        bottom.add(up, BorderLayout.EAST);
+        Box bottom = Box.createHorizontalBox();
+        bottom.add(down);
+        bottom.add(slider);
+        bottom.add(up);
+        bottom.add(play);
         add(bottom, BorderLayout.SOUTH);
         add(timestep, BorderLayout.NORTH);
         slider.setValue(0);
@@ -198,7 +229,7 @@ public class LogViewer extends JPanel {
 
     private void registerViewers(Config config) {
         viewers = new ArrayList<ViewComponent>();
-        for (String next : config.getArrayValue(VIEWERS_KEY, null)) {
+        for (String next : config.getArrayValue(VIEWERS_KEY, "")) {
             ViewComponent viewer = instantiate(next, ViewComponent.class);
             if (viewer != null) {
                 viewer.initialise(config);
@@ -206,7 +237,6 @@ public class LogViewer extends JPanel {
             }
         }
     }
-
 
     /**
        Launch a new LogViewer.

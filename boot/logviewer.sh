@@ -8,4 +8,4 @@ fi
 . functions.sh
 
 makeClasspath $BASEDIR/jars $BASEDIR/lib
-java -Xmx256m -cp $CP kernel.ui.LogViewer $1
+java -Xmx256m -cp $CP rescuecore2.log.LogViewer -c config/logviewer.cfg $1
