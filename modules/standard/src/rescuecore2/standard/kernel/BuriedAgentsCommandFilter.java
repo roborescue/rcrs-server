@@ -29,7 +29,7 @@ public class BuriedAgentsCommandFilter extends AbstractCommandFilter {
         if (e instanceof Human) {
             Human h = (Human)e;
             if (h.isBuriednessDefined() && h.getBuriedness() > 0) {
-                Logger.info("Ignoring command " + c + " from buried agent " + h);
+                Logger.info("Ignoring command " + c + ": Agent " + h + " is buried");
                 return false;
             }
         }

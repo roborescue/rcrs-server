@@ -39,7 +39,7 @@ public class SingleCommandFilter implements CommandFilter {
                 EntityID sender = c.getAgentID();
                 if (sent.contains(sender)) {
                     it.remove();
-                    Logger.debug("Ignoring command " + c + " from " + sender + ": Already sent a command");
+                    Logger.info("Ignoring command " + c + ": Agent " + sender + " already sent a command");
                 }
                 else {
                     sent.add(sender);
