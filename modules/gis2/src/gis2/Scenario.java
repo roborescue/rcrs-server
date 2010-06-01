@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.log.Logger;
 import rescuecore2.config.Config;
 
@@ -231,8 +232,15 @@ public class Scenario {
         }
     }
 
-    private void setupAgent(Human h, EntityID position, StandardWorldModel model, Config config) {
-        Area area = (Area)model.getEntity(position);
+    private void setupAgent(Human h, EntityID position, StandardWorldModel model, Config config) throws ScenarioException {
+        Entity areaEntity = model.getEntity(position);
+        if (areaEntity == null) {
+            throw new ScenarioException("Area " + position + " does not exist");
+        }
+        if (!(areaEntity instanceof Area)) {
+            throw new ScenarioException("Entity " + position + " is not an area: " + areaEntity);
+        }
+        Area area = (Area)areaEntity;
         h.setX(area.getX());
         h.setY(area.getY());
         h.setPosition(position);
