@@ -16,6 +16,7 @@ import rescuecore2.standard.entities.Human;
 
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 
 import rescuecore2.log.Logger;
@@ -78,6 +79,7 @@ public class TrafficAgent {
 
     private boolean mobile;
     private boolean colocated;
+    private boolean verbose;
 
     /**
        Construct a TrafficAgent.
@@ -373,7 +375,7 @@ public class TrafficAgent {
     public void step(double dt) {
         if (mobile) {
             updateGoals();
-            computeForces();
+            computeForces(dt);
             updatePosition(dt);
         }
     }
@@ -400,6 +402,15 @@ public class TrafficAgent {
         return mobile;
     }
 
+    /**
+       Turn verbose logging on or off.
+       @param b True for piles of debugging output, false for smaller piles.
+    */
+    public void setVerbose(boolean b) {
+        verbose = b;
+        Logger.debug(this + " is now " + (verbose ? "" : "not ") + "verbose");
+    }
+
     private void updateGoals() {
         if (currentPathElement == null) {
             if (path.isEmpty()) {
@@ -408,7 +419,9 @@ public class TrafficAgent {
             }
             else {
                 currentPathElement = path.remove();
-                //                Logger.debug(this + " updated path: " + path);
+                if (verbose) {
+                    Logger.debug(this + " updated path: " + path);
+                }
             }
         }
         // Head for the best point in the current path element
@@ -418,22 +431,31 @@ public class TrafficAgent {
             for (Point2D next : currentPathElement.getWaypoints()) {
                 if (hasLos(current, next, currentArea.getAllBlockingLines(), null)) {
                     currentDestination = next;
+                    if (verbose) {
+                        Logger.debug(this + " current path element: " + currentPathElement);
+                        Logger.debug(this + " is at " + current);
+                        Logger.debug(this + " has line-of-sight to " + next);
+                    }
                     break;
                 }
             }
             if (currentDestination == null) {
+                // No line of sight found.
+                // TO DO: See if we can see any part of the next edge.
                 currentDestination = currentPathElement.getGoal();
+                if (verbose) {
+                    Logger.debug(this + " has no line of sight. Heading for " + currentDestination);
+                }
             }
-            //            Logger.debug(this + " current destination: " + currentDestination);
         }
     }
 
-    private void computeForces() {
+    private void computeForces(double dt) {
         colocated = false;
         computeAgentsForce(agentsForce);
         if (!colocated) {
             computeDestinationForce(destinationForce);
-            computeWallsForce(wallsForce);
+            computeWallsForce(wallsForce, dt);
         }
 
         force[0] = destinationForce[0] + agentsForce[0] + wallsForce[0];
@@ -447,10 +469,10 @@ public class TrafficAgent {
     }
 
     private void updatePosition(double dt) {
-        double x = location[0] + dt * velocity[0];
-        double y = location[1] + dt * velocity[1];
         double newVX = velocity[0] + dt * force[0];
         double newVY = velocity[1] + dt * force[1];
+        double x = location[0] + dt * newVX;
+        double y = location[1] + dt * newVY;
         double v = Math.hypot(newVX, newVY);
         if (v > this.velocityLimit) {
             //System.err.println("velocity exceeded velocityLimit");
@@ -458,8 +480,20 @@ public class TrafficAgent {
             newVX /= v;
             newVY /= v;
         }
+        if (verbose) {
+            Logger.debug("Updating position for " + this);
+            Logger.debug("Current position   : " + location[0] + ", " + location[1]);
+            Logger.debug("Current velocity   : " + velocity[0] + ", " + velocity[1]);
+            Logger.debug("Destination forces : " + destinationForce[0] + ", " + destinationForce[1]);
+            Logger.debug("Agent forces       : " + agentsForce[0] + ", " + agentsForce[1]);
+            Logger.debug("Wall forces        : " + wallsForce[0] + ", " + wallsForce[1]);
+            Logger.debug("Total forces       : " + force[0] + ", " + force[1]);
+            Logger.debug("New position       : " + x + ", " + y);
+            Logger.debug("New velocity       : " + newVX + ", " + newVY);
+        }
         if (crossedWall(location[0], location[1], x, y)) {
-            Logger.warn(this + " crossed a wall");
+            velocity[0] = 0;
+            velocity[1] = 0;
             return;
         }
         velocity[0] = newVX;
@@ -496,6 +530,12 @@ public class TrafficAgent {
         Line2D moved = new Line2D(oldX, oldY, newX - oldX, newY - oldY);
         for (Line2D test : blockingLines) {
             if (GeometryTools2D.getSegmentIntersectionPoint(moved, test) != null) {
+                Logger.warn(this + " crossed wall");
+                Logger.warn("Old location: " + oldX + ", " + oldY);
+                Logger.warn("New location: " + newX + ", " + newY);
+                Logger.warn("Movement line: " + moved);
+                Logger.warn("Wall         : " + test);
+                Logger.warn("Crossed at " + GeometryTools2D.getSegmentIntersectionPoint(moved, test));
                 return true;
             }
         }
@@ -555,6 +595,9 @@ public class TrafficAgent {
         if (Double.isNaN(desty)) {
             Logger.error("Destination force y is NaN");
             result[1] = 0;
+        }
+        if (verbose) {
+            Logger.debug("Destination force: " + result[0] + ", " + result[1]);
         }
     }
 
@@ -633,7 +676,7 @@ public class TrafficAgent {
         result[1] = ySum;
     }
 
-    private void computeWallsForce(double[] result) {
+    private void computeWallsForce(double[] result, double dt) {
         double xSum = 0;
         double ySum = 0;
         if (currentArea != null) {
@@ -644,77 +687,85 @@ public class TrafficAgent {
             double cutoff = TrafficConstants.getWallDistanceCutoff();
             double a = TrafficConstants.getWallForceCoefficientA();
             double b = TrafficConstants.getWallForceCoefficientB();
-            double k = TrafficConstants.getWallForceCoefficientK();
             Point2D position = new Point2D(location[0], location[1]);
+            if (verbose) {
+                Logger.debug("Computing wall forces for " + this);
+                Logger.debug("Position: " + position);
+            }
             for (Line2D line : blockingLines) {
+                if (verbose) {
+                    Logger.debug("Next wall: " + line);
+                }
                 Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, position);
+                if (verbose) {
+                    Logger.debug("Closest point: " + closest);
+                }
                 if (closest == line.getOrigin() || closest == line.getEndPoint()) {
                     // Closest point is an endpoint - we're outside the influence of this line.
+                    if (verbose) {
+                        Logger.debug("Closest point is an endpoint");
+                    }
                     continue;
                 }
                 if (!hasLos(position, closest, blockingLines, line)) {
                     // No line-of-sight to closest point
-                    continue;
-                }
-                Point2D p1 = line.getOrigin();
-                Point2D p2 = line.getEndPoint();
-                double p1p2X = p2.getX() - p1.getX();
-                double p1p2Y = p2.getY() - p1.getY();
-                double p1pX =  location[0] - p1.getX();
-                double p1pY =  location[1] - p1.getY();
-                double lineLength = line.getDirection().getLength();
-                if (lineLength == 0) {
-                    continue;
-                }
-                double d = (p1p2X * p1pX + p1p2Y * p1pY) / lineLength;
-                if (d < 0) {
-                    dist = GeometryTools2D.getDistance(p1, position) - r;
-                    dx = (location[0] - p1.getX()) / dist / 2;
-                    dy = (location[1] - p1.getY()) / dist / 2;
-                }
-                else if (lineLength < d) {
-                    dist = GeometryTools2D.getDistance(p2, position) - r;
-                    dx = (location[0] - p2.getX()) / dist / 2;
-                    dy = (location[1] - p2.getY()) / dist / 2;
-                }
-                else {
-                    double p1p2NX = p1p2X / lineLength;
-                    double p1p2NY = p1p2Y / lineLength;
-                    dx = -d * p1p2NX + p1pX;
-                    dy = -d * p1p2NY + p1pY;
-                    dist = Math.sqrt(dx * dx + dy * dy) - r;
-                    dx /= dist;
-                    dy /= dist;
-                    if (Double.isNaN(dist)) {
-                        Logger.warn("computeWallsForce: NaN: Math.sqrt(" + (dx * dx + dy * dy) + "): " + dx + "," + dy + ": " + lineLength);
+                    if (verbose) {
+                        Logger.debug("No line of sight");
                     }
+                    continue;
                 }
+                dist = GeometryTools2D.getDistance(closest, position);
                 if (dist > cutoff) {
+                    if (verbose) {
+                        Logger.debug("Distance to wall: " + dist + " greater than cutoff " + cutoff);
+                    }
                     continue;
                 }
-                if (dist < 0) {
-                    //System.out.println("mark@");
-                    xSum += k * (dist) * dx;
-                    ySum += k * (dist) * dy;
+                // Two forces apply:
+                // If the agent is moving towards this wall then apply a force to bring the agent to a stop. This decreases exponentially with distance.
+                // Also apply a force that decreases exponentially with distance no matter what the agent is doing.
+                double currentVX = velocity[0];
+                double currentVY = velocity[1];
+                double currentFX = destinationForce[0] + agentsForce[0];
+                double currentFY = destinationForce[1] + agentsForce[1];
+                double expectedVX = currentVX + dt * currentFX;
+                double expectedVY = currentVY + dt * currentFY;
+                Vector2D expectedVelocity = new Vector2D(expectedVX, expectedVY);
+                Vector2D wallForce = position.minus(closest).normalised();
+                // Compute the stopping force
+                double magnitude = -expectedVelocity.dot(wallForce);
+                if (magnitude < 0) {
+                    magnitude = 0;
                 }
-                else {
-                    double tmp = a * Math.exp(-(dist) * b);
-                    if (Double.isInfinite(tmp)) {
-                        Logger.warn("calculateWallForce(): A result of exp is infinite: exp(" + (-dist * b) + ")");
-                    }
-                    else if (Double.isNaN(tmp)) {
-                        Logger.warn("calculateWallForce(): A result of exp is NaN: exp(" + (-(dist) * b) + ")");
-                    }
-                    else {
-                        xSum += tmp * dx;
-                        ySum += tmp * dy;
-                    }
+                magnitude = Math.min(1, Math.exp(-((dist / r) - 1) * b));
+                Vector2D stopForce = wallForce.scale(magnitude / dt);
+                // Compute the repulsion force
+                // Decreases exponentially with distance in terms of agent radii.
+                double factor = a * Math.min(1, Math.exp(-((dist / r) - 1) * b));
+                Vector2D repulsionForce = wallForce.scale(factor / dt);
+                xSum += stopForce.getX();
+                ySum += stopForce.getY();
+                xSum += repulsionForce.getX();
+                ySum += repulsionForce.getY();
+                if (verbose) {
+                    Logger.debug("Distance to wall : " + dist);
+                    Logger.debug("Current velocity : " + currentVX + ", " + currentVY);
+                    Logger.debug("Current force    : " + currentFX + ", " + currentFY);
+                    Logger.debug("Expected velocity: " + expectedVelocity);
+                    Logger.debug("Wall force       : " + wallForce);
+                    Logger.debug("Magnitude        : " + magnitude);
+                    Logger.debug("Stop force       : " + stopForce);
+                    Logger.debug("Factor           : " + factor + " (e^" + (-(dist / r) * b) + ")");
+                    Logger.debug("Repulsion force  : " + repulsionForce);
                 }
             }
         }
         if (Double.isNaN(xSum) || Double.isNaN(ySum)) {
             xSum = 0;
             ySum = 0;
+        }
+        if (verbose) {
+            Logger.debug("Total wall force: " + xSum + ", " + ySum);
         }
 
         result[0] = xSum;

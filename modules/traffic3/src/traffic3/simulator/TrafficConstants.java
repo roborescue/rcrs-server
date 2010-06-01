@@ -20,9 +20,9 @@ public final class TrafficConstants {
 
     // Wall force constants
     private static final double WALL_DISTANCE_CUTOFF = 3000;
-    private static final double WALL_FORCE_COEFFICIENT_A = 0.005;
-    private static final double WALL_FORCE_COEFFICIENT_B = 0.01;
-    private static final double WALL_FORCE_COEFFICIENT_K = 0.00001;
+    private static final double WALL_FORCE_COEFFICIENT_A = 0.5;
+    private static final double WALL_FORCE_COEFFICIENT_B = 2;
+    //    private static final double WALL_FORCE_COEFFICIENT_K = 0.00001;
 
     private TrafficConstants() {}
 
@@ -110,7 +110,9 @@ public final class TrafficConstants {
        Get the wall force function coefficient "K".
        @return The wall force function coefficient "K".
     */
+    /*
     public static double getWallForceCoefficientK() {
         return WALL_FORCE_COEFFICIENT_K;
     }
+    */
 }

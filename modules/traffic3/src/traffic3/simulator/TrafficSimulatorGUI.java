@@ -22,6 +22,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 import javax.swing.SwingUtilities;
+import javax.swing.Box;
+import javax.swing.BorderFactory;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -61,7 +63,7 @@ public class TrafficSimulatorGUI extends JPanel {
     private static final int PATH_SPECIAL_NODE_SIZE = 9;
     private static final int TICK_TIME_MS = 10;
 
-    private static final double FORCE_GUI_FACTOR = 10000000;
+    private static final double FORCE_GUI_FACTOR = 1000;
 
     private TrafficManager manager;
 
@@ -74,6 +76,7 @@ public class TrafficSimulatorGUI extends JPanel {
     private JCheckBox wait;
     private JCheckBox animate;
     private Timer timer;
+    private Box verboseBox;
 
     /**
        Construct a TrafficSimulatorGUI.
@@ -88,6 +91,8 @@ public class TrafficSimulatorGUI extends JPanel {
         cont = new JButton("Continue");
         wait = new JCheckBox("Wait on refresh", waitOnRefresh);
         animate = new JCheckBox("Animate", false);
+        verboseBox = Box.createVerticalBox();
+        verboseBox.setBorder(BorderFactory.createTitledBorder("Verbose agents"));
         cont.setEnabled(false);
         cont.addActionListener(new ActionListener() {
                 @Override
@@ -119,13 +124,14 @@ public class TrafficSimulatorGUI extends JPanel {
                 }
             });
 
-        JPanel buttons = new JPanel(new BorderLayout());
-        buttons.add(wait, BorderLayout.WEST);
-        buttons.add(cont, BorderLayout.CENTER);
-        buttons.add(animate, BorderLayout.EAST);
+        Box buttons = Box.createHorizontalBox();
+        buttons.add(wait);
+        buttons.add(cont);
+        buttons.add(animate);
 
         add(view, BorderLayout.CENTER);
         add(buttons, BorderLayout.SOUTH);
+        add(verboseBox, BorderLayout.EAST);
 
         timer = new Timer(TICK_TIME_MS, new ActionListener() {
                 @Override
@@ -144,6 +150,24 @@ public class TrafficSimulatorGUI extends JPanel {
     */
     public void initialise() {
         view.initialise();
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    verboseBox.removeAll();
+                    for (TrafficAgent next : manager.getAgents()) {
+                        final TrafficAgent ta = next;
+                        final JCheckBox check = new JCheckBox("Agent " + ta.getHuman(), false);
+                        check.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    ta.setVerbose(check.isSelected());
+                                }
+                            });
+                        verboseBox.add(check);
+                    }
+                    verboseBox.revalidate();
+                }
+            });
     }
 
     /**
@@ -230,14 +254,20 @@ public class TrafficSimulatorGUI extends JPanel {
 
         @Override
         public void paintComponent(Graphics g) {
-            int width = getWidth();
-            int height = getHeight();
-            Insets insets = getInsets();
-            width -= insets.left + insets.right;
-            height -= insets.top + insets.bottom;
-            transform.rescale(width, height);
-            Graphics2D copy = (Graphics2D)g.create(insets.left, insets.top, width, height);
-            drawObjects(copy);
+            Logger.pushLogContext("traffic3");
+            try {
+                int width = getWidth();
+                int height = getHeight();
+                Insets insets = getInsets();
+                width -= insets.left + insets.right;
+                height -= insets.top + insets.bottom;
+                transform.rescale(width, height);
+                Graphics2D copy = (Graphics2D)g.create(insets.left, insets.top, width, height);
+                drawObjects(copy);
+            }
+            finally {
+                Logger.popLogContext();
+            }
         }
 
         private void drawObjects(Graphics2D g) {
@@ -305,13 +335,13 @@ public class TrafficSimulatorGUI extends JPanel {
                 double agentX = agent.getX();
                 double agentY = agent.getY();
                 double ellipseX1 = agentX - agent.getRadius();
-                double ellipseY1 = agentY + agent.getRadius();
+                double ellipseY1 = agentY - agent.getRadius();
                 double ellipseX2 = agentX + agent.getRadius();
-                double ellipseY2 = agentY - agent.getRadius();
+                double ellipseY2 = agentY + agent.getRadius();
                 double velocityX = agentX + (agent.getVX() * 1000);
                 double velocityY = agentY + (agent.getVY() * 1000);
                 double forceX = agentX + (agent.getFX() * FORCE_GUI_FACTOR);
-                double forceY = agentY - (agent.getFY() * FORCE_GUI_FACTOR);
+                double forceY = agentY + (agent.getFY() * FORCE_GUI_FACTOR);
 
                 int x = transform.xToScreen(agentX);
                 int y = transform.yToScreen(agentY);
@@ -324,18 +354,21 @@ public class TrafficSimulatorGUI extends JPanel {
                 int fx = transform.xToScreen(forceX);
                 int fy = transform.yToScreen(forceY);
                 int ellipseWidth = x2 - x1;
-                int ellipseHeight = y2 - y1;
-
-                g.setColor(agent == selectedAgent ? Color.orange : Color.red);
-                g.fillOval(x1, y1, ellipseWidth, ellipseHeight);
+                int ellipseHeight = y1 - y2;
 
                 /*
-                Logger.debug("Agent position on screen: " + x + ", " + y);
-                Logger.debug("Force: " + agent.getFX() + ", " + agent.getFY());
-                Logger.debug("Force position          : " + fx + ", " + fy);
+                Logger.debug("Agent " + agent);
+                Logger.debug("Position: " + agentX + ", " + agentY + " -> " + x + ", " + y);
+                Logger.debug("Ellipse bounds: " + ellipseX1 + ", " + ellipseY1 + " -> " + ellipseX2 + ", " + ellipseY2);
+                Logger.debug("  " + x1 + ", " + y1 + " -> " + x2 + ", " + y2);
+                Logger.debug("  Width: " + ellipseWidth + ", height: " + ellipseHeight);
+                Logger.debug("Velocity: " + velocityX + ", " + velocityY + " -> " + vx + ", " + vy);
+                Logger.debug("Force: " + forceX + ", " + forceY + " -> " + fx + ", " + fy);
                 */
 
-                Shape shape = new Ellipse2D.Double(x1, y1, ellipseWidth, ellipseHeight);
+                g.setColor(agent == selectedAgent ? Color.orange : Color.red);
+                Shape shape = new Ellipse2D.Double(x1, y2, ellipseWidth, ellipseHeight);
+                g.fill(shape);
                 agents.put(shape, agent);
 
                 // Draw the path of the selected agent
@@ -350,13 +383,6 @@ public class TrafficSimulatorGUI extends JPanel {
                         g.setColor(Color.gray);
                         int lastX = x;
                         int lastY = y;
-                        if (current != null) {
-                            int nodeX = transform.xToScreen(current.getX());
-                            int nodeY = transform.yToScreen(current.getY());
-                            g.drawLine(lastX, lastY, nodeX, nodeY);
-                            lastX = nodeX;
-                            lastY = nodeY;
-                        }
                         for (PathElement next : path) {
                             List<Point2D> waypoints = new ArrayList<Point2D>(next.getWaypoints());
                             Collections.reverse(waypoints);
@@ -374,6 +400,7 @@ public class TrafficSimulatorGUI extends JPanel {
                             int nodeX = transform.xToScreen(current.getX());
                             int nodeY = transform.yToScreen(current.getY());
                             g.fillOval(nodeX - (PATH_SPECIAL_NODE_SIZE / 2), nodeY - (PATH_SPECIAL_NODE_SIZE / 2), PATH_SPECIAL_NODE_SIZE, PATH_SPECIAL_NODE_SIZE);
+                            g.drawLine(x, y, nodeX, nodeY);
                         }
                         if (goal != null) {
                             g.setColor(Color.WHITE);
