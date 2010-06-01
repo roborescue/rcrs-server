@@ -102,7 +102,7 @@ public class MiscParameters {
        @return The amount of damage to add to the agent.
     */
     public int getFireDamage(Building b, Human agent) {
-        if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0) {
+        if (!b.isBuildingCodeDefined()) {
             return 0;
         }
         BuildingClass clazz = getBuildingClass(b);
@@ -115,9 +115,6 @@ public class MiscParameters {
         for (BuildingCode code : BuildingCode.values()) {
             Map<BrokennessDegree, BuildingClass> codeMap = new EnumMap<BrokennessDegree, BuildingClass>(BrokennessDegree.class);
             for (BrokennessDegree degree : BrokennessDegree.values()) {
-                if (degree == BrokennessDegree.NONE) {
-                    continue;
-                }
                 codeMap.put(degree, new BuildingClass(config, code, degree));
             }
             buildingClasses.put(code, codeMap);
