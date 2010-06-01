@@ -21,7 +21,7 @@ public class FrozenAgentsCommandFilter implements CommandFilter {
     public void filter(Collection<Command> commands, KernelState state) {
         int time = state.getTime();
         if (time < freezeTime) {
-            Logger.warn("Ignoring early commands: " + time + " < " + freezeTime);
+            Logger.info("Ignoring early commands: " + time + " < " + freezeTime);
             commands.clear();
         }
     }

@@ -12,7 +12,7 @@ public class WrongTimeCommandFilter extends AbstractCommandFilter {
         if (command.getTime() == state.getTime()) {
             return true;
         }
-        Logger.warn("Ignoring command with wrong timestamp: " + command.getTime() + " should be " + state.getTime());
+        Logger.info("Ignoring command " + command + ": Wrong timestamp: " + command.getTime() + " should be " + state.getTime());
         return false;
     }
 }
