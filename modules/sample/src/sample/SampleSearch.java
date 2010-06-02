@@ -5,7 +5,7 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Building;
-//import rescuecore2.log.Logger;
+import rescuecore2.log.Logger;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -108,7 +108,13 @@ public final class SampleSearch {
         if (e instanceof Area) {
             Area a = (Area)e;
             for (EntityID next : a.getNeighbours()) {
-                result.add(world.getEntity(next));
+                StandardEntity n = world.getEntity(next);
+                if (n == null) {
+                    Logger.warn("Area " + a + " has a null neighbour: " + next);
+                }
+                else {
+                    result.add(n);
+                }
             }
         }
         return result;
