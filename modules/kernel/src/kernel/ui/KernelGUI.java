@@ -58,7 +58,9 @@ public class KernelGUI extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    tabs.addTab(c.getGUIComponentName(), c.getGUIComponent());
+                    if (c.getGUIComponent() != null) {
+                        tabs.addTab(c.getGUIComponentName(), c.getGUIComponent());
+                    }
                 }
             });
     }
