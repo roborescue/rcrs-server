@@ -291,6 +291,14 @@ public class World implements WorldConstants {
         airTemp = a;
     }
 
+    public void setAirCellTemp(int x, int y, double temp) {
+        airTemp[x][y] = temp;
+    }
+
+    public double getAirCellTemp(int x, int y) {
+        return airTemp[x][y];
+    }
+
     public Collection<Building> getBuildings(){
         return buildings;
     }

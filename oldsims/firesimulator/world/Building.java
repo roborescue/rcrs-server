@@ -477,7 +477,7 @@ public class Building extends StationaryObject {
     public double getRadiationEnergy() {
         double t=getTemperature()+293; // Assume ambient temperature is 293 Kelvin.
         double radEn = (t * t * t * t) * totalWallArea * Simulator.RADIATION_COEFFICENT * STEFAN_BOLTZMANN_CONSTANT;
-        /*
+        if (id == 23545) {
         LOG.debug("Getting radiation energy for building " + id);
         LOG.debug("t = " + t);
         LOG.debug("t^4 = " + (t * t * t * t));
@@ -486,7 +486,7 @@ public class Building extends StationaryObject {
         LOG.debug("Stefan-Boltzmann constant: " + STEFAN_BOLTZMANN_CONSTANT);
         LOG.debug("Radiation energy: " + radEn);
         LOG.debug("Building energy: " + getEnergy());
-        */
+        }
         if(radEn==Double.NaN||radEn==Double.POSITIVE_INFINITY||radEn==Double.NEGATIVE_INFINITY)
             radEn=Double.MAX_VALUE*0.75;
         if (radEn > getEnergy()) {

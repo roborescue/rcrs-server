@@ -72,7 +72,6 @@ public class EnergyHistory {
         LOG.debug("Energy summary at time " + time);
         for (Building next : initialEnergy.keySet()) {
             boolean changed = burnEnergy.containsKey(next) || coolEnergy.containsKey(next) || exchangedWithAir.containsKey(next) || lostToRadiation.containsKey(next) || gainedByRadiation.containsKey(next);
-            //            if (next.getID() == 44018) {
             if (changed && !initialEnergy.get(next).equals(finalEnergy.get(next))) {
                 LOG.debug("Building " + next.getID());
                 LOG.debug("  Initial energy / temperature: " + initialEnergy.get(next) + " / " + initialTemperature.get(next));

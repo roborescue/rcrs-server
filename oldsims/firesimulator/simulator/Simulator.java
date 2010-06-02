@@ -34,6 +34,7 @@ public class Simulator {
     public static float RADIATION_COEFFICENT=1.0f;
     public static float TIME_STEP_LENGTH=1f; 		
     public static float WEIGHT_GRID = 0.2f;
+    public static float AIR_CELL_HEAT_CAPACITY = 1f;
 	
     public Set monitors;
     public static boolean verbose;
@@ -178,32 +179,7 @@ public class Simulator {
     private void exchangeBuilding() {	    
         for(Iterator i=world.getBuildings().iterator();i.hasNext();){
             Building b=(Building)i.next();
-            double oldTemperature = b.getTemperature();
-            double dT=((double)averageTemp(b))-b.getTemperature();
-            float coefficient=(AIR_TO_BUILDING_COEFFICIENT*TIME_STEP_LENGTH)/b.getCapacity();
-            if (coefficient > 1) {
-                coefficient = 1f;
-            }
-            double T=b.getTemperature()+(dT*coefficient);
-            double oldEnergy = b.getEnergy();
-            double newEnergy = T*b.getCapacity();
-            b.setEnergy(newEnergy);
-            energyHistory.registerAir(b, newEnergy - oldEnergy);
-
-            /*
-                LOG.debug("Building " + b.getID() + " heat exchange");
-                LOG.debug("Building temperature: " + oldTemperature);
-                LOG.debug("Average cell temperature: " + averageTemp(b));
-                LOG.debug("AIR_TO_BUILDING_COEFFICIENT: " + AIR_TO_BUILDING_COEFFICIENT);
-                LOG.debug("Heat capacity: " + b.getCapacity());
-                LOG.debug("Coefficient: " + coefficient + " (" + (AIR_TO_BUILDING_COEFFICIENT*TIME_STEP_LENGTH)/b.getCapacity() + ")");
-                LOG.debug("dT = " +dT);
-                LOG.debug("T = " + T);
-                LOG.debug("Old energy: " + oldEnergy);
-                LOG.debug("New energy: " + b.getEnergy());
-                LOG.debug("New temperature: " + b.getTemperature());
-            */
-
+            exchangeWithAir(b);
         }
         double sumdt=0;
         Map<Building, Double> radiation = new HashMap<Building, Double>();
@@ -218,10 +194,10 @@ public class Simulator {
             Building[] bs=b.connectedBuilding;
             float[] vs=b.connectedValues;
             /*
-                LOG.debug("Building " + b.getID() + " radiating energy");
-                LOG.debug("Total energy: " + b.getEnergy());
-                LOG.debug("Radiated energy: " + radEn);
-                LOG.debug("Old temperature: " + b.getTemperature());
+              LOG.debug("Building " + b.getID() + " radiating energy");
+              LOG.debug("Total energy: " + b.getEnergy());
+              LOG.debug("Radiated energy: " + radEn);
+              LOG.debug("Old temperature: " + b.getTemperature());
             */
             for(int c=0;c<vs.length;c++){			    
                 double oldEnergy=bs[c].getEnergy();
@@ -231,29 +207,82 @@ public class Simulator {
                 bs[c].setEnergy(sum);
                 energyHistory.registerRadiationGain(bs[c], a);
                 /*
-                    LOG.debug("Building " + bs[c].getID() + " connection value: " + connectionValue);
-                    LOG.debug("Building " + bs[c].getID() + " received " + a);
+                  LOG.debug("Building " + bs[c].getID() + " connection value: " + connectionValue);
+                  LOG.debug("Building " + bs[c].getID() + " received " + a);
                 */
             }
             b.setEnergy(b.getEnergy()-radEn);			
             energyHistory.registerRadiationLoss(b, -radEn);
             /*
-                LOG.debug("New temperature: " + b.getTemperature());
+              LOG.debug("New temperature: " + b.getTemperature());
             */
         }		
     }
 
-    private double averageTemp(Building b) {
-        double total=0;
-        double tempSum=0;
-        //        LOG.debug("Finding average cell temperature for building " + b.getID());
-        for(int i=0;i<b.cells.length;i++){
-            double pc=((double)b.cells[i][2])/100d;
-            total+=pc;
-            tempSum+=getTempAt(b.cells[i][0],b.cells[i][1])*pc;
-        }		
-        return tempSum/total;
+    private void exchangeWithAir(Building b) {
+        // Give/take heat to/from air cells
+        double oldTemperature = b.getTemperature();
+        double oldEnergy = b.getEnergy();
+        double energyDelta = 0;
+
+        /*
+        if (b.getID() == 16204 || b.getID() == 23545) {
+            LOG.debug("Building " + b.getID() + " heat exchange");
+            LOG.debug("Building energy: " + oldEnergy);
+            LOG.debug("Building temperature: " + oldTemperature);
+            LOG.debug("AIR_TO_BUILDING_COEFFICIENT: " + AIR_TO_BUILDING_COEFFICIENT);
+            LOG.debug("AIR_CELL_HEAT_CAPACITY: " + AIR_CELL_HEAT_CAPACITY);
+            LOG.debug("TIME_STEP_LENGTH: " + TIME_STEP_LENGTH);
+            LOG.debug("CELL_SIZE: " + world.SAMPLE_SIZE);
+        }
+        */
+
+        for (int[] nextCell : b.cells) {
+            int cellX = nextCell[0];
+            int cellY = nextCell[1];
+            double cellCover = nextCell[2] / 100.0;
+            double cellTemp = world.getAirCellTemp(cellX, cellY);
+            double dT = cellTemp - b.getTemperature();
+            double energyTransferToBuilding = dT * AIR_TO_BUILDING_COEFFICIENT * TIME_STEP_LENGTH * cellCover * world.SAMPLE_SIZE;
+            energyDelta += energyTransferToBuilding;
+            double newCellTemp = cellTemp - AIR_CELL_HEAT_CAPACITY * TIME_STEP_LENGTH * world.SAMPLE_SIZE * energyTransferToBuilding;
+            world.setAirCellTemp(cellX, cellY, newCellTemp);
+
+            /*
+            if (b.getID() == 16204 || b.getID() == 23545) {
+                LOG.debug("Cell " + cellX + ", " + cellY);
+                LOG.debug("Area covered: " + cellCover);
+                LOG.debug("Cell temperature: " + cellTemp);
+                LOG.debug("dT: " + dT);
+                LOG.debug("Energy transfer to building: " + energyTransferToBuilding);
+                LOG.debug("New cell temperature: " + newCellTemp);
+            }
+            */
+        }
+        b.setEnergy(oldEnergy + energyDelta);
+        energyHistory.registerAir(b, energyDelta);
+
+        /*
+        if (b.getID() == 16204 || b.getID() == 23545) {
+            LOG.debug("New energy: " + b.getEnergy());
+            LOG.debug("New temperature: " + b.getTemperature());
+        }
+        */
     }
+
+    /*
+      private double averageTemp(Building b) {
+      double total=0;
+      double tempSum=0;
+      //        LOG.debug("Finding average cell temperature for building " + b.getID());
+      for(int i=0;i<b.cells.length;i++){
+      double pc=((double)b.cells[i][2])/100d;
+      total+=pc;
+      tempSum+=getTempAt(b.cells[i][0],b.cells[i][1])*pc;
+      }		
+      return tempSum/total;
+      }
+    */
 
     private void updateGrid() {
         LOG.debug("Updating air grid");
@@ -265,7 +294,7 @@ public class Simulator {
                 double change = (dt * AIR_TO_AIR_COEFFICIENT * TIME_STEP_LENGTH);
                 newairtemp[x][y] = relTemp(airtemp[x][y] + change);
                 //                if (newairtemp[x][y] > 0.000001 || airtemp[x][y] > 0.000001) {
-                    //                    LOG.debug("Cell " + x + ", " + y + " old temperature: " + airtemp[x][y] + ", dt: " + dt + ", change: " + change + ", new temp: " + newairtemp[x][y]);
+                //                    LOG.debug("Cell " + x + ", " + y + " old temperature: " + airtemp[x][y] + ", dt: " + dt + ", change: " + change + ", new temp: " + newairtemp[x][y]);
                 //                }
                 if(!(newairtemp[x][y]>-Double.MAX_VALUE&&newairtemp[x][y]<Double.MAX_VALUE)){
                     LOG.warn("Value is not sensible: " + newairtemp[x][y]);
@@ -285,58 +314,44 @@ public class Simulator {
     }
 	
     private double averageTemp(int x, int y) {
-        double rv = (neighbourCellAverage(x,y)+buildingAverage(x,y))/(weightSummBuilding(x,y)+weightSummCells(x,y));
-        if (rv > 0.000001) {
-            /*
-              LOG.debug("Finding average temperature for cell " + x + ", " + y);
-              LOG.debug("Neighbour cell average: " + neighbourCellAverage(x,y));
-              LOG.debug("Building average: " + buildingAverage(x,y));
-              for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
-              Object o[]=(Object[])i.next();
-              Building b = (Building)o[0];
-              float f = ((Float)o[1]).floatValue();
-              LOG.debug("  Building " + b.getID() + " temperature: " + b.getTemperature());
-              LOG.debug("  Building " + b.getID() + " coverage   : " + f);
-              }
-              LOG.debug("Cell weight: " + weightSummCells(x,y));
-              LOG.debug("Building weight: " + weightSummBuilding(x,y));
-              LOG.debug("Result: " + rv);
-            */
-        }
+        //        double rv = (neighbourCellAverage(x,y)+buildingAverage(x,y))/(weightSummBuilding(x,y)+weightSummCells(x,y));
+        double rv = neighbourCellAverage(x, y) / weightSummCells(x, y);
         return rv;
     }
 
-    private float buildingAverage(int x, int y) {
-        float total=0;
-        for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
-            Object o[]=(Object[])i.next();
-            total+=((Building)o[0]).getTemperature()*((Float)o[1]).floatValue();
-        }
-        if (Double.isNaN(total)) {
-            LOG.warn("buildingAverage(" + x + ", " + y + ") returned NaN");
-            total = 0;
-            for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
-                Object o[]=(Object[])i.next();
-                Building b = (Building)o[0];
-                float f = ((Float)o[1]).floatValue();
-                LOG.debug("Building " + b.getID() + " temperature: " + b.getTemperature());
-                LOG.debug("Building " + b.getID() + " coverage   : " + f);
-                total+=((Building)o[0]).getTemperature()*((Float)o[1]).floatValue();
-                LOG.debug("New total: " + total);
-            }
-            LOG.debug("Done");
-        }
-        return total;
-    }
+    /*
+      private float buildingAverage(int x, int y) {
+      float total=0;
+      for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
+      Object o[]=(Object[])i.next();
+      total+=((Building)o[0]).getTemperature()*((Float)o[1]).floatValue();
+      }
+      if (Double.isNaN(total)) {
+      LOG.warn("buildingAverage(" + x + ", " + y + ") returned NaN");
+      total = 0;
+      for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
+      Object o[]=(Object[])i.next();
+      Building b = (Building)o[0];
+      float f = ((Float)o[1]).floatValue();
+      LOG.debug("Building " + b.getID() + " temperature: " + b.getTemperature());
+      LOG.debug("Building " + b.getID() + " coverage   : " + f);
+      total+=((Building)o[0]).getTemperature()*((Float)o[1]).floatValue();
+      LOG.debug("New total: " + total);
+      }
+      LOG.debug("Done");
+      }
+      return total;
+      }
 	
-    private float weightSummBuilding(int x,int y){
-        float total=0;
-        for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
-            Object o[]=(Object[])i.next();
-            total+=((Float)o[1]).floatValue();
-        }
-        return total;
-    }
+      private float weightSummBuilding(int x,int y){
+      float total=0;
+      for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
+      Object o[]=(Object[])i.next();
+      total+=((Float)o[1]).floatValue();
+      }
+      return total;
+      }
+    */
 
     private double neighbourCellAverage(int x, int y) {
         double total=getTempAt(x+1,y-1);
@@ -394,6 +409,7 @@ public class Simulator {
         WIND_DIRECTION = new Float(Configuration.getValue("resq-fire.wind_direction")).floatValue();
         WIND_RANDOM = new Float(Configuration.getValue("resq-fire.wind_random")).floatValue();
         RADIATION_COEFFICENT=new Float(Configuration.getValue("resq-fire.radiation_coefficient")).floatValue();
+        AIR_CELL_HEAT_CAPACITY=new Float(Configuration.getValue("resq-fire.air_cell_heat_capacity")).floatValue();
         ExtinguishRequest.MAX_WATER_PER_CYCLE=new Integer(Configuration.getValue("resq-fire.max_extinguish_power_sum")).intValue();
         ExtinguishRequest.MAX_DISTANCE=new Integer(Configuration.getValue("resq-fire.water_distance")).intValue();
         GAMMA=new Float(Configuration.getValue("resq-fire.gamma")).floatValue();

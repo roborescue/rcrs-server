@@ -92,6 +92,7 @@ public class Configuration {
 		Props.add(new Prop(PREFIX + "energy_loss","energy_loss",null,null,true,null));
 		Props.add(new Prop(PREFIX + "air_to_air_flow","air_to_air_flow",null,null,true,null));
 		Props.add(new Prop(PREFIX + "air_to_building_flow","air_to_building_flow",null,null,true,null));
+		Props.add(new Prop(PREFIX + "air_cell_heat_capacity","air_cell_heat_capacity",null,null,true,null));
 		Props.add(new Prop(PREFIX + "wooden_capacity","wooden_capacity",null,null,true,null));
 		Props.add(new Prop(PREFIX + "wooden_energy","wooden_energy",null,null,true,null));
 		Props.add(new Prop(PREFIX + "wooden_ignition","wooden_ignition",null,null,true,null));
