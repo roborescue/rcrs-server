@@ -366,6 +366,79 @@ public final class GeometryTools2D {
         return Math.hypot(p1.getX() - p2.getX(), p1.getY() - p2.getY());
     }
 
+    /**
+       Clip a line to a rectangle.
+       @param line The line to clip.
+       @param xMin The lower X coordinate of the rectangle.
+       @param yMin The lower Y coordinate of the rectangle.
+       @param xMax The upper X coordinate of the rectangle.
+       @param yMax The upper Y coordinate of the rectangle.
+       @return A clipped line, or null if the line is outside the rectangle.
+    */
+    public static Line2D clipToRectangle(Line2D line, double xMin, double yMin, double xMax, double yMax) {
+        // Liang-Barsky line clipping algorithm
+        double x1 = line.getOrigin().getX();
+        double y1 = line.getOrigin().getY();
+        double x2 = line.getEndPoint().getX();
+        double y2 = line.getEndPoint().getY();
+        double tL = (xMin - x1) / (x2 - x1);
+        double tR = (xMax - x1) / (x2 - x1);
+        double tT = (yMax - y1) / (y2 - y1);
+        double tB = (yMin - y1) / (y2 - y1);
+        double tMin = 0;
+        double tMax = 1;
+        if ((x1 < xMin && x2 < xMin)
+            || (x1 > xMax && x2 > xMax)
+            || (y1 < yMin && y2 < yMin)
+            || (y1 > yMax && y2 > yMax)) {
+            return null;
+        }
+        // Left
+        if (tL > tMin && tL < tMax) {
+            if (x1 < x2) {
+                // Entering left edge
+                tMin = tL;
+            }
+            else {
+                tMax = tL;
+            }
+        }
+        // Right
+        if (tR > tMin && tR < tMax) {
+            if (x1 > x2) {
+                // Entering right edge
+                tMin = tR;
+            }
+            else {
+                tMax = tR;
+            }
+        }
+        // Top
+        if (tT > tMin && tT < tMax) {
+            if (y1 > y2) {
+                // Entering top edge
+                tMin = tT;
+            }
+            else {
+                tMax = tT;
+            }
+        }
+        // Left
+        if (tB > tMin && tB < tMax) {
+            if (y1 < y2) {
+                // Entering bottom edge
+                tMin = tB;
+            }
+            else {
+                tMax = tB;
+            }
+        }
+        if (tMin > tMax) {
+            return null;
+        }
+        return new Line2D(line.getPoint(tMin), line.getPoint(tMax));
+    }
+
     private static double computeAreaUnsigned(List<Point2D> vertices) {
         Iterator<Point2D> it = vertices.iterator();
         Point2D last = it.next();
