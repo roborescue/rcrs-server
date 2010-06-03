@@ -163,7 +163,7 @@
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See http://checkstyle.sf.net/config_misc.html -->
-    <module name="TodoComment"/>
+<!--    <module name="TodoComment"/>-->
     <module name="UpperEll"/>
     <module name="ArrayTypeStyle"/>
 <!--    <module name="FinalParameters"/>-->
