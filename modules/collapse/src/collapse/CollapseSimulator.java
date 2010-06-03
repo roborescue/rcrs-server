@@ -521,6 +521,9 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
         Blockade result = new Blockade(id);
         int[] apexes = getApexes(area);
         List<Point2D> points = GeometryTools2D.vertexArrayToPoints(apexes);
+        if (points.size() < 2) {
+            return null;
+        }
         int cost = (int)(GeometryTools2D.computeArea(points) * REPAIR_COST_FACTOR);
         if (cost == 0) {
             return null;
@@ -531,7 +534,6 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
         result.setX((int)centroid.getX());
         result.setY((int)centroid.getY());
         result.setRepairCost((int)cost);
-        Logger.debug("Created new blockade: " + result.getFullDescription());
         return result;
     }
 
@@ -545,42 +547,51 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
         int moveY = 0;
         int lastX = 0;
         int lastY = 0;
-        while (!it.isDone()) {
+        boolean finished = false;
+        while (!finished && !it.isDone()) {
             int x = 0;
             int y = 0;
             switch (it.currentSegment(d)) {
             case PathIterator.SEG_MOVETO:
-                //                Logger.debug("Move to");
                 x = (int)d[0];
                 y = (int)d[1];
                 moveX = x;
                 moveY = y;
+                //                Logger.debug("Move to " + x + ", " + y);
                 break;
             case PathIterator.SEG_LINETO:
-                //                Logger.debug("Line to");
                 x = (int)d[0];
                 y = (int)d[1];
+                //                Logger.debug("Line to " + x + ", " + y);
+                if (x == moveX && y == moveY) {
+                    finished = true;
+                }
                 break;
             case PathIterator.SEG_QUADTO:
-                //                Logger.debug("Quad to");
                 x = (int)d[2];
                 y = (int)d[3];
+                //                Logger.debug("Quad to " + x + ", " + y);
+                if (x == moveX && y == moveY) {
+                    finished = true;
+                }
                 break;
             case PathIterator.SEG_CUBICTO:
-                //                Logger.debug("Cubic to");
                 x = (int)d[4];
                 y = (int)d[5];
+                //                Logger.debug("Cubic to " + x + ", " + y);
+                if (x == moveX && y == moveY) {
+                    finished = true;
+                }
                 break;
             case PathIterator.SEG_CLOSE:
                 //                Logger.debug("Close");
-                x = moveX;
-                y = moveY;
+                finished = true;
                 break;
             default:
                 throw new RuntimeException("Unexpected result from PathIterator.currentSegment: " + it.currentSegment(d));
             }
             //            Logger.debug(x + ", " + y);
-            if (x != lastX || y != lastY) {
+            if (!finished && (x != lastX || y != lastY)) {
                 apexes.add(x);
                 apexes.add(y);
             }
