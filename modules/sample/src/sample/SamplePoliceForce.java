@@ -3,6 +3,8 @@ package sample;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
@@ -12,9 +14,12 @@ import rescuecore2.log.Logger;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.registry.Registry;
+import rescuecore2.registry.FilterEntityFactory;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.PoliceForce;
@@ -38,6 +43,21 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         super.postConnect();
         model.indexClass(StandardEntityURN.ROAD);
         distance = config.getIntValue(DISTANCE_KEY);
+    }
+
+    @Override
+    public Registry getPreferredRegistry(Registry parent) {
+        // Return a registry that filters out buildings and civilians
+        Registry result = new Registry(super.getPreferredRegistry(parent));
+        Set<String> urns = new HashSet<String>();
+        urns.add(StandardEntityURN.BUILDING.toString());
+        urns.add(StandardEntityURN.REFUGE.toString());
+        urns.add(StandardEntityURN.FIRE_STATION.toString());
+        urns.add(StandardEntityURN.AMBULANCE_CENTRE.toString());
+        urns.add(StandardEntityURN.POLICE_OFFICE.toString());
+        urns.add(StandardEntityURN.CIVILIAN.toString());
+        result.registerEntityFactory(new FilterEntityFactory(StandardEntityFactory.INSTANCE, urns, false));
+        return result;
     }
 
     @Override

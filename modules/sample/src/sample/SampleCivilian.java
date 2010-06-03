@@ -2,13 +2,21 @@ package sample;
 
 import java.util.List;
 import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
+import rescuecore2.registry.Registry;
+import rescuecore2.registry.FilterEntityFactory;
+import rescuecore2.registry.FilterPropertyFactory;
 
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardPropertyURN;
+import rescuecore2.standard.entities.StandardEntityFactory;
+import rescuecore2.standard.entities.StandardPropertyFactory;
 import rescuecore2.standard.entities.Civilian;
 
 import rescuecore2.log.Logger;
@@ -49,6 +57,27 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         // Remove all entities except me
         model.removeAllEntities();
         model.addEntity(me);
+    }
+
+    @Override
+    public Registry getPreferredRegistry(Registry parent) {
+        // Return a registry that filters out buildings and civilians
+        Registry result = new Registry(super.getPreferredRegistry(parent));
+        Set<String> entityURNs = new HashSet<String>();
+        entityURNs.add(StandardEntityURN.BUILDING.toString());
+        entityURNs.add(StandardEntityURN.REFUGE.toString());
+        entityURNs.add(StandardEntityURN.ROAD.toString());
+        entityURNs.add(StandardEntityURN.CIVILIAN.toString());
+        Set<String> propertyURNs = new HashSet<String>();
+        propertyURNs.add(StandardPropertyURN.X.toString());
+        propertyURNs.add(StandardPropertyURN.Y.toString());
+        propertyURNs.add(StandardPropertyURN.NEIGHBOURS.toString());
+        propertyURNs.add(StandardPropertyURN.DAMAGE.toString());
+        propertyURNs.add(StandardPropertyURN.BURIEDNESS.toString());
+        propertyURNs.add(StandardPropertyURN.HP.toString());
+        result.registerEntityFactory(new FilterEntityFactory(StandardEntityFactory.INSTANCE, entityURNs, true));
+        result.registerPropertyFactory(new FilterPropertyFactory(StandardPropertyFactory.INSTANCE, propertyURNs, true));
+        return result;
     }
 
     @Override
