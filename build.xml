@@ -281,7 +281,7 @@
       <javac srcdir="${modules.dir}/@{module}/test" destdir="${modules.dir}/@{module}/test" classpathref="path.common" debug="${debug}">
         <include name="**/*.java"/>
       </javac>
-      <junit fork="true" timeout="60000">
+      <junit fork="true" timeout="120000">
         <sysproperty key="tests.basedir" value="${modules.dir}/@{module}/test"/>
         <sysproperty key="net.sourceforge.cobertura.datafile" value="${cobertura.coveragefile}"/>
         <sysproperty key="log4j.configuration" value="log4j.test.properties"/>
