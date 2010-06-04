@@ -58,7 +58,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
             return;
         }
         // Plan a path to a blocked area
-        List<EntityID> path = search.breadthFirstSearch(location(), getBlockedRoads());
+        List<EntityID> path = search.breadthFirstSearch(me().getPosition(), getBlockedRoads());
         if (path != null) {
             Logger.info("Moving to target");
             Road r = (Road)model.getEntity(path.get(path.size() - 1));
@@ -78,13 +78,13 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         return EnumSet.of(StandardEntityURN.POLICE_FORCE);
     }
 
-    private List<Road> getBlockedRoads() {
+    private List<EntityID> getBlockedRoads() {
         Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.ROAD);
-        List<Road> result = new ArrayList<Road>();
+        List<EntityID> result = new ArrayList<EntityID>();
         for (StandardEntity next : e) {
             Road r = (Road)next;
             if (r.isBlockadesDefined() && !r.getBlockades().isEmpty()) {
-                result.add(r);
+                result.add(r.getID());
             }
         }
         return result;

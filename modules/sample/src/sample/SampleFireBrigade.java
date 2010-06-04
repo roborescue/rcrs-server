@@ -1,5 +1,7 @@
 package sample;
 
+import static rescuecore2.misc.Handy.objectsToIDs;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +65,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         // Are we out of water?
         if (me.isWaterDefined() && me.getWater() == 0) {
             // Head for a refuge
-            List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
+            List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
             if (path != null) {
                 Logger.info("Moving to refuge");
                 sendMove(time, path);
@@ -78,18 +80,18 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             }
         }
         // Find all buildings that are on fire
-        Collection<Building> all = getBurningBuildings();
+        Collection<EntityID> all = getBurningBuildings();
         // Can we extinguish any right now?
-        for (Building next : all) {
-            if (model.getDistance(me, next) <= maxDistance) {
+        for (EntityID next : all) {
+            if (model.getDistance(getID(), next) <= maxDistance) {
                 Logger.info("Extinguishing " + next);
-                sendExtinguish(time, next.getID(), maxPower);
-                sendSpeak(time, 1, ("Extinguishing " + next.getID()).getBytes());
+                sendExtinguish(time, next, maxPower);
+                sendSpeak(time, 1, ("Extinguishing " + next).getBytes());
                 return;
             }
         }
         // Plan a path to a fire
-        for (Building next : all) {
+        for (EntityID next : all) {
             List<EntityID> path = planPathToFire(next);
             if (path != null) {
                 Logger.info("Moving to target");
@@ -109,7 +111,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         return EnumSet.of(StandardEntityURN.FIRE_BRIGADE);
     }
 
-    private List<Building> getBurningBuildings() {
+    private Collection<EntityID> getBurningBuildings() {
         Collection<StandardEntity> e = model.getEntitiesOfType(StandardEntityURN.BUILDING);
         List<Building> result = new ArrayList<Building>();
         for (StandardEntity next : e) {
@@ -122,15 +124,15 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         }
         // Sort by distance
         Collections.sort(result, new DistanceSorter(location(), model));
-        return result;
+        return objectsToIDs(result);
     }
 
-    private List<EntityID> planPathToFire(Building target) {
+    private List<EntityID> planPathToFire(EntityID target) {
         // Try to get to anything within maxDistance of the target
         Collection<StandardEntity> targets = model.getObjectsInRange(target, maxDistance);
         if (targets.isEmpty()) {
             return null;
         }
-        return search.breadthFirstSearch(location(), targets);
+        return search.breadthFirstSearch(me().getPosition(), objectsToIDs(targets));
     }
 }

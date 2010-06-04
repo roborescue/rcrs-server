@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
@@ -22,7 +23,7 @@ import rescuecore2.standard.entities.Refuge;
    A sample ambulance team agent.
  */
 public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
-    private Collection<StandardEntity> unexploredBuildings;
+    private Collection<EntityID> unexploredBuildings;
 
     @Override
     public String toString() {
@@ -33,7 +34,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     protected void postConnect() {
         super.postConnect();
         model.indexClass(StandardEntityURN.CIVILIAN, StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM, StandardEntityURN.REFUGE, StandardEntityURN.BUILDING);
-        unexploredBuildings = model.getEntitiesOfType(StandardEntityURN.BUILDING);
+        unexploredBuildings = new HashSet<EntityID>(buildingIDs);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             }
             else {
                 // Move to a refuge
-                List<EntityID> path = search.breadthFirstSearch(location(), getRefuges());
+                List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
                 if (path != null) {
                     Logger.info("Moving to refuge");
                     sendMove(time, path);
@@ -86,7 +87,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             }
             else {
                 // Try to move to the target
-                List<EntityID> path = search.breadthFirstSearch(location(), next.getPosition(model));
+                List<EntityID> path = search.breadthFirstSearch(me().getPosition(), next.getPosition());
                 if (path != null) {
                     Logger.info("Moving to target");
                     sendMove(time, path);
@@ -95,7 +96,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             }
         }
         // Nothing to do
-        List<EntityID> path = search.breadthFirstSearch(location(), unexploredBuildings);
+        List<EntityID> path = search.breadthFirstSearch(me().getPosition(), unexploredBuildings);
         if (path != null) {
             Logger.info("Searching buildings");
             sendMove(time, path);
@@ -142,10 +143,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
 
     private void updateUnexploredBuildings(ChangeSet changed) {
         for (EntityID next : changed.getChangedEntities()) {
-            StandardEntity e = model.getEntity(next);
-            if (e != null) {
-                unexploredBuildings.remove(e);
-            }
+            unexploredBuildings.remove(next);
         }
     }
 }

@@ -1,32 +1,70 @@
 package sample;
 
 import rescuecore2.worldmodel.EntityID;
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.Area;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.log.Logger;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.misc.collections.LazyMap;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.Area;
+
 /**
-   A sample search class.
+   A sample search class that uses a connection graph to look up neighbours.
  */
 public final class SampleSearch {
-    private StandardWorldModel world;
+    private Map<EntityID, Set<EntityID>> graph;
 
     /**
        Construct a new SampleSearch.
-       @param world The world model to search.
-     */
+       @param world The world model to construct the neighbourhood graph from.
+    */
     public SampleSearch(StandardWorldModel world) {
-        this.world = world;
+        Map<EntityID, Set<EntityID>> neighbours = new LazyMap<EntityID, Set<EntityID>>() {
+            @Override
+            public Set<EntityID> createValue() {
+                return new HashSet<EntityID>();
+            }
+        };
+        for (Entity next : world) {
+            if (next instanceof Area) {
+                Collection<EntityID> areaNeighbours = ((Area)next).getNeighbours();
+                neighbours.get(next.getID()).addAll(areaNeighbours);
+            }
+        }
+        setGraph(neighbours);
+    }
+
+
+    /**
+       Construct a new ConnectionGraphSearch.
+       @param graph The connection graph in the form of a map from EntityID to the set of neighbouring EntityIDs.
+     */
+    public SampleSearch(Map<EntityID, Set<EntityID>> graph) {
+        setGraph(graph);
+    }
+
+    /**
+       Set the neighbourhood graph.
+       @param newGraph The new neighbourhood graph.
+    */
+    public void setGraph(Map<EntityID, Set<EntityID>> newGraph) {
+        this.graph = newGraph;
+    }
+
+    /**
+       Get the neighbourhood graph.
+       @return The neighbourhood graph.
+    */
+    public Map<EntityID, Set<EntityID>> getGraph() {
+        return graph;
     }
 
     /**
@@ -35,7 +73,7 @@ public final class SampleSearch {
        @param goals The set of possible goals.
        @return The path from start to one of the goals, or null if no path can be found.
     */
-    public List<EntityID> breadthFirstSearch(StandardEntity start, StandardEntity... goals) {
+    public List<EntityID> breadthFirstSearch(EntityID start, EntityID... goals) {
         return breadthFirstSearch(start, Arrays.asList(goals));
     }
 
@@ -45,11 +83,11 @@ public final class SampleSearch {
        @param goals The set of possible goals.
        @return The path from start to one of the goals, or null if no path can be found.
     */
-    public List<EntityID> breadthFirstSearch(StandardEntity start, Collection<? extends StandardEntity> goals) {
-        List<StandardEntity> open = new LinkedList<StandardEntity>();
-        Map<StandardEntity, StandardEntity> ancestors = new HashMap<StandardEntity, StandardEntity>();
+    public List<EntityID> breadthFirstSearch(EntityID start, Collection<EntityID> goals) {
+        List<EntityID> open = new LinkedList<EntityID>();
+        Map<EntityID, EntityID> ancestors = new HashMap<EntityID, EntityID>();
         open.add(start);
-        StandardEntity next = null;
+        EntityID next = null;
         boolean found = false;
         ancestors.put(start, start);
         do {
@@ -58,11 +96,11 @@ public final class SampleSearch {
                 found = true;
                 break;
             }
-            Collection<StandardEntity> neighbours = findNeighbours(next);
+            Collection<EntityID> neighbours = graph.get(next);
             if (neighbours.isEmpty()) {
                 continue;
             }
-            for (StandardEntity neighbour : neighbours) {
+            for (EntityID neighbour : neighbours) {
                 if (isGoal(neighbour, goals)) {
                     ancestors.put(neighbour, next);
                     next = neighbour;
@@ -70,7 +108,7 @@ public final class SampleSearch {
                     break;
                 }
                 else {
-                    if (!ancestors.containsKey(neighbour) && !(neighbour instanceof Building)) {
+                    if (!ancestors.containsKey(neighbour)) {
                         open.add(neighbour);
                         ancestors.put(neighbour, next);
                     }
@@ -82,50 +120,19 @@ public final class SampleSearch {
             return null;
         }
         // Walk back from goal to start
-        StandardEntity current = next;
+        EntityID current = next;
         List<EntityID> path = new LinkedList<EntityID>();
-        //        Logger.debug("Building path");
-        //        Logger.debug("Goal found: " + current);
         do {
-            path.add(0, current.getID());
+            path.add(0, current);
             current = ancestors.get(current);
-            //            Logger.debug("Parent node: " + current);
             if (current == null) {
                 throw new RuntimeException("Found a node with no ancestor! Something is broken.");
             }
         } while (current != start);
-        //        Logger.debug("Final path: " + path);
         return path;
     }
 
-    /**
-       Get the neighbours of an entity.
-       @param e The entity to look up.
-       @return All neighbours of that entity.
-    */
-    public Collection<StandardEntity> findNeighbours(StandardEntity e) {
-        Collection<StandardEntity> result = new ArrayList<StandardEntity>();
-        if (e instanceof Area) {
-            Area a = (Area)e;
-            for (EntityID next : a.getNeighbours()) {
-                StandardEntity n = world.getEntity(next);
-                if (n == null) {
-                    Logger.warn("Area " + a + " has a null neighbour: " + next);
-                }
-                else {
-                    result.add(n);
-                }
-            }
-        }
-        return result;
-    }
-
-    private boolean isGoal(StandardEntity e, Collection<? extends StandardEntity> test) {
-        for (StandardEntity next : test) {
-            if (next.getID().equals(e.getID())) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isGoal(EntityID e, Collection<EntityID> test) {
+        return test.contains(e);
     }
 }
