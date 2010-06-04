@@ -3,15 +3,14 @@ package gis2;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.XPath;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Entity;
@@ -47,20 +46,19 @@ public class Scenario {
     private static final QName ID_QNAME = DocumentHelper.createQName("id", RCR_NAMESPACE);
     private static final QName LOCATION_QNAME = DocumentHelper.createQName("location", RCR_NAMESPACE);
 
-    private static final XPath REFUGE_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:refuge");
-    private static final XPath CIV_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:civilian");
-    private static final XPath FB_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:firebrigade");
-    private static final XPath AT_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:ambulanceteam");
-    private static final XPath PF_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:policeforce");
-    private static final XPath FS_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:firestation");
-    private static final XPath AC_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:ambulancecentre");
-    private static final XPath PO_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:policeoffice");
-    private static final XPath FIRE_XPATH = DocumentHelper.createXPath("//rcr:scenario/rcr:fire");
+    private static final QName SCENARIO_QNAME = DocumentHelper.createQName("scenario", RCR_NAMESPACE);
+    private static final QName REFUGE_QNAME = DocumentHelper.createQName("refuge", RCR_NAMESPACE);
+    private static final QName CIV_QNAME = DocumentHelper.createQName("civilian", RCR_NAMESPACE);
+    private static final QName FB_QNAME = DocumentHelper.createQName("firebrigade", RCR_NAMESPACE);
+    private static final QName AT_QNAME = DocumentHelper.createQName("ambulanceteam", RCR_NAMESPACE);
+    private static final QName PF_QNAME = DocumentHelper.createQName("policeforce", RCR_NAMESPACE);
+    private static final QName FS_QNAME = DocumentHelper.createQName("firestation", RCR_NAMESPACE);
+    private static final QName AC_QNAME = DocumentHelper.createQName("ambulancecentre", RCR_NAMESPACE);
+    private static final QName PO_QNAME = DocumentHelper.createQName("policeoffice", RCR_NAMESPACE);
+    private static final QName FIRE_QNAME = DocumentHelper.createQName("fire", RCR_NAMESPACE);
 
-    // Map from uri prefix to uri for XPaths
-    private static final Map<String, String> URIS = new HashMap<String, String>();
-
-    private Collection<Integer> refugeIDs;
+    private Set<Integer> refuges;
+    private Set<Integer> fires;
     private Collection<Integer> civLocations;
     private Collection<Integer> fbLocations;
     private Collection<Integer> atLocations;
@@ -68,28 +66,12 @@ public class Scenario {
     private Collection<Integer> fsLocations;
     private Collection<Integer> acLocations;
     private Collection<Integer> poLocations;
-    private Collection<Integer> fires;
-
-    static {
-        URIS.put("rcr", RCR_NAMESPACE_URI);
-
-        REFUGE_XPATH.setNamespaceURIs(URIS);
-        CIV_XPATH.setNamespaceURIs(URIS);
-        FB_XPATH.setNamespaceURIs(URIS);
-        AT_XPATH.setNamespaceURIs(URIS);
-        PF_XPATH.setNamespaceURIs(URIS);
-        FS_XPATH.setNamespaceURIs(URIS);
-        AC_XPATH.setNamespaceURIs(URIS);
-        PO_XPATH.setNamespaceURIs(URIS);
-        FIRE_XPATH.setNamespaceURIs(URIS);
-    }
 
     /**
-       Create a scenario from an XML document.
-       @param doc The document to read.
+       Create an empty scenario.
     */
-    public Scenario(Document doc) {
-        refugeIDs = new HashSet<Integer>();
+    public Scenario() {
+        refuges = new HashSet<Integer>();
         fires = new HashSet<Integer>();
         civLocations = new ArrayList<Integer>();
         fbLocations = new ArrayList<Integer>();
@@ -98,42 +80,110 @@ public class Scenario {
         fsLocations = new ArrayList<Integer>();
         poLocations = new ArrayList<Integer>();
         acLocations = new ArrayList<Integer>();
-        for (Object next : REFUGE_XPATH.selectNodes(doc)) {
-            Element e = (Element)next;
-            refugeIDs.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
+    }
+
+    /**
+       Create a scenario from an XML document.
+       @param doc The document to read.
+       @throws ScenarioException If the scenario is invalid.
+    */
+    public Scenario(Document doc) throws ScenarioException {
+        this();
+        read(doc);
+    }
+
+    /**
+       Read scenario data from an XML document.
+       @param doc The document to read.
+       @throws ScenarioException If the scenario is invalid.
+    */
+    public void read(Document doc) throws ScenarioException {
+        refuges.clear();
+        fires.clear();
+        civLocations.clear();
+        fbLocations.clear();
+        pfLocations.clear();
+        atLocations.clear();
+        fsLocations.clear();
+        poLocations.clear();
+        acLocations.clear();
+        Element root = doc.getRootElement();
+        if (!root.getQName().equals(SCENARIO_QNAME)) {
+            throw new ScenarioException("Scenario document has wrong root element: expecting " + SCENARIO_QNAME + "; not " + root.getQName());
         }
-        for (Object next : CIV_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(REFUGE_QNAME)) {
+            Element e = (Element)next;
+            refuges.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
+        }
+        for (Object next : root.elements(CIV_QNAME)) {
             Element e = (Element)next;
             civLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : FB_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(FB_QNAME)) {
             Element e = (Element)next;
             fbLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : PF_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(PF_QNAME)) {
             Element e = (Element)next;
             pfLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : AT_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(AT_QNAME)) {
             Element e = (Element)next;
             atLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : FS_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(FS_QNAME)) {
             Element e = (Element)next;
             fsLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : PO_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(PO_QNAME)) {
             Element e = (Element)next;
             poLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : AC_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(AC_QNAME)) {
             Element e = (Element)next;
             acLocations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
-        for (Object next : FIRE_XPATH.selectNodes(doc)) {
+        for (Object next : root.elements(FIRE_QNAME)) {
             Element e = (Element)next;
             fires.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
+    }
+
+    /**
+       Write scenario data to an XML document.
+       @param doc The document to write to.
+    */
+    public void write(Document doc) {
+        Element root = DocumentHelper.createElement(SCENARIO_QNAME);
+        doc.setRootElement(root);
+        for (int next : refuges) {
+            root.addElement(REFUGE_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : fires) {
+            root.addElement(FIRE_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : civLocations) {
+            root.addElement(CIV_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : fbLocations) {
+            root.addElement(FB_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : fsLocations) {
+            root.addElement(FS_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : pfLocations) {
+            root.addElement(PF_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : poLocations) {
+            root.addElement(PO_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : atLocations) {
+            root.addElement(AT_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        for (int next : acLocations) {
+            root.addElement(AC_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
+        root.addNamespace("rcr", RCR_NAMESPACE_URI);
     }
 
     /**
@@ -142,8 +192,8 @@ public class Scenario {
        @param config The configuration.
     */
     public void apply(StandardWorldModel model, Config config) throws ScenarioException {
-        Logger.debug("Creating " + refugeIDs.size() + " refuges");
-        for (int next : refugeIDs) {
+        Logger.debug("Creating " + refuges.size() + " refuges");
+        for (int next : refuges) {
             Logger.debug("Converting building " + next + " to a refuge");
             Building b = (Building)model.getEntity(new EntityID(next));
             if (b == null) {
@@ -230,6 +280,303 @@ public class Scenario {
             Civilian c = new Civilian(new EntityID(++nextID));
             setupAgent(c, id, model, config);
         }
+    }
+
+    /**
+       Get the set of fire locations.
+       @return The set of fire locations.
+    */
+    public Set<Integer> getFires() {
+        return Collections.unmodifiableSet(fires);
+    }
+
+    /**
+       Get the set of refuge locations.
+       @return The set of refuge locations.
+    */
+    public Set<Integer> getRefuges() {
+        return Collections.unmodifiableSet(refuges);
+    }
+
+    /**
+       Get the list of civilian locations.
+       @return The list of civilian locations.
+    */
+    public Collection<Integer> getCivilians() {
+        return Collections.unmodifiableCollection(civLocations);
+    }
+
+    /**
+       Get the list of fire brigade locations.
+       @return The list of fire brigade locations.
+    */
+    public Collection<Integer> getFireBrigades() {
+        return Collections.unmodifiableCollection(fbLocations);
+    }
+
+    /**
+       Get the list of fire station locations.
+       @return The list of fire station locations.
+    */
+    public Collection<Integer> getFireStations() {
+        return Collections.unmodifiableCollection(fsLocations);
+    }
+
+    /**
+       Get the list of police force locations.
+       @return The list of police force locations.
+    */
+    public Collection<Integer> getPoliceForces() {
+        return Collections.unmodifiableCollection(pfLocations);
+    }
+
+    /**
+       Get the list of police office locations.
+       @return The list of police office locations.
+    */
+    public Collection<Integer> getPoliceOffices() {
+        return Collections.unmodifiableCollection(poLocations);
+    }
+
+    /**
+       Get the list of ambulance team locations.
+       @return The list of ambulance team locations.
+    */
+    public Collection<Integer> getAmbulanceTeams() {
+        return Collections.unmodifiableCollection(atLocations);
+    }
+
+    /**
+       Get the list of ambulance centre locations.
+       @return The list of ambulance centre locations.
+    */
+    public Collection<Integer> getAmbulanceCentres() {
+        return Collections.unmodifiableCollection(acLocations);
+    }
+
+    /**
+       Set the set of fire locations.
+       @param newLocations The new set of locations.
+    */
+    public void setFires(Set<Integer> newLocations) {
+        fires.clear();
+        fires.addAll(newLocations);
+    }
+
+    /**
+       Set the set of refuge locations.
+       @param newLocations The new set of locations.
+    */
+    public void setRefuges(Set<Integer> newLocations) {
+        refuges.clear();
+        refuges.addAll(newLocations);
+    }
+
+    /**
+       Set the list of civilian locations.
+       @param newLocations The new list of locations.
+    */
+    public void setCivilians(Collection<Integer> newLocations) {
+        civLocations.clear();
+        civLocations.addAll(newLocations);
+    }
+
+    /**
+       Set the list of fire brigade locations.
+       @param newLocations The new list of locations.
+    */
+    public void setFireBrigades(Collection<Integer> newLocations) {
+        fbLocations.clear();
+        fbLocations.addAll(newLocations);
+    }
+
+    /**
+       Set the list of fire station locations.
+       @param newLocations The new list of locations.
+    */
+    public void setFireStations(Collection<Integer> newLocations) {
+        fsLocations.clear();
+        fsLocations.addAll(newLocations);
+    }
+
+    /**
+       Set the list of police force locations.
+       @param newLocations The new list of locations.
+    */
+    public void setPoliceForces(Collection<Integer> newLocations) {
+        pfLocations.clear();
+        pfLocations.addAll(newLocations);
+    }
+
+    /**
+       Set the list of police office locations.
+       @param newLocations The new list of locations.
+    */
+    public void setPoliceOffices(Collection<Integer> newLocations) {
+        poLocations.clear();
+        poLocations.addAll(newLocations);
+    }
+
+    /**
+       Set the list of ambulance team locations.
+       @param newLocations The new list of locations.
+    */
+    public void setAmbulanceTeams(Collection<Integer> newLocations) {
+        atLocations.clear();
+        atLocations.addAll(newLocations);
+    }
+
+    /**
+       Set the list of ambulance centre locations.
+       @param newLocations The new list of locations.
+    */
+    public void setAmbulanceCentres(Collection<Integer> newLocations) {
+        acLocations.clear();
+        acLocations.addAll(newLocations);
+    }
+
+    /**
+       Add a fire.
+       @param location The new fire location.
+    */
+    public void addFire(int location) {
+        fires.add(location);
+    }
+
+    /**
+       Remove a fire.
+       @param location The fire location to remove.
+    */
+    public void removeFire(int location) {
+        fires.remove(location);
+    }
+
+    /**
+       Add a refuge.
+       @param location The new refuge location.
+    */
+    public void addRefuge(int location) {
+        refuges.add(location);
+    }
+
+    /**
+       Remove a refuge.
+       @param location The refuge location to remove.
+    */
+    public void removeRefuge(int location) {
+        refuges.remove(location);
+    }
+
+    /**
+       Add a civilian.
+       @param location The new civilian location.
+    */
+    public void addCivilian(int location) {
+        civLocations.add(location);
+    }
+
+    /**
+       Remove a civilian.
+       @param location The civilian location to remove.
+    */
+    public void removeCivilian(int location) {
+        civLocations.remove(location);
+    }
+
+    /**
+       Add a fire brigade.
+       @param location The new fire brigade location.
+    */
+    public void addFireBrigade(int location) {
+        fbLocations.add(location);
+    }
+
+    /**
+       Remove a fire brigade.
+       @param location The fire brigade location to remove.
+    */
+    public void removeFireBrigade(int location) {
+        fbLocations.remove(location);
+    }
+
+    /**
+       Add a fire station.
+       @param location The new fire station location.
+    */
+    public void addFireStation(int location) {
+        fsLocations.add(location);
+    }
+
+    /**
+       Remove a fire station.
+       @param location The fire station location to remove.
+    */
+    public void removeFireStation(int location) {
+        fsLocations.remove(location);
+    }
+
+    /**
+       Add a police force.
+       @param location The new police force location.
+    */
+    public void addPoliceForce(int location) {
+        pfLocations.add(location);
+    }
+
+    /**
+       Remove a police force.
+       @param location The police force location to remove.
+    */
+    public void removePoliceForce(int location) {
+        pfLocations.remove(location);
+    }
+
+    /**
+       Add a police office.
+       @param location The new police office location.
+    */
+    public void addPoliceOffice(int location) {
+        poLocations.add(location);
+    }
+
+    /**
+       Remove a police office.
+       @param location The police office location to remove.
+    */
+    public void removePoliceOffice(int location) {
+        poLocations.remove(location);
+    }
+
+    /**
+       Add an ambulance team.
+       @param location The new ambulance team location.
+    */
+    public void addAmbulanceTeam(int location) {
+        atLocations.add(location);
+    }
+
+    /**
+       Remove an ambulance team.
+       @param location The ambulance team location to remove.
+    */
+    public void removeAmbulanceTeam(int location) {
+        atLocations.remove(location);
+    }
+
+    /**
+       Add an ambulance centre.
+       @param location The new ambulance centre location.
+    */
+    public void addAmbulanceCentre(int location) {
+        acLocations.add(location);
+    }
+
+    /**
+       Remove an ambulance centre.
+       @param location The ambulance centre location to remove.
+    */
+    public void removeAmbulanceCentre(int location) {
+        acLocations.remove(location);
     }
 
     private void setupAgent(Human h, EntityID position, StandardWorldModel model, Config config) throws ScenarioException {

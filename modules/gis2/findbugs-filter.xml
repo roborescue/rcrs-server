@@ -1,0 +1,6 @@
+<FindBugsFilter>
+  <Match>
+    <Class name="gis2.RandomScenarioGenerator"/>
+    <Bug pattern="DMI_RANDOM_USED_ONLY_ONCE"/>
+  </Match>
+</FindBugsFilter>
