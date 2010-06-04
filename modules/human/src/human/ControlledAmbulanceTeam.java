@@ -1,5 +1,7 @@
 package human;
 
+import static rescuecore2.misc.Handy.objectsToIDs;
+
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
@@ -49,7 +51,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
                     return;
                 }
                 else {
-                    List<EntityID> path = search.breadthFirstSearch(location(), model.getEntitiesOfType(StandardEntityURN.REFUGE));
+                    List<EntityID> path = search.breadthFirstSearch(me().getPosition(), objectsToIDs(model.getEntitiesOfType(StandardEntityURN.REFUGE)));
                     if (path != null) {
                         sendMove(time, path);
                         return;
@@ -75,7 +77,7 @@ public class ControlledAmbulanceTeam extends StandardAgent<AmbulanceTeam> {
                 }
                 else {
                     // Plan a path
-                    List<EntityID> path = search.breadthFirstSearch(location(), target);
+                    List<EntityID> path = search.breadthFirstSearch(me().getPosition(), target.getID());
                     if (path != null) {
                         sendMove(time, path);
                         return;

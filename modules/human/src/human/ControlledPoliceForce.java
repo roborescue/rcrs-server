@@ -48,7 +48,7 @@ public class ControlledPoliceForce extends StandardAgent<PoliceForce> {
             Logger.info("Nothing to do.");
             return;
         }
-        List<EntityID> path = search.breadthFirstSearch(location(), target);
+        List<EntityID> path = search.breadthFirstSearch(me().getPosition(), target.getID());
         if (path != null) {
             sendMove(time, path);
             return;

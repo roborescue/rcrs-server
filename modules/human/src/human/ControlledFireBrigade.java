@@ -1,5 +1,7 @@
 package human;
 
+import static rescuecore2.misc.Handy.objectsToIDs;
+
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
@@ -45,7 +47,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
         }
         if (target instanceof Refuge) {
             // Just go there
-            List<EntityID> path = search.breadthFirstSearch(location(), target);
+            List<EntityID> path = search.breadthFirstSearch(me().getPosition(), target.getID());
             if (path != null) {
                 sendMove(time, path);
                 return;
@@ -79,7 +81,7 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
         if (targets.isEmpty()) {
             return null;
         }
-        return search.breadthFirstSearch(location(), targets);
+        return search.breadthFirstSearch(me().getPosition(), objectsToIDs(targets));
     }
 
     @Override
@@ -110,4 +112,3 @@ public class ControlledFireBrigade extends StandardAgent<FireBrigade> {
         return "Human controlled fire brigade " + me().getID() + " (" + me().getWater() + " water)" + (target == null ? " (no target)" : " target: building " + target.getID());
     }
 }
-
