@@ -95,6 +95,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
                     || e instanceof PoliceOffice
                     || e instanceof Civilian) {
                 Set<Entity> s = new HashSet<Entity>(initialEntities);
+                s.remove(e);
                 s.add(e);
                 manager.registerAgentControlledEntity(e, s, agentConfig);
             }
