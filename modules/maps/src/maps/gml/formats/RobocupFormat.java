@@ -2,6 +2,7 @@ package maps.gml.formats;
 
 import maps.gml.GMLMap;
 import maps.gml.GMLCoordinates;
+import maps.gml.GMLObject;
 import maps.gml.GMLShape;
 import maps.gml.GMLBuilding;
 import maps.gml.GMLRoad;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 
 import rescuecore2.misc.Pair;
 import rescuecore2.log.Logger;
@@ -57,6 +59,19 @@ public final class RobocupFormat extends GMLMapFormat {
 
     // Map from uri prefix to uri for writing XML documents
     private static final Map<String, String> URIS = new HashMap<String, String>();
+
+    private static final Comparator<GMLObject> ID_SORTER = new Comparator<GMLObject>() {
+        @Override
+        public int compare(GMLObject first, GMLObject second) {
+            if (first.getID() < second.getID()) {
+                return -1;
+            }
+            if (first.getID() > second.getID()) {
+                return 1;
+            }
+            return 0;
+        }
+    };
 
     static {
         URIS.put("gml", Common.GML_NAMESPACE_URI);
@@ -106,7 +121,9 @@ public final class RobocupFormat extends GMLMapFormat {
     }
 
     private void writeNodes(GMLMap map, Element parent) {
-        for (GMLNode next : map.getNodes()) {
+        List<GMLNode> nodes = new ArrayList<GMLNode>(map.getNodes());
+        Collections.sort(nodes, ID_SORTER);
+        for (GMLNode next : nodes) {
             Element e = parent.addElement(Common.GML_NODE_QNAME);
             e.addAttribute(Common.GML_ID_QNAME, String.valueOf(next.getID()));
             e.addElement(Common.GML_POINT_PROPERTY_QNAME).addElement(Common.GML_POINT_QNAME).addElement(Common.GML_COORDINATES_QNAME).setText(next.getCoordinates().toString());
@@ -114,7 +131,9 @@ public final class RobocupFormat extends GMLMapFormat {
     }
 
     private void writeEdges(GMLMap map, Element parent) {
-        for (GMLEdge next : map.getEdges()) {
+        List<GMLEdge> edges = new ArrayList<GMLEdge>(map.getEdges());
+        Collections.sort(edges, ID_SORTER);
+        for (GMLEdge next : edges) {
             Element e = parent.addElement(Common.GML_EDGE_QNAME);
             e.addAttribute(Common.GML_ID_QNAME, String.valueOf(next.getID()));
             e.addElement(Common.GML_DIRECTED_NODE_QNAME).addAttribute(Common.GML_ORIENTATION_QNAME, "-").addAttribute(Common.XLINK_HREF_QNAME, "#" + next.getStart().getID());
@@ -123,7 +142,9 @@ public final class RobocupFormat extends GMLMapFormat {
     }
 
     private void writeShapes(Collection<? extends GMLShape> shapes, QName qname, Element parent) {
-        for (GMLShape next : shapes) {
+        List<GMLShape> sorted = new ArrayList<GMLShape>(shapes);
+        Collections.sort(sorted, ID_SORTER);
+        for (GMLShape next : sorted) {
             Element e = parent.addElement(qname).addAttribute(Common.GML_ID_QNAME, String.valueOf(next.getID())).addElement(Common.GML_FACE_QNAME);
             for (GMLDirectedEdge dEdge : next.getEdges()) {
                 String orientation = dEdge.isForward() ? "+" : "-";
