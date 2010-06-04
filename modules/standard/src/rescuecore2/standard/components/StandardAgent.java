@@ -55,7 +55,7 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
     protected void postConnect() {
         super.postConnect();
         if (shouldIndex()) {
-            model.index(config.getIntValue(StandardWorldModel.GRID_SIZE_KEY, StandardWorldModel.DEFAULT_GRID_SIZE));
+            model.index();
         }
     }
 

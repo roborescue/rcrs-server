@@ -15,6 +15,6 @@ public abstract class StandardSimulator extends AbstractSimulator<StandardWorldM
     @Override
     protected void postConnect() {
         super.postConnect();
-        model.index(config.getIntValue(StandardWorldModel.GRID_SIZE_KEY, StandardWorldModel.DEFAULT_GRID_SIZE));
+        model.index();
     }
 }

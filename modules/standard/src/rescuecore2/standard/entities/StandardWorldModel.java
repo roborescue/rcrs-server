@@ -4,46 +4,41 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.EnumMap;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Properties;
 
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.Shape;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.WorldModelListener;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.misc.Pair;
 import rescuecore2.log.Logger;
+
+import com.infomatiq.jsi.SpatialIndex;
+import com.infomatiq.jsi.IntProcedure;
+import com.infomatiq.jsi.Rectangle;
+import com.infomatiq.jsi.rtree.RTree;
 
 /**
    A wrapper around a WorldModel that indexes Entities by location.
  */
 public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
-    /** Config key entry for specifying the grid size. */
-    public static final String GRID_SIZE_KEY = "worldmodel.standard.grid-size";
-
-    /** The default number of grid cells along each axis. */
-    public static final int DEFAULT_GRID_SIZE = 100;
+    private SpatialIndex index;
 
     private Map<StandardEntityURN, Collection<StandardEntity>> storedTypes;
-    private Collection<StandardEntity> mobileEntities;
-    private Collection<StandardEntity> staticEntities;
-    private Collection<StandardEntity> unindexedEntities;
+    private Set<StandardEntity> unindexedEntities;
+    private Map<Human, Rectangle> humanRectangles;
 
-    private int gridSize;
+    private boolean indexed;
     private int minX;
     private int maxX;
     private int minY;
     private int maxY;
-    private List<List<Cell>> grid;
-    private boolean indexed;
-    private int cellWidth;
-    private int cellHeight;
 
     /**
        Create a StandardWorldModel.
@@ -51,12 +46,23 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     public StandardWorldModel() {
         super(StandardEntity.class);
         storedTypes = new EnumMap<StandardEntityURN, Collection<StandardEntity>>(StandardEntityURN.class);
-        mobileEntities = new HashSet<StandardEntity>();
-        staticEntities = new HashSet<StandardEntity>();
         unindexedEntities = new HashSet<StandardEntity>();
+        humanRectangles = new HashMap<Human, Rectangle>();
         addWorldModelListener(new AddRemoveListener());
-        gridSize = DEFAULT_GRID_SIZE;
         indexed = false;
+    }
+
+    @Override
+    public void merge(ChangeSet changeSet) {
+        super.merge(changeSet);
+        // Update human rectangles
+        for (Map.Entry<Human, Rectangle> next : humanRectangles.entrySet()) {
+            Human h = next.getKey();
+            Rectangle r = next.getValue();
+            index.delete(r, h.getID().getValue());
+            r = makeRectangle(h);
+            index.add(r, h.getID().getValue());
+        }
     }
 
     /**
@@ -76,116 +82,50 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
     }
 
     /**
-       Re-index the world model with a default grid size.
+       Re-index the world model.
     */
     public void index() {
-        index(DEFAULT_GRID_SIZE);
-    }
-
-    /**
-       Re-index the world model.
-       @param newGridSize The size of the grid to create. A zero or negative value will result in a default grid size being used.
-    */
-    public void index(int newGridSize) {
-        if (newGridSize <= 0) {
-            newGridSize = DEFAULT_GRID_SIZE;
-        }
-        if (indexed && unindexedEntities.isEmpty() && gridSize == newGridSize) {
-            Logger.debug("Not bothering with reindex: new grid size is same as old and no entities are currently unindexed");
+        if (indexed && unindexedEntities.isEmpty()) {
+            Logger.debug("Not bothering with reindex: No entities are currently unindexed");
             return;
         }
-        this.gridSize = newGridSize;
         Logger.debug("Re-indexing world model");
-        mobileEntities.clear();
-        staticEntities.clear();
+        long start = System.currentTimeMillis();
+        index = new RTree();
+        index.init(new Properties());
+        humanRectangles.clear();
         unindexedEntities.clear();
-        // Find the bounds of the world first
         minX = Integer.MAX_VALUE;
         maxX = Integer.MIN_VALUE;
         minY = Integer.MAX_VALUE;
         maxY = Integer.MIN_VALUE;
-        Pair<Integer, Integer> location;
+        // Add all rectangles
         for (StandardEntity next : this) {
-            if (next instanceof Human) {
-                mobileEntities.add(next);
-            }
-            else {
-                staticEntities.add(next);
-            }
-            location = next.getLocation(this);
-            if (location != null) {
-                int x = location.first().intValue();
-                int y = location.second().intValue();
-                minX = Math.min(minX, x);
-                maxX = Math.max(maxX, x);
-                minY = Math.min(minY, y);
-                maxY = Math.max(maxY, y);
-            }
-            if (next instanceof Area) {
-                // Include apexes in the bounds
-                Area a = (Area)next;
-                if (a.isEdgesDefined()) {
-                    List<Edge> edges = a.getEdges();
-                    for (Edge edge : edges) {
-                        minX = Math.min(minX, edge.getStartX());
-                        minX = Math.min(minX, edge.getEndX());
-                        maxX = Math.max(maxX, edge.getStartX());
-                        maxX = Math.max(maxX, edge.getEndX());
-                        minY = Math.min(minY, edge.getStartY());
-                        minY = Math.min(minY, edge.getEndY());
-                        maxY = Math.max(maxY, edge.getStartY());
-                        maxY = Math.max(maxY, edge.getEndY());
-                    }
+            Rectangle r = makeRectangle(next);
+            if (r != null) {
+                index.add(r, next.getID().getValue());
+                minX = Math.min(minX, (int)r.min[0]);
+                maxX = Math.max(maxX, (int)r.max[0]);
+                minY = Math.min(minY, (int)r.min[1]);
+                maxY = Math.max(maxY, (int)r.max[1]);
+                if (next instanceof Human) {
+                    humanRectangles.put((Human)next, r);
                 }
             }
         }
-        // Now divide the world into a grid
-        int width = maxX - minX;
-        int height = maxY - minY;
-        Logger.trace("World dimensions: " + minX + ", " + minY + " to " + maxX + ", " + maxY + " (width " + width + ", height " + height + ")");
-        grid = new ArrayList<List<Cell>>(gridSize);
-        Logger.trace("Creating a " + gridSize + " x " + gridSize + " grid");
-        cellWidth = (int)Math.ceil((double)width / (double)gridSize);
-        cellHeight = (int)Math.ceil((double)height / (double)gridSize);
-        for (int i = 0; i < gridSize; ++i) {
-            List<Cell> list = new ArrayList<Cell>(gridSize);
-            grid.add(list);
-            for (int j = 0; j < gridSize; ++j) {
-                Cell cell = new Cell(minX + (i * cellWidth), minY + (j * cellHeight), cellWidth, cellHeight);
-                list.add(cell);
-            }
-        }
-        for (StandardEntity next : staticEntities) {
-            // Find all cells this entity covers
-            if (next instanceof Area) {
-                Logger.debug("Finding cells covered by " + next);
-                for (Cell cell : getCellsCoveredBy(((Area)next).getShape())) {
-                    cell.add(next);
-                }
-            }
-            else if (next instanceof Blockade) {
-                Logger.debug("Finding cells covered by " + next);
-                for (Cell cell : getCellsCoveredBy(((Blockade)next).getShape())) {
-                    cell.add(next);
-                }
-            }
-            else {
-                Logger.debug("Finding cell for " + next);
-                location = next.getLocation(this);
-                if (location != null) {
-                    Cell cell = getCell(getXCell(location.first()), getYCell(location.second()));
-                    cell.add(next);
-                }
-            }
-        }
-        int biggest = 0;
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
-                biggest = Math.max(biggest, getCell(i, j).size());
-            }
-        }
-        Logger.trace("Sorted " + staticEntities.size() + " objects. Biggest cell contains " + biggest + " objects.");
+        long end = System.currentTimeMillis();
+        Logger.debug("Finished re-index. Took " + (end - start) + "ms");
         indexed = true;
+    }
+
+    /**
+       Get objects within a certain range of an entity.
+       @param entity The entity to centre the search on.
+       @param range The range to look up.
+       @return A collection of StandardEntitys that are within range.
+    */
+    public Collection<StandardEntity> getObjectsInRange(EntityID entity, int range) {
+        return getObjectsInRange(getEntity(entity), range);
     }
 
     /**
@@ -210,71 +150,22 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
        @return A collection of StandardEntitys that are within range.
     */
     public Collection<StandardEntity> getObjectsInRange(int x, int y, int range) {
-        //        if (!indexed) {
-        //            index();
-        //        }
-        Collection<StandardEntity> result = new HashSet<StandardEntity>();
-        int cellX = getXCell(x);
-        int cellY = getYCell(y);
-        int cellRangeX = (int)Math.ceil((double)range / (double)cellWidth);
-        int cellRangeY = (int)Math.ceil((double)range / (double)cellHeight);
-        Shape visibleRange = new Ellipse2D.Double(x - range, y - range, range * 2, range * 2);
-        for (int i = Math.max(0, cellX - cellRangeX); i <= Math.min(gridSize - 1, cellX + cellRangeX); ++i) {
-            for (int j = Math.max(0, cellY - cellRangeY); j <= Math.min(gridSize - 1, cellY + cellRangeY); ++j) {
-                Cell cell = getCell(i, j);
-                for (StandardEntity next : cell.getEntities()) {
-                    if (result.contains(next)) {
-                        continue;
+        if (!indexed) {
+            index();
+        }
+        final Collection<StandardEntity> result = new HashSet<StandardEntity>();
+        Rectangle r = new Rectangle(x - range, y - range, x + range, y + range);
+        index.contains(r, new IntProcedure() {
+                @Override
+                public boolean execute(int id) {
+                    StandardEntity e = getEntity(new EntityID(id));
+                    if (e != null) {
+                        result.add(e);
                     }
-                    if (isInside(next, visibleRange)) {
-                        result.add(next);
-                    }
+                    return true;
                 }
-            }
-        }
-        // Now do mobile and unindexed entities
-        for (StandardEntity next : mobileEntities) {
-            if (isInside(next, visibleRange)) {
-                result.add(next);
-            }
-        }
-        for (StandardEntity next : unindexedEntities) {
-            if (isInside(next, visibleRange)) {
-                result.add(next);
-            }
-        }
+            });
         return result;
-    }
-
-    /**
-       Find out if any part of an entity is inside a shape.
-       @param entity The entity to check.
-       @param shape The shape to check.
-       @return true if any part of the entity is inside the shape.
-    */
-    private boolean isInside(StandardEntity entity, Shape shape) {
-        // If this is an area then check for intersection with the range ellipse
-        if (entity instanceof Area) {
-            java.awt.geom.Area area = new java.awt.geom.Area(shape);
-            java.awt.geom.Area test = new java.awt.geom.Area(((Area)entity).getShape());
-            area.intersect(test);
-            return !area.isEmpty();
-        }
-        else if (entity instanceof Blockade) {
-            java.awt.geom.Area area = new java.awt.geom.Area(shape);
-            java.awt.geom.Area test = new java.awt.geom.Area(((Blockade)entity).getShape());
-            area.intersect(test);
-            return !area.isEmpty();
-        }
-        else {
-            Pair<Integer, Integer> location = entity.getLocation(this);
-            if (location != null) {
-                int targetX = location.first();
-                int targetY = location.second();
-                return shape.contains(targetX, targetY);
-            }
-        }
-        return false;
     }
 
     /**
@@ -388,16 +279,31 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         }
     }
 
-    private int getXCell(int x) {
-        return (x - minX) / cellWidth;
-    }
-
-    private int getYCell(int y) {
-        return (y - minY) / cellHeight;
-    }
-
-    private Cell getCell(int x, int y) {
-        return grid.get(x).get(y);
+    private Rectangle makeRectangle(StandardEntity e) {
+        int x1 = Integer.MAX_VALUE;
+        int x2 = Integer.MIN_VALUE;
+        int y1 = Integer.MAX_VALUE;
+        int y2 = Integer.MIN_VALUE;
+        if (e instanceof Area) {
+            int[] apexes = ((Area)e).getApexList();
+            if (apexes.length == 0) {
+                return null;
+            }
+            for (int i = 0; i < apexes.length - 1; i += 2) {
+                x1 = Math.min(x1, apexes[i]);
+                x2 = Math.max(x2, apexes[i]);
+                y1 = Math.min(y1, apexes[i + 1]);
+                y2 = Math.max(y2, apexes[i + 1]);
+            }
+        }
+        else if (e instanceof Human) {
+            Human h = (Human)e;
+            x1 = h.getX();
+            x2 = h.getX();
+            y1 = h.getY();
+            y2 = h.getY();
+        }
+        return new Rectangle(x1, y1, x2, y2);
     }
 
     private int distance(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
@@ -408,46 +314,6 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         double dx = x1 - x2;
         double dy = y1 - y2;
         return (int)Math.hypot(dx, dy);
-    }
-
-    private Set<Cell> getCellsCoveredBy(Shape shape) {
-        Set<Cell> result = new HashSet<Cell>();
-        for (int x = 0; x < gridSize; ++x) {
-            for (int y = 0; y < gridSize; ++y) {
-                Cell cell = getCell(x, y);
-                Rectangle2D cellShape = cell.getShape();
-                if (shape.intersects(cellShape)) {
-                    result.add(cell);
-                }
-            }
-        }
-        return result;
-    }
-
-    private static class Cell {
-        private Collection<StandardEntity> entities;
-        private Rectangle2D shape;
-
-        public Cell(int xMin, int yMin, int width, int height) {
-            shape = new Rectangle2D.Double(xMin, yMin, width, height);
-            entities = new HashSet<StandardEntity>();
-        }
-
-        public Collection<StandardEntity> getEntities() {
-            return entities;
-        }
-
-        public int size() {
-            return entities.size();
-        }
-
-        public void add(StandardEntity e) {
-            entities.add(e);
-        }
-
-        public Rectangle2D getShape() {
-            return shape;
-        }
     }
 
     private class AddRemoveListener implements WorldModelListener<StandardEntity> {
