@@ -155,7 +155,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         }
         final Collection<StandardEntity> result = new HashSet<StandardEntity>();
         Rectangle r = new Rectangle(x - range, y - range, x + range, y + range);
-        index.contains(r, new IntProcedure() {
+        index.intersects(r, new IntProcedure() {
                 @Override
                 public boolean execute(int id) {
                     StandardEntity e = getEntity(new EntityID(id));
