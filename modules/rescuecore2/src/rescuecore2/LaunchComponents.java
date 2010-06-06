@@ -118,6 +118,7 @@ public final class LaunchComponents {
             }
             catch (ConnectionException e) {
                 Logger.info("failed: " + e);
+                break;
             }
         }
     }
