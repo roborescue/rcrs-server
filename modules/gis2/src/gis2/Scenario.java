@@ -190,6 +190,7 @@ public class Scenario {
        Apply this scenario to a world model.
        @param model The world model to alter.
        @param config The configuration.
+       @throws ScenarioException if this scenario is invalid.
     */
     public void apply(StandardWorldModel model, Config config) throws ScenarioException {
         Logger.debug("Creating " + refuges.size() + " refuges");
