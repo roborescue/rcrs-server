@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
    The area model clear simulator. This simulator processes AKClear messages.
@@ -41,10 +43,11 @@ public class ClearSimulator extends StandardSimulator {
         int time = c.getTime();
         Logger.info("Timestep " + time);
         Map<Blockade, Integer> partiallyCleared = new HashMap<Blockade, Integer>();
+        Set<EntityID> cleared = new HashSet<EntityID>();
         for (Command command : c.getCommands()) {
             if (command instanceof AKClear) {
                 AKClear clear = (AKClear)command;
-                if (!isValid(clear)) {
+                if (!isValid(clear, cleared)) {
                     continue;
                 }
                 Logger.debug("Processing " + clear);
@@ -64,6 +67,7 @@ public class ClearSimulator extends StandardSimulator {
                     changes.addChange(area, area.getBlockadesProperty());
                     changes.entityDeleted(blockadeID);
                     partiallyCleared.remove(blockade);
+                    cleared.add(blockadeID);
                     Logger.debug("Cleared " + blockade);
                 }
                 else {
@@ -110,11 +114,15 @@ public class ClearSimulator extends StandardSimulator {
         Logger.info("Timestep " + time + " took " + (end - start) + " ms");
     }
 
-    private boolean isValid(AKClear clear) {
+    private boolean isValid(AKClear clear, Set<EntityID> cleared) {
         StandardEntity agent = model.getEntity(clear.getAgentID());
         StandardEntity target = model.getEntity(clear.getTarget());
         if (agent == null) {
             Logger.info("Rejecting clear command " + clear + ": agent does not exist");
+            return false;
+        }
+        if (cleared.contains(clear.getTarget())) {
+            Logger.info("Ignoring clear command " + clear + ": target already cleared this timestep");
             return false;
         }
         if (target == null) {
