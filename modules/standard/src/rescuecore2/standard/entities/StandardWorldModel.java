@@ -298,10 +298,14 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         }
         else if (e instanceof Human) {
             Human h = (Human)e;
-            x1 = h.getX();
-            x2 = h.getX();
-            y1 = h.getY();
-            y2 = h.getY();
+            Pair<Integer, Integer> location = h.getLocation(this);
+            if (location == null) {
+                return null;
+            }
+            x1 = location.first();
+            x2 = location.first();
+            y1 = location.second();
+            y2 = location.second();
         }
         return new Rectangle(x1, y1, x2, y2);
     }
