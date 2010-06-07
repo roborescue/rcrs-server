@@ -61,7 +61,9 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             Rectangle r = next.getValue();
             index.delete(r, h.getID().getValue());
             r = makeRectangle(h);
-            index.add(r, h.getID().getValue());
+            if (r != null) {
+                index.add(r, h.getID().getValue());
+            }
         }
     }
 
