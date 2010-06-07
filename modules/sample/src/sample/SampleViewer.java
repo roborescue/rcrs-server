@@ -1,22 +1,30 @@
 package sample;
 
+import static rescuecore2.misc.java.JavaTools.instantiate;
+
 import rescuecore2.messages.control.KVTimestep;
 import rescuecore2.view.ViewComponent;
 import rescuecore2.view.ViewListener;
 import rescuecore2.view.RenderedObject;
+import rescuecore2.score.ScoreFunction;
+import rescuecore2.Constants;
+import rescuecore2.Timestep;
 
 import rescuecore2.standard.view.AnimatedWorldModelViewer;
 
 import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import java.util.List;
+import java.text.NumberFormat;
 
 import rescuecore2.standard.components.StandardViewer;
 
@@ -24,14 +32,27 @@ import rescuecore2.standard.components.StandardViewer;
    A simple viewer.
  */
 public class SampleViewer extends StandardViewer {
-    private static final int FONT_SIZE = 20;
+    private static final int DEFAULT_FONT_SIZE = 20;
+    private static final int PRECISION = 3;
 
+    private static final String FONT_SIZE_KEY = "viewer.font-size";
+    private static final String TEAM_NAME_KEY = "viewer.team-name";
+
+    private ScoreFunction scoreFunction;
     private ViewComponent viewer;
     private JLabel timeLabel;
+    private JLabel scoreLabel;
+    private JLabel teamLabel;
+    private NumberFormat format;
 
     @Override
     protected void postConnect() {
         super.postConnect();
+        int fontSize = config.getIntValue(FONT_SIZE_KEY, DEFAULT_FONT_SIZE);
+        String teamName = config.getValue(TEAM_NAME_KEY, "");
+        scoreFunction = makeScoreFunction();
+        format = NumberFormat.getInstance();
+        format.setMaximumFractionDigits(PRECISION);
         JFrame frame = new JFrame("Viewer " + getViewerID() + " (" + model.getAllEntities().size() + " entities)");
         viewer = new AnimatedWorldModelViewer();
         viewer.initialise(config);
@@ -40,11 +61,25 @@ public class SampleViewer extends StandardViewer {
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
         timeLabel = new JLabel("Time: Not started", JLabel.CENTER);
+        teamLabel = new JLabel(teamName, JLabel.LEFT);
+        scoreLabel = new JLabel("Score: Unknown", JLabel.RIGHT);
         timeLabel.setBackground(Color.WHITE);
         timeLabel.setOpaque(true);
-        timeLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, FONT_SIZE));
+        timeLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, fontSize));
+        teamLabel.setBackground(Color.WHITE);
+        teamLabel.setOpaque(true);
+        teamLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, fontSize));
+        scoreLabel.setBackground(Color.WHITE);
+        scoreLabel.setOpaque(true);
+        scoreLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, fontSize));
         frame.add(viewer, BorderLayout.CENTER);
-        frame.add(timeLabel, BorderLayout.NORTH);
+        // CHECKSTYLE:OFF:MagicNumber
+        JPanel labels = new JPanel(new GridLayout(1, 3));
+        // CHECKSTYLE:ON:MagicNumber
+        labels.add(teamLabel);
+        labels.add(timeLabel);
+        labels.add(scoreLabel);
+        frame.add(labels, BorderLayout.NORTH);
         frame.pack();
         frame.setVisible(true);
 
@@ -68,6 +103,7 @@ public class SampleViewer extends StandardViewer {
         SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     timeLabel.setText("Time: " + t.getTime());
+                    scoreLabel.setText("Score: " + format.format(scoreFunction.score(model, new Timestep(t.getTime()))));
                     viewer.view(model, t.getCommands());
                     viewer.repaint();
                 }
@@ -77,5 +113,12 @@ public class SampleViewer extends StandardViewer {
     @Override
     public String toString() {
         return "Sample viewer";
+    }
+
+    private ScoreFunction makeScoreFunction() {
+        String className = config.getValue(Constants.SCORE_FUNCTION_KEY);
+        ScoreFunction result = instantiate(className, ScoreFunction.class);
+        result.initialise(model, config);
+        return result;
     }
 }

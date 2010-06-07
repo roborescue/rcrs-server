@@ -134,7 +134,11 @@ function startKernel {
 function startSims {
     makeClasspath $BASEDIR/lib
     # Viewer
-    xterm -T viewer -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleViewer -c $DIR/config/viewer.cfg $*" &
+    TEAM_NAME_ARG=""
+    if [ ! -z "$TEAM" ]; then
+        TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\"";
+    fi
+    xterm -T viewer -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar rescuecore2.LaunchComponents sample.SampleViewer -c $DIR/config/viewer.cfg $TEAM_NAME_ARG $*" &
     PIDS="$PIDS $!"
     # Simulators
     xterm -T misc -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar rescuecore2.LaunchComponents misc.MiscSimulator -c $DIR/config/misc.cfg $*" &
