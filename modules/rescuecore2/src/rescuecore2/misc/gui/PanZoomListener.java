@@ -14,13 +14,18 @@ import javax.swing.JComponent;
    A mouse listener that will handle panning and zooming in conjunction with a ScreenTransform.
  */
 public class PanZoomListener implements MouseListener, MouseMotionListener, MouseWheelListener {
+    private static final int DEFAULT_MOUSE_ZOOM_THRESHOLD = 100;
     private double mouseDownX;
     private double mouseDownY;
+    private int zoomMouseDownY;
     private boolean dragging;
+    private boolean zooming;
     private ScreenTransform transform;
     private JComponent component;
     private boolean enabled;
     private int panTriggerModifiers;
+    private int zoomTriggerModifiers;
+    private int zoomThreshold;
 
     /**
        Construct a PanZoomListener that listens for events on a JComponent.
@@ -32,6 +37,8 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         component.addMouseMotionListener(this);
         component.addMouseWheelListener(this);
         panTriggerModifiers = InputEvent.BUTTON1_DOWN_MASK;
+        zoomTriggerModifiers = InputEvent.BUTTON2_DOWN_MASK;
+        zoomThreshold = DEFAULT_MOUSE_ZOOM_THRESHOLD;
         enabled = true;
     }
 
@@ -51,13 +58,23 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         enabled = b;
         if (!enabled) {
             dragging = false;
+            zooming = false;
         }
     }
 
     /**
-       Set the modifiers that will trigger panning.
-       @param modifiers The modifiers mask that must be set for panning to begin.
+       Set the modifiers that will trigger zooming.
+       @param modifiers The modifiers mask that must be set for zooming to begin.
     */
+    public void setZoomTriggerModifiers(int modifiers) {
+        zoomTriggerModifiers = modifiers;
+        zooming = false;
+    }
+
+    /**
+    Set the modifiers that will trigger panning.
+    @param modifiers The modifiers mask that must be set for panning to begin.
+     */
     public void setPanTriggerModifiers(int modifiers) {
         panTriggerModifiers = modifiers;
         dragging = false;
@@ -91,6 +108,10 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
             mouseDownY = transform.screenToY(p.y);
             dragging = true;
         }
+        if ((e.getModifiersEx() & zoomTriggerModifiers) == zoomTriggerModifiers) {
+            zoomMouseDownY = e.getPoint().y;
+            zooming = true;
+        }
     }
 
     @Override
@@ -101,6 +122,9 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         if ((e.getModifiersEx() & panTriggerModifiers) != panTriggerModifiers) {
             dragging = false;
         }
+        if ((e.getModifiersEx() & zoomTriggerModifiers) != zoomTriggerModifiers) {
+            zooming = false;
+        }
     }
 
     @Override
@@ -108,12 +132,27 @@ public class PanZoomListener implements MouseListener, MouseMotionListener, Mous
         if (!enabled) {
             return;
         }
-        if (transform == null || !dragging) {
+        if (transform == null) {
             return;
         }
-        Point p = fixEventPoint(e.getPoint());
-        transform.makeCentreRelativeTo(mouseDownX, mouseDownY, p.x, p.y);
-        component.repaint();
+        if (dragging) {
+            Point p = fixEventPoint(e.getPoint());
+            transform.makeCentreRelativeTo(mouseDownX, mouseDownY, p.x, p.y);
+            component.repaint();
+        }
+        if (zooming) {
+            int newY = e.getPoint().y;
+            if (newY < zoomMouseDownY - zoomThreshold) {
+                transform.zoomIn();
+                zoomMouseDownY = newY;
+                component.repaint();
+            }
+            else if (newY > zoomMouseDownY + zoomThreshold) {
+                transform.zoomOut();
+                zoomMouseDownY = newY;
+                component.repaint();
+            }
+        }
     }
 
     @Override
