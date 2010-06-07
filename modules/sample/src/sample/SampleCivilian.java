@@ -71,7 +71,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         Set<String> propertyURNs = new HashSet<String>();
         propertyURNs.add(StandardPropertyURN.X.toString());
         propertyURNs.add(StandardPropertyURN.Y.toString());
-        propertyURNs.add(StandardPropertyURN.NEIGHBOURS.toString());
+        propertyURNs.add(StandardPropertyURN.EDGES.toString());
         propertyURNs.add(StandardPropertyURN.DAMAGE.toString());
         propertyURNs.add(StandardPropertyURN.BURIEDNESS.toString());
         propertyURNs.add(StandardPropertyURN.HP.toString());
