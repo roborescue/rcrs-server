@@ -44,6 +44,8 @@ public class GMLMapViewer extends JComponent {
 
     private static final Color EDGE_COLOUR = Color.BLACK;
 
+    private static final double MIN_ZOOM_BOUNDS_SIZE = 0.1;
+
     private GMLMap map;
     private ScreenTransform transform;
     private PanZoomListener panZoom;
@@ -135,6 +137,15 @@ public class GMLMapViewer extends JComponent {
             return;
         }
         Rectangle2D bounds = GMLTools.getObjectBounds(objects);
+        if (bounds.getWidth() < MIN_ZOOM_BOUNDS_SIZE) {
+            bounds = new Rectangle2D.Double(bounds.getX() - MIN_ZOOM_BOUNDS_SIZE / 2,
+                    bounds.getY(), MIN_ZOOM_BOUNDS_SIZE, bounds.getHeight());
+        }
+        if (bounds.getHeight() < MIN_ZOOM_BOUNDS_SIZE) {
+            bounds = new Rectangle2D.Double(bounds.getX(),
+                    bounds.getY() - MIN_ZOOM_BOUNDS_SIZE / 2,
+                    bounds.getWidth(), MIN_ZOOM_BOUNDS_SIZE);
+        }
         transform.show(bounds);
     }
 
