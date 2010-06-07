@@ -1,7 +1,8 @@
 package rescuecore2.worldmodel;
 
-import static rescuecore2.misc.EncodingTools.writeString;
+import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeProperty;
+import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.readProperty;
 
 import java.util.Set;
@@ -17,8 +18,6 @@ import java.io.IOException;
    Abstract base class for concrete Entity implementations.
  */
 public abstract class AbstractEntity implements Entity {
-    private static final String END_OF_PROPERTIES = "";
-
     private final EntityID id;
     private final Set<EntityListener> listeners;
     private final Set<Property> properties;
@@ -88,22 +87,27 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void write(OutputStream out) throws IOException {
+        int count = 0;
+        for (Property next : getProperties()) {
+            if (next.isDefined()) {
+                ++count;
+            }
+        }
+        writeInt32(count, out);
         for (Property next : getProperties()) {
             if (next.isDefined()) {
                 writeProperty(next, out);
             }
         }
-        // end-of-properties marker
-        writeString(END_OF_PROPERTIES, out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
-        Property prop = null;
-        while (true) {
-            prop = readProperty(in);
+        int count = readInt32(in);
+        for (int i = 0; i < count; ++i) {
+            Property prop = readProperty(in);
             if (prop == null) {
-                return;
+                continue;
             }
             Property existing = getProperty(prop.getURN());
             existing.takeValue(prop);
