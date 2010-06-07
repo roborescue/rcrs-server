@@ -36,6 +36,7 @@ public class SampleViewer extends StandardViewer {
     private static final int PRECISION = 3;
 
     private static final String FONT_SIZE_KEY = "viewer.font-size";
+    private static final String MAXIMISE_KEY = "viewer.maximise";
     private static final String TEAM_NAME_KEY = "viewer.team-name";
 
     private ScoreFunction scoreFunction;
@@ -81,6 +82,9 @@ public class SampleViewer extends StandardViewer {
         labels.add(scoreLabel);
         frame.add(labels, BorderLayout.NORTH);
         frame.pack();
+        if (config.getBooleanValue(MAXIMISE_KEY, false)) {
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
         frame.setVisible(true);
 
         viewer.addViewListener(new ViewListener() {

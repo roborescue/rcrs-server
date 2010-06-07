@@ -8,7 +8,7 @@ processArgs $*
 rm -f $LOGDIR/*.log
 
 startKernel --autorun --nomenu
-startSims --nogui --viewer.team-name=Sample
+startSims --nogui --viewer.team-name=Sample --viewer.maximise=true
 
 makeClasspath $BASEDIR/lib
 xterm -T agents -e "./sampleagent.sh" &
