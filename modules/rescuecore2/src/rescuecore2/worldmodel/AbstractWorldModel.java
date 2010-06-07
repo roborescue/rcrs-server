@@ -92,6 +92,10 @@ public abstract class AbstractWorldModel<T extends Entity> implements WorldModel
             if (existingEntity == null) {
                 // Construct a new entity
                 existingEntity = Registry.getCurrentRegistry().createEntity(changeSet.getEntityURN(e), e);
+                if (existingEntity == null) {
+                    // Bail out
+                    continue;
+                }
                 add = true;
             }
             for (Property p : changeSet.getChangedProperties(e)) {
