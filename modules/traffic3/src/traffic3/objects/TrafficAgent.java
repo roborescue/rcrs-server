@@ -426,25 +426,34 @@ public class TrafficAgent {
         }
         // Head for the best point in the current path element
         if (currentPathElement != null) {
-            currentDestination = null;
+            // Assume we're heading for the target edge.
+            currentDestination = currentPathElement.getGoal();
             Point2D current = new Point2D(location[0], location[1]);
+            Line2D lineToEdge = new Line2D(current, currentDestination);
+            if (verbose) {
+                Logger.debug(this + " finding goal point");
+                Logger.debug(this + " current path element: " + currentPathElement);
+                Logger.debug(this + " current position: " + current);
+                Logger.debug(this + " edge goal: " + currentDestination);
+            }
             for (Point2D next : currentPathElement.getWaypoints()) {
+                if (verbose) {
+                    Logger.debug(this + " next possible goal: " + next);
+                }
+                Line2D lineToNext = new Line2D(current, next);
+                double dot = lineToNext.getDirection().dot(lineToEdge.getDirection());
+                if (dot < 0 || dot > 1) {
+                    if (verbose) {
+                        Logger.debug(this + " next point is " + (dot < 0 ? "backwards" : "too distant") + "; ignoring");
+                    }
+                    continue;
+                }
                 if (hasLos(current, next, currentArea.getAllBlockingLines(), null)) {
                     currentDestination = next;
                     if (verbose) {
-                        Logger.debug(this + " current path element: " + currentPathElement);
-                        Logger.debug(this + " is at " + current);
                         Logger.debug(this + " has line-of-sight to " + next);
                     }
                     break;
-                }
-            }
-            if (currentDestination == null) {
-                // No line of sight found.
-                // TO DO: See if we can see any part of the next edge.
-                currentDestination = currentPathElement.getGoal();
-                if (verbose) {
-                    Logger.debug(this + " has no line of sight. Heading for " + currentDestination);
                 }
             }
         }
