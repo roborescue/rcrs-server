@@ -75,6 +75,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         propertyURNs.add(StandardPropertyURN.DAMAGE.toString());
         propertyURNs.add(StandardPropertyURN.BURIEDNESS.toString());
         propertyURNs.add(StandardPropertyURN.HP.toString());
+        propertyURNs.add(StandardPropertyURN.POSITION.toString());
         result.registerEntityFactory(new FilterEntityFactory(StandardEntityFactory.INSTANCE, entityURNs, true));
         result.registerPropertyFactory(new FilterPropertyFactory(StandardPropertyFactory.INSTANCE, propertyURNs, true));
         return result;
