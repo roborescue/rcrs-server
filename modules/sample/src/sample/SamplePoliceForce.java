@@ -131,7 +131,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
 
     private Blockade getTargetBlockade(Area area, int maxDistance) {
         //        Logger.debug("Looking for nearest blockade in " + area);
-        if (!area.isBlockadesDefined()) {
+        if (area == null || !area.isBlockadesDefined()) {
             //            Logger.debug("Blockades undefined");
             return null;
         }
