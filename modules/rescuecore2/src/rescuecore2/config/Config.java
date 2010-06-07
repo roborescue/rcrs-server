@@ -971,7 +971,7 @@ public class Config {
                     throw new ConfigException(context.getName(), lineNumber, "Empty value");
                 }
                 Logger.trace("Setting '" + key + "' to '" + value + "'");
-                if (config.isDefined(key)) {
+                if (config.isDefined(key) && !value.equals(config.getValue(key))) {
                     Logger.warn("Redefining config key '" + key + "' as '" + value + "'");
                 }
                 config.setValue(key, value);
