@@ -60,7 +60,6 @@ public final class StandardPropertyFactory extends AbstractPropertyFactory<Stand
             return new BooleanProperty(urn);
         case POSITION:
             return new EntityRefProperty(urn);
-        case NEIGHBOURS:
         case BLOCKADES:
             return new EntityRefListProperty(urn);
         case EDGES:

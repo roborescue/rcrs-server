@@ -17,7 +17,6 @@ public enum StandardPropertyURN {
     X(PROPERTY_URN_PREFIX + "x"),
     Y(PROPERTY_URN_PREFIX + "y"),
 
-    NEIGHBOURS(PROPERTY_URN_PREFIX + "neighbours"),
     BLOCKADES(PROPERTY_URN_PREFIX + "blockades"),
     REPAIR_COST(PROPERTY_URN_PREFIX + "repaircost"),
 
