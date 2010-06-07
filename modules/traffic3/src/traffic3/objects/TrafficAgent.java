@@ -429,7 +429,7 @@ public class TrafficAgent {
             // Assume we're heading for the target edge.
             currentDestination = currentPathElement.getGoal();
             Point2D current = new Point2D(location[0], location[1]);
-            Line2D lineToEdge = new Line2D(current, currentDestination);
+            Vector2D vectorToEdge = currentDestination.minus(current).normalised();
             if (verbose) {
                 Logger.debug(this + " finding goal point");
                 Logger.debug(this + " current path element: " + currentPathElement);
@@ -440,10 +440,11 @@ public class TrafficAgent {
                 if (verbose) {
                     Logger.debug(this + " next possible goal: " + next);
                 }
-                Line2D lineToNext = new Line2D(current, next);
-                double dot = lineToNext.getDirection().dot(lineToEdge.getDirection());
+                Vector2D vectorToNext = next.minus(current).normalised();
+                double dot = vectorToNext.dot(vectorToEdge);
                 if (dot < 0 || dot > 1) {
                     if (verbose) {
+                        Logger.debug("Dot product of " + vectorToNext + " and " + vectorToEdge + " is " + dot);
                         Logger.debug(this + " next point is " + (dot < 0 ? "backwards" : "too distant") + "; ignoring");
                     }
                     continue;
