@@ -38,7 +38,7 @@ public abstract class ComponentLauncher implements RequestIDGenerator {
         connection.setRegistry(c.getPreferredRegistry(defaultRegistry));
         connection.startup();
         try {
-            c.connect(connection, this, config);
+            c.connect(connection, this, new Config(config));
         }
         finally {
             Logger.popLogContext();
