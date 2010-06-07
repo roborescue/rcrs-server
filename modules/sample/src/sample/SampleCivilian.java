@@ -62,7 +62,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     @Override
     public Registry getPreferredRegistry(Registry parent) {
         // Return a registry that filters out buildings and civilians
-        Registry result = new Registry(super.getPreferredRegistry(parent));
+        Registry result = new Registry("SampleCivilian filter registry", super.getPreferredRegistry(parent));
         Set<String> entityURNs = new HashSet<String>();
         entityURNs.add(StandardEntityURN.BUILDING.toString());
         entityURNs.add(StandardEntityURN.REFUGE.toString());

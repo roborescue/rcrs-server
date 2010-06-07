@@ -48,7 +48,7 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     @Override
     public Registry getPreferredRegistry(Registry parent) {
         // Return a registry that filters out buildings and civilians
-        Registry result = new Registry(super.getPreferredRegistry(parent));
+        Registry result = new Registry("SamplePoliceForce filter registry", super.getPreferredRegistry(parent));
         Set<String> urns = new HashSet<String>();
         urns.add(StandardEntityURN.BUILDING.toString());
         urns.add(StandardEntityURN.REFUGE.toString());
