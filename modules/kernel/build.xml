@@ -1,7 +1,7 @@
 <!-- This is a build file fragment that will be imported by the main build script -->
 <project>
   <!-- Kernel startup arguments. -->
-  <property name="kernel.startup.config" value="-c config"/>
+  <property name="kernel.startup.config" value="-c config/kernel-inline.cfg"/>
   <property name="kernel.startup.args" value=""/>
 
   <target name="start-kernel" depends="jars,oldsims" description="Start the kernel">

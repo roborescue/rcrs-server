@@ -1,3 +1,9 @@
-#! /bin/sh
-DIR=`dirname $0`/../jars/
-java -Xmx256m -cp $DIR/rescuecore2.jar:$DIR/standard.jar:$DIR/sample.jar sample.LaunchSampleAgents
+#! /bin/bash
+
+. functions.sh
+
+processArgs $*
+
+makeClasspath $BASEDIR/lib $BASEDIR/jars
+
+java -Xmx256m -cp $CP rescuecore2.LaunchComponents sample.SampleFireBrigade*n sample.SampleAmbulanceTeam*n sample.SamplePoliceForce*n sample.SampleCentre*n -c $DIR/config/sample-agents.cfg 2>&1 | tee $LOGDIR/sample-out.log
