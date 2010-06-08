@@ -1,6 +1,7 @@
 package maps.gml.editor;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import maps.gml.GMLBuilding;
@@ -49,15 +50,21 @@ public class ValidateFunction extends AbstractFunction {
     @Override
     public void execute() {
         overlay.clearAllDecorators();
+        
+        Collection<ValidationError> allErrors = new ArrayList<ValidationError>();
         for (MapValidator<GMLMap> validator : GMLMapValidator
                 .getDefaultValidators()) {
             Collection<ValidationError> errors = validator.validate(editor
                     .getMap());
+            allErrors.addAll(errors);
+            
             for (ValidationError e : errors) {
                 System.out.println(e);
                 addDecorator(e.getId());
             }
         }
+        editor.getInspector().setErrors(allErrors);
+        
         editor.getViewer().removeOverlay(overlay);
         editor.getViewer().addOverlay(overlay);
         editor.getViewer().repaint();

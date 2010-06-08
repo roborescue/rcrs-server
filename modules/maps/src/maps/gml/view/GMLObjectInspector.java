@@ -1,21 +1,25 @@
 package maps.gml.view;
 
-import javax.swing.JTable;
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.table.TableModel;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import java.awt.BorderLayout;
+import javax.swing.table.TableModel;
 
-import java.util.Collection;
-import java.util.List;
-
+import maps.gml.GMLDirectedEdge;
+import maps.gml.GMLEdge;
 import maps.gml.GMLMap;
 import maps.gml.GMLNode;
-import maps.gml.GMLEdge;
-import maps.gml.GMLDirectedEdge;
-import maps.gml.GMLShape;
 import maps.gml.GMLObject;
+import maps.gml.GMLShape;
+import maps.validate.ValidationError;
 
 /**
    A class for inspecting GML objects.
@@ -60,6 +64,7 @@ public class GMLObjectInspector extends JPanel {
     private NodeTableModel nodeModel;
     private EdgeTableModel edgeModel;
     private ShapeTableModel shapeModel;
+    private Map<Integer, List<ValidationError>> errors;
 
     /**
        Construct a new GMLObjectInspector.
@@ -68,6 +73,7 @@ public class GMLObjectInspector extends JPanel {
     public GMLObjectInspector(GMLMap map) {
         super(new BorderLayout());
         this.map = map;
+        errors = new HashMap<Integer, List<ValidationError>>();
         nodeModel = new NodeTableModel();
         edgeModel = new EdgeTableModel();
         shapeModel = new ShapeTableModel();
@@ -90,7 +96,8 @@ public class GMLObjectInspector extends JPanel {
     */
     public void inspect(GMLNode node) {
         table.setModel(nodeModel);
-        nodeModel.show(node);
+        List<ValidationError> e = (node == null) ? null : errors.get(node.getID());
+        nodeModel.show(node, e);
     }
 
     /**
@@ -99,7 +106,8 @@ public class GMLObjectInspector extends JPanel {
     */
     public void inspect(GMLEdge edge) {
         table.setModel(edgeModel);
-        edgeModel.show(edge);
+        List<ValidationError> e = (edge == null) ? null : errors.get(edge.getID());
+        edgeModel.show(edge, e);
     }
 
     /**
@@ -108,7 +116,8 @@ public class GMLObjectInspector extends JPanel {
     */
     public void inspect(GMLShape shape) {
         table.setModel(shapeModel);
-        shapeModel.show(shape);
+        List<ValidationError> e = (shape == null) ? null : errors.get(shape.getID());
+        shapeModel.show(shape, e);
     }
 
     /**
@@ -132,18 +141,35 @@ public class GMLObjectInspector extends JPanel {
             throw new IllegalArgumentException("Don't know how to inspect " + object);
         }
     }
+    
+    /**
+     * Set the Collection of ValidationErrors for the Inspector to display in the table.
+     * @param err The collection of errors.
+     */
+    public void setErrors(Collection<ValidationError> err) {
+        errors.clear();
+        for (ValidationError e : err) {
+            if (!errors.containsKey(e.getId())) {
+                errors.put(e.getId(), new ArrayList<ValidationError>());
+            }
+            errors.get(e.getId()).add(e);
+        }
+    }
 
     private class NodeTableModel extends AbstractTableModel {
         private GMLNode node;
+        private List<ValidationError> errors;
 
-        void show(GMLNode n) {
+        void show(GMLNode n, List<ValidationError> err) {
             node = n;
+            errors = err;
             fireTableDataChanged();
         }
 
         @Override
         public int getRowCount() {
-            return NODE_ROWS;
+            int errorCount = (errors == null) ? 0 : errors.size();
+            return NODE_ROWS + errorCount;
         }
 
         @Override
@@ -164,7 +190,7 @@ public class GMLObjectInspector extends JPanel {
                 case NODE_ROW_ATTACHED_EDGES:
                     return "Attached edges";
                 default:
-                    throw new IllegalArgumentException("Unrecognised row: " + row);
+                    return "Error";
                 }
             }
             else if (col == 1) {
@@ -190,7 +216,12 @@ public class GMLObjectInspector extends JPanel {
                     }
                     return result.toString();
                 default:
-                    throw new IllegalArgumentException("Unrecognised row: " + row);
+                    int errorCount = (errors == null) ? 0 : errors.size();
+                    int index = row - NODE_ROWS;
+                    if (index < 0 || index >= errorCount) {
+                        throw new IllegalArgumentException("Invalid row: " + row);
+                    }
+                    return errors.get(index).getMessage();
                 }
             }
             else {
@@ -201,15 +232,18 @@ public class GMLObjectInspector extends JPanel {
 
     private class EdgeTableModel extends AbstractTableModel {
         private GMLEdge edge;
+        private List<ValidationError> errors;
 
-        void show(GMLEdge e) {
+        void show(GMLEdge e, List<ValidationError> err) {
             edge = e;
+            errors = err;
             fireTableDataChanged();
         }
 
         @Override
         public int getRowCount() {
-            return EDGE_ROWS;
+            int errorCount = (errors == null) ? 0 : errors.size();
+            return EDGE_ROWS + errorCount;
         }
 
         @Override
@@ -232,7 +266,7 @@ public class GMLObjectInspector extends JPanel {
                 case EDGE_ROW_ATTACHED_SHAPES:
                     return "Attached shapes";
                 default:
-                    throw new IllegalArgumentException("Unrecognised row: " + row);
+                    return "Error";
                 }
             }
             else if (col == 1) {
@@ -260,7 +294,12 @@ public class GMLObjectInspector extends JPanel {
                     }
                     return result.toString();
                 default:
-                    throw new IllegalArgumentException("Unrecognised row: " + row);
+                    int errorCount = (errors == null) ? 0 : errors.size();
+                    int index = row - EDGE_ROWS;
+                    if (index < 0 || index >= errorCount) {
+                        throw new IllegalArgumentException("Invalid row: " + row);
+                    }
+                    return errors.get(index).getMessage();
                 }
             }
             else {
@@ -271,15 +310,19 @@ public class GMLObjectInspector extends JPanel {
 
     private static class ShapeTableModel extends AbstractTableModel {
         private GMLShape shape;
+        private List<ValidationError> errors;
 
-        void show(GMLShape s) {
+        void show(GMLShape s, List<ValidationError> err) {
             shape = s;
+            errors = err;
             fireTableDataChanged();
         }
 
         @Override
         public int getRowCount() {
-            return SHAPE_BASE_ROWS + (shape == null ? 0 : shape.getEdges().size());
+            int edgeCount = (shape == null) ? 0 : shape.getEdges().size();
+            int errorCount = (errors == null) ? 0 : errors.size();
+            return SHAPE_BASE_ROWS + edgeCount + errorCount;
         }
 
         @Override
@@ -296,7 +339,11 @@ public class GMLObjectInspector extends JPanel {
                 case SHAPE_ROW_EDGE_COUNT:
                     return "Number of edges";
                 default:
-                    return "Edge " + (row - SHAPE_BASE_ROWS + 1);
+                    int edgeCount = (shape == null) ? 0 : shape.getEdges().size();
+                    if (row < SHAPE_BASE_ROWS + edgeCount) {
+                        return "Edge " + (row - SHAPE_BASE_ROWS + 1);
+                    }
+                    return "Error";
                 }
             }
             else if (col == 1) {
@@ -309,12 +356,22 @@ public class GMLObjectInspector extends JPanel {
                 case SHAPE_ROW_EDGE_COUNT:
                     return shape.getEdges().size();
                 default:
-                    List<GMLDirectedEdge> edges = shape.getEdges();
-                    int index = row - SHAPE_BASE_ROWS;
-                    if (index < 0 || index >= edges.size()) {
+                    int edgeCount = (shape == null) ? 0 : shape.getEdges().size();
+                    if (row < SHAPE_BASE_ROWS + edgeCount) {
+                        List<GMLDirectedEdge> edges = shape.getEdges();
+                        int index = row - SHAPE_BASE_ROWS;
+                        if (index < 0 || index >= edges.size()) {
+                            throw new IllegalArgumentException("Invalid row: " + row);
+                        }
+                        return edges.get(index);
+                    }
+                    
+                    int errorCount = (errors == null) ? 0 : errors.size();
+                    int index = row - SHAPE_BASE_ROWS - edgeCount;
+                    if (index < 0 || index >= errorCount) {
                         throw new IllegalArgumentException("Invalid row: " + row);
                     }
-                    return edges.get(index);
+                    return errors.get(index).getMessage();
                 }
             }
             else {
