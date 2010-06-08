@@ -1,14 +1,16 @@
 package maps.gml;
 
-import java.text.NumberFormat;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
    A set of GML coordinates. These coordinates are in m.
 */
 public class GMLCoordinates {
-    private static final NumberFormat FORMAT = new DecimalFormat("#0.000");
-
+    private static final NumberFormat FORMAT = new DecimalFormat("#0.000", DecimalFormatSymbols.getInstance(Locale.US));
+            
     private double x;
     private double y;
 
