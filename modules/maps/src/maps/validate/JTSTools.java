@@ -57,7 +57,7 @@ public final class JTSTools {
             }
             seq.add(geomFactory.createLineString(coord));
         }
-        
+
         try {
             if (!seq.isSequenceable()) {
                 throw new ValidationException(shape.getID(),
@@ -73,7 +73,9 @@ public final class JTSTools {
         CoordinateList coord = new CoordinateList(line.getCoordinates());
         coord.closeRing();
 
+        // CHECKSTYLE:OFF:MagicNumber
         if (coord.size() < 4) {
+            // CHECKSTYLE:ON:MagicNumber
             throw new ValidationException(shape.getID(), "Degenerate Shape");
         }
 

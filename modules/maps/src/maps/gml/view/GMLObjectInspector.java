@@ -141,7 +141,7 @@ public class GMLObjectInspector extends JPanel {
             throw new IllegalArgumentException("Don't know how to inspect " + object);
         }
     }
-    
+
     /**
      * Set the Collection of ValidationErrors for the Inspector to display in the table.
      * @param err The collection of errors.
@@ -356,7 +356,7 @@ public class GMLObjectInspector extends JPanel {
                 case SHAPE_ROW_EDGE_COUNT:
                     return shape.getEdges().size();
                 default:
-                    int edgeCount = (shape == null) ? 0 : shape.getEdges().size();
+                    int edgeCount = shape.getEdges().size();
                     if (row < SHAPE_BASE_ROWS + edgeCount) {
                         List<GMLDirectedEdge> edges = shape.getEdges();
                         int index = row - SHAPE_BASE_ROWS;
@@ -365,7 +365,6 @@ public class GMLObjectInspector extends JPanel {
                         }
                         return edges.get(index);
                     }
-                    
                     int errorCount = (errors == null) ? 0 : errors.size();
                     int index = row - SHAPE_BASE_ROWS - edgeCount;
                     if (index < 0 || index >= errorCount) {

@@ -10,7 +10,7 @@ import java.util.Locale;
 */
 public class GMLCoordinates {
     private static final NumberFormat FORMAT = new DecimalFormat("#0.000", DecimalFormatSymbols.getInstance(Locale.US));
-            
+
     private double x;
     private double y;
 
