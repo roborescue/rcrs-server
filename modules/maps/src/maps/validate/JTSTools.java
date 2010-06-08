@@ -12,6 +12,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.operation.linemerge.LineSequencer;
+import com.vividsolutions.jts.util.AssertionFailedException;
 
 /**
  * This class provides some conversion functions from GML map classes to JTS
@@ -56,9 +57,18 @@ public final class JTSTools {
             }
             seq.add(geomFactory.createLineString(coord));
         }
-
+        
+        try {
+            if (!seq.isSequenceable()) {
+                throw new ValidationException(shape.getID(),
+                "Outline is not a single line.");
+            }
+        }
+        catch (AssertionFailedException e) {
+            throw new ValidationException(shape.getID(),
+                    "Could not get outline: " + e.getMessage());
+        }
         Geometry line = seq.getSequencedLineStrings();
-        assert (line instanceof LineString && ((LineString) line).isRing());
 
         CoordinateList coord = new CoordinateList(line.getCoordinates());
         coord.closeRing();
