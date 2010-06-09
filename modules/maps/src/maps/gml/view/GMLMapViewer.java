@@ -137,6 +137,9 @@ public class GMLMapViewer extends JComponent {
             return;
         }
         Rectangle2D bounds = GMLTools.getObjectBounds(objects);
+        if (bounds == null) {
+            return;
+        }
         if (bounds.getWidth() < MIN_ZOOM_BOUNDS_SIZE) {
             bounds = new Rectangle2D.Double(bounds.getX() - MIN_ZOOM_BOUNDS_SIZE / 2,
                     bounds.getY(), MIN_ZOOM_BOUNDS_SIZE, bounds.getHeight());
