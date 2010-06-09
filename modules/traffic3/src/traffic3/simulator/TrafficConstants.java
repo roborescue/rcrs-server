@@ -19,9 +19,9 @@ public final class TrafficConstants {
     private static NumberGenerator<Double> nudge;
 
     // Wall force constants
-    private static final double WALL_DISTANCE_CUTOFF = 3000;
-    private static final double WALL_FORCE_COEFFICIENT_A = 0.5;
-    private static final double WALL_FORCE_COEFFICIENT_B = 2;
+    private static final double WALL_DISTANCE_CUTOFF = 2000;
+    private static final double WALL_FORCE_COEFFICIENT_A = 0.01;
+    private static final double WALL_FORCE_COEFFICIENT_B = 0.7;
     //    private static final double WALL_FORCE_COEFFICIENT_K = 0.00001;
 
     private TrafficConstants() {}

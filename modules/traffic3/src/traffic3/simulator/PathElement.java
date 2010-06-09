@@ -2,6 +2,7 @@ package traffic3.simulator;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Line2D;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,17 +14,20 @@ import java.util.Collections;
 */
 public class PathElement {
     private EntityID areaID;
+    private Line2D edgeLine;
     private Point2D goalPoint;
     private List<Point2D> allPoints;
 
     /**
        Construct a PathElement.
        @param areaID The ID of the area this element refers to.
+       @param edgeLine The line of the edge we're heading for (if any).
        @param goalPoint The goal of the path element.
        @param wayPoints Zero or more intermediate points that can be used if there is no line-of-sight to the goal.
     */
-    public PathElement(EntityID areaID, Point2D goalPoint, Point2D... wayPoints) {
+    public PathElement(EntityID areaID, Line2D edgeLine, Point2D goalPoint, Point2D... wayPoints) {
         this.areaID = areaID;
+        this.edgeLine = edgeLine;
         this.goalPoint = goalPoint;
         allPoints = new ArrayList<Point2D>(Arrays.asList(wayPoints));
         allPoints.add(goalPoint);
@@ -41,6 +45,14 @@ public class PathElement {
     */
     public Point2D getGoal() {
         return goalPoint;
+    }
+
+    /**
+       Get the target edge line, if any.
+       @return The target edge line or null.
+    */
+    public Line2D getEdgeLine() {
+        return edgeLine;
     }
 
     /**

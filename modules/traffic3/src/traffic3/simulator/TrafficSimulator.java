@@ -294,7 +294,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             int y = (edge.getStartY() + edge.getEndY()) / 2;
             Point2D edgePoint = new Point2D(x, y);
             Point2D centrePoint = new Point2D(currentArea.getX(), currentArea.getY());
-            steps.add(new PathElement(next, edgePoint, centrePoint));
+            steps.add(new PathElement(next, edge.getLine(), edgePoint, centrePoint));
             current = next;
             currentArea = a;
         }
@@ -308,7 +308,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             Logger.warn("Rejecting move: Path is empty");
             return;
         }
-        steps.add(new PathElement(current, new Point2D(targetX, targetY)));
+        steps.add(new PathElement(current, null, new Point2D(targetX, targetY)));
         agent.setPath(steps);
     }
 

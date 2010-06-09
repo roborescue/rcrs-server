@@ -23,7 +23,6 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.collections.LazyMap;
-import rescuecore2.log.Logger;
 
 import com.infomatiq.jsi.SpatialIndex;
 import com.infomatiq.jsi.Rectangle;

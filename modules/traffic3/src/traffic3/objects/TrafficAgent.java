@@ -320,23 +320,19 @@ public class TrafficAgent {
         }
         // Check current destination
         if (currentPathElement != null) {
-            double dx = currentPathElement.getGoal().getX() - location[0];
-            double dy = currentPathElement.getGoal().getY() - location[1];
-            double dSquared = (dx * dx) + (dy * dy);
-            if (dSquared < NEARBY_THRESHOLD_SQUARED) {
-                //                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
-                currentPathElement = null;
-            }
-            else {
-                // Remove any waypoints that we're near to
-                List<Point2D> waypoints = new ArrayList<Point2D>(currentPathElement.getWaypoints());
-                for (Point2D next : waypoints) {
-                    dx = next.getX() - location[0];
-                    dy = next.getY() - location[1];
-                    dSquared = (dx * dx) + (dy * dy);
-                    if (dSquared < NEARBY_THRESHOLD_SQUARED) {
-                        //                Logger.debug("Near target: location = " + location[0] + ", " + location[1] + ", target = " + currentDestination + ", distance squared = " + dSquared + ", threshold = " + NEARBY_THRESHOLD_SQUARED);
-                        currentPathElement.removeWaypoint(next);
+            // If we just crossed the target edge then clear the current path element
+            if (currentDestination == currentPathElement.getGoal() && currentDestination != finalDestination) {
+                // Did we cross the edge?
+                if (currentPathElement.getEdgeLine() != null && crossedLine(location[0], location[1], x, y, currentPathElement.getEdgeLine())) {
+                    currentPathElement = null;
+                }
+                // Are we close enough to the goal point?
+                else {
+                    double dx = x - currentDestination.getX();
+                    double dy = y - currentDestination.getY();
+                    double distanceSquared = dx * dx + dy * dy;
+                    if (distanceSquared < NEARBY_THRESHOLD_SQUARED) {
+                        currentPathElement = null;
                     }
                 }
             }
@@ -440,14 +436,16 @@ public class TrafficAgent {
                 if (verbose) {
                     Logger.debug(this + " next possible goal: " + next);
                 }
-                Vector2D vectorToNext = next.minus(current).normalised();
-                double dot = vectorToNext.dot(vectorToEdge);
-                if (dot < 0 || dot > 1) {
-                    if (verbose) {
-                        Logger.debug("Dot product of " + vectorToNext + " and " + vectorToEdge + " is " + dot);
-                        Logger.debug(this + " next point is " + (dot < 0 ? "backwards" : "too distant") + "; ignoring");
+                if (next != currentPathElement.getGoal()) {
+                    Vector2D vectorToNext = next.minus(current).normalised();
+                    double dot = vectorToNext.dot(vectorToEdge);
+                    if (dot < 0 || dot > 1) {
+                        if (verbose) {
+                            Logger.debug("Dot product of " + vectorToNext + " and " + vectorToEdge + " is " + dot);
+                            Logger.debug(this + " next point is " + (dot < 0 ? "backwards" : "too distant") + "; ignoring");
+                        }
+                        continue;
                     }
-                    continue;
                 }
                 if (hasLos(current, next, currentArea.getAllBlockingLines(), null)) {
                     currentDestination = next;
@@ -536,10 +534,21 @@ public class TrafficAgent {
         return false;
     }
 
+    private boolean crossedLine(double oldX, double oldY, double newX, double newY, Line2D line) {
+        Line2D moved = new Line2D(oldX, oldY, newX - oldX, newY - oldY);
+        Vector2D normal = line.getDirection().getNormal().normalised();
+        double dot1 = new Vector2D(oldX - line.getOrigin().getX(), oldY - line.getOrigin().getY()).normalised().dot(normal);
+        double dot2 = new Vector2D(newX - line.getOrigin().getX(), newY - line.getOrigin().getY()).normalised().dot(normal);
+        return (((dot1 < 0 && dot2 > 0)
+                 || (dot1 > 0 && dot2 < 0))
+                && GeometryTools2D.getSegmentIntersectionPoint(moved, line) != null);
+    }
+
     private boolean crossedWall(double oldX, double oldY, double newX, double newY) {
         Line2D moved = new Line2D(oldX, oldY, newX - oldX, newY - oldY);
         for (Line2D test : blockingLines) {
             if (GeometryTools2D.getSegmentIntersectionPoint(moved, test) != null) {
+                //            if (crossedLine(oldX, oldY, newX, newY, test)) {
                 Logger.warn(this + " crossed wall");
                 Logger.warn("Old location: " + oldX + ", " + oldY);
                 Logger.warn("New location: " + newX + ", " + newY);
@@ -691,8 +700,6 @@ public class TrafficAgent {
         double ySum = 0;
         if (currentArea != null) {
             double r = getRadius();
-            double dx;
-            double dy;
             double dist;
             double cutoff = TrafficConstants.getWallDistanceCutoff();
             double a = TrafficConstants.getWallForceCoefficientA();
@@ -710,19 +717,9 @@ public class TrafficAgent {
                 if (verbose) {
                     Logger.debug("Closest point: " + closest);
                 }
+                boolean endPoint = false;
                 if (closest == line.getOrigin() || closest == line.getEndPoint()) {
-                    // Closest point is an endpoint - we're outside the influence of this line.
-                    if (verbose) {
-                        Logger.debug("Closest point is an endpoint");
-                    }
-                    continue;
-                }
-                if (!hasLos(position, closest, blockingLines, line)) {
-                    // No line-of-sight to closest point
-                    if (verbose) {
-                        Logger.debug("No line of sight");
-                    }
-                    continue;
+                    endPoint = true;
                 }
                 dist = GeometryTools2D.getDistance(closest, position);
                 if (dist > cutoff) {
@@ -731,8 +728,15 @@ public class TrafficAgent {
                     }
                     continue;
                 }
+                if (!endPoint && !hasLos(position, closest, blockingLines, line)) {
+                    // No line-of-sight to closest point
+                    if (verbose) {
+                        Logger.debug("No line of sight");
+                    }
+                    continue;
+                }
                 // Two forces apply:
-                // If the agent is moving towards this wall then apply a force to bring the agent to a stop. This decreases exponentially with distance.
+                // If the agent is moving towards this wall then apply a force to bring the agent to a stop. This force applies when the distance is less than the agent radius.
                 // Also apply a force that decreases exponentially with distance no matter what the agent is doing.
                 double currentVX = velocity[0];
                 double currentVY = velocity[1];
@@ -741,28 +745,42 @@ public class TrafficAgent {
                 double expectedVX = currentVX + dt * currentFX;
                 double expectedVY = currentVY + dt * currentFY;
                 Vector2D expectedVelocity = new Vector2D(expectedVX, expectedVY);
-                Vector2D wallForce = position.minus(closest).normalised();
+                Vector2D wallForceVector = position.minus(closest).normalised();
+                double radii = dist / r;
                 // Compute the stopping force
-                double magnitude = -expectedVelocity.dot(wallForce);
-                if (magnitude < 0) {
+                // Magnitude is the multiple of wallForceVector required to bring the agent to a stop.
+                double magnitude = -expectedVelocity.dot(wallForceVector);
+                if (magnitude < 0 || radii >= 1) {
                     magnitude = 0;
+                    // Agent is moving away or far enough away - no stopping force required.
                 }
-                magnitude = Math.min(1, Math.exp(-((dist / r) - 1) * b));
-                Vector2D stopForce = wallForce.scale(magnitude / dt);
+                else if (radii < 1) {
+                    double d = Math.exp(-(radii - 1) * b);
+                    if (d < 1) {
+                        d = 0;
+                    }
+                    magnitude *= d;
+                    if (endPoint) {
+                        // Endpoints are counted twice so halve the magnitude
+                        magnitude /= 2;
+                    }
+                }
+                Vector2D stopForce = wallForceVector.scale(magnitude / dt);
                 // Compute the repulsion force
                 // Decreases exponentially with distance in terms of agent radii.
-                double factor = a * Math.min(1, Math.exp(-((dist / r) - 1) * b));
-                Vector2D repulsionForce = wallForce.scale(factor / dt);
+                double factor = a * Math.min(1, Math.exp(-(radii - 1) * b));
+                Vector2D repulsionForce = wallForceVector.scale(factor / dt);
                 xSum += stopForce.getX();
                 ySum += stopForce.getY();
                 xSum += repulsionForce.getX();
                 ySum += repulsionForce.getY();
                 if (verbose) {
                     Logger.debug("Distance to wall : " + dist);
+                    Logger.debug("Distance to wall : " + radii + " radii");
                     Logger.debug("Current velocity : " + currentVX + ", " + currentVY);
                     Logger.debug("Current force    : " + currentFX + ", " + currentFY);
                     Logger.debug("Expected velocity: " + expectedVelocity);
-                    Logger.debug("Wall force       : " + wallForce);
+                    Logger.debug("Wall force       : " + wallForceVector);
                     Logger.debug("Magnitude        : " + magnitude);
                     Logger.debug("Stop force       : " + stopForce);
                     Logger.debug("Factor           : " + factor + " (e^" + (-(dist / r) * b) + ")");
