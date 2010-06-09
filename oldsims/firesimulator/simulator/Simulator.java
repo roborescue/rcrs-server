@@ -245,7 +245,7 @@ public class Simulator {
             double dT = cellTemp - b.getTemperature();
             double energyTransferToBuilding = dT * AIR_TO_BUILDING_COEFFICIENT * TIME_STEP_LENGTH * cellCover * world.SAMPLE_SIZE;
             energyDelta += energyTransferToBuilding;
-            double newCellTemp = cellTemp - AIR_CELL_HEAT_CAPACITY * TIME_STEP_LENGTH * world.SAMPLE_SIZE * energyTransferToBuilding;
+            double newCellTemp = cellTemp - energyTransferToBuilding / (AIR_CELL_HEAT_CAPACITY * world.SAMPLE_SIZE);
             world.setAirCellTemp(cellX, cellY, newCellTemp);
 
             /*
