@@ -24,7 +24,13 @@ import rescuecore2.log.Logger;
    Container for building information during conversion.
 */
 public class BuildingInfo {
-    private static final int ENTRANCE_SIZE = 2500;
+    /**
+     * Width of a generated entrance road.
+     */
+    public static final int ENTRANCE_SIZE = 2500;
+
+    private Point2D roadLeft;
+    private Point2D roadRight;
 
     private LegacyBuilding building;
     private List<GMLNode> apexes;
@@ -35,6 +41,22 @@ public class BuildingInfo {
     */
     public BuildingInfo(LegacyBuilding b) {
         building = b;
+    }
+
+    /**
+        Set the left corner at the road end.
+        @param newRoadLeft The new head-left corner.
+     */
+    public void setRoadLeft(Point2D newRoadLeft) {
+        roadLeft = newRoadLeft;
+    }
+
+    /**
+        Set the right corner at the road end.
+        @param newRoadRight The new head-right corner.
+     */
+    public void setRoadRight(Point2D newRoadRight) {
+        roadRight = newRoadRight;
     }
 
     /**
@@ -86,23 +108,25 @@ public class BuildingInfo {
         GMLNode rightNode = gml.createNode(rightEntrance.first().getOrigin().getX(), rightEntrance.first().getOrigin().getY());
         //        Logger.debug("New right node: " + rightNode);
         gml.splitEdge(rightEntrance.second().getEdge(), rightNode);
+        gml.removeEdge(leftEntrance.second().getEdge());
+        gml.removeEdge(rightEntrance.second().getEdge());
         // Now create the new road segment
-        Pair<Line2D, GMLDirectedEdge> leftRoad = getEntrancePoint(left, centreLine, getAllRoadEdges(nodeInfo.values(), roadInfo.values()), true, false);
-        if (leftRoad == null) {
-            Logger.warn(b + ": Left entrance line does not intersect any roads");
-            return;
-        }
-        GMLNode roadLeftNode = gml.createNode(leftRoad.first().getEndPoint().getX(), leftRoad.first().getEndPoint().getY());
+//        Pair<Line2D, GMLDirectedEdge> leftRoad = getEntrancePoint(left, centreLine, getAllRoadEdges(nodeInfo.values(), roadInfo.values()), true, false);
+//        if (leftRoad == null) {
+//            Logger.warn(b + ": Left entrance line does not intersect any roads");
+//            return;
+//        }
+        GMLNode roadLeftNode = gml.createNode(roadLeft.getX(), roadLeft.getY());
         //        Logger.debug("New road left node: " + roadLeftNode);
-        gml.splitEdge(leftRoad.second().getEdge(), roadLeftNode);
-        Pair<Line2D, GMLDirectedEdge> rightRoad = getEntrancePoint(right, centreLine, getAllRoadEdges(nodeInfo.values(), roadInfo.values()), false, false);
-        if (rightRoad == null) {
-            Logger.warn(b + ": Right entrance line does not intersect any roads");
-            return;
-        }
-        GMLNode roadRightNode = gml.createNode(rightRoad.first().getEndPoint().getX(), rightRoad.first().getEndPoint().getY());
+//        gml.splitEdge(leftRoad.second().getEdge(), roadLeftNode);
+//        Pair<Line2D, GMLDirectedEdge> rightRoad = getEntrancePoint(right, centreLine, getAllRoadEdges(nodeInfo.values(), roadInfo.values()), false, false);
+//        if (rightRoad == null) {
+//            Logger.warn(b + ": Right entrance line does not intersect any roads");
+//            return;
+//        }
+        GMLNode roadRightNode = gml.createNode(roadRight.getX(), roadRight.getY());
         //        Logger.debug("New road left node: " + roadRightNode);
-        gml.splitEdge(rightRoad.second().getEdge(), roadRightNode);
+//        gml.splitEdge(rightRoad.second().getEdge(), roadRightNode);
         // Create the road
         gml.createRoad(gml.apexesToEdges(roadLeftNode, roadRightNode, rightNode, leftNode));
     }

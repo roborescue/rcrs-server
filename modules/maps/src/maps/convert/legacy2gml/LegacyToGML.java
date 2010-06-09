@@ -59,6 +59,30 @@ public final class LegacyToGML {
         for (LegacyRoad r : legacy.getRoads()) {
             roadInfo.put(r.getID(), new RoadInfo());
         }
+        Logger.debug("Removing duplicate roads");
+        for (LegacyNode n : legacy.getNodes()) {
+            Map<Integer, LegacyRoad> roadToFarNode = new HashMap<Integer, LegacyRoad>();
+            for (int rid : n.getEdges()) {
+                LegacyRoad road = legacy.getRoad(rid);
+                if (road == null) {
+                    continue;
+                }
+                int farNodeId = (n.getID() == road.getHead()) ? road.getTail() : road.getHead();
+
+                // Use the widest road
+                LegacyRoad existingRoad = roadToFarNode.get(farNodeId);
+                if (existingRoad != null && road.getWidth() <= existingRoad.getWidth()) {
+                    roadInfo.remove(road.getID());
+                }
+                else if (existingRoad != null) {
+                    roadInfo.remove(existingRoad.getID());
+                    roadToFarNode.put(farNodeId, road);
+                }
+                else {
+                    roadToFarNode.put(farNodeId, road);
+                }
+            }
+        }
         Logger.debug("Reading nodes");
         for (LegacyNode n : legacy.getNodes()) {
             nodeInfo.put(n.getID(), new NodeInfo(n));
@@ -69,7 +93,7 @@ public final class LegacyToGML {
         }
         Logger.debug("Creating intersections");
         for (NodeInfo n : nodeInfo.values()) {
-            n.process(legacy, gml, roadInfo);
+            n.process(legacy, gml, roadInfo, buildingInfo);
         }
         Logger.debug("Creating roads");
         for (RoadInfo r : roadInfo.values()) {

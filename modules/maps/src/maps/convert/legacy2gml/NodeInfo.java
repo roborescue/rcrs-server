@@ -1,23 +1,24 @@
 package maps.convert.legacy2gml;
 
 
-import maps.legacy.LegacyMap;
-import maps.legacy.LegacyRoad;
-import maps.legacy.LegacyNode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import maps.gml.GMLMap;
 import maps.gml.GMLNode;
 import maps.gml.GMLRoad;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Comparator;
-import java.util.Collections;
-import java.util.Iterator;
-
-import rescuecore2.misc.geometry.Point2D;
-import rescuecore2.misc.geometry.Line2D;
+import maps.legacy.LegacyBuilding;
+import maps.legacy.LegacyMap;
+import maps.legacy.LegacyNode;
+import maps.legacy.LegacyObject;
+import maps.legacy.LegacyRoad;
 import rescuecore2.misc.geometry.GeometryTools2D;
+import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Vector2D;
 
 /**
@@ -67,38 +68,47 @@ public class NodeInfo {
        @param legacy The legacy map.
        @param gml The GML map.
        @param roadInfo A map from road ID to RoadInfo.
+       @param buildingInfo A map from building ID to BuildingInfo.
     */
-    public void process(LegacyMap legacy, GMLMap gml, Map<Integer, RoadInfo> roadInfo) {
+    public void process(LegacyMap legacy, GMLMap gml, Map<Integer, RoadInfo> roadInfo, Map<Integer, BuildingInfo> buildingInfo) {
         apexes = new ArrayList<GMLNode>();
-        List<RoadAspect> roads = new ArrayList<RoadAspect>();
+        List<EdgeAspect> edges = new ArrayList<EdgeAspect>();
         for (int id : node.getEdges()) {
             LegacyRoad lRoad = legacy.getRoad(id);
-            if (lRoad == null) {
+            if (lRoad != null && roadInfo.containsKey(id)) {
+                edges.add(new RoadAspect(lRoad, node, legacy, roadInfo.get(id)));
                 continue;
             }
-            roads.add(new RoadAspect(lRoad, node, legacy, roadInfo.get(id)));
+            LegacyBuilding lBuilding = legacy.getBuilding(id);
+            if (lBuilding != null && buildingInfo.containsKey(id)) {
+                edges.add(new BuildingAspect(lBuilding, node, legacy, buildingInfo.get(id)));
+            }
         }
-        if (roads.size() == 1) {
-            RoadAspect aspect = roads.get(0);
+        if (edges.size() == 1) {
+            EdgeAspect aspect = edges.get(0);
             findRoadEdges(aspect, centre);
         }
         else {
             // Sort the roads
             CounterClockwiseSort sort = new CounterClockwiseSort(centre);
-            Collections.sort(roads, sort);
+            Collections.sort(edges, sort);
             // Now build the apex list
-            Iterator<RoadAspect> it = roads.iterator();
-            RoadAspect first = it.next();
-            RoadAspect prev = first;
-            RoadAspect next;
+            Iterator<EdgeAspect> it = edges.iterator();
+            EdgeAspect first = it.next();
+            EdgeAspect prev = first;
+            EdgeAspect next;
             while (it.hasNext()) {
                 next = it.next();
-                Point2D apex = findIncomingRoadIntersection(prev, next, centre);
-                apexes.add(gml.createNode(apex.getX(), apex.getY()));
+                Point2D[] newApexes = findIncomingEdgeIntersection(prev, next, centre);
+                for (Point2D apex : newApexes) {
+                    apexes.add(gml.createNode(apex.getX(), apex.getY()));
+                }
                 prev = next;
             }
-            Point2D apex = findIncomingRoadIntersection(prev, first, centre);
-            apexes.add(gml.createNode(apex.getX(), apex.getY()));
+            Point2D[] newApexes = findIncomingEdgeIntersection(prev, first, centre);
+            for (Point2D apex : newApexes) {
+                apexes.add(gml.createNode(apex.getX(), apex.getY()));
+            }
         }
         if (apexes.size() > 2) {
             road = gml.createRoadFromNodes(apexes);
@@ -112,9 +122,9 @@ public class NodeInfo {
        @param centrePoint The centre of the intersection.
        @return The intersection of the two roads.
     */
-    private Point2D findIncomingRoadIntersection(RoadAspect first, RoadAspect second, Point2D centrePoint) {
-        LegacyNode firstNode = first.getFarNode();
-        LegacyNode secondNode = second.getFarNode();
+    private Point2D[] findIncomingEdgeIntersection(EdgeAspect first, EdgeAspect second, Point2D centrePoint) {
+        LegacyObject firstNode = first.getFarNode();
+        LegacyObject secondNode = second.getFarNode();
         Point2D firstPoint = new Point2D(firstNode.getX(), firstNode.getY());
         Point2D secondPoint = new Point2D(secondNode.getX(), secondNode.getY());
         // Find the intersection of the incoming road edges
@@ -132,24 +142,74 @@ public class NodeInfo {
             // This means the normals are parallel, so we can just add a normal to the centre point to generate an intersection point
             intersection = centrePoint.plus(firstNormal);
         }
-        first.setRightEnd(intersection);
-        second.setLeftEnd(intersection);
-        return intersection;
+
+        double maxWidth = Math.max(first.getRoadWidth(), second.getRoadWidth());
+        double distance = GeometryTools2D.getDistance(centrePoint, intersection);
+        Vector2D intersectionVector = intersection.minus(centrePoint).normalised();
+        double dp1 = firstVector.normalised().dot(intersectionVector);
+        double dp2 = secondVector.normalised().dot(intersectionVector);
+
+        if (distance > maxWidth && dp1 > 0 && dp2 > 0) {
+            //Cap spikes on acute angles
+            Vector2D cutoffVector = intersectionVector.getNormal().scale(maxWidth);
+            Point2D cutoffStart = centrePoint.plus(intersectionVector.scale(maxWidth)).plus(cutoffVector);
+            Line2D cutoffLine = new Line2D(cutoffStart, cutoffVector.scale(-2.0));
+            Point2D end1 = GeometryTools2D.getIntersectionPoint(line1, cutoffLine);
+            Point2D end2 = GeometryTools2D.getIntersectionPoint(line2, cutoffLine);
+            first.setRightEnd(end1);
+            second.setLeftEnd(end2);
+            return new Point2D[] {end1, end2};
+        }
+        else if (distance > maxWidth && (dp1 > 0 || dp2 > 0)) {
+            // Prevent too distant intersections on obtuse angles
+            // Those usually happen on intersections between roads with (very) different widths.
+            // For now, just use the intersection that would have occured between two roads
+            // of the averages width
+            double avgWidth = (first.getRoadWidth() + second.getRoadWidth()) / 2.0;
+            firstNormal = firstVector.getNormal().normalised().scale(-avgWidth / 2.0);
+            secondNormal = secondVector.getNormal().normalised().scale(avgWidth / 2.0);
+            start1Point = firstPoint.plus(firstNormal);
+            start2Point = secondPoint.plus(secondNormal);
+            line1 = new Line2D(start1Point, firstVector);
+            line2 = new Line2D(start2Point, secondVector);
+            intersection = GeometryTools2D.getIntersectionPoint(line1, line2);
+
+            first.setRightEnd(intersection);
+            second.setLeftEnd(intersection);
+        }
+        else if (distance > maxWidth) {
+            // Inner acute angle: just cut off at twice the max. road width.
+            intersection = centrePoint.plus(intersectionVector.scale(maxWidth * 2.0));
+            first.setRightEnd(intersection);
+            second.setLeftEnd(intersection);
+        }
+        else {
+            first.setRightEnd(intersection);
+            second.setLeftEnd(intersection);
+        }
+        return new Point2D[] {intersection};
     }
 
-    private void findRoadEdges(RoadAspect aspect, Point2D centrePoint) {
-        LegacyNode farNode = aspect.getFarNode();
+    private void findRoadEdges(EdgeAspect aspect, Point2D centrePoint) {
+        LegacyObject farNode = aspect.getFarNode();
         Point2D roadPoint = new Point2D(farNode.getX(), farNode.getY());
         Vector2D vector = centrePoint.minus(roadPoint);
         Vector2D leftNormal = vector.getNormal().normalised().scale(aspect.getRoadWidth() / 2.0);
         Vector2D rightNormal = leftNormal.scale(-1);
-        Point2D left = roadPoint.plus(leftNormal);
-        Point2D right = roadPoint.plus(rightNormal);
+        Point2D left = centrePoint.plus(leftNormal);
+        Point2D right = centrePoint.plus(rightNormal);
         aspect.setLeftEnd(left);
         aspect.setRightEnd(right);
     }
 
-    private static class RoadAspect {
+    private interface EdgeAspect {
+        int getRoadWidth();
+        LegacyObject getFarNode();
+        void setLeftEnd(Point2D p);
+        void setRightEnd(Point2D p);
+    }
+
+    private static class RoadAspect implements EdgeAspect {
         private boolean forward;
         private LegacyNode farNode;
         private RoadInfo info;
@@ -162,15 +222,15 @@ public class NodeInfo {
             this.info = info;
         }
 
-        int getRoadWidth() {
+        public int getRoadWidth() {
             return width;
         }
 
-        LegacyNode getFarNode() {
+        public LegacyObject getFarNode() {
             return farNode;
         }
 
-        void setLeftEnd(Point2D p) {
+        public void setLeftEnd(Point2D p) {
             if (forward) {
                 info.setHeadLeft(p);
             }
@@ -179,7 +239,7 @@ public class NodeInfo {
             }
         }
 
-        void setRightEnd(Point2D p) {
+        public void setRightEnd(Point2D p) {
             if (forward) {
                 info.setHeadRight(p);
             }
@@ -189,7 +249,33 @@ public class NodeInfo {
         }
     }
 
-    private static class CounterClockwiseSort implements Comparator<RoadAspect> {
+    private static class BuildingAspect implements EdgeAspect {
+        private LegacyBuilding building;
+        private BuildingInfo info;
+
+        BuildingAspect(LegacyBuilding building, LegacyNode intersection, LegacyMap map, BuildingInfo info) {
+            this.building = building;
+            this.info = info;
+        }
+
+        public int getRoadWidth() {
+            return BuildingInfo.ENTRANCE_SIZE;
+        }
+
+        public LegacyObject getFarNode() {
+            return building;
+        }
+
+        public void setLeftEnd(Point2D p) {
+            info.setRoadLeft(p);
+        }
+
+        public void setRightEnd(Point2D p) {
+            info.setRoadRight(p);
+        }
+    }
+
+    private static class CounterClockwiseSort implements Comparator<EdgeAspect> {
         private Point2D centre;
 
         /**
@@ -201,7 +287,7 @@ public class NodeInfo {
         }
 
         @Override
-        public int compare(RoadAspect first, RoadAspect second) {
+        public int compare(EdgeAspect first, EdgeAspect second) {
             double d1 = score(first);
             double d2 = score(second);
             if (d1 < d2) {
@@ -220,8 +306,8 @@ public class NodeInfo {
            @param aspect The RoadAspect.
            @return The amount of clockwiseness. This will be in the range [0..4) with 0 representing 12 o'clock, 1 representing 3 o'clock and so on.
         */
-        public double score(RoadAspect aspect) {
-            LegacyNode node = aspect.getFarNode();
+        public double score(EdgeAspect aspect) {
+            LegacyObject node = aspect.getFarNode();
             Point2D point = new Point2D(node.getX(), node.getY());
             Vector2D v = point.minus(centre);
             double sin = v.getX() / v.getLength();
