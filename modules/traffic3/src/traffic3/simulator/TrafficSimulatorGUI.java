@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.SwingUtilities;
 import javax.swing.Box;
@@ -131,7 +132,7 @@ public class TrafficSimulatorGUI extends JPanel {
 
         add(view, BorderLayout.CENTER);
         add(buttons, BorderLayout.SOUTH);
-        add(verboseBox, BorderLayout.EAST);
+        add(new JScrollPane(verboseBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.EAST);
 
         timer = new Timer(TICK_TIME_MS, new ActionListener() {
                 @Override
