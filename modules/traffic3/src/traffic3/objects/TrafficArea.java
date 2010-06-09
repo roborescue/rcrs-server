@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
+import java.awt.geom.Rectangle2D;
 
 //import rescuecore2.log.Logger;
 
@@ -12,6 +13,8 @@ import rescuecore2.misc.geometry.Line2D;
 
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Edge;
+
+import com.infomatiq.jsi.Rectangle;
 
 /**
    This class wraps an Area object with some extra information.
@@ -26,6 +29,7 @@ public class TrafficArea {
     private List<Line2D> allBlockingLines;
 
     private Area area;
+    private Rectangle bounds;
 
     /**
        Construct a TrafficArea.
@@ -38,6 +42,8 @@ public class TrafficArea {
         blockingLines = null;
         blockadeLines = null;
         allBlockingLines = null;
+        Rectangle2D r = area.getShape().getBounds2D();
+        bounds = new Rectangle((float)r.getMinX(), (float)r.getMinY(), (float)r.getMaxX(), (float)r.getMaxY());
         /*
         area.addEntityListener(new EntityListener() {
                 @Override
@@ -61,6 +67,14 @@ public class TrafficArea {
     */
     public Area getArea() {
         return area;
+    }
+
+    /**
+       Get the bounding rectangle.
+       @return The bounding rectangle.
+    */
+    public Rectangle getBounds() {
+        return bounds;
     }
 
     /**

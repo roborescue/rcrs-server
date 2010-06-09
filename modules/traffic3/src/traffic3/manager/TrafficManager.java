@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
 
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Area;
@@ -20,22 +23,34 @@ import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.log.Logger;
+
+import com.infomatiq.jsi.SpatialIndex;
+import com.infomatiq.jsi.Rectangle;
+import com.infomatiq.jsi.IntProcedure;
+import com.infomatiq.jsi.rtree.RTree;
 
 /**
    The traffic manager maintains information about traffic simulator objects.
 */
 public class TrafficManager {
+    private Map<Integer, TrafficArea> areaByID;
+    private Map<Integer, TrafficBlockade> blockadeByID;
     private Map<Area, TrafficArea> areas;
     private Map<Blockade, TrafficBlockade> blocks;
     private Map<Human, TrafficAgent> agents;
     private Map<TrafficArea, Collection<TrafficArea>> areaNeighbours;
+
+    private SpatialIndex index;
 
     /**
        Construct a new TrafficManager.
     */
     public TrafficManager() {
         areas = new HashMap<Area, TrafficArea>();
+        areaByID = new HashMap<Integer, TrafficArea>();
         blocks = new HashMap<Blockade, TrafficBlockade>();
+        blockadeByID = new HashMap<Integer, TrafficBlockade>();
         agents = new HashMap<Human, TrafficAgent>();
         areaNeighbours = new LazyMap<TrafficArea, Collection<TrafficArea>>() {
             @Override
@@ -43,6 +58,8 @@ public class TrafficManager {
                 return new HashSet<TrafficArea>();
             }
         };
+        index = new RTree();
+        index.init(new Properties());
     }
 
     /**
@@ -52,7 +69,15 @@ public class TrafficManager {
        @return The TrafficArea that contains the given point, or null if no such area is found.
     */
     public TrafficArea findArea(double x, double y) {
-        for (TrafficArea next : getAreas()) {
+        final List<TrafficArea> found = new ArrayList<TrafficArea>();
+        index.intersects(new Rectangle((float)x, (float)y, (float)x, (float)y), new IntProcedure() {
+                @Override
+                public boolean execute(int id) {
+                    found.add(areaByID.get(id));
+                    return true;
+                }
+            });
+        for (TrafficArea next : found) {
             if (next.contains(x, y)) {
                 return next;
             }
@@ -92,6 +117,10 @@ public class TrafficManager {
         blocks.clear();
         agents.clear();
         areaNeighbours.clear();
+        areaByID.clear();
+        blockadeByID.clear();
+        index = new RTree();
+        index.init(new Properties());
     }
 
     /**
@@ -100,6 +129,9 @@ public class TrafficManager {
     */
     public void register(TrafficArea area) {
         areas.put(area.getArea(), area);
+        int id = area.getArea().getID().getValue();
+        areaByID.put(id, area);
+        index.add(area.getBounds(), id);
     }
 
     /**
@@ -116,6 +148,7 @@ public class TrafficManager {
     */
     public void register(TrafficBlockade block) {
         blocks.put(block.getBlockade(), block);
+        blockadeByID.put(block.getBlockade().getID().getValue(), block);
     }
 
     /**
@@ -123,7 +156,7 @@ public class TrafficManager {
        @param block The TrafficBlockade to remove.
     */
     public void remove(TrafficBlockade block) {
-        blocks.remove(block.getBlockade());
+        remove(block.getBlockade());
     }
 
     /**
@@ -132,6 +165,7 @@ public class TrafficManager {
     */
     public void remove(Blockade block) {
         blocks.remove(block);
+        blockadeByID.remove(block.getID().getValue());
     }
 
     /**
