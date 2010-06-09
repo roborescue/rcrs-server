@@ -45,7 +45,8 @@ public class ComputePassableEdgesFunction extends ProgressFunction {
                 Iterator<GMLShape> it = shapes.iterator();
                 GMLShape first = it.next();
                 GMLShape second = it.next();
-                if (first instanceof GMLRoad || second instanceof GMLRoad) {
+                if (first instanceof GMLRoad || second instanceof GMLRoad
+                        || next.isPassable()) {
                     next.setPassable(true);
                     GMLDirectedEdge firstEdge = findDirectedEdge(first.getEdges(), next);
                     GMLDirectedEdge secondEdge = findDirectedEdge(second.getEdges(), next);
