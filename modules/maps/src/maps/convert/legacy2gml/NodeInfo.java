@@ -153,7 +153,9 @@ public class NodeInfo {
             //Cap spikes on acute angles
             Vector2D cutoffVector = intersectionVector.getNormal().scale(maxWidth);
             Point2D cutoffStart = centrePoint.plus(intersectionVector.scale(maxWidth)).plus(cutoffVector);
+            // CHECKSTYLE:OFF:MagicNumber
             Line2D cutoffLine = new Line2D(cutoffStart, cutoffVector.scale(-2.0));
+            // CHECKSTYLE:ON:MagicNumber
             Point2D end1 = GeometryTools2D.getIntersectionPoint(line1, cutoffLine);
             Point2D end2 = GeometryTools2D.getIntersectionPoint(line2, cutoffLine);
             first.setRightEnd(end1);
