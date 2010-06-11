@@ -27,7 +27,7 @@ public class BuildingInfo {
     /**
      * Width of a generated entrance road.
      */
-    public static final int ENTRANCE_SIZE = 2500;
+    public static final int ENTRANCE_SIZE = 3000;
 
     private Point2D roadLeft;
     private Point2D roadRight;
@@ -79,6 +79,9 @@ public class BuildingInfo {
         b.setCode(building.getCode());
         // Create an entrance
         //        Logger.debug("Creating entrance for " + building);
+        if (building.getEntrances().length == 0) {
+            return;
+        }
         Point2D entrancePoint = nodeInfo.get(building.getEntrances()[0]).getLocation();
         Point2D centre = new Point2D(building.getX(), building.getY());
         Line2D centreLine = new Line2D(centre, entrancePoint);
