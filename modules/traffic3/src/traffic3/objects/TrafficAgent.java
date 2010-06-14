@@ -1,30 +1,142 @@
 package traffic3.objects;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-
-import traffic3.manager.TrafficManager;
-import traffic3.simulator.TrafficConstants;
-import traffic3.simulator.PathElement;
-
-import rescuecore2.standard.entities.Human;
-
-import rescuecore2.misc.geometry.Point2D;
-import rescuecore2.misc.geometry.Line2D;
-import rescuecore2.misc.geometry.Vector2D;
-import rescuecore2.misc.geometry.GeometryTools2D;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 import rescuecore2.log.Logger;
+import rescuecore2.misc.geometry.GeometryTools2D;
+import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Vector2D;
+import rescuecore2.standard.entities.Human;
+import traffic3.manager.TrafficManager;
+import traffic3.simulator.PathElement;
+import traffic3.simulator.TrafficConstants;
 
 /**
  * A TrafficAgent is a mobile object in the world.
  */
 public class TrafficAgent {
+
+    /**
+     * This class is used to compute and cache wall related information.
+     * @author goebelbe
+     *
+     */
+    private static class WallInfo {
+        private Line2D wall;
+        private TrafficArea area;
+        private double distance;
+        private Point2D closest;
+        private Point2D origin;
+        private Line2D line;
+        private Vector2D vector;
+
+        /**
+         * Create a new WallInfo object from a Line2D in a TrafficArea.
+         * @param wall The wall to cache.
+         * @param area The area this wall belongs to.
+         */
+        public WallInfo(Line2D wall, TrafficArea area) {
+            this.wall = wall;
+            this.area = area;
+            this.distance = -1;
+            this.closest = null;
+            this.origin = null;
+        }
+
+        /**
+         * Get the shortest distance from the agent's position.
+         * The distance may not be accurate if the wall can't affect the agent
+         * in this microstep.
+         * @return The distance to the agent.
+         */
+        public double getDistance() {
+            return this.distance;
+        }
+
+        /**
+         * Recompute the distance to the agent and the closest point on the line.
+         * @param from The position of the agent.
+         */
+        public void computeClostestPoint(Point2D from) {
+            if (from.equals(origin) && distance >= 0 && closest != null) {
+                wall_cache_hits++;
+                return;
+            }
+            wall_cache_misses++;
+            origin = from;
+            closest = GeometryTools2D.getClosestPointOnSegment(wall, origin);
+            line = new Line2D(origin, closest);
+            vector = line.getDirection();
+            distance = vector.getLength();
+        }
+
+        /**
+         * Get the clostest point to the agent on the wall.
+         * @return The closest point.
+         */
+        public Point2D getClosestPoint() {
+            return closest;
+        }
+
+        /**
+         * Decrease the distance from the wall by an amount.
+         * @param d The amount by which to decrease the distance.
+         */
+        public void decreaseDistance(double d) {
+            distance -= d;
+        }
+
+        /**
+         * Get the wall this WallInfo represents.
+         * @return The wall.
+         */
+        public Line2D getWall() {
+            return wall;
+        }
+
+        /**
+         * Get the line from the agent to the closest point on the wall.
+         * @return Line2D to wall.
+         */
+        public Line2D getLine() {
+            return line;
+        }
+
+        /**
+         * Get the vector from the agent to the closest point on the wall.
+         * @return Vector2D to wall.
+         */
+        public Vector2D getVector() {
+            return vector;
+        }
+
+        /**
+         * Get the are the wall lies in.
+         * @return The area of this wall.
+         */
+        public TrafficArea getArea() {
+            return area;
+        }
+    }
+
+    /**
+     * Debugging variables
+     */
+    public static int wall_updates = 0;
+    public static int area_transitions = 0;
+    public static int distances_computed = 0;
+    public static int cutoff_count = 0;
+    public static int wall_cache_hits = 0;
+    public static int wall_cache_misses = 0;
+    public static int los_shortcut_sorted = 0;
+    public static int los_shortcut_dotp = 0;
+
     private static final int D = 2;
 
     private static final int DEFAULT_POSITION_HISTORY_FREQUENCY = 60;
@@ -50,7 +162,7 @@ public class TrafficAgent {
     private final double[] force = new double[D];
 
     // List of blocking lines near the agent.
-    private Collection<Line2D> blockingLines;
+    private List<WallInfo> blockingLines;
 
     private double radius;
     private double velocityLimit;
@@ -99,7 +211,7 @@ public class TrafficAgent {
         historyCount = 0;
         positionHistoryFrequency = DEFAULT_POSITION_HISTORY_FREQUENCY;
         mobile = true;
-        blockingLines = new HashSet<Line2D>();
+        blockingLines = new ArrayList<WallInfo>();
     }
 
     /**
@@ -315,6 +427,7 @@ public class TrafficAgent {
                 return;
             }
             currentArea = newArea;
+            area_transitions++;
             findBlockingLines();
             currentArea.addAgent(this);
         }
@@ -323,7 +436,9 @@ public class TrafficAgent {
             // If we just crossed the target edge then clear the current path element
             if (currentDestination == currentPathElement.getGoal() && currentDestination != finalDestination) {
                 // Did we cross the edge?
-                if (currentPathElement.getEdgeLine() != null && crossedLine(location[0], location[1], x, y, currentPathElement.getEdgeLine())) {
+                if (currentPathElement.getEdgeLine() != null
+                        && crossedLine(location[0], location[1], x, y,
+                                currentPathElement.getEdgeLine())) {
                     currentPathElement = null;
                 }
                 // Are we close enough to the goal point?
@@ -370,6 +485,7 @@ public class TrafficAgent {
     */
     public void step(double dt) {
         if (mobile) {
+            updateWalls(dt);
             updateGoals();
             computeForces(dt);
             updatePosition(dt);
@@ -447,7 +563,8 @@ public class TrafficAgent {
                         continue;
                     }
                 }
-                if (hasLos(current, next, currentArea.getAllBlockingLines(), null)) {
+
+                if (hasLos(current, next, currentArea)) {
                     currentDestination = next;
                     if (verbose) {
                         Logger.debug(this + " has line-of-sight to " + next);
@@ -479,15 +596,17 @@ public class TrafficAgent {
     private void updatePosition(double dt) {
         double newVX = velocity[0] + dt * force[0];
         double newVY = velocity[1] + dt * force[1];
-        double x = location[0] + dt * newVX;
-        double y = location[1] + dt * newVY;
         double v = Math.hypot(newVX, newVY);
         if (v > this.velocityLimit) {
-            //System.err.println("velocity exceeded velocityLimit");
+            // System.err.println("velocity exceeded velocityLimit");
             v /= this.velocityLimit;
             newVX /= v;
             newVY /= v;
         }
+
+        double x = location[0] + dt * newVX;
+        double y = location[1] + dt * newVY;
+
         if (verbose) {
             Logger.debug("Updating position for " + this);
             Logger.debug("Current position   : " + location[0] + ", " + location[1]);
@@ -506,15 +625,63 @@ public class TrafficAgent {
         }
         velocity[0] = newVX;
         velocity[1] = newVY;
-        setLocation(x, y);
+        if (newVX != 0 || newVY != 0) {
+            double dist = v * dt;
+            for (WallInfo wall : blockingLines) {
+                wall.decreaseDistance(dist);
+            }
+            setLocation(x, y);
+        }
     }
 
-    private boolean hasLos(Point2D source, Point2D target, Collection<Line2D> blocking, Line2D ignore) {
-        Line2D line = new Line2D(source, target);
-        for (Line2D next : blocking) {
-            if (next == ignore) {
+    private boolean hasLos(WallInfo target, List<WallInfo> blocking) {
+        Line2D line = target.getLine();
+
+        for (WallInfo wall : blocking) {
+            if (wall == target) {
+                los_shortcut_sorted++;
+                break;
+            }
+
+            Line2D next = wall.getWall();
+            if (target.getClosestPoint().equals(next.getOrigin())
+                    || target.getClosestPoint().equals(next.getEndPoint())) {
                 continue;
             }
+
+            // Here we test if the wall can intersect the line to the target
+            // in front of the target. This is the case if the following holds:
+            // |v_target| < |v_wall|/cos(alpha)
+            // using dot(v_t, v_w) = cos(alpha) * |v_t| * |v_w|
+            // we get dot(v_t, v_w) < |v_w|^2
+            //
+            // This is strictly true only if the line to the wall and the wall
+            // are orthogonal, but in our case the angle between those can never be
+            // acute (because they intersect at the closest point), so we never
+            // prune real intersections here.
+            double dotp = line.getDirection().dot(wall.getVector());
+            if (dotp < wall.getDistance() * wall.getDistance()) {
+                los_shortcut_dotp++;
+                continue;
+            }
+
+            if (GeometryTools2D.getSegmentIntersectionPoint(line, next) != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean hasLos(Point2D source, Point2D target, TrafficArea area) {
+        Line2D line = new Line2D(source, target);
+        double dist = line.getDirection().getLength();
+
+        for (WallInfo wall : blockingLines) {
+            if (wall.getDistance() > dist || wall.getArea() != area) {
+                break;
+            }
+
+            Line2D next = wall.getWall();
             if (GeometryTools2D.getSegmentIntersectionPoint(line, next) != null) {
                 return false;
             }
@@ -536,25 +703,37 @@ public class TrafficAgent {
 
     private boolean crossedLine(double oldX, double oldY, double newX, double newY, Line2D line) {
         Line2D moved = new Line2D(oldX, oldY, newX - oldX, newY - oldY);
-        Vector2D normal = line.getDirection().getNormal().normalised();
-        double dot1 = new Vector2D(oldX - line.getOrigin().getX(), oldY - line.getOrigin().getY()).normalised().dot(normal);
-        double dot2 = new Vector2D(newX - line.getOrigin().getX(), newY - line.getOrigin().getY()).normalised().dot(normal);
-        return (((dot1 < 0 && dot2 > 0)
-                 || (dot1 > 0 && dot2 < 0))
-                && GeometryTools2D.getSegmentIntersectionPoint(moved, line) != null);
+        return (GeometryTools2D.getSegmentIntersectionPoint(moved, line) != null);
+        /*
+         * Vector2D normal = line.getDirection().getNormal().normalised();
+         * double dot1 = new Vector2D(oldX - line.getOrigin().getX(), oldY -
+         * line.getOrigin().getY()).normalised().dot(normal); double dot2 = new
+         * Vector2D(newX - line.getOrigin().getX(), newY -
+         * line.getOrigin().getY()).normalised().dot(normal); return (((dot1 < 0
+         * && dot2 > 0) || (dot1 > 0 && dot2 < 0)) && GeometryTools2D
+         * .getSegmentIntersectionPoint(moved, line) != null);
+         */
     }
 
     private boolean crossedWall(double oldX, double oldY, double newX, double newY) {
         Line2D moved = new Line2D(oldX, oldY, newX - oldX, newY - oldY);
-        for (Line2D test : blockingLines) {
+        double dist = moved.getDirection().getLength();
+        for (WallInfo wall : blockingLines) {
+            if (wall.getDistance() >= dist) {
+                break;
+            }
+            Line2D test = wall.getWall();
             if (GeometryTools2D.getSegmentIntersectionPoint(moved, test) != null) {
-                //            if (crossedLine(oldX, oldY, newX, newY, test)) {
-                Logger.warn(this + " crossed wall");
-                Logger.warn("Old location: " + oldX + ", " + oldY);
-                Logger.warn("New location: " + newX + ", " + newY);
-                Logger.warn("Movement line: " + moved);
-                Logger.warn("Wall         : " + test);
-                Logger.warn("Crossed at " + GeometryTools2D.getSegmentIntersectionPoint(moved, test));
+                // if (crossedLine(oldX, oldY, newX, newY, test)) {
+                /*
+                 * Logger.warn(this + " crossed wall");
+                 * Logger.warn("Old location: " + oldX + ", " + oldY);
+                 * Logger.warn("New location: " + newX + ", " + newY);
+                 * Logger.warn("Movement line: " + moved);
+                 * Logger.warn("Wall         : " + test);
+                 * Logger.warn("Crossed at " +
+                 * GeometryTools2D.getSegmentIntersectionPoint(moved, test));
+                 */
                 return true;
             }
         }
@@ -564,9 +743,52 @@ public class TrafficAgent {
     private void findBlockingLines() {
         blockingLines.clear();
         if (currentArea != null) {
-            blockingLines.addAll(currentArea.getAllBlockingLines());
+            for (Line2D line : currentArea.getAllBlockingLines()) {
+                blockingLines.add(new WallInfo(line, currentArea));
+            }
             for (TrafficArea neighbour : manager.getNeighbours(currentArea)) {
-                blockingLines.addAll(neighbour.getAllBlockingLines());
+                for (Line2D line : neighbour.getAllBlockingLines()) {
+                    blockingLines.add(new WallInfo(line, neighbour));
+                }
+            }
+        }
+    }
+
+    private void updateWalls(double dt) {
+        wall_updates++;
+        Point2D position = new Point2D(location[0], location[1]);
+        double crossingCutoff = dt * this.velocityLimit;
+        double forceCutoff = TrafficConstants.getWallDistanceCutoff();
+        double cutoff = Math.max(forceCutoff, crossingCutoff);
+        // double dist;
+
+        for (WallInfo wall : blockingLines) {
+            if (wall.getDistance() > cutoff) {
+                cutoff_count++;
+                continue;
+            }
+            wall.computeClostestPoint(position);
+            distances_computed++;
+        }
+
+        // Hand coded, in-sito insertion sort is much faster than
+        // Collection.sort() for lists of this size.
+        for (int i = 1; i < blockingLines.size(); i++) {
+            WallInfo info = blockingLines.get(i);
+            for (int j = i; j >= 0; j--) {
+                if (j == 0) {
+                    blockingLines.remove(i);
+                    blockingLines.add(0, info);
+                }
+                else if (blockingLines.get(j - 1).getDistance() < info
+                        .getDistance()) {
+                    if (j == i) {
+                        break;
+                    }
+                    blockingLines.remove(i);
+                    blockingLines.add(j, info);
+                    break;
+                }
             }
         }
     }
@@ -705,38 +927,50 @@ public class TrafficAgent {
             double r = getRadius();
             double dist;
             double cutoff = TrafficConstants.getWallDistanceCutoff();
-            double a = TrafficConstants.getWallForceCoefficientA();
+            //double a = TrafficConstants.getWallForceCoefficientA();
             double b = TrafficConstants.getWallForceCoefficientB();
             Point2D position = new Point2D(location[0], location[1]);
             if (verbose) {
                 Logger.debug("Computing wall forces for " + this);
                 Logger.debug("Position: " + position);
             }
-            for (Line2D line : blockingLines) {
+
+            for (WallInfo wall : blockingLines) {
+                if (wall.getDistance() > cutoff) {
+                    break;
+                }
+                Line2D line = wall.getWall();
+                dist = wall.getDistance();
+                Point2D closest = wall.getClosestPoint();
+
                 if (verbose) {
                     Logger.debug("Next wall: " + line);
                 }
-                Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, position);
+                // Point2D closest =
+                // GeometryTools2D.getClosestPointOnSegment(line, position);
                 if (verbose) {
                     Logger.debug("Closest point: " + closest);
                 }
-                boolean endPoint = false;
-                if (closest == line.getOrigin() || closest == line.getEndPoint()) {
-                    endPoint = true;
-                }
-                dist = GeometryTools2D.getDistance(closest, position);
-                if (dist > cutoff) {
-                    if (verbose) {
-                        Logger.debug("Distance to wall: " + dist + " greater than cutoff " + cutoff);
-                    }
-                    continue;
-                }
-                if (!endPoint && !hasLos(position, closest, blockingLines, line)) {
+                // dist = GeometryTools2D.getDistance(closest, position);
+                // if (dist > cutoff) {
+                // if (verbose) {
+                // Logger.debug("Distance to wall: " + dist +
+                // " greater than cutoff " + cutoff);
+                // }
+                // continue;
+                // }
+                if (!hasLos(wall, blockingLines)) {
                     // No line-of-sight to closest point
                     if (verbose) {
                         Logger.debug("No line of sight");
                     }
                     continue;
+                }
+
+                boolean endPoint = false;
+                if (closest == line.getOrigin()
+                        || closest == line.getEndPoint()) {
+                    endPoint = true;
                 }
                 // Two forces apply:
                 // If the agent is moving towards this wall then apply a force to bring the agent to a stop. This force applies when the distance is less than the agent radius.
@@ -748,7 +982,7 @@ public class TrafficAgent {
                 double expectedVX = currentVX + dt * currentFX;
                 double expectedVY = currentVY + dt * currentFY;
                 Vector2D expectedVelocity = new Vector2D(expectedVX, expectedVY);
-                Vector2D wallForceVector = position.minus(closest).normalised();
+                Vector2D wallForceVector = wall.getVector().scale(-1.0 / dist);
                 double radii = dist / r;
                 // Compute the stopping force
                 // Magnitude is the multiple of wallForceVector required to bring the agent to a stop.
@@ -771,8 +1005,8 @@ public class TrafficAgent {
                 Vector2D stopForce = wallForceVector.scale(magnitude / dt);
                 // Compute the repulsion force
                 // Decreases exponentially with distance in terms of agent radii.
-                double factor = a * Math.min(1, Math.exp(-(radii - 1) * b));
-                Vector2D repulsionForce = wallForceVector.scale(factor / dt);
+                // double factor = a * Math.min(1, Math.exp(-(radii - 1) * b));
+                // Vector2D repulsionForce = wallForceVector.scale(factor / dt);
                 xSum += stopForce.getX();
                 ySum += stopForce.getY();
                 //                xSum += repulsionForce.getX();
@@ -786,8 +1020,8 @@ public class TrafficAgent {
                     Logger.debug("Wall force       : " + wallForceVector);
                     Logger.debug("Magnitude        : " + magnitude);
                     Logger.debug("Stop force       : " + stopForce);
-                    Logger.debug("Factor           : " + factor + " (e^" + (-(dist / r) * b) + ")");
-                    Logger.debug("Repulsion force  : " + repulsionForce);
+                    // Logger.debug("Factor           : " + factor + " (e^" + (-(dist / r) * b) + ")");
+                    // Logger.debug("Repulsion force  : " + repulsionForce);
                 }
             }
         }
