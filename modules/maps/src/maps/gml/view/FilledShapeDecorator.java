@@ -35,18 +35,27 @@ public class FilledShapeDecorator implements BuildingDecorator, RoadDecorator, S
 
     @Override
     public void decorate(GMLBuilding building, Graphics2D g, ScreenTransform transform) {
+        if (buildingColour == null) {
+            return;
+        }
         g.setColor(buildingColour);
         draw(building, g, transform);
     }
 
     @Override
     public void decorate(GMLRoad road, Graphics2D g, ScreenTransform transform) {
+        if (roadColour == null) {
+            return;
+        }
         g.setColor(roadColour);
         draw(road, g, transform);
     }
 
     @Override
     public void decorate(GMLSpace space, Graphics2D g, ScreenTransform transform) {
+        if (spaceColour == null) {
+            return;
+        }
         g.setColor(spaceColour);
         draw(space, g, transform);
     }
