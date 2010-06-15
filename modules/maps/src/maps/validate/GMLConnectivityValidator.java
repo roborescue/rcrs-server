@@ -97,14 +97,21 @@ public class GMLConnectivityValidator implements MapValidator<GMLMap> {
                 }
                 else {
                     GMLShape backRef = null;
-                    if (neighbour.hasNeighbour(e.getEdge())) {
-                        backRef = map.getShape(neighbour.getNeighbour(e
-                                .getEdge()));
+                    try {
+                        if (neighbour.hasNeighbour(e.getEdge())) {
+                            backRef = map.getShape(neighbour.getNeighbour(e
+                                    .getEdge()));
+                        }
+                        if (backRef != shape) {
+                            String message = "Connection to " + neighbour.getID()
+                                    + " via Edge " + e.getEdge().getID()
+                                    + " is not reflexive.";
+                            errors.add(new ValidationError(shape.getID(), message));
+                        }
                     }
-                    if (backRef != shape) {
-                        String message = "Connection to " + neighbour.getID()
-                                + " via Edge " + e.getEdge().getID()
-                                + " is not reflexive.";
+                    catch (IllegalArgumentException ex) {
+                        String message = "Neigbour " + neighbour.getID()
+                        + " does not share Edge " + e.getEdge().getID();
                         errors.add(new ValidationError(shape.getID(), message));
                     }
                 }
