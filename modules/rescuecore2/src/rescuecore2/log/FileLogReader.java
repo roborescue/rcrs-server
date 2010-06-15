@@ -89,7 +89,7 @@ public class FileLogReader extends AbstractLogReader {
         }
         // Go through updates and apply them all
         for (int i = startTime + 1; i <= time; ++i) {
-            ChangeSet updates = getUpdates(time).getChangeSet();
+            ChangeSet updates = getUpdates(i).getChangeSet();
             Logger.trace("Merging " + updates.getChangedEntities().size() + " updates for timestep " + i);
             result.merge(updates);
         }
