@@ -33,6 +33,7 @@ import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Edge;
+import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.messages.AKMove;
@@ -164,6 +165,9 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             }
         }
         // Any agents that are dead or in ambulances are immobile
+        // Civilians that are injured are immobile
+        // Agents that are buried are immobile
+        // Civilians in refuges are immobile
         for (StandardEntity next : model) {
             if (next instanceof Human) {
                 Human h = (Human)next;
@@ -173,6 +177,18 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
                 }
                 if (h.isPositionDefined() && (model.getEntity(h.getPosition()) instanceof AmbulanceTeam)) {
                     Logger.debug("Agent " + h + " is in an ambulance");
+                    manager.getTrafficAgent(h).setMobile(false);
+                }
+                if (h.isBuriednessDefined() && h.getBuriedness() > 0) {
+                    Logger.debug("Agent " + h + " is buried");
+                    manager.getTrafficAgent(h).setMobile(false);
+                }
+                if (h instanceof Civilian && h.isDamageDefined() && h.getDamage() > 0) {
+                    Logger.debug("Agent " + h + " is injured");
+                    manager.getTrafficAgent(h).setMobile(false);
+                }
+                if (h instanceof Civilian && h.isPositionDefined() && (model.getEntity(h.getPosition()) instanceof Refuge)) {
+                    Logger.debug("Agent " + h + " is in a refuge");
                     manager.getTrafficAgent(h).setMobile(false);
                 }
             }

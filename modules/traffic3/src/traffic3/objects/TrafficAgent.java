@@ -638,6 +638,9 @@ public class TrafficAgent {
 
         Collection<TrafficAgent> nearby = manager.getNearbyAgents(this);
         for (TrafficAgent agent : nearby) {
+            if (!agent.isMobile()) {
+                continue;
+            }
             double dx = agent.getX() - location[0];
             double dy = agent.getY() - location[1];
 
