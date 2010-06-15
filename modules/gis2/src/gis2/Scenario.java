@@ -35,27 +35,27 @@ import rescuecore2.standard.entities.Human;
    This class knows how to read scenario files and apply them to StandardWorldModels.
 */
 public class Scenario {
+    private static final String SCENARIO_NAMESPACE_URI = "urn:roborescue:map:scenario";
+    private static final Namespace SCENARIO_NAMESPACE = DocumentHelper.createNamespace("scenario", SCENARIO_NAMESPACE_URI);
+
     private static final int DEFAULT_HP = 10000;
     private static final int DEFAULT_STAMINA = 10000;
     private static final String WATER_QUANTITY_KEY = "fire.tank.maximum";
 
-    private static final String RCR_NAMESPACE_URI = "urn:roborescue:map:scenario";
-    private static final Namespace RCR_NAMESPACE = DocumentHelper.createNamespace("rcr", RCR_NAMESPACE_URI);
+    private static final QName ROOT_QNAME = DocumentHelper.createQName("scenario", SCENARIO_NAMESPACE);
+    private static final QName ID_QNAME = DocumentHelper.createQName("id", SCENARIO_NAMESPACE);
+    private static final QName LOCATION_QNAME = DocumentHelper.createQName("location", SCENARIO_NAMESPACE);
 
-    private static final QName RCR_ROOT_QNAME = DocumentHelper.createQName("scenario", RCR_NAMESPACE);
-    private static final QName ID_QNAME = DocumentHelper.createQName("id", RCR_NAMESPACE);
-    private static final QName LOCATION_QNAME = DocumentHelper.createQName("location", RCR_NAMESPACE);
-
-    private static final QName SCENARIO_QNAME = DocumentHelper.createQName("scenario", RCR_NAMESPACE);
-    private static final QName REFUGE_QNAME = DocumentHelper.createQName("refuge", RCR_NAMESPACE);
-    private static final QName CIV_QNAME = DocumentHelper.createQName("civilian", RCR_NAMESPACE);
-    private static final QName FB_QNAME = DocumentHelper.createQName("firebrigade", RCR_NAMESPACE);
-    private static final QName AT_QNAME = DocumentHelper.createQName("ambulanceteam", RCR_NAMESPACE);
-    private static final QName PF_QNAME = DocumentHelper.createQName("policeforce", RCR_NAMESPACE);
-    private static final QName FS_QNAME = DocumentHelper.createQName("firestation", RCR_NAMESPACE);
-    private static final QName AC_QNAME = DocumentHelper.createQName("ambulancecentre", RCR_NAMESPACE);
-    private static final QName PO_QNAME = DocumentHelper.createQName("policeoffice", RCR_NAMESPACE);
-    private static final QName FIRE_QNAME = DocumentHelper.createQName("fire", RCR_NAMESPACE);
+    private static final QName SCENARIO_QNAME = DocumentHelper.createQName("scenario", SCENARIO_NAMESPACE);
+    private static final QName REFUGE_QNAME = DocumentHelper.createQName("refuge", SCENARIO_NAMESPACE);
+    private static final QName CIV_QNAME = DocumentHelper.createQName("civilian", SCENARIO_NAMESPACE);
+    private static final QName FB_QNAME = DocumentHelper.createQName("firebrigade", SCENARIO_NAMESPACE);
+    private static final QName AT_QNAME = DocumentHelper.createQName("ambulanceteam", SCENARIO_NAMESPACE);
+    private static final QName PF_QNAME = DocumentHelper.createQName("policeforce", SCENARIO_NAMESPACE);
+    private static final QName FS_QNAME = DocumentHelper.createQName("firestation", SCENARIO_NAMESPACE);
+    private static final QName AC_QNAME = DocumentHelper.createQName("ambulancecentre", SCENARIO_NAMESPACE);
+    private static final QName PO_QNAME = DocumentHelper.createQName("policeoffice", SCENARIO_NAMESPACE);
+    private static final QName FIRE_QNAME = DocumentHelper.createQName("fire", SCENARIO_NAMESPACE);
 
     private Set<Integer> refuges;
     private Set<Integer> fires;
@@ -183,7 +183,7 @@ public class Scenario {
         for (int next : acLocations) {
             root.addElement(AC_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
         }
-        root.addNamespace("rcr", RCR_NAMESPACE_URI);
+        root.addNamespace("scenario", SCENARIO_NAMESPACE_URI);
     }
 
     /**
