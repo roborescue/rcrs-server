@@ -775,8 +775,8 @@ public class TrafficAgent {
                 Vector2D repulsionForce = wallForceVector.scale(factor / dt);
                 xSum += stopForce.getX();
                 ySum += stopForce.getY();
-                xSum += repulsionForce.getX();
-                ySum += repulsionForce.getY();
+                //                xSum += repulsionForce.getX();
+                //                ySum += repulsionForce.getY();
                 if (verbose) {
                     Logger.debug("Distance to wall : " + dist);
                     Logger.debug("Distance to wall : " + radii + " radii");
