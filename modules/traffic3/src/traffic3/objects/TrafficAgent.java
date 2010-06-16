@@ -65,10 +65,8 @@ public class TrafficAgent {
          */
         public void computeClostestPoint(Point2D from) {
             if (from.equals(origin) && distance >= 0 && closest != null) {
-                wall_cache_hits++;
                 return;
             }
-            wall_cache_misses++;
             origin = from;
             closest = GeometryTools2D.getClosestPointOnSegment(wall, origin);
             line = new Line2D(origin, closest);
@@ -124,18 +122,6 @@ public class TrafficAgent {
             return area;
         }
     }
-
-    /**
-     * Debugging variables
-     */
-    public static int wall_updates = 0;
-    public static int area_transitions = 0;
-    public static int distances_computed = 0;
-    public static int cutoff_count = 0;
-    public static int wall_cache_hits = 0;
-    public static int wall_cache_misses = 0;
-    public static int los_shortcut_sorted = 0;
-    public static int los_shortcut_dotp = 0;
 
     private static final int D = 2;
 
@@ -427,7 +413,6 @@ public class TrafficAgent {
                 return;
             }
             currentArea = newArea;
-            area_transitions++;
             findBlockingLines();
             currentArea.addAgent(this);
         }
@@ -639,7 +624,6 @@ public class TrafficAgent {
 
         for (WallInfo wall : blocking) {
             if (wall == target) {
-                los_shortcut_sorted++;
                 break;
             }
 
@@ -661,7 +645,6 @@ public class TrafficAgent {
             // prune real intersections here.
             double dotp = line.getDirection().dot(wall.getVector());
             if (dotp < wall.getDistance() * wall.getDistance()) {
-                los_shortcut_dotp++;
                 continue;
             }
 
@@ -755,7 +738,6 @@ public class TrafficAgent {
     }
 
     private void updateWalls(double dt) {
-        wall_updates++;
         Point2D position = new Point2D(location[0], location[1]);
         double crossingCutoff = dt * this.velocityLimit;
         double forceCutoff = TrafficConstants.getWallDistanceCutoff();
@@ -764,11 +746,9 @@ public class TrafficAgent {
 
         for (WallInfo wall : blockingLines) {
             if (wall.getDistance() > cutoff) {
-                cutoff_count++;
                 continue;
             }
             wall.computeClostestPoint(position);
-            distances_computed++;
         }
 
         // Hand coded, in-sito insertion sort is much faster than

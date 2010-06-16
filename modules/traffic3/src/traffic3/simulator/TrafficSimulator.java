@@ -502,20 +502,6 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
             Logger.debug("Pre-timestep took " + (pre - start) + " ms (average " + ((pre - start) / manager.getAgents().size()) + "ms per agent)");
             Logger.debug("Microsteps took: " + (post - pre) + "ms (average " + ((post - pre) / MICROSTEPS) + "ms)");
             Logger.debug("Post-timestep took " + (end - post) + " ms (average " + ((end - post) / manager.getAgents().size()) + "ms per agent)");
-            Logger.debug(TrafficAgent.wall_updates + " wall updates for " + manager.getAgents().size() + " agents were computed.");
-            Logger.debug(TrafficAgent.distances_computed + " wall computations, " + TrafficAgent.cutoff_count + " computations avoided.");
-            Logger.debug(TrafficAgent.area_transitions + " area transitions.");
-            Logger.debug(TrafficAgent.wall_cache_hits + " / " + TrafficAgent.wall_cache_misses + " wall cache hits/misses.");
-            Logger.debug(TrafficAgent.los_shortcut_sorted + " short-circuited LoS calculations due to sorted walls.");
-            Logger.debug(TrafficAgent.los_shortcut_dotp + " skipped intersections calculations using dot product criterion.");
-            TrafficAgent.wall_updates = 0;
-            TrafficAgent.area_transitions = 0;
-            TrafficAgent.distances_computed= 0;
-            TrafficAgent.cutoff_count= 0;
-            TrafficAgent.wall_cache_hits = 0;
-            TrafficAgent.wall_cache_misses = 0;
-            TrafficAgent.los_shortcut_sorted = 0;
-            TrafficAgent.los_shortcut_dotp = 0;
         }
         Logger.debug("Total time: " + (end - start) + "ms");
     }
