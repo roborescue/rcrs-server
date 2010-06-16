@@ -1,8 +1,8 @@
 package rescuecore2.misc.geometry;
 
 import rescuecore2.misc.geometry.spatialindex.Indexable;
-import rescuecore2.misc.geometry.spatialindex.Region;
 import rescuecore2.misc.geometry.spatialindex.PointRegion;
+import rescuecore2.misc.geometry.spatialindex.Region;
 
 /**
    A point in 2D space. Points are immutable.
@@ -65,6 +65,19 @@ public class Point2D implements Indexable {
      */
     public Point2D plus(Vector2D v) {
         return new Point2D(this.x + v.getX(), this.y + v.getY());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Point2D)) {
+            return false;
+        }
+        return this.x == ((Point2D)o).x && this.y == ((Point2D)o).y;
+    }
+
+    @Override
+    public int hashCode() {
+        return new Double(x).hashCode() ^ new Double(y).hashCode();
     }
 
     @Override
