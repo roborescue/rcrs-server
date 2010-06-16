@@ -145,7 +145,7 @@ function startSims {
     PIDS="$PIDS $!"
     xterm -T traffic -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $DIR/config/traffic3.cfg $* 2>&1 | tee $LOGDIR/traffic-out.log" &
     PIDS="$PIDS $!"
-    xterm -T fire -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $DIR/config/resq-fire.cfg $* 2>&1 | tee $LOGDIR/fire.log" &
+    xterm -T fire -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $DIR/config/resq-fire.cfg $* 2>&1 | tee $LOGDIR/fire-out.log" &
     PIDS="$PIDS $!"
     xterm -T ignition -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $DIR/config/ignition.cfg $* 2>&1 | tee $LOGDIR/ignition-out.log" &
     PIDS="$PIDS $!"
@@ -153,6 +153,16 @@ function startSims {
     PIDS="$PIDS $!"
     xterm -T clear -e "java -Xmx256m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar rescuecore2.LaunchComponents clear.ClearSimulator -c $DIR/config/clear.cfg $* 2>&1 | tee $LOGDIR/clear-out.log" &
     PIDS="$PIDS $!"
+
+    # Wait for all simulators to start
+    waitFor $LOGDIR/viewer.log "connected"
+    waitFor $LOGDIR/misc.log "connected"
+    waitFor $LOGDIR/traffic.log "connected"
+    waitFor $LOGDIR/fire.log "connected"
+    waitFor $LOGDIR/ignition.log "connected"
+    waitFor $LOGDIR/collapse.log "connected"
+    waitFor $LOGDIR/clear.log "connected"
+
     xterm -T civilian -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar rescuecore2.LaunchComponents sample.SampleCivilian*n -c $DIR/config/civilian.cfg $* 2>&1 | tee $LOGDIR/civilian-out.log" &
     PIDS="$PIDS $!"
 }
