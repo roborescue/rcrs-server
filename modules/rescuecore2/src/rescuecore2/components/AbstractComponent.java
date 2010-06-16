@@ -72,6 +72,7 @@ public abstract class AbstractComponent<T extends WorldModel<? extends Entity>> 
             Logger.pushNDC(ndc);
         }
         try {
+            Logger.info(this + " connected");
             postConnect();
             processor = new MessageProcessor();
             c.addConnectionListener(new MessageListener());
