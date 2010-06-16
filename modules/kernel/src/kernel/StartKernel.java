@@ -156,6 +156,7 @@ public final class StartKernel {
             config.addConstraint(new ClassNameValueConstraint(AGENT_REGISTRAR_KEY, AgentRegistrar.class));
             config.addConstraint(new ClassNameValueConstraint(Constants.SCORE_FUNCTION_KEY, ScoreFunction.class));
 
+            Logger.setLogContext("kernel");
             final KernelInfo kernelInfo = createKernel(config, showStartupMenu);
             if (kernelInfo == null) {
                 System.exit(0);
