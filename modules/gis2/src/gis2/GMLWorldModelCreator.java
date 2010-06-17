@@ -114,14 +114,14 @@ public class GMLWorldModelCreator implements WorldModelCreator {
             //            Logger.debug("Centroid: " + centroid);
 
             // Building properties
-            b.setFloors(1);
+            b.setFloors(next.getFloors());
             b.setFieryness(0);
             b.setBrokenness(0);
-            b.setBuildingCode(0);
+            b.setBuildingCode(next.getCode());
             b.setBuildingAttributes(0);
             b.setGroundArea((int)Math.abs(area));
-            b.setTotalArea((int)Math.abs(area));
-            b.setImportance(1);
+            b.setTotalArea(((int)Math.abs(area)) * b.getFloors());
+            b.setImportance(next.getImportance());
             // Area properties
             b.setEdges(createEdges(next, conversion));
             b.setX((int)centroid.getX());

@@ -218,9 +218,10 @@ public final class RobocupFormat extends GMLMapFormat {
                 Element e = (Element)nextBuilding;
                 Pair<List<GMLDirectedEdge>, List<Integer>> edges = readEdges(e, result);
                 GMLBuilding b = new GMLBuilding(readID(e), edges.first(), edges.second());
-                int floors = readInt(e, RCR_FLOORS_QNAME, 1);
-                int code = readInt(e, RCR_BUILDING_CODE_QNAME, 0);
-                int importance = readInt(e, RCR_IMPORTANCE_QNAME, 1);
+                Element f = e.element(Common.GML_FACE_QNAME);
+                int floors = readInt(f, RCR_FLOORS_QNAME, 1);
+                int code = readInt(f, RCR_BUILDING_CODE_QNAME, 0);
+                int importance = readInt(f, RCR_IMPORTANCE_QNAME, 1);
                 b.setFloors(floors);
                 b.setCode(code);
                 b.setImportance(importance);
