@@ -204,6 +204,18 @@ public abstract class GMLShape extends GMLObject {
     }
 
     /**
+    Get the nodes of the edges that make up this shape.
+    @return The underlying nodes.
+     */
+    public List<GMLNode> getUnderlyingNodes() {
+     List<GMLNode> result = new ArrayList<GMLNode>();
+     for (GMLDirectedEdge next : edges) {
+         result.add(next.getStartNode());
+     }
+     return result;
+ }
+
+    /**
        Get the coordinates of the apexes of this shape.
        @return The apex coordinates.
     */

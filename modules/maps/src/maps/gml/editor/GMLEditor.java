@@ -544,7 +544,7 @@ public class GMLEditor extends JPanel {
         addTool(new CreateEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new CreateRoadTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new CreateBuildingTool(this), menu, toolbar, menuGroup, toolbarGroup);
-        addTool(new CreateSpaceTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new CreateSpaceTool(this), menu, null, menuGroup, null);
         menu.addSeparator();
         toolbar.addSeparator();
         addTool(new DeleteNodeTool(this), menu, toolbar, menuGroup, toolbarGroup);
@@ -556,6 +556,7 @@ public class GMLEditor extends JPanel {
         addTool(new MergeNodesTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new MergeLinesTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new SplitEdgeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new SplitShapeTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new TogglePassableTool(this), menu, toolbar, menuGroup, toolbarGroup);
     }
 
@@ -590,9 +591,11 @@ public class GMLEditor extends JPanel {
         toggle.setAction(action);
         check.setAction(action);
         menu.add(check);
-        toolbar.add(toggle);
+        if (toolbar != null) {
+            toolbar.add(toggle);
+            toolbarGroup.add(toggle);
+        }
         menuGroup.add(check);
-        toolbarGroup.add(toggle);
     }
 
     private void addFunction(final Function f, JMenu menu, JToolBar toolbar) {
