@@ -150,6 +150,9 @@ public class GMLMap implements maps.Map {
     */
     public GMLBuilding createBuilding(List<GMLDirectedEdge> bEdges) {
         GMLBuilding b = new GMLBuilding(nextID++, bEdges);
+        b.setFloors(1);
+        b.setCode(0);
+        b.setImportance(1);
         addBuilding(b);
         return b;
     }
