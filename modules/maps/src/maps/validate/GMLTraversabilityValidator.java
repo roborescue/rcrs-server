@@ -11,6 +11,7 @@ import maps.gml.GMLShape;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.operation.linemerge.LineSequencer;
 
 /**
@@ -69,6 +70,8 @@ public class GMLTraversabilityValidator implements MapValidator<GMLMap> {
             // make sure the intersection tests succeed
             result = result.buffer(SHAPE_PADDING);
 
+            Coordinate centroid = JTSTools.pointToCoordinate(shape.getCentroid());
+
             // Build list of adjacent entrance edges
             List<GMLDirectedEdge> edges = shape.getEdges();
             List<List<GMLDirectedEdge>> entrances = new ArrayList<List<GMLDirectedEdge>>();
@@ -76,6 +79,16 @@ public class GMLTraversabilityValidator implements MapValidator<GMLMap> {
             for (GMLDirectedEdge e : edges) {
                 if (shape.hasNeighbour(e)) {
                     entrance.add(e);
+                    //Check if we have a line of sight to the centroid
+                    LineString edge = JTSTools.edgeToLine(e);
+                    Coordinate edgeCenter = edge.getCentroid().getCoordinate();
+                    Coordinate[] coords = new Coordinate[]{centroid, edgeCenter};
+                    LineString lineOfSight = JTSTools.getFactory().createLineString(coords);
+                    if (lineOfSight.intersects(boundary)) {
+                        String message = "Edge " + e.getEdge().getID()
+                            + " has no line of sight to shape center.";
+                        return new ValidationError(shape.getID(), message);
+                    }
                 }
                 else {
                     if (!entrance.isEmpty()) {
