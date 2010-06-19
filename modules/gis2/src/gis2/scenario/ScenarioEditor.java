@@ -281,6 +281,10 @@ public class ScenarioEditor extends JPanel {
     */
     public void setScenario(GMLMap newMap, Scenario newScenario) throws CancelledByUserException {
         checkForChanges();
+        if (!checkScenario(newMap, newScenario)) {
+            JOptionPane.showMessageDialog(null, "The scenario file contained errors.");
+            return;
+        }
         map = newMap;
         scenario = newScenario;
         changed = false;
@@ -593,6 +597,66 @@ public class ScenarioEditor extends JPanel {
             };
         toolbar.add(action);
         menu.add(action);
+    }
+
+    private boolean checkScenario(GMLMap newMap, Scenario newScenario) {
+        boolean valid = true;
+        for (int id : newScenario.getFires()) {
+            if (newMap.getBuilding(id) == null) {
+                valid = false;
+                Logger.warn("Fire at non-existing building " + id);
+            }
+        }
+        for (int id : newScenario.getRefuges()) {
+            if (newMap.getBuilding(id) == null) {
+                valid = false;
+                Logger.warn("Refuge at non-existing building " + id);
+            }
+        }
+        for (int id : newScenario.getFireStations()) {
+            if (newMap.getBuilding(id) == null) {
+                valid = false;
+                Logger.warn("Fire station at non-existing building " + id);
+            }
+        }
+        for (int id : newScenario.getAmbulanceCentres()) {
+            if (newMap.getBuilding(id) == null) {
+                valid = false;
+                Logger.warn("Ambulance centre at non-existing building " + id);
+            }
+        }
+        for (int id : newScenario.getPoliceOffices()) {
+            if (newMap.getBuilding(id) == null) {
+                valid = false;
+                Logger.warn("Police office at non-existing building " + id);
+            }
+        }
+
+        for (int id : newScenario.getCivilians()) {
+            if (newMap.getShape(id) == null) {
+                valid = false;
+                Logger.warn("Civilian at non-existing shape " + id);
+            }
+        }
+        for (int id : newScenario.getFireBrigades()) {
+            if (newMap.getShape(id) == null) {
+                valid = false;
+                Logger.warn("Fire brigade at non-existing shape " + id);
+            }
+        }
+        for (int id : newScenario.getAmbulanceTeams()) {
+            if (newMap.getShape(id) == null) {
+                valid = false;
+                Logger.warn("Ambulance team at non-existing shape " + id);
+            }
+        }
+        for (int id : newScenario.getPoliceForces()) {
+            if (newMap.getShape(id) == null) {
+                valid = false;
+                Logger.warn("Police force at non-existing shape " + id);
+            }
+        }
+        return valid;
     }
 
     private void updateFireOverlay() {
