@@ -40,6 +40,7 @@ import rescuecore2.standard.entities.StandardWorldModel;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Edge;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Human;
@@ -326,21 +327,28 @@ public class LineOfSightPerception implements Perception, GUIComponent {
     private Collection<LineInfo> getAllLines(Collection<StandardEntity> entities) {
         Collection<LineInfo> result = new HashSet<LineInfo>();
         for (StandardEntity next : entities) {
-            int[] apexes = null;
-            boolean blocking = next instanceof Building;
-            if (next instanceof Area) {
-                apexes = ((Area)next).getApexList();
+            if (next instanceof Building) {
+                for (Edge edge : ((Building)next).getEdges()) {
+                    Line2D line = edge.getLine();
+                    result.add(new LineInfo(line, next, !edge.isPassable()));
+                }
+            }
+            if (next instanceof Road) {
+                for (Edge edge : ((Road)next).getEdges()) {
+                    Line2D line = edge.getLine();
+                    result.add(new LineInfo(line, next, false));
+                }
             }
             else if (next instanceof Blockade) {
-                apexes = ((Blockade)next).getApexes();
+                int[] apexes = ((Blockade)next).getApexes();
+                List<Point2D> points = GeometryTools2D.vertexArrayToPoints(apexes);
+                List<Line2D> lines = GeometryTools2D.pointsToLines(points, true);
+                for (Line2D line : lines) {
+                    result.add(new LineInfo(line, next, false));
+                }
             }
             else {
                 continue;
-            }
-            List<Point2D> points = GeometryTools2D.vertexArrayToPoints(apexes);
-            List<Line2D> lines = GeometryTools2D.pointsToLines(points, true);
-            for (Line2D line : lines) {
-                result.add(new LineInfo(line, next, blocking));
             }
         }
         return result;
