@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <rcr:scenario xmlns:rcr="urn:roborescue:map:scenario">
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
-  <rcr:civilian rcr:location="50340"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
+  <rcr:civilian rcr:location="53535"/>
   <rcr:firebrigade rcr:location="51167"/>
   <rcr:policeforce rcr:location="51167"/>
   <rcr:ambulanceteam rcr:location="51167"/>
