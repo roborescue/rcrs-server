@@ -4,8 +4,14 @@ import java.util.Collections;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.io.File;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Callable;
 
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.Entity;
@@ -389,14 +395,40 @@ public class Kernel {
                 return;
             }
             Logger.info("Kernel is shutting down");
+            ExecutorService service = Executors.newFixedThreadPool(agents.size() + sims.size() + viewers.size());
+            List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
             for (AgentProxy next : agents) {
-                next.shutdown();
+                final AgentProxy proxy = next;
+                callables.add(Executors.callable(new Runnable() {
+                        @Override
+                        public void run() {
+                            proxy.shutdown();
+                        }
+                    }));
             }
             for (SimulatorProxy next : sims) {
-                next.shutdown();
+                final SimulatorProxy proxy = next;
+                callables.add(Executors.callable(new Runnable() {
+                        @Override
+                        public void run() {
+                            proxy.shutdown();
+                        }
+                    }));
             }
             for (ViewerProxy next : viewers) {
-                next.shutdown();
+                final ViewerProxy proxy = next;
+                callables.add(Executors.callable(new Runnable() {
+                        @Override
+                        public void run() {
+                            proxy.shutdown();
+                        }
+                    }));
+            }
+            try {
+                service.invokeAll(callables);
+            }
+            catch (InterruptedException e) {
+                Logger.warn("Interrupted during shutdown");
             }
             try {
                 log.writeRecord(new EndLogRecord());
