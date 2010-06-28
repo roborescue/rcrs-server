@@ -21,6 +21,8 @@ import maps.validate.GMLMapValidator;
 import maps.validate.MapValidator;
 import maps.validate.ValidationError;
 
+import rescuecore2.log.Logger;
+
 /**
  * Check the map for errors and highlight them on the map.
  *
@@ -54,6 +56,7 @@ public class ValidateFunction extends AbstractFunction {
         Collection<ValidationError> allErrors = new ArrayList<ValidationError>();
         for (MapValidator<GMLMap> validator : GMLMapValidator
                 .getDefaultValidators()) {
+            Logger.info("Validating " + validator);
             Collection<ValidationError> errors = validator.validate(editor
                     .getMap());
             allErrors.addAll(errors);
