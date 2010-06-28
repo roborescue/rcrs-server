@@ -24,6 +24,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -32,6 +33,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
@@ -76,6 +78,7 @@ public class ScenarioEditor extends JPanel {
     private AgentOverlay agentOverlay;
     private Scenario scenario;
     private Tool currentTool;
+    private JLabel statusLabel;
 
     private boolean changed;
 
@@ -111,6 +114,7 @@ public class ScenarioEditor extends JPanel {
         this.map = map;
         this.scenario = scenario;
         viewer = new GMLMapViewer(map);
+        statusLabel = new JLabel("Status");
         fireOverlay = new DecoratorOverlay();
         centreOverlay = new DecoratorOverlay();
         agentOverlay = new AgentOverlay(this);
@@ -146,6 +150,7 @@ public class ScenarioEditor extends JPanel {
         toolbars.add(toolsToolbar);
         toolbars.add(functionsToolbar);
         add(toolbars, BorderLayout.NORTH);
+        add(statusLabel, BorderLayout.SOUTH);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
         menuBar.add(toolsMenu);
@@ -291,7 +296,6 @@ public class ScenarioEditor extends JPanel {
         viewer.setMap(map);
         inspector.setMap(map);
         updateOverlays();
-        viewer.repaint();
     }
 
     /**
@@ -407,6 +411,7 @@ public class ScenarioEditor extends JPanel {
         updateFireOverlay();
         updateCentreOverlay();
         updateAgentOverlay();
+        updateStatusLabel();
         viewer.repaint();
     }
 
@@ -563,6 +568,10 @@ public class ScenarioEditor extends JPanel {
 
     private void createFunctionActions(JMenu menu, JToolBar toolbar) {
         addFunction(new RandomiseFunction(this), menu, toolbar);
+        addFunction(new ClearFiresFunction(this), menu, toolbar);
+        addFunction(new ClearAgentsFunction(this), menu, toolbar);
+        addFunction(new ClearAllFunction(this), menu, toolbar);
+        addFunction(new PlaceAgentsFunction(this), menu, toolbar);
     }
 
     private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {
@@ -657,6 +666,23 @@ public class ScenarioEditor extends JPanel {
             }
         }
         return valid;
+    }
+
+    private void updateStatusLabel() {
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    statusLabel.setText(scenario.getFires().size() + " fires, "
+                                        + scenario.getRefuges().size() + " refuges, "
+                                        + scenario.getCivilians().size() + " civilians, "
+                                        + scenario.getFireBrigades().size() + " fb, "
+                                        + scenario.getFireStations().size() + " fs, "
+                                        + scenario.getPoliceForces().size() + " pf, "
+                                        + scenario.getPoliceOffices().size() + " po, "
+                                        + scenario.getAmbulanceTeams().size() + " at, "
+                                        + scenario.getAmbulanceCentres().size() + " ac");
+                }
+            });
     }
 
     private void updateFireOverlay() {

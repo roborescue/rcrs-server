@@ -32,7 +32,7 @@ public class RandomScenarioGenerator {
     private static final int DEFAULT_MIN_CENTRES = 0;
     private static final int DEFAULT_MAX_CENTRES = 5;
     private static final int DEFAULT_MIN_REFUGES = 0;
-    private static final int DEFAULT_MAX_REFUGES = 20;
+    private static final int DEFAULT_MAX_REFUGES = 5;
     private static final int DEFAULT_MIN_FIRES = 1;
     private static final int DEFAULT_MAX_FIRES = 10;
 
@@ -306,6 +306,7 @@ public class RandomScenarioGenerator {
 
     private void placeAgents(GMLMap map, Scenario result, Random random, int fire, int police, int ambulance, int civ) {
         List<GMLShape> all = new ArrayList<GMLShape>(map.getAllShapes());
+        List<GMLBuilding> buildings = new ArrayList<GMLBuilding>(map.getBuildings());
         for (int i = 0; i < fire; ++i) {
             int id = all.get(random.nextInt(all.size())).getID();
             result.addFireBrigade(id);
@@ -319,7 +320,7 @@ public class RandomScenarioGenerator {
             result.addAmbulanceTeam(id);
         }
         for (int i = 0; i < civ; ++i) {
-            int id = all.get(random.nextInt(all.size())).getID();
+            int id = buildings.get(random.nextInt(buildings.size())).getID();
             result.addCivilian(id);
         }
     }
