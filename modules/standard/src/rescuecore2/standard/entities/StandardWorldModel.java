@@ -298,6 +298,18 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
                 y2 = Math.max(y2, apexes[i + 1]);
             }
         }
+        else if (e instanceof Blockade) {
+            int[] apexes = ((Blockade)e).getApexes();
+            if (apexes.length == 0) {
+                return null;
+            }
+            for (int i = 0; i < apexes.length - 1; i += 2) {
+                x1 = Math.min(x1, apexes[i]);
+                x2 = Math.max(x2, apexes[i]);
+                y1 = Math.min(y1, apexes[i + 1]);
+                y2 = Math.max(y2, apexes[i + 1]);
+            }
+        }
         else if (e instanceof Human) {
             Human h = (Human)e;
             Pair<Integer, Integer> location = h.getLocation(this);
@@ -308,6 +320,9 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
             x2 = location.first();
             y1 = location.second();
             y2 = location.second();
+        }
+        else {
+            return null;
         }
         return new Rectangle(x1, y1, x2, y2);
     }
