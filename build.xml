@@ -1,17 +1,15 @@
 <project default="complete-build" name="Robocup rescue simulation software">
   <property name="version" value="1.0-prealpha"/>
 
-  <!-- Third party tool version numbers -->
-  <property name="findbugs.version" value="1.3.8"/>
-  <property name="checkstyle.version" value="all-5.0-beta2"/>
-  <property name="cobertura.version" value="1.9.2"/>
-
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
   <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,resq-fire,ignition,maps,clear,traffic3,gis2"/>
+
+  <property name="modules.rescuecore2.depend" value=""/>
   <property name="modules.kernel.depend" value="rescuecore2,handy"/>
   <property name="modules.standard.depend" value="rescuecore2,kernel"/>
   <property name="modules.sample.depend" value="rescuecore2,standard,kernel"/>
+  <property name="modules.handy.depend" value=""/>
   <property name="modules.human.depend" value="rescuecore2,standard,sample"/>
   <property name="modules.collapse.depend" value="rescuecore2,standard"/>
   <property name="modules.misc.depend" value="rescuecore2,standard"/>
@@ -37,42 +35,33 @@
   <import file="${modules.dir}/traffic3/build.xml" optional="true"/>
   <import file="${modules.dir}/gis2/build.xml" optional="true"/>
 
-  <!-- Common properties: modules, lib, build and jar directories -->
   <!-- 3rd party libraries used by all modules -->
   <property name="lib.dir" value="${basedir}/lib"/>
   <!-- Output directory - classes, unit test results etc -->
   <property name="build.dir" value="${basedir}/build"/>
   <!-- Output directory - jar'd class files and resources for all modules -->
   <property name="jar.dir" value="${basedir}/jars"/>
-  <!-- Output directory - javadoc for all modules -->
-  <property name="javadoc.dir" value="${basedir}/docs/javadoc"/>
   <!-- Supplement directory - a place to put stuff that lives on the classpath, e.g. log4j configuration -->
   <property name="supplement.dir" value="${basedir}/supplement"/>
-
-  <!-- Output directories for JUnit, Checkstyle, Findbugs and Cobertura -->
-  <property name="junit.output.dir" value="${build.dir}/junit-results"/>
-  <property name="checkstyle.output.dir" value="${build.dir}/checkstyle-results"/>
-  <property name="findbugs.output.dir" value="${build.dir}/findbugs-results"/>
-  <property name="cobertura.output.dir" value="${build.dir}/cobertura-results"/>
-  <property name="cobertura.coveragefile" value="${cobertura.output.dir}/cobertura.ser"/>
-  <property name="cobertura.instrument.dir" value="${build.dir}/jars-instrumented"/>
 
   <!-- Build tools directory -->
   <property name="buildtools.dir" value="${basedir}/build-tools"/>
 
-  <!-- The type of output for findbugs and cobertura. Can be HTML or XML -->
-  <property name="findbugs.output.format" value="html"/>
-  <property name="cobertura.output.format" value="html"/>
+  <!-- Ant-contrib -->
+  <property name="antcontrib.dir" value="${buildtools.dir}/ant-contrib"/>
+  <property name="antcontrib.version" value="1.0b3"/>
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${antcontrib.dir}/ant-contrib-${antcontrib.version}.jar"/>
+    </classpath>
+  </taskdef>
 
   <!-- Whether to compile with debugging symbols -->
   <property name="debug" value="true"/>
 
   <!-- General javac flags -->
   <property name="javac.flags" value="-Xlint:unchecked,deprecation"/>
-
-  <!-- Findbugs and cobertura home directories -->
-  <property name="findbugs.home" value="${buildtools.dir}/findbugs-${findbugs.version}"/>
-  <property name="cobertura.home" value="${buildtools.dir}/cobertura-${cobertura.version}"/>
 
   <path id="path.jars">
     <fileset dir="${jar.dir}">
@@ -96,209 +85,6 @@
     <path refid="path.lib"/>
   </path>
 
-  <path id="path.junit">
-    <path refid="path.cobertura.instrumented"/>
-    <path refid="path.cobertura"/>
-    <path refid="path.common"/>
-  </path>
-
-  <path id="path.cobertura">
-    <fileset dir="${cobertura.home}">
-      <include name="cobertura.jar"/>
-      <include name="lib/**/*.jar"/>
-    </fileset>
-  </path>
-
-  <path id="path.cobertura.instrumented">
-    <fileset dir="${cobertura.instrument.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-  </path>
-
-  <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties" classpath="${buildtools.dir}/checkstyle-${checkstyle.version}.jar"/>
-
-  <!-- Findbugs task definition -->
-  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
-
-  <!-- Cobertura task definition -->
-  <taskdef classpathref="path.cobertura" resource="tasks.properties"/>
-
-  <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-    <classpath>
-      <pathelement location="${buildtools.dir}/ant-junit.jar"/>
-    </classpath>
-  </taskdef>
-
-  <target name="_generate-module-lib-paths" unless="path.allmodules.lib">
-    <echo message="Generating module lib paths"/>
-    <script language="javascript">
-      <![CDATA[
-        importClass(org.apache.tools.ant.types.Path);
-        importClass(org.apache.tools.ant.types.FileSet);
-        importClass(java.lang.System);
-        importClass(java.io.File);
-        var modules = project.getProperty("modules").split(",");
-        var totalPath = new Path(project);
-        var totalFileset = new FileSet();
-        totalFileset.setDir(new File(project.getProperty("modules.dir")));
-        for (var i = 0; i < modules.length; ++i) {
-          var path = new Path(project);
-          var fileset = new FileSet();
-          var id = "path." + modules[i] + ".lib";
-          fileset.setDir(new File(project.getProperty("modules.dir") + "/" + modules[i] + "/lib"));
-          fileset.setIncludes("**/*.jar");
-          fileset.setErrorOnMissingDir(false);
-          totalFileset.setIncludes(modules[i] + "/lib/**/*.jar");
-          path.addFileset(fileset);
-          project.addReference(id, path);
-        }
-        totalPath.addFileset(totalFileset);
-        project.addReference("path.allmodules.lib", totalPath);
-      ]]>
-    </script>
-  </target>
-
-  <target name="_generate-checkstyle-fileset">
-    <script language="javascript">
-      <![CDATA[
-        importClass(org.apache.tools.ant.types.Path);
-        importClass(org.apache.tools.ant.types.FileSet);
-        importClass(java.lang.System);
-        importClass(java.io.File);
-        var modules = project.getProperty("modules").split(",");
-        var fileset = new FileSet();
-        fileset.setDir(new File(project.getProperty("modules.dir")));
-        for (var i = 0; i < modules.length; ++i) {
-          fileset.setIncludes(modules[i] + "/src/**/*.java");
-        }
-        project.addReference("checkstyle.files", fileset);
-        project.setProjectReference(fileset);
-      ]]>
-    </script>
-  </target>
-
-  <target name="_generate-cobertura-fileset">
-    <script language="javascript">
-      <![CDATA[
-        importClass(org.apache.tools.ant.types.Path);
-        importClass(org.apache.tools.ant.types.FileSet);
-        importClass(java.lang.System);
-        importClass(java.io.File);
-        var modules = project.getProperty("modules").split(",");
-        var fileset = new FileSet();
-        fileset.setDir(new File(project.getProperty("jar.dir")));
-        for (var i = 0; i < modules.length; ++i) {
-          fileset.setIncludes(modules[i] + ".jar");
-        }
-        project.addReference("cobertura.files", fileset);
-      ]]>
-    </script>
-  </target>
-
-  <target name="_generate-javadoc-fileset">
-    <script language="javascript">
-      <![CDATA[
-        importClass(org.apache.tools.ant.types.Path);
-        importClass(org.apache.tools.ant.types.FileSet);
-        importClass(java.lang.System);
-        importClass(java.io.File);
-        var modules = project.getProperty("modules").split(",");
-        var fileset = new FileSet();
-        fileset.setDir(new File(project.getProperty("modules.dir")));
-        for (var i = 0; i < modules.length; ++i) {
-          fileset.setIncludes(modules[i] + "/src/**/*.java");
-        }
-        project.setProjectReference(fileset);
-        project.addReference("javadoc.files", fileset);
-      ]]>
-    </script>
-  </target>
-
-  <!-- Stuff to do before anything else -->
-  <target name="_init">
-    <mkdir dir="${build.dir}"/>
-    <mkdir dir="${jar.dir}"/>
-    <mkdir dir="${junit.output.dir}"/>
-    <mkdir dir="${checkstyle.output.dir}"/>
-    <mkdir dir="${findbugs.output.dir}"/>
-    <mkdir dir="${cobertura.output.dir}"/>
-    <mkdir dir="${cobertura.instrument.dir}"/>
-  </target>
-
-  <!-- General compile target -->
-  <macrodef name="_compile">
-    <attribute name="module"/>
-    <sequential>
-      <echo message="Compiling module @{module}"/>
-      <mkdir dir="${build.dir}/@{module}/classes"/>
-      <javac srcdir="${modules.dir}/@{module}/src" destdir="${build.dir}/@{module}/classes" debug="${debug}">
-        <classpath>
-          <path refid="path.common"/>
-          <path refid="path.@{module}.lib"/>
-        </classpath>
-        <include name="**/*.java"/>
-        <compilerarg value="${javac.flags}"/>
-      </javac>
-    </sequential>
-  </macrodef>
-
-  <!-- General clean target -->
-  <macrodef name="_clean">
-    <attribute name="module"/>
-    <sequential>
-      <echo message="Cleaning module @{module}"/>
-      <delete dir="${build.dir}/@{module}" failonerror="false"/>
-      <delete dir="${junit.output.dir}/@{module}" failonerror="false"/>
-      <delete dir="${jar.dir}/@{module}.jar" failonerror="false"/>
-      <delete dir="${cobertura.instrument.dir}/@{module}.jar" failonerror="false"/>
-      <delete failonerror="false">
-        <fileset dir="${modules.dir}/@{module}/test">
-          <include name="**/*.class"/>
-        </fileset>
-      </delete>
-    </sequential>
-  </macrodef>
-
-  <!-- General jar target -->
-  <macrodef name="_jar">
-    <attribute name="module"/>
-    <sequential>
-      <manifest file="${modules.dir}/@{module}/manifest" mode="update">
-      </manifest>
-      <jar destfile="${jar.dir}/@{module}.jar" manifest="${modules.dir}/@{module}/manifest">
-        <fileset dir="${build.dir}/@{module}/classes" includes="**/*.class"/>
-        <fileset dir="${modules.dir}/@{module}/resources" erroronmissingdir="false"/>
-      </jar>
-    </sequential>
-  </macrodef>
-
-  <!-- General junit target -->
-  <macrodef name="_junit">
-    <attribute name="module"/>
-    <sequential>
-      <mkdir dir="${modules.dir}/@{module}/test"/>
-      <javac srcdir="${modules.dir}/@{module}/test" destdir="${modules.dir}/@{module}/test" classpathref="path.common" debug="${debug}">
-        <include name="**/*.java"/>
-      </javac>
-      <junit fork="true" timeout="120000">
-        <sysproperty key="tests.basedir" value="${modules.dir}/@{module}/test"/>
-        <sysproperty key="net.sourceforge.cobertura.datafile" value="${cobertura.coveragefile}"/>
-        <sysproperty key="log4j.configuration" value="log4j.test.properties"/>
-        <classpath>
-          <path refid="path.junit"/>
-          <pathelement location="${modules.dir}/@{module}/test"/>
-        </classpath>
-        <formatter type="xml"/>
-        <batchtest todir="${junit.output.dir}">
-          <fileset dir="${modules.dir}/@{module}/test">
-            <include name="**/*Test.java"/>
-          </fileset>
-        </batchtest>
-      </junit>
-    </sequential>
-  </macrodef>
-
   <!-- Old simulators -->
   <target name="oldsims" description="Compile all the old simulators">
     <javac srcdir="${basedir}/oldsims/" debug="${debug}">
@@ -320,6 +106,29 @@
     </jar>
   </target>
 
+  <!-- Clean targets -->
+  <macrodef name="_clean">
+    <attribute name="module"/>
+    <sequential>
+      <echo message="Cleaning module @{module}"/>
+      <delete dir="${build.dir}/@{module}" failonerror="false"/>
+      <delete dir="${junit.output.dir}/@{module}" failonerror="false"/>
+      <delete dir="${jar.dir}/@{module}.jar" failonerror="false"/>
+      <delete dir="${cobertura.instrument.dir}/@{module}.jar" failonerror="false"/>
+    </sequential>
+  </macrodef>
+
+  <target name="build-clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${jar.dir}"/>
+    <delete dir="${cobertura.instrument.dir}"/>
+    <for list="${modules}" param="module">
+      <sequential>
+        <_clean module="@{module}"/>
+      </sequential>
+    </for>
+  </target>
+
   <target name="oldsims-clean" description="Clean all the old simulators">
     <delete>
       <fileset dir="${basedir}/oldsims/">
@@ -329,261 +138,32 @@
     </delete>
   </target>
 
-  <!-- Useful tools: checkstyle, findbugs, cobertura -->
-  <target name="_run-checkstyle" depends="compile, _generate-checkstyle-fileset">
-    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false" failureProperty="checkstyle.failure">
-      <fileset refid="checkstyle.files"/>
-      <formatter type="xml" toFile="${checkstyle.output.dir}/checkstyle_errors.xml"/>
-    </checkstyle>
-    <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
-  </target>
-
-  <target name="_checkstyle-warnings" if="checkstyle.failure">
-    <echo message="Checkstyle warnings found"/>
-  </target>
-
-  <target name="checkstyle" depends="_run-checkstyle, _checkstyle-warnings" description="Run Checkstyle on all packages"/>
-
-  <target name="findbugs" depends="jars, _generate-module-lib-paths" description="Run Findbugs on all modules">
-    <!-- Collate all findbugs exclude filters -->
-    <concat destfile="${findbugs.output.dir}/exclude-fragments.xml">
-      <header>&lt;fragments&gt;</header>
-      <footer>&lt;/fragments&gt;</footer>
-      <fileset dir="${modules.dir}">
-        <include name="*/findbugs-filter.xml"/>
-      </fileset>
-    </concat>
-    <xslt style="${buildtools.dir}/findbugs-collate.xsl" in="${findbugs.output.dir}/exclude-fragments.xml" out="${findbugs.output.dir}/exclude.xml">
-      <outputproperty name="method" value="xml"/>
-      <outputproperty name="indent" value="yes"/>
-    </xslt>
-    <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}" excludeFilter="${findbugs.output.dir}/exclude.xml" jvmargs="-Xmx1024m">
-      <fileset dir="${jar.dir}">
-	<include name="**/*.jar"/>
-      </fileset>
-      <auxClasspath refid="path.lib"/>
-      <auxClasspath refid="path.allmodules.lib"/>
-    </findbugs>
-  </target>
-
-  <target name="junit-report" depends="_init, cobertura-instrument, junit, junit-generate-report" description="Run the junit tests for all packages and generate a report">
-  </target>
-
-  <target name="junit-generate-report" description="Generate the JUnit report on already-run unit tests">
-    <junitreport todir="${junit.output.dir}">
-      <fileset dir="${junit.output.dir}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="noframes" todir="${junit.output.dir}"/>
-    </junitreport>
-    <junitreport todir="${junit.output.dir}">
-      <fileset dir="${junit.output.dir}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="frames" todir="${junit.output.dir}"/>
-    </junitreport>
-  </target>
-
-  <target name="cobertura-instrument" depends="jars, _generate-cobertura-fileset">
-    <cobertura-instrument todir="${cobertura.instrument.dir}" datafile="${cobertura.coveragefile}">
-      <fileset refid="cobertura.files"/>
-    </cobertura-instrument>
-  </target>
-
-  <target name="cobertura-report" depends="cobertura-instrument, junit, cobertura-generate-report" description="Generate the cobertura test coverage report for all modules">
-  </target>
-
-  <target name="cobertura-generate-report" description="Generate the cobertura test coverage report for all modules using existing data">
-    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}">
-      <dirset dir="${basedir}">
-        <include name="modules/**/src"/>
-      </dirset>
-    </cobertura-report>
-  </target>
-
-  <target name="javadoc" depends="_generate-javadoc-fileset, _generate-module-lib-paths" description="Generate Javadoc for all modules">
-    <javadoc destdir="${javadoc.dir}">
-      <fileset refid="javadoc.files"/>
-      <classpath refid="path.common"/>
-      <classpath refid="path.allmodules.lib"/>
-    </javadoc>
-  </target>
-
   <target name="javadoc-clean" description="Clean up old javadocs">
     <delete dir="${javadoc.dir}"/>
   </target>
 
-  <target name="build-clean">
-    <delete dir="${build.dir}"/>
-    <delete dir="${jar.dir}"/>
-    <delete dir="${cobertura.instrument.dir}"/>
-  </target>
+  <target name="clean" depends="build-clean, oldsims-clean, javadoc-clean"/>
 
-  <target name="fix-crlf">
-    <fixcrlf srcDir="${basedir}" eol="lf" eof="remove" tab="remove" tablength="4">
-      <include name="modules/**/*.java"/>
-      <include name="modules/**/*.xml"/>
-      <include name="modules/**/*.txt"/>
-      <include name="modules/**/manifest"/>
-      <include name="modules/**/README"/>
-      <include name="boot/**/*.sh"/>
-      <include name="boot/**/*.bat"/>
-      <include name="boot/config/*"/>
-      <include name="supplement/**/*"/>
-      <include name="oldsims/**/*.java"/>
-      <include name="oldsims/**/*.xml"/>
-      <include name="oldsims/**/*.txt"/>
-      <include name="oldsims/**/*.sh"/>
-      <include name="oldsims/**/README"/>
-      <include name="oldsims/**/manifest"/>
-    </fixcrlf>
-  </target>
-
-  <tarfileset dir="." prefix="rescue-${version}/" id="dist.noexec">
-    <exclude name="**/.gitignore"/>
-    <include name="jars/**/*.jar"/>
-    <include name="lib/**/*.jar"/>
-    <include name="boot/**/*"/>
-    <exclude name="boot/logs/"/>
-    <include name="docs/**/*"/>
-    <include name="maps/**/*"/>
-    <include name="supplement/**/*"/>
-    <!-- These need executable permissions -->
-    <exclude name="boot/start.sh"/>
-    <exclude name="boot/demo.sh"/>
-    <exclude name="boot/sampleagent.sh"/>
-    <exclude name="boot/logviewer.sh"/>
-  </tarfileset>
-  <tarfileset dir="." prefix="rescue-${version}/" filemode="744" id="dist.exec">
-    <include name="boot/start.sh"/>
-    <include name="boot/demo.sh"/>
-    <include name="boot/sampleagent.sh"/>
-    <include name="boot/logviewer.sh"/>
-  </tarfileset>
-
-  <target name="dist-binary" depends="oldsims,jars" description="Create a binary distribution">
-    <tar destfile="rescue-${version}.tgz" compression="gzip" longfile="gnu">
-      <tarfileset refid="dist.noexec"/>
-      <tarfileset refid="dist.exec"/>
-    </tar>
-  </target>
-
-  <target name="dist-src" depends="oldsims,jars" description="Create a source distribution">
-    <tar destfile="rescue-${version}-src.tgz" compression="gzip"  longfile="gnu">
-      <tarfileset refid="dist.noexec"/>
-      <tarfileset refid="dist.exec"/>
-      <!-- Source code and build-tools -->
-      <tarfileset dir="." prefix="rescue-${version}/">
-        <include name="modules/**/*"/>
-        <include name="build-tools/**/*"/>
-        <include name="oldsims/**/*"/>
-        <include name="build.xml"/>
-      </tarfileset>
-    </tar>
+  <target name="clean-all">
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${jar.dir}" failonerror="false"/>
+    <delete dir="${javadoc.dir}" failonerror="false"/>
   </target>
 
   <!-- Combined targets -->
   <target name="test-static" depends="checkstyle, findbugs" description="Run the static tests (checkstyle and findbugs) for all modules"/>
 
-  <target name="test-unit" depends="junit-report, cobertura-report" description="Run the unit tests (junit and cobertura) for all modules"/>
+  <target name="test-unit" depends="cobertura, junit, junit-report, cobertura-report" description="Run the unit tests (junit and cobertura) for all modules"/>
 
   <target name="test-all" depends="test-static, test-unit" description="Run the static and unit tests for all modules"/>
 
-  <target name="complete-build" depends="clean,oldsims-clean,oldsims,compile,jars,javadoc,test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
+  <target name="complete-build" depends="clean-all, oldsims, compile, jars, javadoc, test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
 
-  <!-- Generate module compile/jar/test/clean targets and the overall module targets-->
-  <script language="javascript">
-    <![CDATA[
-      importClass(org.apache.tools.ant.Target);
-      importClass(java.lang.System);
-      var modules = project.getProperty("modules").split(",");
-      System.out.println("Creating compile/jar/test/clean tasks for modules");
-      for (var i = 0; i < modules.length; ++i) {
-        // Create new targets for compile, jar, test and clean
-        var compile = new Target();
-        compile.setName(modules[i] + "-compile");
-        compile.setDescription("Compile the " + modules[i] + " module");
-        var compileTask = project.createTask("_compile");
-        compileTask.setDynamicAttribute("module", modules[i]);
-        compile.addTask(compileTask);
-        compile.addDependency("_init");
-        compile.addDependency("_generate-module-lib-paths");
-        // Does this module depend on any others?
-        var depend = project.getProperty("modules." + modules[i] + ".depend");
-        if (depend !== null && depend !== "") {
-          var depends = depend.split(",");
-          for (var j = 0; j < depends.length; ++j) {
-            compile.addDependency(depends[j] + "-jar");
-            System.out.println(modules[i] + "-compile depends on " + depends[j] + "-jar");
-          }
-        }
-        project.addTarget(compile);
-        System.out.println("Added compile target for " + modules[i] + ": " + compile);
-
-        var jar = new Target();
-        jar.setName(modules[i] + "-jar");
-        jar.setDescription("Jar the " + modules[i] + " module");
-        var jarTask = project.createTask("_jar");
-        jarTask.setDynamicAttribute("module", modules[i]);
-        jar.addTask(jarTask);
-        jar.addDependency(modules[i] + "-compile");
-        project.addTarget(jar);
-        System.out.println("Added jar target for " + modules[i] + ": " + jar);
-
-        var junit = new Target();
-        junit.setName(modules[i] + "-junit");
-        junit.setDescription("Junit the " + modules[i] + " module");
-        var junitTask = project.createTask("_junit");
-        junitTask.setDynamicAttribute("module", modules[i]);
-        junit.addTask(junitTask);
-        junit.addDependency(modules[i] + "-jar");
-        project.addTarget(junit);
-        System.out.println("Added junit target for " + modules[i] + ": " + junit);
-
-        var clean = new Target();
-        clean.setName(modules[i] + "-clean");
-        clean.setDescription("Clean the " + modules[i] + " module");
-        var cleanTask = project.createTask("_clean");
-        cleanTask.setDynamicAttribute("module", modules[i]);
-        clean.addTask(cleanTask);
-        project.addTarget(clean);
-        System.out.println("Added clean target for " + modules[i] + ": " + clean);
-      }
-
-      // Now generate the umbrella targets
-      var compileAll = new Target();
-      compileAll.setName("compile");
-      compileAll.setDescription("Compile all modules");
-      for (var i = 0; i < modules.length; ++i) {
-        compileAll.addDependency(modules[i] + "-compile");
-      }
-      project.addTarget(compileAll);
-
-      var jarAll = new Target();
-      jarAll.setName("jars");
-      jarAll.setDescription("Jar all modules");
-      for (var i = 0; i < modules.length; ++i) {
-        jarAll.addDependency(modules[i] + "-jar");
-      }
-      project.addTarget(jarAll);
-
-      var junitAll = new Target();
-      junitAll.setName("junit");
-      junitAll.setDescription("Run Junit on all modules");
-      for (var i = 0; i < modules.length; ++i) {
-        junitAll.addDependency(modules[i] + "-junit");
-      }
-      project.addTarget(junitAll);
-
-      var cleanAll = new Target();
-      cleanAll.setName("clean");
-      cleanAll.setDescription("Clean all modules and build artefacts");
-      for (var i = 0; i < modules.length; ++i) {
-        cleanAll.addDependency(modules[i] + "-clean");
-      }
-      cleanAll.addDependency("build-clean");
-      cleanAll.addDependency("javadoc-clean");
-      project.addTarget(cleanAll);
-    ]]>
-  </script>
+  <import file="build-compile.xml"/>
+  <import file="build-findbugs.xml"/>
+  <import file="build-checkstyle.xml"/>
+  <import file="build-junit.xml"/>
+  <import file="build-javadoc.xml"/>
+  <import file="build-dist.xml"/>
+  <import file="build-misc.xml"/>
 </project>

@@ -1,0 +1,21 @@
+<project>
+  <target name="fix-crlf">
+    <fixcrlf srcDir="${basedir}" eol="lf" eof="remove" tab="remove" tablength="4">
+      <include name="modules/**/*.java"/>
+      <include name="modules/**/*.xml"/>
+      <include name="modules/**/*.txt"/>
+      <include name="modules/**/manifest"/>
+      <include name="modules/**/README"/>
+      <include name="boot/**/*.sh"/>
+      <include name="boot/**/*.bat"/>
+      <include name="boot/config/*"/>
+      <include name="supplement/**/*"/>
+      <include name="oldsims/**/*.java"/>
+      <include name="oldsims/**/*.xml"/>
+      <include name="oldsims/**/*.txt"/>
+      <include name="oldsims/**/*.sh"/>
+      <include name="oldsims/**/README"/>
+      <include name="oldsims/**/manifest"/>
+    </fixcrlf>
+  </target>
+</project>
