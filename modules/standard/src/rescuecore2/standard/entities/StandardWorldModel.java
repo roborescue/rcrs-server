@@ -156,8 +156,23 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
         if (!indexed) {
             index();
         }
+        return getObjectsInRectangle(x - range, y - range, x + range, y + range);
+    }
+
+    /**
+       Get objects inside a given rectangle.
+       @param x1 The x coordinate of the top left corner.
+       @param y1 The y coordinate of the top left corner.
+       @param x2 The x coordinate of the bottom right corner.
+       @param y2 The y coordinate of the bottom right corner.
+       @return A collection of StandardEntitys that are inside the rectangle.
+    */
+    public Collection<StandardEntity> getObjectsInRectangle(int x1, int y1, int x2, int y2) {
+        if (!indexed) {
+            index();
+        }
         final Collection<StandardEntity> result = new HashSet<StandardEntity>();
-        Rectangle r = new Rectangle(x - range, y - range, x + range, y + range);
+        Rectangle r = new Rectangle(x1, y1, x2, y2);
         index.intersects(r, new IntProcedure() {
                 @Override
                 public boolean execute(int id) {

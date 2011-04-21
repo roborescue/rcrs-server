@@ -437,7 +437,12 @@ public class CollapseSimulator extends StandardSimulator implements GUIComponent
 
     private Map<Road, Collection<java.awt.geom.Area>> createRoadBlockades(java.awt.geom.Area buildingArea, java.awt.geom.Area existing) {
         Map<Road, Collection<java.awt.geom.Area>> result = new HashMap<Road, Collection<java.awt.geom.Area>>();
-        for (StandardEntity e : model.getEntitiesOfType(StandardEntityURN.ROAD)) {
+        java.awt.Rectangle rectangle = buildingArea.getBounds();
+        Collection<StandardEntity> roads = model.getObjectsInRectangle((int) rectangle.getMinX(), (int) rectangle.getMinY(), (int) rectangle.getMaxX(), (int) rectangle.getMaxY());
+        for (StandardEntity e : roads) {
+            if (!(e instanceof Road)) {
+                continue;
+            }
             Road r = (Road)e;
             java.awt.geom.Area roadArea = areaToGeomArea(r);
             java.awt.geom.Area intersection = new java.awt.geom.Area(roadArea);
