@@ -28,7 +28,7 @@
     </tar>
   </target>
 
-  <target name="dist-src" depends="oldsims,jars" description="Create a source distribution">
+  <target name="dist-src" description="Create a source distribution">
     <tar destfile="rescue-${version}-src.tgz" compression="gzip"  longfile="gnu">
       <tarfileset refid="dist.noexec"/>
       <tarfileset refid="dist.exec"/>
@@ -37,7 +37,8 @@
         <include name="modules/**/*"/>
         <include name="build-tools/**/*"/>
         <include name="oldsims/**/*"/>
-        <include name="build.xml"/>
+        <include name="build*.xml"/>
+        <include name="findbugs-filter-base.xml"/>
       </tarfileset>
     </tar>
   </target>
