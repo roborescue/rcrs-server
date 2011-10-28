@@ -6,6 +6,9 @@ import rescuecore2.view.LayerViewComponent;
    A viewer for StandardWorldModels.
  */
 public class StandardWorldModelViewer extends LayerViewComponent {
+    /** Prefix for setting related to the StandardWorldModelViewer. */
+    public static final String STANDARD_VIEWER_PREFIX = "viewer.standard";
+
     /**
        Construct a standard world model viewer.
      */
