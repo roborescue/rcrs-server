@@ -1,26 +1,10 @@
 #!/usr/bin/python
 
 import sys, os, stat, glob
+import config
 
-all_teams = ["RAK", "HER", "SBC", "POS", "LTI", "EPI", "IAM", "MRL", "RI1", "SEU", "BON", "SUN", "RMA", "NAI", "ANC", "BRC"]
-
-team_names = {
-    "RAK" : "RoboAKUT",
-    "HER" : "HfutEngineRescue",
-    "SBC" : "SBCe_Saviour",
-    "POS" : "Poseidon",
-    "LTI" : "LTI_Agent_Rescue",
-    "EPI" : "epicenter",
-    "IAM" : "IAMRescue",
-    "MRL" : "MRL",
-    "RI1" : "Ri-one",
-    "SEU" : "SEU_RedSun",
-    "BON" : "BonabRescue",
-    "SUN" : "SUNTORI",
-    "RMA" : "RMAS_ArtSapience",
-    "NAI" : "Naito_Rescue_2011",
-    "ANC" : "anct_resq_2011",
-    "BRC" : "Brave_Circles"}
+all_teams = config.all_teams
+team_names = config.team_names
 
 template = """
 <?xml version="1.0" encoding="iso-8859-1"?>
@@ -75,7 +59,7 @@ class TeamEntry(object):
         self.scores = None
         self.max_time = 0
         self.rank = -1
-        
+
         if self.valid():
             for line in open(os.path.join(self.dir, "init-score.txt")):
                 self.init_score = float(line.strip())
@@ -92,7 +76,9 @@ class TeamEntry(object):
 
     def get_logfile(self, mapdir):
         files = glob.glob(os.path.join(mapdir, "*%s*" % self.name))
-        assert len(files) == 1, "Can't identify team logfile"
+        if len(files) != 1:
+            #Can't identify team logfile
+            raise KeyError
         size = os.stat(files[0])[stat.ST_SIZE]
         return (size, files[0])
 
@@ -126,6 +112,8 @@ class MapData(object):
 
         if os.path.exists("%s-eval" % mapname):
             self.path = "%s-eval" % mapname
+        elif os.path.exists(os.path.join(mapname, "plot-%s.svg" % mapname)):
+            self.path = mapname
         elif os.path.exists("plot-%s.svg" % mapname):
             self.path = "."
         else:
@@ -179,11 +167,12 @@ class MapData(object):
         yield self.turns
 
     def get_mapfile(self):
-        fname = "%s-map.tar.gz" % self.mapname
-        if not os.path.exists(fname):
-            return 0, None
-        size = os.stat(fname)[stat.ST_SIZE]
-        return size, fname
+        names = ["%s-map.tar.gz" % self.mapname, "%s-map.tgz" % self.mapname, "%s.tgz" % self.mapname, "%s.tar.gz" % self.mapname]
+        for fname in names:
+            if os.path.exists(fname):
+                size = os.stat(fname)[stat.ST_SIZE]
+                return size, fname
+        return 0, None
 
     def get_logpackage(self):
         path = "%s-logs.tar" % self.mapname
@@ -247,9 +236,13 @@ if __name__ == '__main__':
                 html = ''
             result.append(html)
         if team.valid():
-            size, log = team.get_logfile(os.path.join(data.path, mapname))
-            log_url = "http://sourceforge.net/projects/roborescue/files/logs/2011/%s" % log
-            result += ['<a href="%s">Download</a> (%s)' % (log_url, sizeof_fmt(size))]
+            try:
+                size, log = team.get_logfile(data.path)
+                log_url = log
+                # log_url = "http://sourceforge.net/projects/roborescue/files/logs/2011/%s" % log
+                result += ['<a href="%s">Download</a> (%s)' % (log_url, sizeof_fmt(size))]
+            except KeyError:
+                pass
         else:
             result.append("")
             

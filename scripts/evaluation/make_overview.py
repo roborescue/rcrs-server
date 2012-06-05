@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, os, stat, glob
-import make_html
+import config, make_html
 
 template = """
 <?xml version="1.0" encoding="iso-8859-1"?>
@@ -11,7 +11,7 @@ template = """
 lang="en" xml:lang="en">
 
 <head>
-<title>Robocup 2011 Rescue Simulation League Results</title>
+<title>Robocup Dutch Open 2012 Rescue Simulation League Results</title>
 <style type="text/css">
   body { font-family: sans-serif; }
 
@@ -26,10 +26,10 @@ lang="en" xml:lang="en">
 </head>
 
 <body>
-<h1>RoboCup 2011 Rescue Simulation League Results</h1>
+<h1>RoboCup Dutch Open 2012 Rescue Simulation League Results</h1>
 
 <p>Click on the map names to get detailed results and logfiles</p>
-<p>Download all maps <a href="%(mapfile)s">here</a> (%(mapsize)s)</p>
+%(map_download)s
 
 %(body)s
 
@@ -39,7 +39,7 @@ lang="en" xml:lang="en">
 """
 
 class DayData(object):
-    def __init__(self, name, shortname, maps, teams, highlight=None):
+    def __init__(self, name, shortname, maps, teams, highlight=None, show_ranks=None):
         self.name = name
         self.shortname = shortname
         self.teams = teams
@@ -47,6 +47,7 @@ class DayData(object):
         self.runs = []
         self.prev_day = None
         self.highlight = highlight
+        self.show_ranks = show_ranks
 
         self.runs = [make_html.MapData(m, teams) for m in self.maps]
         self.calculate_result()
@@ -76,8 +77,12 @@ class DayData(object):
     def get_team_data(self, team):
         single_results = []
         for run in self.runs:
-            t = run.get_team(team)
-            single_results.append((t.final_score, t.rank))
+            try:
+                t = run.get_team(team)
+                single_results.append((t.final_score, t.rank))
+            except:
+                single_results.append((0, -1))
+                
         return single_results, (self.total_scores[team], self.total_ranks[team], self.final_rank[team])
 
     def __str__(self):
@@ -100,17 +105,31 @@ def get_mappack():
        
 if __name__ == '__main__':
     all_teams = make_html.all_teams
-    semi_teams = ["RAK", "SBC", "POS", "IAM", "MRL", "RI1", "SEU", "RMA"]
-    final_teams = ["POS", "IAM", "SEU", "RMA"]
+
+    datadict = {}
+    runs = []
+    for cdata in config.rounds:
+        highlight = cdata.get('highlight', None)
+        show_ranks = cdata.get('show_ranks', None)
+        if show_ranks is True:
+            show_ranks = 3
+        data = DayData(cdata['name'], cdata['shortname'], cdata['maps'], cdata['teams'], highlight, show_ranks)
+        if 'merge_with' in cdata:
+            merge_config = cdata['merge_with']
+            merge_data = datadict[merge_config['name']]
+            data.add_day(merge_data)
+        datadict[cdata['name']] = data
+        runs.append(data)
     
-    day1 = DayData("Preliminaries Day 1", "Preliminary1", ["VC1", "Paris1", "Kobe1", "Berlin1", "Istanbul1"], all_teams)
-    day2 = DayData("Preliminaries Day 2", "Preliminary2", ["Kobe2", "Paris2", "Istanbul2", "Berlin2", "VC2"], all_teams, 8)
-    day2.add_day(day1)
-    semi = DayData("Semifinals", "Semifinals", ["Paris3", "Istanbul3", "Berlin3", "Kobe3", "Istanbul4", "Berlin4", "VC4", "Paris4"], semi_teams, 4)
-    final = DayData("Finals", "Finals", ["Paris5", "Berlin5", "Kobe4", "Istanbul5", "VC5"], final_teams, 0)
+    # day1 = DayData("Preliminaries Day 1", "Preliminary1", ["VC1", "Paris1", "Kobe1", "Berlin1", "Istanbul1"], all_teams)
+    # day2 = DayData("Preliminaries Day 2", "Preliminary2", ["Kobe2", "Paris2", "Istanbul2", "Berlin2", "VC2"], all_teams, 8)
+    # day2.add_day(day1)
+    # semi = DayData("Semifinals", "Semifinals", ["Paris3", "Istanbul3", "Berlin3", "Kobe3", "Istanbul4", "Berlin4", "VC4", "Paris4"], semi_teams, 4)
+    # final = DayData("Finals", "Finals", ["Paris5", "Berlin5", "Kobe4", "Istanbul5", "VC5"], final_teams, 0)
 
     mapsize, mapfile = get_mappack()
     mapsize = make_html.sizeof_fmt(mapsize)
+    map_download = """<p>Download all maps <a href="%s">here</a> (%s)</p>""" % (mapfile, mapsize) if mapfile else ""
 
     def make_table_row(day, team):
         results = []
@@ -129,7 +148,7 @@ if __name__ == '__main__':
         results.append("%d" % final_rank)
 
         classes = []
-        if day.highlight == 0:
+        if day.show_ranks is not None and final_rank <= day.show_ranks:
             if final_rank == 1:
                 classes.append("first")
             elif final_rank == 2:
@@ -146,8 +165,8 @@ if __name__ == '__main__':
     def make_header(day):
         result = ['<th rowspan="2">Team</th>']
         result2 = []
-        for m in day.maps:
-            result.append('<th colspan="2"><a href="%s-eval/index.html">%s</a></th>' % (m,m))
+        for m, run in zip(day.maps, day.runs):
+            result.append('<th colspan="2"><a href="%s/index.html">%s</a></th>' % (run.path, m))
             result2.append("<th>Score</th>")
             result2.append("<th>Rank</th>")
         if day.prev_day:
@@ -162,7 +181,7 @@ if __name__ == '__main__':
         return result, result2
 
     body = ""
-    for run in [day1, day2, semi, final]:
+    for run in runs:
         body += "<h2>%s</h2>\n" % run.name
         table = '<table border="2" cellspacing="0" cellpadding="5">'
         h1, h2 = make_header(run)
