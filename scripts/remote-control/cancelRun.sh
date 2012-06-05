@@ -3,9 +3,9 @@
 . $(dirname $0)/config.sh
 
 CLUSTER=$1
-MAP=$2
-TEAM=$3
-NAME=$TEAM_NAMES[$TEAM]
+# MAP=$2
+# TEAM=$3
+# NAME=$TEAM_NAMES[$TEAM]
 
 SERVER=$(getServerHost $CLUSTER)
 

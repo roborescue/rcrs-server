@@ -4,6 +4,7 @@
 
 MAP=$1
 TEAM=$2
+NAME=${TEAM_NAMES[$TEAM]}
 
 export DISPLAY=:0
 
@@ -24,22 +25,28 @@ fi
 TIME="`date +%m%d-%H%M%S`"
 MAPNAME="`basename $MAP`"
 
-KERNEL_LOGDIR=$HOME/simlogs/$TIME-$TEAM-$MAPNAME
-
+KERNEL_LOGDIR=$HOME/kernel-logs/$DAY/$TIME-$NAME-$MAPNAME
+mkdir -p $KERNEL_LOGDIR
 cd $KERNELDIR/boot
+
+RESCUE_LOG=$LOGDIR/$DAY/kernel/$TIME-$NAME-$MAPNAME
 
 echo "RUNNING_TEAM=$TEAM" >> $LOCKFILE_NAME
 echo "RUNNING_MAP=$MAP" >> $LOCKFILE_NAME
 
-./start.sh -m $THISMAPDIR -c $CONFIG -t $TEAM -l $KERNEL_LOGDIR &
+./start.sh -m $THISMAPDIR -c $CONFIG -t $NAME -l $KERNEL_LOGDIR &
 echo "PID=$!" >> $LOCKFILE_NAME
 
 wait
 
+echo "RUNNING_TEAM=$TEAM" >> $STATFILE_NAME
+echo "RUNNING_MAP=$MAP" >> $STATFILE_NAME
+echo "RESCUE_LOGFILE=$RESCUE_LOG" >> $STATFILE_NAME
+
 echo "Zipping logfile..."
 mkdir -p $HOME/$LOGDIR/$DAY/kernel/
-cp $KERNEL_LOGDIR/rescue.log $HOME/$LOGDIR/$DAY/kernel/$TIME-$TEAM-$MAPNAME
-gzip $HOME/$LOGDIR/$DAY/kernel/$TIME-$TEAM-$MAPNAME
+cp $KERNEL_LOGDIR/rescue.log $HOME/$RESCUE_LOG
+gzip $HOME/$RESCUE_LOG
 
 rm $LOCKFILE_NAME
 echo "All done"

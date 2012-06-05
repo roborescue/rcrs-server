@@ -38,3 +38,21 @@ if (( $TYPE == 3)); then
     echo "Running: /bin/sh \"start.sh\" 0 0 0 0 -1 -1 $HOST 2>&1 | tee $LOGFILE"
     /bin/sh "start.sh" 0 0 0 0 -1 -1 $HOST 2>&1 | tee $LOGFILE
 fi
+
+# # firebrigade 
+# if (( $TYPE == 1)); then
+#     echo "Running: /bin/sh \"start.sh\" 1 $HOST 2>&1 | tee $LOGFILE"
+#     /bin/sh "start.sh" 1 $HOST 2>&1 | tee $LOGFILE
+# fi
+
+# # policeforce
+# if (( $TYPE == 2)); then
+#     echo "Running: /bin/sh \"start.sh\" 2 $HOST 2>&1 | tee $LOGFILE"
+#     /bin/sh "start.sh" 2 $HOST 2>&1 | tee $LOGFILE
+# fi
+
+# # ambulance
+# if (( $TYPE == 3)); then
+#     echo "Running: /bin/sh \"start.sh\" 3 $HOST 2>&1 | tee $LOGFILE"
+#     /bin/sh "start.sh" 3 $HOST 2>&1 | tee $LOGFILE
+# fi

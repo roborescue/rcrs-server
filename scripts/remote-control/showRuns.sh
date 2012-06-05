@@ -2,7 +2,7 @@
 
 . $(dirname $0)/config.sh
 
-for i in 1 2 3; do
+for i in $CLUSTERS; do
     SERVER=$(getServerHost $i)
     RUNNING_TEAM=""
     eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/boot/$LOCKFILE_NAME 2>/dev/null)

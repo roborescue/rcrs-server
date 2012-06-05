@@ -2,6 +2,7 @@
 . $(dirname $0)/config.sh
 
 for HOST in $CLIENT_HOSTS; do
-    rsync -rcLv $1 $REMOTE_USER@$HOST:$2
+    echo "$HOST: "
+    rsync -rcLv $RSYNC_OPTS $1 $REMOTE_USER@$HOST:$2
 done
 

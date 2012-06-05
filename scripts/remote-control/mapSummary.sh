@@ -3,18 +3,8 @@
 
 MAP=$1
 MAP_EVALDIR=$HOME/$EVALDIR/$MAP
-PATH=$PATH:$HOME/$KERNELDIR/scripts/evaluation
-
-if [ ! -d $MAP_EVALDIR ]; then
-    mkdir $MAP_EVALDIR
-
-    if [ -f $DIR/$MAP.tar ]; then
-        cd $MAP_EVALDIR
-
-        echo "extracting $MAP.tar"
-        tar xvf $DIR/$MAP.tar
-    fi;
-fi;
+EVAL_SCRIPTS=$HOME/$KERNELDIR/scripts/evaluation
+PATH=$PATH:$EVAL_SCRIPTS
 
 cd $MAP_EVALDIR
 
@@ -27,26 +17,10 @@ if [ -f final-scores.txt ]; then
 fi
 
 
+NUM_PROCESSED=0
 for TEAM in $TEAM_SHORTHANDS; do
     NAME=${TEAM_NAMES[$TEAM]}
-    LOGFILE_GZ=($MAP/*$NAME*)
-    if [ -f $LOGFILE_GZ ]; then
-        if [ ! -d $TEAM ]; then
-            echo "unpacking $LOGFILE_GZ ..."
-            fn=$(basename $LOGFILE_GZ)
-            LOGFILE=$EVALDIR/${fn%.gz}
-            if [ ! -f $LOGFILE ]; then
-                gunzip -c $LOGFILE_GZ > $LOGFILE
-            fi
-
-            mkdir $TEAM
-            cd $HOME/$KERNELDIR/boot 
-            ./logextract.sh $LOGFILE $EVALDIR/$TEAM
-            cd $EVALDIR
-
-            rm $LOGFILE
-        fi
-        
+    if [ -s $TEAM/init-score.txt ]; then
         cp $TEAM/init-score.txt init-score.txt
         echo -n "\"$NAME\" ">> scores.tmp
         cat $TEAM/scores.txt >> scores.tmp
@@ -63,17 +37,29 @@ for TEAM in $TEAM_SHORTHANDS; do
             cp $TEAM/snapshot-init.png snapshot-init.png
             convert -format png -thumbnail 400x300 -strip -quality 95 PNG8:snapshot-init.png snapshot-init-small.png
         fi
+        LOGFILES=$(ls $HOME/$LOGDIR/$DAY/kernel/*$NAME-$MAP.gz 2>/dev/null) 
+        if [[ -f "$LOGFILES" && ! -f $MAP_EVALDIR/$LOGFILES ]]; then
+            cp $LOGFILES $MAP_EVALDIR
+        fi;
+        NUM_PROCESSED=$((NUM_PROCESSED+1))
 #        echo "recompressing ..."
 #        bzip2 $LOGFILE
       fi
 done
 
+
+# create map tgz
+if [[ -d $HOME/$MAPDIR/$MAP && ! -f $MAP_EVALDIR/$MAP.tgz  ]]; then
+    cd $HOME/$MAPDIR
+    tar czf $MAP_EVALDIR/$MAP.tgz $MAP
+fi;
+
 cd $MAP_EVALDIR
 
 transpose.py scores.tmp > scores.dat
 export RCR_MAP=$MAP
-export RCR_COUNT=$(ls -1 $MAP|wc -l)
+export RCR_COUNT=$NUM_PROCESSED
 echo $RCR_COUNT teams processed
-gnuplot $HOME/$KERNELDIR/scripts/evaluation/plot.gnu
+gnuplot $EVAL_SCRIPTS/plot-scores.gnu
 
-make_html.py $MAP > index.html
+$EVAL_SCRIPTS/make_html.py $MAP > index.html
