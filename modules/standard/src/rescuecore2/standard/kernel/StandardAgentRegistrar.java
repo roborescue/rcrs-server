@@ -90,18 +90,31 @@ public class StandardAgentRegistrar implements AgentRegistrar {
             maybeAddInitialEntity(e, initialEntities);
         }
         for (Entity e : world) {
-            if (e instanceof FireBrigade
-                    || e instanceof FireStation
-                    || e instanceof AmbulanceTeam
-                    || e instanceof AmbulanceCentre
-                    || e instanceof PoliceForce
-                    || e instanceof PoliceOffice
-                    || e instanceof Civilian) {
-                Set<Entity> s = new HashSet<Entity>(initialEntities);
-                s.remove(e);
-                s.add(e);
-                manager.registerAgentControlledEntity(e, s, agentConfig);
-            }
+        	   if (e instanceof FireBrigade
+                       || e instanceof FireStation
+                       || e instanceof AmbulanceTeam
+                       || e instanceof AmbulanceCentre
+                       || e instanceof PoliceForce
+                       || e instanceof PoliceOffice
+                       ) {
+                   Set<Entity> s = new HashSet<Entity>(initialEntities);
+                   s.remove(e);
+                   s.add(e);
+                   manager.registerAgentControlledEntity(e, s, agentConfig);
+               }
+               if(e instanceof Civilian){
+               	Config civilianConfig = new Config(agentConfig);
+               	Set<Entity> s = new HashSet<Entity>(initialEntities);
+                   s.remove(e);
+                   s.add(e);
+                   String configSeed = config.getValue(Constants.RANDOM_SEED_KEY, "");
+                   if(!configSeed.equals("")){
+                   	int seed = Integer.parseInt(configSeed)+e.getID().getValue();
+                   	civilianConfig.setValue(Constants.RANDOM_SEED_KEY,  seed+"");
+                   }
+                   manager.registerAgentControlledEntity(e, s, civilianConfig);            	
+               }
+            
         }
     }
 
