@@ -20,6 +20,7 @@ public class ExtinguishRequest {
     public static final int REASON_TO_MUCH_WATER=-2;
     public static final int REASON_TANK_EMPTY=-3;
     public static final int REASON_OUT_OF_RANGE=-4;
+    public static final int REASON_NEGATIVE_WATER=-5;//Add by Ali Modaresi To fix using kernel bug
     
     public static final String OK="passed all tests";
     public static final String OK_VIRT="is virtual mode";
@@ -27,6 +28,7 @@ public class ExtinguishRequest {
     public static final String ER_TO_MUCH="firebrigade is exceeding limt";
     public static final String ER_EMPTY="tank is empty";
     public static final String ER_RANGE="target is out of range";
+    public static final String ER_NEGATIVE_WATER="negative water request";//Add by Ali Modaresi To fix using kernel bug
     public static final String UNKNOWN="unknown code ";
     
 	public static int MAX_WATER_PER_CYCLE;
@@ -58,6 +60,11 @@ public class ExtinguishRequest {
 		}
 		if(distance(source,target)>MAX_DISTANCE)
 			return REASON_OUT_OF_RANGE;
+		
+		if(quantity<0){//Added by Ali Modaresi to fix using kernel bug
+			LOG.warn("Using kernel bug.... Extinguish with negative water");//Added by Ali Modaresi to fix using kernel bug
+			return REASON_NEGATIVE_WATER;//Added by Ali Modaresi to fix using kernel bug
+		}
 		return REASON_OK;		
 	}
 	
@@ -75,6 +82,8 @@ public class ExtinguishRequest {
         		return ER_EMPTY;
         	case REASON_TO_MUCH_WATER:
         		return ER_TO_MUCH;
+        	case REASON_NEGATIVE_WATER://Added by Ali Modaresi to fix using kernel bug
+        		return ER_NEGATIVE_WATER;//Added by Ali Modaresi to fix using kernel bug
         default:
             return UNKNOWN+code;
         }
