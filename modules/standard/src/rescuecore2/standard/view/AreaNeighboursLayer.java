@@ -25,6 +25,7 @@ public class AreaNeighboursLayer extends StandardEntityViewLayer<Area> {
      */
     public AreaNeighboursLayer() {
         super(Area.class);
+        setVisible(false);
     }
 
     @Override

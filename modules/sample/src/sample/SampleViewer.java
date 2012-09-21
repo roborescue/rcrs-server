@@ -44,6 +44,7 @@ public class SampleViewer extends StandardViewer {
     private JLabel timeLabel;
     private JLabel scoreLabel;
     private JLabel teamLabel;
+    private JLabel mapLabel;
     private NumberFormat format;
 
     @Override
@@ -62,8 +63,23 @@ public class SampleViewer extends StandardViewer {
         viewer.setPreferredSize(new Dimension(500, 500));
         // CHECKSTYLE:ON:MagicNumber
         timeLabel = new JLabel("Time: Not started", JLabel.CENTER);
-        teamLabel = new JLabel(teamName, JLabel.LEFT);
-        scoreLabel = new JLabel("Score: Unknown", JLabel.RIGHT);
+        teamLabel = new JLabel(teamName, JLabel.CENTER);
+        scoreLabel = new JLabel("Score: Unknown", JLabel.CENTER);
+        String mapdir=config.getValue("gis.map.dir").trim();
+        
+		String[] map_spl = mapdir.split("/");
+		int index = map_spl.length-1;
+		String mapname = map_spl[index].trim();
+		if(mapname.equals(""))
+			mapname = map_spl[--index].trim();
+		if(mapname.equals("map"))
+			mapname = map_spl[--index].trim();
+			
+        
+        String totalTime = config.getValue("kernel.timesteps");
+        int channelCount=config.getIntValue("comms.channels.count")-1;//-1 for say
+        
+        mapLabel=new JLabel(mapname+" ("+totalTime+") | "+(channelCount==0? "No Comm":channelCount+" channels"), JLabel.CENTER);
         timeLabel.setBackground(Color.WHITE);
         timeLabel.setOpaque(true);
         timeLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, fontSize));
@@ -73,13 +89,19 @@ public class SampleViewer extends StandardViewer {
         scoreLabel.setBackground(Color.WHITE);
         scoreLabel.setOpaque(true);
         scoreLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, fontSize));
+        
+        mapLabel.setBackground(Color.WHITE);
+        mapLabel.setOpaque(true);
+        mapLabel.setFont(timeLabel.getFont().deriveFont(Font.PLAIN, fontSize));
+        
         frame.add(viewer, BorderLayout.CENTER);
         // CHECKSTYLE:OFF:MagicNumber
-        JPanel labels = new JPanel(new GridLayout(1, 3));
+        JPanel labels = new JPanel(new GridLayout(1, 4));
         // CHECKSTYLE:ON:MagicNumber
         labels.add(teamLabel);
         labels.add(timeLabel);
         labels.add(scoreLabel);
+        labels.add(mapLabel);
         frame.add(labels, BorderLayout.NORTH);
         frame.pack();
         if (config.getBooleanValue(MAXIMISE_KEY, false)) {
