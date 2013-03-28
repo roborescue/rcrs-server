@@ -31,7 +31,9 @@ import rescuecore2.log.Logger;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardWorldModel;
 
 /**
    A view layer that renders humans.
@@ -47,7 +49,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     private static final String USE_ICONS_KEY = "view.standard.human.icons.use";
     private static final int DEFAULT_ICON_SIZE = 32;
 
-    private static final HumanSorter HUMAN_SORTER = new HumanSorter();
+    private static HumanSorter HUMAN_SORTER=null;
 
     private static final Color CIVILIAN_COLOUR = Color.GREEN;
     private static final Color FIRE_BRIGADE_COLOUR = Color.RED;
@@ -88,10 +90,9 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     @Override
     public Shape render(Human h, Graphics2D g, ScreenTransform t) {
-        // Don't draw humans in ambulances
-        if (h.isPositionDefined() && (world.getEntity(h.getPosition()) instanceof AmbulanceTeam)) {
-            return null;
-        }
+//    	if(h instanceof AmbulanceTeam &&world.getEntity(h.getPosition())instanceof Road)
+//    		return null;
+
         Pair<Integer, Integer> location = getLocation(h);
         if (location == null) {
             return null;
@@ -101,9 +102,15 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         Shape shape;
         Icon icon = useIcons ? getIcon(h) : null;
         if (icon == null) {
-            shape = new Ellipse2D.Double(x - SIZE / 2, y - SIZE / 2, SIZE, SIZE);
+            if (h.isPositionDefined() && (world.getEntity(h.getPosition()) instanceof AmbulanceTeam))
+                // draw humans smaller in ambulances
+           	 	shape = new Ellipse2D.Double(x - SIZE / 3, y - SIZE / 3, SIZE/3*2, SIZE/3*2);
+            else
+            	shape = new Ellipse2D.Double(x - SIZE / 2, y - SIZE / 2, SIZE, SIZE);
             g.setColor(adjustColour(getColour(h), h.getHP()));
             g.fill(shape);
+            g.setColor(getColour(h));
+            g.draw(shape);
         }
         else {
             x -= icon.getIconWidth() / 2;
@@ -113,7 +120,6 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
         }
         return shape;
     }
-
     @Override
     public List<JMenuItem> getPopupMenuItems() {
         List<JMenuItem> result = new ArrayList<JMenuItem>();
@@ -123,7 +129,12 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     @Override
     protected void postView() {
-        Collections.sort(entities, HUMAN_SORTER);
+    	if(world==null)
+    		return;
+    	if(HUMAN_SORTER==null)
+        		HUMAN_SORTER= new HumanSorter(world);
+   		Collections.sort(entities, HUMAN_SORTER);
+    	
     }
 
     /**
@@ -245,15 +256,28 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     }
 
     private static final class HumanSorter implements Comparator<Human>, java.io.Serializable {
-        @Override
+        private final StandardWorldModel world;
+
+		public HumanSorter(StandardWorldModel world) {
+			this.world = world;
+		}
+
+		@Override
         public int compare(Human h1, Human h2) {
-            if (h1 instanceof Civilian && !(h2 instanceof Civilian)) {
+        	if(world.getEntity(h1.getPosition())instanceof AmbulanceTeam && !(world.getEntity(h2.getPosition())instanceof AmbulanceTeam))
+        		return 1;
+        	if(!(world.getEntity(h1.getPosition())instanceof AmbulanceTeam) && (world.getEntity(h2.getPosition())instanceof AmbulanceTeam))
+        		return -1;
+        	if (h1 instanceof Civilian && !(h2 instanceof Civilian)) {
                 return -1;
             }
             if (h2 instanceof Civilian && !(h1 instanceof Civilian)) {
                 return 1;
             }
-            return h1.getID().getValue() - h2.getID().getValue();
+            
+            //	return h1.getID().getValue() - h2.getID().getValue();
+            
+            return h2.getHP()-h1.getHP();
         }
     }
 

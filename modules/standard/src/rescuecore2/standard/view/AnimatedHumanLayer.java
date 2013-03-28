@@ -10,7 +10,9 @@ import java.util.LinkedList;
 import rescuecore2.misc.Pair;
 import rescuecore2.config.Config;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.misc.AgentPath;
 
 /**
@@ -57,7 +59,7 @@ public class AnimatedHumanLayer extends HumanLayer {
             }
             animationDone = true;
             for (Queue<Pair<Integer, Integer>> next : frames.values()) {
-                if (next.size() > 1) {
+                if (next.size() > 0) {
                     next.remove();
                     animationDone = false;
                 }
@@ -106,7 +108,13 @@ public class AnimatedHumanLayer extends HumanLayer {
                 if (human == null) {
                     continue;
                 }
-                AgentPath path = AgentPath.computePath(human, world);
+                AgentPath path;
+                StandardEntity position = world.getEntity(human.getPosition());
+                if(position instanceof AmbulanceTeam)
+                	//to render the civilian in ambulance team movement
+                	path=AgentPath.computePath((AmbulanceTeam)position,world);
+                else
+                	path= AgentPath.computePath(human, world);
                 if (path == null) {
                     continue;
                 }
