@@ -66,6 +66,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         Set<String> entityURNs = new HashSet<String>();
         entityURNs.add(StandardEntityURN.BUILDING.toString());
         entityURNs.add(StandardEntityURN.REFUGE.toString());
+        entityURNs.add(StandardEntityURN.HYDRANT.toString());
         entityURNs.add(StandardEntityURN.ROAD.toString());
         entityURNs.add(StandardEntityURN.CIVILIAN.toString());
         Set<String> propertyURNs = new HashSet<String>();
