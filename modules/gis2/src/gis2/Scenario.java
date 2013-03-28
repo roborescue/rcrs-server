@@ -239,26 +239,31 @@ public class Scenario {
             }
             b.setIgnition(true);
         }
-        int nextID = 0;
+        int lastID = 0;
         for (StandardEntity next : model) {
-            nextID = Math.max(nextID, next.getID().getValue());
+        	lastID = Math.max(lastID , next.getID().getValue());
         }
         Logger.debug("Creating " + fbLocations.size() + " fire brigades");
+        
+        
         for (int next : fbLocations) {
             EntityID id = new EntityID(next);
-            FireBrigade f = new FireBrigade(new EntityID(++nextID));
+            lastID=getNextId(model,config,lastID);
+            FireBrigade f = new FireBrigade(new EntityID(lastID));
             setupAgent(f, id, model, config);
         }
         Logger.debug("Creating " + pfLocations.size() + " police forces");
         for (int next : pfLocations) {
             EntityID id = new EntityID(next);
-            PoliceForce p = new PoliceForce(new EntityID(++nextID));
+            lastID=getNextId(model,config,lastID);
+            PoliceForce p = new PoliceForce(new EntityID(lastID));
             setupAgent(p, id, model, config);
         }
         Logger.debug("Creating " + atLocations.size() + " ambulance teams");
         for (int next : atLocations) {
             EntityID id = new EntityID(next);
-            AmbulanceTeam a = new AmbulanceTeam(new EntityID(++nextID));
+            lastID=getNextId(model,config,lastID);
+            AmbulanceTeam a = new AmbulanceTeam(new EntityID(lastID));
             setupAgent(a, id, model, config);
         }
         Logger.debug("Creating " + fsLocations.size() + " fire stations");
@@ -303,11 +308,24 @@ public class Scenario {
         Logger.debug("Creating " + civLocations.size() + " civilians");
         for (int next : civLocations) {
             EntityID id = new EntityID(next);
-            Civilian c = new Civilian(new EntityID(++nextID));
+            lastID=getNextId(model,config,lastID);
+            Civilian c = new Civilian(new EntityID(lastID));
             setupAgent(c, id, model, config);
         }
     }
 
+    private int getNextId(StandardWorldModel model, Config config,int lastId) {
+    	boolean humanRandomId = config.getBooleanValue("senario.human.random-id",true);
+    	if(humanRandomId){
+    		int newId;
+    		do{
+    			newId=config.getRandom().nextInt();
+    		}while(model.getEntity(new EntityID(newId))==null);
+    		return newId;
+    	}else{
+    		return lastId+1;
+    	}
+	}
     /**
        Get the set of fire locations.
        @return The set of fire locations.
