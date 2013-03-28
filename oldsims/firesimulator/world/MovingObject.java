@@ -13,7 +13,7 @@ public abstract class MovingObject extends RealObject {
     private int positionId=0;
     private int positionExtra=0;
     private RescueObject position;
-    private World world = null;
+    protected World world = null; 
     private String currentAction;
     private int currentActionLastChange;
     private int x;

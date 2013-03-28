@@ -14,6 +14,7 @@ import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 
+import firesimulator.world.Hydrant;
 import firesimulator.world.World;
 import firesimulator.world.WorldInfo;
 import firesimulator.world.Refuge;
@@ -100,8 +101,8 @@ public class FireSimulatorWrapper extends StandardSimulator {
                 }
                 else if (r instanceof MovingObject && e instanceof rescuecore2.standard.entities.Human) {
                     mapHumanProperties((rescuecore2.standard.entities.Human)e, (MovingObject)r);
-                }
-                else {
+                }else if(r instanceof Hydrant){
+                }else {
                     Logger.error("Don't know how to map " + r + " from " + e);
                 }
             }
@@ -171,6 +172,10 @@ public class FireSimulatorWrapper extends StandardSimulator {
         if (e instanceof rescuecore2.standard.entities.Refuge) {
             Refuge r = new Refuge(id);
             mapBuildingProperties((rescuecore2.standard.entities.Building)e, r);
+            return r;
+        }
+        if (e instanceof rescuecore2.standard.entities.Hydrant) {
+            Hydrant r = new Hydrant(id);
             return r;
         }
         if (e instanceof rescuecore2.standard.entities.FireStation) {

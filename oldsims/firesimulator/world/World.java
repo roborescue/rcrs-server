@@ -134,6 +134,7 @@ public class World implements WorldConstants {
         Wall.RAY_RATE=new Float(Configuration.getValue("resq-fire.ray_rate")).floatValue();
         Wall.MAX_SAMPLE_DISTANCE=new Integer(Configuration.getValue("resq-fire.max_ray_distance")).intValue();
         FireBrigade.REFILL_QUANTITY=new Integer(Configuration.getValue("resq-fire.water_refill_rate")).intValue();
+        FireBrigade.REFILL_HYDRANT_QUANTITY=new Integer(Configuration.getValue("resq-fire.water_hydrant_refill_rate")).intValue();
         FireBrigade.MAX_WATER_QUANTITY=new Integer(Configuration.getValue("resq-fire.water_capacity")).intValue();
     }
 	

@@ -52,7 +52,7 @@ public class AnimatedWorldModelViewer extends StandardWorldModelViewer {
         addLayer(new RoadLayer());
         addLayer(new AreaNeighboursLayer());
         addLayer(new RoadBlockageLayer());
-        addLayer(new BuildingIconLayer());
+        addLayer(new AreaIconLayer());
         humans = new AnimatedHumanLayer();
         addLayer(humans);
         CommandLayer commands = new CommandLayer();

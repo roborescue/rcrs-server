@@ -110,6 +110,7 @@ public class Configuration {
 		Props.add(new Prop(PREFIX + "concrete_speed","concrete_speed",null,null,true,null));		
 		Props.add(new Prop(PREFIX + "max_extinguish_power_sum","max_extinguish_power_sum",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_refill_rate","water_refill_rate",null,null,true,null));
+		Props.add(new Prop(PREFIX + "water_hydrant_refill_rate","water_hydrant_refill_rate",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_capacity","water_capacity",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_thermal_capacity","water_thermal_capacity",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_distance","water_distance",null,null,true,null));		

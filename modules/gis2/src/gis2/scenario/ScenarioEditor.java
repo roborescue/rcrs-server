@@ -69,6 +69,7 @@ public class ScenarioEditor extends JPanel {
     private static final Color POLICE_OFFICE_COLOUR = new Color(0, 0, 255);
     private static final Color AMBULANCE_CENTRE_COLOUR = new Color(255, 255, 255);
     private static final Color REFUGE_COLOUR = new Color(0, 128, 0);
+    private static final Color HYDRANT_COLOUR = new Color(128, 128, 0);
 
     private GMLMap map;
     private GMLMapViewer viewer;
@@ -94,6 +95,7 @@ public class ScenarioEditor extends JPanel {
     private FilledShapeDecorator policeOfficeDecorator = new FilledShapeDecorator(POLICE_OFFICE_COLOUR, null, null);
     private FilledShapeDecorator ambulanceCentreDecorator = new FilledShapeDecorator(AMBULANCE_CENTRE_COLOUR, null, null);
     private FilledShapeDecorator refugeDecorator = new FilledShapeDecorator(REFUGE_COLOUR, null, null);
+    private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null, HYDRANT_COLOUR, null);
 
     /**
        Construct a new ScenarioEditor.
@@ -546,6 +548,8 @@ public class ScenarioEditor extends JPanel {
         addTool(new RemoveFireTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new PlaceRefugeTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new RemoveRefugeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new PlaceHydrantTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new RemoveHydrantTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new PlaceCivilianTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new RemoveCivilianTool(this), menu, toolbar, menuGroup, toolbarGroup);
         menu.addSeparator();
@@ -622,6 +626,12 @@ public class ScenarioEditor extends JPanel {
                 Logger.warn("Refuge at non-existing building " + id);
             }
         }
+        for (int id : newScenario.getHydrants()) {
+            if (newMap.getRoad(id) == null) {
+                valid = false;
+                Logger.warn("Hydrant at non-existing road " + id);
+            }
+        }
         for (int id : newScenario.getFireStations()) {
             if (newMap.getBuilding(id) == null) {
                 valid = false;
@@ -674,6 +684,7 @@ public class ScenarioEditor extends JPanel {
                 public void run() {
                     statusLabel.setText(scenario.getFires().size() + " fires, "
                                         + scenario.getRefuges().size() + " refuges, "
+                                        + scenario.getHydrants().size()+" hydrants, "
                                         + scenario.getCivilians().size() + " civilians, "
                                         + scenario.getFireBrigades().size() + " fb, "
                                         + scenario.getFireStations().size() + " fs, "
@@ -694,6 +705,7 @@ public class ScenarioEditor extends JPanel {
 
     private void updateCentreOverlay() {
         centreOverlay.clearAllBuildingDecorators();
+        centreOverlay.clearAllRoadDecorators();
         for (int next : scenario.getFireStations()) {
             centreOverlay.setBuildingDecorator(fireStationDecorator, map.getBuilding(next));
         }
@@ -705,6 +717,9 @@ public class ScenarioEditor extends JPanel {
         }
         for (int next : scenario.getRefuges()) {
             centreOverlay.setBuildingDecorator(refugeDecorator, map.getBuilding(next));
+        }
+        for (int next : scenario.getHydrants()) {
+            centreOverlay.setRoadDecorator(hydrantDecorator, map.getRoad(next));
         }
     }
 

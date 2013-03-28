@@ -139,6 +139,7 @@ public class LineOfSightPerception implements Perception, GUIComponent {
                 StandardEntityURN urn = next.getStandardURN();
                 switch (urn) {
                 case ROAD:
+                case HYDRANT:
                     addRoadProperties((Road)next, result);
                     break;
                 case BUILDING:

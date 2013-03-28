@@ -46,6 +46,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         VISIBLE_CONFIG_OPTIONS.add(Constants.PERCEPTION_KEY.replace(".", "\\."));
         VISIBLE_CONFIG_OPTIONS.add("fire\\.tank\\.maximum");
         VISIBLE_CONFIG_OPTIONS.add("fire\\.tank\\.refill-rate");
+        VISIBLE_CONFIG_OPTIONS.add("fire\\.tank\\.refill_hydrant_rate");
         VISIBLE_CONFIG_OPTIONS.add("fire\\.extinguish\\.max-sum");
         VISIBLE_CONFIG_OPTIONS.add("fire\\.extinguish\\.max-distance");
         VISIBLE_CONFIG_OPTIONS.add(StandardConstants.FIRE_BRIGADE_COUNT_KEY.replace(".", "\\."));

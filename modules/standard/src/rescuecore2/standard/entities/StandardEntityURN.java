@@ -13,6 +13,7 @@ public enum StandardEntityURN {
     BLOCKADE(ENTITY_URN_PREFIX + "blockade"),
     BUILDING(ENTITY_URN_PREFIX + "building"),
     REFUGE(ENTITY_URN_PREFIX + "refuge"),
+    HYDRANT(ENTITY_URN_PREFIX + "hydrant"),
     FIRE_STATION(ENTITY_URN_PREFIX + "firestation"),
     AMBULANCE_CENTRE(ENTITY_URN_PREFIX + "ambulancecentre"),
     POLICE_OFFICE(ENTITY_URN_PREFIX + "policeoffice"),
