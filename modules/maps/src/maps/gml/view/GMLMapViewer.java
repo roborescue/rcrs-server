@@ -33,11 +33,11 @@ import maps.gml.GMLTools;
    A component for viewing GML maps.
 */
 public class GMLMapViewer extends JComponent {
-    private static final Color BUILDING_COLOUR = new Color(0, 255, 0, 128); // Transparent lime
+    private static final Color BUILDING_COLOUR = new Color(67, 67, 67, 67); // Transparent dark gray
     private static final Color ROAD_COLOUR = new Color(192, 192, 192, 128); // Transparent light gray
     private static final Color SPACE_COLOUR = new Color(0, 128, 0, 128); // Transparent green
 
-    private static final Color GRID_COLOUR = new Color(64, 64, 64, 64); // Transparent dark gray
+    private static final Color GRID_COLOUR = new Color(0, 255, 0, 128); // Transparent lime
 
     private static final Color NODE_COLOUR = Color.BLACK;
     private static final int NODE_SIZE = 3;
@@ -69,6 +69,7 @@ public class GMLMapViewer extends JComponent {
 
     private boolean grid;
     private double gridResolution;
+	private boolean paintNodes=true;
 
     /**
        Create a GMLMapViewer.
@@ -621,7 +622,7 @@ public class GMLMapViewer extends JComponent {
         }
         for (GMLNode next : nodes) {
             NodeDecorator n = getNodeDecorator(next);
-            if (n != null) {
+            if (paintNodes&&n != null) {
                 n.decorate(next, (Graphics2D)g.create(), transform);
             }
         }
@@ -688,4 +689,9 @@ public class GMLMapViewer extends JComponent {
     private double roundUpToGrid(double d) {
         return Math.ceil(d / gridResolution) * gridResolution;
     }
+
+    public void setPaintNodes(boolean paintNodes) {
+		this.paintNodes = paintNodes;
+		
+	}
 }

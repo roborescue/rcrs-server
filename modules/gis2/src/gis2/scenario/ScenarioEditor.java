@@ -116,6 +116,7 @@ public class ScenarioEditor extends JPanel {
         this.map = map;
         this.scenario = scenario;
         viewer = new GMLMapViewer(map);
+        viewer.setPaintNodes(false);
         statusLabel = new JLabel("Status");
         fireOverlay = new DecoratorOverlay();
         centreOverlay = new DecoratorOverlay();

@@ -83,7 +83,7 @@ public class ScreenTransform {
        Increase the zoom level by one step.
     */
     public void zoomIn() {
-        zoom *= 2;
+        zoom *= 1.5d;
         rescale(lastScreenWidth, lastScreenHeight);
     }
 
@@ -91,7 +91,7 @@ public class ScreenTransform {
        Decrease the zoom level by one step.
     */
     public void zoomOut() {
-        zoom /= 2;
+        zoom /= 1.5d;
         rescale(lastScreenWidth, lastScreenHeight);
     }
 
