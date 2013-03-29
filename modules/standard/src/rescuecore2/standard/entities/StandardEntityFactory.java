@@ -34,6 +34,8 @@ public final class StandardEntityFactory extends AbstractEntityFactory<StandardE
             return new Refuge(id);
         case HYDRANT:
             return new Hydrant(id);
+        case GAS_STATION:
+            return new GasStation(id);
         case FIRE_STATION:
             return new FireStation(id);
         case AMBULANCE_CENTRE:

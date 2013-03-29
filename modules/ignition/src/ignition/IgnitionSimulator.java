@@ -6,7 +6,13 @@ import rescuecore2.log.Logger;
 
 import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.GasStation;
+import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityURN;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,11 +20,17 @@ import java.util.Set;
 */
 public class IgnitionSimulator extends StandardSimulator {
     private IgnitionModel ignitionModel;
-
+    private int GAS_STATION_EXPLOSION_RANG;
+    private List<GasStation> notIgnaitedGasStations;
     @Override
     protected void postConnect() {
         super.postConnect();
         ignitionModel = new RandomIgnitionModel(model, config);
+        GAS_STATION_EXPLOSION_RANG=config.getIntValue("ignition.gas_station.explosion.range");
+        notIgnaitedGasStations=new ArrayList<GasStation>();
+        for (StandardEntity entity : model.getEntitiesOfType(StandardEntityURN.GAS_STATION)) {
+			notIgnaitedGasStations.add((GasStation) entity);
+		}
     }
 
     @Override
@@ -26,6 +38,9 @@ public class IgnitionSimulator extends StandardSimulator {
         long start = System.currentTimeMillis();
         int time = c.getTime();
         Logger.info("Timestep " + time);
+        
+        explosionGasStations(changes);
+        Logger.info("Ignating after shock ");
         // Find out which buildings have ignited.
         Set<Building> buildings = ignitionModel.findIgnitionPoints(model, c.getTime());
         for (Building next : buildings) {
@@ -37,7 +52,26 @@ public class IgnitionSimulator extends StandardSimulator {
         Logger.info("Timestep " + time + " took " + (end - start) + " ms");
     }
 
-    @Override
+    private void explosionGasStations(ChangeSet changes) {
+    	Logger.info("explosion Gas Stations ");
+    	for (Iterator<GasStation> iterator= notIgnaitedGasStations.iterator(); iterator.hasNext();) {
+    		GasStation gasStation = iterator.next();
+        	if(gasStation.isFierynessDefined()&&gasStation.getFieryness()==1){
+        		Logger.info(gasStation+" Ignited ==> explosion" );
+        		for (StandardEntity rangeEntity : model.getObjectsInRange(gasStation, GAS_STATION_EXPLOSION_RANG)) {
+					if(rangeEntity instanceof Building){
+						Building rangeBuilding = (Building)rangeEntity;
+						Logger.info("Igniting " + rangeBuilding);
+						rangeBuilding.setIgnition(true);
+			            changes.addChange(rangeBuilding, rangeBuilding.getIgnitionProperty());
+					}
+				}
+        		iterator.remove();
+        	}
+        }		
+	}
+
+	@Override
     public String getName() {
         return "Ignition simulator";
     }

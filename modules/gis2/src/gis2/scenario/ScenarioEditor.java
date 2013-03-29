@@ -70,6 +70,7 @@ public class ScenarioEditor extends JPanel {
     private static final Color AMBULANCE_CENTRE_COLOUR = new Color(255, 255, 255);
     private static final Color REFUGE_COLOUR = new Color(0, 128, 0);
     private static final Color HYDRANT_COLOUR = new Color(128, 128, 0);
+    private static final Color GAS_STATION_COLOUR = new Color(255, 128, 0);
 
     private GMLMap map;
     private GMLMapViewer viewer;
@@ -95,7 +96,9 @@ public class ScenarioEditor extends JPanel {
     private FilledShapeDecorator policeOfficeDecorator = new FilledShapeDecorator(POLICE_OFFICE_COLOUR, null, null);
     private FilledShapeDecorator ambulanceCentreDecorator = new FilledShapeDecorator(AMBULANCE_CENTRE_COLOUR, null, null);
     private FilledShapeDecorator refugeDecorator = new FilledShapeDecorator(REFUGE_COLOUR, null, null);
+    private FilledShapeDecorator gasStationDecorator = new FilledShapeDecorator(GAS_STATION_COLOUR, null, null);
     private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null, HYDRANT_COLOUR, null);
+    
 
     /**
        Construct a new ScenarioEditor.
@@ -134,6 +137,7 @@ public class ScenarioEditor extends JPanel {
         JToolBar fileToolbar = new JToolBar("File");
         JToolBar editToolbar = new JToolBar("Edit");
         JToolBar toolsToolbar = new JToolBar("Tools");
+        toolsToolbar.setLayout(new ModifiedFlowLayout());
         JToolBar functionsToolbar = new JToolBar("Functions");
         JMenu fileMenu = new JMenu("File", false);
         JMenu editMenu = new JMenu("Edit", false);
@@ -147,11 +151,11 @@ public class ScenarioEditor extends JPanel {
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, inspector);
         add(split, BorderLayout.CENTER);
-        JPanel toolbars = new JPanel(new GridLayout(0, 1));
+        JPanel toolbars = new JPanel(new ModifiedFlowLayout());
         toolbars.add(fileToolbar);
         toolbars.add(editToolbar);
-        toolbars.add(toolsToolbar);
         toolbars.add(functionsToolbar);
+        toolbars.add(toolsToolbar);
         add(toolbars, BorderLayout.NORTH);
         add(statusLabel, BorderLayout.SOUTH);
         menuBar.add(fileMenu);
@@ -549,6 +553,8 @@ public class ScenarioEditor extends JPanel {
         addTool(new RemoveFireTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new PlaceRefugeTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new RemoveRefugeTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new PlaceGasStationTool(this), menu, toolbar, menuGroup, toolbarGroup);
+        addTool(new RemoveGasStationTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new PlaceHydrantTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new RemoveHydrantTool(this), menu, toolbar, menuGroup, toolbarGroup);
         addTool(new PlaceCivilianTool(this), menu, toolbar, menuGroup, toolbarGroup);
@@ -686,6 +692,7 @@ public class ScenarioEditor extends JPanel {
                     statusLabel.setText(scenario.getFires().size() + " fires, "
                                         + scenario.getRefuges().size() + " refuges, "
                                         + scenario.getHydrants().size()+" hydrants, "
+                                        + scenario.getGasStations().size()+" gas stations, "
                                         + scenario.getCivilians().size() + " civilians, "
                                         + scenario.getFireBrigades().size() + " fb, "
                                         + scenario.getFireStations().size() + " fs, "
@@ -718,6 +725,9 @@ public class ScenarioEditor extends JPanel {
         }
         for (int next : scenario.getRefuges()) {
             centreOverlay.setBuildingDecorator(refugeDecorator, map.getBuilding(next));
+        }
+        for (int next : scenario.getGasStations()) {
+            centreOverlay.setBuildingDecorator(gasStationDecorator, map.getBuilding(next));
         }
         for (int next : scenario.getHydrants()) {
             centreOverlay.setRoadDecorator(hydrantDecorator, map.getRoad(next));

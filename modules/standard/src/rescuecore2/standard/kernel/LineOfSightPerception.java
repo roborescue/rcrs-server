@@ -144,6 +144,7 @@ public class LineOfSightPerception implements Perception, GUIComponent {
                     break;
                 case BUILDING:
                 case REFUGE:
+                case GAS_STATION:
                 case FIRE_STATION:
                 case AMBULANCE_CENTRE:
                 case POLICE_OFFICE:

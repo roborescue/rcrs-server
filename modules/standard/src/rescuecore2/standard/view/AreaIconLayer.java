@@ -20,6 +20,7 @@ public class AreaIconLayer extends StandardEntityViewLayer<Area> {
     private static final ImageIcon AMBULANCE_CENTRE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/AmbulanceCentre-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
     private static final ImageIcon REFUGE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Refuge-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
     private static final ImageIcon HYDRANT = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Hydrant-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
+    private static final ImageIcon GAS_STATION= new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/GasStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
     
     /**
        Construct a building icon view layer.
@@ -39,6 +40,9 @@ public class AreaIconLayer extends StandardEntityViewLayer<Area> {
         switch (b.getStandardURN()) {
         case REFUGE:
             icon = REFUGE;
+            break;
+        case GAS_STATION:
+            icon = GAS_STATION;
             break;
         case FIRE_STATION:
             icon = FIRE_STATION;

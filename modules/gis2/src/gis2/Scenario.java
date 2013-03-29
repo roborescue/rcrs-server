@@ -5,6 +5,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
+import org.jfree.util.Log;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.log.Logger;
 import rescuecore2.config.Config;
 
+import rescuecore2.standard.entities.GasStation;
 import rescuecore2.standard.entities.Hydrant;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardWorldModel;
@@ -50,6 +52,7 @@ public class Scenario {
 
     private static final QName SCENARIO_QNAME = DocumentHelper.createQName("scenario", SCENARIO_NAMESPACE);
     private static final QName REFUGE_QNAME = DocumentHelper.createQName("refuge", SCENARIO_NAMESPACE);
+    private static final QName GAS_STATION_QNAME = DocumentHelper.createQName("gasstation", SCENARIO_NAMESPACE);
     private static final QName HYDRANT_QNAME = DocumentHelper.createQName("hydrant", SCENARIO_NAMESPACE);
     private static final QName CIV_QNAME = DocumentHelper.createQName("civilian", SCENARIO_NAMESPACE);
     private static final QName FB_QNAME = DocumentHelper.createQName("firebrigade", SCENARIO_NAMESPACE);
@@ -62,6 +65,7 @@ public class Scenario {
 
     private Set<Integer> refuges;
     private Set<Integer> hydrants;
+    private Set<Integer> gasStations;
     private Set<Integer> fires;
     private Collection<Integer> civLocations;
     private Collection<Integer> fbLocations;
@@ -77,6 +81,7 @@ public class Scenario {
     public Scenario() {
         refuges = new HashSet<Integer>();
        	hydrants= new HashSet<Integer>();
+       	gasStations=new HashSet<Integer>();
         fires = new HashSet<Integer>();
         civLocations = new ArrayList<Integer>();
         fbLocations = new ArrayList<Integer>();
@@ -104,6 +109,7 @@ public class Scenario {
     */
     public void read(Document doc) throws ScenarioException {
     	hydrants.clear();
+    	gasStations.clear();
         refuges.clear();
         fires.clear();
         civLocations.clear();
@@ -124,6 +130,10 @@ public class Scenario {
         for (Object next : root.elements(HYDRANT_QNAME)) {
             Element e = (Element)next;
             hydrants.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
+        }
+        for (Object next : root.elements(GAS_STATION_QNAME)) {
+            Element e = (Element)next;
+            gasStations.add(Integer.parseInt(e.attributeValue(LOCATION_QNAME)));
         }
         for (Object next : root.elements(CIV_QNAME)) {
             Element e = (Element)next;
@@ -176,6 +186,9 @@ public class Scenario {
         for (int next : hydrants) {
             root.addElement(HYDRANT_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
         }
+        for (int next : gasStations) {
+            root.addElement(GAS_STATION_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
+        }
         for (int next : civLocations) {
             root.addElement(CIV_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
         }
@@ -215,6 +228,18 @@ public class Scenario {
                 throw new ScenarioException("Building " + next + " does not exist");
             }
             Refuge r = new Refuge(b);
+            model.removeEntity(b);
+            model.addEntity(r);
+            Logger.debug("Converted " + b + " into " + r);
+        }
+        for (int next : gasStations) {
+            Logger.debug("Converting building " + next + " to a gas station");
+            Building b = (Building)model.getEntity(new EntityID(next));
+            if (b == null) {
+                throw new ScenarioException("Building " + next + " does not exist");
+            }
+            GasStation r = new GasStation(b);
+            r.setImportance(5);
             model.removeEntity(b);
             model.addEntity(r);
             Logger.debug("Converted " + b + " into " + r);
@@ -340,6 +365,14 @@ public class Scenario {
     */
     public Set<Integer> getRefuges() {
         return Collections.unmodifiableSet(refuges);
+    }
+    
+    /**
+    Get the set of GasStations locations.
+    @return The set of GasStations locations.
+ */
+    public Set<Integer> getGasStations() {
+        return Collections.unmodifiableSet(gasStations);
     }
     
     /**
@@ -520,20 +553,36 @@ public class Scenario {
     }
 
     /**
-    Add a {@link hydrant}.
+    Add a hydrant.
     @param location The new hydrant location.
- */
- public void addHydrant(int location) {
-     hydrants.add(location);
- }
+     */
+    public void addHydrant(int location) {
+    	hydrants.add(location);
+    }
 
- /**
-    Remove a hydrant.
-    @param location The hydrant location to remove.
- */
- public void removeHydrant(int location) {
-	 hydrants.remove(location);
- }
+    /**
+		    Remove a hydrant.
+		    @param location The hydrant location to remove.
+     */
+    public void removeHydrant(int location) {
+    	hydrants.remove(location);
+    }
+	 /**
+	    Remove a GasStation.
+	    @param location The GasStation location to remove.
+	 */
+	 public void removeGasStation(int location) {
+		 gasStations.remove(location);
+	 }
+	 
+	    /**
+	    Add a GasStation.
+	    @param location The new GasStation location.
+	     */
+	    public void addGasStation(int location) {
+	    	gasStations.add(location);
+	    }
+
     /**
        Add a civilian.
        @param location The new civilian location.

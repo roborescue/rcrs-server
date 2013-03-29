@@ -9,51 +9,51 @@ import maps.gml.GMLShape;
 /**
    Tool for removing refuges.
 */
-public class RemoveHydrantTool extends ShapeTool {
+public class RemoveGasStationTool extends ShapeTool {
     /**
-       Construct a RemoveHydrantTool.
+       Construct a RemoveGasStationTool.
        @param editor The editor instance.
     */
-    public RemoveHydrantTool(ScenarioEditor editor) {
+    public RemoveGasStationTool(ScenarioEditor editor) {
         super(editor);
     }
 
     @Override
     public String getName() {
-        return "Remove hydrant";
+        return "Remove GasStation";
     }
 
     @Override
     protected boolean shouldHighlight(GMLShape shape) {
-        return shape instanceof GMLRoad;
+        return shape instanceof GMLBuilding;
     }
 
     @Override
     protected void processClick(GMLShape shape) {
-        editor.getScenario().removeHydrant(shape.getID());
+        editor.getScenario().removeGasStation(shape.getID());
         editor.setChanged();
         editor.updateOverlays();
-        editor.addEdit(new RemoveHydrantEdit(shape.getID()));
+        editor.addEdit(new RemoveGasStationEdit(shape.getID()));
     }
 
-    private class RemoveHydrantEdit extends AbstractUndoableEdit {
+    private class RemoveGasStationEdit extends AbstractUndoableEdit {
         private int id;
 
-        public RemoveHydrantEdit(int id) {
+        public RemoveGasStationEdit(int id) {
             this.id = id;
         }
 
         @Override
         public void undo() {
             super.undo();
-            editor.getScenario().addHydrant(id);
+            editor.getScenario().addGasStation(id);
             editor.updateOverlays();
         }
 
         @Override
         public void redo() {
             super.redo();
-            editor.getScenario().removeHydrant(id);
+            editor.getScenario().removeGasStation(id);
             editor.updateOverlays();
         }
     }
