@@ -24,6 +24,8 @@ public enum StandardMessageURN {
     AK_RESCUE(MESSAGE_URN_PREFIX + "rescue"),
     /** Clear command. */
     AK_CLEAR(MESSAGE_URN_PREFIX + "clear"),
+    /** Clear-Area command. */
+    AK_CLEAR_AREA(MESSAGE_URN_PREFIX + "clear_area"),
 
     /** Channel subscribe command. */
     AK_SUBSCRIBE(MESSAGE_URN_PREFIX + "subscribe"),

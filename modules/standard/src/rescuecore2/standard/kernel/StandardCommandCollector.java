@@ -4,6 +4,7 @@ import rescuecore2.config.Config;
 import rescuecore2.messages.Command;
 import rescuecore2.log.Logger;
 
+import rescuecore2.standard.messages.AKClearArea;
 import rescuecore2.standard.messages.AKExtinguish;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKClear;
@@ -64,6 +65,7 @@ public class StandardCommandCollector implements CommandCollector {
                 || (c instanceof AKRest)
                 || (c instanceof AKExtinguish)
                 || (c instanceof AKClear)
+                || (c instanceof AKClearArea)
                 || (c instanceof AKRescue)
                 || (c instanceof AKLoad)
                 || (c instanceof AKUnload));

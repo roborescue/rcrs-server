@@ -42,6 +42,8 @@ public final class StandardMessageFactory extends AbstractMessageFactory<Standar
             return new AKRescue(data);
         case AK_CLEAR:
             return new AKClear(data);
+        case AK_CLEAR_AREA:
+            return new AKClearArea(data);
         case AK_SUBSCRIBE:
             return new AKSubscribe(data);
         case AK_SPEAK:

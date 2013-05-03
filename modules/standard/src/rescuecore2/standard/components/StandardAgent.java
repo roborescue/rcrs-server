@@ -1,28 +1,28 @@
 package rescuecore2.standard.components;
 
-import rescuecore2.components.AbstractAgent;
-import rescuecore2.worldmodel.EntityID;
-
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.Refuge;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.messages.AKRest;
-import rescuecore2.standard.messages.AKMove;
-import rescuecore2.standard.messages.AKExtinguish;
-import rescuecore2.standard.messages.AKClear;
-import rescuecore2.standard.messages.AKRescue;
-import rescuecore2.standard.messages.AKLoad;
-import rescuecore2.standard.messages.AKUnload;
-import rescuecore2.standard.messages.AKSubscribe;
-import rescuecore2.standard.messages.AKSpeak;
-import rescuecore2.standard.messages.AKSay;
-import rescuecore2.standard.messages.AKTell;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+
+import rescuecore2.components.AbstractAgent;
+import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.Refuge;
+import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.messages.AKClear;
+import rescuecore2.standard.messages.AKClearArea;
+import rescuecore2.standard.messages.AKExtinguish;
+import rescuecore2.standard.messages.AKLoad;
+import rescuecore2.standard.messages.AKMove;
+import rescuecore2.standard.messages.AKRescue;
+import rescuecore2.standard.messages.AKRest;
+import rescuecore2.standard.messages.AKSay;
+import rescuecore2.standard.messages.AKSpeak;
+import rescuecore2.standard.messages.AKSubscribe;
+import rescuecore2.standard.messages.AKTell;
+import rescuecore2.standard.messages.AKUnload;
+import rescuecore2.worldmodel.EntityID;
 
 /**
    Abstract base class for standard agents.
@@ -104,6 +104,16 @@ public abstract class StandardAgent<E extends StandardEntity> extends AbstractAg
     */
     protected void sendClear(int time, EntityID target) {
         send(new AKClear(getID(), time, target));
+    }
+
+    /**
+        Send a clear command to the kernel.
+        @param time The current time.
+        @param destX The destination X coordinate to clear.
+        @param destY The destination Y coordinate to clear.
+    */
+    protected void sendClear(int time, int destX, int destY) {
+        send(new AKClearArea(getID(), time, destX, destY));
     }
 
     /**

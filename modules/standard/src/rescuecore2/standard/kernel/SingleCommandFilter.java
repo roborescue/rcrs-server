@@ -8,6 +8,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.log.Logger;
 
+import rescuecore2.standard.messages.AKClearArea;
 import rescuecore2.standard.messages.AKRest;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKLoad;
@@ -56,6 +57,7 @@ public class SingleCommandFilter implements CommandFilter {
         || (c instanceof AKUnload)
         || (c instanceof AKRescue)
         || (c instanceof AKClear)
+        || (c instanceof AKClearArea)
         || (c instanceof AKExtinguish);
     }
 }

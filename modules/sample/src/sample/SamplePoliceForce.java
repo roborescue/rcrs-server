@@ -12,6 +12,7 @@ import rescuecore2.log.Logger;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Vector2D;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -54,7 +55,22 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         if (target != null) {
             Logger.info("Clearing blockade " + target);
             sendSpeak(time, 1, ("Clearing " + target).getBytes());
-            sendClear(time, target.getID());
+//            sendClear(time, target.getX(), target.getY());
+            List<Line2D> lines = GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(target.getApexes()), true);
+            double best = Double.MAX_VALUE;
+            Point2D bestPoint = null;
+            Point2D origin = new Point2D(me().getX(), me().getY());
+            for (Line2D next : lines) {
+                Point2D closest = GeometryTools2D.getClosestPointOnSegment(next, origin);
+                double d = GeometryTools2D.getDistance(origin, closest);
+                if (d < best) {
+                    best = d;
+                    bestPoint = closest;
+                }
+            }
+            Vector2D v = bestPoint.minus(new Point2D(me().getX(), me().getY()));
+            v = v.normalised().scale(1000000);
+            sendClear(time, (int)(me().getX() + v.getX()), (int)(me().getY() + v.getY()));
             return;
         }
         // Plan a path to a blocked area
