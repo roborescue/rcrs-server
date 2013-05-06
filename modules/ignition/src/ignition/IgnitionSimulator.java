@@ -38,8 +38,9 @@ public class IgnitionSimulator extends StandardSimulator {
         long start = System.currentTimeMillis();
         int time = c.getTime();
         Logger.info("Timestep " + time);
-        
+
         explosionGasStations(changes);
+
         Logger.info("Ignating after shock ");
         // Find out which buildings have ignited.
         Set<Building> buildings = ignitionModel.findIgnitionPoints(model, c.getTime());
@@ -57,18 +58,22 @@ public class IgnitionSimulator extends StandardSimulator {
     	for (Iterator<GasStation> iterator= notIgnaitedGasStations.iterator(); iterator.hasNext();) {
     		GasStation gasStation = iterator.next();
         	if(gasStation.isFierynessDefined()&&gasStation.getFieryness()==1){
-        		Logger.info(gasStation+" Ignited ==> explosion" );
-        		for (StandardEntity rangeEntity : model.getObjectsInRange(gasStation, GAS_STATION_EXPLOSION_RANG)) {
-					if(rangeEntity instanceof Building){
-						Building rangeBuilding = (Building)rangeEntity;
-						Logger.info("Igniting " + rangeBuilding);
-						rangeBuilding.setIgnition(true);
-			            changes.addChange(rangeBuilding, rangeBuilding.getIgnitionProperty());
-					}
-				}
+        		explode(gasStation,changes);
         		iterator.remove();
         	}
-        }		
+        }
+	}
+
+	private void explode(GasStation gasStation, ChangeSet changes) {
+		Logger.info(gasStation+" Ignited ==> explosion" );
+		for (StandardEntity rangeEntity : model.getObjectsInRange(gasStation, GAS_STATION_EXPLOSION_RANG)) {
+			if(rangeEntity instanceof Building){
+				Building rangeBuilding = (Building)rangeEntity;
+				Logger.info("Igniting " + rangeBuilding);
+				rangeBuilding.setIgnition(true);
+	            changes.addChange(rangeBuilding, rangeBuilding.getIgnitionProperty());
+			}
+		}
 	}
 
 	@Override
