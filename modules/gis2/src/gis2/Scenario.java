@@ -179,7 +179,7 @@ public class Scenario {
         for (int next : refuges) {
             root.addElement(REFUGE_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
         }
-        
+
         for (int next : fires) {
             root.addElement(FIRE_QNAME).addAttribute(LOCATION_QNAME, String.valueOf(next));
         }
@@ -269,8 +269,8 @@ public class Scenario {
         	lastID = Math.max(lastID , next.getID().getValue());
         }
         Logger.debug("Creating " + fbLocations.size() + " fire brigades");
-        
-        
+
+
         for (int next : fbLocations) {
             EntityID id = new EntityID(next);
             lastID=getNextId(model,config,lastID);
@@ -344,8 +344,8 @@ public class Scenario {
     	if(humanRandomId){
     		int newId;
     		do{
-    			newId=config.getRandom().nextInt();
-    		}while(model.getEntity(new EntityID(newId))==null);
+    			newId=config.getRandom().nextInt(Integer.MAX_VALUE);
+    		}while(model.getEntity(new EntityID(newId))!=null);
     		return newId;
     	}else{
     		return lastId+1;
@@ -366,7 +366,7 @@ public class Scenario {
     public Set<Integer> getRefuges() {
         return Collections.unmodifiableSet(refuges);
     }
-    
+
     /**
     Get the set of GasStations locations.
     @return The set of GasStations locations.
@@ -374,7 +374,7 @@ public class Scenario {
     public Set<Integer> getGasStations() {
         return Collections.unmodifiableSet(gasStations);
     }
-    
+
     /**
     Get the set of hydrant locations.
     @return The set of hydrant locations.
@@ -574,7 +574,7 @@ public class Scenario {
 	 public void removeGasStation(int location) {
 		 gasStations.remove(location);
 	 }
-	 
+
 	    /**
 	    Add a GasStation.
 	    @param location The new GasStation location.
