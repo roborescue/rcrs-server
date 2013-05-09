@@ -27,6 +27,8 @@ public enum ControlMessageURN {
     KS_UPDATE("urn:rescuecore2:messages.control:ks_update"),
     /** Kernel commands broadcast. */
     KS_COMMANDS("urn:rescuecore2:messages.control:ks_commands"),
+    /** Kernel commands aftershocks info. */
+    KS_AFTERSHOCKS_INFO("urn:rescuecore2:messages.control:ks_aftershocks_info"),
 
     /** Viewer-Kernel connect. */
     VK_CONNECT("urn:rescuecore2:messages.control:vk_connect"),

@@ -1,6 +1,6 @@
 package gis2.scenario;
 
-import gis2.Scenario;
+import gis2.GisScenario;
 import java.util.HashSet;
 
 /**
@@ -22,7 +22,7 @@ public class ClearFiresFunction extends AbstractFunction {
 
     @Override
     public void execute() {
-        Scenario s = editor.getScenario();
+        GisScenario s = editor.getScenario();
         s.setFires(new HashSet<Integer>());
         editor.setChanged();
         editor.updateOverlays();

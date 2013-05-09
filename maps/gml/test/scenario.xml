@@ -7,6 +7,8 @@
   <rcr:civilian rcr:location="254"/>
   <rcr:civilian rcr:location="254"/>
   <rcr:civilian rcr:location="254"/>
+  <rcr:aftershock rcr:time="10" rcr:intensity="0.5"/>
+  
 <!--
   <rcr:civilian rcr:location="250"/>
   <rcr:civilian rcr:location="253"/>

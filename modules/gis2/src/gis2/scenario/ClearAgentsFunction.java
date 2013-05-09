@@ -1,6 +1,6 @@
 package gis2.scenario;
 
-import gis2.Scenario;
+import gis2.GisScenario;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -23,7 +23,7 @@ public class ClearAgentsFunction extends AbstractFunction {
 
     @Override
     public void execute() {
-        Scenario s = editor.getScenario();
+        GisScenario s = editor.getScenario();
         Set<Integer> empty = new HashSet<Integer>();
         s.setFireBrigades(empty);
         s.setFireStations(empty);

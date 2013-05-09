@@ -1,7 +1,7 @@
 package gis2.scenario;
 
 import java.util.Random;
-import gis2.Scenario;
+import gis2.GisScenario;
 import gis2.RandomScenarioGenerator;
 
 /**
@@ -27,7 +27,7 @@ public class RandomiseFunction extends AbstractFunction {
     @Override
     public void execute() {
         RandomScenarioGenerator generator = new RandomScenarioGenerator();
-        Scenario s = generator.makeRandomScenario(editor.getMap(), random);
+        GisScenario s = generator.makeRandomScenario(editor.getMap(), random);
         try {
             editor.setScenario(editor.getMap(), s);
             editor.setChanged();

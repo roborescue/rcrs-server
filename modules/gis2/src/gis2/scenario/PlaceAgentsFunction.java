@@ -1,6 +1,6 @@
 package gis2.scenario;
 
-import gis2.Scenario;
+import gis2.GisScenario;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class PlaceAgentsFunction extends AbstractFunction {
                 Logger.error("Error parsing number", e);
             }
         }
-        Scenario s = editor.getScenario();
+        GisScenario s = editor.getScenario();
         switch (type) {
         case TYPE_FIRE:
             for (int id : ids) {

@@ -3,6 +3,7 @@ package kernel;
 /**
    Root of the kernel exception heirarchy.
  */
+
 public class KernelException extends Exception {
     /**
        Construct a kernel exception with no information.

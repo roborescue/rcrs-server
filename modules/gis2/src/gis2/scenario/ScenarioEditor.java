@@ -1,6 +1,6 @@
 package gis2.scenario;
 
-import gis2.Scenario;
+import gis2.GisScenario;
 import gis2.ScenarioException;
 
 import java.awt.BorderLayout;
@@ -78,7 +78,7 @@ public class ScenarioEditor extends JPanel {
     private DecoratorOverlay fireOverlay;
     private DecoratorOverlay centreOverlay;
     private AgentOverlay agentOverlay;
-    private Scenario scenario;
+    private GisScenario scenario;
     private Tool currentTool;
     private JLabel statusLabel;
 
@@ -114,7 +114,7 @@ public class ScenarioEditor extends JPanel {
        @param map The GMLMap to view.
        @param scenario The scenario to edit.
     */
-    public ScenarioEditor(JMenuBar menuBar, GMLMap map, Scenario scenario) {
+    public ScenarioEditor(JMenuBar menuBar, GMLMap map, GisScenario scenario) {
         super(new BorderLayout());
         this.map = map;
         this.scenario = scenario;
@@ -187,7 +187,10 @@ public class ScenarioEditor extends JPanel {
             }
             catch (ScenarioException e) {
                 e.printStackTrace();
-            }
+            } catch (rescuecore2.scenario.exceptions.ScenarioException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
 
         frame.setJMenuBar(menuBar);
@@ -216,8 +219,9 @@ public class ScenarioEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws MapException If there is a problem reading the map.
        @throws ScenarioException If there is a problem reading the scenario.
+     * @throws rescuecore2.scenario.exceptions.ScenarioException 
     */
-    public void load() throws CancelledByUserException, MapException, ScenarioException {
+    public void load() throws CancelledByUserException, MapException, ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
         JFileChooser chooser = new JFileChooser(baseDir);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setFileFilter(new FileFilter() {
@@ -242,8 +246,9 @@ public class ScenarioEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws MapException If there is a problem reading the map.
        @throws ScenarioException If there is a problem reading the scenario.
+     * @throws rescuecore2.scenario.exceptions.ScenarioException 
     */
-    public void load(String filename) throws CancelledByUserException, MapException, ScenarioException {
+    public void load(String filename) throws CancelledByUserException, MapException, ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
         load(new File(filename));
     }
 
@@ -253,8 +258,9 @@ public class ScenarioEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws MapException If there is a problem reading the map.
        @throws ScenarioException If there is a problem reading the scenario.
+     * @throws rescuecore2.scenario.exceptions.ScenarioException 
     */
-    public void load(File dir) throws CancelledByUserException, MapException, ScenarioException {
+    public void load(File dir) throws CancelledByUserException, MapException, ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
         FileReader r = null;
         try {
             GMLMap newMap = (GMLMap)MapReader.readMap(new File(dir, "map.gml"));
@@ -262,7 +268,7 @@ public class ScenarioEditor extends JPanel {
             SAXReader saxReader = new SAXReader();
             r = new FileReader(f);
             Document doc = saxReader.read(r);
-            Scenario newScenario = new Scenario(doc);
+            GisScenario newScenario = new GisScenario(doc);
             setScenario(newMap, newScenario);
             baseDir = dir;
             saveFile = f;
@@ -291,7 +297,7 @@ public class ScenarioEditor extends JPanel {
        @param newScenario The new scenario.
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
     */
-    public void setScenario(GMLMap newMap, Scenario newScenario) throws CancelledByUserException {
+    public void setScenario(GMLMap newMap, GisScenario newScenario) throws CancelledByUserException {
         checkForChanges();
         if (!checkScenario(newMap, newScenario)) {
             JOptionPane.showMessageDialog(null, "The scenario file contained errors.");
@@ -317,7 +323,7 @@ public class ScenarioEditor extends JPanel {
        Get the scenario.
        @return The scenario.
     */
-    public Scenario getScenario() {
+    public GisScenario getScenario() {
         return scenario;
     }
 
@@ -451,7 +457,7 @@ public class ScenarioEditor extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         checkForChanges();
-                        setScenario(map, new Scenario());
+                        setScenario(map, new GisScenario());
                     }
                     catch (CancelledByUserException ex) {
                         return;
@@ -463,7 +469,12 @@ public class ScenarioEditor extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         checkForChanges();
-                        load();
+                        try {
+							load();
+						} catch (rescuecore2.scenario.exceptions.ScenarioException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
                     }
                     catch (CancelledByUserException ex) {
                         return;
@@ -619,7 +630,7 @@ public class ScenarioEditor extends JPanel {
         menu.add(action);
     }
 
-    private boolean checkScenario(GMLMap newMap, Scenario newScenario) {
+    private boolean checkScenario(GMLMap newMap, GisScenario newScenario) {
         boolean valid = true;
         for (int id : newScenario.getFires()) {
             if (newMap.getBuilding(id) == null) {

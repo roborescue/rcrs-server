@@ -21,7 +21,7 @@ public class AgentOverlay implements Overlay {
 	private static final Color FIRE_BRIGADE_COLOUR = Color.RED;
 	private static final Color POLICE_FORCE_COLOUR = Color.BLUE;
 	private static final Color AMBULANCE_TEAM_COLOUR = Color.WHITE;
-	private static final int OFFSET = 7;
+	private static final 	int OFFSET = 7;
 	private ScenarioEditor editor;
 
 	/**
@@ -37,7 +37,8 @@ public class AgentOverlay implements Overlay {
 	@Override
 	public void render(Graphics2D g, ScreenTransform transform) {
 		// Count agents in each location
-		g.setFont(new Font(g.getFont().getName(), Font.BOLD, g.getFont().getSize()));
+		g.setFont(new Font(g.getFont().getName(), Font.BOLD, g.getFont()
+				.getSize()));
 		Map<Integer, Integer> civs = new LazyMap<Integer, Integer>() {
 			@Override
 			public Integer createValue() {

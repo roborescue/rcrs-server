@@ -147,7 +147,7 @@ public class RandomScenarioGenerator {
         try {
             File dir = new File(dirName);
             GMLMap map = (GMLMap)MapReader.readMap(new File(dir, "map.gml"));
-            Scenario s = generator.makeRandomScenario(map, new Random());
+            GisScenario s = generator.makeRandomScenario(map, new Random());
             Document doc = DocumentHelper.createDocument();
             s.write(doc);
             XMLWriter writer = new XMLWriter(new FileOutputStream(new File(dir, "scenario.gml")), OutputFormat.createPrettyPrint());
@@ -259,8 +259,8 @@ public class RandomScenarioGenerator {
        @param random A source of randomness.
        @return A new Scenario.
     */
-    public Scenario makeRandomScenario(GMLMap map, Random random) {
-        Scenario result = new Scenario();
+    public GisScenario makeRandomScenario(GMLMap map, Random random) {
+        GisScenario result = new GisScenario();
         int civ = random.nextInt(maxCivs - minCivs + 1) + minCivs;
         int fb = random.nextInt(maxFBs - minFBs + 1) + minFBs;
         int fs = random.nextInt(maxFSs - minFSs + 1) + minFSs;
@@ -280,13 +280,13 @@ public class RandomScenarioGenerator {
         return result;
     }
 
-    private void placeRefuges(Iterator<GMLBuilding> it, Scenario result, int num) {
+    private void placeRefuges(Iterator<GMLBuilding> it, GisScenario result, int num) {
         for (int i = 0; i < num; ++i) {
             result.addRefuge(it.next().getID());
         }
     }
 
-    private void placeCentres(Iterator<GMLBuilding> it, Scenario result, int fire, int police, int ambulance) {
+    private void placeCentres(Iterator<GMLBuilding> it, GisScenario result, int fire, int police, int ambulance) {
         for (int i = 0; i < fire; ++i) {
             result.addFireStation(it.next().getID());
         }
@@ -298,13 +298,13 @@ public class RandomScenarioGenerator {
         }
     }
 
-    private void placeFires(Iterator<GMLBuilding> it, Scenario result, int num) {
+    private void placeFires(Iterator<GMLBuilding> it, GisScenario result, int num) {
         for (int i = 0; i < num; ++i) {
             result.addFire(it.next().getID());
         }
     }
 
-    private void placeAgents(GMLMap map, Scenario result, Random random, int fire, int police, int ambulance, int civ) {
+    private void placeAgents(GMLMap map, GisScenario result, Random random, int fire, int police, int ambulance, int civ) {
         List<GMLShape> all = new ArrayList<GMLShape>(map.getAllShapes());
         List<GMLBuilding> buildings = new ArrayList<GMLBuilding>(map.getBuildings());
         for (int i = 0; i < fire; ++i) {
