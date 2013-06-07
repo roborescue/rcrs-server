@@ -64,6 +64,10 @@ public class CollapseWorldModel extends StandardWorldModel {
 		for (StandardEntity b : getEntitiesOfType(StandardEntityURN.BUILDING)) {
 			collapseBuildings.put((Building) b, new CSBuilding((Building) b));
 		}
+
+		for (StandardEntity b : getEntitiesOfType(StandardEntityURN.REFUGE)) {
+			collapseBuildings.put((Building) b, new CSBuilding((Building) b));
+		}
 	}
 
 	/**
