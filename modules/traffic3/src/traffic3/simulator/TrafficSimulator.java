@@ -1,5 +1,6 @@
 package traffic3.simulator;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +25,10 @@ import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.control.KSCommands;
 import rescuecore2.config.Config;
 import rescuecore2.log.Logger;
+import rescuecore2.misc.geometry.GeometryTools2D;
+import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.misc.geometry.Vector2D;
 
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
@@ -300,6 +304,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         Area currentArea = (Area)currentEntity;
         List<EntityID> list = move.getPath();
         List<PathElement> steps = new ArrayList<PathElement>();
+        Edge lastEdge = null;
         // Check that all elements refer to Area instances and build the list of target points
         // Target points between areas are the midpoint of the shared edge
         for (Iterator<EntityID> it = list.iterator(); it.hasNext();) {
@@ -317,14 +322,10 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
                 Logger.warn("Rejecting move: Entity ID " + next + " is not adjacent to " + currentArea);
                 return;
             }
-            Area a = (Area)e;
-            int x = (edge.getStartX() + edge.getEndX()) / 2;
-            int y = (edge.getStartY() + edge.getEndY()) / 2;
-            Point2D edgePoint = new Point2D(x, y);
-            Point2D centrePoint = new Point2D(currentArea.getX(), currentArea.getY());
-            steps.add(new PathElement(next, edge.getLine(), edgePoint, centrePoint));
+            Area nextArea = (Area)e;
+            steps.addAll(getPathElements(human, currentArea, lastEdge, nextArea, edge));
             current = next;
-            currentArea = a;
+            currentArea = nextArea;
         }
         int targetX = move.getDestinationX();
         int targetY = move.getDestinationY();
@@ -340,6 +341,148 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
         agent.setPath(steps);
     }
 
+    private Collection<? extends PathElement> getPathElements(Human human, Area lastArea, Edge lastEdge, Area nextArea, Edge nextEdge) {
+		if (human.getID().getValue() == 204623396) {
+			System.out.println("lastArea=" + lastArea + " lastEdge=" + lastEdge + " nextArea=" + nextArea + " nextEdge=" + nextEdge);
+		}
+		ArrayList<PathElement> steps = new ArrayList<PathElement>();
+		Point2D edgePoint = getBestPoint(nextEdge);
+		Point2D centrePoint = new Point2D(lastArea.getX(), lastArea.getY());
+		Point2D start;
+		if (lastEdge == null) {
+			start = new Point2D(human.getX(), human.getY());
+			Point2D entracePoint = getEntranceOfArea(nextEdge, lastArea);
+			if (entracePoint != null) {
+				steps.add(new PathElement(lastArea.getID(), null, entracePoint, centrePoint));
+				steps.add(new PathElement(lastArea.getID(), nextEdge.getLine(), edgePoint, entracePoint));
+			} else
+				steps.add(new PathElement(lastArea.getID(), nextEdge.getLine(), edgePoint));
+
+		} else {
+			start = getMidPoint(lastEdge.getStart(), lastEdge.getEnd());
+			Point2D startEntracePoint = getEntranceOfArea(lastEdge, lastArea);
+			if (startEntracePoint != null)
+				start = startEntracePoint;
+			Point2D ced = getMidPoint(centrePoint, edgePoint);
+			Point2D ce_ced = getMidPoint(centrePoint, ced);
+			Point2D ed_ced = getMidPoint(edgePoint, ced);
+			Point2D st_ce = getMidPoint(centrePoint, start);
+			Point2D ce_stce = getMidPoint(centrePoint, st_ce);
+			Point2D st_stce = getMidPoint(start, st_ce);
+			if (startEntracePoint != null)
+				steps.add(new PathElement(lastArea.getID(), null, startEntracePoint));
+			// startEnterance st_stce st_ce ce_stce center ce_ced ced ed_ced
+			// enterance edge nextEnterance
+			// steps.add(new PathElement(lastArea.getID(), null, st_stce));
+			// steps.add(new PathElement(lastArea.getID(), null, st_ce,
+			// st_stce));
+			// steps.add(new PathElement(lastArea.getID(), null, ce_stce,
+			// st_ce));
+			// steps.add(new PathElement(lastArea.getID(), null, centrePoint,
+			// ce_stce));
+			// steps.add(new PathElement(lastArea.getID(), null, ce_ced,
+			// centrePoint));
+			// steps.add(new PathElement(lastArea.getID(), null, ced, ce_ced));
+			// steps.add(new PathElement(lastArea.getID(), null, ed_ced, ced));
+			Point2D entracePoint = getEntranceOfArea(nextEdge, lastArea);
+			if (entracePoint != null) {
+				// steps.add(new PathElement(lastArea.getID(),
+				// nextEdge.getLine(),
+				// entracePoint,st_stce,st_ce,ce_stce,centrePoint,ce_ced,ced,ed_ced));
+				steps.add(new PathElement(lastArea.getID(), nextEdge.getLine(), entracePoint, centrePoint));
+				steps.add(new PathElement(lastArea.getID(), nextEdge.getLine(), edgePoint, entracePoint));
+			} else {
+				// steps.add(new PathElement(lastArea.getID(),
+				// nextEdge.getLine(),
+				// edgePoint,st_stce,st_ce,ce_stce,centrePoint,ce_ced,ced,ed_ced));
+				steps.add(new PathElement(lastArea.getID(), nextEdge.getLine(), edgePoint, centrePoint));
+			}
+		}
+
+		// Point2D nextEntracePoint = getEntranceOfArea(nextEdge, nextArea);
+		// if (nextEntracePoint != null)
+		// steps.add(new PathElement(nextArea.getID(), null, nextEntracePoint,
+		// edgePoint));
+		return steps;
+	}
+    private Point2D getBestPoint(Edge edge) {
+		int dx = (edge.getStartX() + edge.getEndX());
+		int dy = (edge.getStartY() + edge.getEndY());
+		int x = dx / 2;
+		int y = dy / 2;
+		Line2D line = edge.getLine();
+		ArrayList<Blockade> blockades = new ArrayList<Blockade>();
+		Collection<StandardEntity> objects = model.getObjectsInRange(x, y, TrafficSimulator.RESCUE_AGENT_RADIUS);
+		for (StandardEntity standardEntity : objects) {
+			if (standardEntity instanceof Blockade) {
+				Blockade blockade = (Blockade) standardEntity;
+				blockades.add(blockade);
+			}
+		}
+		Point2D centerPoint = new Point2D(x, y);
+		if (getMinDistance(blockades, centerPoint) > 500)
+			return centerPoint;
+		Point2D bestpoint = edge.getStart();
+		double bestDistance = Integer.MIN_VALUE;
+		for (double i = 0; i < 1; i += .1d) {
+			Point2D tempPoint = line.getPoint(i);
+
+			double minDistance = getMinDistance(blockades, tempPoint);
+			if (minDistance > bestDistance) {
+				bestDistance = minDistance;
+				bestpoint = tempPoint;
+			}
+
+		}
+		return bestpoint;
+	}
+	private double getMinDistance(ArrayList<Blockade> blockades, Point2D point) {
+		double min = Integer.MAX_VALUE;
+		for (Blockade block : blockades) {
+			double minDistance = getMinDistance(block.getApexes(), point);
+			if (min > minDistance)
+				min = minDistance;
+		}
+		return min;
+
+	}
+
+	private double getMinDistance(int[] apexes, Point2D point) {
+		double best = Integer.MAX_VALUE;
+		List<Line2D> edges = GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(apexes), true);
+		for (Line2D edge : edges) {
+			Point2D tempPoint = GeometryTools2D.getClosestPointOnSegment(edge, point);
+			double tempDistance = GeometryTools2D.getDistance(point, tempPoint);
+			if (tempDistance < best)
+				best = tempDistance;
+		}
+		return best;
+	}
+
+    private Point2D getEntranceOfArea(Edge inComingEdge, Area dest) {
+		Point2D edgeMid = getMidPoint(inComingEdge.getStart(), inComingEdge.getEnd());
+		Line2D wallLine = inComingEdge.getLine();
+
+		int distance = 1000;
+		while (distance > 0) {
+			Vector2D offset = wallLine.getDirection().getNormal().normalised().scale(distance);
+			Point2D destXY = edgeMid.plus(offset);
+			if (dest.getShape().contains(destXY.getX(), destXY.getY())) {
+				return destXY;
+			}
+			offset = wallLine.getDirection().getNormal().normalised().scale(-distance);
+			destXY = edgeMid.plus(offset);
+			if (dest.getShape().contains(destXY.getX(), destXY.getY())) {
+				return destXY;
+			}
+			distance -= 100;
+		}
+		return null;
+
+	}
+    private Point2D getMidPoint(Point2D p1, Point2D p2) {
+		return new Point2D((p1.getX() + p2.getX()) / 2, (p1.getY() + p2.getY()) / 2);
+	}
     // Return the loaded civilian (if any)
     private Civilian handleLoad(AKLoad load, ChangeSet changes) {
         EntityID agentID = load.getAgentID();

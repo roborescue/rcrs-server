@@ -3,6 +3,7 @@ package traffic3.objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -12,7 +13,10 @@ import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Vector2D;
+import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.Road;
 import traffic3.manager.TrafficManager;
 import traffic3.simulator.PathElement;
 import traffic3.simulator.TrafficConstants;
@@ -165,6 +169,7 @@ public class TrafficAgent {
 
     // The area the agent is currently in.
     private TrafficArea currentArea;
+	private TrafficArea startPosition;
 
     private List<Point2D> positionHistory;
     private double totalDistance;
@@ -462,6 +467,7 @@ public class TrafficAgent {
             Logger.debug(this + " inside blockade");
             setMobile(false);
         }
+        startPosition = currentArea;
     }
 
     /**
@@ -481,7 +487,56 @@ public class TrafficAgent {
        Perform any post-timestep activities required.
     */
     public void endTimestep() {
-    }
+		handleOutOfActionCivilianMoves();
+
+	}
+
+	private void handleOutOfActionCivilianMoves() {
+		if (!(getHuman() instanceof Civilian))
+			return;
+		if (currentArea.getArea().equals(startPosition.getArea()))
+			return;
+		if (!(currentArea.getArea() instanceof Building))
+			return;
+		if (getPath().isEmpty())
+			return;
+		if (haveThisAreaInPath(currentArea))
+			return;
+
+		Logger.warn(getHuman() + " moved to unplaned building(" + currentArea + ") " + this);
+		TrafficArea newDest = getBestRoadNeighbor(currentArea, new HashSet<TrafficArea>());
+		if (newDest == null) {
+			Logger.warn(currentArea + " dosen't connected to any Road!");
+			return;
+		}
+		setLocation(newDest.getArea().getX(), newDest.getArea().getY());
+
+	}
+	private boolean haveThisAreaInPath(TrafficArea newArea) {
+		for (PathElement path : getPath()) {
+			if (path.getAreaID().equals(newArea.getArea().getID()))
+				return true;
+		}
+		return false;
+	}
+
+	private TrafficArea getBestRoadNeighbor(TrafficArea area, HashSet<TrafficArea> checked) {
+		checked.add(area);
+		if (area.getArea() instanceof Road)
+			return area;
+		for (TrafficArea neighbor : manager.getNeighbours(area)) {
+			if (neighbor.getArea() instanceof Road)
+				return neighbor;
+		}
+		for (TrafficArea neighbor : manager.getNeighbours(area)) {
+			if (checked.contains(neighbor))
+				continue;
+			TrafficArea result = getBestRoadNeighbor(neighbor, checked);
+			if (result != null)
+				return result;
+		}
+		return null;
+	}
 
     /**
        Set whether this agent is mobile or not.
