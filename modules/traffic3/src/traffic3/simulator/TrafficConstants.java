@@ -10,18 +10,18 @@ import rescuecore2.config.Config;
 */
 public final class TrafficConstants {
     // Agent force constants
-    private static final double NUDGE_MAGNITUDE = 0.001;
-    private static final double AGENT_FORCE_COEFFICIENT_A = 0.0001;
-    private static final double AGENT_FORCE_COEFFICIENT_B = 0.001;
-    private static final double AGENT_FORCE_COEFFICIENT_K = 0.00001;
-    private static final double AGENT_DISTANCE_CUTOFF = 10000;
-    private static final double AGENT_FORCE_LIMIT = 0.0001;
+    private static double NUDGE_MAGNITUDE = 0.001;
+    private static double AGENT_FORCE_COEFFICIENT_A = 0.0001;
+    private static double AGENT_FORCE_COEFFICIENT_B = 0.001;
+    private static double AGENT_FORCE_COEFFICIENT_K = 0.00001;
+    private static double AGENT_DISTANCE_CUTOFF = 10000;
+    private static double AGENT_FORCE_LIMIT = 0.0001;
     private static NumberGenerator<Double> nudge;
 
     // Wall force constants
-    private static final double WALL_DISTANCE_CUTOFF = 2000;
-    private static final double WALL_FORCE_COEFFICIENT_A = 0.01;
-    private static final double WALL_FORCE_COEFFICIENT_B = 0.7;
+    private static double WALL_DISTANCE_CUTOFF = 2000;
+    private static double WALL_FORCE_COEFFICIENT_A = 0.01;
+    private static double WALL_FORCE_COEFFICIENT_B = 0.7;
     //    private static final double WALL_FORCE_COEFFICIENT_K = 0.00001;
 
     private TrafficConstants() {}
@@ -31,6 +31,15 @@ public final class TrafficConstants {
        @param config The Config to read.
     */
     static void init(Config config) {
+    	AGENT_FORCE_COEFFICIENT_A=config.getFloatValue("traffic3.agent.force.coefficient.A",AGENT_FORCE_COEFFICIENT_A);
+    	AGENT_FORCE_COEFFICIENT_B=config.getFloatValue("traffic3.agent.force.coefficient.B",AGENT_FORCE_COEFFICIENT_B);
+    	AGENT_FORCE_COEFFICIENT_K=config.getFloatValue("traffic3.agent.force.coefficient.K",AGENT_FORCE_COEFFICIENT_K);
+    	AGENT_DISTANCE_CUTOFF=config.getFloatValue("traffic3.agent.distance.cutoff",AGENT_DISTANCE_CUTOFF);
+    	AGENT_FORCE_LIMIT=config.getFloatValue("traffic3.agent.force.limit",AGENT_FORCE_LIMIT);
+    	WALL_DISTANCE_CUTOFF=config.getFloatValue("traffic3.wall.distance.cutoff",WALL_DISTANCE_CUTOFF);
+    	WALL_FORCE_COEFFICIENT_A=config.getFloatValue("traffic3.wall.force.coefficient.A",WALL_FORCE_COEFFICIENT_A);
+    	WALL_FORCE_COEFFICIENT_B=config.getFloatValue("traffic3.wall.force.coefficient.B",WALL_FORCE_COEFFICIENT_B);
+    	NUDGE_MAGNITUDE=config.getFloatValue("traffic3.nudge-magnitude",NUDGE_MAGNITUDE);
         nudge = new ContinuousUniformGenerator(-NUDGE_MAGNITUDE, NUDGE_MAGNITUDE, config.getRandom());
     }
 

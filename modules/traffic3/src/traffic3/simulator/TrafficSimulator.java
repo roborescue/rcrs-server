@@ -22,6 +22,7 @@ import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.messages.control.KSCommands;
+import rescuecore2.config.Config;
 import rescuecore2.log.Logger;
 import rescuecore2.misc.geometry.Point2D;
 
@@ -54,14 +55,14 @@ import org.uncommons.maths.number.NumberGenerator;
 public class TrafficSimulator extends StandardSimulator implements GUIComponent {
     private static final double STEP_TIME_MS = 100;
     private static final double REAL_TIME_S = 60;
-    private static final int MICROSTEPS = (int)((1000.0 / STEP_TIME_MS) * REAL_TIME_S);
+    private static int MICROSTEPS = (int)((1000.0 / STEP_TIME_MS) * REAL_TIME_S);
 
     private static final int RESCUE_AGENT_RADIUS = 500;
     private static final int CIVILIAN_RADIUS = 200;
-    private static final double RESCUE_AGENT_VELOCITY_MEAN = 0.7;
-    private static final double RESCUE_AGENT_VELOCITY_SD = 0.1;
-    private static final double CIVILIAN_VELOCITY_MEAN = 0.2;
-    private static final double CIVILIAN_VELOCITY_SD = 0.002;
+    private static double RESCUE_AGENT_VELOCITY_MEAN = 0.7;
+    private static double RESCUE_AGENT_VELOCITY_SD = 0.1;
+    private static double CIVILIAN_VELOCITY_MEAN = 0.2;
+    private static double CIVILIAN_VELOCITY_SD = 0.002;
 
     private static final Color FIRE_BRIGADE_COLOUR = Color.RED;
     private static final Color POLICE_FORCE_COLOUR = Color.BLUE;
@@ -89,10 +90,17 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     public String getGUIComponentName() {
         return "Traffic simulator";
     }
-
+    private void init(Config config) {
+    	RESCUE_AGENT_VELOCITY_MEAN =config.getFloatValue("traffic3.rescue-agent.velocity.mean",RESCUE_AGENT_VELOCITY_MEAN);
+        RESCUE_AGENT_VELOCITY_SD =config.getFloatValue("traffic3.rescue-agent.velocity.sd",RESCUE_AGENT_VELOCITY_SD);
+        CIVILIAN_VELOCITY_MEAN =config.getFloatValue("traffic3.civilian.velocity.mean",CIVILIAN_VELOCITY_MEAN);
+        CIVILIAN_VELOCITY_SD =config.getFloatValue("traffic3.civilian.velocity.sd",CIVILIAN_VELOCITY_SD);
+        MICROSTEPS = (int)((config.getIntValue("kernel.agents.think-time") / STEP_TIME_MS) * REAL_TIME_S);
+	}
     @Override
     protected void postConnect() {
         TrafficConstants.init(config);
+        init(config);
         manager.clear();
         for (StandardEntity next : model) {
             if (next instanceof Area) {
