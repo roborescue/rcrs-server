@@ -12,12 +12,12 @@ import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
 
 /**
- * 
+ *
  * Collapse simulator's world model contains aftershocks' information that other
  * simulators don't need.
- * 
+ *
  * @author Salim
- * 
+ *
  */
 public class CollapseWorldModel extends StandardWorldModel {
 	private HashMap<Integer, Float> aftershocks;
@@ -35,7 +35,7 @@ public class CollapseWorldModel extends StandardWorldModel {
 
 	/**
 	 * Changes the list in the world model with the new input aftershock list
-	 * 
+	 *
 	 * @param msg
 	 *            instance of KSAfterShocksInfo
 	 */
@@ -61,18 +61,16 @@ public class CollapseWorldModel extends StandardWorldModel {
 	 * Creates Collapse Simulator Buildings using the Standard Buildings
 	 */
 	private void createCollapseBuildings() {
-		for (StandardEntity b : getEntitiesOfType(StandardEntityURN.BUILDING)) {
-			collapseBuildings.put((Building) b, new CSBuilding((Building) b));
+		for (StandardEntity entity : this) {
+			if(entity instanceof Building)
+				collapseBuildings.put((Building) entity, new CSBuilding((Building) entity));
 		}
 
-		for (StandardEntity b : getEntitiesOfType(StandardEntityURN.REFUGE)) {
-			collapseBuildings.put((Building) b, new CSBuilding((Building) b));
-		}
 	}
 
 	/**
 	 * Returns a specific CSBuilding by its EntityID
-	 * 
+	 *
 	 * @param id
 	 *            is an EntityID
 	 * @return the corresponding CSBuilding to id
@@ -83,7 +81,7 @@ public class CollapseWorldModel extends StandardWorldModel {
 
 	/**
 	 * Returns a specific CSBuilding by its Building
-	 * 
+	 *
 	 * @param building
 	 *            is an Building
 	 * @return the corresponding CSBuilding to building
