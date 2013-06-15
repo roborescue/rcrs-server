@@ -65,6 +65,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         VISIBLE_CONFIG_OPTIONS.add("comms\\.channels\\.\\d+\\.bandwidth");
         VISIBLE_CONFIG_OPTIONS.add("clear\\.repair\\.rate");
         VISIBLE_CONFIG_OPTIONS.add("clear\\.repair\\.distance");
+        VISIBLE_CONFIG_OPTIONS.add("clear\\.repair\\.rad");
         VISIBLE_CONFIG_OPTIONS.add("perception\\.los\\.max-distance");
         VISIBLE_CONFIG_OPTIONS.add("perception\\.los\\.precision\\.hp");
         VISIBLE_CONFIG_OPTIONS.add("perception\\.los\\.precision\\.damage");
@@ -113,9 +114,9 @@ public class StandardAgentRegistrar implements AgentRegistrar {
                    	int seed = Integer.parseInt(configSeed)+e.getID().getValue();
                    	civilianConfig.setValue(Constants.RANDOM_SEED_KEY,  seed+"");
                    }
-                   manager.registerAgentControlledEntity(e, s, civilianConfig);            	
+                   manager.registerAgentControlledEntity(e, s, civilianConfig);
                }
-            
+
         }
     }
 
