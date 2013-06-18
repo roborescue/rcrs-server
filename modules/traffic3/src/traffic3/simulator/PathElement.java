@@ -70,8 +70,7 @@ public class PathElement {
     public void removeWaypoint(Point2D p) {
         allPoints.remove(p);
     }
-
-	public EntityID getAreaID() {
+    public EntityID getAreaID() {
 		return areaID;
 	}
 }
