@@ -23,7 +23,9 @@ public class Line2D implements Indexable {
     public Line2D(Point2D origin, Vector2D direction) {
         this.origin = origin;
         this.direction = direction;
-        this.end = origin.plus(direction);
+        end=origin.plus(direction);
+
+        calculateDirection();
     }
 
     /**
@@ -114,4 +116,18 @@ public class Line2D implements Indexable {
         }
         return region;
     }
+
+	public void setEnd(Point2D end2) {
+		this.end = end2;
+		calculateDirection();
+
+	}
+	private void calculateDirection() {
+		this.direction = end.minus(origin);
+	}
+
+	public void setOrigin(Point2D origin) {
+		this.origin = origin;
+		calculateDirection();
+	}
 }
