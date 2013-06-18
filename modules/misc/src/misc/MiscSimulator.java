@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSCommands;
+import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.worldmodel.Entity;
@@ -23,6 +24,7 @@ import rescuecore2.standard.entities.GasStation;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.components.StandardSimulator;
@@ -40,6 +42,7 @@ import java.util.Formatter;
 public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	private Map<EntityID, HumanAttributes> humans;
 	private Set<EntityID> newlyBrokenBuildings;
+	private Map<EntityID, Integer> oldBrokenBuildingsBuriedness;
 	private Set<EntityID> newlyExplosedGasStations;
 	private MiscParameters parameters;
 	private MiscSimulatorGUI gui;
@@ -63,7 +66,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 		super.postConnect();
 
 		parameters = new MiscParameters(config);
-		GAS_STATION_EXPLOSION_RANG=config.getIntValue("ignition.gas_station.explosion.range",0);
+		GAS_STATION_EXPLOSION_RANG = config.getIntValue("ignition.gas_station.explosion.range", 0);
 		humans = new HashMap<EntityID, HumanAttributes>();
 		newlyBrokenBuildings = new HashSet<EntityID>();
 		newlyExplosedGasStations = new HashSet<EntityID>();
@@ -117,20 +120,22 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	}
 
 	private void processExplodedGasStations(ChangeSet changes) {
-		Logger.info("processExplodedGasStations for "+ newlyExplosedGasStations);
+		Logger.info("processExplodedGasStations for " + newlyExplosedGasStations);
 		for (EntityID gasStationId : newlyExplosedGasStations) {
 			GasStation gasStation = (GasStation) model.getEntity(gasStationId);
 
 			for (HumanAttributes hA : humans.values()) {
 				Human human = hA.getHuman();
-				if(GeometryTools2D.getDistance(new Point2D(human.getX(), human.getY()), new Point2D(gasStation.getX(), gasStation.getY()))<GAS_STATION_EXPLOSION_RANG){
-					Logger.info(human+" getting damage from explosion..."+ human);
+				if (!human.isXDefined() || !human.isYDefined())
+					continue;
+				if (GeometryTools2D.getDistance(new Point2D(human.getX(), human.getY()), new Point2D(gasStation.getX(), gasStation.getY())) < GAS_STATION_EXPLOSION_RANG) {
+					Logger.info(human + " getting damage from explosion..." + human);
 					int oldBuriedness = human.isBuriednessDefined() ? human
 							.getBuriedness() : 0;
-					human.setBuriedness(oldBuriedness+config.getRandom().nextInt(30));//TODO Parameterize
+					human.setBuriedness(oldBuriedness + config.getRandom().nextInt(30));//TODO Parameterize
 					changes.addChange(human, human.getBuriednessProperty());
 					// Check for injury from being exploded
-					int damage = config.getRandom().nextInt(50)+15;//TODO Parameterize
+					int damage = config.getRandom().nextInt(50) + 15;//TODO Parameterize
 					if (damage != 0) {
 						hA.addCollapseDamage(damage);
 					}
@@ -152,11 +157,12 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 			Logger.trace("Checking if human should be buried in broken building");
 			Building b = (Building) human.getPosition(model);
 			if (parameters.shouldBuryAgent(b)) {
-				int buriedness = parameters.getBuriedness(b);
+				int buriedness = parameters.getBuriedness(b) - oldBrokenBuildingsBuriedness.get(b.getID());
+
 				if (buriedness != 0) {
 					int oldBuriedness = human.isBuriednessDefined() ? human
 							.getBuriedness() : 0;
-					human.setBuriedness(Math.max(oldBuriedness, buriedness));
+					human.setBuriedness(oldBuriedness + buriedness);
 					changes.addChange(human, human.getBuriednessProperty());
 					// Check for injury from being buried
 					int damage = parameters.getBuryDamage(b, human);
@@ -334,14 +340,13 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 			if (p.getURN().equals(StandardPropertyURN.BROKENNESS.toString()))
 				checkBrokenness(e, oldValue, newValue);
 
-
 		}
 
 		private void checkNewGasStationExplosion(Entity e, Object oldValue,
 				Object newValue) {
 			double old = oldValue == null ? 0 : (Integer) oldValue;
 			double next = newValue == null ? 0 : (Integer) newValue;
-			if (e instanceof GasStation&& old == 0 && next != 0) {
+			if (e instanceof GasStation && old == 0 && next != 0) {
 				newlyExplosedGasStations.add(e.getID());
 			}
 		}
@@ -351,8 +356,19 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 			double next = newValue == null ? 0 : (Integer) newValue;
 			if (next > old) {
 				newlyBrokenBuildings.add(e.getID());
+
 			}
 		}
 
+	}
+
+	@Override
+	protected void handleUpdate(KSUpdate u) {
+		for (StandardEntity entity : model) {
+			if (entity instanceof Building) {
+				oldBrokenBuildingsBuriedness.put(entity.getID(), parameters.getBuriedness((Building) entity));
+			}
+		}
+		super.handleUpdate(u);
 	}
 }
