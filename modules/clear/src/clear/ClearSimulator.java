@@ -142,7 +142,7 @@ public class ClearSimulator extends StandardSimulator {
 		int targetX = clear.getDestinationX();
 		int targetY = clear.getDestinationY();
 
-		int length = 1000000; // TODO
+		int length = 10000;
 		Area agentPosition = (Area) agent
 				.getPosition(model);
 

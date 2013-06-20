@@ -255,6 +255,7 @@ public class CommandLayer extends StandardViewLayer {
 
 		if (agentToTarget.getLength() > clearLength)
 			agentToTarget = agentToTarget.normalised().scale(clearLength);
+		agentToTarget = agentToTarget.normalised().scale(agentToTarget.getLength() + 510);
 
 		Vector2D backAgent = (new Vector2D(agent.getX(), agent.getY()))
 				.add(agentToTarget.normalised().scale(-510));
