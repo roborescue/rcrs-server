@@ -21,22 +21,22 @@ import firesimulator.world.Wall;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
-public class Configuration {	
+public class Configuration {
     private static final Log LOG = LogFactory.getLog(Configuration.class);
 
     private static final String PREFIX = "resq-fire.";
 
 
 	public class Prop{
-				
-		private String name;		
+
+		private String name;
 		private String command;
 		private String description;
 		private String paramName;
-		private boolean paramReq;		
+		private boolean paramReq;
 		private String value;
 		boolean active;
-		
+
 		public Prop(String name, String command, String description , String paramName, boolean paramReq,String def){
 			this.name=name;
 			this.command=command;
@@ -45,48 +45,48 @@ public class Configuration {
 			this.paramReq=paramReq;
 			if(def!=null){
 				value=def;
-				active=true;	
+				active=true;
 			}else{
 				value=null;
 				active=false;
-			}			
+			}
 		}
-		
+
 		public String getValue(){
 			return value;
 		}
-		
+
 		public boolean isActive(){
 			return active;
 		}
-		
+
 		public boolean validate(){
 			if(paramReq)
 				if(value==null||value.length()==0)return false;
 			return true;
 		}
-		
+
 		public String getDescription(){
 			if(description==null)return "";
-			return "\n"+name+":  "+command+" "+(paramName!=null?(!paramReq?"[":"")+"<"+paramName+">"+(!paramReq?"]":""):"")+"\n"+description+"\n";			
+			return "\n"+name+":  "+command+" "+(paramName!=null?(!paramReq?"[":"")+"<"+paramName+">"+(!paramReq?"]":""):"")+"\n"+description+"\n";
 		}
-		
+
 	}
 
-	private static LinkedList Props	=new LinkedList();	
+	private static LinkedList Props	=new LinkedList();
 	private static final String CONFIG_TXT_PATH=".";
 	public static String VERSION="06.08.2005";
 
-	public void initialize(){	
+	public void initialize(){
 		Props.add(new Prop(PREFIX + "store","s","Stores the intial data from the kernel in the given file.","filename",true,null));
-		Props.add(new Prop(PREFIX + "virtual","v","Use the virtual kernel instead of the rescue kernel.\nRequires a .scn file.","filename",true,null));		
+		Props.add(new Prop(PREFIX + "virtual","v","Use the virtual kernel instead of the rescue kernel.\nRequires a .scn file.","filename",true,null));
 		Props.add(new Prop(PREFIX + "host","h","The host to connect to. Default host is localhost.","host",true,"localhost"));
 		Props.add(new Prop(PREFIX + "port","p","The port to connect to. Default port is 6000","port",true,"6000"));
 		Props.add(new Prop(PREFIX + "setup","stp","Uses the given setup file","filename",true,null));
 		Props.add(new Prop(PREFIX + "csetup","cstp","Uses the given config.txt file","filename",true,null));
 		Props.add(new Prop(PREFIX + "ray_rate","ray_rate","Number of emitted rays per mm while sampling. Default rate is "+Wall.RAY_RATE,"rate",true,Wall.RAY_RATE+""));
-		Props.add(new Prop(PREFIX + "help","help","Prints this text and exits",null,false,null));				
-		//hidden parameters		
+		Props.add(new Prop(PREFIX + "help","help","Prints this text and exits",null,false,null));
+		//hidden parameters
 		Props.add(new Prop(PREFIX + "cell_size","cell_size",null,null,true,null));
                 Props.add(new Prop(PREFIX + "max_ray_distance","max_ray_distance",null,null,true,null));
 		Props.add(new Prop(PREFIX + "energy_loss","energy_loss",null,null,true,null));
@@ -107,18 +107,19 @@ public class Configuration {
 		Props.add(new Prop(PREFIX + "concrete_energy","concrete_energy",null,null,true,null));
 		Props.add(new Prop(PREFIX + "concrete_ignition","concrete_ignition",null,null,true,null));
 		Props.add(new Prop(PREFIX + "concrete_burning","concrete_burning",null,null,true,null));
-		Props.add(new Prop(PREFIX + "concrete_speed","concrete_speed",null,null,true,null));		
+		Props.add(new Prop(PREFIX + "concrete_speed","concrete_speed",null,null,true,null));
 		Props.add(new Prop(PREFIX + "max_extinguish_power_sum","max_extinguish_power_sum",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_refill_rate","water_refill_rate",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_hydrant_refill_rate","water_hydrant_refill_rate",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_capacity","water_capacity",null,null,true,null));
 		Props.add(new Prop(PREFIX + "water_thermal_capacity","water_thermal_capacity",null,null,true,null));
-		Props.add(new Prop(PREFIX + "water_distance","water_distance",null,null,true,null));		
-		Props.add(new Prop(PREFIX + "radiation_coefficient","radiation_coefficient",null,null,true,null));		
+		Props.add(new Prop(PREFIX + "water_distance","water_distance",null,null,true,null));
+		Props.add(new Prop(PREFIX + "radiation_coefficient","radiation_coefficient",null,null,true,null));
 		Props.add(new Prop(PREFIX + "wind_speed","wind_speed",null,null,true,null));
 		Props.add(new Prop(PREFIX + "wind_direction","wind_direction",null,null,true,null));
 		Props.add(new Prop(PREFIX + "wind_random","wind_random",null,null,true,null));
 		Props.add(new Prop(PREFIX + "randomseed","randomseed",null,null,true,null));
+		Props.add(new Prop("random.seed","random.seed",null,null,true,null));
 		Props.add(new Prop(PREFIX + "refuge_inflammable","refuge_inflammable",null,null,true,null));
 		Props.add(new Prop(PREFIX + "fire_station_inflammable","firestation_inflammable",null,null,true,null));
 		Props.add(new Prop(PREFIX + "police_office_inflammable","policeoffice_inflammable",null,null,true,null));
@@ -128,10 +129,10 @@ public class Configuration {
 		Props.add(new Prop(PREFIX + "burn-rate-average","burn-rate-average",null,null,true,"0.2"));
 		Props.add(new Prop(PREFIX + "burn-rate-variance","burn-rate-variance",null,null,true,"0"));
 	}
-	
+
 	public void parse(String cmdLine){
 		StringTokenizer st=new StringTokenizer(cmdLine,"-");
-		try{		
+		try{
 			while(st.hasMoreTokens()){
 				 String tok=st.nextToken();
 				 int index=tok.indexOf(" ");
@@ -145,7 +146,7 @@ public class Configuration {
 				 	cmd=tok.substring(0,index).trim();
 				 	if(cmd.length()==0)continue;
 					Prop p =propForCmd(cmd);
-					p.active=true;				
+					p.active=true;
 					p.value=tok.substring(index).trim();
 				 }
 			}
@@ -154,7 +155,7 @@ public class Configuration {
 			printHelpAndExit();
 		}
 	}
-	
+
 	private void printHelpAndExit(){
 		System.out.println("ResQ Firesimulator");
 		System.out.println(VERSION);
@@ -164,7 +165,7 @@ public class Configuration {
 			System.out.print(((Prop)i.next()).getDescription());
 		System.exit(0);
 	}
-	
+
 	private static Configuration.Prop propForCmd(String cmd){
 		for(Iterator i=Props.iterator();i.hasNext();){
 			Prop p=(Prop)i.next();
@@ -172,7 +173,7 @@ public class Configuration {
 		}
 		return null;
 	}
-	
+
 	public static boolean isActive(String name){
 		for(Iterator i=Props.iterator();i.hasNext();){
 			Prop p=(Prop)i.next();
@@ -180,7 +181,7 @@ public class Configuration {
 		}
 		return false;
 	}
-	
+
 	public static String getValue(String name){
 		for(Iterator i=Props.iterator();i.hasNext();){
 			Prop p=(Prop)i.next();
@@ -189,7 +190,7 @@ public class Configuration {
 		return null;
 	}
 
-	
+
 	public void parse(String[] args) {
 		if(args.length<1)return;
 		String s="";
@@ -197,8 +198,8 @@ public class Configuration {
 		parse(s);
 	}
 
-	
-	public static boolean loadSetup(String fileName) {		
+
+	public static boolean loadSetup(String fileName) {
 		try {
 			FileInputStream fis=new FileInputStream(new File(fileName));
 			Properties prop=new Properties();
@@ -211,14 +212,14 @@ public class Configuration {
 					p.value=val;
 					p.active=true;
 				}
-			}			
+			}
 		} catch (Exception e) {
 			return false;
 		}
 		return true;
 	}
-	
-	public static void loadConfigTXT(String filename) {		
+
+	public static void loadConfigTXT(String filename) {
 		String fname=CONFIG_TXT_PATH+File.separator+"config.txt";
 		if(filename!=null)
 			fname=filename;
@@ -226,38 +227,38 @@ public class Configuration {
 		try{
 			Pattern comment=Pattern.compile("([^#]*)(#(.*))*",Pattern.DOTALL);
 			Pattern keyValue=Pattern.compile("([^:]*):(.*)",Pattern.DOTALL);
-			BufferedReader br=new BufferedReader(new FileReader(fname));			
-			Hashtable lines=new Hashtable();			
+			BufferedReader br=new BufferedReader(new FileReader(fname));
+			Hashtable lines=new Hashtable();
 			String line;
 			String key;
 			String value;
-			while((line=br.readLine())!=null){				
+			while((line=br.readLine())!=null){
 				line=line.trim();
-				Matcher m=comment.matcher(line);				
+				Matcher m=comment.matcher(line);
 				if(m.matches()){
 					Matcher gm=keyValue.matcher(m.group(1));
 					if(gm.matches()&&gm.groupCount()==2){
-						key=gm.group(1).trim(); 
-						value=gm.group(2).trim();						
+						key=gm.group(1).trim();
+						value=gm.group(2).trim();
 						lines.put(key,value);
 					}
 				}
-			}			
+			}
 			for(Iterator i=Props.iterator();i.hasNext();){
 				Prop p=(Prop)i.next();
 				String name=p.name;
 				value=(String) lines.get(name);
-				if(value!=null){					
+				if(value!=null){
 					p.active=true;
 					p.value=value;
 				}
-			}		
-			
+			}
+
 		}catch (Exception e) {
                     LOG.error("unable to load \""+fname+"\"", e);
 		}
 
-		
+
 	}
 
 	public static void setProperty(String name, String value, boolean state){
@@ -280,7 +281,7 @@ public class Configuration {
         return result;
     }
 
-	public static void dump(){		
+	public static void dump(){
 		for(Iterator i=Props.iterator();i.hasNext();){
 			Prop p=(Prop)i.next();
 			LOG.debug(p.command+"="+p.value+ "["+p.active+"]");
@@ -299,11 +300,11 @@ public class Configuration {
                             prop.put(p.command,p.value);
 			}
 		}
-		if(!fileName.endsWith(".stp"))fileName+=".stp";		
+		if(!fileName.endsWith(".stp"))fileName+=".stp";
 		File f=new File(fileName);
 		if(f.exists())f.delete();
 		f.createNewFile();
-		FileOutputStream fos=new FileOutputStream(f);		
+		FileOutputStream fos=new FileOutputStream(f);
 		prop.store(fos,"fire simulator setup file");
 		fos.close();
 	}

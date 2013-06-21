@@ -19,7 +19,7 @@ import org.uncommons.maths.random.GaussianGenerator;
 
 public class Simulator {
     private static final Log LOG = LogFactory.getLog(Simulator.class);
-	
+
     private World world;
     private WindShift windShift;
 
@@ -32,10 +32,10 @@ public class Simulator {
     public static float WIND_RANDOM=0f;
     public static int   WIND_SPEED=0;
     public static float RADIATION_COEFFICENT=1.0f;
-    public static float TIME_STEP_LENGTH=1f; 		
+    public static float TIME_STEP_LENGTH=1f;
     public static float WEIGHT_GRID = 0.2f;
     public static float AIR_CELL_HEAT_CAPACITY = 1f;
-	
+
     public Set monitors;
     public static boolean verbose;
     private static Simulator me;
@@ -51,51 +51,51 @@ public class Simulator {
         //        kernel.register(this);
         windShift=null;
     }
-	
+
     public static Simulator getSimulator(){
         return me;
     }
-	
+
     public void addMonitor(Monitor monitor){
         monitors.add(monitor);
     }
-	
+
     public void removeMonitor(Monitor monitor){
         monitors.remove(monitor);
     }
-	
+
     private void informStep(){
         for(Iterator i = monitors.iterator();i.hasNext();){
             ((Monitor)i.next()).step(world);
         }
     }
-	
+
     private void informDone(){
         for(Iterator i = monitors.iterator();i.hasNext();){
             ((Monitor)i.next()).done(world);
         }
     }
-	
+
     private void informReset(){
         for(Iterator i = monitors.iterator();i.hasNext();){
             ((Monitor)i.next()).reset(world);
         }
     }
-	
-    public void step(int timestep){	
+
+    public void step(int timestep){
         energyHistory = new EnergyHistory(world, timestep);
         refill();
         executeExtinguishRequests();
-        burn();			
+        burn();
         cool();
-        updateGrid();		
+        updateGrid();
         exchangeBuilding();
         //FIXED
         cool();
         energyHistory.registerFinalEnergy(world);
         energyHistory.logSummary();
     }
-	
+
     private void cool(){
         for(Iterator i = world.getBuildings().iterator();i.hasNext();){
             Building b = (Building) i.next();
@@ -111,7 +111,7 @@ public class Simulator {
             }
         }
     }
-	
+
     private void executeExtinguishRequests() {
         for(Iterator i=world.getExtinguishIterator();i.hasNext();){
             ExtinguishRequest er=(ExtinguishRequest)i.next();
@@ -120,7 +120,7 @@ public class Simulator {
         world.clearExtinguishRequests();
     }
 
-    private void burn() {		
+    private void burn() {
         for (Building b : world.getBuildings()) {
             if (b.getTemperature() >= b.getIgnitionPoint() && b.fuel > 0 && b.isInflameable()) {
                 float consumed = b.getConsum();
@@ -132,7 +132,7 @@ public class Simulator {
                 double oldTemp = b.getTemperature();
                 b.setEnergy(b.getEnergy() + consumed);
                 energyHistory.registerBurn(b, consumed);
-                b.fuel -= consumed;	
+                b.fuel -= consumed;
                 b.setPrevBurned(consumed);
                 /*
                   LOG.debug("Building " + b.getID() + " burned " + consumed + " fuel.");
@@ -142,10 +142,10 @@ public class Simulator {
             }
             else {
                 b.setPrevBurned(0f);
-            }			
+            }
         }
     }
-	
+
     private void waterCooling(Building b) {
         double lWATER_COEFFICIENT=(b.getFieryness()>0&&b.getFieryness()<4?WATER_COEFFICIENT:WATER_COEFFICIENT*GAMMA);
         boolean cond = false;
@@ -176,7 +176,7 @@ public class Simulator {
         }
     }
 
-    private void exchangeBuilding() {	    
+    private void exchangeBuilding() {
         for(Iterator i=world.getBuildings().iterator();i.hasNext();){
             Building b=(Building)i.next();
             exchangeWithAir(b);
@@ -184,12 +184,12 @@ public class Simulator {
         double sumdt=0;
         Map<Building, Double> radiation = new HashMap<Building, Double>();
         for(Iterator i=world.getBuildings().iterator();i.hasNext();){
-            Building b=(Building)i.next();			
+            Building b=(Building)i.next();
             double radEn=b.getRadiationEnergy();
             radiation.put(b, radEn);
         }
         for(Iterator i=world.getBuildings().iterator();i.hasNext();){
-            Building b=(Building)i.next();			
+            Building b=(Building)i.next();
             double radEn=radiation.get(b);
             Building[] bs=b.connectedBuilding;
             float[] vs=b.connectedValues;
@@ -199,9 +199,9 @@ public class Simulator {
               LOG.debug("Radiated energy: " + radEn);
               LOG.debug("Old temperature: " + b.getTemperature());
             */
-            for(int c=0;c<vs.length;c++){			    
+            for(int c=0;c<vs.length;c++){
                 double oldEnergy=bs[c].getEnergy();
-                double connectionValue=vs[c];			    			   
+                double connectionValue=vs[c];
                 double a=radEn*connectionValue;
                 double sum=oldEnergy+a;
                 bs[c].setEnergy(sum);
@@ -211,12 +211,12 @@ public class Simulator {
                   LOG.debug("Building " + bs[c].getID() + " received " + a);
                 */
             }
-            b.setEnergy(b.getEnergy()-radEn);			
+            b.setEnergy(b.getEnergy()-radEn);
             energyHistory.registerRadiationLoss(b, -radEn);
             /*
               LOG.debug("New temperature: " + b.getTemperature());
             */
-        }		
+        }
     }
 
     private void exchangeWithAir(Building b) {
@@ -279,7 +279,7 @@ public class Simulator {
       double pc=((double)b.cells[i][2])/100d;
       total+=pc;
       tempSum+=getTempAt(b.cells[i][0],b.cells[i][1])*pc;
-      }		
+      }
       return tempSum/total;
       }
     */
@@ -305,14 +305,14 @@ public class Simulator {
                 }
             }
         }
-        world.setAirTemp(newairtemp);		
+        world.setAirTemp(newairtemp);
         world.setAirTemp(getWindShift().shift(world.getAirTemp(),this));
     }
-    
+
     private double relTemp(double deltaT){
         return Math.max(0, deltaT*ENERGY_LOSS*TIME_STEP_LENGTH);
     }
-	
+
     private double averageTemp(int x, int y) {
         //        double rv = (neighbourCellAverage(x,y)+buildingAverage(x,y))/(weightSummBuilding(x,y)+weightSummCells(x,y));
         double rv = neighbourCellAverage(x, y) / weightSummCells(x, y);
@@ -342,7 +342,7 @@ public class Simulator {
       }
       return total;
       }
-	
+
       private float weightSummBuilding(int x,int y){
       float total=0;
       for(Iterator i=world.gridToBuilding[x][y].iterator();i.hasNext();){
@@ -361,14 +361,14 @@ public class Simulator {
         total+=getTempAt(x,y+1);
         total+=getTempAt(x-1,y-1);
         total+=getTempAt(x-1,y);
-        total+=getTempAt(x-1,y+1);		
+        total+=getTempAt(x-1,y+1);
         return total*WEIGHT_GRID;
     }
-	
+
     private float weightSummCells(int x,int y){
         return 8 * WEIGHT_GRID;
     }
-	
+
     protected double getTempAt(int x,int y){
         if(x<0||y<0||x>=world.getAirTemp().length||y>=world.getAirTemp()[0].length)
             return 0;
@@ -378,21 +378,21 @@ public class Simulator {
     public void setWind(float direction,float speed){
         windShift=new WindShift(direction,(float)speed,world.SAMPLE_SIZE);
     }
-	
+
     public void setWindSpeed(float speed){
         windShift=getWindShift();
         setWind(windShift.getDirection(),speed);
     }
-	
+
     public void setWindDirection(float direction){
         windShift=getWindShift();
         setWind(direction,windShift.speed);
     }
-	
+
     public WindShift getWindShift(){
         if(WIND_RANDOM>0&&windShift!=null){
             float nd=(float) (windShift.direction+windShift.direction*WIND_RANDOM*Rnd.get01());
-            float ns=(float) (windShift.speed+windShift.speed*WIND_RANDOM*Rnd.get01());			
+            float ns=(float) (windShift.speed+windShift.speed*WIND_RANDOM*Rnd.get01());
             setWind(nd,ns);
         }
         if (windShift==null||windShift.direction!=WIND_DIRECTION||windShift.speed!=WIND_SPEED)
@@ -400,10 +400,10 @@ public class Simulator {
         return windShift;
     }
 
-    private void loadVars(){			
+    private void loadVars(){
         AIR_TO_BUILDING_COEFFICIENT = new Float(Configuration.getValue("resq-fire.air_to_building_flow")).floatValue();
-        AIR_TO_AIR_COEFFICIENT =new Float(Configuration.getValue("resq-fire.air_to_air_flow")).floatValue(); 
-        ENERGY_LOSS = new Float(Configuration.getValue("resq-fire.energy_loss")).floatValue();		
+        AIR_TO_AIR_COEFFICIENT =new Float(Configuration.getValue("resq-fire.air_to_air_flow")).floatValue();
+        ENERGY_LOSS = new Float(Configuration.getValue("resq-fire.energy_loss")).floatValue();
         WATER_COEFFICIENT= new Float(Configuration.getValue("resq-fire.water_thermal_capacity")).floatValue();
         WIND_SPEED = new Integer(Configuration.getValue("resq-fire.wind_speed")).intValue();
         WIND_DIRECTION = new Float(Configuration.getValue("resq-fire.wind_direction")).floatValue();
@@ -413,24 +413,21 @@ public class Simulator {
         ExtinguishRequest.MAX_WATER_PER_CYCLE=new Integer(Configuration.getValue("resq-fire.max_extinguish_power_sum")).intValue();
         ExtinguishRequest.MAX_DISTANCE=new Integer(Configuration.getValue("resq-fire.water_distance")).intValue();
         GAMMA=new Float(Configuration.getValue("resq-fire.gamma")).floatValue();
-        Rnd.setSeed(new Long(Configuration.getValue("resq-fire.randomseed")).longValue());
-        java.util.Random random = new java.util.Random(new Long(Configuration.getValue("resq-fire.randomseed")).longValue());
-        Building.burnRate = new GaussianGenerator(new Double(Configuration.getValue("resq-fire.burn-rate-average")).doubleValue(),
-                                                  new Double(Configuration.getValue("resq-fire.burn-rate-variance")).doubleValue(),
-                                                  random);
+        Rnd.setSeed(new Long(Configuration.getValue("random.seed")).longValue());
+
     }
-	
-    public void initialize(){		
+
+    public void initialize(){
         try{
             loadVars();
         }catch (Exception e) {
             LOG.fatal("invalid configuration, aborting", e);
-            System.exit(-1);			
+            System.exit(-1);
         }
-			
+
         world.initialize();
     }
-	
+
     public void reset(){
         loadVars();
         world.reset();

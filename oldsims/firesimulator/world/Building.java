@@ -12,12 +12,14 @@ import java.util.LinkedList;
 import rescuecore.OutputBuffer;
 
 import firesimulator.simulator.Simulator;
+import firesimulator.util.Configuration;
 import firesimulator.util.Geometry;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
 import org.uncommons.maths.number.NumberGenerator;
+import org.uncommons.maths.random.GaussianGenerator;
 
 /**
  * @author tn
@@ -37,7 +39,7 @@ public class Building extends StationaryObject {
     public static boolean AMBULANCE_INFALMEABLE=false;
     public static boolean FIRE_INFALMEABLE=false;
     public static boolean REFUGE_INFALMEABLE=false;
-    public static NumberGenerator<Double> burnRate;
+    public NumberGenerator<Double> burnRate;
     public boolean fierynessChanged;
     private int waterQuantity;
     private int floors=1;
@@ -51,7 +53,7 @@ public class Building extends StationaryObject {
     private float buildingAreaGround=0;
     private float buildingAreaTotal=0;
     private int[] apexes;
-    private Polygon polygon;	
+    private Polygon polygon;
     public float fuel;
     private float initFuel;
     private float prevBurned;
@@ -67,9 +69,9 @@ public class Building extends StationaryObject {
     public double totalWallArea;
     private int lwater = 0;
     private int lwTime = -1;
-    private boolean wasEverWatered = false; 
+    private boolean wasEverWatered = false;
     public boolean inflameable = true;
-	
+
     public static float woodCapacity=4;
     public static float steelCapacity=4;
     public static float concreteCapacity=4;
@@ -78,18 +80,18 @@ public class Building extends StationaryObject {
     public static float concreteIgnition=400;
     public static float woodEnergie=1;
     public static float steelEnergie=1;
-    public static float concreteEnergie=1;	
+    public static float concreteEnergie=1;
     public static float woodBurning=800;
     public static float steelBurning=800;
     public static float concreteBurning=800;
-	
+
     public static final int NORMAL=0;
     public static final int HEATING=1;
     public static final int BURNING=2;
     public static final int COOLING_DOWN=3;
     public static final int EXTINGUISHED=5;
     public static final int BURNED_DOWN=4;
-	
+
 
     public Building(int id) {
         super(id);
@@ -97,8 +99,12 @@ public class Building extends StationaryObject {
         connectedBuildings=new Hashtable(30);
         initFuel = -1;
         prevBurned=0;
-    }	
-	
+        java.util.Random random = new java.util.Random(new Long(Configuration.getValue("random.seed")).longValue());
+        burnRate = new GaussianGenerator(new Double(Configuration.getValue("resq-fire.burn-rate-average")).doubleValue(),
+                                                  new Double(Configuration.getValue("resq-fire.burn-rate-variance")).doubleValue(),
+                                                  random);
+    }
+
     public float getBurningTemp(){
         switch(code){
         case 0:
@@ -109,7 +115,7 @@ public class Building extends StationaryObject {
             return concreteBurning;
         }
     }
-	
+
     public float getIgnitionPoint(){
         switch(code){
         case 0:
@@ -120,8 +126,8 @@ public class Building extends StationaryObject {
             return concreteIgnition;
         }
     }
-	
-	
+
+
     public void ignite() {
         energy=getCapacity()*getIgnitionPoint()*1.5;
     }
@@ -129,16 +135,16 @@ public class Building extends StationaryObject {
     public float getBuildingAreaGround(){
         return buildingAreaGround;
     }
-	
+
     public int getFloors(){
         return floors;
     }
-	
-    public void initialize(World world){			
+
+    public void initialize(World world){
         initWalls(world);
         setFieryness(0);
         setWaterQuantity(0);
-        fierynessChanged=false;	
+        fierynessChanged=false;
         if(polygon==null){
             polygon=new Polygon();
             for(int n=0;n<apexes.length;n++)
@@ -151,17 +157,17 @@ public class Building extends StationaryObject {
         initFuel=-1;
         prevBurned=0;
         lwTime = -1;
-        lwater = 0;	        
+        lwater = 0;
         wasEverWatered = false;
         LOG.debug("Initialised building " + id + ": ground area = " + buildingAreaGround + ", floors = " + floors + ", volume = " + volume + ", initial fuel = " + fuel + ", energy capacity = " + getCapacity());
     }
-	
+
     public void reset(World w) {
         setFieryness(0);
-        setWaterQuantity(0);		
-        initialize(w);	
+        setWaterQuantity(0);
+        initialize(w);
     }
-	
+
     private void initWalls(World world){
         if(walls != null)
             return;
@@ -182,31 +188,31 @@ public class Building extends StationaryObject {
             else
                 LOG.warn("Ignoring odd wall at building "+getID());
             lx=tx;
-            ly=ty;			
+            ly=ty;
         }
         Wall w=new Wall(lx,ly,fx,fy,this);
-        walls.add(w);		
+        walls.add(w);
         world.allWalls.addAll(walls);
         totalWallArea=totalWallArea/1000000d;
     }
-	
+
     public int hashCode(){
         return id;
     }
-	
-    public void initWallValues(World world){			
+
+    public void initWallValues(World world){
         int totalHits=0;
         int totalRays=0;
         int selfHits=0;
         int strange=0;
         for(Iterator w=walls.iterator();w.hasNext();){
-            Wall wall=(Wall)w.next();			
+            Wall wall=(Wall)w.next();
             wall.findHits(world);
             totalHits+=wall.hits;
             selfHits+=wall.selfHits;
             totalRays+=wall.rays;
             strange=wall.strange;
-        }		
+        }
         int c=0;
         connectedBuilding=new Building[connectedBuildings.size()];
         connectedValues=new float[connectedBuildings.size()];
@@ -219,14 +225,14 @@ public class Building extends StationaryObject {
         }
         LOG.debug("{"+(((float)totalHits)*100/((float)totalRays))+","+totalRays+","+totalHits+","+selfHits+","+strange+"}");
     }
-	
+
     public float getInitialFuel(){
         if(initFuel<0){
             initFuel = (float)(getFuelDensity()*volume);
         }
         return initFuel;
     }
-	
+
     private float getFuelDensity(){
         switch(code){
         case 0:
@@ -237,7 +243,7 @@ public class Building extends StationaryObject {
             return concreteEnergie;
         }
     }
-	
+
     private float getThermoCapacity(){
         switch(code){
         case 0:
@@ -252,36 +258,36 @@ public class Building extends StationaryObject {
     public Polygon getPolygon(){
         return polygon;
     }
-	
+
     public String getType(){
         return "BUILDING";
     }
-	
+
     public void setAttributes(int atrb){
         this.attributes=atrb;
     }
-	
+
     public int getCode(){
         return code;
     }
-	
+
     public void setIgnition(int ignition){
         this.ignition=ignition;
     }
-	
+
     public int getIgnition(){
         return ignition;
     }
-	
-    public void setFieryness(int fieryness){		
+
+    public void setFieryness(int fieryness){
         this.fieryness=fieryness;
     }
-	
+
     public float getFuel(){
         return fuel;
     }
-	
-    public int getFieryness(){ 
+
+    public int getFieryness(){
         if(!isInflameable())
             return 0;
         if(getTemperature()>=getIgnitionPoint()){
@@ -290,12 +296,12 @@ public class Building extends StationaryObject {
             if(fuel>=getInitialFuel()*0.33)
                 return 2;   // burning, more damaged
             if(fuel>0)
-                return 3;    // burning, severly damaged 
+                return 3;    // burning, severly damaged
         }
         if(fuel==getInitialFuel())
             if (wasEverWatered)
                 return 4;   // not burnt, but watered-damaged
-            else    
+            else
                 return 0;   // not burnt, no water damage
         if(fuel>=getInitialFuel()*0.66)
             return 5;        // extinguished, slightly damaged
@@ -305,19 +311,19 @@ public class Building extends StationaryObject {
             return 7;        // extinguished, severely damaged
         return 8;           // completely burnt down
     }
-	
+
     public void setBrokenness(int brk){
         this.brokenness=brk;
     }
-	
+
     public void setEntrances(int[] ent){
         this.entrances=ent;
     }
-	
+
     public void setCode(int code){
         this.code=code;
     }
-	
+
     public void setBuildingAreaGround(float area){
         this.buildingAreaGround=area;
     }
@@ -325,15 +331,15 @@ public class Building extends StationaryObject {
     public void setBuildingAreaTotal(float area){
         this.buildingAreaTotal=area;
     }
-	
+
     public void setApexes(int[] apx){
         this.apexes=apx;
     }
-	
+
     public int[] getApexes(){
         return apexes;
     }
-		
+
     public void setFloors(int floors){
         this.floors=floors;
     }
@@ -437,15 +443,15 @@ public class Building extends StationaryObject {
     public int getLastWater(){
         return lwater;
     }
-	
+
     public boolean getLastWatered(){
         return lwTime == World.getWorld().getTime();
     }
-	
+
     public boolean wasEverWatered() {
         return wasEverWatered;
     }
-    
+
     public int getWaterQuantity() {
         return waterQuantity;
     }
@@ -453,12 +459,12 @@ public class Building extends StationaryObject {
     public void setWaterQuantity(int i) {
         if(i > waterQuantity){
             lwTime = World.getWorld().getTime();
-            lwater = i - waterQuantity;	        
+            lwater = i - waterQuantity;
             wasEverWatered = true;
         }
         waterQuantity = i;
     }
-	
+
 
     public float getCapacity() {
         return capacity;
@@ -498,17 +504,17 @@ public class Building extends StationaryObject {
     public boolean isBuilding(int x,int y){
         return getX()==x&&getY()==y;
     }
-	
+
     public double getEnergy() {
         if(energy==Double.NaN||energy==Double.POSITIVE_INFINITY||energy==Double.NEGATIVE_INFINITY)
             energy=Double.MAX_VALUE*0.75d;
         return energy;
     }
-    public void setEnergy(double energy) {        
+    public void setEnergy(double energy) {
         if(energy==Double.NaN||energy==Double.POSITIVE_INFINITY||energy==Double.NEGATIVE_INFINITY){
-            energy=Double.MAX_VALUE*0.75d;            
+            energy=Double.MAX_VALUE*0.75d;
         }
-        this.energy = energy;        		    
+        this.energy = energy;
     }
 
     public float getConsum() {
@@ -522,19 +528,19 @@ public class Building extends StationaryObject {
             f=0.005f;
         return getInitialFuel()*f;
     }
-    
+
     public float getPrevBurned() {
         return prevBurned;
     }
-    
+
     public void setPrevBurned(float prevBurned) {
         this.prevBurned = prevBurned;
     }
-    
+
     public void setInflameable(boolean inflameable){
         this.inflameable=inflameable;
     }
-    
+
     public boolean isInflameable(){
         return inflameable;
     }
