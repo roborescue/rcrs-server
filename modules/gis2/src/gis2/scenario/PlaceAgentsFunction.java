@@ -25,6 +25,7 @@ public class PlaceAgentsFunction extends AbstractFunction {
     private static final int TYPE_FIRE = 0;
     private static final int TYPE_POLICE = 1;
     private static final int TYPE_AMBULANCE = 2;
+    private static final int TYPE_CIVILIAN = 3;
 
     private Random random;
 
@@ -48,23 +49,33 @@ public class PlaceAgentsFunction extends AbstractFunction {
         JPanel panel = new JPanel(new GridLayout(3, 2));
         // CHECKSTYLE:ON:MagicNumber
         JTextField numberField = new JTextField("1");
-        JComboBox typeCombo = new JComboBox(new String[] {"Fire", "Police", "Ambulance"});
-        JCheckBox buildingBox = new JCheckBox("Place in buildings?", false);
+        JComboBox typeCombo = new JComboBox(new String[] {"Fire", "Police", "Ambulance","Civilian"});
+
+        JCheckBox  buildingBox = new JCheckBox ("In buildings?", false);
+        JCheckBox  roadBox = new JCheckBox ("In Roads?", true);
+        JPanel jp=new JPanel();
+        jp.add(buildingBox);
+        jp.add(roadBox);
+
         panel.add(new JLabel("Type"));
         panel.add(typeCombo);
         panel.add(new JLabel("Number"));
         panel.add(numberField);
-        panel.add(buildingBox);
+        panel.add(jp);
         List<Integer> ids = new ArrayList<Integer>();
         int type = -1;
-        List<GMLShape> all = new ArrayList<GMLShape>(editor.getMap().getRoads());
+        List<GMLShape> all = new ArrayList<GMLShape>();
         if (JOptionPane.showConfirmDialog(null, panel, "Add agents", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             try {
                 int number = Integer.parseInt(numberField.getText());
                 type = typeCombo.getSelectedIndex();
-                boolean buildings = buildingBox.isSelected();
-                if (buildings) {
+                if(roadBox.isSelected())
+                	all.addAll(editor.getMap().getRoads());
+                if (buildingBox.isSelected())
                     all.addAll(editor.getMap().getBuildings());
+                if(all.size()==0){
+                	JOptionPane.showMessageDialog(null, "No Area to Place... Please choose In Road or Building...","Error",JOptionPane.ERROR_MESSAGE);
+                	return;
                 }
                 for (int i = 0; i < number; ++i) {
                     ids.add(all.get(random.nextInt(all.size())).getID());
@@ -74,7 +85,7 @@ public class PlaceAgentsFunction extends AbstractFunction {
                 Logger.error("Error parsing number", e);
             }
         }
-        GisScenario s = editor.getScenario();
+         GisScenario s = editor.getScenario();
         switch (type) {
         case TYPE_FIRE:
             for (int id : ids) {
@@ -91,6 +102,11 @@ public class PlaceAgentsFunction extends AbstractFunction {
                 s.addAmbulanceTeam(id);
             }
             break;
+        case TYPE_CIVILIAN:
+        	for (int id : ids) {
+                s.addCivilian(id);
+            }
+        	break;
         default:
             throw new IllegalArgumentException("Unexpected type: " + type);
         }

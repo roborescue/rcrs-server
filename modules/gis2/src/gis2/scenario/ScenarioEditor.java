@@ -98,7 +98,7 @@ public class ScenarioEditor extends JPanel {
     private FilledShapeDecorator refugeDecorator = new FilledShapeDecorator(REFUGE_COLOUR, null, null);
     private FilledShapeDecorator gasStationDecorator = new FilledShapeDecorator(GAS_STATION_COLOUR, null, null);
     private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null, HYDRANT_COLOUR, null);
-    
+
 
     /**
        Construct a new ScenarioEditor.
@@ -219,7 +219,7 @@ public class ScenarioEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws MapException If there is a problem reading the map.
        @throws ScenarioException If there is a problem reading the scenario.
-     * @throws rescuecore2.scenario.exceptions.ScenarioException 
+     * @throws rescuecore2.scenario.exceptions.ScenarioException
     */
     public void load() throws CancelledByUserException, MapException, ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
         JFileChooser chooser = new JFileChooser(baseDir);
@@ -246,7 +246,7 @@ public class ScenarioEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws MapException If there is a problem reading the map.
        @throws ScenarioException If there is a problem reading the scenario.
-     * @throws rescuecore2.scenario.exceptions.ScenarioException 
+     * @throws rescuecore2.scenario.exceptions.ScenarioException
     */
     public void load(String filename) throws CancelledByUserException, MapException, ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
         load(new File(filename));
@@ -258,7 +258,7 @@ public class ScenarioEditor extends JPanel {
        @throws CancelledByUserException If the user cancels the change due to unsaved changes.
        @throws MapException If there is a problem reading the map.
        @throws ScenarioException If there is a problem reading the scenario.
-     * @throws rescuecore2.scenario.exceptions.ScenarioException 
+     * @throws rescuecore2.scenario.exceptions.ScenarioException
     */
     public void load(File dir) throws CancelledByUserException, MapException, ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
         FileReader r = null;
@@ -594,6 +594,7 @@ public class ScenarioEditor extends JPanel {
         addFunction(new ClearAgentsFunction(this), menu, toolbar);
         addFunction(new ClearAllFunction(this), menu, toolbar);
         addFunction(new PlaceAgentsFunction(this), menu, toolbar);
+        addFunction(new RandomHydrantPlacementFunction(this), menu, toolbar);
     }
 
     private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {
