@@ -42,7 +42,7 @@ import java.util.Formatter;
 public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	private Map<EntityID, HumanAttributes> humans;
 	private Set<EntityID> newlyBrokenBuildings;
-	private Map<EntityID, Integer> oldBrokenBuildingsBuriedness;
+	private Map<EntityID, Integer> oldBrokenBuildingsBuriedness=new HashMap<>();
 	private Set<EntityID> newlyExplosedGasStations;
 	private MiscParameters parameters;
 	private MiscSimulatorGUI gui;
