@@ -57,6 +57,7 @@ import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardPropertyURN;
+import rescuecore2.standard.messages.AKClearArea;
 import rescuecore2.standard.messages.AKMove;
 import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.standard.messages.AKUnload;
@@ -184,6 +185,9 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			if (next instanceof AKClear) {
 				handleClear((AKClear) next, changes);
 			}
+			if (next instanceof AKClearArea) {
+				handleClear((AKClearArea) next, changes);
+			}
 			if (next instanceof AKExtinguish) {
 				handleExtinguish((AKExtinguish) next, changes);
 			}
@@ -256,6 +260,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 		long end = System.currentTimeMillis();
 		Logger.info("Timestep " + c.getTime() + " took " + (end - start) + " ms");
 	}
+
 
 	@Override
 	protected void handleUpdate(KSUpdate u) {
@@ -830,6 +835,15 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			Logger.debug(agent + " is clearing");
 		}
 	}
+	private void handleClear(AKClearArea clear, ChangeSet changes) {
+		EntityID agentID = clear.getAgentID();
+		Entity agent = model.getEntity(agentID);
+		if (agent instanceof Human) {
+			manager.getTrafficAgent((Human) agent).setMobile(false);
+			Logger.debug(agent + " is clearing");
+		}
+	}
+
 
 	private void handleRescue(AKRescue rescue, ChangeSet changes) {
 		// Agents rescueing civilians are not mobile
