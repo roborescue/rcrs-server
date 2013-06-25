@@ -1,0 +1,31 @@
+#!/bin/bash
+. $(dirname $0)/config.sh
+
+case "$1" in
+    dist)
+	$(dirname $0)/syncKernels.sh $KERNELDIR
+	$(dirname $0)/syncClients.sh $KERNELDIR
+	;;
+
+    maps)
+	$(dirname $0)/syncKernels.sh $MAPDIR
+	;;
+    code)
+	$(dirname $0)/syncClients.sh $CODEDIR
+	;;
+
+    logs)
+	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
+	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
+	;;
+
+    all)
+	$(dirname $0)/syncKernels.sh $KERNELDIR
+	$(dirname $0)/syncClients.sh $SCRIPTDIR
+	$(dirname $0)/syncKernels.sh $MAPDIR
+	$(dirname $0)/syncClients.sh $CODEDIR
+
+	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
+	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
+	;;
+esac
