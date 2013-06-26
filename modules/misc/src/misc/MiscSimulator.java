@@ -65,7 +65,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	@Override
 	protected void postConnect() {
 		super.postConnect();
-
+		notExplosedGasStations=new HashSet<>();
 		parameters = new MiscParameters(config);
 		GAS_STATION_EXPLOSION_RANG = config.getIntValue("ignition.gas_station.explosion.range", 0);
 		humans = new HashMap<EntityID, HumanAttributes>();
