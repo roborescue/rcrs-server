@@ -1,5 +1,6 @@
 package misc;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
@@ -42,11 +43,11 @@ import java.util.Formatter;
 public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	private Map<EntityID, HumanAttributes> humans;
 	private Set<EntityID> newlyBrokenBuildings;
-	private Map<EntityID, Integer> oldBrokenBuildingsBuriedness=new HashMap<>();
-	private Set<EntityID> newlyExplosedGasStations;
+	private Map<EntityID, Integer> oldBrokenBuildingsBuriedness = new HashMap<>();
 	private MiscParameters parameters;
 	private MiscSimulatorGUI gui;
 	private int GAS_STATION_EXPLOSION_RANG;
+	private Set<EntityID> notExplosedGasStations;
 
 	@Override
 	public JComponent getGUIComponent() {
@@ -69,12 +70,14 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 		GAS_STATION_EXPLOSION_RANG = config.getIntValue("ignition.gas_station.explosion.range", 0);
 		humans = new HashMap<EntityID, HumanAttributes>();
 		newlyBrokenBuildings = new HashSet<EntityID>();
-		newlyExplosedGasStations = new HashSet<EntityID>();
 		Logger.info("MiscSimulator connected. World has "
 				+ model.getAllEntities().size() + " entities.");
 		BuildingChangeListener buildingListener = new BuildingChangeListener();
 		// HumanChangeListener humanListener = new HumanChangeListener();
 		for (Entity et : model.getAllEntities()) {
+			if (et instanceof GasStation) {
+				notExplosedGasStations.add(et.getID());
+			}
 			if (et instanceof Building) {
 				et.addEntityListener(buildingListener);
 			} else if (et instanceof Human) {
@@ -110,7 +113,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 		updateDamage(changes);
 		// Clean up
 		newlyBrokenBuildings.clear();
-		newlyExplosedGasStations.clear();
 		writeDebugOutput(c.getTime());
 		if (gui != null) {
 			gui.refresh(humans.values());
@@ -120,29 +122,33 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	}
 
 	private void processExplodedGasStations(ChangeSet changes) {
-		Logger.info("processExplodedGasStations for " + newlyExplosedGasStations);
-		for (EntityID gasStationId : newlyExplosedGasStations) {
-			GasStation gasStation = (GasStation) model.getEntity(gasStationId);
-
-			for (HumanAttributes hA : humans.values()) {
-				Human human = hA.getHuman();
-				if (!human.isXDefined() || !human.isYDefined())
-					continue;
-				if (GeometryTools2D.getDistance(new Point2D(human.getX(), human.getY()), new Point2D(gasStation.getX(), gasStation.getY())) < GAS_STATION_EXPLOSION_RANG) {
-					Logger.info(human + " getting damage from explosion..." + human);
-					int oldBuriedness = human.isBuriednessDefined() ? human
-							.getBuriedness() : 0;
-					human.setBuriedness(oldBuriedness + config.getRandom().nextInt(30));//TODO Parameterize
-					changes.addChange(human, human.getBuriednessProperty());
-					// Check for injury from being exploded
-					int damage = config.getRandom().nextInt(50) + 15;//TODO Parameterize
-					if (damage != 0) {
-						hA.addCollapseDamage(damage);
+		Logger.info("processExplodedGasStations for " + notExplosedGasStations);
+		for (Iterator<EntityID> iterator = notExplosedGasStations.iterator(); iterator.hasNext();) {
+			GasStation gasStation = (GasStation) model.getEntity(iterator.next());
+			if (gasStation.isFierynessDefined() && gasStation.getFieryness() == 1) {
+				for (HumanAttributes hA : humans.values()) {
+					Human human = hA.getHuman();
+					if (!human.isXDefined() || !human.isYDefined())
+						continue;
+					if (GeometryTools2D.getDistance(new Point2D(human.getX(), human.getY()), new Point2D(gasStation.getX(), gasStation.getY())) < GAS_STATION_EXPLOSION_RANG) {
+						Logger.info(human + " getting damage from explosion..." + human);
+						int oldBuriedness = human.isBuriednessDefined() ? human
+								.getBuriedness() : 0;
+						human.setBuriedness(oldBuriedness + config.getRandom().nextInt(30));//TODO Parameterize
+						changes.addChange(human, human.getBuriednessProperty());
+						// Check for injury from being exploded
+						int damage = config.getRandom().nextInt(50) + 15;//TODO Parameterize
+						if (damage != 0) {
+							hA.addCollapseDamage(damage);
+						}
 					}
+
 				}
 
+				iterator.remove();
 			}
 		}
+
 	}
 
 	private void processBrokenBuildings(ChangeSet changes) {
@@ -334,21 +340,9 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 				return; // we want to only look at buildings
 			}
 
-			if (p.getURN().equals(StandardPropertyURN.FIERYNESS.toString()))
-				checkNewGasStationExplosion(e, oldValue, newValue);
-
 			if (p.getURN().equals(StandardPropertyURN.BROKENNESS.toString()))
 				checkBrokenness(e, oldValue, newValue);
 
-		}
-
-		private void checkNewGasStationExplosion(Entity e, Object oldValue,
-				Object newValue) {
-			double old = oldValue == null ? 0 : (Integer) oldValue;
-			double next = newValue == null ? 0 : (Integer) newValue;
-			if (e instanceof GasStation && old == 0 && next != 0) {
-				newlyExplosedGasStations.add(e.getID());
-			}
 		}
 
 		private void checkBrokenness(Entity e, Object oldValue, Object newValue) {
