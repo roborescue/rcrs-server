@@ -9,7 +9,7 @@ LOGDIR=logs
 DISTDIR=logdist
 EVALDIR=evaluation
 
-RSYNC_OPTS=-C
+RSYNC_OPTS=-CE
 
 CLUSTERS="1 2 3"
 
@@ -22,6 +22,8 @@ CLIENT_HOSTS="c1-2 c1-3 c1-4 c2-2 c2-3 c2-4 c3-2 c3-3 c3-4"
 # CLIENT_HOSTS=localhost
 
 KERNEL_WAITING_TIME=5
+
+PRECOMPUTE_TIMEOUT=185
 
 DAY=testing
 
@@ -61,4 +63,5 @@ function getClientHost() {
 
 LOCAL_HOMEDIR=/home/$LOCAL_USER
 LOCKFILE_NAME=rsl_run.lock
+LOCKFILE_NAME_PRECOMP=/home/$REMOTE_USER/rsl_precomp.lock
 STATFILE_NAME=rsl_last_run.stat

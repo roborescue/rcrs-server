@@ -1,6 +1,8 @@
 #!/bin/bash
 . $(dirname $0)/config.sh
 
+cd $LOCAL_HOMEDIR
+
 case "$1" in
     dist)
 	$(dirname $0)/syncKernels.sh $KERNELDIR

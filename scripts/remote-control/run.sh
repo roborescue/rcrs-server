@@ -17,6 +17,28 @@ if [ ! -z $RUNNING_TEAM ]; then
 fi;
 
 echo "Starting run for team $NAME ($TEAM) on map $MAP on cluster $CLUSTER."
+
+if [ -f "$CODEDIR/$TEAM/precompute.sh" ]; then
+    echo "Starting kernel for precomputation..."
+
+    ssh $REMOTE_USER@$SERVER $SCRIPTDIR/remoteStartKernelPrecompute.sh $MAP $TEAM&
+
+    echo
+    read -p "Press any key to start agents for precomputation... " -n1 -s
+    echo
+
+    for i in 1 2 3; do
+	CLIENT=$(getClientHost $CLUSTER $i)
+	ssh $REMOTE_USER@$CLIENT $SCRIPTDIR/remoteStartPrecompute.sh $TEAM $SERVER $i $MAP&
+    done;
+
+    sleep $PRECOMPUTE_TIMEOUT
+
+    echo "stopping precomputation run"
+    cancelRun.sh $CLUSTER
+fi
+
+
 echo "Starting kernel..."
 
 ssh $REMOTE_USER@$SERVER $SCRIPTDIR/remoteStartKernel.sh $MAP $TEAM&
