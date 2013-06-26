@@ -56,7 +56,7 @@ public class LogViewer extends JPanel {
     private static final int TICK_STEP_SIZE = 10;
 
     private static final int VIEWER_SIZE = 500;
-    private static final int FRAME_DELAY = 200;
+    private static final int FRAME_DELAY = 1000;
 
     private LogReader log;
     private JLabel timestep;
