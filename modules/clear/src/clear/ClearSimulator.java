@@ -147,35 +147,20 @@ public class ClearSimulator extends StandardSimulator {
 				.getPosition(model);
 
 		Map<Blockade, java.awt.geom.Area> blockades = new HashMap<Blockade, java.awt.geom.Area>();
-		Set<EntityID> checkedAreas = new HashSet<EntityID>();
-		Queue<Area> queue = new LinkedList<Area>();
-		queue.add(agentPosition);
-		while (queue.size() > 0) {
-			Area area = queue.poll();
-			checkedAreas.add(area.getID());
-			if (area.isBlockadesDefined()) {
-				for (EntityID blockadeID : area.getBlockades()) {
-					Blockade blockade = (Blockade) model.getEntity(blockadeID);
-					if (blockade == null)
-						continue;
-					if (blockade.getShape() == null)
-						System.err.println("Blockade Shape is null");
-					blockades.put(blockade, new java.awt.geom.Area(blockade.getShape()));
+		for (StandardEntity entity : model.getObjectsInRange(agent.getX(), agent.getY(), length)) {
+			if(entity instanceof Area) {
+				Area area = (Area) entity;
+				if (area.isBlockadesDefined()) {
+					for (EntityID blockadeID : area.getBlockades()) {
+						Blockade blockade = (Blockade) model.getEntity(blockadeID);
+						if (blockade == null)
+							continue;
+						if (blockade.getShape() == null)
+							System.err.println("Blockade Shape is null");
+						blockades.put(blockade, new java.awt.geom.Area(blockade.getShape()));
+					}
 				}
 			}
-
-			for (Edge edge : area.getEdges())
-				if (edge.getNeighbour() != null
-						&& !checkedAreas.contains(edge.getNeighbour())) {
-					double dist = Math.hypot(
-							(edge.getStartX() + edge.getEndX()) / 2
-									- agent.getX(),
-							(edge.getStartY() + edge.getEndY()) / 2
-									- agent.getY());
-					if (dist < length)
-						queue.add((Area) model
-								.getEntity(edge.getNeighbour()));
-				}
 		}
 
 		int counter = 0;
@@ -241,7 +226,8 @@ public class ClearSimulator extends StandardSimulator {
 						Iterator<EntityID> it = newIDs.iterator();
 						List<Blockade> newBlockades = new ArrayList<Blockade>();
 						if (areas.size() > 0)
-							Logger.debug("Creating new blockade objects");
+							Logger.debug("Creating new blockade objects for " + blockade.getID().getValue()
+									+ " " + areas.size());
 						for (int[] apexes : areas) {
 							EntityID id = it.next();
 							Blockade b = makeBlockade(id, apexes, road.getID());
