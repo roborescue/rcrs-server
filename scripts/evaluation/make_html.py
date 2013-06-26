@@ -19,6 +19,7 @@ lang="en" xml:lang="en">
   body { font-family: sans-serif; }
 
   table { border-collapse: collapse; }
+  .running { color:red; }
   tr.first { background-color: #E9D44A; }
   tr.second { background-color: #C8C8C8; }
   tr.third { background-color: #C89D4C; }
@@ -54,8 +55,10 @@ class TeamEntry(object):
         self.map = mapdata
         self.dir = os.path.join(self.map.path, team)
 
+        self.running = True
         self.init_score = None
         self.final_score = 0.0
+        self.last_score = 0.0
         self.scores = None
         self.max_time = 0
         self.rank = -1
@@ -63,10 +66,18 @@ class TeamEntry(object):
         if self.valid():
             for line in open(os.path.join(self.dir, "init-score.txt")):
                 self.init_score = float(line.strip())
-            for line in open(os.path.join(self.dir, "final-score.txt")):
-                self.final_score = float(line.strip())
+               
             for line in open(os.path.join(self.dir, "scores.txt")):
                 self.scores = [float(s) for s in line.split()]
+            self.last_score = self.scores[-1]
+
+            try:
+                for line in open(os.path.join(self.dir, "final-score.txt")):
+                    self.final_score = float(line.strip())
+                self.running = False
+            except:
+                pass
+                
             self.max_time = len(self.scores) - 1
 
     def valid(self):
@@ -228,7 +239,11 @@ if __name__ == '__main__':
         elif team.rank == 3:
             classes.append("third")
 
-        result = [team.name, "%.6f" % team.final_score, "%d" % team.rank]
+        if team.final_score == team.last_score:
+            result = [team.name, "%.6f" % team.final_score, "%d" % team.rank]
+        else:
+            result = [team.name, "<span class=\"running\">%.6f</span>" % team.last_score, "%d" % team.rank]
+
         for t, path, tn_path, score in team.get_screenshots():
             if path:
                 html = '<a href="%s"><img src="%s" width="100" height="75" alt="Map at turn %d" /></a><br />%.4f' % (path, tn_path, t, score)

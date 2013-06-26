@@ -32,6 +32,9 @@ if [ ! -f snapshot-init.png ]; then
     convert -format png -thumbnail 400x300 -strip -quality 95 PNG8:snapshot-init.png snapshot-init-small.png
 fi
 
+echo "Final score is: $(cat $TEAM/final-score.txt)"
+
+echo "Rebuilding summary page for $RUNNING_MAP"
+
 mapSummary.sh $MAP
 
-echo "Final score is: $(cat $TEAM/final-score.txt)"

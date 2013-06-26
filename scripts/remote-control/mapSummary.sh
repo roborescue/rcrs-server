@@ -25,9 +25,9 @@ for TEAM in $TEAM_SHORTHANDS; do
         echo -n "\"$NAME\" ">> scores.tmp
         cat $TEAM/scores.txt >> scores.tmp
         echo >> scores.tmp
-        echo -n "$TEAM " >> final-scores.txt
-        cat $TEAM/final-score.txt >> final-scores.txt
-        echo >> final-scores.txt
+        # echo -n "$TEAM " >> final-scores.txt
+        # cat $TEAM/final-score.txt >> final-scores.txt
+        # echo >> final-scores.txt
 
         for screen in $TEAM/*.png; do
             tn=${screen%.png}-tn.jpg

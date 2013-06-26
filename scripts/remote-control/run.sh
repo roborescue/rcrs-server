@@ -23,9 +23,7 @@ if [ -f "$CODEDIR/$TEAM/precompute.sh" ]; then
 
     ssh $REMOTE_USER@$SERVER $SCRIPTDIR/remoteStartKernelPrecompute.sh $MAP $TEAM&
 
-    echo
-    read -p "Press any key to start agents for precomputation... " -n1 -s
-    echo
+    sleep 6
 
     for i in 1 2 3; do
 	CLIENT=$(getClientHost $CLUSTER $i)
@@ -43,9 +41,15 @@ echo "Starting kernel..."
 
 ssh $REMOTE_USER@$SERVER $SCRIPTDIR/remoteStartKernel.sh $MAP $TEAM&
 
-echo
-read -p "Press any key to start agents... " -n1 -s
-echo
+sleep 4
+
+STATDIR=$LOCAL_HOMEDIR/$EVALDIR/$MAP/$TEAM
+mkdir -p $STATDIR
+cd $KERNELDIR/boot
+./extract-view.sh $NAME $SERVER $STATDIR&
+cd $HOME
+
+sleep 12
 
 for i in 1 2 3; do
     CLIENT=$(getClientHost $CLUSTER $i)

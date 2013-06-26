@@ -1,9 +1,20 @@
-all_teams = ["BAS",  "FCP", "KAV"]
+all_teams = ["BAS", "ANC", "APO", "CSU", "GUC", "LTI", "MIN", "MRL", "NAI", "POS", "RI1", "RAK", "SOS", "ZJU"]
 
 team_names = {
     "BAS" : "Baseline (no agents)",
-    "KAV" : "Kaveh",
-    "FCP" : "FC-Portugal",
+    "ANC" : "anct_rescue2013",
+    "APO" : "Apollo-Rescue",
+    "CSU" : "CSU-YUNLU",
+    "GUC" : "GUC_ArtSapience",
+    "LTI" : "LTI-Agent-Rescue",
+    "MIN" : "MinERS",
+    "MRL" : "MRL",
+    "NAI" : "NAITO-Rescue2013",
+    "POS" : "Poseidon",
+    "RI1" : "Ri-one",
+    "RAK" : "RoboAKUT",
+    "SOS" : "S.O.S.",
+    "ZJU" : "ZJUBase"
 }
 
 day1 = {'name' : "Day 1",

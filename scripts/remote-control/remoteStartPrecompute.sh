@@ -29,13 +29,13 @@ fi
 
 # policeforce
 if (( $TYPE == 2)); then
-    echo "Running: /bin/sh \"precompute.sh\" 1 0 0 0 0 0 $HOST 2>&1 | tee $LOGFILE"
+    echo "Running: /bin/sh \"precompute.sh\" 0 0 1 0 0 0 $HOST 2>&1 | tee $LOGFILE"
     /bin/sh "precompute.sh" 0 0 1 0 0 0 $HOST 2>&1 | tee $LOGFILE
 fi
 
 # ambulance
 if (( $TYPE == 3)); then
-    echo "Running: /bin/sh \"precompute.sh\" 1 0 0 0 0 0 $HOST 2>&1 | tee $LOGFILE"
+    echo "Running: /bin/sh \"precompute.sh\" 0 0 0 0 1 0 $HOST 2>&1 | tee $LOGFILE"
     /bin/sh "precompute.sh" 0 0 0 0 1 0 $HOST 2>&1 | tee $LOGFILE
 fi
 

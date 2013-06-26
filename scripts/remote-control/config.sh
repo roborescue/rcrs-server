@@ -17,6 +17,7 @@ HOSTS="c1-1 c1-2 c1-3 c1-4 c2-1 c2-2 c2-3 c2-4 c3-1 c3-2 c3-3 c3-4 control"
 SERVER_HOSTS="c1-1 c2-1 c3-1"
 CLIENT_HOSTS="c1-2 c1-3 c1-4 c2-2 c2-3 c2-4 c3-2 c3-3 c3-4"
 
+
 # HOSTS=localhost
 # SERVER_HOSTS=localhost
 # CLIENT_HOSTS=localhost
@@ -27,10 +28,10 @@ PRECOMPUTE_TIMEOUT=185
 
 DAY=testing
 
-TEAM_SHORTHANDS="SAM ANC APO CSU GUC LTI MIN MRL NAI POS RI1 RAK SOS ZJU"
+TEAM_SHORTHANDS="BAS ANC APO CSU GUC LTI MIN MRL NAI POS RI1 RAK SOS ZJU"
 
 declare -A TEAM_NAMES
-TEAM_NAMES[SAM]=Sample_agents
+TEAM_NAMES[BAS]=Baseline
 TEAM_NAMES[ANC]=anct_rescue2013
 TEAM_NAMES[APO]=Apollo-Rescue
 TEAM_NAMES[CSU]=CSU-YUNLU
@@ -46,6 +47,12 @@ TEAM_NAMES[SOS]=S.O.S.
 TEAM_NAMES[ZJU]=ZJUBase
 
 DIR=$(pwd)
+
+declare -A CONNECT_VIEWER
+CONNECT_VIEWER[1]=no
+CONNECT_VIEWER[2]=yes
+CONNECT_VIEWER[3]=yes
+
 
 #return hostname of the kernel server of the given cluster
 function getServerHost() {
