@@ -1,75 +1,60 @@
 package traffic3.simulator;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.geom.Path2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JComponent;
 
-import traffic3.objects.TrafficArea;
-import traffic3.objects.TrafficBlockade;
-import traffic3.objects.TrafficAgent;
-import traffic3.manager.TrafficManager;
+import org.uncommons.maths.number.NumberGenerator;
+import org.uncommons.maths.random.GaussianGenerator;
 
 import rescuecore2.GUIComponent;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.WorldModelListener;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.properties.EntityRefListProperty;
-import rescuecore2.worldmodel.properties.EntityRefProperty;
-import rescuecore2.worldmodel.properties.IntProperty;
-import rescuecore2.messages.Command;
-import rescuecore2.messages.control.KSUpdate;
-import rescuecore2.messages.control.KSCommands;
 import rescuecore2.log.Logger;
-import rescuecore2.misc.Pair;
+import rescuecore2.messages.Command;
+import rescuecore2.messages.control.KSCommands;
+import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Vector2D;
-import rescuecore2.misc.gui.ScreenTransform;
 import rescuecore2.misc.gui.ShapeDebugFrame;
-import rescuecore2.misc.gui.ShapeDebugFrame.AWTShapeInfo;
 import rescuecore2.misc.gui.ShapeDebugFrame.Line2DShapeInfo;
-import rescuecore2.misc.gui.ShapeDebugFrame.Point2DShapeInfo;
+import rescuecore2.standard.components.StandardSimulator;
+import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
-import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.Edge;
+import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.PoliceForce;
-import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.Civilian;
-import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.Edge;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardPropertyURN;
-import rescuecore2.standard.messages.AKClearArea;
-import rescuecore2.standard.messages.AKMove;
-import rescuecore2.standard.messages.AKLoad;
-import rescuecore2.standard.messages.AKUnload;
-import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.messages.AKClear;
+import rescuecore2.standard.messages.AKClearArea;
 import rescuecore2.standard.messages.AKExtinguish;
-import rescuecore2.standard.components.StandardSimulator;
-
-import org.uncommons.maths.random.GaussianGenerator;
-import org.uncommons.maths.number.NumberGenerator;
-
-import firesimulator.util.Rnd;
+import rescuecore2.standard.messages.AKLoad;
+import rescuecore2.standard.messages.AKMove;
+import rescuecore2.standard.messages.AKRescue;
+import rescuecore2.standard.messages.AKUnload;
+import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.WorldModelListener;
+import rescuecore2.worldmodel.properties.EntityRefListProperty;
+import rescuecore2.worldmodel.properties.EntityRefProperty;
+import rescuecore2.worldmodel.properties.IntProperty;
+import traffic3.manager.TrafficManager;
+import traffic3.objects.TrafficAgent;
+import traffic3.objects.TrafficArea;
+import traffic3.objects.TrafficBlockade;
 
 /**
  * The Area model traffic simulator.
@@ -261,7 +246,6 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 		Logger.info("Timestep " + c.getTime() + " took " + (end - start) + " ms");
 	}
 
-
 	@Override
 	protected void handleUpdate(KSUpdate u) {
 		clearCache(u);
@@ -424,7 +408,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			System.out.println("lastArea=" + lastArea + " lastEdge=" + lastEdge + " nextArea=" + nextArea + " nextEdge=" + nextEdge);
 		}
 		ArrayList<PathElement> steps = new ArrayList<PathElement>();
-		Point2D edgePoint = getBestPoint(nextEdge);
+		Point2D edgePoint = getBestPoint(nextEdge,nextArea);
 		Point2D centrePoint = new Point2D(lastArea.getX(), lastArea.getY());
 		Point2D start;
 		if (lastEdge == null) {
@@ -437,7 +421,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 				steps.add(new PathElement(lastArea.getID(), nextEdge.getLine(), edgePoint));
 
 		} else {
-			start = getBestPoint(lastEdge);
+			start = getBestPoint(lastEdge,nextArea);
 			Point2D startEntracePoint = getEntranceOfArea(lastEdge, lastArea);
 			if (startEntracePoint != null)
 				start = startEntracePoint;
@@ -483,9 +467,17 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 		// edgePoint));
 		return steps;
 	}
-
+	private boolean haveImpassibleEdge(Area dest){
+		for (Edge edge: dest.getEdges()) {
+			if(!edge.isPassable())
+				return true;
+		}
+		return false;
+	}
 	private Point2D getEntranceOfArea(Edge inComingEdge, Area dest) {
-		Point2D edgeMid = getBestPoint(inComingEdge);
+
+		Point2D edgeMid =getBestPoint(inComingEdge,dest);
+
 		Line2D wallLine = inComingEdge.getLine();
 
 		int distance = 1000;
@@ -519,13 +511,13 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 		if (lastEdge == null)
 			start = new Point2D(human.getX(), human.getY());
 		else
-			start = getBestPoint(lastEdge);
+			start = getBestPoint(lastEdge,lastArea);
 		Point2D startpoint;
 		if (lastEdge == null)
 			startpoint = start;
 		else
 			startpoint = getMidPoint(lastEdge.getStart(), lastEdge.getEnd());
-		Point2D edgePoint = getBestPoint(nextEdge);
+		Point2D edgePoint = getBestPoint(nextEdge,nextArea);
 		Point2D centrePoint = new Point2D(lastArea.getX(), lastArea.getY());
 
 		List<ShapeDebugFrame.ShapeInfo> resultGraph = new ArrayList<ShapeDebugFrame.ShapeInfo>();
@@ -631,19 +623,29 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			if (lastArea == null || lastArea == area) {
 				SameAreaElements.add(pathElement);
 			} else {
-				for (int i = 1; i < SameAreaElements.size(); i++) {
-					Line2D line2D = new Line2D(SameAreaElements.get(i - 1).getGoal(), SameAreaElements.get(i).getGoal());
-					for (Line2D block : lastArea.getAllBlockingLines()) {
-						if (GeometryTools2D.getSegmentIntersectionPoint(line2D, block) != null)
-							return false;
-					}
-				}
-				lastArea=area;
+				if (!checkElements(lastArea, SameAreaElements))
+					return false;
 				SameAreaElements.clear();
+			}
+			lastArea = area;
+		}
+		if (!checkElements(lastArea, SameAreaElements))
+			return false;
+		return true;
+	}
+
+	private boolean checkElements(TrafficArea lastArea, List<PathElement> sameAreaElements) {
+		if(sameAreaElements.size()<=1)
+			return true;
+
+		for (int i = 1; i < sameAreaElements.size(); i++) {
+			Line2D line2D = new Line2D(sameAreaElements.get(i - 1).getGoal(), sameAreaElements.get(i).getGoal());
+			for (Line2D block : lastArea.getAllBlockingLines()) {
+				if (GeometryTools2D.getSegmentIntersectionPoint(line2D, block) != null)
+					return false;
 			}
 		}
 		return true;
-
 	}
 
 	static Point2D getMidPoint(Point2D p1, Point2D p2) {
@@ -655,7 +657,9 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
 	}
 
-	private Point2D getBestPoint(Edge edge) {
+	private Point2D getBestPoint(Edge edge, Area dest) {
+		if(!haveImpassibleEdge(dest))
+			return getMidPoint(edge.getStart(), edge.getEnd());
 		int dx = (edge.getStartX() + edge.getEndX());
 		int dy = (edge.getStartY() + edge.getEndY());
 		int x = dx / 2;
@@ -669,6 +673,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 				blockingLines.addAll(manager.getTrafficArea(area).getAllBlockingLines());
 			}
 		}
+
 		Point2D centerPoint = new Point2D(x, y);
 		// if (getMinDistance(blockingLines, centerPoint) >
 		// TrafficSimulator.RESCUE_AGENT_RADIUS)
@@ -835,6 +840,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			Logger.debug(agent + " is clearing");
 		}
 	}
+
 	private void handleClear(AKClearArea clear, ChangeSet changes) {
 		EntityID agentID = clear.getAgentID();
 		Entity agent = model.getEntity(agentID);
@@ -843,7 +849,6 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			Logger.debug(agent + " is clearing");
 		}
 	}
-
 
 	private void handleRescue(AKRescue rescue, ChangeSet changes) {
 		// Agents rescueing civilians are not mobile
