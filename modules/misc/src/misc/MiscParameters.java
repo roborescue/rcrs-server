@@ -11,6 +11,7 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.AmbulanceTeam;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.PoliceForce;
+import rescuecore2.standard.entities.Refuge;
 
 /**
  * Container for all misc simulator parameters.
@@ -45,7 +46,7 @@ public class MiscParameters {
        @return True if an agent inside the building should be buried, false otherwise.
     */
     public boolean shouldBuryAgent(Building b) {
-        if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0) {
+        if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0||b instanceof Refuge) {
             return false;
         }
         BuildingClass clazz = getBuildingClass(b);
