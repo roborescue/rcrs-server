@@ -1,7 +1,8 @@
-all_teams = ["BAS", "ANC", "APO", "CSU", "GUC", "LTI", "MIN", "MRL", "NAI", "POS", "RI1", "RAK", "SOS", "ZJU"]
+all_teams = ["ANC", "APO", "CSU", "GUC", "LTI", "MIN", "MRL", "NAI", "POS", "RI1", "RAK", "SOS", "ZJU"]
+semi_teams = ["APO", "CSU", "GUC", "MIN", "MRL", "POS", "SOS", "ZJU"]
 
 team_names = {
-    "BAS" : "Baseline (no agents)",
+    # "BAS" : "Baseline (no agents)",
     "ANC" : "anct_rescue2013",
     "APO" : "Apollo-Rescue",
     "CSU" : "CSU-YUNLU",
@@ -19,29 +20,32 @@ team_names = {
 
 day1 = {'name' : "Day 1",
         'shortname' : "Day1",
-        'maps' : ["Berlin1", "Kobe1", "Paris1"],
+        'maps' : ["Berlin1", "Eindhoven1", "Kobe1", "Paris1", "VC1"],
         'teams' : all_teams}
 
 day2 = {'name' : "Day 2",
         'shortname' : "Day2",
-        'maps' : ["Istanbul1", "VC1", "Kobe2"],
+        'maps' : ["Mexico1", "Kobe2", "Eindhoven2", "Istanbul1", "Paris2"],
         'teams' : all_teams,
-        'merge_with' : day1}
+        'merge_with' : day1,
+        'highlight' : 8}
 
-day3 = {'name' : "Day 3",
-        'shortname' : "Day3",
-        'maps' : ["Paris2", "Berlin2", "Istanbul2"],
-        'teams' : all_teams,
-        'merge_with' : day2}
 
-final = {'name' : "Finals",
-        'shortname' : "final",
-        'maps' : ["Eindhoven1"],
-        'teams' : all_teams,
-        'merge_with' : day3,
-        'show_ranks' : 1}
+semi = {'name' : "Semifinals",
+        'shortname' : "Semifinals",
+        'maps' : ["VC2", "Berlin2", "Kobe3", "Istanbul2", "Mexico2", "Eindhoven3", "Paris3", "Eindhoven4"],
+        'teams' : semi_teams,
+        'highlight' : 4}
 
-rounds = [day1, day2, day3, final]
+
+# final = {'name' : "Finals",
+#         'shortname' : "final",
+#         'maps' : ["Eindhoven1"],
+#         'teams' : all_teams,
+#         'merge_with' : day3,
+#         'show_ranks' : 1}
+
+rounds = [day1, day2, semi]
 
 # semi_teams = ["RAK", "SBC", "POS", "IAM", "MRL", "RI1", "SEU", "RMA"]
 # final_teams = ["POS", "IAM", "SEU", "RMA"]
@@ -72,3 +76,5 @@ rounds = [day1, day2, day3, final]
 
 # rounds = [day1, day2, semi, final]
 
+log_location = "logs/2013"
+add_downloads = True
