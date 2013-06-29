@@ -27,7 +27,7 @@ case "$1" in
 
     all)
 	$(dirname $0)/syncKernels.sh $KERNELDIR
-	$(dirname $0)/syncClients.sh $SCRIPTDIR
+	$(dirname $0)/syncClients.sh $KERNELDIR
 	$(dirname $0)/syncKernels.sh $MAPDIR
 	$(dirname $0)/syncClients.sh $CODEDIR
 

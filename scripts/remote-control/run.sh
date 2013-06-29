@@ -41,7 +41,7 @@ echo "Starting kernel..."
 
 ssh $REMOTE_USER@$SERVER $SCRIPTDIR/remoteStartKernel.sh $MAP $TEAM&
 
-sleep 4
+sleep 8
 
 STATDIR=$LOCAL_HOMEDIR/$EVALDIR/$MAP/$TEAM
 mkdir -p $STATDIR
@@ -49,7 +49,7 @@ cd $KERNELDIR/boot
 ./extract-view.sh $NAME $SERVER $STATDIR&
 cd $HOME
 
-sleep 12
+sleep 8
 
 for i in 1 2 3; do
     CLIENT=$(getClientHost $CLUSTER $i)
@@ -68,5 +68,7 @@ while [ ! -z $RUNNING_TEAM ]; do
 done
 
 echo "Evaluating run..."
+
+cancelRun.sh $CLUSTER
 
 evalRun.sh $CLUSTER
