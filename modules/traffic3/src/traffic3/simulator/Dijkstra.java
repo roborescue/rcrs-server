@@ -20,6 +20,7 @@ public class Dijkstra {
 	}
 
 	public Dijkstra() {
+		
 	}
 
 	/**
@@ -39,6 +40,9 @@ public class Dijkstra {
 		marker++;
 		for (int i = 0; i < numberOfVertex; ++i) {
 			minCost[i] = Long.MAX_VALUE/2;
+		}
+		for(int i=0;i<parent.length;i++){
+			parent[i] = -1;
 		}
 		PriorityQueue<Integer> PQ = new PriorityQueue<Integer>(100, new Cmp());
 			parent[src] = -1;

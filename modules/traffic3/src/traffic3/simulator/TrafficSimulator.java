@@ -377,6 +377,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 				Logger.warn("Rejecting move: Entity ID " + next + " is not an area: " + e);
 				return;
 			}
+
 			Edge edge = currentArea.getEdgeTo(next);
 			if (edge == null) {
 				Logger.warn("Rejecting move: Entity ID " + next + " is not adjacent to " + currentArea);
@@ -480,7 +481,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
 		Line2D wallLine = inComingEdge.getLine();
 
-		int distance = 1000;
+		int distance = 500;
 		while (distance > 0) {
 			Vector2D offset = wallLine.getDirection().getNormal().normalised().scale(distance);
 			Point2D destXY = edgeMid.plus(offset);
@@ -564,27 +565,33 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ArrayList<Integer> path = dijkstra.getpathArray(end);
-			if (dijkstra.getWeight(end) < 1000 && path.size() > 2) {
-				List<Point2D> points = new ArrayList<Point2D>();
-				for (Integer integer : path) {
-					// resultGraph.add(new Line2DShapeInfo(oLines.get(integer),
-					// "path", Color.white, false, true));
-					Point2D point = getMidPoint(oLines.get(integer).getOrigin(), oLines.get(integer).getEndPoint());
-					// resultGraph.add(new Point2DShapeInfo(point, "path",
-					// Color.white, true));
-					points.add(point);
+			try{
+			if (dijkstra.getWeight(end) < 1000 ) {
+				ArrayList<Integer> path = dijkstra.getpathArray(end);
+				if(path.size() > 2){
+    				List<Point2D> points = new ArrayList<Point2D>();
+    				for (Integer integer : path) {
+    					// resultGraph.add(new Line2DShapeInfo(oLines.get(integer),
+    					// "path", Color.white, false, true));
+    					Point2D point = getMidPoint(oLines.get(integer).getOrigin(), oLines.get(integer).getEndPoint());
+    					// resultGraph.add(new Point2DShapeInfo(point, "path",
+    					// Color.white, true));
+    					points.add(point);
+    				}
+    
+    				ArrayList<PathElement> result = new ArrayList<PathElement>();
+    				result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), start));
+    
+    				for (Point2D point : points)
+    					result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), point));
+    
+    				result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), edgePoint));
+    				// debug.show("final graph", resultGraph);
+    				return result;
 				}
-
-				ArrayList<PathElement> result = new ArrayList<PathElement>();
-				result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), start));
-
-				for (Point2D point : points)
-					result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), point));
-
-				result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), edgePoint));
-				// debug.show("final graph", resultGraph);
-				return result;
+			}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 		}
 		// debug.show("No path with dijkstra", resultGraph);
