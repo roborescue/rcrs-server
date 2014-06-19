@@ -81,6 +81,10 @@ public class Dijkstra {
 	 */
 	public ArrayList<Integer> getpathArray(int desVertex) {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
+		if (parent[desVertex] ==desVertex) {
+			System.err.println("How it executed!===>loop in getpath array");
+			return ar;
+		}
 		if (parent[desVertex] != -1) {
 			ar = getpathArray(parent[desVertex]);
 		}
