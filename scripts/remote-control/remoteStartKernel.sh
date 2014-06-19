@@ -46,7 +46,7 @@ echo "RESCUE_LOGFILE=$RESCUE_LOG" >> $STATFILE_NAME
 echo "Zipping logfile..."
 mkdir -p $HOME/$LOGDIR/$DAY/kernel/
 cp $KERNEL_LOGDIR/rescue.log $HOME/$RESCUE_LOG
-gzip $HOME/$RESCUE_LOG
+gzip --best $HOME/$RESCUE_LOG
 
 rm $LOCKFILE_NAME
 echo "All done"

@@ -26,7 +26,7 @@ if not result:
 def get_row(colum, row):
     if row < len(colum):
         return colum[row]
-    return colum[-1]
+    return "?"#colum[-1]
 #print [len(r) for r in result]
     
 count = len(result[0])

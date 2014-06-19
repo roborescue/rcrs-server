@@ -11,7 +11,7 @@ template = """
 lang="en" xml:lang="en">
 
 <head>
-<title>Robocup Dutch Open 2012 Rescue Simulation League Results</title>
+<title>RoboCup 2013 Rescue Simulation League Results</title>
 <style type="text/css">
   body { font-family: sans-serif; }
 
@@ -26,7 +26,7 @@ lang="en" xml:lang="en">
 </head>
 
 <body>
-<h1>RoboCup Dutch Open 2012 Rescue Simulation League Results</h1>
+<h1>RoboCup 2013 Rescue Simulation League Results</h1>
 
 <p>Click on the map names to get detailed results and logfiles</p>
 %(map_download)s
@@ -48,6 +48,7 @@ class DayData(object):
         self.prev_day = None
         self.highlight = highlight
         self.show_ranks = show_ranks
+        self.started = False
 
         self.runs = [make_html.MapData(m, teams) for m in self.maps]
         self.calculate_result()
@@ -57,6 +58,9 @@ class DayData(object):
         self.total_scores = dict((t, 0.0) for t in self.teams)
         self.final_rank = {}
         for run in self.runs:
+            if not run.started:
+                continue
+            self.started = True
             for team in run.entries:
                 self.total_ranks[team.id] += team.rank
                 self.total_scores[team.id] += team.final_score
@@ -66,7 +70,7 @@ class DayData(object):
                 self.total_scores[t] += self.prev_day.total_scores[t]
                 
         sorted_teams = sorted(self.teams, key=lambda t: -self.total_scores[t])
-        sorted_teams = sorted(sorted_teams, key=lambda t: self.total_ranks[t])
+        sorted_teams = sorted(sorted_teams, key=lambda t: -self.total_ranks[t])
         for i, t in enumerate(sorted_teams):
             self.final_rank[t] = i+1
 
@@ -114,6 +118,8 @@ if __name__ == '__main__':
         if show_ranks is True:
             show_ranks = 3
         data = DayData(cdata['name'], cdata['shortname'], cdata['maps'], cdata['teams'], highlight, show_ranks)
+        if not data.started:
+            continue
         if 'merge_with' in cdata:
             merge_config = cdata['merge_with']
             merge_data = datadict[merge_config['name']]
@@ -135,7 +141,9 @@ if __name__ == '__main__':
         results = []
         res, (tot_score, tot_rank, final_rank) = day.get_team_data(team)
         results.append(make_html.team_names[team])
-        for score, rank in res:
+        for (score, rank), run  in zip(res, day.runs):
+            if not run.started:
+                continue
             results.append("%.2f" % score)
             results.append("%d" % rank)
         if day.prev_day:
@@ -166,22 +174,26 @@ if __name__ == '__main__':
         result = ['<th rowspan="2">Team</th>']
         result2 = []
         for m, run in zip(day.maps, day.runs):
+            if not run.started:
+                continue
             result.append('<th colspan="2"><a href="%s/index.html">%s</a></th>' % (run.path, m))
             result2.append("<th>Score</th>")
-            result2.append("<th>Rank</th>")
+            result2.append("<th>Points</th>")
         if day.prev_day:
             result.append('<th colspan="2">%s</th>' % day.prev_day.shortname)
             result2.append("<th>Score</th>")
-            result2.append("<th>Rank</th>")
+            result2.append("<th>Points</th>")
             
         result.append('<th colspan="2">Total</th>')
         result2.append("<th>Score</th>")
-        result2.append("<th>Rank</th>")
+        result2.append("<th>Points</th>")
         result.append('<th rowspan="2">Rank</th>')
         return result, result2
 
     body = ""
     for run in runs:
+        if not run.started:
+            continue
         body += "<h2>%s</h2>\n" % run.name
         table = '<table border="2" cellspacing="0" cellpadding="5">'
         h1, h2 = make_header(run)
