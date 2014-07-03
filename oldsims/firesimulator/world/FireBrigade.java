@@ -77,7 +77,8 @@ public class FireBrigade extends MovingObject {
 		
 		if (getWaterQuantity() + REFILL_HYDRANT_QUANTITY> MAX_WATER_QUANTITY) 
 			setWaterQuantity(MAX_WATER_QUANTITY);
-		setWaterQuantity(getWaterQuantity() + REFILL_HYDRANT_QUANTITY);
+		else
+			setWaterQuantity(getWaterQuantity() + REFILL_HYDRANT_QUANTITY);
 		return true;
 	}
 	public boolean refillInRefuge() {
