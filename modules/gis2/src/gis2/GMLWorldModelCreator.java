@@ -49,7 +49,9 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 	private static final String DEFAULT_MAP_FILE = "map.gml";
 	private static final String SCENARIO_FILE_KEY = "gis.map.scenario";
 	private static final String DEFAULT_SCENARIO_FILE = "scenario.xml";
-
+	private static final String MAX_FLOOR = "gis.map.max-floor";
+	private static final String FLOOR_PLACEMENT_TYPE = "gis.map.floor-placement.random";
+	private static final String RANDOM_FLOOR_RATE = "gis.map.floor-placement.random.floor-rate.";
 	private static final double SQ_MM_TO_SQ_M = 0.000001;
 
 	private GisScenario scenario;
@@ -60,7 +62,6 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 	// private ShapeDebugFrame debug;
 
 	private int nextID;
-
 	@Override
 	public String toString() {
 		return "GML world model creator";
@@ -76,7 +77,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 					DEFAULT_MAP_FILE));
 			File scenarioFile = new File(dir, config.getValue(
 					SCENARIO_FILE_KEY, DEFAULT_SCENARIO_FILE));
-			readMapData(mapFile, result);
+			readMapData(mapFile, result,config);
 			readScenarioAndApply(scenarioFile, result, config);
 			for (Entity e : result) {
 				nextID = Math.max(nextID, e.getID().getValue());
@@ -98,13 +99,26 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 		return new EntityID(nextID++);
 	}
 
-	private void readMapData(File mapFile, StandardWorldModel result)
+	private void readMapData(File mapFile, StandardWorldModel result, Config config)
 			throws MapException {
+		
+
+		int maxFloor = config.getIntValue(MAX_FLOOR,3);
+		boolean randomfloorPlacement = config.getBooleanValue(FLOOR_PLACEMENT_TYPE,false);
+		int[] floorRates = new int[maxFloor+1];
+		int[] floorRatesCumulative = new int[maxFloor+1];
+		for(int i=1;i<=maxFloor;i++){
+			floorRates[i]=config.getIntValue(RANDOM_FLOOR_RATE+i);
+			floorRatesCumulative[i]=floorRatesCumulative[i-1]+floorRates[i];
+		}
+
+		
 		GMLMap map = (GMLMap) MapReader.readMap(mapFile);
 		CoordinateConversion conversion = getCoordinateConversion(map);
 		Logger.debug("Creating entities");
 		Logger.debug(map.getBuildings().size() + " buildings");
 		Logger.debug(map.getRoads().size() + " roads");
+		
 		for (GMLBuilding next : map.getBuildings()) {
 			// Create a new Building entity
 			EntityID id = new EntityID(next.getID());
@@ -118,7 +132,18 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 			// Logger.debug("Centroid: " + centroid);
 
 			// Building properties
-			b.setFloors(next.getFloors());
+			int floors = Math.min(maxFloor, next.getFloors());
+			if(randomfloorPlacement){
+				int rnd=config.getRandom().nextInt(floorRatesCumulative[maxFloor])+1;
+				for(int i=1;i<=maxFloor;i++){
+					if(rnd<=floorRatesCumulative[i]){
+						floors=i;
+						System.out.println(b+" floor:"+i+" random:"+rnd);
+						break;
+					}
+				}
+			}
+			b.setFloors(floors);
 			b.setFieryness(0);
 			b.setBrokenness(0);
 			b.setBuildingCode(next.getCode());
