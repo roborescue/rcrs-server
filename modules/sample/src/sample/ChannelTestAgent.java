@@ -17,8 +17,8 @@ import rescuecore2.log.Logger;
    An agent for testing communication channels.
  */
 public class ChannelTestAgent extends AbstractSampleAgent<Human> {
-    private static final int CHANNEL = 4;
-    private static final int N = 100;
+    private static final int CHANNEL = 1;
+    private static final int N = 45;
 
     @Override
     public String toString() {
@@ -36,10 +36,12 @@ public class ChannelTestAgent extends AbstractSampleAgent<Human> {
         if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
             sendSubscribe(time, CHANNEL);
         }
+        int inputSize = 0;
         // Send N messages
         if (me() instanceof FireBrigade) {
             for (int i = 0; i < N; ++i) {
-                say(i + 1, time);
+                inputSize += i;
+            	say(i, time);
             }
         }
         Logger.debug("Time " + time);
@@ -47,9 +49,11 @@ public class ChannelTestAgent extends AbstractSampleAgent<Human> {
         // Count failures and dropouts
         int failures = N;
         int dropout = 0;
+        int totalSize=0;
         for (Command next : heard) {
             if (next instanceof AKSpeak) {
                 AKSpeak speak = (AKSpeak)next;
+                totalSize+=speak.getContent().length;
                 --failures;
                 if (speak.getContent().length == 0) {
                     ++dropout;
@@ -58,6 +62,10 @@ public class ChannelTestAgent extends AbstractSampleAgent<Human> {
         }
         Logger.debug(failures + " failed messages");
         Logger.debug(dropout + " dropout messages");
+        Logger.debug("Total: " + totalSize + "/" + inputSize + "bytes");
+        System.out.println(failures + " failed messages");
+        System.out.println(dropout + " dropout messages");
+        System.out.println("Total: " + totalSize + "/" + inputSize + "bytes");
     }
 
     @Override

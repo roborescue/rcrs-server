@@ -84,12 +84,17 @@ public abstract class AbstractChannel implements Channel {
         if (channel != channelID) {
             throw new InvalidMessageException("Tried to push '" + speak + "' to channel " + channelID);
         }
+        int originalSize = speak.getContent().length;
+        if(originalSize == 0){
+        	throw new InvalidMessageException("Tried to push empty message to channel " + channelID);
+        }
         Logger.debug("Pushing " + speak + " through channel " + channelID);
+        
         speak = applyInputNoise(speak);
         Logger.debug("Input noise result: " + speak);
-        if (speak != null) {
-            pushImpl(speak);
-        }
+//        if (speak != null) {
+            pushImpl(speak,originalSize);
+//        }
     }
 
     /**
@@ -97,7 +102,7 @@ public abstract class AbstractChannel implements Channel {
        @param msg The message.
        @throws InvalidMessageException If the message is invalid.
     */
-    protected abstract void pushImpl(AKSpeak msg) throws InvalidMessageException;
+    protected abstract void pushImpl(AKSpeak msg, int originalSize) throws InvalidMessageException;
 
     /**
        Register a message that should be send to an agent on the next call to @{link #getMessagesForAgent(AgentProxy)}. This method will ignore the subscribers list so subclasses should use @{link #isSubscribed(Entity)} if they wish to restrict messages to subscribers only.

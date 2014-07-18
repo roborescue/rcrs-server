@@ -56,8 +56,11 @@ public class VoiceChannel extends AbstractChannel {
     }
 
     @Override
-    protected void pushImpl(AKSpeak speak) throws InvalidMessageException {
-        EntityID agentID = speak.getAgentID();
+    protected void pushImpl(AKSpeak speak, int originalSize) throws InvalidMessageException {
+        if(speak==null)
+        	return;
+        
+    	EntityID agentID = speak.getAgentID();
         Entity e = world.getEntity(agentID);
         if (!(e instanceof Human)) {
             throw new InvalidMessageException("Agent " + agentID + " is not a human: " + (e == null ? "null" : e.getClass().getName()));
@@ -67,7 +70,7 @@ public class VoiceChannel extends AbstractChannel {
         if (count >= maxMessages) {
             throw new InvalidMessageException("Agent " + agentID + " has uttered too many voice messages on " + this);
         }
-        if (data.length > maxSize) {
+        if (originalSize > maxSize) {
             throw new InvalidMessageException("Agent " + agentID + " tried to send an oversize voice message: " + data.length + " bytes but the limit is " + maxSize);
         }
         uttered.put(agentID, count + 1);

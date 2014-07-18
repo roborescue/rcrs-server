@@ -31,14 +31,18 @@ public class RadioChannel extends AbstractChannel {
     }
 
     @Override
-    public void pushImpl(AKSpeak speak) throws InvalidMessageException {
+    public void pushImpl(AKSpeak speak, int originalSize) throws InvalidMessageException {
+    	usedBandwidth += originalSize;
+    	if(speak==null)
+    		return;
+    	
         byte[] data = speak.getContent();
-        if (usedBandwidth + data.length > bandwidth) {
+        if (usedBandwidth > bandwidth) {
             throw new InvalidMessageException("Discarding message on channel " + channelID + ": already used " + usedBandwidth + " of " + bandwidth + " bytes, new message is " + data.length + " bytes.");
         }
         Logger.debug(this + " accepted message from " + speak.getAgentID());
         addMessageForSubscribers(speak);
-        usedBandwidth += data.length;
+//        usedBandwidth += data.length;
     }
 
     @Override
