@@ -50,13 +50,16 @@ function makeClasspath {
 
 # Print the usage statement
 function printUsage {
-    echo "Usage: $0 [options]"
+    echo "Usage: $0 <mapfulldir> [options]"
     echo "Options"
     echo "======="
+    echo "<mapfulldir>                    The directory of map and config file Default is empty"     
     echo "-m    --map       <mapdir>      Set the map directory. Default is \"$BASEDIR/maps/gml/test\""
     echo "-l    --log       <logdir>      Set the log directory. Default is \"logs\""
     echo "-s    --timestamp               Append a timestamp, the team name and map name to the log directory name"
     echo "-t    --team      <teamname>    Set the team name. Default is \"\""
+    echo "+x    -x                        Yes/No Xterm "
+
 }
 
 # Process arguments
@@ -66,6 +69,14 @@ function processArgs {
     CONFIGDIR="$BASEDIR/maps/gml/Kobe2013/config"
     TEAM=""
     TIMESTAMP_LOGS=""
+    XTERM="yes"
+
+    if [[ $1 != "-*" ]];then
+	MAP="$1/map"
+	CONFIGDIR="$1/config"
+	XTERM="no"
+	shift 1
+    fi
 
     while [[ ! -z "$1" ]]; do
         case "$1" in
@@ -87,6 +98,14 @@ function processArgs {
                 ;;
             -s | --timestamp)
                 TIMESTAMP_LOGS="yes";
+                shift
+                ;;
+            -x)
+                XTERM="no";
+                shift
+                ;;
+            +x)
+                XTERM="yes";
                 shift
                 ;;
             -h | --help)
@@ -128,13 +147,22 @@ function processArgs {
     mkdir -p $LOGDIR
 }
 
+function execute {
+    title=$1
+    command=$2
+    if [[ $XTERM == "yes" ]];then
+        xterm -T $title -e "$command  2>&1 |tee $LOGDIR/$title-out.log" &
+    else
+         sh -c "$command  2>&1 |tee $LOGDIR/$title-out.log" &
+    fi
+    PIDS="$PIDS $!"
+}
 # Start the kernel
 function startKernel {
     KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
 
-    xterm -T kernel -e "java -Xmx2048m -cp $CP -Dlog4j.log.dir=$LOGDIR kernel.StartKernel $KERNEL_OPTIONS 2>&1 | tee $LOGDIR/kernel-out.log" &
-    PIDS="$PIDS $!"
+    execute kernel "java -Xmx2048m -cp $CP -Dlog4j.log.dir=$LOGDIR kernel.StartKernel $KERNEL_OPTIONS"
     # Wait for the kernel to start
     waitFor $LOGDIR/kernel.log "Listening for connections"
 }
@@ -148,23 +176,15 @@ function startSims {
         TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\"";
     fi
 
-    # xterm -T human -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/human.jar human.ControlledAgentGUI -c $CONFIGDIR/human.cfg $* 2>&1 | tee $LOGDIR/human-out.log" &
-    # PIDS="$PIDS $!"
     # Simulators
 
-    xterm -T misc -e "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $* 2>&1 | tee $LOGDIR/misc-out.log" &
-    PIDS="$PIDS $!"
-    xterm -T traffic -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $* 2>&1 | tee $LOGDIR/traffic-out.log" &
-    PIDS="$PIDS $!"
-    xterm -T fire -e "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $* 2>&1 | tee $LOGDIR/fire-out.log" &
-    PIDS="$PIDS $!"
-    xterm -T ignition -e "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $* 2>&1 | tee $LOGDIR/ignition-out.log" &
-    PIDS="$PIDS $!"
-    xterm -T collapse -e "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $* 2>&1 | tee $LOGDIR/collapse-out.log" &
-    PIDS="$PIDS $!"
-    xterm -T clear -e "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $* 2>&1 | tee $LOGDIR/clear-out.log" &
-    PIDS="$PIDS $!"
-
+    execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $*"
+    execute traffic "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $*"
+    execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $*"
+    execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $*"
+    execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $*"
+    execute clear "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $*"
+    
 echo "waiting for misc to connect..."
     waitFor $LOGDIR/misc-out.log "success"
 echo "waiting for traffic to connect..."
@@ -179,11 +199,9 @@ echo "waiting for collapse to connect..."
 echo "waiting for clear to connect..."    
     waitFor $LOGDIR/clear-out.log "success"
 
-    xterm -T civilian -e "java -Xmx1324m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleCivilian*n -c $CONFIGDIR/civilian.cfg $* 2>&1 | tee $LOGDIR/civilian-out.log" &
-    PIDS="$PIDS $!"
+    execute civilian "java -Xmx1324m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleCivilian*n -c $CONFIGDIR/civilian.cfg $*"
 sleep 2
-    xterm -T viewer -e "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewer -c $CONFIGDIR/viewer.cfg $TEAM_NAME_ARG $* 2>&1 | tee $LOGDIR/viewer-out.log" &
-    PIDS="$PIDS $!"
+    execute viewer "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewer -c $CONFIGDIR/viewer.cfg $TEAM_NAME_ARG $*"
 
 
 
