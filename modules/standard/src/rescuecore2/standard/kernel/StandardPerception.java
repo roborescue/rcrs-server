@@ -160,13 +160,10 @@ public class StandardPerception implements Perception, GUIComponent {
             if (location != null) {
                 int x = location.first().intValue();
                 int y = location.second().intValue();
-                //Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
-                Collection<StandardEntity> nearby = world.getAllEntities();
+                Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
                 // Copy entities and set property values
                 for (StandardEntity next : nearby) 
                 {
-                	if(world.getDistance(agentEntity, next)>viewDistance)
-                		continue;
                     StandardEntityURN urn = next.getStandardURN();
                     switch (urn) {
                     case ROAD:

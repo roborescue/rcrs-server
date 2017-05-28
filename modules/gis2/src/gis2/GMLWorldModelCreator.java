@@ -138,7 +138,6 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 				for(int i=1;i<=maxFloor;i++){
 					if(rnd<=floorRatesCumulative[i]){
 						floors=i;
-						System.out.println(b+" floor:"+i+" random:"+rnd);
 						break;
 					}
 				}
