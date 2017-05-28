@@ -90,9 +90,6 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
     @Override
     public Shape render(Human h, Graphics2D g, ScreenTransform t) {
-//    	if(h instanceof AmbulanceTeam &&world.getEntity(h.getPosition())instanceof Road)
-//    		return null;
-
         Pair<Integer, Integer> location = getLocation(h);
         if (location == null) {
             return null;
@@ -107,7 +104,8 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
            	 	shape = new Ellipse2D.Double(x - SIZE / 3, y - SIZE / 3, SIZE/3*2, SIZE/3*2);
             else
             	shape = new Ellipse2D.Double(x - SIZE / 2, y - SIZE / 2, SIZE, SIZE);
-            g.setColor(adjustColour(getColour(h), h.getHP()));
+            
+            g.setColor(adjustColour(getColour(h), h.isHPDefined()? h.getHP():10000));
             g.fill(shape);
             g.setColor(getColour(h));
             g.draw(shape);
@@ -264,20 +262,23 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
 
 		@Override
         public int compare(Human h1, Human h2) {
+			if(h1.isPositionDefined()&&h2.isPositionDefined()){
         	if(world.getEntity(h1.getPosition())instanceof AmbulanceTeam && !(world.getEntity(h2.getPosition())instanceof AmbulanceTeam))
         		return 1;
         	if(!(world.getEntity(h1.getPosition())instanceof AmbulanceTeam) && (world.getEntity(h2.getPosition())instanceof AmbulanceTeam))
         		return -1;
+			}
         	if (h1 instanceof Civilian && !(h2 instanceof Civilian)) {
                 return -1;
             }
+        	
             if (h2 instanceof Civilian && !(h1 instanceof Civilian)) {
                 return 1;
             }
             
-            //	return h1.getID().getValue() - h2.getID().getValue();
-            
-            return h2.getHP()-h1.getHP();
+            if(h1.isHPDefined()&&h2.isHPDefined())
+            	return h2.getHP()-h1.getHP();
+            return h1.getID().getValue() - h2.getID().getValue();
         }
     }
 

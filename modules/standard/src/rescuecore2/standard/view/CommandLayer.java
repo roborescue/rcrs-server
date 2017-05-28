@@ -78,7 +78,7 @@ public class CommandLayer extends StandardViewLayer {
     */
     public CommandLayer() {
         commands = new ArrayList<Command>();
-        renderMove = true;
+        renderMove = false;
         renderExtinguish = true;
         renderClear = true;
         renderClearArea = true;

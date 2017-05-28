@@ -96,6 +96,9 @@ public class BuildingLayer extends AreaLayer<Building> {
     }
 
     private void drawBrokenness(Building b, Shape shape, Graphics2D g) {
+    	if (!b.isBrokennessDefined()) {
+            return;
+        }
         int brokenness = b.getBrokenness();
         // CHECKSTYLE:OFF:MagicNumber
         int colour = Math.max(0, 135 - brokenness / 2);
