@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
-
+import java.util.Collections;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -160,6 +160,7 @@ public abstract class ViewComponent extends JComponent {
                 result.add(next);
             }
         }
+        Collections.reverse(result);
         return result;
     }
 
