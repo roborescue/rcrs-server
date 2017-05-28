@@ -25,6 +25,7 @@ import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.GUIComponent;
@@ -159,9 +160,13 @@ public class StandardPerception implements Perception, GUIComponent {
             if (location != null) {
                 int x = location.first().intValue();
                 int y = location.second().intValue();
-                Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
+                //Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
+                Collection<StandardEntity> nearby = world.getAllEntities();
                 // Copy entities and set property values
-                for (StandardEntity next : nearby) {
+                for (StandardEntity next : nearby) 
+                {
+                	if(world.getDistance(agentEntity, next)>viewDistance)
+                		continue;
                     StandardEntityURN urn = next.getStandardURN();
                     switch (urn) {
                     case ROAD:
@@ -247,6 +252,8 @@ public class StandardPerception implements Perception, GUIComponent {
         // Update POSITION, POSITION_EXTRA, DIRECTION, STAMINA, HP, DAMAGE, BURIEDNESS
         result.addChange(human, human.getPositionProperty());
         //result.addChange(human, human.getPositionExtraProperty());
+        result.addChange(human, human.getXProperty());
+        result.addChange(human, human.getYProperty());
         result.addChange(human, human.getDirectionProperty());
         result.addChange(human, human.getStaminaProperty());
         result.addChange(human, human.getBuriednessProperty());
@@ -266,6 +273,8 @@ public class StandardPerception implements Perception, GUIComponent {
         // Un-round hp and damage
         result.addChange(human, human.getHPProperty());
         result.addChange(human, human.getDamageProperty());
+        if(human instanceof FireBrigade)
+        	result.addChange(human, ((FireBrigade)human).getWaterProperty());
     }
 
     private void addBlockadeProperties(Blockade blockade, ChangeSet result) {
