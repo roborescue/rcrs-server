@@ -139,7 +139,7 @@ public class ClearSimulator extends StandardSimulator {
 		int targetX = clear.getDestinationX();
 		int targetY = clear.getDestinationY();
 
-		int length = 10000;
+		int length = config.getIntValue(REPAIR_DISTANCE_KEY);
 		Area agentPosition = (Area) agent
 				.getPosition(model);
 
