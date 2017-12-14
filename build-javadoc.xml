@@ -4,6 +4,7 @@
   <target name="_generate-javadoc-fileset">
     <script language="javascript">
       <![CDATA[
+        load('nashorn:mozilla_compat.js')
         importClass(org.apache.tools.ant.types.Path);
         importClass(org.apache.tools.ant.types.FileSet);
         importClass(java.lang.System);

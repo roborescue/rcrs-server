@@ -14,3 +14,9 @@
 build/
 jars/
 jars-instrumented/
+/bin/
+
+# Eclipse project
+.settings
+.project
+.classpath

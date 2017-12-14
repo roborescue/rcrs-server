@@ -24,7 +24,9 @@
     <attribute name="module"/>
     <sequential>
       <if>
-        <not><isset property="@{module}.compiled"/></not>
+        <not>
+          <isset property="@{module}.compiled"/>
+        </not>
         <then>
           <!-- Check for dependencies -->
           <propertycopy property="deps" from="modules.@{module}.depend" override="true"/>
@@ -35,7 +37,8 @@
             </sequential>
           </for>
           <mkdir dir="${build.dir}/@{module}/classes"/>
-          <javac srcdir="${modules.dir}/@{module}/src" destdir="${build.dir}/@{module}/classes" debug="${debug}">
+          <javac srcdir="${modules.dir}/@{module}/src" destdir="${build.dir}/@{module}/classes"
+            debug="${debug}">
             <classpath>
               <path refid="path.common"/>
             </classpath>
@@ -51,8 +54,7 @@
   <macrodef name="_jar">
     <attribute name="module"/>
     <sequential>
-      <manifest file="${modules.dir}/@{module}/manifest" mode="update">
-      </manifest>
+      <manifest file="${modules.dir}/@{module}/manifest" mode="update"> </manifest>
       <jar destfile="${jar.dir}/@{module}.jar" manifest="${modules.dir}/@{module}/manifest">
         <fileset dir="${build.dir}/@{module}/classes" includes="**/*.class"/>
         <fileset dir="${modules.dir}/@{module}/resources" erroronmissingdir="false"/>

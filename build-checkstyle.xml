@@ -3,20 +3,25 @@
   <property name="checkstyle.output.dir" value="${build.dir}/checkstyle-results"/>
 
   <!-- Checkstyle task definition -->
-  <taskdef resource="checkstyletask.properties" classpath="${buildtools.dir}/checkstyle-${checkstyle.version}.jar"/>
+  <taskdef resource="checkstyletask.properties"
+    classpath="${buildtools.dir}/checkstyle-${checkstyle.version}.jar"/>
 
-  <target name="checkstyle" depends="_run-checkstyle, _checkstyle-warnings" description="Run Checkstyle on all modules"/>
+  <target name="checkstyle" depends="_run-checkstyle, _checkstyle-warnings"
+    description="Run Checkstyle on all modules"/>
 
   <target name="_init-checkstyle">
     <mkdir dir="${checkstyle.output.dir}"/>
   </target>
 
   <target name="_run-checkstyle" depends="compile, _init-checkstyle, _generate-checkstyle-fileset">
-    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common" failOnViolation="false" failureProperty="checkstyle.failure">
+    <checkstyle config="${buildtools.dir}/checkstyle.xml" classpathref="path.common"
+      failOnViolation="false" failureProperty="checkstyle.failure">
       <fileset refid="checkstyle.files"/>
       <formatter type="xml" toFile="${checkstyle.output.dir}/checkstyle_errors.xml"/>
     </checkstyle>
-    <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml" out="${checkstyle.output.dir}/checkstyle_errors.html" style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
+    <xslt in="${checkstyle.output.dir}/checkstyle_errors.xml"
+      out="${checkstyle.output.dir}/checkstyle_errors.html"
+      style="${buildtools.dir}/checkstyle-noframes-sorted.xsl"/>
   </target>
 
   <target name="_checkstyle-warnings" if="checkstyle.failure">
@@ -26,6 +31,7 @@
   <target name="_generate-checkstyle-fileset">
     <script language="javascript">
       <![CDATA[
+        load('nashorn:mozilla_compat.js')
         importClass(org.apache.tools.ant.types.Path);
         importClass(org.apache.tools.ant.types.FileSet);
         importClass(java.lang.System);

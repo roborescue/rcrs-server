@@ -148,9 +148,11 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
             seen.add(current);
             Area area = (Area) model.getEntity(current);
             if(area instanceof Road)
-            	break;
-            if(area==null)
-            	System.err.println(current+" is null??? "+me());
+              break;
+            if(area==null) {
+              System.err.println(current+" is null??? "+me());
+              break;
+            }
             List<EntityID> possible = new ArrayList<EntityID>(area.getNeighbours());
             Collections.shuffle(possible, random);
             boolean found = false;

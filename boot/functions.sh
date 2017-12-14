@@ -50,34 +50,34 @@ function makeClasspath {
 
 # Print the usage statement
 function printUsage {
-    echo "Usage: $0 <mapfulldir> [options]"
-    echo "Options"
-    echo "======="
-    echo "<mapfulldir>                    The directory of map and config file Default is empty"     
-    echo "-m    --map       <mapdir>      Set the map directory. Default is \"$BASEDIR/maps/gml/test\""
-    echo "-l    --log       <logdir>      Set the log directory. Default is \"logs\""
-    echo "-s    --timestamp               Append a timestamp, the team name and map name to the log directory name"
-    echo "-t    --team      <teamname>    Set the team name. Default is \"\""
-    echo "+x    -x                        Yes/No Xterm "
-
+    echo "Usage: $0 [scenario] [options]"
+    echo
+    echo "[scenario]  Scenario directory including the map and config directories. Default: \"../maps/gml/Kobe2013\""
+    echo
+    echo "[options]"
+    echo "-m    --map       <mapdir>    Set the map directory. Default: \"../maps/gml/Kobe2013/map\""
+    echo "-c    --config    <configdir> Set the config directory. Default: \"../maps/gml/Kobe2013/config\""
+    echo "-t    --team      <teamname>  Set the team name. Default: \"\""
+    echo "-l    --log       <logdir>    Set the log directory. Default: \"logs\""
+    echo "-s    --timestamp             Create a log sub-directory including timestamp, team name and map name"
+    echo "[+|-]x                        Enable/Disable XTerm use. Default: \"Disable\""
 }
 
-# Process arguments
+# Process command-line arguments
 function processArgs {
     LOGDIR="logs"
     MAP="$BASEDIR/maps/gml/Kobe2013/map"
     CONFIGDIR="$BASEDIR/maps/gml/Kobe2013/config"
     TEAM=""
     TIMESTAMP_LOGS=""
-    XTERM="yes"
-
-    if [[ $1 != "-*" ]];then
-	MAP="$1/map"
-	CONFIGDIR="$1/config"
-	XTERM="no"
-	shift 1
+    XTERM="no"
+    
+    if [ $# -gt 0 ] && [[ $1 != -* ]]; then
+        MAP="$1/map"
+        CONFIGDIR="$1/config"
+        shift 1
     fi
-
+    
     while [[ ! -z "$1" ]]; do
         case "$1" in
             -m | --map)
@@ -97,50 +97,49 @@ function processArgs {
                 shift 2
                 ;;
             -s | --timestamp)
-                TIMESTAMP_LOGS="yes";
+                TIMESTAMP_LOGS="yes"
                 shift
                 ;;
             -x)
-                XTERM="no";
+                XTERM="no"
                 shift
                 ;;
             +x)
-                XTERM="yes";
+                XTERM="yes"
                 shift
                 ;;
             -h | --help)
                 printUsage
-                exit 1;
+                exit 1
                 ;;
-            
             *)
-                echo "Unrecognised option: $1"
+                echo "Unrecognized option: $1"
                 printUsage
                 exit 1
                 ;;
         esac
     done
-
-    if [ -z $MAP ] ; then
-        printUsage
+    
+    # Check if the Map directory exists
+    if [ -z $MAP ] || [ ! -d $MAP ]; then
+    echo "Directory does not exist or does not have the \"map\" and \"config\" sub-directories"
         exit 1
     fi
-    if [ ! -d $MAP ] ; then
-        echo "$MAP is not a directory"
-        printUsage
-        exit 1
-    fi
-
-    if [ ! -z "$TIMESTAMP_LOGS" ] ; then
-        TIME="`date +%m%d-%H%M%S`"
+    
+    # Append timestamp, team and map name to the log directory
+    if [ ! -z "$TIMESTAMP_LOGS" ]; then
+        TIME="`date +%Y%m%d-%H%M%S`"
+        
+        # Extract map name
         MAPNAME="`basename $MAP`"
         if [ "$MAPNAME" == "map" ]; then
             MAPNAME="$(basename $(dirname $MAP))"
         fi
+        
         if [ -z "$TEAM" ]; then
-            LOGDIR="$LOGDIR/$TIME-$MAPNAME"
+          LOGDIR="$LOGDIR/$TIME-$MAPNAME"
         else
-            LOGDIR="$LOGDIR/$TIME-$TEAM-$MAPNAME"
+          LOGDIR="$LOGDIR/$TIME-$TEAM-$MAPNAME"
         fi
     fi
     LOGDIR=`readlink -f $LOGDIR`
@@ -153,10 +152,11 @@ function execute {
     if [[ $XTERM == "yes" ]];then
         xterm -T $title -e "$command  2>&1 |tee $LOGDIR/$title-out.log" &
     else
-         sh -c "$command  2>&1 |tee $LOGDIR/$title-out.log" &
+        sh -c "$command  2>&1 |tee $LOGDIR/$title-out.log" &
     fi
     PIDS="$PIDS $!"
 }
+
 # Start the kernel
 function startKernel {
     KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $*"
@@ -175,9 +175,8 @@ function startSims {
     if [ ! -z "$TEAM" ]; then
         TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\"";
     fi
-
-    # Simulators
-
+    
+    # Execute the simulators
     execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $*"
     execute traffic "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $*"
     execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $*"
@@ -185,28 +184,29 @@ function startSims {
     execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $*"
     execute clear "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $*"
     
-echo "waiting for misc to connect..."
+    echo "waiting for misc to connect..."
     waitFor $LOGDIR/misc-out.log "success"
-echo "waiting for traffic to connect..."
+    
+    echo "waiting for traffic to connect..."
     waitFor $LOGDIR/traffic-out.log "success"
-
-echo "waiting for fire to connect..."
+    
+    echo "waiting for fire to connect..."
     waitFor $LOGDIR/fire-out.log "success"
-echo "waiting for ignition to connect..."
+    
+    echo "waiting for ignition to connect..."
     waitFor $LOGDIR/ignition-out.log "success"
-echo "waiting for collapse to connect..."
+    
+    echo "waiting for collapse to connect..."
     waitFor $LOGDIR/collapse-out.log "success"
-echo "waiting for clear to connect..."    
+    
+    echo "waiting for clear to connect..."    
     waitFor $LOGDIR/clear-out.log "success"
-
-    execute civilian "java -Xmx1324m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleCivilian*n -c $CONFIGDIR/civilian.cfg $*"
-sleep 2
+    
+    execute civilian "java -Xmx1512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleCivilian*n -c $CONFIGDIR/civilian.cfg $*"
+    sleep 2
     execute viewer "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewer -c $CONFIGDIR/viewer.cfg $TEAM_NAME_ARG $*"
-
-
-
+    
     # Wait for all simulators to start
-echo "waiting for viewer to connect..."
+    echo "waiting for viewer to connect..."
     waitFor $LOGDIR/viewer-out.log "success"
-
 }

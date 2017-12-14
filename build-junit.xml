@@ -53,6 +53,7 @@
   <target name="_generate-cobertura-fileset">
     <script language="javascript">
       <![CDATA[
+        load('nashorn:mozilla_compat.js')
         importClass(org.apache.tools.ant.types.Path);
         importClass(org.apache.tools.ant.types.FileSet);
         importClass(java.lang.System);
@@ -74,7 +75,8 @@
       <echo message="Running JUnit tests for module @{module}"/>
       <mkdir dir="${modules.dir}/@{module}/test"/>
       <mkdir dir="${build.dir}/@{module}/test"/>
-      <javac srcdir="${modules.dir}/@{module}/test" destdir="${build.dir}/@{module}/test" classpathref="path.common" debug="${debug}">
+      <javac srcdir="${modules.dir}/@{module}/test" destdir="${build.dir}/@{module}/test"
+        classpathref="path.common" debug="${debug}">
         <include name="**/*.java"/>
       </javac>
       <junit fork="true" timeout="120000" printsummary="on">
@@ -124,15 +126,19 @@
     </cobertura-instrument>
   </target>
 
-  <target name="cobertura-report" depends="_init-cobertura" description="Generate the cobertura test coverage report">
-    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}" destdir="${cobertura.output.dir}">
+  <target name="cobertura-report" depends="_init-cobertura"
+    description="Generate the cobertura test coverage report">
+    <cobertura-report format="${cobertura.output.format}" datafile="${cobertura.coveragefile}"
+      destdir="${cobertura.output.dir}">
       <dirset dir="${basedir}">
         <include name="modules/**/src"/>
       </dirset>
     </cobertura-report>
   </target>
 
-  <target name="junit" depends="junit-run, junit-report" description="Run the junit tests and generate a report"/>
+  <target name="junit" depends="junit-run, junit-report"
+    description="Run the junit tests and generate a report"/>
 
-  <target name="cobertura" depends="_cobertura-instrument, junit-run, cobertura-report" description="Run unit tests and generate the cobertura test coverage report"/>
+  <target name="cobertura" depends="_cobertura-instrument, junit-run, cobertura-report"
+    description="Run unit tests and generate the cobertura test coverage report"/>
 </project>

@@ -5,13 +5,15 @@
   <property name="findbugs.home" value="${buildtools.dir}/findbugs-${findbugs.version}"/>
 
   <!-- Findbugs task definition -->
-  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+    classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
 
   <target name="_init-findbugs">
     <mkdir dir="${findbugs.output.dir}"/>
   </target>
 
-  <target name="findbugs" depends="jars,_init-findbugs, _generate-findbugs-fileset" description="Run Findbugs on all modules">
+  <target name="findbugs" depends="jars,_init-findbugs, _generate-findbugs-fileset"
+    description="Run Findbugs on all modules">
     <!-- Collate all findbugs exclude filters -->
     <concat destfile="${findbugs.output.dir}/exclude-fragments.xml">
       <header>&lt;fragments&gt;</header>
@@ -19,11 +21,14 @@
       <fileset dir="${basedir}" includes="findbugs-filter-base.xml"/>
       <fileset refid="findbugs.filters"/>
     </concat>
-    <xslt style="${buildtools.dir}/findbugs-collate.xsl" in="${findbugs.output.dir}/exclude-fragments.xml" out="${findbugs.output.dir}/exclude.xml">
+    <xslt style="${buildtools.dir}/findbugs-collate.xsl"
+      in="${findbugs.output.dir}/exclude-fragments.xml" out="${findbugs.output.dir}/exclude.xml">
       <outputproperty name="method" value="xml"/>
       <outputproperty name="indent" value="yes"/>
     </xslt>
-    <findbugs home="${findbugs.home}" output="${findbugs.output.format}" outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}" excludeFilter="${findbugs.output.dir}/exclude.xml" jvmargs="-Xmx1024m">
+    <findbugs home="${findbugs.home}" output="${findbugs.output.format}"
+      outputFile="${findbugs.output.dir}/findbugs_errors.${findbugs.output.format}"
+      excludeFilter="${findbugs.output.dir}/exclude.xml" jvmargs="-Xmx1024m">
       <fileset refid="findbugs.jars"/>
     </findbugs>
   </target>
@@ -31,6 +36,7 @@
   <target name="_generate-findbugs-fileset">
     <script language="javascript">
       <![CDATA[
+        load('nashorn:mozilla_compat.js')
         importClass(org.apache.tools.ant.types.Path);
         importClass(org.apache.tools.ant.types.FileSet);
         importClass(java.lang.System);
