@@ -61,7 +61,8 @@
     <!-- Checks for imports                              -->
     <!-- See http://checkstyle.sf.net/config_import.html -->
     <module name="AvoidStarImport"/>
-    <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
+    <module name="IllegalImport"/>
+    <!-- defaults to sun.* packages -->
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
 
@@ -69,7 +70,7 @@
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sf.net/config_sizes.html -->
     <module name="MethodLength"/>
-<!--
+    <!--
     <module name="ParameterNumber"/>
 -->
 
@@ -123,7 +124,7 @@
       <property name="ignoreSetter" value="true"/>
       <property name="ignoreConstructorParameter" value="true"/>
     </module>
-<!--    <module name="IllegalInstantiation"/>-->
+    <!--    <module name="IllegalInstantiation"/>-->
     <module name="InnerAssignment"/>
     <module name="MagicNumber">
       <!-- 1000 is a common timeout value -->
@@ -148,7 +149,7 @@
     <module name="DefaultComesLast"/>
     <module name="FallThrough"/>
     <module name="MultipleVariableDeclarations"/>
-    
+
 
     <!-- Checks for class design                         -->
     <!-- See http://checkstyle.sf.net/config_design.html -->
@@ -163,10 +164,10 @@
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See http://checkstyle.sf.net/config_misc.html -->
-<!--    <module name="TodoComment"/>-->
+    <!--    <module name="TodoComment"/>-->
     <module name="UpperEll"/>
     <module name="ArrayTypeStyle"/>
-<!--    <module name="FinalParameters"/>-->
+    <!--    <module name="FinalParameters"/>-->
 
   </module>
 
