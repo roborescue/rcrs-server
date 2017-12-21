@@ -8,13 +8,13 @@
 *~
 
 # Ignore log files
+boot/logs/
 *.log
 
 # Ignore the build and jars directories
 build/
 jars/
-jars-instrumented/
-/bin/
+bin/
 
 # Eclipse project
 .settings

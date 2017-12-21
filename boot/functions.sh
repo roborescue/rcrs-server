@@ -52,11 +52,11 @@ function makeClasspath {
 function printUsage {
     echo "Usage: $0 [scenario] [options]"
     echo
-    echo "[scenario]  Scenario directory including the map and config directories. Default: \"../maps/gml/Kobe2013\""
+    echo "[scenario]  Scenario directory including the map and config directories. Default: \"../maps/gml/test\""
     echo
     echo "[options]"
-    echo "-m    --map       <mapdir>    Set the map directory. Default: \"../maps/gml/Kobe2013/map\""
-    echo "-c    --config    <configdir> Set the config directory. Default: \"../maps/gml/Kobe2013/config\""
+    echo "-m    --map       <mapdir>    Set the map directory. Default: \"../maps/gml/test/map\""
+    echo "-c    --config    <configdir> Set the config directory. Default: \"../maps/gml/test/config\""
     echo "-t    --team      <teamname>  Set the team name. Default: \"\""
     echo "-l    --log       <logdir>    Set the log directory. Default: \"logs\""
     echo "-s    --timestamp             Create a log sub-directory including timestamp, team name and map name"
@@ -66,8 +66,8 @@ function printUsage {
 # Process command-line arguments
 function processArgs {
     LOGDIR="logs"
-    MAP="$BASEDIR/maps/gml/Kobe2013/map"
-    CONFIGDIR="$BASEDIR/maps/gml/Kobe2013/config"
+    MAP="$BASEDIR/maps/gml/test/map"
+    CONFIGDIR="$BASEDIR/maps/gml/test/config"
     TEAM=""
     TIMESTAMP_LOGS=""
     XTERM="no"
