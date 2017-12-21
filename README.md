@@ -32,7 +32,7 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 $ cd boot
 
-$ ./start.sh ../maps/gml/Kobe2013
+$ ./start.sh ../maps/gml/test
 ```
 
 Open another terminal window, navigate to the ```rcrs-server``` root directory and execute
