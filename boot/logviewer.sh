@@ -1,7 +1,7 @@
 #! /bin/bash
 
 if [ ! $# -eq 1 ] ; then
-  echo "usage: `basename $0` <logfile>"
+  echo "usage: `basename $0` <rescue.log path>"
   exit 1
 fi
 
