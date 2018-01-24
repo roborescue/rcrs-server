@@ -5,4 +5,4 @@ if [ ! $# -eq 1 ] ; then
   exit 1
 fi
 
-CLASSPATH=../jars/*:../lib/* java maps.gml.editor.GMLEditor $1
+CLASSPATH=../../jars/*:../../lib/* java maps.gml.editor.GMLEditor $1

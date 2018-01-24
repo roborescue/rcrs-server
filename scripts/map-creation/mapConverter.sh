@@ -5,4 +5,4 @@ if [ ! $# -eq 2 ] ; then
   exit 1
 fi
 
-CLASSPATH=../jars/*:../lib/* java maps.convert.legacy2gml.LegacyToGML $1 $2
+CLASSPATH=../../jars/*:../../lib/* java maps.convert.legacy2gml.LegacyToGML $1 $2
