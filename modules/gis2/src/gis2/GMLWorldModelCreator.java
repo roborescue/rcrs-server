@@ -109,21 +109,31 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 
 		int maxFloor = config.getIntValue(MAX_FLOOR,3);
 		boolean randomfloorPlacement = config.getBooleanValue(FLOOR_PLACEMENT_TYPE,false);
-		int[] floorRates = new int[maxFloor+1];
-		int[] floorRatesCumulative = new int[maxFloor+1];
-		for(int i=1;i<=maxFloor;i++){
-			floorRates[i]=config.getIntValue(RANDOM_FLOOR_RATE+i);
-			floorRatesCumulative[i]=floorRatesCumulative[i-1]+floorRates[i];
+		int[] floorRates = null;
+		int[] floorRatesCumulative = null;
+		if(randomfloorPlacement) {
+			floorRates = new int[maxFloor+1];
+			floorRatesCumulative = new int[maxFloor+1];
+			for(int i=1;i<=maxFloor;i++){
+				floorRates[i]=config.getIntValue(RANDOM_FLOOR_RATE+i);
+				floorRatesCumulative[i]=floorRatesCumulative[i-1]+floorRates[i];
+			}
 		}
+
 		
 		int maxBuildingCode = config.getIntValue(MAX_BUILDING_CODE, 2);
 		boolean randomBuildingCodePlacement = config.getBooleanValue(BUILDING_CODE_PLACEMENT_TYPE, false);
-		int[] buildingCodeRates = new int[maxBuildingCode + 1];
-		int[] buildingCodesCumulative = new int[maxBuildingCode + 1];
-		for(int i = 0; i <= maxBuildingCode; i++){
-			buildingCodeRates[i] = config.getIntValue(RANDOM_BUILDING_CODE_RATE + i);
-			buildingCodesCumulative[i] = (i > 0 ? buildingCodesCumulative[i - 1] : 0) + buildingCodeRates[i];
+		int[] buildingCodeRates = null;
+		int[] buildingCodesCumulative =  null;
+		if(randomBuildingCodePlacement) {
+			buildingCodeRates = new int[maxBuildingCode + 1];
+			buildingCodesCumulative = new int[maxBuildingCode + 1];
+			for(int i = 0; i <= maxBuildingCode; i++){
+				buildingCodeRates[i] = config.getIntValue(RANDOM_BUILDING_CODE_RATE + i);
+				buildingCodesCumulative[i] = (i > 0 ? buildingCodesCumulative[i - 1] : 0) + buildingCodeRates[i];
+			}
 		}
+
 		
 		GMLMap map = (GMLMap) MapReader.readMap(mapFile);
 		CoordinateConversion conversion = getCoordinateConversion(map);
