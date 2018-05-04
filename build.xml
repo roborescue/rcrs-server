@@ -1,9 +1,10 @@
 <project default="complete-build" name="Robocup rescue simulation software">
-  <property name="version" value="1.0-prealpha"/>
+  <property name="version" value="1.2"/>
 
   <!-- Modules directory -->
   <property name="modules.dir" value="${basedir}/modules"/>
-  <property name="modules" value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,resq-fire,ignition,maps,clear,traffic3,gis2"/>
+  <property name="modules"
+    value="rescuecore2,kernel,standard,sample,handy,human,collapse,misc,resq-fire,ignition,maps,clear,traffic3,gis2"/>
 
   <property name="modules.rescuecore2.depend" value=""/>
   <property name="modules.kernel.depend" value="rescuecore2,handy"/>
@@ -53,7 +54,8 @@
 
   <taskdef resource="net/sf/antcontrib/antlib.xml">
     <classpath>
-      <pathelement location="${antcontrib.dir}/ant-contrib-${antcontrib.version}.jar"/>
+      <pathelement
+        location="${antcontrib.dir}/ant-contrib-${antcontrib.version}.jar"/>
     </classpath>
   </taskdef>
 
@@ -114,7 +116,8 @@
       <delete dir="${build.dir}/@{module}" failonerror="false"/>
       <delete dir="${junit.output.dir}/@{module}" failonerror="false"/>
       <delete dir="${jar.dir}/@{module}.jar" failonerror="false"/>
-      <delete dir="${cobertura.instrument.dir}/@{module}.jar" failonerror="false"/>
+      <delete dir="${cobertura.instrument.dir}/@{module}.jar"
+        failonerror="false"/>
     </sequential>
   </macrodef>
 
@@ -151,13 +154,19 @@
   </target>
 
   <!-- Combined targets -->
-  <target name="test-static" depends="checkstyle, findbugs" description="Run the static tests (checkstyle and findbugs) for all modules"/>
+  <target name="test-static" depends="checkstyle, findbugs"
+    description="Run the static tests (checkstyle and findbugs) for all modules"/>
 
-  <target name="test-unit" depends="cobertura, junit, junit-report, cobertura-report" description="Run the unit tests (junit and cobertura) for all modules"/>
+  <target name="test-unit"
+    depends="cobertura, junit, junit-report, cobertura-report"
+    description="Run the unit tests (junit and cobertura) for all modules"/>
 
-  <target name="test-all" depends="test-static, test-unit" description="Run the static and unit tests for all modules"/>
+  <target name="test-all" depends="test-static, test-unit"
+    description="Run the static and unit tests for all modules"/>
 
-  <target name="complete-build" depends="clean-all, oldsims, compile, jars, javadoc, test-all" description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
+  <target name="complete-build"
+    depends="clean-all, oldsims, compile, jars, javadoc, test-all"
+    description="Do a complete clean and rebuild: clean, compile, jar and run all tests"/>
 
   <import file="build-compile.xml"/>
   <import file="build-findbugs.xml"/>
