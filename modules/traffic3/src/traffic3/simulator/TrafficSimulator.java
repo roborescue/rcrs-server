@@ -665,40 +665,40 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 	}
 
 	private Point2D getBestPoint(Edge edge, Area dest) {
-		if(!haveImpassibleEdge(dest))
+//		if(!haveImpassibleEdge(dest))
 			return getMidPoint(edge.getStart(), edge.getEnd());
-		int dx = (edge.getStartX() + edge.getEndX());
-		int dy = (edge.getStartY() + edge.getEndY());
-		int x = dx / 2;
-		int y = dy / 2;
-		Line2D line = edge.getLine();
-		ArrayList<Line2D> blockingLines = new ArrayList<Line2D>();
-		Collection<StandardEntity> objects = model.getObjectsInRange(x, y, TrafficSimulator.RESCUE_AGENT_RADIUS);
-		for (StandardEntity standardEntity : objects) {
-			if (standardEntity instanceof Area) {
-				Area area = (Area) standardEntity;
-				blockingLines.addAll(manager.getTrafficArea(area).getAllBlockingLines());
-			}
-		}
-
-		Point2D centerPoint = new Point2D(x, y);
-		// if (getMinDistance(blockingLines, centerPoint) >
-		// TrafficSimulator.RESCUE_AGENT_RADIUS)
-		// return centerPoint;
-		Point2D bestpoint = centerPoint;
-		double bestDistance = TrafficSimulator.RESCUE_AGENT_RADIUS * 4 / 5;
-		for (double i = 0; i < 1; i += .1d) {
-			Point2D tempPoint = line.getPoint(i);
-
-			double blockDistance = getMinDistance(blockingLines, tempPoint);
-			if (blockDistance > bestDistance) {
-				bestDistance = blockDistance;
-				bestpoint = tempPoint;
-			}
-
-		}
-
-		return bestpoint;
+//		int dx = (edge.getStartX() + edge.getEndX());
+//		int dy = (edge.getStartY() + edge.getEndY());
+//		int x = dx / 2;
+//		int y = dy / 2;
+//		Line2D line = edge.getLine();
+//		ArrayList<Line2D> blockingLines = new ArrayList<Line2D>();
+//		Collection<StandardEntity> objects = model.getObjectsInRange(x, y, TrafficSimulator.RESCUE_AGENT_RADIUS);
+//		for (StandardEntity standardEntity : objects) {
+//			if (standardEntity instanceof Area) {
+//				Area area = (Area) standardEntity;
+//				blockingLines.addAll(manager.getTrafficArea(area).getAllBlockingLines());
+//			}
+//		}
+//
+//		Point2D centerPoint = new Point2D(x, y);
+//		// if (getMinDistance(blockingLines, centerPoint) >
+//		// TrafficSimulator.RESCUE_AGENT_RADIUS)
+//		// return centerPoint;
+//		Point2D bestpoint = centerPoint;
+//		double bestDistance = TrafficSimulator.RESCUE_AGENT_RADIUS * 4 / 5;
+//		for (double i = 0; i < 1; i += .1d) {
+//			Point2D tempPoint = line.getPoint(i);
+//
+//			double blockDistance = getMinDistance(blockingLines, tempPoint);
+//			if (blockDistance > bestDistance) {
+//				bestDistance = blockDistance;
+//				bestpoint = tempPoint;
+//			}
+//
+//		}
+//
+//		return bestpoint;
 	}
 
 	private double getMinDistance(List<Line2D> blockingLines, Point2D point) {
