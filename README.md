@@ -19,9 +19,9 @@ $ git clone git@github.com:roborescue/rcrs-server.git
 
 ```bash
 
-$ ant clean
+$ ant clean-all
 
-$ ant
+$ ant complete-build
 ```
 
 ## 4. Execute
