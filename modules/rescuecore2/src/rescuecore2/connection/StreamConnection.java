@@ -106,10 +106,12 @@ public class StreamConnection extends AbstractConnection {
     private class ReadThread extends WorkerThread {
         @Override
         protected boolean work() {
+            byte[] buffer = {};
+	    int size = -1;
             try {
-                int size = readInt32(in);
+                size = readInt32(in);
                 if (size > 0) {
-                    byte[] buffer = readBytes(size, in);
+                    buffer = readBytes(size, in);
                     bytesReceived(buffer);
                 }
                 return true;
