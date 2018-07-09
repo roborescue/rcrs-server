@@ -37,28 +37,17 @@ public class Geometry {
 		return new Point((int)rv[0],(int)rv[1]);
 	}
 
-	public static float[] intersect(float[]points){
-		float[] l1=getAffineFunction(points[0],points[1],points[2],points[3]);
-		float[] l2=getAffineFunction(points[4],points[5],points[6],points[7]);
-		float[] crossing;
-		if(l1==null&&l2==null){						
-			return null;
+	public static float[] intersect(float[] points){
+		float dx1 = points[2] - points[0];
+		float dy1 = points[3] - points[1];
+		float dx2 = points[6] - points[4];
+		float dy2 = points[7] - points[5];
+		float s = (dx1 * (points[1] - points[5]) - dy1 * (points[0] - points[4])) / (dx1 * dy2 - dx2 * dy1);
+		float t = (dx2 * (points[1] - points[5]) - dy2 * (points[0] - points[4])) / (dx1 * dy2 - dx2 * dy1);
+		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+			return new float[] {points[0] + (t * dx1), points[1] + (t * dy1)};
 		}
-		else if(l1==null&&l2!=null) {			
-			crossing= intersect(l2[0],l2[1],points[0]);
-		}
-		else if(l1!=null&&l2==null){			
-			crossing= intersect(l1[0],l1[1],points[4]);
-		}
-		else{						
-			crossing =intersect(l1[0],l1[1],l2[0],l2[1]);
-		}
-		if (crossing==null){			
-			return null;
-		}
-		if(!(inBounds(points[0],points[1],points[2],points[3],crossing[0],crossing[1])&&
-		inBounds(points[4],points[5],points[6],points[7],crossing[0],crossing[1]))) return null;
-		return crossing;
+		return null;
 	}
 
 	public static float[] getAffineFunction(float x1,float y1,float x2,float y2){
@@ -71,19 +60,6 @@ public class Geometry {
 	public static float getLength(Point2D a, Point2D b){
 		a.distance(b);
 		return 0;
-	}
-	
-	public static float[] intersect(float m1, float b1, float m2, float b2){
-		if(m1==m2){			
-			return null;
-		}
-		float x=(b2-b1)/(m1-m2);
-		float y=m1*x+b1;		
-		return new float[]{x,y};
-	}
-	
-	public static float[] intersect(float m1, float b1, float x){
-		return new float[]{x, m1*x+b1};
 	}
 	
 	public static boolean inBounds(float bx1,float by1,float bx2, float by2, float x, float y){

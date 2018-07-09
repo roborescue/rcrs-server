@@ -52,6 +52,10 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 	private static final String MAX_FLOOR = "gis.map.max-floor";
 	private static final String FLOOR_PLACEMENT_TYPE = "gis.map.floor-placement.random";
 	private static final String RANDOM_FLOOR_RATE = "gis.map.floor-placement.random.floor-rate.";
+	private static final String BUILDING_CODE_PLACEMENT_TYPE = "gis.map.building-code-placement.random";
+	private static final String RANDOM_BUILDING_CODE_RATE = "gis.map.building-code-placement.random.code-rate.";
+	private static final String MAX_BUILDING_CODE = "gis.map.max-building-code";
+	
 	private static final double SQ_MM_TO_SQ_M = 0.000001;
 
 	private GisScenario scenario;
@@ -105,11 +109,29 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 
 		int maxFloor = config.getIntValue(MAX_FLOOR,3);
 		boolean randomfloorPlacement = config.getBooleanValue(FLOOR_PLACEMENT_TYPE,false);
-		int[] floorRates = new int[maxFloor+1];
-		int[] floorRatesCumulative = new int[maxFloor+1];
-		for(int i=1;i<=maxFloor;i++){
-			floorRates[i]=config.getIntValue(RANDOM_FLOOR_RATE+i);
-			floorRatesCumulative[i]=floorRatesCumulative[i-1]+floorRates[i];
+		int[] floorRates = null;
+		int[] floorRatesCumulative = null;
+		if(randomfloorPlacement) {
+			floorRates = new int[maxFloor+1];
+			floorRatesCumulative = new int[maxFloor+1];
+			for(int i=1;i<=maxFloor;i++){
+				floorRates[i]=config.getIntValue(RANDOM_FLOOR_RATE+i);
+				floorRatesCumulative[i]=floorRatesCumulative[i-1]+floorRates[i];
+			}
+		}
+
+		
+		int maxBuildingCode = config.getIntValue(MAX_BUILDING_CODE, 2);
+		boolean randomBuildingCodePlacement = config.getBooleanValue(BUILDING_CODE_PLACEMENT_TYPE, false);
+		int[] buildingCodeRates = null;
+		int[] buildingCodesCumulative =  null;
+		if(randomBuildingCodePlacement) {
+			buildingCodeRates = new int[maxBuildingCode + 1];
+			buildingCodesCumulative = new int[maxBuildingCode + 1];
+			for(int i = 0; i <= maxBuildingCode; i++){
+				buildingCodeRates[i] = config.getIntValue(RANDOM_BUILDING_CODE_RATE + i);
+				buildingCodesCumulative[i] = (i > 0 ? buildingCodesCumulative[i - 1] : 0) + buildingCodeRates[i];
+			}
 		}
 
 		
@@ -142,10 +164,22 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 					}
 				}
 			}
+			
+			int code = Math.min(maxBuildingCode, next.getCode());
+			if(randomBuildingCodePlacement){
+				int rnd = config.getRandom().nextInt(buildingCodesCumulative[maxBuildingCode]) + 1;
+				for(int i = 0; i <= maxBuildingCode; i++){
+					if(rnd <= buildingCodesCumulative[i]){
+						code = i;
+						break;
+					}
+				}
+			}
+			
 			b.setFloors(floors);
 			b.setFieryness(0);
 			b.setBrokenness(0);
-			b.setBuildingCode(next.getCode());
+			b.setBuildingCode(code);
 			b.setBuildingAttributes(0);
 			b.setGroundArea((int) Math.abs(area));
 			b.setTotalArea(((int) Math.abs(area)) * b.getFloors());
