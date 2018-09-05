@@ -22,6 +22,7 @@ public class DamageType {
      Construct a DamageType.
      @param type The name of this type.
      @param config The system configuration.
+     @param Random sequence proprietary.
      */
     public DamageType(String type, Config config, Random random) {
         this.type = type;
