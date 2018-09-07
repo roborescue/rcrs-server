@@ -20,7 +20,6 @@ import rescuecore2.standard.entities.Refuge;
  */
 public class MiscParameters {
     private Config config;
-    private Random rng;
 
     // All building classes indexed by building code and degree of collapse. The BuildingClass class knows about buriedness rates, injury rates etc.
     private Map<BuildingCode, Map<BrokennessDegree, BuildingClass>> buildingClasses;
@@ -30,34 +29,34 @@ public class MiscParameters {
     private DamageType fireDamage;
 
     /**
-       Create a new MiscParameters object based on a Config.
-       @param config The Config to read.
-    */
+     Create a new MiscParameters object based on a Config.
+     @param config The Config to read.
+     */
     public MiscParameters(Config config) {
         this.config = config;
-        rng = config.getRandom();
         initBuildingData();
         initInjuryData();
     }
 
     /**
-       Find out if an agent inside a building should be buried due to collapse.
-       @param b The building to check.
-       @return True if an agent inside the building should be buried, false otherwise.
-    */
-    public boolean shouldBuryAgent(Building b) {
+     Find out if an agent inside a building should be buried due to collapse.
+     @param b The building to check.
+     @param hA Human Attribute for calc should bury.
+     @return True if an agent inside the building should be buried, false otherwise.
+     */
+    public boolean shouldBuryAgent(Building b, HumanAttributes hA) {
         if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0||b instanceof Refuge) {
             return false;
         }
         BuildingClass clazz = getBuildingClass(b);
-        return clazz.shouldBury();
+        return clazz.shouldBury(hA);
     }
 
     /**
-       Get the buriedness of an agent inside a building.
-       @param b The building to check.
-       @return The buriedness of an agent inside the building.
-    */
+     Get the buriedness of an agent inside a building.
+     @param b The building to check.
+     @return The buriedness of an agent inside the building.
+     */
     public int getBuriedness(Building b) {
         if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0) {
             return 0;
@@ -67,48 +66,48 @@ public class MiscParameters {
     }
 
     /**
-       Get the amount of damage an agent should take as a result of being in a collapsing building.
-       @param b The building.
-       @param agent The agent being damaged.
-       @return The amount of damage to add to the agent.
-    */
-    public int getCollapseDamage(Building b, Human agent) {
+     Get the amount of damage an agent should take as a result of being in a collapsing building.
+     @param b The building.
+     @param hA The HumanAttributes.
+     @return The amount of damage to add to the agent.
+     */
+    public int getCollapseDamage(Building b, HumanAttributes hA) {
         if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0) {
             return 0;
         }
         BuildingClass clazz = getBuildingClass(b);
-        Injury injury = clazz.getCollapseInjury();
-        return collapseDamage.getDamage(injury, agent);
+        Injury injury = clazz.getCollapseInjury(hA.getRandom());
+        return collapseDamage.getDamage(injury, hA.getHuman());
     }
 
     /**
-       Get the amount of damage an agent should take as a result of being buried in a collapsed building.
-       @param b The building.
-       @param agent The agent being damaged.
-       @return The amount of damage to add to the agent.
-    */
-    public int getBuryDamage(Building b, Human agent) {
+     Get the amount of damage an agent should take as a result of being buried in a collapsed building.
+     @param b The building.
+     @param hA The HumanAttributes.
+     @return The amount of damage to add to the agent.
+     */
+    public int getBuryDamage(Building b, HumanAttributes hA) {
         if (!b.isBuildingCodeDefined() || !b.isBrokennessDefined() || b.getBrokenness() == 0) {
             return 0;
         }
         BuildingClass clazz = getBuildingClass(b);
-        Injury injury = clazz.getBuryInjury();
-        return buryDamage.getDamage(injury, agent);
+        Injury injury = clazz.getBuryInjury(hA.getRandom());
+        return buryDamage.getDamage(injury, hA.getHuman());
     }
 
     /**
-       Get the amount of damage an agent should take as a result of being in a burning building.
-       @param b The building.
-       @param agent The agent being damaged.
-       @return The amount of damage to add to the agent.
-    */
-    public int getFireDamage(Building b, Human agent) {
+     Get the amount of damage an agent should take as a result of being in a burning building.
+     @param b The building.
+     @param hA The HumanAttributes.
+     @return The amount of damage to add to the agent.
+     */
+    public int getFireDamage(Building b, HumanAttributes hA) {
         if (!b.isBuildingCodeDefined()) {
             return 0;
         }
         BuildingClass clazz = getBuildingClass(b);
-        Injury injury = clazz.getFireInjury();
-        return fireDamage.getDamage(injury, agent);
+        Injury injury = clazz.getFireInjury(hA.getRandom());
+        return fireDamage.getDamage(injury, hA.getHuman());
     }
 
     private void initBuildingData() {
@@ -159,27 +158,28 @@ public class MiscParameters {
         }
 
         public int getAgentBuriedness() {
-            return initialBuriedness;
+            return initialBuriedness ;//TODO Genrate Random;
         }
 
-        public boolean shouldBury() {
-            return rng.nextDouble() < buriedProbability;
+        public boolean shouldBury(HumanAttributes hA) {
+            return hA.getRandom().nextDouble() < buriedProbability;
         }
 
-        public Injury getCollapseInjury() {
-            return getInjury(collapseInjuryProbability);
+        public Injury getCollapseInjury(Random random) {
+            return getInjury(collapseInjuryProbability, random);
         }
 
-        public Injury getBuryInjury() {
-            return getInjury(buryInjuryProbability);
+        public Injury getBuryInjury(Random random) {
+            return getInjury(buryInjuryProbability, random);
         }
 
-        public Injury getFireInjury() {
-            return getInjury(fireInjuryProbability);
+        public Injury getFireInjury(Random random) {
+            return getInjury(fireInjuryProbability, random);
         }
 
-        private Injury getInjury(Map<Injury, Double> table) {
-            double d = rng.nextDouble();
+        private Injury getInjury(Map<Injury, Double> table, Random random) {
+            double d = random.nextDouble();
+
             double d1 = table.get(Injury.SLIGHT);
             double d2 = table.get(Injury.SERIOUS) + d1;
             double d3 = table.get(Injury.CRITICAL) + d2;
@@ -198,8 +198,8 @@ public class MiscParameters {
 
     private enum BuildingCode {
         WOOD,
-            STEEL,
-            CONCRETE;
+        STEEL,
+        CONCRETE;
 
         public String toString() {
             return super.toString().toLowerCase();
@@ -208,9 +208,9 @@ public class MiscParameters {
 
     private enum BrokennessDegree {
         NONE(0, 0),
-            PARTIAL(1, 25),
-            HALF(26, 50),
-            ALL(51, 100);
+        PARTIAL(1, 25),
+        HALF(26, 50),
+        ALL(51, 100);
 
         private int min;
         private int max;
