@@ -47,6 +47,11 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	private MiscParameters parameters;
 	private MiscSimulatorGUI gui;
 	private int GAS_STATION_EXPLOSION_RANG;
+	private int GAS_STATION_Buriedness_Bound;
+	private int GAS_STATION_Buriedness_MIN;
+	private int GAS_STATION_Damage_Bound;
+	private int GAS_STATION_Damage_MIN;
+
 	private Set<EntityID> notExplosedGasStations;
 
 	@Override
@@ -68,6 +73,11 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 		notExplosedGasStations=new HashSet<>();
 		parameters = new MiscParameters(config);
 		GAS_STATION_EXPLOSION_RANG = config.getIntValue("ignition.gas_station.explosion.range", 0);
+		GAS_STATION_Buriedness_Bound = config.getIntValue("misc.gas_station.Buriedness.bound", 30);
+		GAS_STATION_Buriedness_MIN = config.getIntValue("misc.gas_station.Buriedness.min", 0);
+		GAS_STATION_Damage_Bound = config.getIntValue("misc.gas_station.Damage.bound", 50);
+		GAS_STATION_Damage_MIN = config.getIntValue("misc.gas_station.Damage.min", 15);
+
 		humans = new HashMap<EntityID, HumanAttributes>();
 		newlyBrokenBuildings = new HashSet<EntityID>();
 		Logger.info("MiscSimulator connected. World has "
@@ -134,10 +144,10 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 						Logger.info(human + " getting damage from explosion..." + human);
 						int oldBuriedness = human.isBuriednessDefined() ? human
 								.getBuriedness() : 0;
-						human.setBuriedness(oldBuriedness + config.getRandom().nextInt(30));//TODO Parameterize
+						human.setBuriedness(oldBuriedness + hA.getRandom().nextInt(GAS_STATION_Buriedness_Bound) + GAS_STATION_Buriedness_MIN);
 						changes.addChange(human, human.getBuriednessProperty());
 						// Check for injury from being exploded
-						int damage = config.getRandom().nextInt(50) + 15;//TODO Parameterize
+						int damage = hA.getRandom().nextInt(GAS_STATION_Damage_Bound) + GAS_STATION_Damage_MIN;
 						if (damage != 0) {
 							hA.addCollapseDamage(damage);
 						}
@@ -162,7 +172,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 			// Check for buriedness
 			Logger.trace("Checking if human should be buried in broken building");
 			Building b = (Building) human.getPosition(model);
-			if (parameters.shouldBuryAgent(b)) {
+			if (parameters.shouldBuryAgent(b, hA)) {
 				int buriedness = parameters.getBuriedness(b) - oldBrokenBuildingsBuriedness.get(b.getID());
 
 				if (buriedness != 0) {
@@ -171,14 +181,14 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 					human.setBuriedness(oldBuriedness + buriedness);
 					changes.addChange(human, human.getBuriednessProperty());
 					// Check for injury from being buried
-					int damage = parameters.getBuryDamage(b, human);
+					int damage = parameters.getBuryDamage(b, hA);
 					if (damage != 0) {
 						hA.addBuriednessDamage(damage);
 					}
 				}
 			}
 			// Now check for injury from the collapse
-			int damage = parameters.getCollapseDamage(b, human);
+			int damage = parameters.getCollapseDamage(b, hA);
 			if (damage != 0) {
 				hA.addCollapseDamage(damage);
 			}
@@ -194,7 +204,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 					&& ((Building) position).isOnFire()) {
 				// Human is in a burning building
 				int damage = parameters.getFireDamage((Building) position,
-						human);
+						hA);
 				if (damage != 0) {
 					hA.addFireDamage(damage);
 				}
@@ -335,7 +345,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 	private class BuildingChangeListener implements EntityListener {
 		@Override
 		public void propertyChanged(Entity e, Property p, Object oldValue,
-				Object newValue) {
+									Object newValue) {
 			if (!(e instanceof Building)) {
 				return; // we want to only look at buildings
 			}
