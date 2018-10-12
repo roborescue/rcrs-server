@@ -1,0 +1,218 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+version = '1.3'
+mainClassName = "kernel.StartKernel"
+
+dependencies {
+  implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
+
+  testImplementation 'junit:junit:4.12'
+}
+
+repositories {
+  mavenCentral()
+}
+
+sourceSets {
+  main {
+    java {
+      srcDirs = [ 'modules/kernel/src',
+                  'modules/handy/src',
+                  'modules/misc/src',
+                  'modules/rescuecore2/src',
+                  'modules/standard/src',
+                  'modules/clear/src',
+                  'modules/collapse/src',
+                  'modules/gis2/src',
+                  'modules/human/src',
+                  'modules/ignition/src',
+                  'modules/maps/src',
+                  'modules/sample/src',
+                  'modules/traffic3/src',
+                  'oldsims/rescuecore',
+                  'oldsims/firesimulator',
+                  'modules/resq-fire/src'
+                ]
+    }
+  }
+}
+
+test {
+  useJUnit()
+}
+
+jar {
+  manifest {
+    attributes( 'Implementation-Title': project.name,
+                'Implementation-Version': project.version )
+  }
+  destinationDir file('jars')
+}
+
+clean.doFirst {
+  delete file( new File( rootDir, 'jars' ) )
+  delete file( new File( rootDir, 'test-results' ) )
+}
+
+/* Modules jar generation tasks */
+task clearJar(type: Jar) {
+  from(sourceSets.main.output) {
+    include 'clear/**'
+  }
+  destinationDir file('jars')
+  archiveName 'clear.jar'
+}
+
+task collapseJar(type: Jar) {
+  from(sourceSets.main.output) {
+    include 'collapse/**'
+  }
+  destinationDir file('jars')
+  archiveName 'collapse.jar'
+}
+
+task gis2Jar(type: Jar) {
+  from(sourceSets.main.output) {
+    include 'gis2/**'
+  }
+  destinationDir file('jars')
+  archiveName 'gis2.jar'
+}
+
+task handyJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'handy/**'
+  }
+  destinationDir file('jars')
+  archiveName 'handy.jar'
+}
+
+task humanJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'human/**'
+  }
+  destinationDir file('jars')
+  archiveName 'human.jar'
+}
+
+task ignitionJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'ignition/**'
+  }
+  destinationDir file('jars')
+  archiveName 'ignition.jar'
+}
+
+task kernelJar(type: Jar) {
+  from(sourceSets.main.output) {
+    include 'kernel/**'
+  }
+  destinationDir file('jars')
+  archiveName 'kernel.jar'
+}
+
+task mapsJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'maps/**'
+  }
+  destinationDir file('jars')
+  archiveName 'maps.jar'
+}
+
+task miscJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'misc/**'
+  }
+  destinationDir file('jars')
+  archiveName 'misc.jar'
+}
+
+task rescuecore2Jar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'rescuecore2/**'
+    exclude 'rescuecore2/standard/**'
+  }
+  into 'rescuecore2', {
+    from 'modules/rescuecore2/resources/rescuecore2'
+  }
+  destinationDir file('jars')
+  archiveName 'rescuecore2.jar'
+}
+
+task resqFireJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'rescuecore/**'
+    include 'firesimulator/**'
+  }
+  destinationDir file('jars')
+  archiveName 'resq-fire.jar'
+}
+
+task sampleJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'sample/**'
+  }
+  destinationDir file('jars')
+  archiveName 'sample.jar'
+}
+
+task standardJar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'rescuecore2/standard/**'
+  }
+  into 'rescuecore2/standard', {
+    from 'modules/standard/resources/rescuecore2/standard'
+  }
+  destinationDir file('jars')
+  archiveName 'standard.jar'
+}
+
+task traffic3Jar (type: Jar) {
+  from(sourceSets.main.output) {
+    include 'traffic3/**'
+  }
+  from 'modules/traffic3/resources'
+  destinationDir file('jars')
+  archiveName 'traffic3.jar'
+}
+
+/* Performs a complete build of the simulator */
+task completeBuild(type: GradleBuild) {
+  tasks = [ 'clean', 'build', 'clearJar', 'collapseJar', 'gis2Jar', 'handyJar',
+            'humanJar', 'ignitionJar', 'kernelJar', 'mapsJar', 'miscJar',
+            'rescuecore2Jar', 'resqFireJar', 'sampleJar', 'standardJar',
+            'traffic3Jar'
+          ]
+}
+
+/* Generate a random scenario */
+task randomScenario(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'gis2.RandomScenarioGenerator'
+  maxHeapSize = '2048m'
+  args = [ 'maps/gml/test/map' ]
+}
+
+/* Open scenario editor */
+task scenarioEditor(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'gis2.scenario.ScenarioEditor'
+  maxHeapSize = '2048m'
+  args = [ 'maps/gml/test/map' ]
+}
+
+/* Open LogViewer */
+task logViewer(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'rescuecore2.log.LogViewer'
+  maxHeapSize = '2048m'
+  args = [ '-c',
+           'boot/config',
+           'boot/logs/rescue.log'
+         ]
+}

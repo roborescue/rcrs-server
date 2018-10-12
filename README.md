@@ -5,8 +5,8 @@
 ## 1. Software Pre-Requisites
 
 - Git
-- Ant
-- Oracle Java JDK 8
+- Gradle
+- OpenJDK Java 8+
 
 ## 2. Download project from GitHub
 
@@ -19,9 +19,9 @@ $ git clone git@github.com:roborescue/rcrs-server.git
 
 ```bash
 
-$ ant clean-all
+$ gradle clean
 
-$ ant complete-build
+$ gradle completeBuild
 ```
 
 ## 4. Execute
@@ -32,7 +32,7 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 $ cd boot
 
-$ ./start.sh ../maps/gml/test
+$ ./start.sh -m ../maps/gml/test/map -c ../maps/gml/test/config
 ```
 
 Open another terminal window, navigate to the ```rcrs-server``` root directory and execute
@@ -46,4 +46,4 @@ $ ./sampleagent.sh
 
 ## 5. Support
 
-To report a bug, suggest improvements or request support, please open an issue at GitHub https://github.com/roborescue/rcrs-server/issues.
+To report a bug, suggest improvements or request support, please open an issue at GitHub <https://github.com/roborescue/rcrs-server/issues>.

@@ -22,3 +22,6 @@ lib/resq-fire.jar
 .settings
 .project
 .classpath
+
+# Gradle
+.gradle
