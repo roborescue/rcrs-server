@@ -1,6 +1,6 @@
 # `rcrs-server` Robocup Rescue Simulation Server
 
-(Linux) Instructions to download, compile and install the RoboCup Rescue Simulator (RCRS)
+(Linux) Instructions to download, build and run the RoboCup Rescue Simulator (RCRS)
 
 ## 1. Software Pre-Requisites
 
