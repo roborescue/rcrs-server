@@ -139,7 +139,7 @@ public class ScenarioMaker {
 		final Action randomiseAction = new AbstractAction("Randomise") {
 				public void actionPerformed(ActionEvent e) {
 					randomise();
-				}				
+				}
 			};
 		JMenuBar menubar = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -235,7 +235,7 @@ public class ScenarioMaker {
 	private void randomise() {
 		RandomiseDialog r = new RandomiseDialog(null);
 		r.pack();
-		r.show();
+		r.setVisible(true);
 		if (r.wasOK()) {
 			FireStation[] fireStations = new FireStation[r.getFireStations()];
 			PoliceOffice[] policeOffices = new PoliceOffice[r.getPoliceOffices()];
@@ -373,7 +373,7 @@ public class ScenarioMaker {
 		case CLEAR_FIRE_BRIGADES:
 			return removeAgent(os,RescueConstants.TYPE_FIRE_BRIGADE);
 		case PLACE_POLICE_FORCES:
-			return addAgent(os,RescueConstants.TYPE_POLICE_FORCE);			
+			return addAgent(os,RescueConstants.TYPE_POLICE_FORCE);
 		case CLEAR_POLICE_FORCES:
 			return removeAgent(os,RescueConstants.TYPE_POLICE_FORCE);
 		case PLACE_AMBULANCE_TEAMS:
@@ -838,7 +838,7 @@ public class ScenarioMaker {
 	}
 
 	private static class BigRoadRenderer implements MapRenderer {
-		public boolean canRender(Object o) { 
+		public boolean canRender(Object o) {
 			return o instanceof Road;
 		}
 
@@ -871,7 +871,7 @@ public class ScenarioMaker {
 			this.downstream = downstream;
 		}
 
-		public boolean canRender(Object o) { 
+		public boolean canRender(Object o) {
 			return o instanceof Building && downstream.canRender(o);
 		}
 
@@ -899,7 +899,7 @@ public class ScenarioMaker {
 			this.downstream = downstream;
 		}
 
-		public boolean canRender(Object o) { 
+		public boolean canRender(Object o) {
 			return o instanceof Humanoid && downstream.canRender(o);
 		}
 
@@ -965,7 +965,7 @@ public class ScenarioMaker {
 		private JButton ok;
 		private JButton cancel;
 		private boolean wasOK;
-		
+
 		public RandomiseDialog(Frame owner) {
 			super(owner,"Randomise config",true);
 			civsField = new JSpinner(new SpinnerNumberModel(70,50,80,1));
