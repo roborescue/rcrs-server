@@ -208,8 +208,5 @@ task logViewer(type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'rescuecore2.log.LogViewer'
   maxHeapSize = '2048m'
-  args = [ '-c',
-           'boot/config',
-           'boot/logs/rescue.log'
-         ]
+  args = [ 'boot/logs/rescue.log' ]
 }
