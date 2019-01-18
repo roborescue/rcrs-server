@@ -8,7 +8,6 @@ import java.util.EnumSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.log.Logger;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
@@ -21,10 +20,13 @@ import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.Area;
 
+import org.apache.log4j.Logger;
+
 /**
    A sample police force agent.
  */
 public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
+    private static final Logger LOG = Logger.getLogger(SamplePoliceForce.class);
     private static final String DISTANCE_KEY = "clear.repair.distance";
 
     private int distance;
@@ -48,12 +50,12 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
             sendSubscribe(time, 1);
         }
         for (Command next : heard) {
-            Logger.debug("Heard " + next);
+            LOG.debug("Heard " + next);
         }
         // Am I near a blockade?
         Blockade target = getTargetBlockade();
         if (target != null) {
-            Logger.info("Clearing blockade " + target);
+            LOG.info("Clearing blockade " + target);
             sendSpeak(time, 1, ("Clearing " + target).getBytes());
 //            sendClear(time, target.getX(), target.getY());
             List<Line2D> lines = GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(target.getApexes()), true);
@@ -76,16 +78,16 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
         // Plan a path to a blocked area
         List<EntityID> path = search.breadthFirstSearch(me().getPosition(), getBlockedRoads());
         if (path != null) {
-            Logger.info("Moving to target");
+            LOG.info("Moving to target");
             Road r = (Road)model.getEntity(path.get(path.size() - 1));
             Blockade b = getTargetBlockade(r, -1);
             sendMove(time, path, b.getX(), b.getY());
-            Logger.debug("Path: " + path);
-            Logger.debug("Target coordinates: " + b.getX() + ", " + b.getY());
+            LOG.debug("Path: " + path);
+            LOG.debug("Target coordinates: " + b.getX() + ", " + b.getY());
             return;
         }
-        Logger.debug("Couldn't plan a path to a blocked road");
-        Logger.info("Moving randomly");
+        LOG.debug("Couldn't plan a path to a blocked road");
+        LOG.info("Moving randomly");
         sendMove(time, randomWalk());
     }
 
@@ -107,14 +109,14 @@ public class SamplePoliceForce extends AbstractSampleAgent<PoliceForce> {
     }
 
     private Blockade getTargetBlockade() {
-        Logger.debug("Looking for target blockade");
+        LOG.debug("Looking for target blockade");
         Area location = (Area)location();
-        Logger.debug("Looking in current location");
+        LOG.debug("Looking in current location");
         Blockade result = getTargetBlockade(location, distance);
         if (result != null) {
             return result;
         }
-        Logger.debug("Looking in neighbouring locations");
+        LOG.debug("Looking in neighbouring locations");
         for (EntityID next : location.getNeighbours()) {
             location = (Area)model.getEntity(next);
             result = getTargetBlockade(location, distance);

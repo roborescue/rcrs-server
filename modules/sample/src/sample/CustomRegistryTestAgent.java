@@ -14,12 +14,13 @@ import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.Human;
 
-import rescuecore2.log.Logger;
+import org.apache.log4j.Logger;
 
 /**
    An agent for testing custom registry objects.
  */
 public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
+    private static final Logger LOG = Logger.getLogger(CustomRegistryTestAgent.class);
     @Override
     public String toString() {
         return "Custom registry test agent";
@@ -35,8 +36,8 @@ public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
     @Override
     protected void postConnect() {
         super.postConnect();
-        Logger.info("Custom registry test agent " + getID() + " connected");
-        Logger.info("Current registry: " + Registry.getCurrentRegistry());
+        LOG.info("Custom registry test agent " + getID() + " connected");
+        LOG.info("Current registry: " + Registry.getCurrentRegistry());
     }
 
     @Override

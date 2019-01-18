@@ -45,7 +45,6 @@ import maps.gml.view.GMLMapViewer;
 import maps.gml.view.GMLObjectInspector;
 import maps.gml.view.DecoratorOverlay;
 import maps.gml.view.FilledShapeDecorator;
-import rescuecore2.log.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -53,6 +52,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.apache.log4j.Logger;
 
 /**
    A component for editing scenarios.
@@ -99,6 +99,7 @@ public class ScenarioEditor extends JPanel {
     private FilledShapeDecorator gasStationDecorator = new FilledShapeDecorator(GAS_STATION_COLOUR, null, null);
     private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null, HYDRANT_COLOUR, null);
 
+    private static final Logger LOG = Logger.getLogger(ScenarioEditor.class);
 
     /**
        Construct a new ScenarioEditor.
@@ -336,7 +337,7 @@ public class ScenarioEditor extends JPanel {
             saveAs();
         }
         if (saveFile != null) {
-            Logger.debug("Saving to " + saveFile.getAbsolutePath());
+            LOG.debug("Saving to " + saveFile.getAbsolutePath());
             Document doc = DocumentHelper.createDocument();
             scenario.write(doc);
             try {
@@ -636,62 +637,62 @@ public class ScenarioEditor extends JPanel {
         for (int id : newScenario.getFires()) {
             if (newMap.getBuilding(id) == null) {
                 valid = false;
-                Logger.warn("Fire at non-existing building " + id);
+                LOG.warn("Fire at non-existing building " + id);
             }
         }
         for (int id : newScenario.getRefuges()) {
             if (newMap.getBuilding(id) == null) {
                 valid = false;
-                Logger.warn("Refuge at non-existing building " + id);
+                LOG.warn("Refuge at non-existing building " + id);
             }
         }
         for (int id : newScenario.getHydrants()) {
             if (newMap.getRoad(id) == null) {
                 valid = false;
-                Logger.warn("Hydrant at non-existing road " + id);
+                LOG.warn("Hydrant at non-existing road " + id);
             }
         }
         for (int id : newScenario.getFireStations()) {
             if (newMap.getBuilding(id) == null) {
                 valid = false;
-                Logger.warn("Fire station at non-existing building " + id);
+                LOG.warn("Fire station at non-existing building " + id);
             }
         }
         for (int id : newScenario.getAmbulanceCentres()) {
             if (newMap.getBuilding(id) == null) {
                 valid = false;
-                Logger.warn("Ambulance centre at non-existing building " + id);
+                LOG.warn("Ambulance centre at non-existing building " + id);
             }
         }
         for (int id : newScenario.getPoliceOffices()) {
             if (newMap.getBuilding(id) == null) {
                 valid = false;
-                Logger.warn("Police office at non-existing building " + id);
+                LOG.warn("Police office at non-existing building " + id);
             }
         }
 
         for (int id : newScenario.getCivilians()) {
             if (newMap.getShape(id) == null) {
                 valid = false;
-                Logger.warn("Civilian at non-existing shape " + id);
+                LOG.warn("Civilian at non-existing shape " + id);
             }
         }
         for (int id : newScenario.getFireBrigades()) {
             if (newMap.getShape(id) == null) {
                 valid = false;
-                Logger.warn("Fire brigade at non-existing shape " + id);
+                LOG.warn("Fire brigade at non-existing shape " + id);
             }
         }
         for (int id : newScenario.getAmbulanceTeams()) {
             if (newMap.getShape(id) == null) {
                 valid = false;
-                Logger.warn("Ambulance team at non-existing shape " + id);
+                LOG.warn("Ambulance team at non-existing shape " + id);
             }
         }
         for (int id : newScenario.getPoliceForces()) {
             if (newMap.getShape(id) == null) {
                 valid = false;
-                Logger.warn("Police force at non-existing shape " + id);
+                LOG.warn("Police force at non-existing shape " + id);
             }
         }
         return valid;

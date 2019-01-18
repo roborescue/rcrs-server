@@ -26,12 +26,14 @@ import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
 import rescuecore2.standard.entities.Civilian;
-import rescuecore2.log.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
    A sample civilian agent.
  */
 public class SampleCivilian extends AbstractSampleAgent<Civilian> {
+    private static final Logger LOG = Logger.getLogger(SampleCivilian.class);
     private static final double DEFAULT_HELP_PROBABILITY = 0.1;
     private static final double DEFAULT_OUCH_PROBABILITY = 0.1;
     private static final int DEFAULT_CONSCIOUS_THRESHOLD = 2500;
@@ -59,7 +61,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         helpProbability = config.getFloatValue(HELP_PROBABILITY_KEY, DEFAULT_HELP_PROBABILITY);
         ouchProbability = config.getFloatValue(OUCH_PROBABILITY_KEY, DEFAULT_OUCH_PROBABILITY);
         consciousThreshold = config.getIntValue(CONSCIOUS_THRESHOLD_KEY, DEFAULT_CONSCIOUS_THRESHOLD);
-        Logger.info("Civilian " + getID() + " connected");
+        LOG.info("Civilian " + getID() + " connected");
         Civilian me = me();
         // Remove all entities except me
         model.removeAllEntities();
@@ -103,16 +105,16 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
         int buriedness = me.isBuriednessDefined() ? me.getBuriedness() : 0;
         if (hp <= 0 || hp < consciousThreshold) {
             // Unconscious (or dead): do nothing
-            Logger.info("Unconcious or dead");
+            LOG.info("Unconcious or dead");
             sendRest(time);
             return;
         }
         if (damage > 0 && random.nextDouble() < ouchProbability) {
-            Logger.info("Shouting in pain");
+            LOG.info("Shouting in pain");
             say(OUCH, time);
         }
         if (buriedness > 0 && random.nextDouble() < helpProbability) {
-            Logger.info("Calling for help");
+            LOG.info("Calling for help");
             say(HELP, time);
         }
         
@@ -120,12 +122,12 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
             // Run for the refuge
             List<EntityID> path = search.breadthFirstSearchForCivilian(me().getPosition(), refugeIDs);
             if (path != null) {
-                Logger.info("Heading for a refuge");
+                LOG.info("Heading for a refuge");
                 sendMove(time, path);
                 return;
             }
             else {
-                Logger.info("Moving to road");
+                LOG.info("Moving to road");
                 if(model.getEntity(me().getPosition()) instanceof Road)
                 	sendRest(time);
                 else
@@ -133,7 +135,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
                 return;
             }
         }
-        Logger.info("Not moving: damage = " + damage + ", buriedness = " + buriedness);
+        LOG.info("Not moving: damage = " + damage + ", buriedness = " + buriedness);
         sendRest(time);
     }
     

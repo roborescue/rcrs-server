@@ -4,15 +4,14 @@ import firesimulator.util.Configuration;
 import firesimulator.world.Building;
 import firesimulator.world.FireBrigade;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * @author tn
  *
  */
 public class ExtinguishRequest {
-    private static final Log LOG = LogFactory.getLog(ExtinguishRequest.class);
+    private static final Logger LOG = Logger.getLogger(ExtinguishRequest.class);
 		
     public static final int REASON_OK=1;
     public static final int REASON_OK_VIRTUAL=2;

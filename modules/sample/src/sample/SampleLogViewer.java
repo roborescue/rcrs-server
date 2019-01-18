@@ -38,7 +38,6 @@ import rescuecore2.log.CommandsRecord;
 import rescuecore2.log.FileLogReader;
 import rescuecore2.log.LogException;
 import rescuecore2.log.LogReader;
-import rescuecore2.log.Logger;
 import rescuecore2.log.UpdatesRecord;
 import rescuecore2.messages.Command;
 import rescuecore2.misc.CommandLineOptions;
@@ -53,10 +52,13 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 
+import org.apache.log4j.Logger;
+
 /**
    A class for viewing log files.
  */
 public class SampleLogViewer extends JPanel {
+    private static final Logger LOG = Logger.getLogger(SampleLogViewer.class);
     private static final String VIEWERS_KEY = "log.viewers";
 
     private static final int TICK_STEP_SIZE = 10;
@@ -145,7 +147,7 @@ public class SampleLogViewer extends JPanel {
                                         Thread.sleep(FRAME_DELAY);
                                     }
                                     catch (InterruptedException e1) {
-                                        Logger.warn("Player interrupted", e1);
+                                        LOG.warn("Player interrupted", e1);
                                     }
                                 }
                             }
@@ -274,13 +276,13 @@ public class SampleLogViewer extends JPanel {
             frame.setVisible(true);
         }
         catch (IOException e) {
-            Logger.error("Error reading log", e);
+            LOG.error("Error reading log", e);
         }
         catch (ConfigException e) {
-            Logger.error("Configuration error", e);
+            LOG.error("Configuration error", e);
         }
         catch (LogException e) {
-            Logger.error("Error reading log", e);
+            LOG.error("Error reading log", e);
         }
     }
 

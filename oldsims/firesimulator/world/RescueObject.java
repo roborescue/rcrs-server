@@ -1,9 +1,6 @@
 package firesimulator.world;
 
-import rescuecore.OutputBuffer;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * @author tn
@@ -12,8 +9,6 @@ import org.apache.commons.logging.Log;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public abstract class RescueObject implements WorldConstants {
-    private static final Log LOG = LogFactory.getLog(RescueObject.class);
-
     int id;
 	
     public RescueObject(int id){
