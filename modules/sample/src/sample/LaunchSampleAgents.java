@@ -11,11 +11,12 @@ import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.Constants;
-import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
 import rescuecore2.standard.messages.StandardMessageFactory;
+
+import org.apache.log4j.Logger;
 
 /**
    Launcher for sample agents. This will launch as many instances of each of the sample agents as possible, all using one connction.
@@ -26,6 +27,8 @@ public final class LaunchSampleAgents {
     private static final String AMBULANCE_TEAM_FLAG = "-at";
     private static final String CIVILIAN_FLAG = "-cv";
 
+    private static final Logger LOG = Logger.getLogger(LaunchSampleAgents.class);
+
     private LaunchSampleAgents() {}
 
     /**
@@ -33,7 +36,6 @@ public final class LaunchSampleAgents {
        @param args The following arguments are understood: -p <port>, -h <hostname>, -fb <fire brigades>, -pf <police forces>, -at <ambulance teams>
     */
     public static void main(String[] args) {
-        Logger.setLogContext("sample");
         try {
             Registry.SYSTEM_REGISTRY.registerEntityFactory(StandardEntityFactory.INSTANCE);
             Registry.SYSTEM_REGISTRY.registerMessageFactory(StandardMessageFactory.INSTANCE);
@@ -57,7 +59,7 @@ public final class LaunchSampleAgents {
                     at = Integer.parseInt(args[++i]);
                 }
                 else {
-                    Logger.warn("Unrecognised option: " + args[i]);
+                    LOG.warn("Unrecognised option: " + args[i]);
                 }
             }
             // CHECKSTYLE:ON:ModifiedControlVariable
@@ -65,16 +67,16 @@ public final class LaunchSampleAgents {
             connect(launcher, fb, pf, at, config);
         }
         catch (IOException e) {
-            Logger.error("Error connecting agents", e);
+            LOG.error("Error connecting agents", e);
         }
         catch (ConfigException e) {
-            Logger.error("Configuration error", e);
+            LOG.error("Configuration error", e);
         }
         catch (ConnectionException e) {
-            Logger.error("Error connecting agents", e);
+            LOG.error("Error connecting agents", e);
         }
         catch (InterruptedException e) {
-            Logger.error("Error connecting agents", e);
+            LOG.error("Error connecting agents", e);
         }
     }
 
@@ -82,53 +84,53 @@ public final class LaunchSampleAgents {
         int i = 0;
         try {
             while (fb-- != 0) {
-                Logger.info("Connecting fire brigade " + (i++) + "...");
+                LOG.info("Connecting fire brigade " + (i++) + "...");
                 launcher.connect(new SampleFireBrigade());
-                Logger.info("success");
+                LOG.info("success");
             }
         }
         catch (ComponentConnectionException e) {
-            Logger.info("failed: " + e.getMessage());
+            LOG.info("failed: " + e.getMessage());
         }
         try {
             while (pf-- != 0) {
-                Logger.info("Connecting police force " + (i++) + "...");
+                LOG.info("Connecting police force " + (i++) + "...");
                 launcher.connect(new SamplePoliceForce());
-                Logger.info("success");
+                LOG.info("success");
             }
         }
         catch (ComponentConnectionException e) {
-            Logger.info("failed: " + e.getMessage());
+            LOG.info("failed: " + e.getMessage());
         }
         try {
             while (at-- != 0) {
-                Logger.info("Connecting ambulance team " + (i++) + "...");
+                LOG.info("Connecting ambulance team " + (i++) + "...");
                 launcher.connect(new SampleAmbulanceTeam());
-                Logger.info("success");
+                LOG.info("success");
             }
         }
         catch (ComponentConnectionException e) {
-            Logger.info("failed: " + e.getMessage());
+            LOG.info("failed: " + e.getMessage());
         }
         try {
             while (true) {
-                Logger.info("Connecting centre " + (i++) + "...");
+                LOG.info("Connecting centre " + (i++) + "...");
                 launcher.connect(new SampleCentre());
-                Logger.info("success");
+                LOG.info("success");
             }
         }
         catch (ComponentConnectionException e) {
-            Logger.info("failed: " + e.getMessage());
+            LOG.info("failed: " + e.getMessage());
         }
         try {
             while (true) {
-                Logger.info("Connecting dummy agent " + (i++) + "...");
+                LOG.info("Connecting dummy agent " + (i++) + "...");
                 launcher.connect(new DummyAgent());
-                Logger.info("success");
+                LOG.info("success");
             }
         }
         catch (ComponentConnectionException e) {
-            Logger.info("failed: " + e.getMessage());
+            LOG.info("failed: " + e.getMessage());
         }
     }
 }

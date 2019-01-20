@@ -5,12 +5,10 @@ import java.util.HashMap;
 
 import firesimulator.world.World;
 import firesimulator.world.Building;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 public class EnergyHistory {
-    private static final Log LOG = LogFactory.getLog(EnergyHistory.class);
+    private static final Logger LOG = Logger.getLogger(EnergyHistory.class);
 
     private int time;
     private Map<Building, Double> initialEnergy;

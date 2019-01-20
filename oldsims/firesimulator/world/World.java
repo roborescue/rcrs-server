@@ -12,20 +12,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.HashSet;
 
-import firesimulator.simulator.ExtinguishRequest;
 import firesimulator.util.Configuration;
-
-import rescuecore.InputBuffer;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * @author tn
  *
  */
 public class World implements WorldConstants {   
-    private static final Log LOG = LogFactory.getLog(World.class);
+    private static final Logger LOG = Logger.getLogger(World.class);
     
     private Hashtable pool;
     private Collection extinguishRequests;

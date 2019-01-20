@@ -5,7 +5,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,9 +16,7 @@ import java.util.Set;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.log.Logger;
 import rescuecore2.config.Config;
-
 
 import rescuecore2.scenario.compatibilities.CollapseSimCompatibaleScenarioV1_1;
 import rescuecore2.scenario.exceptions.ScenarioException;
@@ -103,6 +101,8 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 	private Collection<Integer> fsLocations;
 	private Collection<Integer> acLocations;
 	private Collection<Integer> poLocations;
+
+	private static final Logger LOG = Logger.getLogger(GisScenario.class);
 
 	/**
 	 * Create an empty scenario.
@@ -286,9 +286,9 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 	 */
 	public void apply(StandardWorldModel model, Config config)
 			throws ScenarioException {
-		Logger.debug("Creating " + refuges.size() + " refuges");
+		LOG.debug("Creating " + refuges.size() + " refuges");
 		for (int next : refuges) {
-			Logger.debug("Converting building " + next + " to a refuge");
+			LOG.debug("Converting building " + next + " to a refuge");
 			Building b = (Building) model.getEntity(new EntityID(next));
 			if (b == null) {
 				throw new ScenarioException("Building " + next
@@ -297,10 +297,10 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			Refuge r = new Refuge(b);
 			model.removeEntity(b);
 			model.addEntity(r);
-			Logger.debug("Converted " + b + " into " + r);
+			LOG.debug("Converted " + b + " into " + r);
 		}
 		for (int next : gasStations) {
-			Logger.debug("Converting building " + next + " to a gas station");
+			LOG.debug("Converting building " + next + " to a gas station");
 			Building b = (Building) model.getEntity(new EntityID(next));
 			if (b == null) {
 				throw new ScenarioException("Building " + next
@@ -310,10 +310,10 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			r.setImportance(5);
 			model.removeEntity(b);
 			model.addEntity(r);
-			Logger.debug("Converted " + b + " into " + r);
+			LOG.debug("Converted " + b + " into " + r);
 		}
 		for (int next : hydrants) {
-			Logger.debug("Converting Road " + next + " to a hydrant");
+			LOG.debug("Converting Road " + next + " to a hydrant");
 			Area area = (Area) model.getEntity(new EntityID(next));
 			if (area == null || !(area instanceof Road)) {
 				throw new ScenarioException("Road " + next + " does not exist");
@@ -321,11 +321,11 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			Hydrant h = new Hydrant((Road) area);
 			model.removeEntity(area);
 			model.addEntity(h);
-			Logger.debug("Converted " + area + " into " + h);
+			LOG.debug("Converted " + area + " into " + h);
 		}
-		Logger.debug("Igniting " + fires.size() + " fires");
+		LOG.debug("Igniting " + fires.size() + " fires");
 		for (int next : fires) {
-			Logger.debug("Igniting " + next);
+			LOG.debug("Igniting " + next);
 			Building b = (Building) model.getEntity(new EntityID(next));
 			if (b == null) {
 				throw new ScenarioException("Building " + next
@@ -337,7 +337,7 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 		for (StandardEntity next : model) {
 			lastID = Math.max(lastID, next.getID().getValue());
 		}
-		Logger.debug("Creating " + fbLocations.size() + " fire brigades");
+		LOG.debug("Creating " + fbLocations.size() + " fire brigades");
 
 		for (int next : fbLocations) {
 			EntityID id = new EntityID(next);
@@ -345,24 +345,24 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			FireBrigade f = new FireBrigade(new EntityID(lastID));
 			setupAgent(f, id, model, config);
 		}
-		Logger.debug("Creating " + pfLocations.size() + " police forces");
+		LOG.debug("Creating " + pfLocations.size() + " police forces");
 		for (int next : pfLocations) {
 			EntityID id = new EntityID(next);
 			lastID = getNextId(model, config, lastID);
 			PoliceForce p = new PoliceForce(new EntityID(lastID));
 			setupAgent(p, id, model, config);
 		}
-		Logger.debug("Creating " + atLocations.size() + " ambulance teams");
+		LOG.debug("Creating " + atLocations.size() + " ambulance teams");
 		for (int next : atLocations) {
 			EntityID id = new EntityID(next);
 			lastID = getNextId(model, config, lastID);
 			AmbulanceTeam a = new AmbulanceTeam(new EntityID(lastID));
 			setupAgent(a, id, model, config);
 		}
-		Logger.debug("Creating " + fsLocations.size() + " fire stations");
+		LOG.debug("Creating " + fsLocations.size() + " fire stations");
 		for (int next : fsLocations) {
 			EntityID id = new EntityID(next);
-			Logger.debug("Coverting building " + next + " to a fire station");
+			LOG.debug("Coverting building " + next + " to a fire station");
 			Building b = (Building) model.getEntity(id);
 			if (b == null) {
 				throw new ScenarioException("Building " + next
@@ -371,12 +371,12 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			FireStation f = new FireStation(b);
 			model.removeEntity(b);
 			model.addEntity(f);
-			Logger.debug("Converted " + b + " into " + f);
+			LOG.debug("Converted " + b + " into " + f);
 		}
-		Logger.debug("Creating " + poLocations.size() + " police offices");
+		LOG.debug("Creating " + poLocations.size() + " police offices");
 		for (int next : poLocations) {
 			EntityID id = new EntityID(next);
-			Logger.debug("Coverting building " + next + " to a police office");
+			LOG.debug("Coverting building " + next + " to a police office");
 			Building b = (Building) model.getEntity(id);
 			if (b == null) {
 				throw new ScenarioException("Building " + next
@@ -385,12 +385,12 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			PoliceOffice p = new PoliceOffice(b);
 			model.removeEntity(b);
 			model.addEntity(p);
-			Logger.debug("Converted " + b + " into " + p);
+			LOG.debug("Converted " + b + " into " + p);
 		}
-		Logger.debug("Creating " + acLocations.size() + " ambulance centres");
+		LOG.debug("Creating " + acLocations.size() + " ambulance centres");
 		for (int next : acLocations) {
 			EntityID id = new EntityID(next);
-			Logger.debug("Coverting building " + next
+			LOG.debug("Coverting building " + next
 					+ " to an ambulance centre");
 			Building b = (Building) model.getEntity(id);
 			if (b == null) {
@@ -400,9 +400,9 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			AmbulanceCentre a = new AmbulanceCentre(b);
 			model.removeEntity(b);
 			model.addEntity(a);
-			Logger.debug("Converted " + b + " into " + a);
+			LOG.debug("Converted " + b + " into " + a);
 		}
-		Logger.debug("Creating " + civLocations.size() + " civilians");
+		LOG.debug("Creating " + civLocations.size() + " civilians");
 		for (int next : civLocations) {
 			EntityID id = new EntityID(next);
 			lastID = getNextId(model, config, lastID);
@@ -868,7 +868,7 @@ public class GisScenario implements rescuecore2.scenario.Scenario,
 			((FireBrigade) h).setWater(config.getIntValue(WATER_QUANTITY_KEY));
 		}
 		model.addEntity(h);
-		Logger.debug("Created " + h);
+		LOG.debug("Created " + h);
 	}
 
 	@Override

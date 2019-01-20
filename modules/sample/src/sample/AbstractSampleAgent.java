@@ -9,7 +9,7 @@ import java.util.Map;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.Constants;
-import rescuecore2.log.Logger;
+import org.apache.log4j.Logger;
 
 import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.StandardEntity;
@@ -29,6 +29,7 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
 
     private static final String SAY_COMMUNICATION_MODEL = StandardCommunicationModel.class.getName();
     private static final String SPEAK_COMMUNICATION_MODEL = ChannelCommunicationModel.class.getName();
+    private static final Logger LOG = Logger.getLogger(AbstractSampleAgent.class);
 
     /**
        The search algorithm.
@@ -83,8 +84,8 @@ public abstract class AbstractSampleAgent<E extends StandardEntity> extends Stan
         search = new SampleSearch(model);
         neighbours = search.getGraph();
         useSpeak = config.getValue(Constants.COMMUNICATION_MODEL_KEY).equals(SPEAK_COMMUNICATION_MODEL);
-        Logger.debug("Communcation model: " + config.getValue(Constants.COMMUNICATION_MODEL_KEY));
-        Logger.debug(useSpeak ? "Using speak model" : "Using say model");
+        LOG.debug("Communcation model: " + config.getValue(Constants.COMMUNICATION_MODEL_KEY));
+        LOG.debug(useSpeak ? "Using speak model" : "Using say model");
     }
 
     /**

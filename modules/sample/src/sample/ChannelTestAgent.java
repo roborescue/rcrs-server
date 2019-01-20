@@ -11,7 +11,7 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.FireBrigade;
 import rescuecore2.standard.messages.AKSpeak;
 
-import rescuecore2.log.Logger;
+import org.apache.log4j.Logger;
 
 /**
    An agent for testing communication channels.
@@ -19,6 +19,7 @@ import rescuecore2.log.Logger;
 public class ChannelTestAgent extends AbstractSampleAgent<Human> {
     private static final int CHANNEL = 1;
     private static final int N = 45;
+    private static final Logger LOG = Logger.getLogger(ChannelTestAgent.class);
 
     @Override
     public String toString() {
@@ -28,7 +29,7 @@ public class ChannelTestAgent extends AbstractSampleAgent<Human> {
     @Override
     protected void postConnect() {
         super.postConnect();
-        Logger.info("Channel test agent " + getID() + " connected");
+        LOG.info("Channel test agent " + getID() + " connected");
     }
 
     @Override
@@ -44,8 +45,8 @@ public class ChannelTestAgent extends AbstractSampleAgent<Human> {
             	say(i, time);
             }
         }
-        Logger.debug("Time " + time);
-        Logger.debug("Heard " + heard.size() + " messages");
+        LOG.debug("Time " + time);
+        LOG.debug("Heard " + heard.size() + " messages");
         // Count failures and dropouts
         int failures = N;
         int dropout = 0;
@@ -60,9 +61,9 @@ public class ChannelTestAgent extends AbstractSampleAgent<Human> {
                 }
             }
         }
-        Logger.debug(failures + " failed messages");
-        Logger.debug(dropout + " dropout messages");
-        Logger.debug("Total: " + totalSize + "/" + inputSize + "bytes");
+        LOG.debug(failures + " failed messages");
+        LOG.debug(dropout + " dropout messages");
+        LOG.debug("Total: " + totalSize + "/" + inputSize + "bytes");
         System.out.println(failures + " failed messages");
         System.out.println(dropout + " dropout messages");
         System.out.println("Total: " + totalSize + "/" + inputSize + "bytes");

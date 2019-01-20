@@ -14,9 +14,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
-import rescuecore2.log.Logger;
-
 import maps.gml.GMLShape;
+import org.apache.log4j.Logger;
 
 /**
    Function for placing agents.
@@ -28,6 +27,8 @@ public class PlaceAgentsFunction extends AbstractFunction {
     private static final int TYPE_CIVILIAN = 3;
 
     private Random random;
+
+    private static final Logger LOG = Logger.getLogger(PlaceAgentsFunction.class);
 
     /**
        Construct a place agents function.
@@ -82,7 +83,7 @@ public class PlaceAgentsFunction extends AbstractFunction {
                 }
             }
             catch (NumberFormatException e) {
-                Logger.error("Error parsing number", e);
+                LOG.error("Error parsing number", e);
             }
         }
          GisScenario s = editor.getScenario();

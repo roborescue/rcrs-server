@@ -10,7 +10,6 @@ import java.util.HashSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -19,10 +18,13 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Civilian;
 import rescuecore2.standard.entities.Refuge;
 
+import org.apache.log4j.Logger;
+
 /**
    A sample ambulance team agent.
  */
 public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
+    private static final Logger LOG = Logger.getLogger(SampleAmbulanceTeam.class);
     private Collection<EntityID> unexploredBuildings;
 
     @Override
@@ -44,7 +46,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             sendSubscribe(time, 1);
         }
         for (Command next : heard) {
-            Logger.debug("Heard " + next);
+            LOG.debug("Heard " + next);
         }
         updateUnexploredBuildings(changed);
         // Am I transporting a civilian to a refuge?
@@ -52,7 +54,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
             // Am I at a refuge?
             if (location() instanceof Refuge) {
                 // Unload!
-                Logger.info("Unloading");
+                LOG.info("Unloading");
                 sendUnload(time);
                 return;
             }
@@ -60,12 +62,12 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                 // Move to a refuge
                 List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
                 if (path != null) {
-                    Logger.info("Moving to refuge");
+                    LOG.info("Moving to refuge");
                     sendMove(time, path);
                     return;
                 }
                 // What do I do now? Might as well carry on and see if we can dig someone else out.
-                Logger.debug("Failed to plan path to refuge");
+                LOG.debug("Failed to plan path to refuge");
             }
         }
         // Go through targets (sorted by distance) and check for things we can do
@@ -74,13 +76,13 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                 // Targets in the same place might need rescueing or loading
                 if ((next instanceof Civilian) && next.getBuriedness() == 0 && !(location() instanceof Refuge)) {
                     // Load
-                    Logger.info("Loading " + next);
+                    LOG.info("Loading " + next);
                     sendLoad(time, next.getID());
                     return;
                 }
                 if (next.getBuriedness() > 0) {
                     // Rescue
-                    Logger.info("Rescueing " + next);
+                    LOG.info("Rescueing " + next);
                     sendRescue(time, next.getID());
                     return;
                 }
@@ -89,7 +91,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                 // Try to move to the target
                 List<EntityID> path = search.breadthFirstSearch(me().getPosition(), next.getPosition());
                 if (path != null) {
-                    Logger.info("Moving to target");
+                    LOG.info("Moving to target");
                     sendMove(time, path);
                     return;
                 }
@@ -98,11 +100,11 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
         // Nothing to do
         List<EntityID> path = search.breadthFirstSearch(me().getPosition(), unexploredBuildings);
         if (path != null) {
-            Logger.info("Searching buildings");
+            LOG.info("Searching buildings");
             sendMove(time, path);
             return;
         }
-        Logger.info("Moving randomly");
+        LOG.info("Moving randomly");
         sendMove(time, randomWalk());
     }
 
@@ -114,7 +116,7 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
     private boolean someoneOnBoard() {
         for (StandardEntity next : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
             if (((Human)next).getPosition().equals(getID())) {
-                Logger.debug(next + " is on board");
+                LOG.debug(next + " is on board");
                 return true;
             }
         }

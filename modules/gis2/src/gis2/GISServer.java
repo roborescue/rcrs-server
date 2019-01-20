@@ -9,7 +9,6 @@ import rescuecore2.Constants;
 import rescuecore2.config.Config;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.java.LoadableTypeProcessor;
-import rescuecore2.log.Logger;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.connection.Connection;
@@ -22,6 +21,8 @@ import rescuecore2.messages.control.KGConnect;
 import rescuecore2.messages.control.GKConnectOK;
 import rescuecore2.messages.control.Shutdown;
 
+import org.apache.log4j.Logger;
+
 /**
  * This class is used for starting a remote GIS server.
  */
@@ -31,6 +32,8 @@ public final class GISServer {
     private ServerSocket server;
     private WorldModel<? extends Entity> world;
     private volatile boolean running;
+
+    private static final Logger LOG = Logger.getLogger(GISServer.class);
 
     private GISServer(int port, WorldModel<? extends Entity> world) throws IOException {
         server = new ServerSocket(port);
@@ -50,11 +53,11 @@ public final class GISServer {
             processJarFiles(config);
             GMLWorldModelCreator creator = new GMLWorldModelCreator();
             new GISServer(port, creator.buildWorldModel(config)).run();
-            Logger.info("GIS server listening on port " + port);
+            LOG.info("GIS server listening on port " + port);
         }
         // CHECKSTYLE:OFF:IllegalCatch
         catch (Exception e) {
-            Logger.fatal("Error starting GIS server", e);
+            LOG.fatal("Error starting GIS server", e);
         }
         // CHECKSTYLE:ON:IllegalCatch
     }
@@ -75,7 +78,7 @@ public final class GISServer {
                 new ServerThread(socket).start();
             }
             catch (IOException e) {
-                Logger.error("Error accepting connection", e);
+                LOG.error("Error accepting connection", e);
                 running = false;
             }
         }
@@ -97,7 +100,7 @@ public final class GISServer {
                 c = new TCPConnection(socket);
             }
             catch (IOException e) {
-                Logger.error("Error starting TCPConnection", e);
+                LOG.error("Error starting TCPConnection", e);
                 return;
             }
             c.startup();
@@ -123,7 +126,7 @@ public final class GISServer {
                     c.sendMessage(new GKConnectOK(world.getAllEntities()));
                 }
                 catch (ConnectionException e) {
-                    Logger.fatal("Error sending message", e);
+                    LOG.fatal("Error sending message", e);
                     die();
                 }
             }

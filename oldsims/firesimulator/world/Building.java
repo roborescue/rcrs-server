@@ -14,9 +14,7 @@ import rescuecore.OutputBuffer;
 import firesimulator.simulator.Simulator;
 import firesimulator.util.Configuration;
 import firesimulator.util.Geometry;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
@@ -26,7 +24,7 @@ import org.uncommons.maths.random.GaussianGenerator;
  *
  */
 public class Building extends StationaryObject {
-    private static final Log LOG = LogFactory.getLog(Building.class);
+    private static final Logger LOG = Logger.getLogger(Building.class);
 
     private static final double STEFAN_BOLTZMANN_CONSTANT = 0.000000056704;
 

@@ -10,14 +10,11 @@ import firesimulator.util.Rnd;
 import firesimulator.world.Building;
 import firesimulator.world.FireBrigade;
 import firesimulator.world.World;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-import org.uncommons.maths.random.GaussianGenerator;
+import org.apache.log4j.Logger;
 
 public class Simulator {
 
-  private static final Log LOG                         = LogFactory
-      .getLog( Simulator.class );
+  private static final Logger LOG = Logger.getLogger( Simulator.class );
 
   private World            world;
 
