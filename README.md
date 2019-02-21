@@ -19,9 +19,9 @@ $ git clone git@github.com:roborescue/rcrs-server.git
 
 ```bash
 
-$ gradle clean
+$ ./gradlew clean
 
-$ gradle completeBuild
+$ ./gradlew completeBuild
 ```
 
 ## 4. Execute
