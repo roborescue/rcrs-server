@@ -32,8 +32,7 @@ sourceSets {
                   'modules/maps/src',
                   'modules/sample/src',
                   'modules/traffic3/src',
-                  'oldsims/rescuecore',
-                  'oldsims/firesimulator',
+                  'oldsims',
                   'modules/resq-fire/src'
                 ]
     }
