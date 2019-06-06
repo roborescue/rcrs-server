@@ -21,6 +21,9 @@ import java.io.IOException;
 import rescuecore2.misc.collections.LazyMap;
 import rescuecore2.log.Logger;
 
+import rescuecore2.worldmodel.properties.EntityRefListProperty;
+import rescuecore2.standard.entities.StandardPropertyURN;
+
 /**
    This class is used for accumulating changes to entities.
  */
@@ -137,11 +140,33 @@ public class ChangeSet {
        Merge another ChangeSet into this one.
        @param other The other ChangeSet.
      */
+    private static final String BLOCKADES_URN =
+        StandardPropertyURN.BLOCKADES.toString();
+
     public void merge(ChangeSet other) {
         for (Map.Entry<EntityID, Map<String, Property>> next : other.changes.entrySet()) {
             EntityID e = next.getKey();
             String urn = other.getEntityURN(e);
             for (Property p : next.getValue().values()) {
+
+                if (p.getURN().equals(BLOCKADES_URN) &&
+                    changes.get(e).containsKey(BLOCKADES_URN)) {
+
+                    EntityRefListProperty bp1 = (EntityRefListProperty)p.copy();
+                    EntityRefListProperty bp2 =
+                        (EntityRefListProperty)changes.get(e).get(BLOCKADES_URN);
+
+                    if (bp2.isDefined())
+                    {
+                        for (EntityID id : bp2.getValue()) bp1.addValue(id);
+                    }
+
+                    for (EntityID id : deleted) bp1.removeValue(id);
+                    for (EntityID id : other.deleted) bp1.removeValue(id);
+
+                    p = bp1;
+                }
+
                 addChange(e, urn, p);
             }
         }

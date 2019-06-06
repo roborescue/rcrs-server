@@ -99,6 +99,19 @@ public class EntityRefListProperty extends AbstractProperty {
     }
 
     /**
+       Remove a value from the list.
+       @param id The id to remove.
+     */
+    public void removeValue(EntityID id) {
+        List<EntityID> old = new ArrayList<EntityID>(ids);
+        ids.remove(id);
+
+        if (ids.isEmpty()) undefine();
+
+        fireChange(old, Collections.unmodifiableList(ids));
+    }
+
+    /**
        Remove all entries from this list but keep it defined.
      */
     public void clearValues() {
