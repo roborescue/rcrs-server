@@ -152,6 +152,8 @@ public class ChangeSet {
                 if (p.getURN().equals(BLOCKADES_URN) &&
                     changes.get(e).containsKey(BLOCKADES_URN)) {
 
+                    System.err.println("------------ CALLED ------------");
+
                     EntityRefListProperty bp1 = (EntityRefListProperty)p.copy();
                     EntityRefListProperty bp2 =
                         (EntityRefListProperty)changes.get(e).get(BLOCKADES_URN);
