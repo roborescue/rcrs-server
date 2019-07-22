@@ -209,3 +209,11 @@ task logViewer(type: JavaExec) {
   maxHeapSize = '2048m'
   args = [ 'boot/logs/rescue.log' ]
 }
+
+/*Open gml editor */
+task gmlEditor(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'maps.gml.editor.GMLEditor'
+  maxHeapSize = '2048m'
+  args = [ 'maps/gml/test/map/map.gml' ]
+}
