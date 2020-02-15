@@ -2,8 +2,8 @@ plugins {
   id 'java'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '13'
+targetCompatibility = '13'
 version = '1.3'
 
 dependencies {

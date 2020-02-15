@@ -5,8 +5,8 @@
 ## 1. Software Pre-Requisites
 
 - Git
-- Gradle 3.4+
-- OpenJDK Java 8+
+- Gradle 6.1.1+
+- OpenJDK Java 13+
 
 ## 2. Download project from GitHub
 
