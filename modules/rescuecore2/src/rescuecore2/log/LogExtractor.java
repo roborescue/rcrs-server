@@ -213,6 +213,8 @@ public class LogExtractor {
         catch (LogException e) {
             Logger.error("Error reading log", e);
         }
+
+        System.exit(0);
     }
     
     private static void writeFile(String filename, String content) {
