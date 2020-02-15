@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.JComponent;
-
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
-
 import rescuecore2.GUIComponent;
 import rescuecore2.log.Logger;
 import rescuecore2.messages.Command;
@@ -578,13 +575,13 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
     					// Color.white, true));
     					points.add(point);
     				}
-    
+
     				ArrayList<PathElement> result = new ArrayList<PathElement>();
     				result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), start));
-    
+
     				for (Point2D point : points)
     					result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), point));
-    
+
     				result.add(new PathElement(nextArea.getID(), nextEdge.getLine(), edgePoint));
     				// debug.show("final graph", resultGraph);
     				return result;

@@ -2,63 +2,58 @@ package kernel;
 
 import static rescuecore2.misc.java.JavaTools.instantiate;
 import static rescuecore2.misc.java.JavaTools.instantiateFactory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JFrame;
-import javax.swing.JDialog;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
-import org.dom4j.DocumentException;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-
-import rescuecore2.connection.ConnectionException;
-import rescuecore2.connection.ConnectionManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import org.dom4j.DocumentException;
+import kernel.ui.KernelGUI;
+import kernel.ui.KernelStartupPanel;
+import kernel.ui.ScoreGraph;
+import kernel.ui.ScoreTable;
+import rescuecore2.Constants;
+import rescuecore2.GUIComponent;
+import rescuecore2.components.Component;
+import rescuecore2.components.ComponentConnectionException;
+import rescuecore2.components.ComponentInitialisationException;
+import rescuecore2.components.ComponentLauncher;
+import rescuecore2.config.ClassNameSetValueConstraint;
+import rescuecore2.config.ClassNameValueConstraint;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.config.IntegerValueConstraint;
-import rescuecore2.config.ClassNameSetValueConstraint;
-import rescuecore2.config.ClassNameValueConstraint;
-import rescuecore2.components.ComponentLauncher;
-import rescuecore2.components.Component;
-import rescuecore2.components.ComponentInitialisationException;
-import rescuecore2.components.ComponentConnectionException;
-import rescuecore2.registry.Registry;
-import rescuecore2.registry.MessageFactory;
-import rescuecore2.registry.EntityFactory;
-import rescuecore2.registry.PropertyFactory;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.misc.Pair;
-import rescuecore2.misc.MutableBoolean;
-import rescuecore2.misc.CommandLineOptions;
-import rescuecore2.misc.java.LoadableTypeProcessor;
-import rescuecore2.misc.java.LoadableType;
-import rescuecore2.Constants;
-import rescuecore2.GUIComponent;
+import rescuecore2.connection.ConnectionException;
+import rescuecore2.connection.ConnectionManager;
 import rescuecore2.log.LogException;
 import rescuecore2.log.Logger;
+import rescuecore2.misc.CommandLineOptions;
+import rescuecore2.misc.MutableBoolean;
+import rescuecore2.misc.Pair;
+import rescuecore2.misc.java.LoadableType;
+import rescuecore2.misc.java.LoadableTypeProcessor;
+import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.MessageFactory;
+import rescuecore2.registry.PropertyFactory;
+import rescuecore2.registry.Registry;
 import rescuecore2.scenario.Scenario;
 import rescuecore2.score.ScoreFunction;
-
-import kernel.ui.KernelStartupPanel;
-import kernel.ui.KernelGUI;
-import kernel.ui.ScoreTable;
-import kernel.ui.ScoreGraph;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.WorldModel;
 
 /**
  * A class for launching the kernel.
@@ -100,10 +95,10 @@ public final class StartKernel {
 
 	/**
 	 * Start a kernel.
-	 * 
+	 *
 	 * @param args
 	 *            Command line arguments.
-	 * @throws DocumentException 
+	 * @throws DocumentException
 	 */
 	public static void main(String[] args) throws DocumentException {
 		Config config = new Config();
@@ -113,7 +108,6 @@ public final class StartKernel {
 		Logger.setLogContext("startup");
 		try {
 			args = CommandLineOptions.processArgs(args, config);
-			int i = 0;
 			for (String arg : args) {
 				if (arg.equalsIgnoreCase(NO_GUI)) {
 					showGUI = false;
