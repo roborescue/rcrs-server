@@ -499,7 +499,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 
 	}
 
-	public static ShapeDebugFrame debug = new ShapeDebugFrame();
+	// public static ShapeDebugFrame debug = new ShapeDebugFrame();
 
 	private Collection<? extends PathElement> getPathElements2(Human human, Area lastArea, Edge lastEdge, Area nextArea, Edge nextEdge) {
 		// if (human instanceof Civilian)
