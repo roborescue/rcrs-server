@@ -142,7 +142,10 @@ function processArgs {
           LOGDIR="$LOGDIR/$TIME-$TEAM-$MAPNAME"
         fi
     fi
-    LOGDIR=`readlink -f $LOGDIR`
+    
+    if [ "$(uname -s)" = 'Linux' ]; then
+        LOGDIR=`readlink -f $LOGDIR`
+    fi
     mkdir -p $LOGDIR
 }
 
