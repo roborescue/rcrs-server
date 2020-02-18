@@ -194,6 +194,7 @@ public final class StartKernel {
 					}
 				}
 				JFrame frame = new JFrame("Kernel GUI");
+				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 				frame.getContentPane().add(gui);
 				frame.pack();
 				frame.addWindowListener(new WindowAdapter() {
