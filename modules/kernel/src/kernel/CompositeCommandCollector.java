@@ -9,17 +9,14 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 /**
    A CommandCollector that waits for any of a set of child CommandCollectors to return a result.
 */
 public class CompositeCommandCollector implements CommandCollector {
     private Set<CommandCollector> children;
+    private ExecutorService executorService;
 
     /**
        Construct a CompositeCommandCollector with no children.
@@ -40,7 +37,10 @@ public class CompositeCommandCollector implements CommandCollector {
         if (agents.size() == 0) {
             return new HashSet<Command>();
         }
-        ExecutorCompletionService<Collection<Command>> service = new ExecutorCompletionService<Collection<Command>>(Executors.newFixedThreadPool(agents.size()));
+        if (executorService == null) {
+            executorService = Executors.newFixedThreadPool(children.size());
+        }
+        ExecutorCompletionService<Collection<Command>> service = new ExecutorCompletionService<Collection<Command>>(executorService);
         Set<Future<Collection<Command>>> futures = new HashSet<Future<Collection<Command>>>();
         for (CommandCollector next : children) {
             futures.add(service.submit(new ChildCommandsFetcher(next, agents, timestep)));
