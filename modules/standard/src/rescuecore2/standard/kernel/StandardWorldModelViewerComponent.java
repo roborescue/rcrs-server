@@ -79,6 +79,7 @@ public class StandardWorldModelViewerComponent extends KernelListenerAdapter imp
                 }
             });
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, new JScrollPane(inspector));
+        split.setResizeWeight(0.8);
         view = new JPanel(new BorderLayout());
         view.add(split, BorderLayout.CENTER);
         view.add(field, BorderLayout.NORTH);
