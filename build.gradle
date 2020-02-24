@@ -2,8 +2,8 @@ plugins {
   id 'java'
 }
 
-sourceCompatibility = '13'
-targetCompatibility = '13'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 version = '1.3'
 
 dependencies {
@@ -56,12 +56,30 @@ clean.doFirst {
 }
 
 /* Modules jar generation tasks */
+task clearSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'clear/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'clear-sources.jar'
+}
+
 task clearJar(type: Jar) {
   from(sourceSets.main.output) {
     include 'clear/**'
   }
   destinationDir file('jars')
   archiveName 'clear.jar'
+}
+
+task collapseSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'collapse/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'collapse-sources.jar'
 }
 
 task collapseJar(type: Jar) {
@@ -72,12 +90,30 @@ task collapseJar(type: Jar) {
   archiveName 'collapse.jar'
 }
 
+task gis2SourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'gis2/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'gis2-sources.jar'
+}
+
 task gis2Jar(type: Jar) {
   from(sourceSets.main.output) {
     include 'gis2/**'
   }
   destinationDir file('jars')
   archiveName 'gis2.jar'
+}
+
+task handySourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'handy/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'handy-sources.jar'
 }
 
 task handyJar (type: Jar) {
@@ -88,12 +124,30 @@ task handyJar (type: Jar) {
   archiveName 'handy.jar'
 }
 
+task humanSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'human/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'human-sources.jar'
+}
+
 task humanJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'human/**'
   }
   destinationDir file('jars')
   archiveName 'human.jar'
+}
+
+task ignitionSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'ignition/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'ignition-sources.jar'
 }
 
 task ignitionJar (type: Jar) {
@@ -104,12 +158,30 @@ task ignitionJar (type: Jar) {
   archiveName 'ignition.jar'
 }
 
+task kernelSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'kernel/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'kernel-sources.jar'
+}
+
 task kernelJar(type: Jar) {
   from(sourceSets.main.output) {
     include 'kernel/**'
   }
   destinationDir file('jars')
   archiveName 'kernel.jar'
+}
+
+task mapsSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'maps/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'maps-sources.jar'
 }
 
 task mapsJar (type: Jar) {
@@ -120,12 +192,34 @@ task mapsJar (type: Jar) {
   archiveName 'maps.jar'
 }
 
+task miscSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'misc/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'misc-sources.jar'
+}
+
 task miscJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'misc/**'
   }
   destinationDir file('jars')
   archiveName 'misc.jar'
+}
+
+task rescuecore2SourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'rescuecore2/**'
+    exclude 'rescuecore2/standard/**'
+  }
+  into 'rescuecore2', {
+    from 'modules/rescuecore2/resources/rescuecore2'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'rescuecore2-sources.jar'
 }
 
 task rescuecore2Jar (type: Jar) {
@@ -140,6 +234,16 @@ task rescuecore2Jar (type: Jar) {
   archiveName 'rescuecore2.jar'
 }
 
+task resqFireSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'rescuecore/**'
+    include 'firesimulator/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'resq-fire-sources.jar'
+}
+
 task resqFireJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'rescuecore/**'
@@ -149,12 +253,33 @@ task resqFireJar (type: Jar) {
   archiveName 'resq-fire.jar'
 }
 
+task sampleSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'sample/**'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'sample-sources.jar'
+}
+
 task sampleJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'sample/**'
   }
   destinationDir file('jars')
   archiveName 'sample.jar'
+}
+
+task standardSourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'rescuecore2/standard/**'
+  }
+  into 'rescuecore2/standard', {
+    from 'modules/standard/resources/rescuecore2/standard'
+  }
+  destinationDir file('jars/sources')
+  archiveName 'standard-sources.jar'
 }
 
 task standardJar (type: Jar) {
@@ -168,6 +293,16 @@ task standardJar (type: Jar) {
   archiveName 'standard.jar'
 }
 
+task traffic3SourceJar (type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from(sourceSets.main.allSource) {
+    include 'traffic3/**'
+  }
+  from 'modules/traffic3/resources'
+  destinationDir file('jars/sources')
+  archiveName 'traffic3-sources.jar'
+}
+
 task traffic3Jar (type: Jar) {
   from(sourceSets.main.output) {
     include 'traffic3/**'
@@ -177,12 +312,22 @@ task traffic3Jar (type: Jar) {
   archiveName 'traffic3.jar'
 }
 
-/* Performs a complete build of the simulator */
+/* Generate the compressed source in Jar files  */
+task sourcesJar(type: GradleBuild) {
+  tasks = [ 'clearSourceJar', 'collapseSourceJar', 'gis2SourceJar',
+            'handySourceJar', 'humanSourceJar', 'ignitionSourceJar',
+            'kernelSourceJar', 'mapsSourceJar', 'miscSourceJar',
+            'rescuecore2SourceJar', 'resqFireSourceJar', 'sampleJar',
+            'standardSourceJar', 'traffic3SourceJar'
+          ]
+}
+
+/* Perform a complete build of the simulator */
 task completeBuild(type: GradleBuild) {
   tasks = [ 'clean', 'build', 'clearJar', 'collapseJar', 'gis2Jar', 'handyJar',
             'humanJar', 'ignitionJar', 'kernelJar', 'mapsJar', 'miscJar',
             'rescuecore2Jar', 'resqFireJar', 'sampleJar', 'standardJar',
-            'traffic3Jar'
+            'traffic3Jar', 'sourcesJar'
           ]
 }
 

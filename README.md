@@ -6,7 +6,7 @@
 
 - Git
 - Gradle 6.1.1+
-- OpenJDK Java 13+
+- OpenJDK Java 8+
 
 ## 2. Download project from GitHub
 
