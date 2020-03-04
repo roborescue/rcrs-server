@@ -170,14 +170,9 @@ function startKernel {
     waitFor $LOGDIR/kernel.log "Listening for connections"
 }
 
-# Start the viewer and simulators
+# Start the simulators
 function startSims {
     makeClasspath $BASEDIR/lib
-    # Viewer
-    TEAM_NAME_ARG=""
-    if [ ! -z "$TEAM" ]; then
-        TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\"";
-    fi
 
     # Execute the simulators
     execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $*"
@@ -206,10 +201,20 @@ function startSims {
     waitFor $LOGDIR/clear-out.log "success"
 
     execute civilian "java -Xmx1512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleCivilian*n -c $CONFIGDIR/civilian.cfg $*"
-    sleep 2
+}
+
+# Start the viewer
+function startViewer {
+    makeClasspath $BASEDIR/lib
+
+    TEAM_NAME_ARG=""
+    if [ ! -z "$TEAM" ]; then
+        TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\""
+    fi
+
+    # Execute the viewer
     execute viewer "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewer -c $CONFIGDIR/viewer.cfg $TEAM_NAME_ARG $*"
 
-    # Wait for all simulators to start
     echo "waiting for viewer to connect..."
     waitFor $LOGDIR/viewer-out.log "success"
 }

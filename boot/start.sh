@@ -11,6 +11,7 @@ sh kill.sh
 # startGIS
 startKernel --nomenu
 startSims
+startViewer
 
 echo "Start your agents"
 waitFor $LOGDIR/kernel.log "Kernel has shut down" 30
