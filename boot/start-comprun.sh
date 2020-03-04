@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 . functions.sh
 
@@ -7,7 +7,7 @@ processArgs $*
 # Delete old logs
 rm -f $LOGDIR/*.log
 
-#startGIS
+# startGIS
 startKernel --nomenu --autorun
 startSims
 

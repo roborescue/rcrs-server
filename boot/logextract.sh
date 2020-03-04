@@ -1,8 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 
 if [ ! $# -eq 2 ] ; then
-  echo "usage: `basename $0` <rescue.log path> <output dir>"
-  exit 1
+    echo "usage: `basename $0` <rescue.log path> <output dir>"
+    exit 1
 fi
 
 . functions.sh
