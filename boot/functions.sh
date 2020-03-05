@@ -60,6 +60,7 @@ function printUsage {
     echo "-t    --team      <teamname>  Set the team name. Default: \"\""
     echo "-l    --log       <logdir>    Set the log directory. Default: \"logs\""
     echo "-s    --timestamp             Create a log sub-directory including timestamp, team name and map name"
+    echo "-g    --nogui                 Disable GUI."
     echo "[+|-]x                        Enable/Disable XTerm use. Default: \"Disable\""
 }
 
@@ -70,6 +71,7 @@ function processArgs {
     CONFIGDIR="$BASEDIR/maps/gml/test/config"
     TEAM=""
     TIMESTAMP_LOGS=""
+    NOGUI="no"
     XTERM="no"
 
     if [ $# -gt 0 ] && [[ $1 != -* ]]; then
@@ -98,6 +100,10 @@ function processArgs {
                 ;;
             -s | --timestamp)
                 TIMESTAMP_LOGS="yes"
+                shift
+                ;;
+            -g | --nogui)
+                NOGUI="yes"
                 shift
                 ;;
             -x)
@@ -162,7 +168,12 @@ function execute {
 
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $*"
+    GUI_OPTION=""
+    if [[ $NOGUI == "yes" ]]; then
+        GUI_OPTION="--nogui"
+    fi
+
+    KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $GUI_OPTION $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
 
     execute kernel "java -Xmx2048m -cp $CP -Dlog4j.log.dir=$LOGDIR kernel.StartKernel $KERNEL_OPTIONS"
@@ -172,15 +183,20 @@ function startKernel {
 
 # Start the simulators
 function startSims {
+    GUI_OPTION=""
+    if [[ $NOGUI == "yes" ]]; then
+        GUI_OPTION="--nogui"
+    fi
+
     makeClasspath $BASEDIR/lib
 
     # Execute the simulators
-    execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $*"
-    execute traffic "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $*"
-    execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $*"
-    execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $*"
-    execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $*"
-    execute clear "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $*"
+    execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $GUI_OPTION $*"
+    execute traffic "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $GUI_OPTION $*"
+    execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $GUI_OPTION $*"
+    execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $GUI_OPTION $*"
+    execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $GUI_OPTION $*"
+    execute clear "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $GUI_OPTION $*"
 
     echo "waiting for misc to connect..."
     waitFor $LOGDIR/misc-out.log "success"
@@ -205,6 +221,10 @@ function startSims {
 
 # Start the viewer
 function startViewer {
+    if [[ $NOGUI == "yes" ]]; then
+        return 0
+    fi
+
     makeClasspath $BASEDIR/lib
 
     TEAM_NAME_ARG=""
