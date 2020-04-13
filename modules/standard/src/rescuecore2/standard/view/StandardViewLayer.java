@@ -31,7 +31,7 @@ public abstract class StandardViewLayer extends AbstractViewLayer {
     @Override
     public void initialise(Config config) {
         String visibleKey = STANDARD_VIEWER_PREFIX + "." + this.getClass().getSimpleName() + "." + VISIBILITY_SUFFIX;
-        boolean isVisible = config.getBooleanValue(visibleKey, true);
+        boolean isVisible = config.getBooleanValue(visibleKey, isVisible());
         setVisible(isVisible);
     }
 
