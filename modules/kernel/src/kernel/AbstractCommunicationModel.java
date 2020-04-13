@@ -1,8 +1,8 @@
 package kernel;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Arrays;
 
@@ -16,16 +16,16 @@ import rescuecore2.misc.collections.LazyMap;
    Abstract base class for communication models.
  */
 public abstract class AbstractCommunicationModel implements CommunicationModel {
-    private Map<Entity, Set<Command>> hearing;
+    private Map<Entity, List<Command>> hearing;
 
     /**
        Construct an AbstractCommunicationModel.
     */
     public AbstractCommunicationModel() {
-        hearing = new LazyMap<Entity, Set<Command>>() {
+        hearing = new LazyMap<Entity, List<Command>>() {
             @Override
-            public Set<Command> createValue() {
-                return new HashSet<Command>();
+            public List<Command> createValue() {
+                return new LinkedList<Command>();
             }
         };
     }

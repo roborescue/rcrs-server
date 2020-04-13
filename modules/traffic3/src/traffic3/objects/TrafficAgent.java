@@ -1156,4 +1156,9 @@ public class TrafficAgent {
 		sb.append("]");
 		return sb.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		return human.getID().hashCode();
+	}
 }
