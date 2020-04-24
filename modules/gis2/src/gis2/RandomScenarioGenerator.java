@@ -150,7 +150,7 @@ public class RandomScenarioGenerator {
             GisScenario s = generator.makeRandomScenario(map, new Random());
             Document doc = DocumentHelper.createDocument();
             s.write(doc);
-            XMLWriter writer = new XMLWriter(new FileOutputStream(new File(dir, "scenario.gml")), OutputFormat.createPrettyPrint());
+            XMLWriter writer = new XMLWriter(new FileOutputStream(new File(dir, "scenario.xml")), OutputFormat.createPrettyPrint());
             writer.write(doc);
             writer.flush();
             writer.close();
