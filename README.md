@@ -15,7 +15,7 @@
 $ git clone git@github.com:roborescue/rcrs-server.git
 ```
 
-## 3. Compile
+## 3. Compile the project
 
 ```bash
 
@@ -24,7 +24,7 @@ $ ./gradlew clean
 $ ./gradlew completeBuild
 ```
 
-## 4. Execute
+## 4. Execute the Rescue Simulation Server
 
 Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
 
@@ -44,6 +44,48 @@ $ cd boot
 $ ./sampleagent.sh
 ```
 
-## 5. Support
+## 5. Tools
+
+### 5.1 Map Editor
+
+Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
+
+```bash
+
+$ ./gradlew gmlEditor --args=<map file path>
+```
+where ```--args=<map file path>``` is optional. The default map file path is ```maps/gml/test/map/map.gml```.
+
+### 5.2 Scenario Editor
+
+Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
+
+```bash
+
+$ ./gradlew scenarioEditor --args=<scenario path>
+```
+where ```--args=<scenario path>``` is optional. The default scenario path is ```maps/gml/test/map```.
+
+### 5.3 Random Scenario
+
+Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
+
+```bash
+
+$ ./gradlew randomScenario --args=<map path>
+```
+where ```--args=<map path>``` is optional. The default map path is ```maps/gml/test/map```.
+
+### 5.4 Log Viewer
+
+Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
+
+```bash
+
+$ ./gradlew logViewer --args=<log file path>
+```
+where ```--args=<log file path>``` is optional. The default log file path is ```boot/logs/rescule.log```.
+
+## 6. Support
 
 To report a bug, suggest improvements or request support, please open an issue at GitHub <https://github.com/roborescue/rcrs-server/issues>.
