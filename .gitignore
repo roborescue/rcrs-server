@@ -25,3 +25,12 @@ lib/resq-fire.jar
 
 # Gradle
 .gradle
+
+# IntelliJ project
+.idea
+*.iml
+
+# General mac os
+.DS_Store
+.AppleDouble
+.LSOverride
