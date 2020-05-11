@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
@@ -46,11 +46,11 @@ public class TrafficManager {
        Construct a new TrafficManager.
     */
     public TrafficManager() {
-        areas = new HashMap<Area, TrafficArea>();
-        areaByID = new HashMap<Integer, TrafficArea>();
-        blocks = new HashMap<Blockade, TrafficBlockade>();
-        blockadeByID = new HashMap<Integer, TrafficBlockade>();
-        agents = new HashMap<Human, TrafficAgent>();
+        areas = new ConcurrentHashMap<Area, TrafficArea>();
+        areaByID = new ConcurrentHashMap<Integer, TrafficArea>();
+        blocks = new ConcurrentHashMap<Blockade, TrafficBlockade>();
+        blockadeByID = new ConcurrentHashMap<Integer, TrafficBlockade>();
+        agents = new ConcurrentHashMap<Human, TrafficAgent>();
         areaNeighbours = new LazyMap<TrafficArea, Collection<TrafficArea>>() {
             @Override
             public Collection<TrafficArea> createValue() {
