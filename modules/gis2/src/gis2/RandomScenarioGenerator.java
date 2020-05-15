@@ -84,6 +84,11 @@ public class RandomScenarioGenerator {
        @param args Command line arguments: <map directory> [-civ min max] [-fb min max] [-fs min max] [-pf min max] [-po min max] [-at min max] [-ac min max] [-refuge min max] [-fire min max].
     */
     public static void main(String[] args) {
+
+        if (args.length < 1) {
+            printUsage();
+            return;
+        }
         String dirName = args[0];
         RandomScenarioGenerator generator = new RandomScenarioGenerator();
         // CHECKSTYLE:OFF:ModifiedControlVariable
@@ -163,6 +168,10 @@ public class RandomScenarioGenerator {
         }
     }
 
+    private static void printUsage() {
+        System.out.println("Usage: Launch Random Scenario Generator [options]"); // TODO @ffaraji
+        System.exit(0);
+    }
     /**
        Set the minimum and maximum number of civilians.
        @param min The new minimum.
