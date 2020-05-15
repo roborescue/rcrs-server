@@ -6,12 +6,12 @@ cd `dirname $0`
 . functions.sh
 
 LOGDIR='logs'
-SCENARIO_DIR=$1
+MAP_DIR=$1
 
-if [[ ! -z "$SCENARIO_DIR" ]]; then
-    SCENARIO_DIR=$(abspath $SCENARIO_DIR)
+if [[ ! -z "$MAP_DIR" ]]; then
+    MAP_DIR=$(abspath $MAP_DIR)
 
-    if [[ -z "$SCENARIO_DIR" ]]; then
+    if [[ -z "$MAP_DIR" ]]; then
         exit 1
     fi
 fi
@@ -19,4 +19,4 @@ fi
 echo "starting randomScenarioGenerator..."
 
 makeClasspath $BASEDIR/jars $BASEDIR/lib
-execute random-scenario-editor "java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR gis2.RandomScenarioGenerator $SCENARIO_DIR"
+execute random-scenario-editor "java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR gis2.RandomScenarioGenerator $MAP_DIR $*"
