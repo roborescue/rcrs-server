@@ -16,7 +16,7 @@ if [[ ! -z "$SCENARIO_DIR" ]]; then
     fi
 fi
 
-echo "starting randomScenarioEditor..."
+echo "starting randomScenarioGenerator..."
 
 makeClasspath $BASEDIR/jars $BASEDIR/lib
 execute random-scenario-editor "java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR gis2.RandomScenarioGenerator $SCENARIO_DIR"
