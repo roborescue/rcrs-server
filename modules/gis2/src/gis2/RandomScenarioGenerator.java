@@ -169,25 +169,21 @@ public class RandomScenarioGenerator {
     }
 
     private static void printUsage() {
-    echo "Usage: $0 [map] [options]"
-    echo
-    echo "[map]  Map directory to generate random scenario
-    echo
-    echo "[options]"
-    echo "-civ      min max    Set the minimum and maximum number of civilians"
-    echo "-fb       min max    Set the minimum and maximum number of fire brigades"
-    echo "-fs        min max    Set the minimum and maximum number of fire stations"
-    echo "-pf        min max    Set the minimum and maximum number of police forces"
-    echo "-po        min max    Set the minimum and maximum number of police offices"
-    echo "-at  	     min max    Set the minimum and maximum number of ambulance teams"
-    echo "-ac        min max    Set the minimum and maximum number of ambulance centers"
-    echo "-refuge    min max    Set the minimum and maximum number of refuges"
-    echo "-fire      min max	Set the minimum and maximum number of fires"
-
-}
-        System.out.println("Usage: Launch Random Scenario Generator [options]"); // TODO @ffaraji
-        System.exit(0);
+        System.out.println("Usage: Launch Random Scenario Generator [map] [options]");
+        System.out.println();
+        System.out.println("[map]  Map directory to generate random scenario");
+        System.out.println();
+        System.out.println("[options]");
+        System.out.println("-civ\tmin max\tSet the minimum and maximum number of civilians");
+        System.out.println("-fb\tmin max\tSet the minimum and maximum number of fire brigades");
+        System.out.println("-fs\tmin max\tSet the minimum and maximum number of fire stations");
+        System.out.println("-pf\tmin max\tSet the minimum and maximum number of police forces");
+        System.out.println("-po\tmin max\tSet the minimum and maximum number of police offices");
+        System.out.println("-ac\tmin max\tSet the minimum and maximum number of ambulance centers");
+        System.out.println("-refuge\tmin max\tSet the minimum and maximum number of refuges");
+        System.out.println("-fire\tmin max\tSet the minimum and maximum number of fires");
     }
+
     /**
        Set the minimum and maximum number of civilians.
        @param min The new minimum.
