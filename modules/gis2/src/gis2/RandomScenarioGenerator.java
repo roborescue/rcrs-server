@@ -169,6 +169,22 @@ public class RandomScenarioGenerator {
     }
 
     private static void printUsage() {
+    echo "Usage: $0 [map] [options]"
+    echo
+    echo "[map]  Map directory to generate random scenario
+    echo
+    echo "[options]"
+    echo "-civ      min max    Set the minimum and maximum number of civilians"
+    echo "-fb       min max    Set the minimum and maximum number of fire brigades"
+    echo "-fs        min max    Set the minimum and maximum number of fire stations"
+    echo "-pf        min max    Set the minimum and maximum number of police forces"
+    echo "-po        min max    Set the minimum and maximum number of police offices"
+    echo "-at  	     min max    Set the minimum and maximum number of ambulance teams"
+    echo "-ac        min max    Set the minimum and maximum number of ambulance centers"
+    echo "-refuge    min max    Set the minimum and maximum number of refuges"
+    echo "-fire      min max	Set the minimum and maximum number of fires"
+
+}
         System.out.println("Usage: Launch Random Scenario Generator [options]"); // TODO @ffaraji
         System.exit(0);
     }
