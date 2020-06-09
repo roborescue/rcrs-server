@@ -51,6 +51,7 @@ jar {
 }
 
 clean.doFirst {
+  delete file( new File( rootDir, 'bin' ) )
   delete file( new File( rootDir, 'jars' ) )
   delete file( new File( rootDir, 'test-results' ) )
 }
@@ -355,7 +356,7 @@ task logViewer(type: JavaExec) {
   args = [ 'boot/logs/rescue.log' ]
 }
 
-/*Open gml editor */
+/* Open gml editor */
 task gmlEditor(type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'maps.gml.editor.GMLEditor'

@@ -1,27 +1,28 @@
-# Ignore .o files
-*.o
-
-# Ignore .class files
+# Java
 *.class
 
-# Ignore temporary files
-*~
-
-# Ignore log files
-boot/logs
+# Log files
 *.log
+hs_err_pid*
 
-# Ignore the build and jars directories
+# Gradle
+.gradle
 build
-jars
 bin
-lib/rescuecore.jar
-lib/resq-fire.jar
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
 
 # Eclipse project
 .settings
 .project
 .classpath
 
-# Gradle
-.gradle
+# Visual Studio Code
+.vscode
+
+# Project
+jars
