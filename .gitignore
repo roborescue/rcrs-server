@@ -24,5 +24,10 @@ bin
 # Visual Studio Code
 .vscode
 
+# General MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
 # Project
 jars
