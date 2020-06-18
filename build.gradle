@@ -7,6 +7,7 @@ targetCompatibility = '1.8'
 version = '1.3'
 
 dependencies {
+  runtime fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
   implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
 
   testImplementation 'junit:junit:4.12'
@@ -334,32 +335,40 @@ task completeBuild(type: GradleBuild) {
 
 /* Generate a random scenario */
 task randomScenario(type: JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
+  workingDir = 'boot'
+  classpath = files('supplement')
+  classpath += sourceSets.main.runtimeClasspath
   main = 'gis2.RandomScenarioGenerator'
   maxHeapSize = '2048m'
-  args = [ 'maps/gml/test/map' ]
+  args = [ '../maps/gml/test/map' ]
 }
 
 /* Open scenario editor */
 task scenarioEditor(type: JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
+  workingDir = 'boot'
+  classpath = files('supplement')
+  classpath += sourceSets.main.runtimeClasspath
   main = 'gis2.scenario.ScenarioEditor'
   maxHeapSize = '2048m'
-  args = [ 'maps/gml/test/map' ]
+  args = [ '../maps/gml/test/map' ]
 }
 
 /* Open LogViewer */
-task logViewer(type: JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
-  main = 'rescuecore2.log.LogViewer'
-  maxHeapSize = '2048m'
-  args = [ 'boot/logs/rescue.log' ]
+task logViewer(type: JavaExec, dependsOn: classes) {
+  workingDir = 'boot'
+  classpath = files('supplement')
+  classpath += sourceSets.main.runtimeClasspath
+  main = 'sample.SampleLogViewer'
+  maxHeapSize = '256m'
+  args = [ '-c', 'config/logviewer.cfg', 'logs/rescue.log' ]
 }
 
 /* Open gml editor */
 task gmlEditor(type: JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
+  workingDir = 'boot'
+  classpath = files('supplement')
+  classpath += sourceSets.main.runtimeClasspath
   main = 'maps.gml.editor.GMLEditor'
   maxHeapSize = '2048m'
-  args = [ 'maps/gml/test/map/map.gml' ]
+  args = [ '../maps/gml/test/map/map.gml' ]
 }
