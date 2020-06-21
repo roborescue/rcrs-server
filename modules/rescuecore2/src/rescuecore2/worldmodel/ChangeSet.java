@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import rescuecore2.log.Logger;
 import rescuecore2.misc.collections.LazyMap;
-import rescuecore2.standard.entities.StandardPropertyURN;
+//import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 
 /**
@@ -173,8 +173,8 @@ public class ChangeSet {
    * @param other
    *          The other ChangeSet.
    */
-  private static final String BLOCKADES_URN = StandardPropertyURN.BLOCKADES
-      .toString();
+  //private static final String BLOCKADES_URN = StandardPropertyURN.BLOCKADES
+  //    .toString();
 
 
   public void merge( ChangeSet other ) {
@@ -184,12 +184,18 @@ public class ChangeSet {
       String urn = other.getEntityURN( e );
       for ( Property p : next.getValue().values() ) {
 
-        if ( p.getURN().equals( BLOCKADES_URN )
-            && changes.get( e ).containsKey( BLOCKADES_URN ) ) {
+        //if ( p.getURN().equals( BLOCKADES_URN )
+        //    && changes.get( e ).containsKey( BLOCKADES_URN ) ) {
+
+        if ((p instanceof EntityRefListProperty) &&
+             (changes.get(e).containsKey( urn ) &&
+               (changes.get(e).get( urn ) instanceof EntityRefListProperty))) {
 
           EntityRefListProperty bp1 = (EntityRefListProperty) p.copy();
+          //EntityRefListProperty bp2 = (EntityRefListProperty) changes.get( e )
+          //    .get( BLOCKADES_URN );
           EntityRefListProperty bp2 = (EntityRefListProperty) changes.get( e )
-              .get( BLOCKADES_URN );
+              .get( urn );
 
           if ( bp2.isDefined() ) {
             for ( EntityID id : bp2.getValue() )
