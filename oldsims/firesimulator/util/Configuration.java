@@ -18,11 +18,10 @@ import java.util.regex.Pattern;
 
 import firesimulator.world.Wall;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 public class Configuration {
-    private static final Log LOG = LogFactory.getLog(Configuration.class);
+    private static final Logger LOG = Logger.getLogger(Configuration.class);
 
     private static final String PREFIX = "resq-fire.";
 

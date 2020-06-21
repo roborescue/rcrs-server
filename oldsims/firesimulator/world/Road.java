@@ -1,7 +1,6 @@
 package firesimulator.world;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * @author tn
@@ -10,7 +9,7 @@ import org.apache.commons.logging.Log;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class Road extends Edge {
-    private static final Log LOG = LogFactory.getLog(Road.class);
+    private static final Logger LOG = Logger.getLogger(Road.class);
 
     int width;
     int block;

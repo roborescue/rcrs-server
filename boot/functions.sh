@@ -60,6 +60,7 @@ function printUsage {
     echo "-t    --team      <teamname>  Set the team name. Default: \"\""
     echo "-l    --log       <logdir>    Set the log directory. Default: \"logs\""
     echo "-s    --timestamp             Create a log sub-directory including timestamp, team name and map name"
+    echo "-g    --nogui                 Disable GUI"
     echo "[+|-]x                        Enable/Disable XTerm use. Default: \"Disable\""
 }
 
@@ -70,14 +71,15 @@ function processArgs {
     CONFIGDIR="$BASEDIR/maps/gml/test/config"
     TEAM=""
     TIMESTAMP_LOGS=""
+    NOGUI="no"
     XTERM="no"
-    
+
     if [ $# -gt 0 ] && [[ $1 != -* ]]; then
         MAP="$1/map"
         CONFIGDIR="$1/config"
         shift 1
     fi
-    
+
     while [[ ! -z "$1" ]]; do
         case "$1" in
             -m | --map)
@@ -100,6 +102,10 @@ function processArgs {
                 TIMESTAMP_LOGS="yes"
                 shift
                 ;;
+            -g | --nogui)
+                NOGUI="yes"
+                shift
+                ;;
             -x)
                 XTERM="no"
                 shift
@@ -119,47 +125,55 @@ function processArgs {
                 ;;
         esac
     done
-    
+
     # Check if the Map directory exists
     if [ -z $MAP ] || [ ! -d $MAP ]; then
-    echo "Directory does not exist or does not have the \"map\" and \"config\" sub-directories"
+        echo "Directory does not exist or does not have the \"map\" and \"config\" sub-directories"
         exit 1
     fi
-    
+
     # Append timestamp, team and map name to the log directory
     if [ ! -z "$TIMESTAMP_LOGS" ]; then
         TIME="`date +%Y%m%d-%H%M%S`"
-        
+
         # Extract map name
         MAPNAME="`basename $MAP`"
         if [ "$MAPNAME" == "map" ]; then
             MAPNAME="$(basename $(dirname $MAP))"
         fi
-        
+
         if [ -z "$TEAM" ]; then
-          LOGDIR="$LOGDIR/$TIME-$MAPNAME"
+            LOGDIR="$LOGDIR/$TIME-$MAPNAME"
         else
-          LOGDIR="$LOGDIR/$TIME-$TEAM-$MAPNAME"
+            LOGDIR="$LOGDIR/$TIME-$TEAM-$MAPNAME"
         fi
     fi
-    LOGDIR=`readlink -f $LOGDIR`
+
+    if [ "$(uname -s)" = 'Linux' ]; then
+        LOGDIR=`readlink -f $LOGDIR`
+    fi
     mkdir -p $LOGDIR
 }
 
 function execute {
     title=$1
     command=$2
-    if [[ $XTERM == "yes" ]];then
-        xterm -T $title -e "$command  2>&1 |tee $LOGDIR/$title-out.log" &
+    if [[ $XTERM == "yes" ]]; then
+        xterm -T $title -e "$command 2>&1 | tee $LOGDIR/$title-out.log" &
     else
-        sh -c "$command  2>&1 |tee $LOGDIR/$title-out.log" &
+        sh -c "$command 2>&1 | tee $LOGDIR/$title-out.log" &
     fi
     PIDS="$PIDS $!"
 }
 
 # Start the kernel
 function startKernel {
-    KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $*"
+    GUI_OPTION=""
+    if [[ $NOGUI == "yes" ]]; then
+        GUI_OPTION="--nogui"
+    fi
+
+    KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $GUI_OPTION $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
 
     execute kernel "java -Xmx2048m -cp $CP -Dlog4j.log.dir=$LOGDIR kernel.StartKernel $KERNEL_OPTIONS"
@@ -167,46 +181,58 @@ function startKernel {
     waitFor $LOGDIR/kernel.log "Listening for connections"
 }
 
-# Start the viewer and simulators
+# Start the simulators
 function startSims {
-    makeClasspath $BASEDIR/lib
-    # Viewer
-    TEAM_NAME_ARG=""
-    if [ ! -z "$TEAM" ]; then
-        TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\"";
+    GUI_OPTION=""
+    if [[ $NOGUI == "yes" ]]; then
+        GUI_OPTION="--nogui"
     fi
-    
+
+    makeClasspath $BASEDIR/lib
+
     # Execute the simulators
-    execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $*"
-    execute traffic "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $*"
-    execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar:$BASEDIR/oldsims/firesimulator/lib/commons-logging-1.1.1.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $*"
-    execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $*"
-    execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $*"
-    execute clear "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $*"
-    
+    execute misc "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/misc.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents misc.MiscSimulator -c $CONFIGDIR/misc.cfg $GUI_OPTION $*"
     echo "waiting for misc to connect..."
     waitFor $LOGDIR/misc-out.log "success"
-    
+
+    execute traffic "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/traffic3.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents traffic3.simulator.TrafficSimulator -c $CONFIGDIR/traffic3.cfg $GUI_OPTION $*"
     echo "waiting for traffic to connect..."
     waitFor $LOGDIR/traffic-out.log "success"
-    
+
+    execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $GUI_OPTION $*"
     echo "waiting for fire to connect..."
     waitFor $LOGDIR/fire-out.log "success"
-    
+
+    execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $GUI_OPTION $*"
     echo "waiting for ignition to connect..."
     waitFor $LOGDIR/ignition-out.log "success"
-    
+
+    execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $GUI_OPTION $*"
     echo "waiting for collapse to connect..."
     waitFor $LOGDIR/collapse-out.log "success"
-    
-    echo "waiting for clear to connect..."    
+
+    execute clear "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/clear.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents clear.ClearSimulator -c $CONFIGDIR/clear.cfg $GUI_OPTION $*"
+    echo "waiting for clear to connect..."
     waitFor $LOGDIR/clear-out.log "success"
-    
+
     execute civilian "java -Xmx1512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar:$BASEDIR/jars/kernel.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleCivilian*n -c $CONFIGDIR/civilian.cfg $*"
-    sleep 2
+}
+
+# Start the viewer
+function startViewer {
+    if [[ $NOGUI == "yes" ]]; then
+        return 0
+    fi
+
+    makeClasspath $BASEDIR/lib
+
+    TEAM_NAME_ARG=""
+    if [ ! -z "$TEAM" ]; then
+        TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\""
+    fi
+
+    # Execute the viewer
     execute viewer "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewer -c $CONFIGDIR/viewer.cfg $TEAM_NAME_ARG $*"
-    
-    # Wait for all simulators to start
     echo "waiting for viewer to connect..."
     waitFor $LOGDIR/viewer-out.log "success"
 }

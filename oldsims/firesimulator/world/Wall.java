@@ -3,15 +3,14 @@ package firesimulator.world;
 import java.awt.Point;
 import java.util.Iterator;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * @author tn
  *
  */
 public class Wall {
-    private static final Log LOG = LogFactory.getLog(Wall.class);
+    private static final Logger LOG = Logger.getLogger(Wall.class);
 	
 	public static int MAX_SAMPLE_DISTANCE = 50000;
     public int x1;

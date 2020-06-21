@@ -1,8 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 
 if [ ! $# -eq 3 ] ; then
-  echo "usage: `basename $0` <teamname> <hostname> <dir>"
-  exit 1
+    echo "usage: `basename $0` <teamname> <hostname> <dir>"
+    exit 1
 fi
 
 processArgs $*

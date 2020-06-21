@@ -84,6 +84,11 @@ public class RandomScenarioGenerator {
        @param args Command line arguments: <map directory> [-civ min max] [-fb min max] [-fs min max] [-pf min max] [-po min max] [-at min max] [-ac min max] [-refuge min max] [-fire min max].
     */
     public static void main(String[] args) {
+
+        if (args.length < 1) {
+            printUsage();
+            return;
+        }
         String dirName = args[0];
         RandomScenarioGenerator generator = new RandomScenarioGenerator();
         // CHECKSTYLE:OFF:ModifiedControlVariable
@@ -150,7 +155,7 @@ public class RandomScenarioGenerator {
             GisScenario s = generator.makeRandomScenario(map, new Random());
             Document doc = DocumentHelper.createDocument();
             s.write(doc);
-            XMLWriter writer = new XMLWriter(new FileOutputStream(new File(dir, "scenario.gml")), OutputFormat.createPrettyPrint());
+            XMLWriter writer = new XMLWriter(new FileOutputStream(new File(dir, "scenario.xml")), OutputFormat.createPrettyPrint());
             writer.write(doc);
             writer.flush();
             writer.close();
@@ -161,6 +166,22 @@ public class RandomScenarioGenerator {
         catch (MapException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void printUsage() {
+        System.out.println("Usage: Launch Random Scenario Generator [map] [options]");
+        System.out.println();
+        System.out.println("[map]  Map directory to generate random scenario");
+        System.out.println();
+        System.out.println("[options]");
+        System.out.println("-civ\tmin max\tSet the minimum and maximum number of civilians");
+        System.out.println("-fb\tmin max\tSet the minimum and maximum number of fire brigades");
+        System.out.println("-fs\tmin max\tSet the minimum and maximum number of fire stations");
+        System.out.println("-pf\tmin max\tSet the minimum and maximum number of police forces");
+        System.out.println("-po\tmin max\tSet the minimum and maximum number of police offices");
+        System.out.println("-ac\tmin max\tSet the minimum and maximum number of ambulance centers");
+        System.out.println("-refuge\tmin max\tSet the minimum and maximum number of refuges");
+        System.out.println("-fire\tmin max\tSet the minimum and maximum number of fires");
     }
 
     /**

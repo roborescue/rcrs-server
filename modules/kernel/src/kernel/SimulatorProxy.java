@@ -138,4 +138,9 @@ public class SimulatorProxy extends AbstractKernelComponent {
             }
         }
     }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
 }

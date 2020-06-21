@@ -33,4 +33,9 @@ public class ViewerProxy extends AbstractKernelComponent {
     public String toString() {
         return getName() + " (" + id + "): " + getConnection().toString();
     }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
 }

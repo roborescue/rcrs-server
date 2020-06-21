@@ -542,22 +542,29 @@ public class CollapseSimulator extends StandardSimulator implements
 		Vector2D wallDirection = wallLine.getDirection();
 		Vector2D offset = wallDirection.getNormal().normalised().scale(-d);
 		Path2D path = new Path2D.Double();
-		Point2D first = wallLine.getOrigin();
-		Point2D second = wallLine.getEndPoint();
-		Point2D third = second.plus(offset);
-		Point2D fourth = first.plus(offset);
+                
+		Point2D right = wallLine.getOrigin();
+		Point2D left = wallLine.getEndPoint();
+                
+		Point2D first = left.plus(offset.scale(-1));
+		Point2D second = right.plus(offset.scale(-1));
+		Point2D third = right.plus(offset);
+		Point2D fourth = left.plus(offset);
+                
 		path.moveTo(first.getX(), first.getY());
 		path.lineTo(second.getX(), second.getY());
 		path.lineTo(third.getX(), third.getY());
 		path.lineTo(fourth.getX(), fourth.getY());
+		path.closePath();
+                
 		java.awt.geom.Area wallArea = new java.awt.geom.Area(path);
 		areaList.add(wallArea);
 		// Also add circles at each corner
 		double radius = offset.getLength();
-		Ellipse2D ellipse1 = new Ellipse2D.Double(first.getX() - radius,
-				first.getY() - radius, radius * 2, radius * 2);
-		Ellipse2D ellipse2 = new Ellipse2D.Double(second.getX() - radius,
-				second.getY() - radius, radius * 2, radius * 2);
+		Ellipse2D ellipse1 = new Ellipse2D.Double(right.getX() - radius,
+				right.getY() - radius, radius * 2, radius * 2);
+		Ellipse2D ellipse2 = new Ellipse2D.Double(left.getX() - radius,
+				left.getY() - radius, radius * 2, radius * 2);
 		areaList.add(new java.awt.geom.Area(ellipse1));
 		areaList.add(new java.awt.geom.Area(ellipse2));
 		// Logger.info("Edge from " + wallLine + " expanded to " + first + ", "

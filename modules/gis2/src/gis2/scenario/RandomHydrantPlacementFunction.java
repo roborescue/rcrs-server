@@ -16,16 +16,17 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
-import rescuecore2.log.Logger;
-
 import maps.gml.GMLMap;
 import maps.gml.GMLShape;
+
+import org.apache.log4j.Logger;
 
 /**
    Function for placing agents.
 */
 public class RandomHydrantPlacementFunction extends AbstractFunction {
     private Random random;
+    private static final Logger LOG = Logger.getLogger(RandomHydrantPlacementFunction.class);
 
     /**
        Construct a place agents function.
@@ -70,7 +71,7 @@ public class RandomHydrantPlacementFunction extends AbstractFunction {
                 }
             }
             catch (NumberFormatException e) {
-                Logger.error("Error parsing number", e);
+                LOG.error("Error parsing number", e);
             }
         }
         editor.setChanged();

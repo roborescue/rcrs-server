@@ -33,16 +33,33 @@ import firesimulator.simulator.ExtinguishRequest;
 import firesimulator.util.Configuration;
 
 import java.util.Collection;
+import firesimulator.gui.*;
+import javax.swing.JComponent;
+import rescuecore2.GUIComponent;
 
 /**
    A rescuecore2 Simulator that wraps the ResQ Freiburg fire simulator.
  */
-public class FireSimulatorWrapper extends StandardSimulator {
+public class FireSimulatorWrapper extends StandardSimulator implements GUIComponent {
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
 
     private Simulator sim;
     private World world;
+    private FireSimulatorGUI fireSimulatorGUI = null;
 
+	@Override
+	public JComponent getGUIComponent() {
+		if(fireSimulatorGUI == null) {
+			fireSimulatorGUI = new FireSimulatorGUI(sim, world);
+		}
+		return fireSimulatorGUI;
+	}
+
+	@Override
+	public String getGUIComponentName() {
+		return "Fire simulator";
+	}
+	
     @Override
     protected void postConnect() {
         super.postConnect();
@@ -69,6 +86,9 @@ public class FireSimulatorWrapper extends StandardSimulator {
             }
         }
         sim.initialize();
+	
+		
+	
     }
 
     @Override
@@ -162,6 +182,11 @@ public class FireSimulatorWrapper extends StandardSimulator {
         }
         long end = System.currentTimeMillis();
         Logger.info("Time " + c.getTime() + " took " + (end - start) + "ms");
+		
+		if(fireSimulatorGUI != null) {
+			fireSimulatorGUI.refresh();
+		}
+
     }
 
     private RescueObject mapEntity(Entity e) {

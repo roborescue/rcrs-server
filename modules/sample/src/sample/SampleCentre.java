@@ -5,16 +5,18 @@ import java.util.EnumSet;
 
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.log.Logger;
 
 import rescuecore2.standard.components.StandardAgent;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.StandardEntityURN;
 
+import org.apache.log4j.Logger;
+
 /**
    A sample centre agent.
  */
 public class SampleCentre extends StandardAgent<Building> {
+    private static final Logger LOG = Logger.getLogger(SampleCentre.class);
     @Override
     public String toString() {
         return "Sample centre";
@@ -27,7 +29,7 @@ public class SampleCentre extends StandardAgent<Building> {
             sendSubscribe(time, 1, 2);
         }
         for (Command next : heard) {
-            Logger.debug("Heard " + next);
+            LOG.debug("Heard " + next);
         }
         sendRest(time);
     }

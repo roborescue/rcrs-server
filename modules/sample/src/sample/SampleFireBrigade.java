@@ -11,7 +11,6 @@ import java.util.EnumSet;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.Command;
-import rescuecore2.log.Logger;
 
 import rescuecore2.standard.entities.StandardEntity;
 import rescuecore2.standard.entities.StandardEntityURN;
@@ -19,10 +18,13 @@ import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Refuge;
 import rescuecore2.standard.entities.FireBrigade;
 
+import org.apache.log4j.Logger;
+
 /**
    A sample fire brigade agent.
  */
 public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
+    private static Logger LOG = Logger.getLogger(SampleFireBrigade.class);
     private static final String MAX_WATER_KEY = "fire.tank.maximum";
     private static final String MAX_DISTANCE_KEY = "fire.extinguish.max-distance";
     private static final String MAX_POWER_KEY = "fire.extinguish.max-sum";
@@ -43,7 +45,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         maxWater = config.getIntValue(MAX_WATER_KEY);
         maxDistance = config.getIntValue(MAX_DISTANCE_KEY);
         maxPower = config.getIntValue(MAX_POWER_KEY);
-        Logger.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
+        LOG.info("Sample fire brigade connected: max extinguish distance = " + maxDistance + ", max power = " + maxPower + ", max tank = " + maxWater);
     }
 
     @Override
@@ -53,12 +55,12 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             sendSubscribe(time, 1);
         }
         for (Command next : heard) {
-            Logger.debug("Heard " + next);
+            LOG.debug("Heard " + next);
         }
         FireBrigade me = me();
         // Are we currently filling with water?
         if (me.isWaterDefined() && me.getWater() < maxWater && location() instanceof Refuge) {
-            Logger.info("Filling with water at " + location());
+            LOG.info("Filling with water at " + location());
             sendRest(time);
             return;
         }
@@ -67,14 +69,14 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
             // Head for a refuge
             List<EntityID> path = search.breadthFirstSearch(me().getPosition(), refugeIDs);
             if (path != null) {
-                Logger.info("Moving to refuge");
+                LOG.info("Moving to refuge");
                 sendMove(time, path);
                 return;
             }
             else {
-                Logger.debug("Couldn't plan a path to a refuge.");
+                LOG.debug("Couldn't plan a path to a refuge.");
                 path = randomWalk();
-                Logger.info("Moving randomly");
+                LOG.info("Moving randomly");
                 sendMove(time, path);
                 return;
             }
@@ -84,7 +86,7 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         // Can we extinguish any right now?
         for (EntityID next : all) {
             if (model.getDistance(getID(), next) <= maxDistance) {
-                Logger.info("Extinguishing " + next);
+                LOG.info("Extinguishing " + next);
                 sendExtinguish(time, next, maxPower);
                 sendSpeak(time, 1, ("Extinguishing " + next).getBytes());
                 return;
@@ -94,15 +96,15 @@ public class SampleFireBrigade extends AbstractSampleAgent<FireBrigade> {
         for (EntityID next : all) {
             List<EntityID> path = planPathToFire(next);
             if (path != null) {
-                Logger.info("Moving to target");
+                LOG.info("Moving to target");
                 sendMove(time, path);
                 return;
             }
         }
         List<EntityID> path = null;
-        Logger.debug("Couldn't plan a path to a fire.");
+        LOG.debug("Couldn't plan a path to a fire.");
         path = randomWalk();
-        Logger.info("Moving randomly");
+        LOG.info("Moving randomly");
         sendMove(time, path);
     }
 

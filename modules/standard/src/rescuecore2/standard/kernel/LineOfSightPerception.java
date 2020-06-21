@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
@@ -327,7 +328,7 @@ public class LineOfSightPerception implements Perception, GUIComponent {
     }
 
     private Collection<LineInfo> getAllLines(Collection<StandardEntity> entities) {
-        Collection<LineInfo> result = new HashSet<LineInfo>();
+        Collection<LineInfo> result = new LinkedList<LineInfo>();
         for (StandardEntity next : entities) {
             if (next instanceof Building) {
                 for (Edge edge : ((Building)next).getEdges()) {

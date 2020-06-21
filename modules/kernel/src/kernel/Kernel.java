@@ -4,9 +4,11 @@ package kernel;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.io.IOException;
 import java.io.File;
 
@@ -103,7 +105,12 @@ public class Kernel {
             this.commandCollector = collector;
             this.idGenerator = idGenerator;
             listeners = new HashSet<KernelListener>();
-            agents = new HashSet<AgentProxy>();
+            agents = new TreeSet<AgentProxy>(new Comparator<AgentProxy>() {
+                @Override
+                public int compare(AgentProxy o1, AgentProxy o2) {
+                    return Integer.compare(o1.hashCode(), o2.hashCode());
+                }
+            });
             sims = new HashSet<SimulatorProxy>();
             viewers = new HashSet<ViewerProxy>();
             time = 0;

@@ -1,22 +1,33 @@
-# Ignore .o files
-*.o
-
-# Ignore .class files
+# Java
 *.class
 
-# Ignore temporary files
-*~
-
-# Ignore log files
-boot/logs/
+# Log files
 *.log
+hs_err_pid*
 
-# Ignore the build and jars directories
-build/
-jars/
-bin/
+# Gradle
+.gradle
+build
+bin
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
 
 # Eclipse project
 .settings
 .project
 .classpath
+
+# Visual Studio Code
+.vscode
+
+# General MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Project
+jars
