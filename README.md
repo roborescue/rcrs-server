@@ -5,7 +5,7 @@
 ## 1. Software Pre-Requisites
 
 - Git
-- Gradle 6.1.1+
+- Gradle
 - OpenJDK Java 8+
 
 ## 2. Download project from GitHub
@@ -82,9 +82,9 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ ./gradlew logViewer --args=<log file path>
+$ ./gradlew logViewer --args='-c config/logviewer.cfg <log path>'
 ```
-where ```--args=<log file path>``` is optional. The default log file path is ```boot/logs/rescule.log```.
+where ```--args='-c config/logviewer.cfg <log path>'``` is optional and ```<log path>``` defines the log file path. The default log file path is ```logs/rescue.log```.
 
 ## 6. Support
 

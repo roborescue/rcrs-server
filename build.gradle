@@ -7,7 +7,7 @@ targetCompatibility = '1.8'
 version = '1.3'
 
 dependencies {
-  runtime fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
+  runtimeOnly fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
   implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
 
   testImplementation 'junit:junit:4.12'
@@ -360,7 +360,7 @@ task logViewer(type: JavaExec, dependsOn: classes) {
   classpath += sourceSets.main.runtimeClasspath
   main = 'sample.SampleLogViewer'
   maxHeapSize = '256m'
-  args = [ '-c', 'config/logviewer.cfg', 'logs/rescue.log' ]
+  args = [ '-c', 'config/logviewer.cfg', 'logs/rescue.log']
 }
 
 /* Open gml editor */
