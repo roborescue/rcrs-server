@@ -27,6 +27,7 @@ public class Building extends Area {
     private IntProperty totalArea;
     private IntProperty temperature;
     private IntProperty importance;
+    private IntProperty capacity;
 
     /**
        Construct a Building object with entirely undefined property values.
@@ -44,7 +45,8 @@ public class Building extends Area {
         totalArea = new IntProperty(StandardPropertyURN.BUILDING_AREA_TOTAL);
         temperature = new IntProperty(StandardPropertyURN.TEMPERATURE);
         importance = new IntProperty(StandardPropertyURN.IMPORTANCE);
-        registerProperties(floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance);
+        capacity = new IntProperty(StandardPropertyURN.CAPACITY);
+        registerProperties(floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, capacity);
     }
 
     /**
@@ -63,7 +65,8 @@ public class Building extends Area {
         totalArea = new IntProperty(other.totalArea);
         temperature = new IntProperty(other.temperature);
         importance = new IntProperty(other.importance);
-        registerProperties(floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance);
+        capacity = new IntProperty(other.capacity);
+        registerProperties(floors, ignition, fieryness, brokenness, code, attributes, groundArea, totalArea, temperature, importance, capacity);
     }
 
     @Override
@@ -111,6 +114,8 @@ public class Building extends Area {
             return temperature;
         case IMPORTANCE:
             return importance;
+        case CAPACITY:
+                return capacity;
         default:
             return super.getProperty(urn);
         }
@@ -211,6 +216,14 @@ public class Building extends Area {
     }
 
     /**
+       Set the fieryness of this building.
+       @param fieryness The new fieryness value.
+    */
+    public void setFieryness(int fieryness) {
+        this.fieryness.setValue(fieryness);
+    }
+
+    /**
        Get the fieryness of this building as an enum constant. If fieryness is not defined then return null.
        @return The fieryness property value as a Fieryness enum, or null if fieryness is undefined.
      */
@@ -219,14 +232,6 @@ public class Building extends Area {
             return null;
         }
         return StandardEntityConstants.Fieryness.values()[fieryness.getValue()];
-    }
-
-    /**
-       Set the fieryness of this building.
-       @param fieryness The new fieryness value.
-    */
-    public void setFieryness(int fieryness) {
-        this.fieryness.setValue(fieryness);
     }
 
     /**
@@ -300,6 +305,14 @@ public class Building extends Area {
     }
 
     /**
+       Set the building code of this building.
+       @param newCode The new building code.
+    */
+    public void setBuildingCode(int newCode) {
+        this.code.setValue(newCode);
+    }
+
+    /**
        Get the building code of this building as an enum constant. If building code is not defined then return null.
        @return The building code property value as a BuildingCode enum, or null if building code is undefined.
      */
@@ -308,14 +321,6 @@ public class Building extends Area {
             return null;
         }
         return StandardEntityConstants.BuildingCode.values()[code.getValue()];
-    }
-
-    /**
-       Set the building code of this building.
-       @param newCode The new building code.
-    */
-    public void setBuildingCode(int newCode) {
-        this.code.setValue(newCode);
     }
 
     /**
@@ -526,6 +531,44 @@ public class Building extends Area {
     */
     public void undefineImportance() {
         importance.undefine();
+    }
+
+    /**
+     Get the capacity property.
+     @return The capacity property.
+     */
+    public IntProperty getCapacityProperty() {
+        return capacity;
+    }
+
+    /**
+     Get the capacity of this building.
+     @return The capacity.
+     */
+    public int getCapacity() {
+        return capacity.getValue();
+    }
+
+    /**
+     Set the capacity of this building.
+     @param capacity The new temperature.
+     */
+    public void setCapacity(int capacity) {
+        this.capacity.setValue(capacity);
+    }
+
+    /**
+     Find out if the capacity property has been defined.
+     @return True if the capacity property has been defined, false otherwise.
+     */
+    public boolean isCapacityDefined() {
+        return capacity.isDefined();
+    }
+
+    /**
+     Undefine the capacity property.
+     */
+    public void undefineCapacity() { capacity.undefine();
     }
 
     /**

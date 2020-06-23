@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -38,9 +39,12 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
+import gnu.trove.THashMap;
 import maps.MapException;
 import maps.MapReader;
+import maps.gml.GMLBuilding;
 import maps.gml.GMLMap;
+import maps.gml.GMLRefuge;
 import maps.gml.view.GMLMapViewer;
 import maps.gml.view.GMLObjectInspector;
 import maps.gml.view.DecoratorOverlay;
@@ -53,6 +57,7 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.apache.log4j.Logger;
+import rescuecore2.config.Config;
 
 /**
    A component for editing scenarios.
@@ -100,6 +105,7 @@ public class ScenarioEditor extends JPanel {
     private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null, HYDRANT_COLOUR, null);
 
     private static final Logger LOG = Logger.getLogger(ScenarioEditor.class);
+    private  static Config config;
 
     /**
        Construct a new ScenarioEditor.
@@ -173,6 +179,7 @@ public class ScenarioEditor extends JPanel {
        @param args Command line arguments.
     */
     public static void main(String[] args) {
+        config = new Config();
         final JFrame frame = new JFrame("Scenario Editor");
         JMenuBar menuBar = new JMenuBar();
         final ScenarioEditor editor = new ScenarioEditor(menuBar);
@@ -269,7 +276,7 @@ public class ScenarioEditor extends JPanel {
             SAXReader saxReader = new SAXReader();
             r = new FileReader(f);
             Document doc = saxReader.read(r);
-            GisScenario newScenario = new GisScenario(doc);
+            GisScenario newScenario = new GisScenario(doc, config);
             setScenario(newMap, newScenario);
             baseDir = dir;
             saveFile = f;
@@ -310,6 +317,16 @@ public class ScenarioEditor extends JPanel {
         viewer.setMap(map);
         inspector.setMap(map);
         updateOverlays();
+    }
+
+    public void updateGMLRefuges()
+    {
+        for (int next : scenario.getRefuges()) {
+            GMLRefuge refuge = new GMLRefuge(next, map.getBuilding(next).getEdges());
+            refuge.setBedCapacity(scenario.getRefugeBedCapacity().get(next));
+            refuge.setRefillCapacity(scenario.getRefugeRefillCapacity().get(next));
+            scenario.addGMLRefuge(refuge);
+        }
     }
 
     /**
@@ -422,6 +439,7 @@ public class ScenarioEditor extends JPanel {
        Update the overlay views.
     */
     public void updateOverlays() {
+        updateGMLRefuges();
         updateFireOverlay();
         updateCentreOverlay();
         updateAgentOverlay();
@@ -737,7 +755,8 @@ public class ScenarioEditor extends JPanel {
             centreOverlay.setBuildingDecorator(ambulanceCentreDecorator, map.getBuilding(next));
         }
         for (int next : scenario.getRefuges()) {
-            centreOverlay.setBuildingDecorator(refugeDecorator, map.getBuilding(next));
+            //centreOverlay.setBuildingDecorator(refugeDecorator, map.getBuilding(next));
+            centreOverlay.setBuildingDecorator(refugeDecorator, scenario.getRefuge(next));
         }
         for (int next : scenario.getGasStations()) {
             centreOverlay.setBuildingDecorator(gasStationDecorator, map.getBuilding(next));

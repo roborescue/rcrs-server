@@ -10,6 +10,11 @@ import java.util.Random;
 /**
  Class for holding information about humans.
  */
+/*
+ * Implementation of Refuge Bed Capacity
+ * @author Farshid Faraji
+ * May 2020 During Covid-19 :-)))
+ * */
 public class HumanAttributes {
     private Human human;
     private EntityID id;
@@ -143,6 +148,14 @@ public class HumanAttributes {
         damageCollapse.progress();
         damageFire.progress();
         damageBury.progress();
+    }
+
+    public void progressDamageInRefuge()
+    {
+        //int damage = getTotalDamage();
+        damageCollapse.progressInRefuge();
+        damageFire.progressInRefuge();
+        damageBury.progressInRefuge();
     }
 
     /**

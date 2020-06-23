@@ -1,7 +1,8 @@
 package gis2.scenario;
 
+import javax.swing.*;
+import java.awt.*;
 import javax.swing.undo.AbstractUndoableEdit;
-
 import maps.gml.GMLBuilding;
 import maps.gml.GMLShape;
 
@@ -29,10 +30,26 @@ public class PlaceRefugeTool extends ShapeTool {
 
     @Override
     protected void processClick(GMLShape shape) {
-        editor.getScenario().addRefuge(shape.getID());
-        editor.setChanged();
-        editor.updateOverlays();
-        editor.addEdit(new AddRefugeEdit(shape.getID()));
+        JPanel panel = new JPanel(new GridLayout(3, 2));
+        // CHECKSTYLE:ON:MagicNumber
+        JTextField bedNumberField = new JTextField("100");
+        panel.add(new JLabel("Insert a bed capacity for the refuge"));
+        panel.add(bedNumberField);
+
+        JTextField refillNumberField = new JTextField("10");
+        panel.add(new JLabel("Insert a refill capacity for the refuge"));
+        panel.add(refillNumberField);
+
+        if (JOptionPane.showConfirmDialog(null, panel, "Refuge Capacity", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+        {
+            int bedCapacity = Integer.parseInt(bedNumberField.getText());
+            int refillCapacity = Integer.parseInt(refillNumberField.getText());
+
+            editor.getScenario().addRefuge(shape.getID(), bedCapacity, refillCapacity);
+            editor.setChanged();
+            editor.updateOverlays();
+            editor.addEdit(new AddRefugeEdit(shape.getID()));
+        }
     }
 
     private class AddRefugeEdit extends AbstractUndoableEdit {

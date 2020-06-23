@@ -16,6 +16,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.io.OutputFormat;
+import rescuecore2.log.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -303,7 +304,7 @@ public class RandomScenarioGenerator {
 
     private void placeRefuges(Iterator<GMLBuilding> it, GisScenario result, int num) {
         for (int i = 0; i < num; ++i) {
-            result.addRefuge(it.next().getID());
+            result.addRefuge(it.next().getID(), 100, 10);
         }
     }
 

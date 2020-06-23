@@ -12,6 +12,19 @@ import java.util.Map;
 import kernel.Perception;
 import kernel.AgentProxy;
 
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.standard.entities.StandardEntity;
+import rescuecore2.standard.entities.Road;
+import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Edge;
+import rescuecore2.standard.entities.Blockade;
+import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.entities.FireBrigade;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.Refuge;
+import rescuecore2.standard.entities.AmbulanceCentre;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
@@ -37,17 +50,6 @@ import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Area;
-import rescuecore2.standard.entities.Edge;
-import rescuecore2.standard.entities.Blockade;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.view.StandardWorldModelViewer;
 import rescuecore2.standard.view.StandardViewLayer;
 import rescuecore2.standard.view.BuildingLayer;
@@ -58,6 +60,12 @@ import rescuecore2.standard.view.HumanLayer;
 /**
    Line of sight perception.
  */
+
+/*
+ * Implementation of Refuge Bed Capacity
+ * @author Farshid Faraji
+ * May 2020 During Covid-19 :-)))
+ * */
 public class LineOfSightPerception implements Perception, GUIComponent {
     private static final int DEFAULT_VIEW_DISTANCE = 30000;
     private static final int DEFAULT_HP_PRECISION = 1000;
@@ -143,8 +151,15 @@ public class LineOfSightPerception implements Perception, GUIComponent {
                 case HYDRANT:
                     addRoadProperties((Road)next, result);
                     break;
-                case BUILDING:
+                // the refuge bed and waiting list information is only given to AT
                 case REFUGE:
+                    if(agentEntity instanceof Human)
+                            if (((Human) agentEntity).getPosition(world) == next) {
+                                addRefugeProperties((Refuge) next, result);
+                            }
+                    addBuildingProperties((Building) next, result);
+                    break;
+                case BUILDING:
                 case GAS_STATION:
                 case FIRE_STATION:
                 case AMBULANCE_CENTRE:
@@ -171,6 +186,15 @@ public class LineOfSightPerception implements Perception, GUIComponent {
                     break;
                 }
             }
+
+            if(agentEntity instanceof AmbulanceCentre)
+            {
+                Collection<StandardEntity> refuges = world.getEntitiesOfType(StandardEntityURN.REFUGE);
+                for (StandardEntity next : refuges) {
+                    addRefugeProperties((Refuge)next, result);
+                }
+            }
+
         }
         if (view != null) {
             view.repaint();
@@ -203,7 +227,16 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         result.addChange(building, building.getTemperatureProperty());
         result.addChange(building, building.getFierynessProperty());
         result.addChange(building, building.getBrokennessProperty());
+        result.addChange(building, building.getCapacityProperty());
     }
+
+    public void addRefugeProperties(Refuge refuge, ChangeSet result) {
+        result.addChange(refuge, refuge.getBedCapacityProperty());
+        result.addChange(refuge, refuge.getOccupiedBedsProperty());
+        result.addChange(refuge, refuge.getWaitingListSizeProperty());
+        //TODO send other information e.g civilians info in the refuge
+    }
+
 
     private void addAreaProperties(Area area, ChangeSet result) {
     }
