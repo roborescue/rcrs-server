@@ -1,18 +1,19 @@
 package maps.gml.view;
 
-import java.awt.Graphics2D;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import maps.gml.GMLBuilding;
 import maps.gml.GMLEdge;
 import maps.gml.GMLNode;
 import maps.gml.GMLRoad;
 import maps.gml.GMLSpace;
+import maps.gml.GMLRefuge;
 import rescuecore2.misc.gui.ScreenTransform;
+import java.awt.Graphics2D;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Draws an overlay consisting of Decorators.
@@ -34,6 +35,7 @@ public class DecoratorOverlay implements Overlay {
         roadDecorators = new HashMap<GMLRoad, RoadDecorator>();
         spaceDecorators = new HashMap<GMLSpace, SpaceDecorator>();
     }
+
 
     /**
      * Set the NodeDecorator for a set of GMLNodes.
@@ -403,6 +405,19 @@ public class DecoratorOverlay implements Overlay {
                 .entrySet()) {
             e.getValue().decorate(e.getKey(), (Graphics2D) g.create(),
                     transform);
+
+            if(e.getKey() instanceof GMLRefuge)
+            {
+                int x = transform.xToScreen(e.getKey().getCentreX());
+                int y = transform.yToScreen(e.getKey().getCentreY());
+                Graphics2D oldg = g;
+                g.setColor(new Color(0,0,0));
+                g.setFont(new Font(g.getFont().getName(), Font.BOLD, g.getFont()
+                        .getSize()));
+                g.drawString(String.valueOf("C=" + ((GMLRefuge)e.getKey()).getBedCapacity()), x - 20, y);
+                //g.drawString(String.valueOf("R " + ((GMLRefuge)e.getKey()).getRefillCapacity()), x - 10, y + 10);
+                g = oldg;
+            }
         }
         for (Entry<GMLSpace, SpaceDecorator> e : spaceDecorators.entrySet()) {
             e.getValue().decorate(e.getKey(), (Graphics2D) g.create(),

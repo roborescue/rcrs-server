@@ -233,6 +233,8 @@ public class SplitShapeTool extends AbstractTool {
                 b2.setFloors(b.getFloors());
                 b1.setImportance(b.getImportance());
                 b2.setImportance(b.getImportance());
+                b1.setCapacity(b.getCapacity());
+                b2.setCapacity(b.getCapacity());
                 s1 = b1;
                 s2 = b2;
             }
