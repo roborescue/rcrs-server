@@ -90,7 +90,7 @@ public class Geometry {
 		if(mb==null){
             //vertical line
             int p = Math.max(a.y,b.y)-Math.min(a.y,b.y);
-            p = (int) (p*Math.random());
+            p = (int) (p*Rnd.get01());
             p = p + Math.min(a.y,b.y);
             return new Point(a.x,p);
         }
