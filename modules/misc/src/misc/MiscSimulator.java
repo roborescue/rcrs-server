@@ -277,7 +277,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
                 * For the implementation of Refuge Bed Capacity
                 Damage increases and HP decreases while victim is in waiting list in Refuge
                 While victim is on the bed, Damage is reducing but HP is fix
-                human will not die while on the bed but it take time to get damage to 0
+                human will not die while on the bed but it takes time to get damage to 0
             * */
 
             else if (h.isPositionDefined() && (h.getPosition(model) instanceof Refuge) && h.isHPDefined() && h.getHP() > 0)
@@ -300,8 +300,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
                         h.setHP(newHP);
                         changes.addChange(ha.getHuman(), ha.getHuman().getHPProperty());
                     }
-                    if(h instanceof Civilian)
-                        Logger.warn("waiting list " + h.getPosition() + " = " + h + " damage = " + h.getDamage());
                 } else {
                     updateDamageInRefuge(ha);
                     h.setDamage(ha.getTotalDamage());
@@ -309,14 +307,11 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 
                     if (oldDamage > 0 && h.getDamage() <= 0){
                         if (waitingList.get(h.getPosition()).size() > 0) {
-                            EntityID remid = waitingList.get(h.getPosition()).remove();
-                            Logger.warn("update damage : waiting list removed " + remid + " size = " + waitingList.get(h.getPosition()).size() + " " + h + " old damage = " + oldDamage + " new damage = " + h.getDamage());
+                            waitingList.get(h.getPosition()).remove();
                         }
                         else
                             ((Refuge) h.getPosition(model)).decreaseOccupiedBeds();
                     }
-                    if(h instanceof Civilian && h.getDamage() > 0)
-                        Logger.warn("bed " + h.getPosition() + " =  " + h + " damage = " + h.getDamage());
                 }
             }
         }
@@ -360,7 +355,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     private boolean checkRescue(AKRescue rescue, Entity agent) {
         EntityID targetID = rescue.getTarget();
         Entity target = model.getEntity(targetID);
-        if (!(agent instanceof AmbulanceTeam)) {
+        if (!(agent instanceof FireBrigade)) {
             Logger.warn("Rejecting rescue command from agent " + agent.getID()
             		+ " who is of type " + agent.getURN());
             return false;
@@ -377,13 +372,13 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             return false;
         }
         Human h = (Human) target;
-        AmbulanceTeam at = (AmbulanceTeam) agent;
-        if (at.isHPDefined() && at.getHP() <= 0) {
+        FireBrigade fb = (FireBrigade) agent;
+        if (fb.isHPDefined() && fb.getHP() <= 0) {
             Logger.warn("Rejecting rescue command from agent " + agent.getID()
             		+ ": agent is dead");
             return false;
         }
-        if (at.isBuriednessDefined() && at.getBuriedness() > 0) {
+        if (fb.isBuriednessDefined() && fb.getBuriedness() > 0) {
             Logger.warn("Rejecting rescue command from agent " + agent.getID()
             		+ ": agent is buried");
             return false;
@@ -393,13 +388,13 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             		+ " for a non-buried target " + targetID);
             return false;
         }
-        if (!h.isPositionDefined() || !at.isPositionDefined()
-                || !h.getPosition().equals(at.getPosition())) {
+        if (!h.isPositionDefined() || !fb.isPositionDefined()
+                || !h.getPosition().equals(fb.getPosition())) {
             Logger.warn("Rejecting rescue command from agent " + agent.getID()
             		+ " for a non-adjacent target " + targetID);
             return false;
         }
-        if (h.getID().equals(at.getID())) {
+        if (h.getID().equals(fb.getID())) {
             Logger.warn("Rejecting rescue command from agent " + agent.getID()
             		+ ": tried to rescue self");
             return false;
