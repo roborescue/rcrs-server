@@ -533,7 +533,6 @@ public abstract class Human extends StandardEntity {
         jsonObject.put("EntityName", this.getEntityName());
         jsonObject.put("Damage", this.getDamage());
         jsonObject.put("HP", this.getHP());
-        jsonObject.put("Stamina", this.getStamina());
 
         JSONObject jsonPosition = new JSONObject();
         jsonPosition.put("x", getX());
