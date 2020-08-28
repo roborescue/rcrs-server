@@ -1,5 +1,6 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -100,5 +101,13 @@ public class FireBrigade extends Human {
     @Override
     protected String getEntityName() {
         return "Fire brigade";
+    }
+
+    @Override
+    public JSONObject toJson(){
+        JSONObject jsonObject = super.toJson();
+        jsonObject.put("EntityName", this.getEntityName());
+
+        return jsonObject;
     }
 }

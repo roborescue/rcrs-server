@@ -1,5 +1,6 @@
 package rescuecore2.worldmodel;
 
+import org.json.JSONObject;
 import java.util.Set;
 
 import java.io.InputStream;
@@ -66,4 +67,6 @@ public interface Entity {
        @return A new Entity with the same ID and property values.
      */
     Entity copy();
+
+    JSONObject toJson();
 }

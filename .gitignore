@@ -21,6 +21,13 @@ bin
 .project
 .classpath
 
+# Gradle
+.gradle
+
+# IntelliJ project
+.idea
+*.iml
+
 # Visual Studio Code
 .vscode
 

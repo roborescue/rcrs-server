@@ -1,5 +1,6 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -33,5 +34,12 @@ public class Hydrant extends Road {
     @Override
     protected String getEntityName() {
         return "Hydrant";
+    }
+
+    @Override
+    public JSONObject toJson(){
+        JSONObject jsonObject = super.toJson();
+        jsonObject.put("EntityName", this.getEntityName());
+        return jsonObject;
     }
 }

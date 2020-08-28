@@ -1,5 +1,7 @@
 package rescuecore2.worldmodel;
 
+import org.json.JSONObject;
+
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeProperty;
 import static rescuecore2.misc.EncodingTools.readInt32;
@@ -122,6 +124,13 @@ public abstract class AbstractEntity implements Entity {
         result.append(id);
         result.append(")");
         return result.toString();
+    }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("EntityName", this.getEntityName());
+        return json;
     }
 
     /**
