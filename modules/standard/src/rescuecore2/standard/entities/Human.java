@@ -1,5 +1,7 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Property;
@@ -522,4 +524,23 @@ public abstract class Human extends StandardEntity {
         this.x.setValue(newX);
         this.y.setValue(newY);
     }
+
+
+    @Override
+    public JSONObject toJson(){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Id", this.getID());
+        jsonObject.put("EntityName", this.getEntityName());
+        jsonObject.put("Damage", this.getDamage());
+        jsonObject.put("HP", this.getHP());
+        jsonObject.put("Stamina", this.getStamina());
+
+        JSONObject jsonPosition = new JSONObject();
+        jsonPosition.put("x", getX());
+        jsonPosition.put("y", getY());
+        jsonObject.put("Position", jsonPosition);
+
+        return jsonObject;
+    }
+
 }

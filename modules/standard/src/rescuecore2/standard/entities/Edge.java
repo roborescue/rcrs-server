@@ -1,5 +1,6 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
@@ -133,5 +134,15 @@ public class Edge {
     @Override
     public String toString() {
         return "Edge from " + start + " to " + end + " (" + (neighbour == null ? "impassable" : "neighbour: " + neighbour) + ")";
+    }
+
+    public JSONObject toJson(){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("StartX", this.getStartX());
+        jsonObject.put("StartY", this.getStartY());
+        jsonObject.put("EndX", this.getEndX());
+        jsonObject.put("EndY", this.getEndY());
+
+        return jsonObject;
     }
 }

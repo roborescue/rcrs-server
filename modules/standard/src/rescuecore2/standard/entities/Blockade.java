@@ -1,5 +1,6 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -320,5 +321,16 @@ public class Blockade extends StandardEntity {
                 shape = null;
             }
         }
+    }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        json.put("id", this.getID());
+        json.put("EntityName", this.getEntityName());
+        json.put("Apexes", this.getApexes());
+        json.put("RepairCost", this.getRepairCost());
+
+
+        return json;
     }
 }
