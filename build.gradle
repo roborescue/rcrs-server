@@ -9,6 +9,7 @@ version = '1.3'
 dependencies {
   runtimeOnly fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
   implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
+  compile group: 'org.json', name: 'json', version: '20200518'
 
   testImplementation 'junit:junit:4.12'
 }

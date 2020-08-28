@@ -12,6 +12,7 @@ sh kill.sh
 startKernel --nomenu
 startSims
 startViewer
+startViewerEventLogger
 
 echo "Start your agents"
 waitFor $LOGDIR/kernel.log "Kernel has shut down" 30

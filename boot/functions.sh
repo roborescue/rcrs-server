@@ -67,6 +67,7 @@ function printUsage {
 # Process command-line arguments
 function processArgs {
     LOGDIR="logs"
+    RECORDSDIR="records"
     MAP="$BASEDIR/maps/gml/test/map"
     CONFIGDIR="$BASEDIR/maps/gml/test/config"
     TEAM=""
@@ -92,6 +93,10 @@ function processArgs {
                 ;;
             -l | --log)
                 LOGDIR="$2"
+                shift 2
+                ;;
+            -r | --records)
+                RECORDSDIR="$2"
                 shift 2
                 ;;
             -t | --team)
@@ -153,6 +158,7 @@ function processArgs {
         LOGDIR=`readlink -f $LOGDIR`
     fi
     mkdir -p $LOGDIR
+    mkdir -p $RECORDSDIR
 }
 
 function execute {
@@ -235,4 +241,22 @@ function startViewer {
     execute viewer "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewer -c $CONFIGDIR/viewer.cfg $TEAM_NAME_ARG $*"
     echo "waiting for viewer to connect..."
     waitFor $LOGDIR/viewer-out.log "success"
+}
+
+
+# Start the viewer event logger
+function startViewerEventLogger {
+    if [[ $NOGUI == "yes" ]]; then
+        return 0
+    fi
+
+    makeClasspath $BASEDIR/lib
+
+    TEAM_NAME_ARG=""
+    if [ ! -z "$TEAM" ]; then
+        TEAM_NAME_ARG="\"--viewer.team-name=$TEAM\""
+    fi
+
+    # Execute the viewer
+    execute viewer "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/sample.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.SampleViewerEventLogger -c $CONFIGDIR/viewer.cfg --records.dir=$RECORDSDIR $TEAM_NAME_ARG $*"
 }
