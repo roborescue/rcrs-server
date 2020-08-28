@@ -1,6 +1,5 @@
 package sample;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -9,13 +8,15 @@ import org.json.JSONObject;
 
 import rescuecore2.log.Logger;
 import rescuecore2.standard.components.StandardViewer;
+import rescuecore2.standard.entities.Area;
+import rescuecore2.standard.entities.Road;
+import rescuecore2.standard.entities.Building;
+import rescuecore2.standard.entities.Blockade;
+import rescuecore2.standard.entities.Human;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.control.KVTimestep;
-import rescuecore2.standard.entities.Blockade;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.Road;
 
 /**
  * A simple viewer event recorder.
@@ -35,7 +36,7 @@ public class SampleViewerEventLogger extends StandardViewer {
 
         String mapName = getMapName();
         this.teamName = config.getValue(TEAM_NAME_KEY, "Connecting...");
-        recordsDir = config.getValue(RECORDS_DIR_KEY,  "./records");
+        recordsDir = config.getValue(RECORDS_DIR_KEY, "./records");
         String totalTime = config.getValue("kernel.timesteps");
         int channelCount = config.getIntValue("comms.channels.count") - 1;//-1 for say
 
@@ -106,6 +107,9 @@ public class SampleViewerEventLogger extends StandardViewer {
         if (entity instanceof Building) {
             jsonEntity.remove("Edges");
             jsonEntity.remove("Floors");
+        }
+        if (entity instanceof Area) {
+            jsonEntity.remove("Apexes");
         }
         if (entity instanceof Human) {
             Human human = (Human) entity;

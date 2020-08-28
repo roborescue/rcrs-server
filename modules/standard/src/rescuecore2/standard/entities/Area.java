@@ -1,5 +1,6 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -321,5 +322,13 @@ public abstract class Area extends StandardEntity {
                 neighbours = null;
             }
         }
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Apexes", this.getApexList());
+
+        return jsonObject;
     }
 }

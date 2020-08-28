@@ -641,7 +641,7 @@ public abstract class Human extends StandardEntity {
    *          The new position.
    * @param newX
    *          The x coordinate of this agent.
-   * @param newY
+   * @param newYStandardPropertyURN
    *          The y coordinate if this agent.
    */
   public void setPosition( EntityID newPosition, int newX, int newY ) {
@@ -658,11 +658,7 @@ public abstract class Human extends StandardEntity {
     jsonObject.put( "EntityName", this.getEntityName() );
     jsonObject.put( "Damage", this.getDamage() );
     jsonObject.put( "HP", this.getHP() );
-
-    JSONObject jsonPosition = new JSONObject();
-    jsonPosition.put( "x", getX() );
-    jsonPosition.put( "y", getY() );
-    jsonObject.put( "Position", jsonPosition );
+    jsonObject.put( "Pos", new int[]{getX(), getY()});
 
     return jsonObject;
   }
