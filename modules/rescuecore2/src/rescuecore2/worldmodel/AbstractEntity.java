@@ -145,15 +145,6 @@ public abstract class AbstractEntity implements Entity {
   }
 
 
-  @Override
-  public JSONObject toJson() {
-    JSONObject json = new JSONObject();
-    json.put( "id", id );
-    json.put( "EntityName", this.getEntityName() );
-    return json;
-  }
-
-
   /**
    * Get the full description of this object.
    *

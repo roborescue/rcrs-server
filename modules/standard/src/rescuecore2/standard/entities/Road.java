@@ -52,10 +52,7 @@ public class Road extends Area {
 
   @Override
   public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( "Id", this.getID() );
-    jsonObject.put( "EntityName", this.getEntityName() );
-
-    return jsonObject;
+    return super.toJson();
   }
+
 }

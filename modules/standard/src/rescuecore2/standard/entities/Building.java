@@ -671,12 +671,11 @@ public class Building extends Area {
   @Override
   public JSONObject toJson() {
     JSONObject jsonObject = super.toJson();
-    jsonObject.put( "Id", this.getID() );
-    jsonObject.put( "EntityName", this.getEntityName() );
     jsonObject.put( "Brokenness", this.getBrokenness() );
     jsonObject.put( "Fieryness", this.getFieryness() );
     jsonObject.put( "Floors", this.getFloors() );
 
     return jsonObject;
   }
+
 }

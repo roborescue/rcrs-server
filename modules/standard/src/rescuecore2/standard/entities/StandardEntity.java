@@ -1,5 +1,6 @@
 package rescuecore2.standard.entities;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.AbstractEntity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
@@ -44,4 +45,13 @@ public abstract class StandardEntity extends AbstractEntity {
     public final String getURN() {
         return getStandardURN().toString();
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put( "id", getID() );
+        json.put( "EntityName", this.getEntityName() );
+        return json;
+    }
+
 }

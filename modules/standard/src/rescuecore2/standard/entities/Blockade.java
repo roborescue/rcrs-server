@@ -90,7 +90,7 @@ public class Blockade extends StandardEntity {
 
   @Override
   protected String getEntityName() {
-    return "Building";
+    return "Blockade";
   }
 
 
@@ -399,12 +399,11 @@ public class Blockade extends StandardEntity {
 
   @Override
   public JSONObject toJson() {
-    JSONObject json = new JSONObject();
-    json.put( "Id", this.getID() );
-    json.put( "EntityName", this.getEntityName() );
-    json.put( "Apexes", this.getApexes() );
-    json.put( "RepairCost", this.getRepairCost() );
+    JSONObject jsonObject = super.toJson();
+    jsonObject.put( "Apexes", this.getApexes() );
+    jsonObject.put( "RepairCost", this.getRepairCost() );
 
-    return json;
+    return jsonObject;
   }
+
 }

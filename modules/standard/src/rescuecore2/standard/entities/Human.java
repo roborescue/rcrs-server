@@ -653,9 +653,7 @@ public abstract class Human extends StandardEntity {
 
   @Override
   public JSONObject toJson() {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put( "Id", this.getID() );
-    jsonObject.put( "EntityName", this.getEntityName() );
+    JSONObject jsonObject = super.toJson();
     jsonObject.put( "Damage", this.getDamage() );
     jsonObject.put( "HP", this.getHP() );
     jsonObject.put( "Pos", new int[]{getX(), getY()});
