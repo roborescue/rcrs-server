@@ -10,7 +10,7 @@ hs_err_pid*
 build
 bin
 
-# IntelliJ
+# IntelliJ project
 *.iml
 *.ipr
 *.iws
@@ -24,12 +24,11 @@ bin
 # Gradle
 .gradle
 
-# IntelliJ project
-.idea
-*.iml
-
 # Visual Studio Code
 .vscode
+
+# Theia IDE
+.theia
 
 # General MacOS
 .DS_Store
@@ -37,4 +36,6 @@ bin
 .LSOverride
 
 # Project
+boot/logs
+boot/records
 jars
