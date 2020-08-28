@@ -89,6 +89,12 @@ public class Blockade extends StandardEntity {
 
 
   @Override
+  protected String getEntityName() {
+    return "Building";
+  }
+
+
+  @Override
   public Property getProperty( String urn ) {
     StandardPropertyURN type;
     try {
@@ -394,7 +400,7 @@ public class Blockade extends StandardEntity {
   @Override
   public JSONObject toJson() {
     JSONObject json = new JSONObject();
-    json.put( "id", this.getID() );
+    json.put( "Id", this.getID() );
     json.put( "EntityName", this.getEntityName() );
     json.put( "Apexes", this.getApexes() );
     json.put( "RepairCost", this.getRepairCost() );
