@@ -671,9 +671,9 @@ public class Building extends Area {
   @Override
   public JSONObject toJson() {
     JSONObject jsonObject = super.toJson();
-    jsonObject.put( "Brokenness", this.getBrokenness() );
-    jsonObject.put( "Fieryness", this.getFieryness() );
-    jsonObject.put( "Floors", this.getFloors() );
+    jsonObject.put("Brokenness", this.isBrokennessDefined() ? this.getBrokenness() : JSONObject.NULL);
+    jsonObject.put("Fieryness", this.isFierynessDefined() ? this.getFieryness() : JSONObject.NULL);
+    jsonObject.put("Floors", this.isFloorsDefined() ? this.getFloors() : JSONObject.NULL);
 
     return jsonObject;
   }

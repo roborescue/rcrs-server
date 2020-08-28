@@ -53,6 +53,5 @@ public class Civilian extends Human {
   public JSONObject toJson() {
     return super.toJson();
   }
-
-
+  
 }

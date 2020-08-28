@@ -327,7 +327,7 @@ public abstract class Area extends StandardEntity {
     @Override
     public JSONObject toJson() {
         JSONObject jsonObject = super.toJson();
-        jsonObject.put("Apexes", this.getApexList());
+        jsonObject.put("Apexes", this.isEdgesDefined() ? this.getApexList() : JSONObject.NULL);
 
         return jsonObject;
     }
