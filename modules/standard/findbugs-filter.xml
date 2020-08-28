@@ -1,7 +1,0 @@
-<FindBugsFilter>
-  <Match>
-    <Class name="rescuecore2.standard.entities.Area"/>
-    <Bug pattern="EI_EXPOSE_REP"/>
-    <Method name="getApexList"/>
-  </Match>
-</FindBugsFilter>

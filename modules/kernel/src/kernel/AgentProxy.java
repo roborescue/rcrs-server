@@ -61,7 +61,7 @@ public class AgentProxy extends AbstractKernelComponent {
     public Collection<Command> getAgentCommands(int timestep) {
         Collection<Command> result;
         synchronized (commands) {
-            result = commands.get(timestep);
+            result = new ArrayList<>(commands.get(timestep));
         }
         Logger.trace(entity.toString() + " getAgentCommands(" + timestep + ") returning " + result);
         return result;
