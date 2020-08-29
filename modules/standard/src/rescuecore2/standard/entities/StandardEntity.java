@@ -49,7 +49,7 @@ public abstract class StandardEntity extends AbstractEntity {
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put( "id", getID() );
+        json.put( "Id", getID() );
         json.put( "EntityName", this.getEntityName() );
         return json;
     }
