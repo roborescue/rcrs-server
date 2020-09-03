@@ -80,12 +80,12 @@ public class SampleAmbulanceTeam extends AbstractSampleAgent<AmbulanceTeam> {
                     sendLoad(time, next.getID());
                     return;
                 }
-                if (next.getBuriedness() > 0) {
+                /*if (next.getBuriedness() > 0) {
                     // Rescue
                     LOG.info("Rescueing " + next);
                     sendRescue(time, next.getID());
                     return;
-                }
+                }*/
             }
             else {
                 // Try to move to the target

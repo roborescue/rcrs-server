@@ -12,6 +12,7 @@ import java.util.Dictionary;
 import kernel.Perception;
 import kernel.AgentProxy;
 
+import rescuecore2.standard.entities.*;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
@@ -19,15 +20,6 @@ import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.config.Config;
 import rescuecore2.misc.Pair;
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.Area;
-import rescuecore2.standard.entities.Blockade;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.GUIComponent;
 
 import java.awt.GridLayout;
@@ -46,8 +38,13 @@ import javax.swing.event.ChangeEvent;
 import handy.swing.SliderComponent;
 
 /**
-   Legacy implementation of perception with a GUI.
+ * Legacy implementation of perception with a GUI.
  */
+/*
+ * Implementation of Refuge Bed Capacity
+ * @author Farshid Faraji
+ * May 2020 During Covid-19 :-)))
+ * */
 public class StandardPerception implements Perception, GUIComponent {
     private static final boolean DEFAULT_USE_FAR_FIRES = true;
     private static final int DEFAULT_HP_PRECISION = 1000;
@@ -82,8 +79,8 @@ public class StandardPerception implements Perception, GUIComponent {
     private final Object lock = new Object();
 
     /**
-       Create a StandardPerception object.
-    */
+     * Create a StandardPerception object.
+     */
     public StandardPerception() {
     }
 
@@ -101,11 +98,10 @@ public class StandardPerception implements Perception, GUIComponent {
         time = 0;
         for (StandardEntity next : world) {
             if (next instanceof Building) {
-                Building b = (Building)next;
+                Building b = (Building) next;
                 if (!b.isFierynessDefined() || b.getFieryness() == 0) {
                     unburntBuildings.add(b);
-                }
-                else {
+                } else {
                     ignitionTimes.put(b, time);
                 }
             }
@@ -130,18 +126,18 @@ public class StandardPerception implements Perception, GUIComponent {
     @Override
     public void setTime(int timestep) {
         // Look for buildings that caught fire last timestep
-        for (Iterator<Building> it = unburntBuildings.iterator(); it.hasNext();) {
+        for (Iterator<Building> it = unburntBuildings.iterator(); it.hasNext(); ) {
             Building next = it.next();
             if (next.isFierynessDefined()) {
                 switch (next.getFierynessEnum()) {
-                case HEATING:
-                case BURNING:
-                case INFERNO:
-                    ignitionTimes.put(next, time);
-                    it.remove();
-                    break;
-                default:
-                    // Ignore
+                    case HEATING:
+                    case BURNING:
+                    case INFERNO:
+                        ignitionTimes.put(next, time);
+                        it.remove();
+                        break;
+                    default:
+                        // Ignore
                 }
             }
         }
@@ -162,40 +158,45 @@ public class StandardPerception implements Perception, GUIComponent {
                 int y = location.second().intValue();
                 Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, viewDistance);
                 // Copy entities and set property values
-                for (StandardEntity next : nearby) 
-                {
+                for (StandardEntity next : nearby) {
                     StandardEntityURN urn = next.getStandardURN();
                     switch (urn) {
-                    case ROAD:
-                    case HYDRANT:
-                        addRoadProperties((Road)next, result);
-                        break;
-                    case BUILDING:
-                    case REFUGE:
-                    case GAS_STATION:
-                    case FIRE_STATION:
-                    case AMBULANCE_CENTRE:
-                    case POLICE_OFFICE:
-                        addBuildingProperties((Building)next, result);
-                        break;
-                    case CIVILIAN:
-                    case FIRE_BRIGADE:
-                    case AMBULANCE_TEAM:
-                    case POLICE_FORCE:
-                        // Always send all properties of the agent-controlled object
-                        if (next == agentEntity) {
-                            addSelfProperties((Human)next, result);
-                        }
-                        else {
-                            addHumanProperties((Human)next, result);
-                        }
-                        break;
-                    case BLOCKADE:
-                        addBlockadeProperties((Blockade)next, result);
-                        break;
-                    default:
-                        // Ignore other types
-                        break;
+                        case ROAD:
+                        case HYDRANT:
+                            addRoadProperties((Road) next, result);
+                            break;
+
+                        case REFUGE:
+                            if (agentEntity instanceof Human)
+                                if (((Human) agentEntity).getPosition(world) == next) {
+                                    addRefugeProperties((Refuge) next, result);
+                                }
+                            addBuildingProperties((Building) next, result);
+                            break;
+                        case BUILDING:
+                        case GAS_STATION:
+                        case FIRE_STATION:
+                        case AMBULANCE_CENTRE:
+                        case POLICE_OFFICE:
+                            addBuildingProperties((Building) next, result);
+                            break;
+                        case CIVILIAN:
+                        case FIRE_BRIGADE:
+                        case AMBULANCE_TEAM:
+                        case POLICE_FORCE:
+                            // Always send all properties of the agent-controlled object
+                            if (next == agentEntity) {
+                                addSelfProperties((Human) next, result);
+                            } else {
+                                addHumanProperties((Human) next, result);
+                            }
+                            break;
+                        case BLOCKADE:
+                            addBlockadeProperties((Blockade) next, result);
+                            break;
+                        default:
+                            // Ignore other types
+                            break;
                     }
                 }
                 // Now look for far fires
@@ -209,6 +210,13 @@ public class StandardPerception implements Perception, GUIComponent {
                         if (range <= visibleRange) {
                             addFarBuildingProperties(b, result);
                         }
+                    }
+                }
+
+                if (agentEntity instanceof AmbulanceCentre) {
+                    Collection<StandardEntity> refuges = world.getEntitiesOfType(StandardEntityURN.REFUGE);
+                    for (StandardEntity next : refuges) {
+                        addRefugeProperties((Refuge) next, result);
                     }
                 }
             }
@@ -235,6 +243,13 @@ public class StandardPerception implements Perception, GUIComponent {
         result.addChange(building, building.getTemperatureProperty());
         result.addChange(building, building.getFierynessProperty());
         result.addChange(building, building.getBrokennessProperty());
+    }
+
+    public void addRefugeProperties(Refuge refuge, ChangeSet result) {
+        result.addChange(refuge, refuge.getBedCapacityProperty());
+        result.addChange(refuge, refuge.getOccupiedBedsProperty());
+        result.addChange(refuge, refuge.getWaitingListSizeProperty());
+        //TODO send other information e.g civilians info in the refuge
     }
 
     private void addAreaProperties(Area area, ChangeSet result) {
@@ -270,8 +285,8 @@ public class StandardPerception implements Perception, GUIComponent {
         // Un-round hp and damage
         result.addChange(human, human.getHPProperty());
         result.addChange(human, human.getDamageProperty());
-        if(human instanceof FireBrigade)
-        	result.addChange(human, ((FireBrigade)human).getWaterProperty());
+        if (human instanceof FireBrigade)
+            result.addChange(human, ((FireBrigade) human).getWaterProperty());
     }
 
     private void addBlockadeProperties(Blockade blockade, ChangeSet result) {
@@ -360,29 +375,29 @@ public class StandardPerception implements Perception, GUIComponent {
             add(s);
             add(farFiresBox);
             viewDistanceSlider.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        updateViewDistance(viewDistanceSlider.getValue());
-                    }
-                });
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    updateViewDistance(viewDistanceSlider.getValue());
+                }
+            });
             hpPrecisionSlider.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        updateHPPrecision(hpPrecisionSlider.getValue());
-                    }
-                });
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    updateHPPrecision(hpPrecisionSlider.getValue());
+                }
+            });
             damagePrecisionSlider.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        updateDamagePrecision(damagePrecisionSlider.getValue());
-                    }
-                });
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    updateDamagePrecision(damagePrecisionSlider.getValue());
+                }
+            });
             farFiresBox.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        updateUseFarFires(farFiresBox.isSelected());
-                    }
-                });
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    updateUseFarFires(farFiresBox.isSelected());
+                }
+            });
             // Add tick marks to sliders
             viewDistanceSlider.setPaintLabels(true);
             viewDistanceSlider.setPaintTicks(true);
