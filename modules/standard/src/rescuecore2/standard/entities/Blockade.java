@@ -400,8 +400,8 @@ public class Blockade extends StandardEntity {
   @Override
   public JSONObject toJson() {
     JSONObject jsonObject = super.toJson();
-    jsonObject.put( "Apexes", this.isApexesDefined() ? this.getApexes() : JSONObject.NULL);
-    jsonObject.put( "RepairCost", this.isRepairCostDefined() ? this.getRepairCost() : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.APEXES.toString(), this.isApexesDefined() ? this.getApexes() : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.REPAIR_COST.toString(), this.isRepairCostDefined() ? this.getRepairCost() : JSONObject.NULL);
 
     return jsonObject;
   }

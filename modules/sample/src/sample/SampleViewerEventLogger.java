@@ -13,6 +13,8 @@ import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.Building;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.StandardPropertyURN;
+
 
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -105,16 +107,16 @@ public class SampleViewerEventLogger extends StandardViewer {
             return null;
         }
         if (entity instanceof Building) {
-            jsonEntity.remove("Edges");
-            jsonEntity.remove("Floors");
+            jsonEntity.remove(StandardPropertyURN.EDGES.toString());
+            jsonEntity.remove(StandardPropertyURN.FLOORS.toString());
         }
         if (entity instanceof Area) {
-            jsonEntity.remove("Apexes");
+            jsonEntity.remove(StandardPropertyURN.APEXES.toString());
         }
         if (entity instanceof Human) {
             Human human = (Human) entity;
             if (human.getBuriedness() > 0) {
-                jsonEntity.remove("Position");
+                jsonEntity.remove(StandardPropertyURN.POSITION.toString());
             }
         }
 
