@@ -2,6 +2,7 @@ package sample;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +20,7 @@ import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.control.KVTimestep;
+import rescuecore2.worldmodel.Property;
 
 /**
  * A simple viewer event recorder.
@@ -76,15 +78,23 @@ public class SampleViewerEventLogger extends StandardViewer {
         JSONArray jsonEntities = new JSONArray();
         for (EntityID id : kvt.getChangeSet().getChangedEntities()) {
             Entity entity = model.getEntity(id);
+            Set<Property> changedProperties = kvt.getChangeSet().getChangedProperties(entity.getID());
 
             // Filter Entity
-            JSONObject jsonEntity = getFilteredEntity(entity, entity.toJson());
-
-            if (jsonEntity == null) {
-                continue;
+            JSONObject jsonEntity = entity.toJson();
+            JSONObject filteredJsonEntity = new JSONObject();
+            for (Property property : changedProperties) {
+                String propertyName = property.getURN();
+                if(jsonEntity.has(propertyName) && !jsonEntity.isNull(propertyName)) {
+                    String jsonEntityProperty = jsonEntity.get(propertyName).toString();
+                    filteredJsonEntity.put(propertyName, jsonEntityProperty);
+                }
             }
 
-            jsonEntities.put(jsonEntity);
+            if(!filteredJsonEntity.isEmpty()){
+                filteredJsonEntity.put("Id", jsonEntity.get("Id"));
+                jsonEntities.put(jsonEntity);
+            }
         }
 
         JSONObject jsonRecord = new JSONObject();
@@ -94,35 +104,6 @@ public class SampleViewerEventLogger extends StandardViewer {
 
         writeJsonFile(jsonRecord, logFilePath, true);
     }
-
-    private JSONObject getFilteredEntity(Entity entity, JSONObject jsonEntity) {
-        // SEND Whole entity
-        if (entity instanceof Blockade) {
-            return jsonEntity;
-        }
-
-        jsonEntity.remove("EntityName");
-
-        if (entity instanceof Road) {
-            return null;
-        }
-        if (entity instanceof Building) {
-            jsonEntity.remove(StandardPropertyURN.EDGES.toString());
-            jsonEntity.remove(StandardPropertyURN.FLOORS.toString());
-        }
-        if (entity instanceof Area) {
-            jsonEntity.remove(StandardPropertyURN.APEXES.toString());
-        }
-        if (entity instanceof Human) {
-            Human human = (Human) entity;
-            if (human.getBuriedness() > 0) {
-                jsonEntity.remove(StandardPropertyURN.POSITION.toString());
-            }
-        }
-
-        return jsonEntity;
-    }
-
 
     private void writeJsonFile(JSONObject output, String filename, boolean append) {
 
