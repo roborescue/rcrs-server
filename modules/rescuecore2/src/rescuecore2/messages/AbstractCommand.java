@@ -1,5 +1,6 @@
 package rescuecore2.messages;
 
+import org.json.JSONObject;
 import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.worldmodel.EntityID;
@@ -88,5 +89,13 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
         init();
         setAgentID(id);
         setTime(t);
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("Name", getURN());
+        json.put("AgentId", this.getAgentID().getValue());
+        return json;
     }
 }

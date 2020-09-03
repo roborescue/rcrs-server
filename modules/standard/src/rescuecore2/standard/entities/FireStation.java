@@ -64,6 +64,4 @@ public class FireStation extends Building {
   public JSONObject toJson() {
     return super.toJson();
   }
-
-
 }

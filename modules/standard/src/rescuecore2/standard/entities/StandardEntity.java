@@ -53,5 +53,4 @@ public abstract class StandardEntity extends AbstractEntity {
         json.put( "EntityName", this.getEntityName() );
         return json;
     }
-
 }

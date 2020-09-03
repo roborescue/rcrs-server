@@ -48,10 +48,4 @@ public class PoliceForce extends Human {
     return "Police force";
   }
 
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-
 }

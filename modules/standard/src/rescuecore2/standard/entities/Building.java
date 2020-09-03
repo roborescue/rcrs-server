@@ -677,5 +677,4 @@ public class Building extends Area {
 
     return jsonObject;
   }
-
 }

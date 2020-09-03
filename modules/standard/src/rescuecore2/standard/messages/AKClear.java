@@ -1,5 +1,6 @@
 package rescuecore2.standard.messages;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.AbstractCommand;
@@ -48,5 +49,13 @@ public class AKClear extends AbstractCommand {
      */
     public EntityID getTarget() {
         return target.getValue();
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonObject = super.toJson();
+        jsonObject.put("Target", this.getTarget());
+
+        return jsonObject;
     }
 }

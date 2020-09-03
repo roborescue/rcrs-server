@@ -38,5 +38,4 @@ public class GasStation extends Building {
   public JSONObject toJson() {
     return super.toJson();
   }
-
 }

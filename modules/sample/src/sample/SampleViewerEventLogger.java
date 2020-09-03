@@ -3,6 +3,7 @@ package sample;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import rescuecore2.Constants;
 import rescuecore2.Timestep;
 import rescuecore2.log.Logger;
+import rescuecore2.messages.Command;
 import rescuecore2.score.ScoreFunction;
 import rescuecore2.standard.components.StandardViewer;
 
@@ -67,37 +69,27 @@ public class SampleViewerEventLogger extends StandardViewer {
     protected void handleTimestep(final KVTimestep kvt) {
         super.handleTimestep(kvt);
 
-        JSONArray jsonEntities = new JSONArray();
-        for (EntityID id : kvt.getChangeSet().getChangedEntities()) {
-            Entity entity = model.getEntity(id);
-            Set<Property> changedProperties = kvt.getChangeSet().getChangedProperties(entity.getID());
-
-            // Filter Entity
-            JSONObject jsonEntity = entity.toJson();
-            JSONObject filteredJsonEntity = new JSONObject();
-            for (Property property : changedProperties) {
-                String propertyName = property.getURN();
-                if (jsonEntity.has(propertyName) && !jsonEntity.isNull(propertyName)) {
-                    String jsonEntityProperty = jsonEntity.get(propertyName).toString();
-                    filteredJsonEntity.put(propertyName, jsonEntityProperty);
-                }
-            }
-
-            if (!filteredJsonEntity.isEmpty()) {
-                filteredJsonEntity.put("Id", jsonEntity.get("Id"));
-                jsonEntities.put(jsonEntity);
-            }
-        }
-
         JSONObject jsonInfo = generateInfo(kvt);
+        JSONArray jsonEntities = generateChanges(kvt);
+        JSONArray jsonCommands = getCommandActionLog(kvt);
 
         JSONObject jsonRecord = new JSONObject();
 
+        jsonRecord.put("Commands", jsonCommands);
         jsonRecord.put("Entities", jsonEntities);
         jsonRecord.put("Info", jsonInfo);
         jsonRecord.put("TimeStep", kvt.getTime());
 
         writeJsonFile(jsonRecord, logFilePath, true);
+    }
+
+
+    private JSONArray generateMap() {
+        JSONArray jsonAllEntities = new JSONArray();
+        for (Entity entity : model.getAllEntities()) {
+            jsonAllEntities.put(entity.toJson());
+        }
+        return jsonAllEntities;
     }
 
     private JSONObject generateSummery() {
@@ -129,13 +121,42 @@ public class SampleViewerEventLogger extends StandardViewer {
         return jsonInfo;
     }
 
-    private JSONArray generateMap() {
+
+    private JSONArray generateChanges(final KVTimestep kvt) {
+        JSONArray jsonEntities = new JSONArray();
+        for (EntityID id : kvt.getChangeSet().getChangedEntities()) {
+            Entity entity = model.getEntity(id);
+            Set<Property> changedProperties = kvt.getChangeSet().getChangedProperties(entity.getID());
+
+            // Filter Entity
+            JSONObject jsonEntity = entity.toJson();
+            JSONObject filteredJsonEntity = new JSONObject();
+            for (Property property : changedProperties) {
+                String propertyName = property.getURN();
+                if (jsonEntity.has(propertyName) && !jsonEntity.isNull(propertyName)) {
+                    String jsonEntityProperty = jsonEntity.get(propertyName).toString();
+                    filteredJsonEntity.put(propertyName, jsonEntityProperty);
+                }
+            }
+
+            if (!filteredJsonEntity.isEmpty()) {
+                filteredJsonEntity.put("Id", jsonEntity.get("Id"));
+                jsonEntities.put(jsonEntity);
+            }
+        }
+
+        return jsonEntities;
+    }
+
+    private JSONArray getCommandActionLog(final KVTimestep t) {
         JSONArray jsonAllEntities = new JSONArray();
-        for (Entity entity : model.getAllEntities()) {
-            jsonAllEntities.put(entity.toJson());
+
+        for (Command command : t.getCommands()) {
+            jsonAllEntities.put(command.toJson());
         }
         return jsonAllEntities;
     }
+
 
     private void writeJsonFile(JSONObject output, String filename, boolean append) {
 

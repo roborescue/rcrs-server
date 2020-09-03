@@ -43,11 +43,4 @@ public class Hydrant extends Road {
   protected String getEntityName() {
     return "Hydrant";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-
 }

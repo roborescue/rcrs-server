@@ -47,11 +47,4 @@ public class Civilian extends Human {
   protected String getEntityName() {
     return "Civilian";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-  
 }

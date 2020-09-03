@@ -47,11 +47,4 @@ public class AmbulanceTeam extends Human {
   protected String getEntityName() {
     return "Ambulance team";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-
 }

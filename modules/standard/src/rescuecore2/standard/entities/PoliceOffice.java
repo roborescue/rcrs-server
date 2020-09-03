@@ -58,11 +58,4 @@ public class PoliceOffice extends Building {
   protected String getEntityName() {
     return "Police office";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-
 }

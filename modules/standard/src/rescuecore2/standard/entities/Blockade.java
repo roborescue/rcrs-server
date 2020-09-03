@@ -405,5 +405,4 @@ public class Blockade extends StandardEntity {
 
     return jsonObject;
   }
-
 }

@@ -122,10 +122,4 @@ public class FireBrigade extends Human {
   protected String getEntityName() {
     return "Fire brigade";
   }
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-
 }

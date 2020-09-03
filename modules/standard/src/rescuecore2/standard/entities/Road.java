@@ -48,11 +48,4 @@ public class Road extends Area {
   protected String getEntityName() {
     return "Road";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    return super.toJson();
-  }
-
 }

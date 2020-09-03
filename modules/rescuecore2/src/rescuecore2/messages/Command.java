@@ -1,5 +1,6 @@
 package rescuecore2.messages;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -17,4 +18,6 @@ public interface Command extends Message {
        @return The timestep.
      */
     int getTime();
+
+    JSONObject toJson();
 }
