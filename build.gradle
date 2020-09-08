@@ -8,14 +8,13 @@ version = '1.3'
 
 dependencies {
   runtimeOnly fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
-  implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
-  compile group: 'org.json', name: 'json', version: '20200518'
 
-  testImplementation 'junit:junit:4.12'
+  implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
+  implementation 'org.json:json:20200518'
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 sourceSets {
@@ -372,4 +371,12 @@ task gmlEditor(type: JavaExec) {
   main = 'maps.gml.editor.GMLEditor'
   maxHeapSize = '2048m'
   args = [ '../maps/gml/test/map/map.gml' ]
+}
+
+/* Converter OSM to GML */
+task osm2gml(type: JavaExec) {
+  classpath = files('supplement')
+  classpath += sourceSets.main.runtimeClasspath
+  main = 'maps.convert.Convert'
+  maxHeapSize = '2048m'
 }

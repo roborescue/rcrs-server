@@ -86,6 +86,16 @@ $ ./gradlew logViewer --args='-c config/logviewer.cfg <log path>'
 ```
 where ```--args='-c config/logviewer.cfg <log path>'``` is optional and ```<log path>``` defines the log file path. The default log file path is ```logs/rescue.log```.
 
+### 5.5 `osm2gml`
+
+Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
+
+```bash
+
+$ ./gradlew osm2gml --args='<osm map path> <gml map path>'
+```
+The ```<osm map path>``` is the path to the OSM map file and the ```<gml map path>``` is the destination GML map path.
+
 ## 6. Support
 
 To report a bug, suggest improvements or request support, please open an issue at GitHub <https://github.com/roborescue/rcrs-server/issues>.
