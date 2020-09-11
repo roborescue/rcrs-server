@@ -3,7 +3,8 @@ package sample;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -17,6 +18,7 @@ import rescuecore2.score.ScoreFunction;
 import rescuecore2.standard.components.StandardViewer;
 
 
+import rescuecore2.standard.messages.StandardMessageURN;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.control.KVTimestep;
@@ -148,11 +150,25 @@ public class SampleViewerEventLogger extends StandardViewer {
         return jsonEntities;
     }
 
+    List<StandardMessageURN> allowed_command_child = Arrays.asList(
+            StandardMessageURN.AK_CLEAR,
+            StandardMessageURN.AK_CLEAR_AREA,
+            StandardMessageURN.AK_EXTINGUISH,
+            StandardMessageURN.AK_LOAD,
+            StandardMessageURN.AK_MOVE,
+            StandardMessageURN.AK_RESCUE,
+            StandardMessageURN.AK_REST,
+            StandardMessageURN.AK_UNLOAD
+    );
+
     private JSONArray getCommandActionLog(final KVTimestep t) {
         JSONArray jsonAllEntities = new JSONArray();
 
         for (Command command : t.getCommands()) {
-            jsonAllEntities.put(command.toJson());
+            StandardMessageURN commandStandardMessageURN = StandardMessageURN.fromString(command.getURN());
+            if (allowed_command_child.contains(commandStandardMessageURN)) {
+                jsonAllEntities.put(command.toJson());
+            }
         }
         return jsonAllEntities;
     }

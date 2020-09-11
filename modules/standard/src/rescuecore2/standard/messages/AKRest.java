@@ -1,6 +1,5 @@
 package rescuecore2.standard.messages;
 
-import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractCommand;
 
@@ -36,8 +35,4 @@ public class AKRest extends AbstractCommand {
         super(StandardMessageURN.AK_REST);
     }
 
-    @Override
-    public JSONObject toJson() {
-        return super.toJson();
-    }
 }
