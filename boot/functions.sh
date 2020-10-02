@@ -61,6 +61,8 @@ function printUsage {
     echo "-l    --log       <logdir>    Set the log directory. Default: \"logs\""
     echo "-s    --timestamp             Create a log sub-directory including timestamp, team name and map name"
     echo "-g    --nogui                 Disable GUI"
+    echo "-j    --jlog-record           Enable Jlog Recorder (startViewerEventLogger)"
+    echo "-r    --record-dir <records_dir> Set Jlog Recorder log dir"
     echo "[+|-]x                        Enable/Disable XTerm use. Default: \"Disable\""
 }
 
@@ -73,6 +75,7 @@ function processArgs {
     TEAM=""
     TIMESTAMP_LOGS=""
     NOGUI="no"
+    JLOG_RECORD="no"
     XTERM="no"
 
     if [ $# -gt 0 ] && [[ $1 != -* ]]; then
@@ -95,7 +98,11 @@ function processArgs {
                 LOGDIR="$2"
                 shift 2
                 ;;
-            -r | --records)
+            -j | --jlog-record)
+                JLOG_RECORD="yes"
+                shift
+                ;;
+            -r | --records-dir)
                 RECORDSDIR="$2"
                 shift 2
                 ;;
@@ -246,7 +253,7 @@ function startViewer {
 
 # Start the viewer event logger
 function startViewerEventLogger {
-    if [[ $NOGUI == "yes" ]]; then
+    if [[ $JLOG_RECORD == "no" ]]; then
         return 0
     fi
 
