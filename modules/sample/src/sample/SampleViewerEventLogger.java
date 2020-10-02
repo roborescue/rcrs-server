@@ -73,12 +73,14 @@ public class SampleViewerEventLogger extends StandardViewer {
 
         JSONObject jsonInfo = generateInfo(kvt);
         JSONArray jsonEntities = generateChanges(kvt);
+        JSONArray jsonDeletedEntities = getDeletedEntities(kvt);
         JSONArray jsonCommands = getCommandActionLog(kvt);
 
         JSONObject jsonRecord = new JSONObject();
 
         jsonRecord.put("Commands", jsonCommands);
         jsonRecord.put("Entities", jsonEntities);
+        jsonRecord.put("DeletedEntities", jsonDeletedEntities);
         jsonRecord.put("Info", jsonInfo);
         jsonRecord.put("TimeStep", kvt.getTime());
 
@@ -148,6 +150,15 @@ public class SampleViewerEventLogger extends StandardViewer {
         }
 
         return jsonEntities;
+    }
+
+    private JSONArray getDeletedEntities(final KVTimestep kvt){
+        JSONArray jsonDeletedEntities = new JSONArray();
+        for(EntityID id: kvt.getChangeSet().getDeletedEntities()){
+            jsonDeletedEntities.put(id.getValue());
+        }
+
+        return jsonDeletedEntities;
     }
 
     List<StandardMessageURN> allowed_command_child = Arrays.asList(
