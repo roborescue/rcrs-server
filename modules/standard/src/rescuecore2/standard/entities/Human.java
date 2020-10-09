@@ -657,6 +657,7 @@ public abstract class Human extends StandardEntity {
     jsonObject.put(StandardPropertyURN.DAMAGE.toString(), this.isDamageDefined() ? this.getDamage() : JSONObject.NULL );
     jsonObject.put(StandardPropertyURN.HP.toString(), this.isHPDefined() ? this.getHP() : JSONObject.NULL );
     jsonObject.put(StandardPropertyURN.POSITION.toString(), this.isPositionDefined() ? new int[]{getX(), getY()} : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.POSITION_HISTORY.toString(), this.isPositionHistoryDefined() ? this.getPositionHistory() : JSONObject.NULL);
 
     return jsonObject;
   }

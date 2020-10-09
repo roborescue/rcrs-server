@@ -48,12 +48,4 @@ public class AmbulanceTeam extends Human {
     return "Ambulance team";
   }
 
-
-  @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put(StandardPropertyURN.POSITION_HISTORY.toString(), this.isPositionHistoryDefined() ? this.getPositionHistory() : JSONObject.NULL);
-
-    return jsonObject;
-  }
 }
