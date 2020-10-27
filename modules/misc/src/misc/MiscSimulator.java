@@ -1,13 +1,24 @@
 package misc;
 
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JComponent;
-
+import rescuecore2.GUIComponent;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KSCommands;
 import rescuecore2.messages.control.KSUpdate;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.*;
+import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.messages.AKUnload;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -15,13 +26,6 @@ import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.log.Logger;
-
-import rescuecore2.standard.messages.AKRescue;
-import rescuecore2.standard.components.StandardSimulator;
-
-import rescuecore2.GUIComponent;
-
-import java.util.*;
 
 /**
  * Implementation of the legacy misc simulator.
@@ -232,7 +236,6 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
   private void processBurningBuildings( ChangeSet changes ) {
     for ( HumanAttributes hA : humans.values() ) {
       Human human = hA.getHuman();
-      EntityID positionID = human.getPosition();
       Entity position = human.getPosition( model );
       if ( position instanceof Building
           && ( (Building) position ).isOnFire() ) {
@@ -267,6 +270,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             ha.getCollapseDamage(), ha.getFireDamage(), buriedness );
       }
     }
+    format.close();
     Logger.debug( builder.toString() );
   }
 
@@ -380,14 +384,14 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
   private boolean checkRescue( AKRescue rescue, Entity agent ) {
     EntityID targetID = rescue.getTarget();
     Entity target = model.getEntity( targetID );
-    if ( !( agent instanceof FireBrigade ) ) {
+    if ( !( agent instanceof FireBrigade || agent instanceof AmbulanceTeam ) ) {
       Logger.warn( "Rejecting rescue command from agent " + agent.getID()
           + " who is of type " + agent.getURN() );
       return false;
     }
     if ( target == null ) {
       Logger.warn( "Rejecting rescue command from agent " + agent.getID()
-          + " for a non-existant target " + targetID );
+          + " for a non-existent target " + targetID );
       return false;
     }
     if ( !( target instanceof Human ) ) {
@@ -397,32 +401,35 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
       return false;
     }
     Human h = (Human) target;
-    FireBrigade fb = (FireBrigade) agent;
-    if ( fb.isHPDefined() && fb.getHP() <= 0 ) {
-      Logger.warn( "Rejecting rescue command from agent " + agent.getID()
-          + ": agent is dead" );
-      return false;
-    }
-    if ( fb.isBuriednessDefined() && fb.getBuriedness() > 0 ) {
-      Logger.warn( "Rejecting rescue command from agent " + agent.getID()
-          + ": agent is buried" );
-      return false;
-    }
     if ( !h.isBuriednessDefined() || h.getBuriedness() == 0 ) {
       Logger.warn( "Rejecting rescue command from agent " + agent.getID()
           + " for a non-buried target " + targetID );
       return false;
     }
-    if ( !h.isPositionDefined() || !fb.isPositionDefined()
-        || !h.getPosition().equals( fb.getPosition() ) ) {
-      Logger.warn( "Rejecting rescue command from agent " + agent.getID()
-          + " for a non-adjacent target " + targetID );
-      return false;
-    }
-    if ( h.getID().equals( fb.getID() ) ) {
-      Logger.warn( "Rejecting rescue command from agent " + agent.getID()
-          + ": tried to rescue self" );
-      return false;
+
+    if ( agent instanceof FireBrigade || agent instanceof AmbulanceTeam ) {
+      Human ag = (Human) agent;
+      if ( ag.isHPDefined() && ag.getHP() <= 0 ) {
+        Logger.warn( "Rejecting rescue command from agent " + agent.getID()
+            + ": agent is dead" );
+        return false;
+      }
+      if ( ag.isBuriednessDefined() && ag.getBuriedness() > 0 ) {
+        Logger.warn( "Rejecting rescue command from agent " + agent.getID()
+            + ": agent is buried" );
+        return false;
+      }
+      if ( !h.isPositionDefined() || !ag.isPositionDefined()
+          || !h.getPosition().equals( ag.getPosition() ) ) {
+        Logger.warn( "Rejecting rescue command from agent " + agent.getID()
+            + " for a non-adjacent target " + targetID );
+        return false;
+      }
+      if ( h.getID().equals( ag.getID() ) ) {
+        Logger.warn( "Rejecting rescue command from agent " + agent.getID()
+            + ": tried to rescue self" );
+        return false;
+      }
     }
     return true;
   }
@@ -546,7 +553,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         while ( ( (Refuge) e ).getOccupiedBeds() < ( (Refuge) e )
             .getBedCapacity() ) {
           if ( waitingList.get( e.getID() ).size() > 0 ) {
-            EntityID removedid = waitingList.get( e.getID() ).remove();
+            waitingList.get( e.getID() ).remove();
             ( (Refuge) e ).increaseOccupiedBeds();
           } else
             break;
