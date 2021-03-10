@@ -48,12 +48,4 @@ public class AmbulanceTeam extends Human {
     return "Ambulance team";
   }
 
-
-  @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( "EntityName", this.getEntityName() );
-
-    return jsonObject;
-  }
 }

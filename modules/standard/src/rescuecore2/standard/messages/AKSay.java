@@ -1,5 +1,6 @@
 package rescuecore2.standard.messages;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.components.RawDataComponent;
 import rescuecore2.messages.AbstractCommand;
@@ -52,4 +53,5 @@ public class AKSay extends AbstractCommand {
     public byte[] getContent() {
         return data.getData();
     }
+
 }

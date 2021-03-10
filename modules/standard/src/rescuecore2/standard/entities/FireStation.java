@@ -58,12 +58,4 @@ public class FireStation extends Building {
   protected String getEntityName() {
     return "Fire station";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( "EntityName", this.getEntityName() );
-    return jsonObject;
-  }
 }

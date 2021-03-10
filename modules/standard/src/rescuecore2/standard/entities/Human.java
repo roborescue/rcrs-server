@@ -641,7 +641,7 @@ public abstract class Human extends StandardEntity {
    *          The new position.
    * @param newX
    *          The x coordinate of this agent.
-   * @param newY
+   * @param newYStandardPropertyURN
    *          The y coordinate if this agent.
    */
   public void setPosition( EntityID newPosition, int newX, int newY ) {
@@ -653,16 +653,11 @@ public abstract class Human extends StandardEntity {
 
   @Override
   public JSONObject toJson() {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put( "Id", this.getID() );
-    jsonObject.put( "EntityName", this.getEntityName() );
-    jsonObject.put( "Damage", this.getDamage() );
-    jsonObject.put( "HP", this.getHP() );
-
-    JSONObject jsonPosition = new JSONObject();
-    jsonPosition.put( "x", getX() );
-    jsonPosition.put( "y", getY() );
-    jsonObject.put( "Position", jsonPosition );
+    JSONObject jsonObject = super.toJson();
+    jsonObject.put(StandardPropertyURN.DAMAGE.toString(), this.isDamageDefined() ? this.getDamage() : JSONObject.NULL );
+    jsonObject.put(StandardPropertyURN.HP.toString(), this.isHPDefined() ? this.getHP() : JSONObject.NULL );
+    jsonObject.put(StandardPropertyURN.POSITION.toString(), this.isPositionDefined() ? new int[]{getX(), getY()} : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.POSITION_HISTORY.toString(), this.isPositionHistoryDefined() ? this.getPositionHistory() : JSONObject.NULL);
 
     return jsonObject;
   }

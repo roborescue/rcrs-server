@@ -670,18 +670,10 @@ public class Building extends Area {
 
   @Override
   public JSONObject toJson() {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put( "Id", this.getID() );
-    jsonObject.put( "EntityName", this.getEntityName() );
-    jsonObject.put( "Brokenness", this.getBrokenness() );
-    jsonObject.put( "Fieryness", this.getFieryness() );
-    jsonObject.put( "Floors", this.getFloors() );
-
-    JSONArray edgesJson = new JSONArray();
-    for ( Edge edge : this.getEdges() ) {
-      edgesJson.put( edge.toJson() );
-    }
-    jsonObject.put( "Edges", edgesJson );
+    JSONObject jsonObject = super.toJson();
+    jsonObject.put(StandardPropertyURN.BROKENNESS.toString(), this.isBrokennessDefined() ? this.getBrokenness() : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.FIERYNESS.toString(), this.isFierynessDefined() ? this.getFieryness() : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.FLOORS.toString(), this.isFloorsDefined() ? this.getFloors() : JSONObject.NULL);
 
     return jsonObject;
   }

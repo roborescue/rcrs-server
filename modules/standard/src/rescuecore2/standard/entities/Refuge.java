@@ -59,12 +59,4 @@ public class Refuge extends Building {
   protected String getEntityName() {
     return "Refuge";
   }
-
-
-  @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( "EntityName", this.getEntityName() );
-    return jsonObject;
-  }
 }

@@ -1,5 +1,6 @@
 package rescuecore2.standard.messages;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.AbstractCommand;
@@ -61,5 +62,14 @@ public class AKClearArea extends AbstractCommand {
     */
     public int getDestinationY() {
     	return y.getValue();
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonObject = super.toJson();
+        jsonObject.put("X", this.getDestinationX());
+        jsonObject.put("Y", this.getDestinationY());
+
+        return jsonObject;
     }
 }

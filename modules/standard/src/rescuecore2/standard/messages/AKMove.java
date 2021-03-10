@@ -2,6 +2,8 @@ package rescuecore2.standard.messages;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.components.EntityIDListComponent;
 import rescuecore2.messages.components.IntComponent;
@@ -92,5 +94,15 @@ public class AKMove extends AbstractCommand {
     */
     public int getDestinationY() {
         return y.getValue();
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonObject = super.toJson();
+        jsonObject.put("Path", this.getPath());
+        jsonObject.put("X", this.getDestinationX());
+        jsonObject.put("Y", this.getDestinationX());
+
+        return jsonObject;
     }
 }

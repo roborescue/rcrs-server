@@ -1,5 +1,6 @@
 package rescuecore2.standard.messages;
 
+import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.AbstractCommand;
 import rescuecore2.messages.components.EntityIDComponent;
@@ -62,5 +63,13 @@ public class AKExtinguish extends AbstractCommand {
     */
     public int getWater() {
         return water.getValue();
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject jsonObject = super.toJson();
+        jsonObject.put("Target", this.getTarget());
+
+        return jsonObject;
     }
 }

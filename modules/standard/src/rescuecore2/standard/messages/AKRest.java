@@ -34,4 +34,5 @@ public class AKRest extends AbstractCommand {
     private AKRest() {
         super(StandardMessageURN.AK_REST);
     }
+
 }
