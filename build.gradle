@@ -2,15 +2,14 @@ plugins {
   id 'java'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-version = '1.3'
+sourceCompatibility = '11'
+targetCompatibility = '11'
+version = '1.5'
 
 dependencies {
   runtimeOnly fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
-
   implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
-  implementation 'org.json:json:20200518'
+  implementation 'org.json:json:20210307'
 }
 
 repositories {
@@ -63,16 +62,16 @@ task clearSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'clear/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'clear-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'clear-sources.jar'
 }
 
 task clearJar(type: Jar) {
   from(sourceSets.main.output) {
     include 'clear/**'
   }
-  destinationDir file('jars')
-  archiveName 'clear.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'clear.jar'
 }
 
 task collapseSourceJar (type: Jar, dependsOn: classes) {
@@ -80,16 +79,16 @@ task collapseSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'collapse/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'collapse-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'collapse-sources.jar'
 }
 
 task collapseJar(type: Jar) {
   from(sourceSets.main.output) {
     include 'collapse/**'
   }
-  destinationDir file('jars')
-  archiveName 'collapse.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'collapse.jar'
 }
 
 task gis2SourceJar (type: Jar, dependsOn: classes) {
@@ -97,16 +96,16 @@ task gis2SourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'gis2/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'gis2-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'gis2-sources.jar'
 }
 
 task gis2Jar(type: Jar) {
   from(sourceSets.main.output) {
     include 'gis2/**'
   }
-  destinationDir file('jars')
-  archiveName 'gis2.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'gis2.jar'
 }
 
 task handySourceJar (type: Jar, dependsOn: classes) {
@@ -114,16 +113,16 @@ task handySourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'handy/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'handy-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'handy-sources.jar'
 }
 
 task handyJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'handy/**'
   }
-  destinationDir file('jars')
-  archiveName 'handy.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'handy.jar'
 }
 
 task humanSourceJar (type: Jar, dependsOn: classes) {
@@ -131,16 +130,16 @@ task humanSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'human/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'human-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'human-sources.jar'
 }
 
 task humanJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'human/**'
   }
-  destinationDir file('jars')
-  archiveName 'human.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'human.jar'
 }
 
 task ignitionSourceJar (type: Jar, dependsOn: classes) {
@@ -148,16 +147,16 @@ task ignitionSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'ignition/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'ignition-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'ignition-sources.jar'
 }
 
 task ignitionJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'ignition/**'
   }
-  destinationDir file('jars')
-  archiveName 'ignition.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'ignition.jar'
 }
 
 task kernelSourceJar (type: Jar, dependsOn: classes) {
@@ -165,16 +164,16 @@ task kernelSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'kernel/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'kernel-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'kernel-sources.jar'
 }
 
 task kernelJar(type: Jar) {
   from(sourceSets.main.output) {
     include 'kernel/**'
   }
-  destinationDir file('jars')
-  archiveName 'kernel.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'kernel.jar'
 }
 
 task mapsSourceJar (type: Jar, dependsOn: classes) {
@@ -182,16 +181,16 @@ task mapsSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'maps/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'maps-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'maps-sources.jar'
 }
 
 task mapsJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'maps/**'
   }
-  destinationDir file('jars')
-  archiveName 'maps.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'maps.jar'
 }
 
 task miscSourceJar (type: Jar, dependsOn: classes) {
@@ -199,16 +198,16 @@ task miscSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'misc/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'misc-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'misc-sources.jar'
 }
 
 task miscJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'misc/**'
   }
-  destinationDir file('jars')
-  archiveName 'misc.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'misc.jar'
 }
 
 task rescuecore2SourceJar (type: Jar, dependsOn: classes) {
@@ -220,8 +219,8 @@ task rescuecore2SourceJar (type: Jar, dependsOn: classes) {
   into 'rescuecore2', {
     from 'modules/rescuecore2/resources/rescuecore2'
   }
-  destinationDir file('jars/sources')
-  archiveName 'rescuecore2-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'rescuecore2-sources.jar'
 }
 
 task rescuecore2Jar (type: Jar) {
@@ -232,8 +231,8 @@ task rescuecore2Jar (type: Jar) {
   into 'rescuecore2', {
     from 'modules/rescuecore2/resources/rescuecore2'
   }
-  destinationDir file('jars')
-  archiveName 'rescuecore2.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'rescuecore2.jar'
 }
 
 task resqFireSourceJar (type: Jar, dependsOn: classes) {
@@ -242,8 +241,8 @@ task resqFireSourceJar (type: Jar, dependsOn: classes) {
     include 'rescuecore/**'
     include 'firesimulator/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'resq-fire-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'resq-fire-sources.jar'
 }
 
 task resqFireJar (type: Jar) {
@@ -251,8 +250,8 @@ task resqFireJar (type: Jar) {
     include 'rescuecore/**'
     include 'firesimulator/**'
   }
-  destinationDir file('jars')
-  archiveName 'resq-fire.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'resq-fire.jar'
 }
 
 task sampleSourceJar (type: Jar, dependsOn: classes) {
@@ -260,16 +259,16 @@ task sampleSourceJar (type: Jar, dependsOn: classes) {
   from(sourceSets.main.allSource) {
     include 'sample/**'
   }
-  destinationDir file('jars/sources')
-  archiveName 'sample-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'sample-sources.jar'
 }
 
 task sampleJar (type: Jar) {
   from(sourceSets.main.output) {
     include 'sample/**'
   }
-  destinationDir file('jars')
-  archiveName 'sample.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'sample.jar'
 }
 
 task standardSourceJar (type: Jar, dependsOn: classes) {
@@ -280,8 +279,8 @@ task standardSourceJar (type: Jar, dependsOn: classes) {
   into 'rescuecore2/standard', {
     from 'modules/standard/resources/rescuecore2/standard'
   }
-  destinationDir file('jars/sources')
-  archiveName 'standard-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'standard-sources.jar'
 }
 
 task standardJar (type: Jar) {
@@ -291,8 +290,8 @@ task standardJar (type: Jar) {
   into 'rescuecore2/standard', {
     from 'modules/standard/resources/rescuecore2/standard'
   }
-  destinationDir file('jars')
-  archiveName 'standard.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'standard.jar'
 }
 
 task traffic3SourceJar (type: Jar, dependsOn: classes) {
@@ -301,8 +300,8 @@ task traffic3SourceJar (type: Jar, dependsOn: classes) {
     include 'traffic3/**'
   }
   from 'modules/traffic3/resources'
-  destinationDir file('jars/sources')
-  archiveName 'traffic3-sources.jar'
+  destinationDirectory = file('jars/sources')
+  archiveFileName = 'traffic3-sources.jar'
 }
 
 task traffic3Jar (type: Jar) {
@@ -310,8 +309,8 @@ task traffic3Jar (type: Jar) {
     include 'traffic3/**'
   }
   from 'modules/traffic3/resources'
-  destinationDir file('jars')
-  archiveName 'traffic3.jar'
+  destinationDirectory = file('jars')
+  archiveFileName = 'traffic3.jar'
 }
 
 /* Generate the compressed source in Jar files  */
