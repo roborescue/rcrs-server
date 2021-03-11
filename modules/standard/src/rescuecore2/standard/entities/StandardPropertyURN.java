@@ -42,7 +42,13 @@ public enum StandardPropertyURN {
     WATER_QUANTITY(PROPERTY_URN_PREFIX + "waterquantity"),
 
     TEMPERATURE(PROPERTY_URN_PREFIX + "temperature"),
-    IMPORTANCE(PROPERTY_URN_PREFIX + "importance");
+    IMPORTANCE(PROPERTY_URN_PREFIX + "importance"),
+    CAPACITY(PROPERTY_URN_PREFIX + "capacity"),
+    BEDCAPACITY(PROPERTY_URN_PREFIX + "bedCapacity"),
+    OCCUPIEDBEDS(PROPERTY_URN_PREFIX + "occupiedBeds"),
+    REFILLCAPACITY(PROPERTY_URN_PREFIX + "refillCapacity"),
+    WAITINGLISTSIZE(PROPERTY_URN_PREFIX + "waitingListSize");
+
 
     // CHECKSTYLE:ON:JavadocVariableCheck
 

@@ -46,7 +46,7 @@ import rescuecore2.worldmodel.EntityID;
 public class CommandLayer extends StandardViewLayer {
     private static final int SIZE = 15;
     private static final Color CLEAR_COLOUR = new Color(0, 0, 255, 128);
-    private static final Color RESCUE_COLOUR = new Color(255, 255, 255, 128);
+    private static final Color RESCUE_COLOUR = new Color(255, 255, 0, 128);
     private static final Color LOAD_COLOUR = new Color(255, 255, 255, 128);
     private static final Color UNLOAD_COLOUR = new Color(255, 255, 255, 128);
 

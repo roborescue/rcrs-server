@@ -1,6 +1,5 @@
 package rescuecore2.standard.entities;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -33,6 +32,7 @@ public class Building extends Area {
   private IntProperty                                            totalArea;
   private IntProperty                                            temperature;
   private IntProperty                                            importance;
+  private IntProperty                                            capacity;
 
 
   /**
@@ -53,8 +53,9 @@ public class Building extends Area {
     totalArea = new IntProperty( StandardPropertyURN.BUILDING_AREA_TOTAL );
     temperature = new IntProperty( StandardPropertyURN.TEMPERATURE );
     importance = new IntProperty( StandardPropertyURN.IMPORTANCE );
+    capacity = new IntProperty( StandardPropertyURN.CAPACITY );
     registerProperties( floors, ignition, fieryness, brokenness, code,
-        attributes, groundArea, totalArea, temperature, importance );
+        attributes, groundArea, totalArea, temperature, importance, capacity );
   }
 
 
@@ -76,8 +77,9 @@ public class Building extends Area {
     totalArea = new IntProperty( other.totalArea );
     temperature = new IntProperty( other.temperature );
     importance = new IntProperty( other.importance );
+    capacity = new IntProperty( other.capacity );
     registerProperties( floors, ignition, fieryness, brokenness, code,
-        attributes, groundArea, totalArea, temperature, importance );
+        attributes, groundArea, totalArea, temperature, importance, capacity );
   }
 
 
@@ -128,6 +130,8 @@ public class Building extends Area {
         return temperature;
       case IMPORTANCE:
         return importance;
+      case CAPACITY:
+        return capacity;
       default:
         return super.getProperty( urn );
     }
@@ -656,6 +660,55 @@ public class Building extends Area {
 
 
   /**
+   * Get the capacity property.
+   *
+   * @return The capacity property.
+   */
+  public IntProperty getCapacityProperty() {
+    return capacity;
+  }
+
+
+  /**
+   * Get the capacity of this building.
+   *
+   * @return The capacity.
+   */
+  public int getCapacity() {
+    return capacity.getValue();
+  }
+
+
+  /**
+   * Set the capacity of this building.
+   *
+   * @param capacity
+   *          The new temperature.
+   */
+  public void setCapacity( int capacity ) {
+    this.capacity.setValue( capacity );
+  }
+
+
+  /**
+   * Find out if the capacity property has been defined.
+   *
+   * @return True if the capacity property has been defined, false otherwise.
+   */
+  public boolean isCapacityDefined() {
+    return capacity.isDefined();
+  }
+
+
+  /**
+   * Undefine the capacity property.
+   */
+  public void undefineCapacity() {
+    capacity.undefine();
+  }
+
+
+  /**
    * Find out if this building is on fire.
    *
    * @return True iff this buildings fieryness indicates that it is burning.
@@ -671,9 +724,12 @@ public class Building extends Area {
   @Override
   public JSONObject toJson() {
     JSONObject jsonObject = super.toJson();
-    jsonObject.put(StandardPropertyURN.BROKENNESS.toString(), this.isBrokennessDefined() ? this.getBrokenness() : JSONObject.NULL);
-    jsonObject.put(StandardPropertyURN.FIERYNESS.toString(), this.isFierynessDefined() ? this.getFieryness() : JSONObject.NULL);
-    jsonObject.put(StandardPropertyURN.FLOORS.toString(), this.isFloorsDefined() ? this.getFloors() : JSONObject.NULL);
+    jsonObject.put( StandardPropertyURN.BROKENNESS.toString(),
+        this.isBrokennessDefined() ? this.getBrokenness() : JSONObject.NULL );
+    jsonObject.put( StandardPropertyURN.FIERYNESS.toString(),
+        this.isFierynessDefined() ? this.getFieryness() : JSONObject.NULL );
+    jsonObject.put( StandardPropertyURN.FLOORS.toString(),
+        this.isFloorsDefined() ? this.getFloors() : JSONObject.NULL );
 
     return jsonObject;
   }

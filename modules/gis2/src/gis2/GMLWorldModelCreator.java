@@ -52,7 +52,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 	private static final String BUILDING_CODE_PLACEMENT_TYPE = "gis.map.building-code-placement.random";
 	private static final String RANDOM_BUILDING_CODE_RATE = "gis.map.building-code-placement.random.code-rate.";
 	private static final String MAX_BUILDING_CODE = "gis.map.max-building-code";
-	
+
 	private static final double SQ_MM_TO_SQ_M = 0.000001;
 
 	private GisScenario scenario;
@@ -180,6 +180,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 			b.setGroundArea((int) Math.abs(area));
 			b.setTotalArea(((int) Math.abs(area)) * b.getFloors());
 			b.setImportance(next.getImportance());
+			b.setCapacity(0);//todo
 			// Area properties
 			b.setEdges(createEdges(next, conversion));
 			b.setX((int) centroid.getX());
@@ -211,19 +212,19 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 			StandardWorldModel result, Config config) throws DocumentException,
 			ScenarioException {
 		if (scenarioFile.exists()) {
-			readScenario(scenarioFile);
+			readScenario(scenarioFile, config);
 			LOG.debug("Applying scenario");
 			scenario.apply(result, config);
 		}
 	}
 
-	private void readScenario(File scenarioFile) throws DocumentException,
+	private void readScenario(File scenarioFile, Config config) throws DocumentException,
 			ScenarioException {
 		if (scenarioFile.exists()) {
 			SAXReader reader = new SAXReader();
 			LOG.debug("Reading scenario");
 			Document doc = reader.read(scenarioFile);
-			scenario = new GisScenario(doc);
+			scenario = new GisScenario(doc, config);
 		}
 	}
 
@@ -269,7 +270,7 @@ public class GMLWorldModelCreator implements WorldModelCreator {
 			File scenarioFile = new File(dir, config.getValue(
 					SCENARIO_FILE_KEY, DEFAULT_SCENARIO_FILE));
 			try {
-				readScenario(scenarioFile);
+				readScenario(scenarioFile, config);
 			} catch (ScenarioException e) {
 				e.printStackTrace();
 			}

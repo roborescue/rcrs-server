@@ -56,6 +56,7 @@ public final class RobocupFormat extends GMLMapFormat {
     private static final QName RCR_FLOORS_QNAME = DocumentHelper.createQName("floors", RCR_NAMESPACE);
     private static final QName RCR_BUILDING_CODE_QNAME = DocumentHelper.createQName("buildingcode", RCR_NAMESPACE);
     private static final QName RCR_IMPORTANCE_QNAME = DocumentHelper.createQName("importance", RCR_NAMESPACE);
+    private static final QName RCR_CAPACITY_QNAME = DocumentHelper.createQName("capacity", RCR_NAMESPACE);
 
     // Map from uri prefix to uri for writing XML documents
     private static final Map<String, String> URIS = new HashMap<String, String>();
@@ -159,6 +160,7 @@ public final class RobocupFormat extends GMLMapFormat {
                 e.addAttribute(RCR_FLOORS_QNAME, String.valueOf(b.getFloors()));
                 e.addAttribute(RCR_BUILDING_CODE_QNAME, String.valueOf(b.getCode()));
                 e.addAttribute(RCR_IMPORTANCE_QNAME, String.valueOf(b.getImportance()));
+                //e.addAttribute(RCR__QNAME, String.valueOf(b.getImportance()));
             }
         }
     }
@@ -222,9 +224,11 @@ public final class RobocupFormat extends GMLMapFormat {
                 int floors = readInt(f, RCR_FLOORS_QNAME, 1);
                 int code = readInt(f, RCR_BUILDING_CODE_QNAME, 0);
                 int importance = readInt(f, RCR_IMPORTANCE_QNAME, 1);
+                int capacity = readInt(f, RCR_CAPACITY_QNAME, 0);
                 b.setFloors(floors);
                 b.setCode(code);
                 b.setImportance(importance);
+                b.setCapacity(capacity);
                 result.addBuilding(b);
             }
         }

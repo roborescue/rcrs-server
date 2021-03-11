@@ -1,6 +1,5 @@
 package rescuecore2.standard.entities;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
@@ -654,10 +653,16 @@ public abstract class Human extends StandardEntity {
   @Override
   public JSONObject toJson() {
     JSONObject jsonObject = super.toJson();
-    jsonObject.put(StandardPropertyURN.DAMAGE.toString(), this.isDamageDefined() ? this.getDamage() : JSONObject.NULL );
-    jsonObject.put(StandardPropertyURN.HP.toString(), this.isHPDefined() ? this.getHP() : JSONObject.NULL );
-    jsonObject.put(StandardPropertyURN.POSITION.toString(), this.isPositionDefined() ? new int[]{getX(), getY()} : JSONObject.NULL);
-    jsonObject.put(StandardPropertyURN.POSITION_HISTORY.toString(), this.isPositionHistoryDefined() ? this.getPositionHistory() : JSONObject.NULL);
+    jsonObject.put( StandardPropertyURN.DAMAGE.toString(),
+        this.isDamageDefined() ? this.getDamage() : JSONObject.NULL );
+    jsonObject.put( StandardPropertyURN.HP.toString(),
+        this.isHPDefined() ? this.getHP() : JSONObject.NULL );
+    jsonObject.put( StandardPropertyURN.POSITION.toString(),
+        this.isPositionDefined() ? new int[]{ getX(), getY() }
+            : JSONObject.NULL );
+    jsonObject.put( StandardPropertyURN.POSITION_HISTORY.toString(),
+        this.isPositionHistoryDefined() ? this.getPositionHistory()
+            : JSONObject.NULL );
 
     return jsonObject;
   }

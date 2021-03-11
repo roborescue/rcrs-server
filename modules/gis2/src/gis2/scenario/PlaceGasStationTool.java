@@ -7,7 +7,7 @@ import maps.gml.GMLRoad;
 import maps.gml.GMLShape;
 
 /**
-   Tool for placing refuges.
+   Tool for placing gasStation.
 */
 public class PlaceGasStationTool extends ShapeTool {
     /**
