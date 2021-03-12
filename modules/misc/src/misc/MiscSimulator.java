@@ -384,7 +384,8 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
   private boolean checkRescue( AKRescue rescue, Entity agent ) {
     EntityID targetID = rescue.getTarget();
     Entity target = model.getEntity( targetID );
-    if ( !( agent instanceof FireBrigade || agent instanceof AmbulanceTeam ) ) {
+    // || agent instanceof AmbulanceTeam
+    if ( !( agent instanceof FireBrigade ) ) {
       Logger.warn( "Rejecting rescue command from agent " + agent.getID()
           + " who is of type " + agent.getURN() );
       return false;
@@ -407,7 +408,8 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
       return false;
     }
 
-    if ( agent instanceof FireBrigade || agent instanceof AmbulanceTeam ) {
+    // || agent instanceof AmbulanceTeam
+    if ( agent instanceof FireBrigade ) {
       Human ag = (Human) agent;
       if ( ag.isHPDefined() && ag.getHP() <= 0 ) {
         Logger.warn( "Rejecting rescue command from agent " + agent.getID()
@@ -531,7 +533,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
    * For the implementation of Refuge Bed Capacity
    **/
   private void updateRefuges() {
-    for ( Map.Entry e : waitingList.entrySet() ) {
+    for ( Map.Entry<EntityID, Deque<EntityID>> e : waitingList.entrySet() ) {
       ArrayList<EntityID> tempList = new ArrayList<EntityID>();
       for ( EntityID civ : (Deque<EntityID>) e.getValue() ) {
         if ( model.getEntity( civ ) instanceof Human ) {

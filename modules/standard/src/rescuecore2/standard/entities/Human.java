@@ -1,13 +1,13 @@
 package rescuecore2.standard.entities;
 
 import org.json.JSONObject;
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.properties.IntProperty;
-import rescuecore2.worldmodel.properties.IntArrayProperty;
-import rescuecore2.worldmodel.properties.EntityRefProperty;
 import rescuecore2.misc.Pair;
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
+import rescuecore2.worldmodel.WorldModel;
+import rescuecore2.worldmodel.properties.EntityRefProperty;
+import rescuecore2.worldmodel.properties.IntArrayProperty;
+import rescuecore2.worldmodel.properties.IntProperty;
 
 /**
  * Abstract base class for Humans.

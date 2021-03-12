@@ -4,8 +4,8 @@ import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.BooleanProperty;
+import rescuecore2.worldmodel.properties.IntProperty;
 
 import java.util.EnumSet;
 

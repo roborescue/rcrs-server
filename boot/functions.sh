@@ -212,13 +212,13 @@ function startSims {
     echo "waiting for traffic to connect..."
     waitFor $LOGDIR/traffic-out.log "success"
 
-    execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $GUI_OPTION $*"
-    echo "waiting for fire to connect..."
-    waitFor $LOGDIR/fire-out.log "success"
+    # execute fire "java -Xmx1024m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/resq-fire.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents firesimulator.FireSimulatorWrapper -c $CONFIGDIR/resq-fire.cfg $GUI_OPTION $*"
+    # echo "waiting for fire to connect..."
+    # waitFor $LOGDIR/fire-out.log "success"
 
-    execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $GUI_OPTION $*"
-    echo "waiting for ignition to connect..."
-    waitFor $LOGDIR/ignition-out.log "success"
+    # execute ignition "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/ignition.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents ignition.IgnitionSimulator -c $CONFIGDIR/ignition.cfg $GUI_OPTION $*"
+    # echo "waiting for ignition to connect..."
+    # waitFor $LOGDIR/ignition-out.log "success"
 
     execute collapse "java -Xmx512m -cp $CP:$BASEDIR/jars/rescuecore2.jar:$BASEDIR/jars/standard.jar:$BASEDIR/jars/collapse.jar -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents collapse.CollapseSimulator -c $CONFIGDIR/collapse.cfg $GUI_OPTION $*"
     echo "waiting for collapse to connect..."

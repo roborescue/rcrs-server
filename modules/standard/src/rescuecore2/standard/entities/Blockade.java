@@ -1,18 +1,19 @@
 package rescuecore2.standard.entities;
 
+import java.awt.Polygon;
+import java.awt.Shape;
+
 import org.json.JSONObject;
+
+import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.EntityListener;
-import rescuecore2.worldmodel.properties.IntProperty;
-import rescuecore2.worldmodel.properties.IntArrayProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
-import rescuecore2.misc.Pair;
-
-import java.awt.Shape;
-import java.awt.Polygon;
+import rescuecore2.worldmodel.properties.IntArrayProperty;
+import rescuecore2.worldmodel.properties.IntProperty;
 
 /**
  * A blockade.
@@ -400,8 +401,10 @@ public class Blockade extends StandardEntity {
   @Override
   public JSONObject toJson() {
     JSONObject jsonObject = super.toJson();
-    jsonObject.put(StandardPropertyURN.APEXES.toString(), this.isApexesDefined() ? this.getApexes() : JSONObject.NULL);
-    jsonObject.put(StandardPropertyURN.REPAIR_COST.toString(), this.isRepairCostDefined() ? this.getRepairCost() : JSONObject.NULL);
+    jsonObject.put( StandardPropertyURN.APEXES.toString(),
+        this.isApexesDefined() ? this.getApexes() : JSONObject.NULL );
+    jsonObject.put( StandardPropertyURN.REPAIR_COST.toString(),
+        this.isRepairCostDefined() ? this.getRepairCost() : JSONObject.NULL );
 
     return jsonObject;
   }

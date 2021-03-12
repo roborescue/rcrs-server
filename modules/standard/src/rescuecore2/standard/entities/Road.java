@@ -1,7 +1,5 @@
 package rescuecore2.standard.entities;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 

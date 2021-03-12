@@ -1,8 +1,0 @@
-# The map directory to read
-gis.map.dir : ../maps/gml/legacy/Kobe
-
-
-# Optional: The map file to read. Defaults to map.gml
-gis.map.file : map.gml
-# Optional: The scenario file to read. Defaults to scenario.xml
-gis.map.scenario : scenario.xml

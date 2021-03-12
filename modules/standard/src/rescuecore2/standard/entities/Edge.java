@@ -18,7 +18,7 @@ public class Edge {
 
 
   /**
-   * Constuct an impassable Edge.
+   * Construct an impassable Edge.
    *
    * @param startX
    *          The X coordinate of the first endpoint.
@@ -35,7 +35,7 @@ public class Edge {
 
 
   /**
-   * Constuct an impassable Edge.
+   * Construct an impassable Edge.
    *
    * @param start
    *          The first endpoint coordinates.
@@ -48,8 +48,8 @@ public class Edge {
 
 
   /**
-   * Constuct an Edge. If the neighbour is null then this edge is impassable; if
-   * it is non-null then this edge is passable.
+   * Construct an Edge. If the neighbour is null then this edge is impassable;
+   * if it is non-null then this edge is passable.
    *
    * @param startX
    *          The X coordinate of the first endpoint.
@@ -69,8 +69,8 @@ public class Edge {
 
 
   /**
-   * Constuct an Edge. If the neighbour is null then this edge is impassable; if
-   * it is non-null then this edge is passable.
+   * Construct an Edge. If the neighbour is null then this edge is impassable;
+   * if it is non-null then this edge is passable.
    *
    * @param start
    *          The first endpoint coordinates.
@@ -195,5 +195,4 @@ public class Edge {
 
     return jsonObject;
   }
-  
 }
