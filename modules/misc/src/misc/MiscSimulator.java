@@ -20,6 +20,7 @@ import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.*;
 import rescuecore2.standard.messages.AKRescue;
 import rescuecore2.standard.messages.AKUnload;
+import rescuecore2.standard.messages.AKLoad;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityListener;
@@ -51,6 +52,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
 
   private Set<EntityID>                  notExplosedGasStations;
   private Map<EntityID, Deque<EntityID>> waitingList;
+  private Map<EntityID, Deque<EntityID>> beds;
 
 
   @Override
@@ -73,6 +75,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     super.postConnect();
     notExplosedGasStations = new HashSet<>();
     waitingList = new HashMap<EntityID, Deque<EntityID>>();
+    beds = new HashMap<EntityID, Deque<EntityID>>();
 
     parameters = new MiscParameters( config );
     GAS_STATION_EXPLOSION_RANG = config
@@ -99,6 +102,9 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
       if ( et instanceof Refuge ) {
         Deque<EntityID> wlist = new LinkedList<EntityID>();
         waitingList.put( et.getID(), wlist );
+
+        Deque<EntityID> blist = new LinkedList<EntityID>();
+        beds.put( et.getID(), blist );
       }
       if ( et instanceof Building ) {
         et.addEntityListener( buildingListener );
@@ -132,6 +138,11 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         if ( com instanceof AKUnload ) {
           handleUnload( com, changes );
         }
+
+        if ( com instanceof AKLoad ) {
+          handleLoad( (AKLoad)com, changes );
+        }
+
       } else {
         Logger.debug( "Ignoring " + com );
       }
@@ -140,13 +151,13 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     updateRefuges();
 
     processBrokenBuildings( changes );
-    processBurningBuildings( changes );
-    processExplodedGasStations( changes );
+    //processBurningBuildings( changes );
+    //processExplodedGasStations( changes );
     updateDamage( changes );
 
     updateChangeSet( changes );
 
-    // Clean up
+            // Clean up
     newlyBrokenBuildings.clear();
     writeDebugOutput( c.getTime() );
     if ( gui != null ) {
@@ -326,16 +337,22 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
             h.setHP( newHP );
             changes.addChange( ha.getHuman(), ha.getHuman().getHPProperty() );
           }
-        } else {
+        } else if ( beds.get( h.getPosition() ).size() > 0
+                && beds.get( h.getPosition() ).contains( h.getID() ) ) {
           updateDamageInRefuge( ha );
           h.setDamage( ha.getTotalDamage() );
           changes.addChange( ha.getHuman(), ha.getHuman().getDamageProperty() );
 
           if ( oldDamage > 0 && h.getDamage() <= 0 ) {
+
+            if (beds.get( h.getPosition() ).remove(h.getID())) {
+              ((Refuge) h.getPosition(model)).decreaseOccupiedBeds();
+            }
+
             if ( waitingList.get( h.getPosition() ).size() > 0 ) {
-              waitingList.get( h.getPosition() ).remove();
-            } else
-              ( (Refuge) h.getPosition( model ) ).decreaseOccupiedBeds();
+              beds.get( h.getPosition() ).add( waitingList.get( h.getPosition() ).remove() );
+              ((Refuge) h.getPosition(model)).increaseOccupiedBeds();
+            }
           }
         }
       }
@@ -376,6 +393,9 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     }
     if ( command instanceof AKUnload )
       return checkUnload( (AKUnload) command, e );
+
+    if ( command instanceof AKLoad )
+      return checkLoad( (AKLoad) command, e );
 
     return false;
   }
@@ -454,6 +474,23 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
     return true;
   }
 
+  private boolean checkLoad( AKLoad unload, Entity agent ) {
+    if ( !( agent instanceof AmbulanceTeam ) ) {
+      Logger.warn( "Rejecting load command from agent " + agent.getID()
+              + " who is of type " + agent.getURN() );
+      return false;
+    }
+
+    AmbulanceTeam at = (AmbulanceTeam) agent;
+    if ( at.isHPDefined() && at.getHP() <= 0 ) {
+      Logger.warn( "Rejecting Unload command from agent " + agent.getID()
+              + ": agent is dead" );
+      return false;
+    }
+
+    return true;
+  }
+
 
   private void handleRescue( Human target, ChangeSet changes ) {
     target.setBuriedness( Math.max( 0, target.getBuriedness() - 1 ) );
@@ -480,6 +517,77 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
       if ( AgentPosition != null && AgentPosition instanceof Refuge ) {
         addVictimToWaitingList( AgentPosition, target );
       }
+    }
+  }
+
+
+  private void handleLoad( AKLoad load, ChangeSet changes ) {
+    EntityID agentID = load.getAgentID();
+    Entity agent = model.getEntity(agentID);
+
+    EntityID targetID = load.getTarget();
+    Entity target = model.getEntity(targetID);
+
+    //---------------
+    if (agent == null) {
+      Logger.warn("Rejecting load command from agent " + agentID + ": agent does not exist");
+      return;
+    }
+    if (!(agent instanceof AmbulanceTeam)) {
+      Logger.warn("Rejecting load command from agent " + agentID + ": agent type is " + agent.getURN());
+      return;
+    }
+    if (target == null) {
+      Logger.warn("Rejecting load command from agent " + agentID + ": target does not exist " + targetID);
+      return;
+    }
+
+    AmbulanceTeam at = (AmbulanceTeam) agent;
+    Civilian h = (Civilian) target;
+
+    if (at.isHPDefined() && at.getHP() <= 0) {
+      Logger.warn("Rejecting load command from agent " + agentID + ": agent is dead");
+      return;
+    }
+
+    if (!h.isPositionDefined() || !at.isPositionDefined() || !h.getPosition().equals(at.getPosition())) {
+      Logger.warn("Rejecting load command from agent " + agentID + ": target is non-adjacent " + targetID);
+      return;
+    }
+    if (h.getID().equals(at.getID())) {
+      Logger.warn("Rejecting load command from agent " + agentID + ": tried to load self");
+      return;
+    }
+    // Is there something already loaded?
+    for (Entity e : model.getEntitiesOfType(StandardEntityURN.CIVILIAN)) {
+      Civilian c = (Civilian) e;
+      if (c.isPositionDefined() && agentID.equals(c.getPosition())) {
+        Logger.warn("Rejecting load command from agent " + agentID + ": agent already has civilian " + c.getID() + " loaded");
+        return;
+      }
+    }
+    //--------------------
+
+
+    Entity AgentPosition = ((Human) agent).getPosition(model);
+    if (AgentPosition != null && AgentPosition instanceof Refuge) {
+
+      if (waitingList.get(h.getPosition()).size() > 0
+              && waitingList.get(h.getPosition()).contains(h.getID())) {
+        waitingList.get(h.getPosition()).remove(h.getID());
+      }
+
+      if (beds.get(h.getPosition()).size() > 0
+              && beds.get(h.getPosition()).contains(h.getID())) {
+        beds.get(h.getPosition()).remove(h.getID());
+        ((Refuge) h.getPosition(model)).decreaseOccupiedBeds();
+
+        if (waitingList.get(h.getPosition()).size() > 0) {
+          beds.get(h.getPosition()).add(waitingList.get(h.getPosition()).remove());
+          ((Refuge) h.getPosition(model)).increaseOccupiedBeds();
+        }
+      }
+
     }
   }
 
@@ -549,13 +657,40 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         ( (Deque<EntityID>) e.getValue() ).removeAll( tempList );
       }
     }
+
+    for ( Map.Entry<EntityID, Deque<EntityID>> e : beds.entrySet() ) {
+      ArrayList<EntityID> tempList = new ArrayList<EntityID>();
+      for ( EntityID civ : (Deque<EntityID>) e.getValue() ) {
+        if ( model.getEntity( civ ) instanceof Human ) {
+          if ( ( (Human) model.getEntity( civ ) ).getDamage() <= 0 ) {
+            tempList.add( civ );
+          }
+          if ( ( (Human) model.getEntity( civ ) ).getHP() <= 0 ) {
+            tempList.add( civ );
+          }
+        }
+      }
+      if ( tempList.size() > 0 ) {
+        //( (Deque<EntityID>) e.getValue() ).removeAll( tempList );
+        for (EntityID id : tempList) {
+          if (( (Deque<EntityID>) e.getValue() ).remove( id )) {
+            ((Refuge) model.getEntity(e.getKey())).decreaseOccupiedBeds();
+            Logger.warn("decreaseOccupiedBeds in update Refuge");
+          }
+        }
+
+      }
+    }
+
+
     for ( StandardEntity e : model
         .getEntitiesOfType( StandardEntityURN.REFUGE ) ) {
       if ( e instanceof Refuge ) {
+        //Logger.warn("Refuge = " + e.getID() + " bed cap = " + ( (Refuge) e ).getOccupiedBeds() + " beds size = " + beds.get(e.getID()).size() + " wait size = " + waitingList.get(e.getID()).size());
         while ( ( (Refuge) e ).getOccupiedBeds() < ( (Refuge) e )
             .getBedCapacity() ) {
           if ( waitingList.get( e.getID() ).size() > 0 ) {
-            waitingList.get( e.getID() ).remove();
+            beds.get( e.getID() ).add( waitingList.get( e.getID() ).remove() );
             ( (Refuge) e ).increaseOccupiedBeds();
           } else
             break;
