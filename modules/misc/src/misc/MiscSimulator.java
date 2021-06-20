@@ -319,6 +319,13 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
       else if ( h.isPositionDefined()
           && ( h.getPosition( model ) instanceof Refuge ) && h.isHPDefined()
           && h.getHP() > 0 ) {
+        if (h instanceof FireBrigade || h instanceof AmbulanceTeam || h instanceof PoliceForce)
+        {
+          ha.clearDamage();
+          h.setDamage(0);
+          changes.addChange(ha.getHuman(), ha.getHuman().getDamageProperty());
+          continue;
+        }
         if ( waitingList.get( h.getPosition() ).size() > 0
             && waitingList.get( h.getPosition() ).contains( h.getID() ) ) {
           updateDamage( ha );
