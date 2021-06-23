@@ -72,17 +72,25 @@ public class SampleViewerEventLogger extends StandardViewer {
     super.handleTimestep( kvt );
 
     JSONObject jsonInfo = generateInfo( kvt );
-    JSONArray jsonEntities = generateChanges( kvt );
-    JSONArray jsonDeletedEntities = getDeletedEntities( kvt );
-    JSONArray jsonCommands = getCommandActionLog( kvt );
-
     JSONObject jsonRecord = new JSONObject();
 
+    JSONArray jsonEntities = new JSONArray();
+    JSONArray jsonDeletedEntities = new JSONArray();
+    JSONArray jsonCommands = new JSONArray();
+
+    try {
+        jsonEntities = generateChanges( kvt );
+        jsonDeletedEntities = getDeletedEntities( kvt );
+        jsonCommands = getCommandActionLog( kvt );
+    } catch(Exception e) {
+       e.printStackTrace();
+    }
+
+    jsonRecord.put( "Info", jsonInfo );
+    jsonRecord.put( "TimeStep", kvt.getTime() );
     jsonRecord.put( "Commands", jsonCommands );
     jsonRecord.put( "Entities", jsonEntities );
     jsonRecord.put( "DeletedEntities", jsonDeletedEntities );
-    jsonRecord.put( "Info", jsonInfo );
-    jsonRecord.put( "TimeStep", kvt.getTime() );
 
     writeJsonFile( jsonRecord, logFilePath, true );
   }
@@ -91,7 +99,11 @@ public class SampleViewerEventLogger extends StandardViewer {
   private JSONArray generateMap() {
     JSONArray jsonAllEntities = new JSONArray();
     for ( Entity entity : model.getAllEntities() ) {
-      jsonAllEntities.put( entity.toJson() );
+      try {
+        jsonAllEntities.put( entity.toJson() );
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
     }
     return jsonAllEntities;
   }
@@ -139,22 +151,25 @@ public class SampleViewerEventLogger extends StandardViewer {
       Entity entity = model.getEntity( id );
       Set<Property> changedProperties = kvt.getChangeSet()
           .getChangedProperties( entity.getID() );
-
-      // Filter Entity
-      JSONObject jsonEntity = entity.toJson();
-      JSONObject filteredJsonEntity = new JSONObject();
-      for ( Property property : changedProperties ) {
-        String propertyName = property.getURN();
-        if ( jsonEntity.has( propertyName )
-            && !jsonEntity.isNull( propertyName ) ) {
-          String jsonEntityProperty = jsonEntity.get( propertyName ).toString();
-          filteredJsonEntity.put( propertyName, jsonEntityProperty );
+      try {
+        // Filter Entity
+        JSONObject jsonEntity = entity.toJson();
+        JSONObject filteredJsonEntity = new JSONObject();
+        for ( Property property : changedProperties ) {
+          String propertyName = property.getURN();
+          if ( jsonEntity.has( propertyName )
+              && !jsonEntity.isNull( propertyName ) ) {
+            String jsonEntityProperty = jsonEntity.get( propertyName ).toString();
+            filteredJsonEntity.put( propertyName, jsonEntityProperty );
+          }
         }
-      }
 
-      if ( !filteredJsonEntity.isEmpty() ) {
-        filteredJsonEntity.put( "Id", jsonEntity.get( "Id" ) );
-        jsonEntities.put( jsonEntity );
+        if ( !filteredJsonEntity.isEmpty() ) {
+          filteredJsonEntity.put( "Id", jsonEntity.get( "Id" ) );
+          jsonEntities.put( jsonEntity );
+        }
+      } catch(Exception e) {
+        e.printStackTrace();
       }
     }
 
@@ -165,7 +180,11 @@ public class SampleViewerEventLogger extends StandardViewer {
   private JSONArray getDeletedEntities( final KVTimestep kvt ) {
     JSONArray jsonDeletedEntities = new JSONArray();
     for ( EntityID id : kvt.getChangeSet().getDeletedEntities() ) {
-      jsonDeletedEntities.put( id.getValue() );
+      try {
+        jsonDeletedEntities.put( id.getValue() );
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
     }
 
     return jsonDeletedEntities;
@@ -185,8 +204,12 @@ public class SampleViewerEventLogger extends StandardViewer {
     for ( Command command : t.getCommands() ) {
       StandardMessageURN commandStandardMessageURN = StandardMessageURN
           .fromString( command.getURN() );
-      if ( allowed_command_child.contains( commandStandardMessageURN ) ) {
-        jsonAllEntities.put( command.toJson() );
+      try {
+        if ( allowed_command_child.contains( commandStandardMessageURN ) ) {
+          jsonAllEntities.put( command.toJson() );
+        }
+      } catch(Exception e) {
+        e.printStackTrace();
       }
     }
     return jsonAllEntities;
