@@ -337,9 +337,8 @@ task randomScenario(type: JavaExec) {
   workingDir = 'boot'
   classpath = files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'gis2.RandomScenarioGenerator'
+  main = 'gis2.scenario.RandomScenarioGenerator'
   maxHeapSize = '2048m'
-  args = [ '../maps/gml/test/map' ]
 }
 
 /* Open scenario editor */
@@ -349,7 +348,6 @@ task scenarioEditor(type: JavaExec) {
   classpath += sourceSets.main.runtimeClasspath
   main = 'gis2.scenario.ScenarioEditor'
   maxHeapSize = '2048m'
-  args = [ '../maps/gml/test/map' ]
 }
 
 /* Open LogViewer */
@@ -369,7 +367,6 @@ task gmlEditor(type: JavaExec) {
   classpath += sourceSets.main.runtimeClasspath
   main = 'maps.gml.editor.GMLEditor'
   maxHeapSize = '2048m'
-  args = [ '../maps/gml/test/map/map.gml' ]
 }
 
 /* Converter OSM to GML */

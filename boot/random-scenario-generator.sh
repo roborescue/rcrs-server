@@ -19,4 +19,4 @@ fi
 echo "starting randomScenarioGenerator..."
 
 makeClasspath $BASEDIR/jars $BASEDIR/lib
-execute random-scenario-editor "java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR gis2.RandomScenarioGenerator $MAP_DIR $*"
+execute random-scenario-editor "java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR gis2.scenario.RandomScenarioGenerator $MAP_DIR $*"

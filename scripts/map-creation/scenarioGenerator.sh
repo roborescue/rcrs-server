@@ -19,4 +19,4 @@ REFUGE_MAX=2
 FIRE_MIN=3
 FIRE_MAX=3
 
-CLASSPATH=../jars/*:../lib/* java gis2.RandomScenarioGenerator $1 -civ $CIV_MIN $CIV_MAX -fb $FB_MIN $FB_MAX -fs $FS_MIN $FS_MAX -pf $PF_MIN $PF_MAX -po $PO_MIN $PO_MAX -at $AT_MIN $AT_MAX -ac $AC_MIN $AC_MAX -refuge $REFUGE_MIN $REFUGE_MAX -fire $FIRE_MIN $FIRE_MAX
+CLASSPATH=../jars/*:../lib/* java gis2.scenario.RandomScenarioGenerator $1 -civ $CIV_MIN $CIV_MAX -fb $FB_MIN $FB_MAX -fs $FS_MIN $FS_MAX -pf $PF_MIN $PF_MAX -po $PO_MIN $PO_MAX -at $AT_MIN $AT_MAX -ac $AC_MIN $AC_MAX -refuge $REFUGE_MIN $REFUGE_MAX -fire $FIRE_MIN $FIRE_MAX
