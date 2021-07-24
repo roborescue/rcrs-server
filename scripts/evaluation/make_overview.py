@@ -11,7 +11,9 @@ template = """
 lang="en" xml:lang="en">
 
 <head>
-<title>RoboCup 2013 Rescue Simulation League Results</title>
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+<title>RoboCup 2021 Rescue Simulation League Results</title>
 <style type="text/css">
   body { font-family: sans-serif; }
 
@@ -26,7 +28,7 @@ lang="en" xml:lang="en">
 </head>
 
 <body>
-<h1>RoboCup 2013 Rescue Simulation League Results</h1>
+<h1>RoboCup 2021 Rescue Simulation League Results</h1>
 
 <p>Click on the map names to get detailed results and logfiles</p>
 %(map_download)s
@@ -145,7 +147,11 @@ if __name__ == '__main__':
             if not run.started:
                 continue
             results.append("%.2f" % score)
-            results.append("%d" % rank)
+            teamdata=run.get_team(team)
+            jlog_url="../%s"%(teamdata.jlog)
+            full_log_url="../%s"%(teamdata.full_log)
+            viewer_url="viewer/?jlog=%s&full_log=%s"%(jlog_url,full_log_url)
+            results.append("%d <a href='%s'><i class='far fa-play-circle'></i></a>" % (rank,viewer_url))
         if day.prev_day:
             _, (prev_score, prev_rank, _) = day.prev_day.get_team_data(team)
             results.append("%.2f" % prev_score)
@@ -176,7 +182,7 @@ if __name__ == '__main__':
         for m, run in zip(day.maps, day.runs):
             if not run.started:
                 continue
-            result.append('<th colspan="2"><a href="%s/index.html">%s</a></th>' % (run.path, m))
+            result.append('<th colspan="2"><a href="%s/index.html">%s</a> <a href="%s/%s.tgz" ><i class="fas fa-download"></i></a></th>' % (run.path, m,m,m))
             result2.append("<th>Score</th>")
             result2.append("<th>Points</th>")
         if day.prev_day:

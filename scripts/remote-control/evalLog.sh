@@ -13,11 +13,20 @@ if [[ $LOGFILE == *.gz ]]; then
     echo "logfile is gzipped: ${LOGFILE%.gz}"
     LOGFILE_GZ=$LOGFILE
     LOGFILE=${LOGFILE%.gz}
-
     if [ ! -f $LOGFILE ]; then
         gunzip -c $LOGFILE_GZ > $LOGFILE
     fi;
+
+elif [[ $LOGFILE == *.7z ]]; then
+    echo "logfile is 7zipped: ${LOGFILE%.7z}"
+    LOGFILE_7Z=$LOGFILE
+    LOGFILE=${LOGFILE%.7z}
+
+    if [ ! -f $LOGFILE ]; then
+        7za e $LOGFILE_7Z 
+    fi;
 fi;
+
 
 cd $HOME/$KERNELDIR/boot 
 ./logextract.sh $LOGFILE $MAP_EVALDIR/$TEAM

@@ -1,41 +1,49 @@
-all_teams = ["ANC", "APO", "CSU", "GUC", "LTI", "MIN", "MRL", "NAI", "POS", "RI1", "RAK", "SOS", "ZJU"]
-semi_teams = ["APO", "CSU", "GUC", "MIN", "MRL", "POS", "SOS", "ZJU"]
+all_teams = ["RI1","MRL","CSU","AIT"]
+final_teams = ["MRL","CSU","AIT"]
 
 team_names = {
     # "BAS" : "Baseline (no agents)",
-    "ANC" : "anct_rescue2013",
-    "APO" : "Apollo-Rescue",
-    "CSU" : "CSU-YUNLU",
-    "GUC" : "GUC_ArtSapience",
-    "LTI" : "LTI-Agent-Rescue",
-    "MIN" : "MinERS",
+    "CSU" : "CSU-Yunlu",
     "MRL" : "MRL",
-    "NAI" : "NAITO-Rescue2013",
-    "POS" : "Poseidon",
     "RI1" : "Ri-one",
-    "RAK" : "RoboAKUT",
-    "SOS" : "S.O.S.",
-    "ZJU" : "ZJUBase"
+    "AIT" : "AIT-Rescue"
 }
 
-day1 = {'name' : "Day 1",
-        'shortname' : "Day1",
-        'maps' : ["Berlin1", "Eindhoven1", "Kobe1", "Paris1", "VC1"],
+setup = {'name' : "setup day",
+        'shortname' : "setup",
+        'maps' : ["kobe-test"],
         'teams' : all_teams}
 
-day2 = {'name' : "Day 2",
-        'shortname' : "Day2",
-        'maps' : ["Mexico1", "Kobe2", "Eindhoven2", "Istanbul1", "Paris2"],
+day1 = {'name' : "Preliminary Day 1",
+        'shortname' : "Day1",
+        'maps' : ["vc1", "joao1","berlin1", "eindhoven1", "mexico1"],
         'teams' : all_teams,
-        'merge_with' : day1,
-        'highlight' : 8}
+#        'merge_with' : day1,
+#        'highlight' : 8
+	}
 
 
-semi = {'name' : "Semifinals",
-        'shortname' : "Semifinals",
-        'maps' : ["VC2", "Berlin2", "Kobe3", "Istanbul2", "Mexico2", "Eindhoven3", "Paris3", "Eindhoven4"],
-        'teams' : semi_teams,
-        'highlight' : 4}
+day2 = {'name' : "Preliminary Day 2",
+        'shortname' : "Day2",
+        'maps' : ["ny1","kobe1", "sydney1", "sakae1", "paris1"],
+        'teams' : all_teams,
+#        'merge_with' : day1,
+#        'highlight' : 8
+	}
+
+
+semi = {'name' : "Semifinal",
+        'shortname' : "Semifinal",
+        'maps' : ["vc2", "berlin2", "eindhoven2", "istanbul1", "sf1", "ny2", "paris2", "kobe2"],
+        'teams' : all_teams,
+	'show_ranks' : 3}
+
+
+final = {'name' : "Finals",
+        'shortname' : "final",
+        'maps' : ["montreal1", "sf2", "sydney2", "berlin3", "kobe3", "sakae2", "eindhoven3", "paris3"],
+        'teams' : final_teams,
+        'show_ranks' : 2}
 
 
 # final = {'name' : "Finals",
@@ -45,7 +53,7 @@ semi = {'name' : "Semifinals",
 #         'merge_with' : day3,
 #         'show_ranks' : 1}
 
-rounds = [day1, day2, semi]
+rounds = [day1, day2, semi, final]
 
 # semi_teams = ["RAK", "SBC", "POS", "IAM", "MRL", "RI1", "SEU", "RMA"]
 # final_teams = ["POS", "IAM", "SEU", "RMA"]
@@ -76,5 +84,5 @@ rounds = [day1, day2, semi]
 
 # rounds = [day1, day2, semi, final]
 
-log_location = "logs/2013"
+log_location = "logs/2021"
 add_downloads = True

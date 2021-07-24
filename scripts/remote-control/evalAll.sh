@@ -1,13 +1,16 @@
 #!/bin/bash
 . $(dirname $0)/config.sh
 
-PATH=$PATH:$HOME/$KERNELDIR/scripts/evaluation
+PATH=$PATH:$HOME/scripts/evaluation
 
 cd $HOME/$EVALDIR
 
 for DIR in *; do
-    if [[ -d $DIR && ! -s $DIR/index.html ]]; then
-        mapSummary.sh $DIR
+       echo $DIR "==="
+    #if [[ -d $DIR && ! -s $DIR/index.html ]]; then
+     if [[ $DIR != "viewer" ]]; then
+       mapSummary.sh $DIR ||echo "error"
+#	echo $DIR
     fi;
 done;
 

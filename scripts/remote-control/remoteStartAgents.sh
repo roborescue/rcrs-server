@@ -24,7 +24,7 @@ echo Starting agents on machine $(hostname)
 # firebrigade 
 if (( $TYPE == 1)); then
     echo "Running: /bin/sh \"start.sh\" -1 -1 0 0 0 0 $HOST 2>&1 | tee $LOGFILE"
-    /bin/sh "start.sh" -1 -1 0 0 0 0 $HOST 2>&1 | tee $LOGFILE
+    /bin/sh "start.sh"  -1 -1 0 0 0 0 $HOST 2>&1 | tee $LOGFILE
 fi
 
 # policeforce

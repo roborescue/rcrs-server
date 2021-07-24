@@ -6,7 +6,7 @@ MAP=$1
 TEAM=$2
 NAME=${TEAM_NAMES[$TEAM]}
 
-export DISPLAY=:0
+#export DISPLAY=:0
 
 cd $HOME
 

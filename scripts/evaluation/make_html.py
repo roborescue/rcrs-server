@@ -62,6 +62,8 @@ class TeamEntry(object):
         self.scores = None
         self.max_time = 0
         self.rank = -1
+        self.jlog= None
+        self.full_log=None
 
         if self.valid():
             for line in open(os.path.join(self.dir, "init-score.txt")):
@@ -79,6 +81,11 @@ class TeamEntry(object):
                 pass
                 
             self.max_time = len(self.scores) - 1
+        try:
+            self.full_log=self.get_logfile(self.map.mapname)[1]
+            self.jlog=self.get_jlogfile(self.map.mapname)[1]
+        except:
+            pass
 
     def valid(self):
         if not os.path.exists(self.dir):
@@ -86,7 +93,16 @@ class TeamEntry(object):
         return True
 
     def get_logfile(self, mapdir):
-        files = glob.glob(os.path.join(mapdir, "*-%s*.gz" % self.name))
+#        files = glob.glob(os.path.join(mapdir, "*-%s*.gz" % self.name))
+        files = glob.glob(os.path.join(mapdir, "*-%s*.7z" % self.name))
+        if len(files) != 1:
+            #Can't identify team logfile
+            raise KeyError
+        size = os.stat(files[0])[stat.ST_SIZE]
+        return (size, files[0])
+
+    def get_jlogfile(self, mapdir):
+        files = glob.glob(os.path.join(mapdir, "*-%s*.jlog.zip" % self.name))
         if len(files) != 1:
             #Can't identify team logfile
             raise KeyError
@@ -133,8 +149,8 @@ class MapData(object):
             return
 
         used_teams = teams if teams else all_teams
-
         for t in used_teams:
+          try:
             entry = TeamEntry(t, self)
             if entry.valid():
                 self.entries.append(entry)
@@ -142,7 +158,9 @@ class MapData(object):
                 self.turns = max(self.turns, entry.max_time)
             elif teams is not None:
                 self.entries.append(entry)
-
+          except:
+             print >> sys.stderr, "Couldn't find eval directory for map %s team %s." % (mapname,t)
+             return
         for t in self.entries:
             if t.max_time != self.turns:
                 t.final_score = 0.0
@@ -215,7 +233,7 @@ class MapData(object):
         yield self.turns
 
     def get_mapfile(self):
-        names = ["%s-map.tar.gz" % self.mapname, "%s-map.tgz" % self.mapname, "%s.tgz" % self.mapname, "%s.tar.gz" % self.mapname]
+        names = ["%s.7z" % self.mapname, "%s-map.tar.gz" % self.mapname, "%s-map.tgz" % self.mapname, "%s.tgz" % self.mapname, "%s.tar.gz" % self.mapname]
         for fname in names:
             if os.path.exists(fname):
                 size = os.stat(fname)[stat.ST_SIZE]
@@ -223,7 +241,7 @@ class MapData(object):
         return 0, None
 
     def get_logpackage(self):
-        path = "%s-logs.tar" % self.mapname
+        path = "%s-logs.7z" % self.mapname
         descent = 3
         while not os.path.exists(path) and descent > 0:
             path = os.path.join("..", path)
@@ -292,10 +310,13 @@ if __name__ == '__main__':
         if config.add_downloads and team.valid():
             try:
                 size, log = team.get_logfile(data.path)
+                jsize, jlog = team.get_jlogfile(data.path)
                 # log_url = log
-                log_url = "http://sourceforge.net/projects/roborescue/files/%s/%s/%s/download" % (config.log_location, data.mapname, log)
+#                log_url = "http://sourceforge.net/projects/roborescue/files/%s/%s/%s/download" % (config.log_location, data.mapname, log)
+                log_url = "%s" % (log)
+		jlog_url= "../viewer/?jlog=../%s/%s&full_log=../%s/%s"%(mapname,jlog,mapname,log_url)
                 # log_url = "http://sourceforge.net/projects/roborescue/files/logs/2011/%s" % log
-                result += ['<a href="%s">Download</a> (%s)' % (log_url, sizeof_fmt(size))]
+                result += ['<a href="%s">View Simulation</a> (%s)<br/><a href="%s">Download Simulation</a> (%s)' % (jlog_url,sizeof_fmt(jsize), log_url, sizeof_fmt(size))]
             except KeyError:
                 pass
         else:

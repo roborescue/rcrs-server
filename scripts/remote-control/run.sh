@@ -45,9 +45,9 @@ sleep 8
 
 STATDIR=$LOCAL_HOMEDIR/$EVALDIR/$MAP/$TEAM
 mkdir -p $STATDIR
-cd $KERNELDIR/boot
-./extract-view.sh $NAME $SERVER $STATDIR&
-cd $HOME
+#cd $LOCAL_HOMEDIR/$KERNELDIR/boot
+#./extract-view.sh $NAME $SERVER $STATDIR&
+#cd $HOME
 
 sleep 8
 

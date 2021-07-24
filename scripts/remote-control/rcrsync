@@ -5,18 +5,18 @@ cd $LOCAL_HOMEDIR
 
 case "$1" in
     dist)
-	$(dirname $0)/syncKernels.sh $KERNELDIR
-	$(dirname $0)/syncClients.sh $KERNELDIR
+	$(dirname $0)/syncKernels.sh $KERNELDIR $KERNELDIR
+#	$(dirname $0)/syncClients.sh $KERNELDIR
 	;;
 
     maps)
-	$(dirname $0)/syncKernels.sh $MAPDIR
+	$(dirname $0)/syncKernels.sh $MAPDIR $MAPDIR
 	;;
     code)
 	if [ ! -z "$2" ]; then
 	    $(dirname $0)/syncClients.sh $CODEDIR/$2 $CODEDIR/
 	else
-	    $(dirname $0)/syncClients.sh $CODEDIR 
+	    $(dirname $0)/syncClients.sh $CODEDIR  $CODEDIR
 	fi
 	;;
 
@@ -26,10 +26,12 @@ case "$1" in
 	;;
 
     all)
-	$(dirname $0)/syncKernels.sh $KERNELDIR
-	$(dirname $0)/syncClients.sh $KERNELDIR
-	$(dirname $0)/syncKernels.sh $MAPDIR
-	$(dirname $0)/syncClients.sh $CODEDIR
+	$(dirname $0)/syncKernels.sh ~/scripts/ ~/scripts/
+        $(dirname $0)/syncClients.sh ~/scripts/ ~/scripts/
+	$(dirname $0)/syncKernels.sh $KERNELDIR/ $KERNELDIR/
+#	$(dirname $0)/syncClients.sh $KERNELDIR $KERNELDIR
+	$(dirname $0)/syncKernels.sh $MAPDIR/ $MAPDIR/
+	$(dirname $0)/syncClients.sh $CODEDIR/ $CODEDIR/
 
 	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
 	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
