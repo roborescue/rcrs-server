@@ -5,26 +5,37 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 /**
-   The top-level interface for messages that are sent between simulator components.
+ * The top-level interface for messages that are sent between simulator
+ * components.
  */
 public interface Message {
-    /**
-       Get the urn of this message type.
-       @return The message urn.
-     */
-    String getURN();
 
-    /**
-       Write the content of this message to a stream. The content should not include the message type ID.
-       @param out The stream to write to.
-       @throws IOException If the write fails.
-     */
-    void write(OutputStream out) throws IOException;
+  /**
+   * Get the urn of this message type.
+   *
+   * @return The message urn.
+   */
+  String getURN();
 
-    /**
-       Read the content of this message from a stream. The content should not include the message type ID.
-       @param in The stream to read from.
-       @throws IOException If the read fails.
-     */
-    void read(InputStream in) throws IOException;
+  /**
+   * Write the content of this message to a stream. The content should not
+   * include the message type ID.
+   *
+   * @param out
+   *          The stream to write to.
+   * @throws IOException
+   *           If the write fails.
+   */
+  void write( OutputStream out ) throws IOException;
+
+  /**
+   * Read the content of this message from a stream. The content should not
+   * include the message type ID.
+   *
+   * @param in
+   *          The stream to read from.
+   * @throws IOException
+   *           If the read fails.
+   */
+  void read( InputStream in ) throws IOException;
 }

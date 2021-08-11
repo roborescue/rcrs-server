@@ -1,10 +1,5 @@
 package rescuecore2.worldmodel.properties;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,9 +10,11 @@ import rescuecore2.worldmodel.Property;
 /**
  * A property that refers to a list of entity IDs.
  */
-public class EntityRefListProperty extends AbstractProperty {
+public class EntityRefListProperty extends AbstractProperty<List<EntityID>> {
 
-  private List<EntityID> ids;
+  public static final int VALUE = 0;
+
+  private List<EntityID>  ids;
 
 
   /**
@@ -149,7 +146,7 @@ public class EntityRefListProperty extends AbstractProperty {
 
 
   @Override
-  public void takeValue( Property p ) {
+  public void takeValue( Property<?> p ) {
     if ( p instanceof EntityRefListProperty ) {
       EntityRefListProperty e = (EntityRefListProperty) p;
       if ( e.isDefined() ) {
@@ -165,36 +162,41 @@ public class EntityRefListProperty extends AbstractProperty {
 
 
   @Override
-  public void write( OutputStream out ) throws IOException {
-    writeInt32( ids.size(), out );
-    for ( EntityID next : ids ) {
-      writeInt32( next.getValue(), out );
-    }
-  }
-
-
-  @Override
-  public void read( InputStream in ) throws IOException {
-    int count = readInt32( in );
-    List<EntityID> newIDs = new ArrayList<EntityID>( count );
-    for ( int i = 0; i < count; ++i ) {
-      newIDs.add( new EntityID( readInt32( in ) ) );
-    }
-    setValue( newIDs );
-  }
-
-
-  /*
-   * @Override public String toString() { StringBuilder result = new
-   * StringBuilder(); result.append(getURN()); if (isDefined()) {
-   * result.append(" = {"); for (Iterator<EntityID> it = ids.iterator();
-   * it.hasNext();) { result.append(it.next()); if (it.hasNext()) {
-   * result.append(", "); } } result.append("}"); } else {
-   * result.append(" (undefined)"); } return result.toString(); }
-   */
-
-  @Override
   public EntityRefListProperty copy() {
     return new EntityRefListProperty( this );
+  }
+
+
+  @Override
+  public void setFields( List<Object> fields ) {
+    this.ids = this.convertToValue( fields );
+    this.setDefined();
+  }
+
+
+  @Override
+  public List<Object> getFields() {
+    List<Object> fields = new ArrayList<Object>();
+
+    int[] ids = new int[this.ids.size()];
+    for ( int i = 0; i < this.ids.size(); i++ ) {
+      ids[i] = this.ids.get( i ).getValue();
+    }
+    fields.add( EntityRefListProperty.VALUE, ids );
+
+    return fields;
+  }
+
+
+  @Override
+  public List<EntityID> convertToValue( List<Object> fields ) {
+    List<EntityID> ids = new ArrayList<EntityID>();
+
+    int[] values = (int[]) fields.get( EntityRefListProperty.VALUE );
+    for ( int i = 0; i < values.length; i++ ) {
+      ids.add( new EntityID( values[i] ) );
+    }
+
+    return ids;
   }
 }

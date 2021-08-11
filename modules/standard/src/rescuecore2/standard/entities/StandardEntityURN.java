@@ -1,6 +1,6 @@
 package rescuecore2.standard.entities;
 
-import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX;
+import static rescuecore2.Constants.ENTITY_URN_PREFIX;
 
 /**
  * URNs for standard entities.
@@ -51,5 +51,22 @@ public enum StandardEntityURN {
       }
     }
     throw new IllegalArgumentException( s );
+  }
+
+
+  /**
+   * Convert a String to a StandardPropertyURN.
+   *
+   * @param s
+   *          The String to convert.
+   * @return A StandardPropertyURN.
+   */
+  public static StandardEntityURN formInt( int i ) {
+    for ( StandardEntityURN next : StandardEntityURN.values() ) {
+      if ( next.ordinal() == i ) {
+        return next;
+      }
+    }
+    throw new IllegalArgumentException( String.valueOf( i ) );
   }
 }

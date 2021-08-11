@@ -1,5 +1,7 @@
 package rescuecore2.standard.entities;
 
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -45,5 +47,33 @@ public class Road extends Area {
   @Override
   protected String getEntityName() {
     return "Road";
+  }
+
+
+  @Override
+  public void setEntity( Map<String, List<Object>> properties ) {
+    StandardPropertyURN type;
+
+    for ( String urn : properties.keySet() ) {
+      List<Object> fields = properties.get( urn );
+
+      type = StandardPropertyURN.fromString( urn );
+      switch ( type ) {
+        case X:
+          this.setX( this.getXProperty().convertToValue( fields ) );
+          break;
+        case Y:
+          this.setY( this.getYProperty().convertToValue( fields ) );
+          break;
+        case EDGES:
+          this.setEdges( this.getEdgesProperty().convertToValue( fields ) );
+          break;
+        case BLOCKADES:
+          this.setBlockades(
+              this.getBlockadesProperty().convertToValue( fields ) );
+          break;
+        default:
+      }
+    }
   }
 }

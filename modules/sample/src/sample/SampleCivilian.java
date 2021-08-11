@@ -1,16 +1,14 @@
 package sample;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import rescuecore2.messages.Command;
+import rescuecore2.commands.Command;
 import rescuecore2.registry.FilterEntityFactory;
 import rescuecore2.registry.FilterPropertyFactory;
 import rescuecore2.registry.Registry;
@@ -20,10 +18,10 @@ import rescuecore2.standard.entities.Human;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.entities.StandardPropertyFactory;
-import rescuecore2.worldmodel.EntityID;
+import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.EntityID;
 
 /**
  * A sample civilian agent.
@@ -114,7 +112,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     int buriedness = me.isBuriednessDefined() ? me.getBuriedness() : 0;
     if ( hp <= 0 || hp < consciousThreshold ) {
       // Unconscious (or dead): do nothing
-      LOG.info( "Unconscious or dead" );
+      LOG.info( "Unconcious or dead" );
       sendRest( time );
       return;
     }

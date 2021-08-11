@@ -1,5 +1,7 @@
 package rescuecore2.standard.entities;
 
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -45,5 +47,11 @@ public class Civilian extends Human {
   @Override
   protected String getEntityName() {
     return "Civilian";
+  }
+
+
+  @Override
+  public void setEntity( Map<String, List<Object>> properties ) {
+    super.setEntity( properties );
   }
 }

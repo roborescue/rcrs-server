@@ -1,60 +1,79 @@
 package rescuecore2.worldmodel;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+import java.util.List;
 
 /**
-   Interface for the properties that make up an entity.
+ * Interface for the properties that make up an entity.
  */
-public interface Property {
-    /**
-       Get the urn of this property.
-       @return The urn of this property.
-     */
-    String getURN();
+public interface Property<T> {
 
-    /**
-       Does this property have a defined value?
-       @return True if a value has been set for this property, false otherwise.
-     */
-    boolean isDefined();
+  /**
+   * Get the urn of this property.
+   *
+   * @return The urn of this property.
+   */
+  String getURN();
 
-    /**
-       Undefine the value of this property. Future calls to {@link #isDefined()} will return false.
-     */
-    void undefine();
+  /**
+   * Does this property have a defined value?
+   *
+   * @return True if a value has been set for this property, false otherwise.
+   */
+  boolean isDefined();
 
-    /**
-       Take on the value of another property.
-       @param other The other property to inspect.
-       @throws IllegalArgumentException If the other property is the wrong type.
-     */
-    void takeValue(Property other);
+  /**
+   * Undefine the value of this property. Future calls to {@link #isDefined()}
+   * will return false.
+   */
+  void undefine();
 
-    /**
-       Write this property to a stream.
-       @param out The stream to write to.
-       @throws IOException If the write fails.
-     */
-    void write(OutputStream out) throws IOException;
+  /**
+   * Take on the value of another property.
+   *
+   * @param other
+   *          The other property to inspect.
+   * @throws IllegalArgumentException
+   *           If the other property is the wrong type.
+   */
+  void takeValue( Property<?> other );
 
-    /**
-       Read this property from a stream.
-       @param in The stream to read from.
-       @throws IOException If the read fails.
-     */
-    void read(InputStream in) throws IOException;
+  /**
+   * Get the value of this property. If the property is undefined then the
+   * return value should be null.
+   *
+   * @return The value of this property.
+   */
+  T getValue();
 
-    /**
-       Get the value of this property. If the property is undefined then the return value should be null.
-       @return The value of this property.
-    */
-    Object getValue();
+  /**
+   * Create a copy of this property.
+   *
+   * @return A copy of this property.
+   */
+  Property<T> copy();
 
-    /**
-       Create a copy of this property.
-       @return A copy of this property.
-    */
-    Property copy();
+  /**
+   * Set this property with the content of the object
+   *
+   * @param fields
+   *          The list content to set the property object.
+   */
+  void setFields( List<Object> fields );
+
+  /**
+   * Get the property in the list format
+   *
+   * @return The property object in list format.
+   *
+   */
+  List<Object> getFields();
+
+  /**
+   * Convert the list format with the content in the list content
+   *
+   * @param fields
+   *          The list content to convert to the property value format.
+   * @return Property value
+   */
+  T convertToValue( List<Object> fields );
 }

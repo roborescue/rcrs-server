@@ -1,20 +1,17 @@
 package rescuecore2.standard.entities;
 
+import java.awt.Shape;
+import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Polygon;
-import java.awt.Shape;
-
-import org.json.JSONObject;
-
 import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.EntityListener;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.worldmodel.properties.IntProperty;
+import rescuecore2.worldmodel.properties.EntityRefListProperty;
 
 /**
  * The Area object.
@@ -79,7 +76,7 @@ public abstract class Area extends StandardEntity {
 
 
   @Override
-  public Property getProperty( String urn ) {
+  public Property<?> getProperty( String urn ) {
     StandardPropertyURN type;
     try {
       type = StandardPropertyURN.fromString( urn );
@@ -341,6 +338,9 @@ public abstract class Area extends StandardEntity {
   public int[] getApexList() {
     if ( apexList == null ) {
       List<Edge> e = getEdges();
+      if ( e == null ) {
+        System.out.println( "NULL" );
+      }
       apexList = new int[e.size() * 2];
       int i = 0;
       for ( Edge next : e ) {
@@ -376,7 +376,7 @@ public abstract class Area extends StandardEntity {
   private class EdgesListener implements EntityListener {
 
     @Override
-    public void propertyChanged( Entity e, Property p, Object oldValue,
+    public void propertyChanged( Entity e, Property<?> p, Object oldValue,
         Object newValue ) {
       if ( p == edges ) {
         shape = null;
@@ -384,15 +384,5 @@ public abstract class Area extends StandardEntity {
         neighbours = null;
       }
     }
-  }
-
-
-  @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( StandardPropertyURN.APEXES.toString(),
-        this.isEdgesDefined() ? this.getApexList() : JSONObject.NULL );
-
-    return jsonObject;
   }
 }

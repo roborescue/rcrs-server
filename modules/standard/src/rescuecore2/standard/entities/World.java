@@ -1,5 +1,7 @@
 package rescuecore2.standard.entities;
 
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -333,5 +335,40 @@ public class World extends StandardEntity {
    */
   public void undefineWindDirection() {
     windDirection.undefine();
+  }
+
+
+  @Override
+  public void setEntity( Map<String, List<Object>> properties ) {
+    StandardPropertyURN type;
+
+    for ( String urn : properties.keySet() ) {
+      List<Object> fields = properties.get( urn );
+
+      type = StandardPropertyURN.fromString( urn );
+      switch ( type ) {
+        case START_TIME:
+          this.setStartTime(
+              this.getStartTimeProperty().convertToValue( fields ) );
+          break;
+        case LONGITUDE:
+          this.setLongitude(
+              this.getLongitudeProperty().convertToValue( fields ) );
+          break;
+        case LATITUDE:
+          this.setLatitude(
+              this.getLatitudeProperty().convertToValue( fields ) );
+          break;
+        case WIND_FORCE:
+          this.setWindForce(
+              this.getWindForceProperty().convertToValue( fields ) );
+          break;
+        case WIND_DIRECTION:
+          this.setWindDirection(
+              this.getWindDirectionProperty().convertToValue( fields ) );
+          break;
+        default:
+      }
+    }
   }
 }

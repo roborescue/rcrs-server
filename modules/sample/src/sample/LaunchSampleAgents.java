@@ -1,25 +1,24 @@
 package sample;
 
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
-
 import rescuecore2.Constants;
-import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.components.ComponentLauncher;
 import rescuecore2.components.TCPComponentLauncher;
+import rescuecore2.components.ComponentConnectionException;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.connection.ConnectionException;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.registry.Registry;
+import rescuecore2.standard.commands.StandardCommandFactory;
 import rescuecore2.standard.entities.StandardEntityFactory;
-import rescuecore2.standard.messages.StandardMessageFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
+
+import org.apache.log4j.Logger;
 
 /**
  * Launcher for sample agents. This will launch as many instances of each of the
- * sample agents as possible, all using one connection.
+ * sample agents as possible, all using one connction.
  */
 public final class LaunchSampleAgents {
 
@@ -48,7 +47,7 @@ public final class LaunchSampleAgents {
       Registry.SYSTEM_REGISTRY
           .registerEntityFactory( StandardEntityFactory.INSTANCE );
       Registry.SYSTEM_REGISTRY
-          .registerMessageFactory( StandardMessageFactory.INSTANCE );
+          .registerCommandFactory( StandardCommandFactory.INSTANCE );
       Registry.SYSTEM_REGISTRY
           .registerPropertyFactory( StandardPropertyFactory.INSTANCE );
       Config config = new Config();
@@ -60,6 +59,7 @@ public final class LaunchSampleAgents {
       int fb = -1;
       int pf = -1;
       int at = -1;
+      // CHECKSTYLE:OFF:ModifiedControlVariable
       for ( int i = 0; i < args.length; ++i ) {
         if ( args[i].equals( FIRE_BRIGADE_FLAG ) ) {
           fb = Integer.parseInt( args[++i] );
@@ -71,6 +71,7 @@ public final class LaunchSampleAgents {
           LOG.warn( "Unrecognised option: " + args[i] );
         }
       }
+      // CHECKSTYLE:ON:ModifiedControlVariable
       ComponentLauncher launcher = new TCPComponentLauncher( host, port,
           config );
       connect( launcher, fb, pf, at, config );

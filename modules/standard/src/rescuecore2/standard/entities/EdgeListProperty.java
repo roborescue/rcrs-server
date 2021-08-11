@@ -1,15 +1,8 @@
 package rescuecore2.standard.entities;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
-
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -17,9 +10,11 @@ import rescuecore2.worldmodel.Property;
 /**
  * A property that defines a list of Edges.
  */
-public class EdgeListProperty extends AbstractProperty {
+public class EdgeListProperty extends AbstractProperty<List<Edge>> {
 
-  private List<Edge> edges;
+  public static final int EDGES = 0;
+
+  private List<Edge>      edges;
 
 
   /**
@@ -30,7 +25,7 @@ public class EdgeListProperty extends AbstractProperty {
    */
   public EdgeListProperty( String urn ) {
     super( urn );
-    edges = new ArrayList<Edge>();
+    this.edges = new ArrayList<Edge>();
   }
 
 
@@ -42,7 +37,7 @@ public class EdgeListProperty extends AbstractProperty {
    */
   public EdgeListProperty( Enum<?> urn ) {
     super( urn );
-    edges = new ArrayList<Edge>();
+    this.edges = new ArrayList<Edge>();
   }
 
 
@@ -91,7 +86,7 @@ public class EdgeListProperty extends AbstractProperty {
     if ( !isDefined() ) {
       return null;
     }
-    return Collections.unmodifiableList( edges );
+    return Collections.unmodifiableList( this.edges );
   }
 
 
@@ -103,9 +98,9 @@ public class EdgeListProperty extends AbstractProperty {
    *          The new edge list.
    */
   public void setEdges( List<Edge> newEdges ) {
-    edges.clear();
-    edges.addAll( newEdges );
-    setDefined();
+    this.edges.clear();
+    this.edges.addAll( newEdges );
+    this.setDefined();
   }
 
 
@@ -116,8 +111,8 @@ public class EdgeListProperty extends AbstractProperty {
    *          The edge to add.
    */
   public void addEdge( Edge edge ) {
-    edges.add( edge );
-    setDefined();
+    this.edges.add( edge );
+    this.setDefined();
   }
 
 
@@ -125,18 +120,18 @@ public class EdgeListProperty extends AbstractProperty {
    * Remove all edges from this list but keep it defined.
    */
   public void clearEdges() {
-    edges.clear();
+    this.edges.clear();
   }
 
 
   @Override
-  public void takeValue( Property p ) {
+  public void takeValue( Property<?> p ) {
     if ( p instanceof EdgeListProperty ) {
       EdgeListProperty e = (EdgeListProperty) p;
       if ( e.isDefined() ) {
-        setEdges( e.getValue() );
+        this.setEdges( e.getValue() );
       } else {
-        undefine();
+        this.undefine();
       }
     } else {
       throw new IllegalArgumentException(
@@ -146,44 +141,58 @@ public class EdgeListProperty extends AbstractProperty {
 
 
   @Override
-  public void write( OutputStream out ) throws IOException {
-    writeInt32( edges.size(), out );
-    for ( Edge next : edges ) {
-      writeInt32( next.getStartX(), out );
-      writeInt32( next.getStartY(), out );
-      writeInt32( next.getEndX(), out );
-      writeInt32( next.getEndY(), out );
-      if ( next.isPassable() ) {
-        writeInt32( next.getNeighbour().getValue(), out );
-      } else {
-        writeInt32( 0, out );
-      }
-    }
-  }
-
-
-  @Override
-  public void read( InputStream in ) throws IOException {
-    int count = readInt32( in );
-    edges.clear();
-    for ( int i = 0; i < count; ++i ) {
-      int startX = readInt32( in );
-      int startY = readInt32( in );
-      int endX = readInt32( in );
-      int endY = readInt32( in );
-      EntityID neighbour = null;
-      int id = readInt32( in );
-      if ( id != 0 ) {
-        neighbour = new EntityID( id );
-      }
-      edges.add( new Edge( startX, startY, endX, endY, neighbour ) );
-    }
-    setDefined();
-  }
-
-
-  @Override
   public EdgeListProperty copy() {
     return new EdgeListProperty( this );
+  }
+
+
+  @Override
+  public void setFields( List<Object> fields ) {
+    this.edges = this.convertToValue( fields );
+    this.setDefined();
+  }
+
+
+  @Override
+  public List<Object> getFields() {
+    List<Object> fields = new ArrayList<Object>();
+
+    int[][] edges = new int[this.edges.size()][5];
+    for ( int i = 0; i < this.edges.size(); i++ ) {
+      edges[i][0] = this.edges.get( i ).getStartX();
+      edges[i][1] = this.edges.get( i ).getStartY();
+      edges[i][2] = this.edges.get( i ).getEndX();
+      edges[i][3] = this.edges.get( i ).getEndY();
+
+      if ( this.edges.get( i ).getNeighbour() != null ) {
+        edges[i][4] = this.edges.get( i ).getNeighbour().getValue();
+      } else {
+        edges[i][4] = -1;
+      }
+    }
+
+    fields.add( EdgeListProperty.EDGES, edges );
+
+    return fields;
+  }
+
+
+  @Override
+  public List<Edge> convertToValue( List<Object> fields ) {
+    List<Edge> values = new ArrayList<Edge>();
+
+    int[][] edges = (int[][]) fields.get( EdgeListProperty.EDGES );
+    for ( int i = 0; i < edges.length; i++ ) {
+      Edge edge;
+      if ( edges[i][4] == -1 ) {
+        edge = new Edge( edges[i][0], edges[i][1], edges[i][2], edges[i][3] );
+      } else {
+        edge = new Edge( edges[i][0], edges[i][1], edges[i][2], edges[i][3],
+            new EntityID( edges[i][4] ) );
+      }
+
+      values.add( edge );
+    }
+    return values;
   }
 }

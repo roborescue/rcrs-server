@@ -1,52 +1,124 @@
 package rescuecore2.messages.control;
 
-import java.util.List;
-import java.util.Collection;
-
-import rescuecore2.messages.Control;
-import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.components.EntityListComponent;
-import rescuecore2.worldmodel.Entity;
-
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.control.ControlMessageProto.GKConnectOKProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyProto;
+import rescuecore2.registry.Registry;
+import rescuecore2.messages.control.ControlMessageProto.EntityProto;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardPropertyURN;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 
 /**
-   A message for signalling a successful connection to the GIS.
+ * A message for signalling a successful connection to the GIS.
  */
-public class GKConnectOK extends AbstractMessage implements Control {
-    private EntityListComponent world;
+public class GKConnectOK extends AbstractMessage {
 
-    /**
-       A GKConnectOK message that populates its data from a stream.
-       @param in The InputStream to read.
-       @throws IOException If there is a problem reading the stream.
-     */
-    public GKConnectOK(InputStream in) throws IOException {
-        this();
-        read(in);
+  private List<Entity> world;
+
+
+  /**
+   * A GKConnectOK message that populates its data from a stream.
+   *
+   * @param in
+   *          The InputStream to read.
+   * @throws IOException
+   *           If there is a problem reading the stream.
+   */
+  public GKConnectOK( InputStream in ) throws IOException {
+    super( ControlMessageURN.GK_CONNECT_OK.toString() );
+    this.read( in );
+  }
+
+
+  /**
+   * A GKConnectOK with a specified entity list.
+   *
+   * @param entities
+   *          The entities to send.
+   */
+  public GKConnectOK( Collection<? extends Entity> entities ) {
+    super( ControlMessageURN.GK_CONNECT_OK.toString() );
+    this.world = new ArrayList<>( entities );
+  }
+
+
+  /**
+   * Get the entity list.
+   *
+   * @return All entities.
+   */
+  public List<Entity> getEntities() {
+    return this.world;
+  }
+
+
+  @Override
+  public void write( OutputStream out ) throws IOException {
+    GKConnectOKProto.Builder gkConnectOKBuilder = GKConnectOKProto.newBuilder();
+
+    for ( Entity entity : this.world ) {
+      EntityProto.Builder entityProtoBuilder = EntityProto.newBuilder()
+          .setUrnID( StandardEntityURN.fromString( entity.getURN() ).ordinal() )
+          .setEntityID( entity.getID().getValue() );
+
+      for ( Property<?> property : entity.getProperties() ) {
+        if ( property.isDefined() ) {
+          PropertyProto propertyProto = MsgProtoBuf
+              .setPropertyProto( property );
+          entityProtoBuilder.addProperties( propertyProto );
+        }
+      }
+      gkConnectOKBuilder.addEntities( entityProtoBuilder.build() );
     }
 
-    /**
-       A GKConnectOK with a specified entity list.
-       @param entities The entities to send.
-     */
-    public GKConnectOK(Collection<? extends Entity> entities) {
-        this();
-        world.setEntities(entities);
-    }
+    GKConnectOKProto gkConnectOK = gkConnectOKBuilder.build();
+    gkConnectOK.writeTo( out );
+  }
 
-    private GKConnectOK() {
-        super(ControlMessageURN.GK_CONNECT_OK);
-        world = new EntityListComponent("Entities");
-        addMessageComponent(world);
-    }
 
-    /**
-       Get the entity list.
-       @return All entities.
-     */
-    public List<Entity> getEntities() {
-        return world.getEntities();
+  @Override
+  public void read( InputStream in ) throws IOException {
+    GKConnectOKProto gkConnectOK = GKConnectOKProto.parseFrom( in );
+
+    this.world = new ArrayList<Entity>();
+
+    List<EntityProto> entityList = gkConnectOK.getEntitiesList();
+    for ( EntityProto entityProto : entityList ) {
+      String entityURN = StandardEntityURN.formInt( entityProto.getUrnID() )
+          .toString();
+      int entityID = entityProto.getEntityID();
+
+      Entity entity = Registry.getCurrentRegistry().createEntity( entityURN,
+          new EntityID( entityID ) );
+
+      if ( entity != null ) {
+
+        Map<String, List<Object>> properties = new HashMap<String, List<Object>>();
+        for ( PropertyProto propertyProto : entityProto.getPropertiesList() ) {
+          String propertyURN = StandardPropertyURN
+              .fromInt( propertyProto.getUrnID() ).toString();
+
+          List<Object> property = MsgProtoBuf
+              .setPropertyFields( propertyProto );
+
+          properties.put( propertyURN, property );
+        }
+
+        entity.setEntity( properties );
+
+        this.world.add( entity );
+      }
     }
+  }
 }

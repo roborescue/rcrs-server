@@ -1,11 +1,8 @@
 package rescuecore2.worldmodel;
 
-import org.json.JSONObject;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
 
 /**
  * Interface for all objects that live in a WorldModel. Entities are made up of
@@ -49,7 +46,7 @@ public interface Entity {
    *
    * @return A set of Properties. This will never be null, but may be empty.
    */
-  Set<Property> getProperties();
+  Set<Property<?>> getProperties();
 
   /**
    * Get a property by urn.
@@ -58,27 +55,7 @@ public interface Entity {
    *          The urn to look up.
    * @return The property with the given urn or null if no such property exists.
    */
-  Property getProperty( String urn );
-
-  /**
-   * Write this Entity to a stream.
-   *
-   * @param out
-   *          The stream to write to.
-   * @throws IOException
-   *           If the write fails.
-   */
-  void write( OutputStream out ) throws IOException;
-
-  /**
-   * Read this Entity from a stream.
-   *
-   * @param in
-   *          The stream to read from.
-   * @throws IOException
-   *           If the read fails.
-   */
-  void read( InputStream in ) throws IOException;
+  Property<?> getProperty( String urn );
 
   /**
    * Create a copy of this entity.
@@ -88,9 +65,10 @@ public interface Entity {
   Entity copy();
 
   /**
-   * Return the Entity state in JSON format
+   * Set the entity object based on a list of properties.
    *
-   * @return Entity states
+   * @param properties
+   *          The list of properties object to set the entity object.
    */
-  JSONObject toJson();
+  void setEntity( Map<String, List<Object>> properties );
 }

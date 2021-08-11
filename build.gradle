@@ -20,7 +20,6 @@ sourceSets {
   main {
     java {
       srcDirs = [ 'modules/kernel/src',
-                  'modules/handy/src',
                   'modules/misc/src',
                   'modules/rescuecore2/src',
                   'modules/standard/src',
@@ -106,23 +105,6 @@ task gis2Jar(type: Jar) {
   }
   destinationDirectory = file('jars')
   archiveFileName = 'gis2.jar'
-}
-
-task handySourceJar (type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from(sourceSets.main.allSource) {
-    include 'handy/**'
-  }
-  destinationDirectory = file('jars/sources')
-  archiveFileName = 'handy-sources.jar'
-}
-
-task handyJar (type: Jar) {
-  from(sourceSets.main.output) {
-    include 'handy/**'
-  }
-  destinationDirectory = file('jars')
-  archiveFileName = 'handy.jar'
 }
 
 task humanSourceJar (type: Jar, dependsOn: classes) {
@@ -316,8 +298,8 @@ task traffic3Jar (type: Jar) {
 /* Generate the compressed source in Jar files  */
 task sourcesJar(type: GradleBuild) {
   tasks = [ 'clearSourceJar', 'collapseSourceJar', 'gis2SourceJar',
-            'handySourceJar', 'humanSourceJar', 'ignitionSourceJar',
-            'kernelSourceJar', 'mapsSourceJar', 'miscSourceJar',
+            'humanSourceJar', 'ignitionSourceJar', 'kernelSourceJar',
+            'mapsSourceJar', 'miscSourceJar',
             'rescuecore2SourceJar', 'resqFireSourceJar', 'sampleJar',
             'standardSourceJar', 'traffic3SourceJar'
           ]
@@ -325,7 +307,7 @@ task sourcesJar(type: GradleBuild) {
 
 /* Perform a complete build of the simulator */
 task completeBuild(type: GradleBuild) {
-  tasks = [ 'clean', 'build', 'clearJar', 'collapseJar', 'gis2Jar', 'handyJar',
+  tasks = [ 'clean', 'build', 'clearJar', 'collapseJar', 'gis2Jar',
             'humanJar', 'ignitionJar', 'kernelJar', 'mapsJar', 'miscJar',
             'rescuecore2Jar', 'resqFireJar', 'sampleJar', 'standardJar',
             'traffic3Jar', 'sourcesJar'

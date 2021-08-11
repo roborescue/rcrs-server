@@ -2,15 +2,13 @@ package sample;
 
 import java.util.Collection;
 import java.util.EnumSet;
-
 import org.apache.log4j.Logger;
-
-import rescuecore2.messages.Command;
-import rescuecore2.registry.EntityFactory;
+import rescuecore2.commands.Command;
 import rescuecore2.registry.Registry;
+import rescuecore2.registry.EntityFactory;
 import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardEntityFactory;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;

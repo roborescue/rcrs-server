@@ -10,11 +10,6 @@ import org.uncommons.maths.number.NumberGenerator;
 /**
  Container for information about different damage types.
  */
-/*
- * Implementation of Refuge Bed Capacity
- * @author Farshid Faraji
- * May 2020 During Covid-19 :-)))
- * */
 public class DamageType {
     private String type;
     private double k;
@@ -60,14 +55,6 @@ public class DamageType {
         return damage;
     }
 
-    public double progressInRefuge() {
-        if (damage <= 0) {
-            return damage;
-        }
-        double n = noise.nextValue();
-        damage = damage - (k * damage * damage) - l - (2*n);
-        return damage;
-    }
     /**
      Get the current damage.
      @return The current damage.

@@ -4,9 +4,7 @@ import com.infomatiq.jsi.IntProcedure;
 import com.infomatiq.jsi.Rectangle;
 import com.infomatiq.jsi.SpatialIndex;
 import com.infomatiq.jsi.rtree.RTree;
-
 import java.awt.geom.Rectangle2D;
-
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -14,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import rescuecore2.log.Logger;
 import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.ChangeSet;
@@ -138,7 +135,7 @@ public class StandardWorldModel extends DefaultWorldModel<StandardEntity> {
    *          The entity to centre the search on.
    * @param range
    *          The range to look up.
-   * @return A collection of StandardEntitys that are within range.
+   * @return A collection of StandardEntities that are within range.
    */
   public Collection<StandardEntity> getObjectsInRange( EntityID entity,
       int range ) {

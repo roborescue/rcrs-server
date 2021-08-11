@@ -1,13 +1,13 @@
 package rescuecore2.standard.entities;
 
-import org.json.JSONObject;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.worldmodel.properties.BooleanProperty;
 import rescuecore2.worldmodel.properties.IntProperty;
-
-import java.util.EnumSet;
+import rescuecore2.worldmodel.properties.BooleanProperty;
 
 /**
  * The Building object.
@@ -32,7 +32,6 @@ public class Building extends Area {
   private IntProperty                                            totalArea;
   private IntProperty                                            temperature;
   private IntProperty                                            importance;
-  private IntProperty                                            capacity;
 
 
   /**
@@ -53,9 +52,8 @@ public class Building extends Area {
     totalArea = new IntProperty( StandardPropertyURN.BUILDING_AREA_TOTAL );
     temperature = new IntProperty( StandardPropertyURN.TEMPERATURE );
     importance = new IntProperty( StandardPropertyURN.IMPORTANCE );
-    capacity = new IntProperty( StandardPropertyURN.CAPACITY );
     registerProperties( floors, ignition, fieryness, brokenness, code,
-        attributes, groundArea, totalArea, temperature, importance, capacity );
+        attributes, groundArea, totalArea, temperature, importance );
   }
 
 
@@ -77,9 +75,8 @@ public class Building extends Area {
     totalArea = new IntProperty( other.totalArea );
     temperature = new IntProperty( other.temperature );
     importance = new IntProperty( other.importance );
-    capacity = new IntProperty( other.capacity );
     registerProperties( floors, ignition, fieryness, brokenness, code,
-        attributes, groundArea, totalArea, temperature, importance, capacity );
+        attributes, groundArea, totalArea, temperature, importance );
   }
 
 
@@ -130,8 +127,6 @@ public class Building extends Area {
         return temperature;
       case IMPORTANCE:
         return importance;
-      case CAPACITY:
-        return capacity;
       default:
         return super.getProperty( urn );
     }
@@ -660,55 +655,6 @@ public class Building extends Area {
 
 
   /**
-   * Get the capacity property.
-   *
-   * @return The capacity property.
-   */
-  public IntProperty getCapacityProperty() {
-    return capacity;
-  }
-
-
-  /**
-   * Get the capacity of this building.
-   *
-   * @return The capacity.
-   */
-  public int getCapacity() {
-    return capacity.getValue();
-  }
-
-
-  /**
-   * Set the capacity of this building.
-   *
-   * @param capacity
-   *          The new temperature.
-   */
-  public void setCapacity( int capacity ) {
-    this.capacity.setValue( capacity );
-  }
-
-
-  /**
-   * Find out if the capacity property has been defined.
-   *
-   * @return True if the capacity property has been defined, false otherwise.
-   */
-  public boolean isCapacityDefined() {
-    return capacity.isDefined();
-  }
-
-
-  /**
-   * Undefine the capacity property.
-   */
-  public void undefineCapacity() {
-    capacity.undefine();
-  }
-
-
-  /**
    * Find out if this building is on fire.
    *
    * @return True iff this buildings fieryness indicates that it is burning.
@@ -722,15 +668,60 @@ public class Building extends Area {
 
 
   @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( StandardPropertyURN.BROKENNESS.toString(),
-        this.isBrokennessDefined() ? this.getBrokenness() : JSONObject.NULL );
-    jsonObject.put( StandardPropertyURN.FIERYNESS.toString(),
-        this.isFierynessDefined() ? this.getFieryness() : JSONObject.NULL );
-    jsonObject.put( StandardPropertyURN.FLOORS.toString(),
-        this.isFloorsDefined() ? this.getFloors() : JSONObject.NULL );
+  public void setEntity( Map<String, List<Object>> properties ) {
+    StandardPropertyURN type;
 
-    return jsonObject;
+    for ( String urn : properties.keySet() ) {
+      List<Object> fields = properties.get( urn );
+
+      type = StandardPropertyURN.fromString( urn );
+      switch ( type ) {
+        case X:
+          this.setX( this.getXProperty().convertToValue( fields ) );
+          break;
+        case Y:
+          this.setY( this.getYProperty().convertToValue( fields ) );
+          break;
+        case EDGES:
+          this.setEdges( this.getEdgesProperty().convertToValue( fields ) );
+          break;
+        case BLOCKADES:
+          this.setBlockades(
+              this.getBlockadesProperty().convertToValue( fields ) );
+          break;
+        case FLOORS:
+          this.floors.setValue( this.floors.convertToValue( fields ) );
+          break;
+        case IGNITION:
+          this.setIgnition( this.ignition.convertToValue( fields ) );
+          break;
+        case FIERYNESS:
+          this.setFieryness( this.fieryness.convertToValue( fields ) );
+          break;
+        case BROKENNESS:
+          this.setBrokenness( this.brokenness.convertToValue( fields ) );
+          break;
+        case BUILDING_CODE:
+          this.setBuildingCode( this.code.convertToValue( fields ) );
+          break;
+        case BUILDING_ATTRIBUTES:
+          this.setBuildingAttributes(
+              this.attributes.convertToValue( fields ) );
+          break;
+        case BUILDING_AREA_GROUND:
+          this.setGroundArea( this.groundArea.convertToValue( fields ) );
+          break;
+        case BUILDING_AREA_TOTAL:
+          this.setTotalArea( this.totalArea.convertToValue( fields ) );
+          break;
+        case TEMPERATURE:
+          this.setTemperature( this.temperature.convertToValue( fields ) );
+          break;
+        case IMPORTANCE:
+          this.setImportance( this.importance.convertToValue( fields ) );
+          break;
+        default:
+      }
+    }
   }
 }

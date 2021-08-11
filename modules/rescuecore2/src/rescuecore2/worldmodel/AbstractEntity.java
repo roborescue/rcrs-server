@@ -1,29 +1,21 @@
 package rescuecore2.worldmodel;
 
-import org.json.JSONObject;
-
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.writeProperty;
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readProperty;
-
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Abstract base class for concrete Entity implementations.
  */
 public abstract class AbstractEntity implements Entity {
 
-  private final EntityID            id;
-  private final Set<EntityListener> listeners;
-  private final Set<Property>       properties;
+  private final EntityID                 id;
+  private final Set<EntityListener>      listeners;
+  private final Map<String, Property<?>> properties;
 
 
   /**
@@ -34,8 +26,8 @@ public abstract class AbstractEntity implements Entity {
    */
   protected AbstractEntity( EntityID id ) {
     this.id = id;
-    listeners = new HashSet<EntityListener>();
-    properties = new HashSet<Property>();
+    this.listeners = new HashSet<EntityListener>();
+    this.properties = new HashMap<String, Property<?>>();
   }
 
 
@@ -52,7 +44,7 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void addEntityListener( EntityListener l ) {
-    synchronized ( listeners ) {
+    synchronized ( this.listeners ) {
       listeners.add( l );
     }
   }
@@ -60,7 +52,7 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void removeEntityListener( EntityListener l ) {
-    synchronized ( listeners ) {
+    synchronized ( this.listeners ) {
       listeners.remove( l );
     }
   }
@@ -69,8 +61,8 @@ public abstract class AbstractEntity implements Entity {
   @Override
   public Entity copy() {
     Entity result = copyImpl();
-    for ( Property original : getProperties() ) {
-      Property copy = result.getProperty( original.getURN() );
+    for ( Property<?> original : this.getProperties() ) {
+      Property<?> copy = result.getProperty( original.getURN() );
       copy.takeValue( original );
     }
     return result;
@@ -85,15 +77,13 @@ public abstract class AbstractEntity implements Entity {
   protected abstract Entity copyImpl();
 
 
-  @Override
-  public final Set<Property> getProperties() {
-    return properties;
-  }
-
-
-  @Override
-  public Property getProperty( String propertyURN ) {
-    return null;
+  /**
+   * Get the name of this entity. Default implementation returns the entity URN.
+   *
+   * @return The name of this entity.
+   */
+  protected String getEntityName() {
+    return this.getURN();
   }
 
 
@@ -104,42 +94,25 @@ public abstract class AbstractEntity implements Entity {
 
 
   @Override
-  public void write( OutputStream out ) throws IOException {
-    int count = 0;
-    for ( Property next : getProperties() ) {
-      if ( next.isDefined() ) {
-        ++count;
-      }
-    }
-    writeInt32( count, out );
-    for ( Property next : getProperties() ) {
-      if ( next.isDefined() ) {
-        writeProperty( next, out );
-      }
-    }
+  public final Set<Property<?>> getProperties() {
+    Set<Property<?>> values = new HashSet<Property<?>>();
+    values.addAll( properties.values() );
+    return values;
   }
 
 
   @Override
-  public void read( InputStream in ) throws IOException {
-    int count = readInt32( in );
-    for ( int i = 0; i < count; ++i ) {
-      Property prop = readProperty( in );
-      if ( prop == null ) {
-        continue;
-      }
-      Property existing = getProperty( prop.getURN() );
-      existing.takeValue( prop );
-    }
+  public Property<?> getProperty( String propertyURN ) {
+    return this.properties.get( propertyURN );
   }
 
 
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder();
-    result.append( getEntityName() );
+    result.append( this.getEntityName() );
     result.append( " (" );
-    result.append( id );
+    result.append( this.id );
     result.append( ")" );
     return result.toString();
   }
@@ -152,8 +125,8 @@ public abstract class AbstractEntity implements Entity {
    */
   public String getFullDescription() {
     StringBuilder result = new StringBuilder();
-    String name = getEntityName();
-    String urn = getURN();
+    String name = this.getEntityName();
+    String urn = this.getURN();
     if ( !name.equals( urn ) ) {
       result.append( name );
       result.append( " [" );
@@ -163,9 +136,10 @@ public abstract class AbstractEntity implements Entity {
       result.append( name );
     }
     result.append( " (" );
-    result.append( id );
+    result.append( this.id );
     result.append( ") [" );
-    for ( Iterator<Property> it = getProperties().iterator(); it.hasNext(); ) {
+    for ( Iterator<Property<?>> it = getProperties().iterator(); it
+        .hasNext(); ) {
       result.append( it.next().toString() );
       if ( it.hasNext() ) {
         result.append( ", " );
@@ -178,29 +152,17 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public int hashCode() {
-    return id.hashCode();
+    return this.id.hashCode();
   }
 
 
   @Override
   public boolean equals( Object o ) {
     if ( o instanceof AbstractEntity ) {
-      // CHECKSTYLE:OFF:IllegalType
-      AbstractEntity a = (AbstractEntity) o;
-      // CHECKSTYLE:ON:IllegalType
-      return this.id.equals( a.id );
+
+      return this.id.equals( ( (AbstractEntity) o ).id );
     }
     return false;
-  }
-
-
-  /**
-   * Get the name of this entity. Default implementation returns the entity URN.
-   *
-   * @return The name of this entity.
-   */
-  protected String getEntityName() {
-    return getURN();
   }
 
 
@@ -210,11 +172,11 @@ public abstract class AbstractEntity implements Entity {
    * @param props
    *          The properties to register.
    */
-  protected void registerProperties( Property... props ) {
-    for ( Property p : props ) {
-      properties.add( p );
+  protected void registerProperties( Property<?>... props ) {
+    for ( Property<?> p : props ) {
+      properties.put( p.getURN(), p );
       if ( p instanceof AbstractProperty ) {
-        ( (AbstractProperty) p ).setEntity( this );
+        ( (AbstractProperty<?>) p ).setEntity( this );
       }
     }
   }
@@ -230,14 +192,17 @@ public abstract class AbstractEntity implements Entity {
    * @param newValue
    *          The new value.
    */
-  protected void firePropertyChanged( Property p, Object oldValue,
+  protected void firePropertyChanged( Property<?> p, Object oldValue,
       Object newValue ) {
     Collection<EntityListener> copy;
-    synchronized ( listeners ) {
-      copy = new HashSet<EntityListener>( listeners );
+    synchronized ( this.listeners ) {
+      copy = new HashSet<EntityListener>( this.listeners );
     }
     for ( EntityListener next : copy ) {
       next.propertyChanged( this, p, oldValue, newValue );
     }
   }
+
+
+  public abstract void setEntity( Map<String, List<Object>> properties );
 }

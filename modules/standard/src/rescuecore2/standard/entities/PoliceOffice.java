@@ -1,5 +1,7 @@
 package rescuecore2.standard.entities;
 
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -56,5 +58,11 @@ public class PoliceOffice extends Building {
   @Override
   protected String getEntityName() {
     return "Police office";
+  }
+
+
+  @Override
+  public void setEntity( Map<String, List<Object>> properties ) {
+    super.setEntity( properties );
   }
 }

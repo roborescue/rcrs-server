@@ -73,8 +73,4 @@ public class FilledShapeDecorator implements BuildingDecorator, RoadDecorator, S
         }
         g.fill(new Polygon(xs, ys, n));
     }
-
-    public Color getBuildingColour() {
-        return buildingColour;
-    }
 }

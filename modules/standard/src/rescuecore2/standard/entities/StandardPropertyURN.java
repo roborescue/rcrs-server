@@ -1,6 +1,6 @@
 package rescuecore2.standard.entities;
 
-import static rescuecore2.standard.Constants.PROPERTY_URN_PREFIX;
+import static rescuecore2.Constants.PROPERTY_URN_PREFIX;
 
 /**
  * URNs for standard property types.
@@ -41,12 +41,7 @@ public enum StandardPropertyURN {
   WATER_QUANTITY( PROPERTY_URN_PREFIX + "waterquantity" ),
 
   TEMPERATURE( PROPERTY_URN_PREFIX + "temperature" ),
-  IMPORTANCE( PROPERTY_URN_PREFIX + "importance" ),
-  CAPACITY( PROPERTY_URN_PREFIX + "capacity" ),
-  BEDCAPACITY( PROPERTY_URN_PREFIX + "bedCapacity" ),
-  OCCUPIEDBEDS( PROPERTY_URN_PREFIX + "occupiedBeds" ),
-  REFILLCAPACITY( PROPERTY_URN_PREFIX + "refillCapacity" ),
-  WAITINGLISTSIZE( PROPERTY_URN_PREFIX + "waitingListSize" );
+  IMPORTANCE( PROPERTY_URN_PREFIX + "importance" );
 
 
   private String urn;
@@ -77,5 +72,22 @@ public enum StandardPropertyURN {
       }
     }
     throw new IllegalArgumentException( s );
+  }
+
+
+  /**
+   * Convert an Integer to a StandardPropertyURN.
+   *
+   * @param i
+   *          The Integer to convert.
+   * @return A StandardPropertyURN.
+   */
+  public static StandardPropertyURN fromInt( int i ) {
+    for ( StandardPropertyURN next : StandardPropertyURN.values() ) {
+      if ( next.ordinal() == i ) {
+        return next;
+      }
+    }
+    throw new IllegalArgumentException( String.valueOf( i ) );
   }
 }

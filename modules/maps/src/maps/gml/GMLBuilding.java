@@ -9,7 +9,6 @@ public class GMLBuilding extends GMLShape {
     private int floors;
     private int code;
     private int importance;
-    private int capacity;
 
     /**
        Construct a GMLBuilding.
@@ -41,22 +40,6 @@ public class GMLBuilding extends GMLShape {
     @Override
     public String toString() {
         return "GMLBuilding " + getID();
-    }
-
-    /**
-     Set the capacity of this building.
-     @param newCapacity The new capacity of the building.
-     */
-    public void setCapacity(int newCapacity) {
-        capacity = newCapacity;
-    }
-
-    /**
-     Get the capacity of this building.
-     @return The the capacity of building.
-     */
-    public int getCapacity() {
-        return capacity;
     }
 
     /**

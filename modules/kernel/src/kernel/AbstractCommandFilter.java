@@ -3,8 +3,8 @@ package kernel;
 import java.util.Collection;
 import java.util.Iterator;
 
+import rescuecore2.commands.Command;
 import rescuecore2.config.Config;
-import rescuecore2.messages.Command;
 
 /**
    An abstract base class for command filters.

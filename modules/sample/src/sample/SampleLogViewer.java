@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -31,7 +30,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
+import org.apache.log4j.Logger;
+import rescuecore2.commands.Command;
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.log.CommandsRecord;
@@ -39,7 +39,6 @@ import rescuecore2.log.FileLogReader;
 import rescuecore2.log.LogException;
 import rescuecore2.log.LogReader;
 import rescuecore2.log.UpdatesRecord;
-import rescuecore2.messages.Command;
 import rescuecore2.misc.CommandLineOptions;
 import rescuecore2.misc.gui.ListModelList;
 import rescuecore2.misc.java.LoadableTypeProcessor;
@@ -51,8 +50,6 @@ import rescuecore2.view.ViewListener;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
-
-import org.apache.log4j.Logger;
 
 /**
  * A class for viewing log files.

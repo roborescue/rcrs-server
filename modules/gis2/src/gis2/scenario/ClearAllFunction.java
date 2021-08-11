@@ -1,42 +1,40 @@
 package gis2.scenario;
 
 import gis2.GisScenario;
-
+import java.util.Set;
 import java.util.HashSet;
 
 /**
- * Function for removing all agents, fires, civilians and refuges.
- */
+   Function for removing all agents, fires, civilians and refuges.
+*/
 public class ClearAllFunction extends AbstractFunction {
-  /**
-   * Construct a clear all function.
-   *
-   * @param editor The editor instance.
-   */
-  public ClearAllFunction(ScenarioEditor editor) {
-    super(editor);
-  }
+    /**
+       Construct a clear all function.
+       @param editor The editor instance.
+    */
+    public ClearAllFunction(ScenarioEditor editor) {
+        super(editor);
+    }
 
-  @Override
-  public String getName() {
-    return "Remove all";
-  }
+    @Override
+    public String getName() {
+        return "Remove all";
+    }
 
-  @Override
-  public void execute() {
-    GisScenario s = editor.getScenario();
-    s.setFireBrigades(new HashSet<Integer>());
-    s.setFireStations(new HashSet<Integer>());
-    s.setPoliceForces(new HashSet<Integer>());
-    s.setPoliceOffices(new HashSet<Integer>());
-    s.setAmbulanceTeams(new HashSet<Integer>());
-    s.setAmbulanceCentres(new HashSet<Integer>());
-    s.setCivilians(new HashSet<Integer>());
-    s.setFires(new HashSet<Integer>());
-    s.setRefuges(new HashSet<Integer>());
-    s.setGasStations(new HashSet<Integer>());
-    s.setHydrants(new HashSet<Integer>());
-    editor.setChanged();
-    editor.updateOverlays();
-  }
+    @Override
+    public void execute() {
+        GisScenario s = editor.getScenario();
+        Set<Integer> empty = new HashSet<Integer>();
+        s.setFireBrigades(empty);
+        s.setFireStations(empty);
+        s.setPoliceForces(empty);
+        s.setPoliceOffices(empty);
+        s.setAmbulanceTeams(empty);
+        s.setAmbulanceCentres(empty);
+        s.setCivilians(empty);
+        s.setFires(empty);
+        s.setRefuges(empty);
+        editor.setChanged();
+        editor.updateOverlays();
+    }
 }

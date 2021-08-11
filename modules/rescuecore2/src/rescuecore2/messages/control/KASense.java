@@ -1,94 +1,206 @@
 package rescuecore2.messages.control;
 
-import rescuecore2.messages.Control;
-import rescuecore2.messages.Command;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import rescuecore2.commands.Command;
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.components.IntComponent;
-import rescuecore2.messages.components.EntityIDComponent;
-import rescuecore2.messages.components.ChangeSetComponent;
-import rescuecore2.messages.components.CommandListComponent;
+import rescuecore2.messages.control.ControlMessageProto.ChangeSetProto;
+import rescuecore2.messages.control.ControlMessageProto.CommandProto;
+import rescuecore2.messages.control.ControlMessageProto.KASenseProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyProto;
+import rescuecore2.registry.Registry;
 import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.ChangeSet;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Collection;
-
 /**
-   A message for signalling a perception update for an agent.
+ * A message for signalling a perception update for an agent.
  */
-public class KASense extends AbstractMessage implements Control {
-    private EntityIDComponent agentID;
-    private IntComponent time;
-    private ChangeSetComponent updates;
-    private CommandListComponent hear;
+public class KASense extends AbstractMessage {
 
-    /**
-       A KASense message that populates its data from a stream.
-       @param in The InputStream to read.
-       @throws IOException If there is a problem reading the stream.
-     */
-    public KASense(InputStream in) throws IOException {
-        this();
-        read(in);
+  private EntityID      agentID;
+  private int           time;
+  private ChangeSet     changes;
+  private List<Command> hear;
+
+
+  /**
+   * A KASense message that populates its data from a stream.
+   *
+   * @param in
+   *          The InputStream to read.
+   * @throws IOException
+   *           If there is a problem reading the stream.
+   */
+  public KASense( InputStream in ) throws IOException {
+    super( ControlMessageURN.KA_SENSE.toString() );
+    this.read( in );
+  }
+
+
+  /**
+   * A populated KASense message.
+   *
+   * @param agentID
+   *          The ID of the Entity that is receiving the update.
+   * @param time
+   *          The timestep of the simulation.
+   * @param changes
+   *          All changes that the agent can perceive.
+   * @param hear
+   *          The messages that the agent can hear.
+   */
+  public KASense( EntityID agentID, int time, ChangeSet changes, Collection<? extends Command> hear ) {
+    super( ControlMessageURN.KA_SENSE.toString() );
+    this.agentID = agentID;
+    this.time = time;
+    this.changes = changes;
+    this.hear = new ArrayList<Command>();
+    this.hear.addAll( hear );
+  }
+
+
+  /**
+   * Get the ID of the agent.
+   *
+   * @return The agent ID.
+   */
+  public EntityID getAgentID() {
+    return this.agentID;
+  }
+
+
+  /**
+   * Get the time.
+   *
+   * @return The time.
+   */
+  public int getTime() {
+    return this.time;
+  }
+
+
+  /**
+   * Get the changed entities.
+   *
+   * @return The ChangeSet.
+   */
+  public ChangeSet getChanges() {
+    return this.changes;
+  }
+
+
+  /**
+   * Get the messages the agent can hear.
+   *
+   * @return The agent messages.
+   */
+  public Collection<Command> getHearing() {
+    return this.hear;
+  }
+
+
+  @Override
+  public void write( OutputStream out ) throws IOException {
+    KASenseProto.Builder kaSenseBuilder = KASenseProto.newBuilder()
+        .setAgentID( this.agentID.getValue() ).setTime( this.time );
+
+    ChangeSetProto.Builder changeSetProtoBuilder = ChangeSetProto.newBuilder();
+
+    // Changes
+    for ( EntityID entityID : this.changes.getChangedEntities() ) {
+      Set<Property<?>> changedProperty = this.changes
+          .getChangedProperties( entityID );
+
+      for ( Property<?> property : changedProperty ) {
+        PropertyProto propertyProto = MsgProtoBuf.setPropertyProto( property );
+
+        PropertyMapProto propertyMapProto = PropertyMapProto.newBuilder()
+            .putProperty( property.getURN(), propertyProto ).build();
+
+        changeSetProtoBuilder.putChanges( entityID.getValue(),
+            propertyMapProto );
+      }
     }
 
-    /**
-       A populated KASense message.
-       @param agentID The ID of the Entity that is receiving the update.
-       @param time The timestep of the simulation.
-       @param changes All changes that the agent can perceive.
-       @param hear The messages that the agent can hear.
-     */
-    public KASense(EntityID agentID, int time, ChangeSet changes, Collection<? extends Command> hear) {
-        this();
-        this.agentID.setValue(agentID);
-        this.time.setValue(time);
-        this.updates.setChangeSet(changes);
-        this.hear.setCommands(hear);
+    // Deleted
+    for ( EntityID entityID : this.changes.getDeletedEntities() ) {
+      changeSetProtoBuilder.addDeletes( entityID.getValue() );
     }
 
-    private KASense() {
-        super(ControlMessageURN.KA_SENSE);
-        agentID = new EntityIDComponent("Agent ID");
-        time = new IntComponent("Time");
-        updates = new ChangeSetComponent("Updates");
-        hear = new CommandListComponent("Hearing");
-        addMessageComponent(agentID);
-        addMessageComponent(time);
-        addMessageComponent(updates);
-        addMessageComponent(hear);
+    // Entity URNs
+    for ( EntityID entityID : this.changes.getChangedEntities() ) {
+      changeSetProtoBuilder.putEntitiesURNs( entityID.getValue(),
+          this.changes.getEntityURN( entityID ) );
     }
 
-    /**
-       Get the ID of the agent.
-       @return The agent ID.
-     */
-    public EntityID getAgentID() {
-        return agentID.getValue();
+    kaSenseBuilder.setChanges( changeSetProtoBuilder.build() );
+
+    for ( Command command : this.hear ) {
+      CommandProto commandProto = MsgProtoBuf.setCommandProto( command );
+      kaSenseBuilder.addHears( commandProto );
     }
 
-    /**
-       Get the time.
-       @return The time.
-     */
-    public int getTime() {
-        return time.getValue();
+    KASenseProto kaSense = kaSenseBuilder.build();
+    kaSense.writeTo( out );
+  }
+
+
+  @Override
+  public void read( InputStream in ) throws IOException {
+    KASenseProto kaSense = KASenseProto.parseFrom( in );
+
+    this.agentID = new EntityID( kaSense.getAgentID() );
+    this.time = kaSense.getTime();
+
+    this.changes = new ChangeSet();
+    ChangeSetProto changeSetProto = kaSense.getChanges();
+
+    // Add changed entities and properties
+    Map<Integer, PropertyMapProto> changesMap = changeSetProto.getChangesMap();
+    Map<Integer, String> entitiesURN = changeSetProto.getEntitiesURNsMap();
+    for ( Integer entityIDProto : changesMap.keySet() ) {
+      EntityID entityID = new EntityID( entityIDProto );
+      String urn = entitiesURN.get( entityIDProto );
+
+      PropertyMapProto propertyMapProto = changesMap.get( entityIDProto );
+      for ( String propertyURN : propertyMapProto.getPropertyMap().keySet() ) {
+        Property<?> property = Registry.getCurrentRegistry()
+            .createProperty( propertyURN );
+
+        if ( property != null ) {
+          List<Object> fields = MsgProtoBuf.setPropertyFields(
+              propertyMapProto.getPropertyMap().get( propertyURN ) );
+
+          property.setFields( fields );
+
+          this.changes.addChange( entityID, urn, property );
+        }
+      }
     }
 
-    /**
-       Get the changed entities.
-       @return The ChangeSet.
-     */
-    public ChangeSet getChangeSet() {
-        return updates.getChangeSet();
+    // Add deleted entities
+    for ( Integer entityID : changeSetProto.getDeletesList() ) {
+      this.changes.entityDeleted( new EntityID( entityID ) );
     }
 
-    /**
-       Get the messages the agent can hear.
-       @return The agent messages.
-    */
-    public Collection<Command> getHearing() {
-        return hear.getCommands();
+    this.hear = new ArrayList<Command>();
+    for ( CommandProto commandProto : kaSense.getHearsList() ) {
+      Command command = Registry.getCurrentRegistry()
+          .createCommand( commandProto.getUrn() );
+
+      Map<String, Object> fields = MsgProtoBuf.setCommandFields( commandProto );
+
+      command.setFields( fields );
+
+      this.hear.add( command );
     }
+  }
 }

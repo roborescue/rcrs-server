@@ -2,9 +2,10 @@ package rescuecore2.standard.entities;
 
 import java.awt.Polygon;
 import java.awt.Shape;
-
-import org.json.JSONObject;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -90,13 +91,7 @@ public class Blockade extends StandardEntity {
 
 
   @Override
-  protected String getEntityName() {
-    return "Blockade";
-  }
-
-
-  @Override
-  public Property getProperty( String urn ) {
+  public Property<?> getProperty( String urn ) {
     StandardPropertyURN type;
     try {
       type = StandardPropertyURN.fromString( urn );
@@ -234,7 +229,7 @@ public class Blockade extends StandardEntity {
    * @return The apexes.
    */
   public int[] getApexes() {
-    return apexes.getValue();
+    return apexes.getValue().stream().mapToInt( i -> i ).toArray();
   }
 
 
@@ -245,7 +240,8 @@ public class Blockade extends StandardEntity {
    *          The new apexes.
    */
   public void setApexes( int[] apexes ) {
-    this.apexes.setValue( apexes );
+    this.apexes.setValue(
+        Arrays.stream( apexes ).boxed().collect( Collectors.toList() ) );
   }
 
 
@@ -389,7 +385,7 @@ public class Blockade extends StandardEntity {
   private class ApexesListener implements EntityListener {
 
     @Override
-    public void propertyChanged( Entity e, Property p, Object oldValue,
+    public void propertyChanged( Entity e, Property<?> p, Object oldValue,
         Object newValue ) {
       if ( p == apexes ) {
         shape = null;
@@ -399,13 +395,35 @@ public class Blockade extends StandardEntity {
 
 
   @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( StandardPropertyURN.APEXES.toString(),
-        this.isApexesDefined() ? this.getApexes() : JSONObject.NULL );
-    jsonObject.put( StandardPropertyURN.REPAIR_COST.toString(),
-        this.isRepairCostDefined() ? this.getRepairCost() : JSONObject.NULL );
+  public void setEntity( Map<String, List<Object>> properties ) {
+    StandardPropertyURN type;
 
-    return jsonObject;
+    for ( String urn : properties.keySet() ) {
+      List<Object> fields = properties.get( urn );
+
+      type = StandardPropertyURN.fromString( urn );
+      switch ( type ) {
+        case X:
+          this.setX( this.getXProperty().convertToValue( fields ) );
+          break;
+        case Y:
+          this.setY( this.getYProperty().convertToValue( fields ) );
+          break;
+        case POSITION:
+          this.setPosition(
+              this.getPositionProperty().convertToValue( fields ) );
+          break;
+        case APEXES:
+          List<Integer> apexes = this.getApexesProperty()
+              .convertToValue( fields );
+          this.setApexes( apexes.stream().mapToInt( i -> i ).toArray() );
+          break;
+        case REPAIR_COST:
+          this.setRepairCost(
+              this.getRepairCostProperty().convertToValue( fields ) );;
+          break;
+        default:
+      }
+    }
   }
 }

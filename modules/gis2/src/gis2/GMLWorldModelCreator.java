@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import kernel.KernelException;
+import kernel.WorldModelCreator;
+
 import maps.CoordinateConversion;
 import maps.MapException;
 import maps.MapReader;
@@ -32,13 +35,11 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.WorldModel;
 
-import kernel.KernelException;
-import kernel.WorldModelCreator;
-
 /**
  * A WorldModelCreator that reads a GML file and scenario descriptor.
  */
 public class GMLWorldModelCreator implements WorldModelCreator {
+
   private static final String MAP_DIRECTORY_KEY = "gis.map.dir";
   private static final String MAP_FILE_KEY = "gis.map.file";
   private static final String DEFAULT_MAP_FILE = "map.gml";
@@ -54,6 +55,9 @@ public class GMLWorldModelCreator implements WorldModelCreator {
   private static final double SQ_MM_TO_SQ_M = 0.000001;
 
   private GisScenario scenario;
+  // CHECKSTYLE:OFF:MagicNumber
+  // private static final double AREA_SCALE_FACTOR = 1.0 / 1000000.0;
+  // CHECKSTYLE:ON:MagicNumber
   private static final Logger LOG = Logger.getLogger(GMLWorldModelCreator.class);
 
   // private ShapeDebugFrame debug;
@@ -135,6 +139,10 @@ public class GMLWorldModelCreator implements WorldModelCreator {
       double area = GeometryTools2D.computeArea(vertices) * SQ_MM_TO_SQ_M;
       Point2D centroid = GeometryTools2D.computeCentroid(vertices);
 
+      // LOG.debug("Building vertices: " + vertices);
+      // LOG.debug("Area: " + area);
+      // LOG.debug("Centroid: " + centroid);
+
       // Building properties
       int floors = Math.min(maxFloor, next.getFloors());
       if (randomfloorPlacement) {
@@ -166,12 +174,12 @@ public class GMLWorldModelCreator implements WorldModelCreator {
       b.setGroundArea((int) Math.abs(area));
       b.setTotalArea(((int) Math.abs(area)) * b.getFloors());
       b.setImportance(next.getImportance());
-      b.setCapacity(0);
       // Area properties
       b.setEdges(createEdges(next, conversion));
       b.setX((int) centroid.getX());
       b.setY((int) centroid.getY());
       result.addEntity(b);
+      // LOG.debug(b.getFullDescription());
     }
     for (GMLRoad next : map.getRoads()) {
       // Create a new Road entity
@@ -180,44 +188,52 @@ public class GMLWorldModelCreator implements WorldModelCreator {
       List<Point2D> vertices = convertShapeToPoints(next, conversion);
       Point2D centroid = GeometryTools2D.computeCentroid(vertices);
 
+      // LOG.debug("Road vertices: " + vertices);
+      // LOG.debug("Centroid: " + centroid);
+
       // Road properties: None
       // Area properties
       r.setX((int) centroid.getX());
       r.setY((int) centroid.getY());
       r.setEdges(createEdges(next, conversion));
       result.addEntity(r);
+      // LOG.debug(b.getFullDescription());
     }
   }
 
   private void readScenarioAndApply(File scenarioFile, StandardWorldModel result, Config config)
       throws DocumentException, ScenarioException {
     if (scenarioFile.exists()) {
-      readScenario(scenarioFile, config);
+      readScenario(scenarioFile);
       LOG.debug("Applying scenario");
       scenario.apply(result, config);
     }
   }
 
-  private void readScenario(File scenarioFile, Config config) throws DocumentException, ScenarioException {
+  private void readScenario(File scenarioFile) throws DocumentException, ScenarioException {
     if (scenarioFile.exists()) {
       SAXReader reader = new SAXReader();
       LOG.debug("Reading scenario");
       Document doc = reader.read(scenarioFile);
-      scenario = new GisScenario(doc, config);
+      scenario = new GisScenario(doc);
     }
   }
 
   private List<Edge> createEdges(GMLShape s, CoordinateConversion conversion) {
+    // LOG.debug("Computing edges for " + s);
     List<Edge> result = new ArrayList<Edge>();
     for (GMLDirectedEdge edge : s.getEdges()) {
       GMLCoordinates start = edge.getStartCoordinates();
       GMLCoordinates end = edge.getEndCoordinates();
       Integer neighbourID = s.getNeighbour(edge);
       EntityID id = neighbourID == null ? null : new EntityID(neighbourID);
+      // LOG.debug("Edge: " + start + " -> " + end);
       double sx = conversion.convertX(start.getX());
       double sy = conversion.convertY(start.getY());
       double ex = conversion.convertX(end.getX());
       double ey = conversion.convertY(end.getY());
+      // LOG.debug(edge.getEdge() + " : " + sx + "," + sy + " -> " + ex
+      // + "," + ey);
       result.add(new Edge((int) sx, (int) sy, (int) ex, (int) ey, id));
     }
     return result;
@@ -241,11 +257,12 @@ public class GMLWorldModelCreator implements WorldModelCreator {
       File dir = new File(config.getValue(MAP_DIRECTORY_KEY));
       File scenarioFile = new File(dir, config.getValue(SCENARIO_FILE_KEY, DEFAULT_SCENARIO_FILE));
       try {
-        readScenario(scenarioFile, config);
+        readScenario(scenarioFile);
       } catch (ScenarioException e) {
         e.printStackTrace();
       }
     }
     return scenario;
   }
+
 }

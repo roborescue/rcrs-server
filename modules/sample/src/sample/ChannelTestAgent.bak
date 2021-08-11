@@ -1,0 +1,80 @@
+package sample;
+
+import java.util.Collection;
+import java.util.EnumSet;
+
+import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.messages.Command;
+
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.Human;
+import rescuecore2.standard.entities.FireBrigade;
+import rescuecore2.standard.messages.AKSpeak;
+
+import org.apache.log4j.Logger;
+
+/**
+   An agent for testing communication channels.
+ */
+public class ChannelTestAgent extends AbstractSampleAgent<Human> {
+    private static final int CHANNEL = 1;
+    private static final int N = 45;
+    private static final Logger LOG = Logger.getLogger(ChannelTestAgent.class);
+
+    @Override
+    public String toString() {
+        return "Channel test agent";
+    }
+
+    @Override
+    protected void postConnect() {
+        super.postConnect();
+        LOG.info("Channel test agent " + getID() + " connected");
+    }
+
+    @Override
+    protected void think(int time, ChangeSet changed, Collection<Command> heard) {
+        if (time == config.getIntValue(kernel.KernelConstants.IGNORE_AGENT_COMMANDS_KEY)) {
+            sendSubscribe(time, CHANNEL);
+        }
+        int inputSize = 0;
+        // Send N messages
+        if (me() instanceof FireBrigade) {
+            for (int i = 0; i < N; ++i) {
+                inputSize += i;
+            	say(i, time);
+            }
+        }
+        LOG.debug("Time " + time);
+        LOG.debug("Heard " + heard.size() + " messages");
+        // Count failures and dropouts
+        int failures = N;
+        int dropout = 0;
+        int totalSize=0;
+        for (Command next : heard) {
+            if (next instanceof AKSpeak) {
+                AKSpeak speak = (AKSpeak)next;
+                totalSize+=speak.getContent().length;
+                --failures;
+                if (speak.getContent().length == 0) {
+                    ++dropout;
+                }
+            }
+        }
+        LOG.debug(failures + " failed messages");
+        LOG.debug(dropout + " dropout messages");
+        LOG.debug("Total: " + totalSize + "/" + inputSize + "bytes");
+        System.out.println(failures + " failed messages");
+        System.out.println(dropout + " dropout messages");
+        System.out.println("Total: " + totalSize + "/" + inputSize + "bytes");
+    }
+
+    @Override
+    protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+        return EnumSet.of(StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM);
+    }
+
+    private void say(int messageLength, int time) {
+        sendSpeak(time, CHANNEL, new byte[messageLength]);
+    }
+}

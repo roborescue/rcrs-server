@@ -1,6 +1,7 @@
 package rescuecore2.standard.entities;
 
-import org.json.JSONObject;
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -35,7 +36,7 @@ public class GasStation extends Building {
 
 
   @Override
-  public JSONObject toJson() {
-    return super.toJson();
+  public void setEntity( Map<String, List<Object>> properties ) {
+    super.setEntity( properties );
   }
 }

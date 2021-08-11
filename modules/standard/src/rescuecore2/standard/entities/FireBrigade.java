@@ -1,5 +1,7 @@
 package rescuecore2.standard.entities;
 
+import java.util.List;
+import java.util.Map;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -52,7 +54,7 @@ public class FireBrigade extends Human {
 
 
   @Override
-  public Property getProperty( String urn ) {
+  public Property<?> getProperty( String urn ) {
     StandardPropertyURN type;
     try {
       type = StandardPropertyURN.fromString( urn );
@@ -120,5 +122,25 @@ public class FireBrigade extends Human {
   @Override
   protected String getEntityName() {
     return "Fire brigade";
+  }
+
+
+  @Override
+  public void setEntity( Map<String, List<Object>> properties ) {
+    StandardPropertyURN type;
+
+    super.setEntity( properties );
+
+    for ( String urn : properties.keySet() ) {
+      List<Object> fields = properties.get( urn );
+
+      type = StandardPropertyURN.fromString( urn );
+      switch ( type ) {
+        case WATER_QUANTITY:
+          this.setWater( this.getWaterProperty().convertToValue( fields ) );
+          break;
+        default:
+      }
+    }
   }
 }

@@ -1,6 +1,9 @@
 package rescuecore2.standard.entities;
 
-import org.json.JSONObject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -74,7 +77,7 @@ public abstract class Human extends StandardEntity {
 
 
   @Override
-  public Property getProperty( String urn ) {
+  public Property<?> getProperty( String urn ) {
     StandardPropertyURN type;
     try {
       type = StandardPropertyURN.fromString( urn );
@@ -188,7 +191,7 @@ public abstract class Human extends StandardEntity {
    * @return The position history.
    */
   public int[] getPositionHistory() {
-    return positionHistory.getValue();
+    return positionHistory.getValue().stream().mapToInt( i -> i ).toArray();
   }
 
 
@@ -199,7 +202,8 @@ public abstract class Human extends StandardEntity {
    *          The new position history.
    */
   public void setPositionHistory( int[] history ) {
-    this.positionHistory.setValue( history );
+    this.positionHistory.setValue(
+        Arrays.stream( history ).boxed().collect( Collectors.toList() ) );
   }
 
 
@@ -640,7 +644,7 @@ public abstract class Human extends StandardEntity {
    *          The new position.
    * @param newX
    *          The x coordinate of this agent.
-   * @param newYStandardPropertyURN
+   * @param newY
    *          The y coordinate if this agent.
    */
   public void setPosition( EntityID newPosition, int newX, int newY ) {
@@ -651,19 +655,53 @@ public abstract class Human extends StandardEntity {
 
 
   @Override
-  public JSONObject toJson() {
-    JSONObject jsonObject = super.toJson();
-    jsonObject.put( StandardPropertyURN.DAMAGE.toString(),
-        this.isDamageDefined() ? this.getDamage() : JSONObject.NULL );
-    jsonObject.put( StandardPropertyURN.HP.toString(),
-        this.isHPDefined() ? this.getHP() : JSONObject.NULL );
-    jsonObject.put( StandardPropertyURN.POSITION.toString(),
-        this.isPositionDefined() ? new int[]{ getX(), getY() }
-            : JSONObject.NULL );
-    jsonObject.put( StandardPropertyURN.POSITION_HISTORY.toString(),
-        this.isPositionHistoryDefined() ? this.getPositionHistory()
-            : JSONObject.NULL );
+  public void setEntity( Map<String, List<Object>> properties ) {
+    StandardPropertyURN type;
 
-    return jsonObject;
+    for ( String urn : properties.keySet() ) {
+      List<Object> fields = properties.get( urn );
+
+      type = StandardPropertyURN.fromString( urn );
+      switch ( type ) {
+        case X:
+          this.setX( this.getXProperty().convertToValue( fields ) );
+          break;
+        case Y:
+          this.setY( this.getYProperty().convertToValue( fields ) );
+          break;
+        case POSITION:
+          this.setPosition(
+              this.getPositionProperty().convertToValue( fields ) );
+          break;
+        case POSITION_HISTORY:
+          List<Integer> history = this.getPositionHistoryProperty()
+              .convertToValue( fields );
+          this.setPositionHistory(
+              history.stream().mapToInt( i -> i ).toArray() );
+          break;
+        case DIRECTION:
+          this.setDirection(
+              this.getDirectionProperty().convertToValue( fields ) );
+          break;
+        case STAMINA:
+          this.setStamina( this.getStaminaProperty().convertToValue( fields ) );
+          break;
+        case HP:
+          this.setHP( this.getHPProperty().convertToValue( fields ) );
+          break;
+        case DAMAGE:
+          this.setDamage( this.getDamageProperty().convertToValue( fields ) );
+          break;
+        case BURIEDNESS:
+          this.setBuriedness(
+              this.getBuriednessProperty().convertToValue( fields ) );
+          break;
+        case TRAVEL_DISTANCE:
+          this.setTravelDistance(
+              this.getTravelDistanceProperty().convertToValue( fields ) );
+          break;
+        default:
+      }
+    }
   }
 }
