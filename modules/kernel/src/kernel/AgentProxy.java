@@ -9,6 +9,7 @@ import rescuecore2.connection.Connection;
 import rescuecore2.connection.ConnectionListener;
 import rescuecore2.log.Logger;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.control.AKCommand;
 import rescuecore2.messages.control.KASense;
 import rescuecore2.misc.collections.LazyMap;
 import rescuecore2.worldmodel.ChangeSet;
@@ -106,12 +107,14 @@ public class AgentProxy extends AbstractKernelComponent {
   private class AgentConnectionListener implements ConnectionListener {
     @Override
     public void messageReceived(Connection c, Message msg) {
-      if (msg instanceof Command) {
-        EntityID id = ((Command) msg).getAgentID();
-        if (id.equals(getControlledEntity().getID())) {
-          commandReceived((Command) msg);
-        }
-      }
+    	if(msg instanceof AKCommand) {
+		  for (Command cmd:((AKCommand) msg).getCommand()) {
+		     EntityID id = cmd.getAgentID();
+		     if (id.equals(getControlledEntity().getID())) {
+		        commandReceived(cmd);
+		     }
+		   }
+    	}
     }
   }
 
