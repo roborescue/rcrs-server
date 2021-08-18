@@ -9,6 +9,7 @@ import java.io.IOException;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.control.ControlMessageProto.ChangeSetProto;
 import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto.Builder;
 import rescuecore2.messages.control.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.control.ControlMessageProto.SKUpdateProto;
 import rescuecore2.registry.Registry;
@@ -93,36 +94,8 @@ public class SKUpdate extends AbstractMessage {
     SKUpdateProto.Builder skUpdateBuilder = SKUpdateProto.newBuilder()
         .setSimID( this.simID ).setTime( this.time );
 
-    ChangeSetProto.Builder changeSetProtoBuilder = ChangeSetProto.newBuilder();
-
-    // Changes
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      Set<Property<?>> changedProperty = this.changes
-          .getChangedProperties( entityID );
-
-      for ( Property<?> property : changedProperty ) {
-        PropertyProto propertyProto = MsgProtoBuf.setPropertyProto( property );
-
-        PropertyMapProto propertyMapProto = PropertyMapProto.newBuilder()
-            .putProperty( property.getURN(), propertyProto ).build();
-
-        changeSetProtoBuilder.putChanges( entityID.getValue(),
-            propertyMapProto );
-      }
-    }
-
-    // Deleted
-    for ( EntityID entityID : this.changes.getDeletedEntities() ) {
-      changeSetProtoBuilder.addDeletes( entityID.getValue() );
-    }
-
-    // Entity URNs
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      changeSetProtoBuilder.putEntitiesURNs( entityID.getValue(),
-          this.changes.getEntityURN( entityID ) );
-    }
-
-    skUpdateBuilder.setChanges( changeSetProtoBuilder.build() );
+    
+    skUpdateBuilder.setChanges( MsgProtoBuf.setChangeSetProto(this.changes));
 
     SKUpdateProto skUpdate = skUpdateBuilder.build();
     skUpdate.writeTo( out );

@@ -93,36 +93,8 @@ public class KSUpdate extends AbstractMessage {
     KSUpdateProto.Builder ksUpdateBuilder = KSUpdateProto.newBuilder()
         .setSimID( this.simID ).setTime( this.time );
 
-    ChangeSetProto.Builder changeSetProtoBuilder = ChangeSetProto.newBuilder();
-
-    // Changes
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      Set<Property<?>> changedProperty = this.changes
-          .getChangedProperties( entityID );
-
-      for ( Property<?> property : changedProperty ) {
-        PropertyProto propertyProto = MsgProtoBuf.setPropertyProto( property );
-
-        PropertyMapProto propertyMapProto = PropertyMapProto.newBuilder()
-            .putProperty( property.getURN(), propertyProto ).build();
-
-        changeSetProtoBuilder.putChanges( entityID.getValue(),
-            propertyMapProto );
-      }
-    }
-
-    // Deleted
-    for ( EntityID entityID : this.changes.getDeletedEntities() ) {
-      changeSetProtoBuilder.addDeletes( entityID.getValue() );
-    }
-
-    // Entity URNs
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      changeSetProtoBuilder.putEntitiesURNs( entityID.getValue(),
-          this.changes.getEntityURN( entityID ) );
-    }
-
-    ksUpdateBuilder.setChanges( changeSetProtoBuilder.build() );
+    
+    ksUpdateBuilder.setChanges( MsgProtoBuf.setChangeSetProto(this.changes));
 
     KSUpdateProto ksUpdate = ksUpdateBuilder.build();
     ksUpdate.writeTo( out );

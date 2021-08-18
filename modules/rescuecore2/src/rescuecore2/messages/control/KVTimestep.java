@@ -118,36 +118,8 @@ public class KVTimestep extends AbstractMessage {
       kvTimestepBuilder.addCommands( commandProto );
     }
 
-    ChangeSetProto.Builder changeSetProtoBuilder = ChangeSetProto.newBuilder();
-
-    // Changes
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      Set<Property<?>> changedProperty = this.changes
-          .getChangedProperties( entityID );
-
-      for ( Property<?> property : changedProperty ) {
-        PropertyProto propertyProto = MsgProtoBuf.setPropertyProto( property );
-
-        PropertyMapProto propertyMapProto = PropertyMapProto.newBuilder()
-            .putProperty( property.getURN(), propertyProto ).build();
-
-        changeSetProtoBuilder.putChanges( entityID.getValue(),
-            propertyMapProto );
-      }
-    }
-
-    // Deleted
-    for ( EntityID entityID : this.changes.getDeletedEntities() ) {
-      changeSetProtoBuilder.addDeletes( entityID.getValue() );
-    }
-
-    // Entity URNs
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      changeSetProtoBuilder.putEntitiesURNs( entityID.getValue(),
-          this.changes.getEntityURN( entityID ) );
-    }
-
-    kvTimestepBuilder.setChanges( changeSetProtoBuilder.build() );
+    
+    kvTimestepBuilder.setChanges( MsgProtoBuf.setChangeSetProto(this.changes));
 
     KVTimestepProto kvTimestep = kvTimestepBuilder.build();
     kvTimestep.writeTo( out );

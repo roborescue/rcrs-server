@@ -112,36 +112,10 @@ public class KASense extends AbstractMessage {
     KASenseProto.Builder kaSenseBuilder = KASenseProto.newBuilder()
         .setAgentID( this.agentID.getValue() ).setTime( this.time );
 
-    ChangeSetProto.Builder changeSetProtoBuilder = ChangeSetProto.newBuilder();
+    kaSenseBuilder.setChanges( MsgProtoBuf.setChangeSetProto(this.changes));
+ 
 
-    // Changes
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      Set<Property<?>> changedProperty = this.changes
-          .getChangedProperties( entityID );
-
-      for ( Property<?> property : changedProperty ) {
-        PropertyProto propertyProto = MsgProtoBuf.setPropertyProto( property );
-
-        PropertyMapProto propertyMapProto = PropertyMapProto.newBuilder()
-            .putProperty( property.getURN(), propertyProto ).build();
-
-        changeSetProtoBuilder.putChanges( entityID.getValue(),
-            propertyMapProto );
-      }
-    }
-
-    // Deleted
-    for ( EntityID entityID : this.changes.getDeletedEntities() ) {
-      changeSetProtoBuilder.addDeletes( entityID.getValue() );
-    }
-
-    // Entity URNs
-    for ( EntityID entityID : this.changes.getChangedEntities() ) {
-      changeSetProtoBuilder.putEntitiesURNs( entityID.getValue(),
-          this.changes.getEntityURN( entityID ) );
-    }
-
-    kaSenseBuilder.setChanges( changeSetProtoBuilder.build() );
+    
 
     for ( Command command : this.hear ) {
       CommandProto commandProto = MsgProtoBuf.setCommandProto( command );

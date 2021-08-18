@@ -5,16 +5,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import rescuecore2.commands.Command;
 import rescuecore2.config.Config;
+import rescuecore2.messages.control.ControlMessageProto.ChangeSetProto;
 import rescuecore2.messages.control.ControlMessageProto.CommandProto;
 import rescuecore2.messages.control.ControlMessageProto.ConfigProto;
 import rescuecore2.messages.control.ControlMessageProto.IntListProto;
 import rescuecore2.messages.control.ControlMessageProto.IntMatrixProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto;
 import rescuecore2.messages.control.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.control.ControlMessageProto.StrListProto;
 import rescuecore2.messages.control.ControlMessageProto.ValueProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto.Builder;
 import rescuecore2.standard.entities.StandardPropertyURN;
+import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 
 public class MsgProtoBuf {
@@ -179,7 +186,35 @@ public class MsgProtoBuf {
 
     return propertyProtoBuilder.build();
   }
+  public static ChangeSetProto setChangeSetProto( ChangeSet changeSet ) {
+	  ChangeSetProto.Builder changeSetProtoBuilder = ChangeSetProto.newBuilder();
 
+	    // Changes
+	    for ( EntityID entityID : changeSet.getChangedEntities() ) {
+	      Set<Property<?>> changedProperty = changeSet
+	          .getChangedProperties( entityID );
+	       Builder propertyMapProto = PropertyMapProto.newBuilder();
+	      for ( Property<?> property : changedProperty ) {
+	        PropertyProto propertyProto = MsgProtoBuf.setPropertyProto( property );
+        	propertyMapProto.putProperty( property.getURN(), propertyProto );        
+	      }
+	      changeSetProtoBuilder.putChanges( entityID.getValue(),
+	              propertyMapProto.build() );
+	    }
+
+	    // Deleted
+	    for ( EntityID entityID : changeSet.getDeletedEntities() ) {
+	      changeSetProtoBuilder.addDeletes( entityID.getValue() );
+	    }
+
+	    // Entity URNs
+	    for ( EntityID entityID : changeSet.getChangedEntities() ) {
+	      changeSetProtoBuilder.putEntitiesURNs( entityID.getValue(),
+	    		  changeSet.getEntityURN( entityID ) );
+	    }
+
+	    return changeSetProtoBuilder.build();
+	  }
 
   public static List<Object> setPropertyFields( PropertyProto propertyProto ) {
     List<Object> property = new ArrayList<Object>();
