@@ -314,7 +314,7 @@ task completeBuild(type: GradleBuild) {
           ]
 }
 
-/* Open scenario editor */
+/* run simulator */
 task run(type: JavaExec) {
   workingDir = 'boot'
   classpath = files('supplement')
