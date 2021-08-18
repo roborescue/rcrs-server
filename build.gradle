@@ -321,7 +321,8 @@ task run(type: JavaExec) {
   classpath += sourceSets.main.runtimeClasspath
   main = 'kernel.StartKernel'
   maxHeapSize = '2048m'
-  args '-c config/kernel-inline.cfg --gis.map.dir=../maps/test/map --kernel.logname=logs/rescue.log'
+  jvmArgs '-Dlog4j.log.dir=logs'
+  args('-c config/kernel-inline.cfg --gis.map.dir=../maps/test/map --kernel.logname=logs/rescue.log'.split(' '))
 }
 /* Generate a random scenario */
 task randomScenario(type: JavaExec) {
