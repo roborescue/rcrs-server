@@ -9,6 +9,7 @@ import java.io.IOException;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.control.ControlMessageProto.ChangeSetProto;
 import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto;
+import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto.Builder;
 import rescuecore2.messages.control.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.control.ControlMessageProto.SKUpdateProto;
 import rescuecore2.registry.Registry;
@@ -93,6 +94,7 @@ public class SKUpdate extends AbstractMessage {
     SKUpdateProto.Builder skUpdateBuilder = SKUpdateProto.newBuilder()
         .setSimID( this.simID ).setTime( this.time );
 
+    
     skUpdateBuilder.setChanges( MsgProtoBuf.setChangeSetProto(this.changes));
 
     SKUpdateProto skUpdate = skUpdateBuilder.build();
