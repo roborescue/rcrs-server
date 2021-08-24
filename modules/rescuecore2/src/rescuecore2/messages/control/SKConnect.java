@@ -1,8 +1,9 @@
 package rescuecore2.messages.control;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.control.ControlMessageProto.SKConnectProto;
 
@@ -11,42 +12,34 @@ import rescuecore2.messages.control.ControlMessageProto.SKConnectProto;
  */
 public class SKConnect extends AbstractMessage {
 
-  private int    requestID;
-  private int    version;
+  private int requestID;
+  private int version;
   private String simulatorName;
-
 
   /**
    * An SKConnect message that populates its data from a stream.
    *
-   * @param in
-   *          The InputStream to read.
-   * @throws IOException
-   *           If there is a problem reading the stream.
+   * @param in The InputStream to read.
+   * @throws IOException If there is a problem reading the stream.
    */
-  public SKConnect( InputStream in ) throws IOException {
-    super( ControlMessageURN.SK_CONNECT.toString() );
-    this.read( in );
+  public SKConnect(InputStream in) throws IOException {
+    super(ControlMessageURN.SK_CONNECT.toString());
+    this.read(in);
   }
-
 
   /**
    * An SKConnect with a given version and request ID.
    *
-   * @param requestID
-   *          The request ID.
-   * @param version
-   *          The version number.
-   * @param name
-   *          The name of the simulator.
+   * @param requestID The request ID.
+   * @param version   The version number.
+   * @param name      The name of the simulator.
    */
-  public SKConnect( int requestID, int version, String name ) {
-    super( ControlMessageURN.SK_CONNECT.toString() );
+  public SKConnect(int requestID, int version, String name) {
+    super(ControlMessageURN.SK_CONNECT.toString());
     this.requestID = requestID;
     this.version = version;
     this.simulatorName = name;
   }
-
 
   /**
    * Get the request ID.
@@ -57,7 +50,6 @@ public class SKConnect extends AbstractMessage {
     return this.requestID;
   }
 
-
   /**
    * Get the version number of this request.
    *
@@ -66,7 +58,6 @@ public class SKConnect extends AbstractMessage {
   public int getVersion() {
     return this.version;
   }
-
 
   /**
    * Get the simulator name.
@@ -77,18 +68,15 @@ public class SKConnect extends AbstractMessage {
     return this.simulatorName;
   }
 
+  public void write(OutputStream out) throws IOException {
+    SKConnectProto skConnect = SKConnectProto.newBuilder().setRequestID(this.requestID).setVersion(this.version)
+        .setSimulatorName(this.simulatorName).build();
 
-  public void write( OutputStream out ) throws IOException {
-    SKConnectProto skConnect = SKConnectProto.newBuilder()
-        .setRequestID( this.requestID ).setVersion( this.version )
-        .setSimulatorName( this.simulatorName ).build();
-
-    skConnect.writeTo( out );
+    skConnect.writeTo(out);
   }
 
-
-  public void read( InputStream in ) throws IOException {
-    SKConnectProto skConnect = SKConnectProto.parseFrom( in );
+  public void read(InputStream in) throws IOException {
+    SKConnectProto skConnect = SKConnectProto.parseFrom(in);
 
     this.requestID = skConnect.getRequestID();
     this.version = skConnect.getVersion();

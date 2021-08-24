@@ -4,31 +4,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
-import rescuecore2.log.Logger;
 import rescuecore2.commands.Command;
+import rescuecore2.log.Logger;
 import rescuecore2.messages.control.KSCommands;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
+import rescuecore2.standard.commands.AKClear;
+import rescuecore2.standard.commands.AKClearArea;
 import rescuecore2.standard.components.StandardSimulator;
 import rescuecore2.standard.entities.Area;
 import rescuecore2.standard.entities.Blockade;
 import rescuecore2.standard.entities.PoliceForce;
 import rescuecore2.standard.entities.Road;
 import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.commands.AKClear;
-import rescuecore2.standard.commands.AKClearArea;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
 
 /**
- The area model clear simulator. This simulator processes AKClear messages.
+ * The area model clear simulator. This simulator processes AKClear messages.
  */
 public class ClearSimulator extends StandardSimulator {
   private static final String SIMULATOR_NAME = "Area model clear simulator";
@@ -54,14 +52,14 @@ public class ClearSimulator extends StandardSimulator {
     Set<EntityID> cleared = new HashSet<EntityID>();
     for (Command command : c.getCommands()) {
       if (command instanceof AKClear) {
-        AKClear clear = (AKClear)command;
+        AKClear clear = (AKClear) command;
         if (!isValid(clear, cleared)) {
           continue;
         }
         Logger.debug("Processing " + clear);
         EntityID blockadeID = clear.getTarget();
-        Blockade blockade = (Blockade)model.getEntity(blockadeID);
-        Area area = (Area)model.getEntity(blockade.getPosition());
+        Blockade blockade = (Blockade) model.getEntity(blockadeID);
+        Area area = (Area) model.getEntity(blockade.getPosition());
         int cost = blockade.getRepairCost();
         int rate = config.getIntValue(REPAIR_RATE_KEY);
         Logger.debug("Blockade repair cost: " + cost);
@@ -77,8 +75,7 @@ public class ClearSimulator extends StandardSimulator {
           partiallyCleared.remove(blockade);
           cleared.add(blockadeID);
           Logger.debug("Cleared " + blockade);
-        }
-        else {
+        } else {
           // Update the repair cost
           if (!partiallyCleared.containsKey(blockade)) {
             partiallyCleared.put(blockade, cost);
@@ -120,8 +117,8 @@ public class ClearSimulator extends StandardSimulator {
         // Shift both x and y so they are now d * dx from the centre
         double newX = cx + (dx * d);
         double newY = cy + (dy * d);
-        apexes[i] = (int)newX;
-        apexes[i + 1] = (int)newY;
+        apexes[i] = (int) newX;
+        apexes[i + 1] = (int) newY;
       }
       b.setApexes(apexes);
       changes.addChange(b, b.getApexesProperty());
@@ -139,12 +136,11 @@ public class ClearSimulator extends StandardSimulator {
     int targetY = clear.getDestinationY();
 
     int length = config.getIntValue(REPAIR_DISTANCE_KEY);
-    Area agentPosition = (Area) agent
-            .getPosition(model);
+    // Area agentPosition = (Area) agent.getPosition(model);
 
     Map<Blockade, java.awt.geom.Area> blockades = new HashMap<Blockade, java.awt.geom.Area>();
     for (StandardEntity entity : model.getObjectsInRange(agent.getX(), agent.getY(), length)) {
-      if(entity instanceof Area) {
+      if (entity instanceof Area) {
         Area area = (Area) entity;
         if (area.isBlockadesDefined()) {
           for (EntityID blockadeID : area.getBlockades()) {
@@ -164,8 +160,7 @@ public class ClearSimulator extends StandardSimulator {
     while (true) {
       counter++;
       length = (min + max) / 2;
-      java.awt.geom.Area area = Geometry.getClearArea(agent, targetX, targetY, length,
-              clearRad);
+      java.awt.geom.Area area = Geometry.getClearArea(agent, targetX, targetY, length, clearRad);
 
       double firstSurface = Geometry.surface(area);
       for (java.awt.geom.Area blockade : blockades.values())
@@ -187,8 +182,7 @@ public class ClearSimulator extends StandardSimulator {
       break;
     }
 
-    java.awt.geom.Area area = Geometry.getClearArea(agent, targetX, targetY, length,
-            clearRad);
+    java.awt.geom.Area area = Geometry.getClearArea(agent, targetX, targetY, length, clearRad);
     for (Map.Entry<Blockade, java.awt.geom.Area> entry : blockades.entrySet()) {
       Blockade blockade = entry.getKey();
       java.awt.geom.Area blockadeArea = entry.getValue();
@@ -205,25 +199,20 @@ public class ClearSimulator extends StandardSimulator {
           if (blockade == null) {
             blockade = backupBlockade;
             areas.clear();
-          }
-          else {
-            changes.addChange(blockade,
-                    blockade.getApexesProperty());
+          } else {
+            changes.addChange(blockade, blockade.getApexesProperty());
             changes.addChange(blockade, blockade.getXProperty());
             changes.addChange(blockade, blockade.getYProperty());
-            changes.addChange(blockade,
-                    blockade.getRepairCostProperty());
+            changes.addChange(blockade, blockade.getRepairCostProperty());
           }
         }
         if (areas.size() != 1) {
           try {
-            List<EntityID> newIDs = requestNewEntityIDs(areas
-                    .size());
+            List<EntityID> newIDs = requestNewEntityIDs(areas.size());
             Iterator<EntityID> it = newIDs.iterator();
             List<Blockade> newBlockades = new ArrayList<Blockade>();
             if (areas.size() > 0)
-              Logger.debug("Creating new blockade objects for " + blockade.getID().getValue()
-                      + " " + areas.size());
+              Logger.debug("Creating new blockade objects for " + blockade.getID().getValue() + " " + areas.size());
             for (int[] apexes : areas) {
               EntityID id = it.next();
               Blockade b = makeBlockade(id, apexes, road.getID());
@@ -295,7 +284,7 @@ public class ClearSimulator extends StandardSimulator {
       Logger.info("Rejecting clear command " + clear + ": target is not a road");
       return false;
     }
-    PoliceForce police = (PoliceForce)agent;
+    PoliceForce police = (PoliceForce) agent;
     StandardEntity agentPosition = police.getPosition(model);
     if (agentPosition == null) {
       Logger.info("Rejecting clear command " + clear + ": could not locate agent");
@@ -309,7 +298,7 @@ public class ClearSimulator extends StandardSimulator {
       Logger.info("Rejecting clear command " + clear + ": agent is buried");
       return false;
     }
-    Blockade targetBlockade = (Blockade)target;
+    Blockade targetBlockade = (Blockade) target;
     if (!targetBlockade.isPositionDefined()) {
       Logger.info("Rejecting clear command " + clear + ": blockade has no position");
       return false;
@@ -323,7 +312,8 @@ public class ClearSimulator extends StandardSimulator {
     int range = config.getIntValue(REPAIR_DISTANCE_KEY);
     Point2D agentLocation = new Point2D(police.getX(), police.getY());
     double bestDistance = Double.MAX_VALUE;
-    for (Line2D line : GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(targetBlockade.getApexes()), true)) {
+    for (Line2D line : GeometryTools2D.pointsToLines(GeometryTools2D.vertexArrayToPoints(targetBlockade.getApexes()),
+        true)) {
       Point2D closest = GeometryTools2D.getClosestPointOnSegment(line, agentLocation);
       double distance = GeometryTools2D.getDistance(agentLocation, closest);
       if (distance < range) {
@@ -340,25 +330,21 @@ public class ClearSimulator extends StandardSimulator {
   private boolean isValid(AKClearArea clear, Set<EntityID> cleared) {
     StandardEntity agent = model.getEntity(clear.getAgentID());
     if (agent == null) {
-      Logger.info("Rejecting clear command " + clear
-              + ": agent does not exist");
+      Logger.info("Rejecting clear command " + clear + ": agent does not exist");
       return false;
     }
     if (!(agent instanceof PoliceForce)) {
-      Logger.info("Rejecting clear command " + clear
-              + ": agent is not a police officer");
+      Logger.info("Rejecting clear command " + clear + ": agent is not a police officer");
       return false;
     }
     PoliceForce police = (PoliceForce) agent;
     StandardEntity agentPosition = police.getPosition(model);
     if (agentPosition == null) {
-      Logger.info("Rejecting clear command " + clear
-              + ": could not locate agent");
+      Logger.info("Rejecting clear command " + clear + ": could not locate agent");
       return false;
     }
     if (!(agentPosition instanceof Area)) {
-      Logger.info("Rejecting clear command " + clear
-              + ": could not locate agent");
+      Logger.info("Rejecting clear command " + clear + ": could not locate agent");
       return false;
     }
     if (!police.isHPDefined() || police.getHP() <= 0) {
@@ -366,8 +352,7 @@ public class ClearSimulator extends StandardSimulator {
       return false;
     }
     if (police.isBuriednessDefined() && police.getBuriedness() > 0) {
-      Logger.info("Rejecting clear command " + clear
-              + ": agent is buried");
+      Logger.info("Rejecting clear command " + clear + ": agent is buried");
       return false;
     }
     return true;

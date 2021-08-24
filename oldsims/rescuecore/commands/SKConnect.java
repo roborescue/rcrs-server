@@ -17,39 +17,38 @@ package rescuecore.commands;
 
 import rescuecore.InputBuffer;
 import rescuecore.OutputBuffer;
-import rescuecore.RescueObject;
 import rescuecore.RescueConstants;
 
 public class SKConnect extends Command {
-	private int version;
-    private String name;
+  private int version;
+  private String name;
 
-	public SKConnect(String name) {
-            this(0, name);
-	}
+  public SKConnect(String name) {
+    this(0, name);
+  }
 
-    public SKConnect(int version, String name) {
-		super(RescueConstants.SK_CONNECT);
-		this.version = version;
-                this.name = name;
-	}
+  public SKConnect(int version, String name) {
+    super(RescueConstants.SK_CONNECT);
+    this.version = version;
+    this.name = name;
+  }
 
-	public SKConnect(InputBuffer in) {
-		super(RescueConstants.SK_CONNECT);
-		read(in);
-	}
+  public SKConnect(InputBuffer in) {
+    super(RescueConstants.SK_CONNECT);
+    read(in);
+  }
 
-	public void read(InputBuffer in) {
-		version = in.readInt();
-                name = in.readString();
-	}
+  public void read(InputBuffer in) {
+    version = in.readInt();
+    name = in.readString();
+  }
 
-	public void write(OutputBuffer out) {
-		out.writeInt(version);
-                out.writeString(name);
-	}
+  public void write(OutputBuffer out) {
+    out.writeInt(version);
+    out.writeString(name);
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public int getVersion() {
+    return version;
+  }
 }

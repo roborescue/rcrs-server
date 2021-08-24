@@ -17,39 +17,38 @@ package rescuecore.commands;
 
 import rescuecore.InputBuffer;
 import rescuecore.OutputBuffer;
-import rescuecore.RescueObject;
 import rescuecore.RescueConstants;
 
 public class VKConnect extends Command {
-	private int version;
-    private String name;
+  private int version;
+  private String name;
 
-	public VKConnect(String name) {
-            this(0, name);
-	}
+  public VKConnect(String name) {
+    this(0, name);
+  }
 
-    public VKConnect(int version, String name) {
-		super(RescueConstants.VK_CONNECT);
-		this.version = version;
-                this.name = name;
-	}
+  public VKConnect(int version, String name) {
+    super(RescueConstants.VK_CONNECT);
+    this.version = version;
+    this.name = name;
+  }
 
-	public VKConnect(InputBuffer in) {
-		super(RescueConstants.VK_CONNECT);
-		read(in);
-	}
+  public VKConnect(InputBuffer in) {
+    super(RescueConstants.VK_CONNECT);
+    read(in);
+  }
 
-	public void read(InputBuffer in) {
-		version = in.readInt();
-                name = in.readString();
-	}
+  public void read(InputBuffer in) {
+    version = in.readInt();
+    name = in.readString();
+  }
 
-	public void write(OutputBuffer out) {
-		out.writeInt(version);
-                out.writeString(name);
-	}
+  public void write(OutputBuffer out) {
+    out.writeInt(version);
+    out.writeString(name);
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public int getVersion() {
+    return version;
+  }
 }

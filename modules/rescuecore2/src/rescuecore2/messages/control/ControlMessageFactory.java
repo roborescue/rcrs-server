@@ -1,7 +1,8 @@
 package rescuecore2.messages.control;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
 import rescuecore2.log.Logger;
 import rescuecore2.messages.Message;
 import rescuecore2.registry.AbstractMessageFactory;
@@ -9,76 +10,72 @@ import rescuecore2.registry.AbstractMessageFactory;
 /**
  * A factory for control messages.
  */
-public final class ControlMessageFactory
-    extends AbstractMessageFactory<ControlMessageURN> {
+public final class ControlMessageFactory extends AbstractMessageFactory<ControlMessageURN> {
 
   /** Singleton instance. */
   public static final ControlMessageFactory INSTANCE = new ControlMessageFactory();
 
-
   private ControlMessageFactory() {
-    super( ControlMessageURN.class );
+    super(ControlMessageURN.class);
   }
 
-
   @Override
-  public Message makeMessage( ControlMessageURN urn, InputStream data )
-      throws IOException {
-    switch ( urn ) {
+  public Message makeMessage(ControlMessageURN urn, InputStream data) throws IOException {
+    switch (urn) {
       case KG_CONNECT:
-        return new KGConnect( data );
+        return new KGConnect(data);
       case KG_ACKNOWLEDGE:
-        return new KGAcknowledge( data );
+        return new KGAcknowledge(data);
       case GK_CONNECT_OK:
-        return new GKConnectOK( data );
+        return new GKConnectOK(data);
       case GK_CONNECT_ERROR:
-        return new GKConnectError( data );
+        return new GKConnectError(data);
       case SK_CONNECT:
-        return new SKConnect( data );
+        return new SKConnect(data);
       case SK_ACKNOWLEDGE:
-        return new SKAcknowledge( data );
+        return new SKAcknowledge(data);
       case SK_UPDATE:
-        return new SKUpdate( data );
+        return new SKUpdate(data);
       case KS_CONNECT_OK:
-        return new KSConnectOK( data );
+        return new KSConnectOK(data);
       case KS_CONNECT_ERROR:
-        return new KSConnectError( data );
+        return new KSConnectError(data);
       case KS_AFTERSHOCK_INFO:
-        return new KSAfterShockInfo( data );
+        return new KSAfterShockInfo(data);
       case KS_UPDATE:
-        return new KSUpdate( data );
+        return new KSUpdate(data);
       case KS_COMMANDS:
-        return new KSCommands( data );
+        return new KSCommands(data);
       case VK_CONNECT:
-        return new VKConnect( data );
+        return new VKConnect(data);
       case VK_ACKNOWLEDGE:
-        return new VKAcknowledge( data );
+        return new VKAcknowledge(data);
       case KV_CONNECT_OK:
-        return new KVConnectOK( data );
+        return new KVConnectOK(data);
       case KV_CONNECT_ERROR:
-        return new KVConnectError( data );
+        return new KVConnectError(data);
       case KV_TIMESTEP:
-        return new KVTimestep( data );
+        return new KVTimestep(data);
       case AK_CONNECT:
-        return new AKConnect( data );
+        return new AKConnect(data);
       case AK_ACKNOWLEDGE:
-        return new AKAcknowledge( data );
+        return new AKAcknowledge(data);
       case AK_COMMAND:
-        return new AKCommand( data );
+        return new AKCommand(data);
       case KA_CONNECT_OK:
-        return new KAConnectOK( data );
+        return new KAConnectOK(data);
       case KA_CONNECT_ERROR:
-        return new KAConnectError( data );
+        return new KAConnectError(data);
       case KA_SENSE:
-        return new KASense( data );
+        return new KASense(data);
       case SHUTDOWN:
-        return new Shutdown( data );
+        return new Shutdown(data);
       case ENTITY_ID_REQUEST:
-        return new EntityIDRequest( data );
+        return new EntityIDRequest(data);
       case ENTITY_ID_RESPONSE:
-        return new EntityIDResponse( data );
+        return new EntityIDResponse(data);
       default:
-        Logger.warn( "Unrecognised message urn: " + urn );
+        Logger.warn("Unrecognised message urn: " + urn);
         return null;
     }
   }

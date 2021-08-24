@@ -15,65 +15,64 @@
 
 package rescuecore.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rescuecore.InputBuffer;
 import rescuecore.OutputBuffer;
 import rescuecore.RescueConstants;
-import java.util.List;
-import java.util.ArrayList;
 
 public class AKExtinguish extends AgentCommand {
-    private Nozzle[] nozzles;
+  private Nozzle[] nozzles;
 
-    public AKExtinguish(int senderID,int time, int targetID, int direction, int x, int y, int water) {
-        super(RescueConstants.AK_EXTINGUISH,senderID,time);
-        nozzles = new Nozzle[1];
-        nozzles[0] = new Nozzle(targetID,direction,x,y,water);
-    }
+  public AKExtinguish(int senderID, int time, int targetID, int direction, int x, int y, int water) {
+    super(RescueConstants.AK_EXTINGUISH, senderID, time);
+    nozzles = new Nozzle[1];
+    nozzles[0] = new Nozzle(targetID, direction, x, y, water);
+  }
 
-    public AKExtinguish(int senderID, int time, Nozzle[] nozzles) {
-        super(RescueConstants.AK_EXTINGUISH,senderID,time);
-        this.nozzles = nozzles;
-    }
+  public AKExtinguish(int senderID, int time, Nozzle[] nozzles) {
+    super(RescueConstants.AK_EXTINGUISH, senderID, time);
+    this.nozzles = nozzles;
+  }
 
-    public AKExtinguish(InputBuffer in) {
-        super(RescueConstants.AK_EXTINGUISH,0,0);
-        read(in);
-    }
+  public AKExtinguish(InputBuffer in) {
+    super(RescueConstants.AK_EXTINGUISH, 0, 0);
+    read(in);
+  }
 
-    /*
-      public AKExtinguish(int senderID, byte[] data) {
-      super(AK_EXTINGUISH,senderID);
-      readNozzles(data,0);
+  /*
+   * public AKExtinguish(int senderID, byte[] data) {
+   * super(AK_EXTINGUISH,senderID); readNozzles(data,0); }
+   */
+
+  public void read(InputBuffer in) {
+    super.read(in);
+    List allNozzles = new ArrayList();
+    int target = 0;
+    do {
+      target = in.readInt();
+      if (target != 0) {
+        allNozzles.add(new Nozzle(target, in.readInt(), in.readInt(), in.readInt(), in.readInt()));
       }
-    */
+    } while (target != 0);
+    nozzles = new Nozzle[allNozzles.size()];
+    allNozzles.toArray(nozzles);
+  }
 
-    public void read(InputBuffer in) {
-        super.read(in);
-        List allNozzles = new ArrayList();
-        int target = 0;
-        do {
-            target = in.readInt();
-            if (target!=0) {
-                allNozzles.add(new Nozzle(target,in.readInt(),in.readInt(),in.readInt(),in.readInt()));
-            }
-        } while (target!=0);
-        nozzles = new Nozzle[allNozzles.size()];
-        allNozzles.toArray(nozzles);
+  public void write(OutputBuffer out) {
+    super.write(out);
+    for (int i = 0; i < nozzles.length; ++i) {
+      out.writeInt(nozzles[i].getTarget());
+      out.writeInt(nozzles[i].getDirection());
+      out.writeInt(nozzles[i].getX());
+      out.writeInt(nozzles[i].getY());
+      out.writeInt(nozzles[i].getWater());
     }
+    out.writeInt(0);
+  }
 
-    public void write(OutputBuffer out) {
-        super.write(out);
-        for (int i=0;i<nozzles.length;++i) {
-            out.writeInt(nozzles[i].getTarget());
-            out.writeInt(nozzles[i].getDirection());
-            out.writeInt(nozzles[i].getX());
-            out.writeInt(nozzles[i].getY());
-            out.writeInt(nozzles[i].getWater());
-        }
-        out.writeInt(0);
-    }
-
-    public Nozzle[] getNozzles() {
-        return nozzles;
-    }
+  public Nozzle[] getNozzles() {
+    return nozzles;
+  }
 }

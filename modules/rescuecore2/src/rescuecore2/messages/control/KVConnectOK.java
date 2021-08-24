@@ -1,13 +1,14 @@
 package rescuecore2.messages.control;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+
 import rescuecore2.config.Config;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.control.ControlMessageProto.ConfigProto;
@@ -26,47 +27,38 @@ import rescuecore2.worldmodel.Property;
  */
 public class KVConnectOK extends AbstractMessage {
 
-  private int          viewerID;
-  private int          requestID;
+  private int viewerID;
+  private int requestID;
   private List<Entity> world;
-  private Config       config;
-
+  private Config config;
 
   /**
    * A KVConnectOK message that populates its data from a stream.
    *
-   * @param in
-   *          The InputStream to read.
-   * @throws IOException
-   *           If there is a problem reading the stream.
+   * @param in The InputStream to read.
+   * @throws IOException If there is a problem reading the stream.
    */
-  public KVConnectOK( InputStream in ) throws IOException {
-    super( ControlMessageURN.KV_CONNECT_OK.toString() );
-    this.read( in );
+  public KVConnectOK(InputStream in) throws IOException {
+    super(ControlMessageURN.KV_CONNECT_OK.toString());
+    this.read(in);
   }
-
 
   /**
    * A populated KVConnectOK message.
    *
-   * @param viewerID
-   *          The viewer ID.
-   * @param requestID
-   *          The request ID.
-   * @param allEntities
-   *          All Entities in the world.
-   * @param config
-   *          The Config that the agent knows about.
+   * @param viewerID    The viewer ID.
+   * @param requestID   The request ID.
+   * @param allEntities All Entities in the world.
+   * @param config      The Config that the agent knows about.
    */
-  public KVConnectOK( int viewerID, int requestID, Collection<? extends Entity> allEntities, Config config ) {
-    super( ControlMessageURN.KV_CONNECT_OK.toString() );
+  public KVConnectOK(int viewerID, int requestID, Collection<? extends Entity> allEntities, Config config) {
+    super(ControlMessageURN.KV_CONNECT_OK.toString());
     this.viewerID = viewerID;
     this.requestID = requestID;
     this.world = new ArrayList<Entity>();
-    this.world.addAll( allEntities );
+    this.world.addAll(allEntities);
     this.config = config;
   }
-
 
   /**
    * Get the viewer ID.
@@ -77,7 +69,6 @@ public class KVConnectOK extends AbstractMessage {
     return this.viewerID;
   }
 
-
   /**
    * Get the request ID.
    *
@@ -86,7 +77,6 @@ public class KVConnectOK extends AbstractMessage {
   public int getRequestID() {
     return this.requestID;
   }
-
 
   /**
    * Get the entity list.
@@ -97,7 +87,6 @@ public class KVConnectOK extends AbstractMessage {
     return this.world;
   }
 
-
   /**
    * Get the Config.
    *
@@ -107,38 +96,34 @@ public class KVConnectOK extends AbstractMessage {
     return this.config;
   }
 
-
   @Override
-  public void write( OutputStream out ) throws IOException {
-    KVConnectOKProto.Builder kvConnectOKBuilder = KVConnectOKProto.newBuilder()
-        .setViewerID( this.viewerID ).setRequestID( this.requestID );
+  public void write(OutputStream out) throws IOException {
+    KVConnectOKProto.Builder kvConnectOKBuilder = KVConnectOKProto.newBuilder().setViewerID(this.viewerID)
+        .setRequestID(this.requestID);
 
-    for ( Entity entity : this.world ) {
+    for (Entity entity : this.world) {
       EntityProto.Builder entityProtoBuilder = EntityProto.newBuilder()
-          .setUrnID( StandardEntityURN.fromString( entity.getURN() ).ordinal() )
-          .setEntityID( entity.getID().getValue() );
+          .setUrnID(StandardEntityURN.fromString(entity.getURN()).ordinal()).setEntityID(entity.getID().getValue());
 
-      for ( Property<?> property : entity.getProperties() ) {
-        if ( property.isDefined() ) {
-          PropertyProto propertyProto = MsgProtoBuf
-              .setPropertyProto( property );
-          entityProtoBuilder.addProperties( propertyProto );
+      for (Property<?> property : entity.getProperties()) {
+        if (property.isDefined()) {
+          PropertyProto propertyProto = MsgProtoBuf.setPropertyProto(property);
+          entityProtoBuilder.addProperties(propertyProto);
         }
       }
-      kvConnectOKBuilder.addEntities( entityProtoBuilder.build() );
+      kvConnectOKBuilder.addEntities(entityProtoBuilder.build());
     }
 
-    ConfigProto configProto = MsgProtoBuf.setConfigProto( this.config );
-    kvConnectOKBuilder.setConfig( configProto );
+    ConfigProto configProto = MsgProtoBuf.setConfigProto(this.config);
+    kvConnectOKBuilder.setConfig(configProto);
 
     KVConnectOKProto kvConnectOK = kvConnectOKBuilder.build();
-    kvConnectOK.writeTo( out );
+    kvConnectOK.writeTo(out);
   }
 
-
   @Override
-  public void read( InputStream in ) throws IOException {
-    KVConnectOKProto kvConnectOK = KVConnectOKProto.parseFrom( in );
+  public void read(InputStream in) throws IOException {
+    KVConnectOKProto kvConnectOK = KVConnectOKProto.parseFrom(in);
 
     this.viewerID = kvConnectOK.getViewerID();
     this.requestID = kvConnectOK.getRequestID();
@@ -146,33 +131,29 @@ public class KVConnectOK extends AbstractMessage {
     this.world = new ArrayList<Entity>();
 
     List<EntityProto> entityList = kvConnectOK.getEntitiesList();
-    for ( EntityProto entityProto : entityList ) {
-      String entityURN = StandardEntityURN.formInt( entityProto.getUrnID() )
-          .toString();
+    for (EntityProto entityProto : entityList) {
+      String entityURN = StandardEntityURN.formInt(entityProto.getUrnID()).toString();
       int entityID = entityProto.getEntityID();
 
-      Entity entity = Registry.getCurrentRegistry().createEntity( entityURN,
-          new EntityID( entityID ) );
+      Entity entity = Registry.getCurrentRegistry().createEntity(entityURN, new EntityID(entityID));
 
-      if ( entity != null ) {
+      if (entity != null) {
         Map<String, List<Object>> properties = new HashMap<String, List<Object>>();
-        for ( PropertyProto propertyProto : entityProto.getPropertiesList() ) {
-          String propertyURN = StandardPropertyURN
-              .fromInt( propertyProto.getUrnID() ).toString();
+        for (PropertyProto propertyProto : entityProto.getPropertiesList()) {
+          String propertyURN = StandardPropertyURN.fromInt(propertyProto.getUrnID()).toString();
 
-          List<Object> property = MsgProtoBuf
-              .setPropertyFields( propertyProto );
+          List<Object> property = MsgProtoBuf.setPropertyFields(propertyProto);
 
-          properties.put( propertyURN, property );
+          properties.put(propertyURN, property);
         }
 
-        entity.setEntity( properties );
+        entity.setEntity(properties);
 
-        this.world.add( entity );
+        this.world.add(entity);
       }
     }
 
     ConfigProto configProto = kvConnectOK.getConfig();
-    this.config = MsgProtoBuf.setConfig( configProto );
+    this.config = MsgProtoBuf.setConfig(configProto);
   }
 }

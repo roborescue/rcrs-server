@@ -1,8 +1,8 @@
 package rescuecore2.messages;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 
 /**
  * The top-level interface for messages that are sent between simulator
@@ -18,24 +18,20 @@ public interface Message {
   String getURN();
 
   /**
-   * Write the content of this message to a stream. The content should not
-   * include the message type ID.
+   * Write the content of this message to a stream. The content should not include
+   * the message type ID.
    *
-   * @param out
-   *          The stream to write to.
-   * @throws IOException
-   *           If the write fails.
+   * @param out The stream to write to.
+   * @throws IOException If the write fails.
    */
-  void write( OutputStream out ) throws IOException;
+  void write(OutputStream out) throws IOException;
 
   /**
    * Read the content of this message from a stream. The content should not
    * include the message type ID.
    *
-   * @param in
-   *          The stream to read from.
-   * @throws IOException
-   *           If the read fails.
+   * @param in The stream to read from.
+   * @throws IOException If the read fails.
    */
-  void read( InputStream in ) throws IOException;
+  void read(InputStream in) throws IOException;
 }
