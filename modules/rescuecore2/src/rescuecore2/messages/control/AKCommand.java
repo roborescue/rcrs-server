@@ -63,6 +63,7 @@ public class AKCommand extends AbstractMessage {
     return this.command;
   }
 
+  @Override
   public void write(OutputStream out) throws IOException {
     AKCommandProto.Builder akCommandBuilder = AKCommandProto.newBuilder();
 
@@ -76,6 +77,7 @@ public class AKCommand extends AbstractMessage {
     akCommand.writeTo(out);
   }
 
+  @Override
   public void read(InputStream in) throws IOException {
     AKCommandProto akCommand = AKCommandProto.parseFrom(in);
 
