@@ -2,6 +2,7 @@ package rescuecore2.standard.entities;
 
 import java.util.List;
 import java.util.Map;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -13,45 +14,38 @@ public class Civilian extends Human {
   /**
    * Construct a Civilian object with entirely undefined values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  public Civilian( EntityID id ) {
-    super( id );
+  public Civilian(EntityID id) {
+    super(id);
   }
-
 
   /**
    * Civilian copy constructor.
    *
-   * @param other
-   *          The Civilian to copy.
+   * @param other The Civilian to copy.
    */
-  public Civilian( Civilian other ) {
-    super( other );
+  public Civilian(Civilian other) {
+    super(other);
   }
-
 
   @Override
   protected Entity copyImpl() {
-    return new Civilian( getID() );
+    return new Civilian(getID());
   }
-
 
   @Override
   public StandardEntityURN getStandardURN() {
     return StandardEntityURN.CIVILIAN;
   }
 
-
   @Override
   protected String getEntityName() {
     return "Civilian";
   }
 
-
   @Override
-  public void setEntity( Map<String, List<Object>> properties ) {
-    super.setEntity( properties );
+  public void setEntity(Map<String, List<Object>> properties) {
+    super.setEntity(properties);
   }
 }

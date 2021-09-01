@@ -321,17 +321,18 @@ task run(type: JavaExec) {
   classpath += files('jars')
   classpath += files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'kernel.StartKernel'
-  maxHeapSize = '2048m'
+  mainClass = 'kernel.StartKernel'
+  maxHeapSize = '4096m'
   jvmArgs '-Dlog4j.log.dir=logs'
   args('-c config/kernel-inline.cfg --gis.map.dir=../maps/test/map --kernel.logname=logs/rescue.log'.split(' '))
 }
+
 /* Generate a random scenario */
 task randomScenario(type: JavaExec) {
   workingDir = 'boot'
   classpath = files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'gis2.scenario.RandomScenarioGenerator'
+  mainClass = 'gis2.scenario.RandomScenarioGenerator'
   maxHeapSize = '2048m'
 }
 
@@ -340,7 +341,7 @@ task scenarioEditor(type: JavaExec) {
   workingDir = 'boot'
   classpath = files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'gis2.scenario.ScenarioEditor'
+  mainClass = 'gis2.scenario.ScenarioEditor'
   maxHeapSize = '2048m'
 }
 
@@ -349,7 +350,7 @@ task logViewer(type: JavaExec, dependsOn: classes) {
   workingDir = 'boot'
   classpath = files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'sample.SampleLogViewer'
+  mainClass = 'sample.SampleLogViewer'
   maxHeapSize = '256m'
   args = [ '-c', 'config/logviewer.cfg', 'logs/rescue.log']
 }
@@ -359,7 +360,7 @@ task gmlEditor(type: JavaExec) {
   workingDir = 'boot'
   classpath = files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'maps.gml.editor.GMLEditor'
+  mainClass = 'maps.gml.editor.GMLEditor'
   maxHeapSize = '2048m'
 }
 
@@ -367,6 +368,6 @@ task gmlEditor(type: JavaExec) {
 task osm2gml(type: JavaExec) {
   classpath = files('supplement')
   classpath += sourceSets.main.runtimeClasspath
-  main = 'maps.convert.Convert'
+  mainClass = 'maps.convert.Convert'
   maxHeapSize = '2048m'
 }

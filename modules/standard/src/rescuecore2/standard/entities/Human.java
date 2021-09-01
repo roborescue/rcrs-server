@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.json.JSONObject;
+
 import rescuecore2.misc.Pair;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -17,114 +20,105 @@ import rescuecore2.worldmodel.properties.IntProperty;
  */
 public abstract class Human extends StandardEntity {
 
-  private IntProperty       x;
-  private IntProperty       y;
+  private IntProperty x;
+  private IntProperty y;
   private EntityRefProperty position;
-  private IntArrayProperty  positionHistory;
-  private IntProperty       travelDistance;
-  private IntProperty       direction;
-  private IntProperty       stamina;
-  private IntProperty       hp;
-  private IntProperty       damage;
-  private IntProperty       buriedness;
-
+  private IntArrayProperty positionHistory;
+  private IntProperty travelDistance;
+  private IntProperty direction;
+  private IntProperty stamina;
+  private IntProperty hp;
+  private IntProperty damage;
+  private IntProperty buriedness;
 
   /**
    * Construct a Human object with entirely undefined property values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  protected Human( EntityID id ) {
-    super( id );
-    x = new IntProperty( StandardPropertyURN.X );
-    y = new IntProperty( StandardPropertyURN.Y );
-    travelDistance = new IntProperty( StandardPropertyURN.TRAVEL_DISTANCE );
-    position = new EntityRefProperty( StandardPropertyURN.POSITION );
-    positionHistory = new IntArrayProperty(
-        StandardPropertyURN.POSITION_HISTORY );
-    direction = new IntProperty( StandardPropertyURN.DIRECTION );
-    stamina = new IntProperty( StandardPropertyURN.STAMINA );
-    hp = new IntProperty( StandardPropertyURN.HP );
-    damage = new IntProperty( StandardPropertyURN.DAMAGE );
-    buriedness = new IntProperty( StandardPropertyURN.BURIEDNESS );
-    registerProperties( x, y, position, positionHistory, travelDistance,
-        direction, stamina, hp, damage, buriedness );
+  protected Human(EntityID id) {
+    super(id);
+    this.x = new IntProperty(StandardPropertyURN.X);
+    this.y = new IntProperty(StandardPropertyURN.Y);
+    this.travelDistance = new IntProperty(StandardPropertyURN.TRAVEL_DISTANCE);
+    this.position = new EntityRefProperty(StandardPropertyURN.POSITION);
+    this.positionHistory = new IntArrayProperty(StandardPropertyURN.POSITION_HISTORY);
+    this.direction = new IntProperty(StandardPropertyURN.DIRECTION);
+    this.stamina = new IntProperty(StandardPropertyURN.STAMINA);
+    this.hp = new IntProperty(StandardPropertyURN.HP);
+    this.damage = new IntProperty(StandardPropertyURN.DAMAGE);
+    this.buriedness = new IntProperty(StandardPropertyURN.BURIEDNESS);
+    registerProperties(this.x, this.y, this.position, this.positionHistory, this.travelDistance, this.direction,
+        this.stamina, this.hp, this.damage, this.buriedness);
   }
-
 
   /**
    * Human copy constructor.
    *
-   * @param other
-   *          The Human to copy.
+   * @param other The Human to copy.
    */
-  public Human( Human other ) {
-    super( other );
-    x = new IntProperty( other.x );
-    y = new IntProperty( other.y );
-    travelDistance = new IntProperty( other.travelDistance );
-    position = new EntityRefProperty( other.position );
-    positionHistory = new IntArrayProperty( other.positionHistory );
-    direction = new IntProperty( other.direction );
-    stamina = new IntProperty( other.stamina );
-    hp = new IntProperty( other.hp );
-    damage = new IntProperty( other.damage );
-    buriedness = new IntProperty( other.buriedness );
-    registerProperties( x, y, position, positionHistory, travelDistance,
-        direction, stamina, hp, damage, buriedness );
+  public Human(Human other) {
+    super(other);
+    this.x = new IntProperty(other.x);
+    this.y = new IntProperty(other.y);
+    this.travelDistance = new IntProperty(other.travelDistance);
+    this.position = new EntityRefProperty(other.position);
+    this.positionHistory = new IntArrayProperty(other.positionHistory);
+    this.direction = new IntProperty(other.direction);
+    this.stamina = new IntProperty(other.stamina);
+    this.hp = new IntProperty(other.hp);
+    this.damage = new IntProperty(other.damage);
+    this.buriedness = new IntProperty(other.buriedness);
+    registerProperties(this.x, this.y, this.position, this.positionHistory, this.travelDistance, this.direction,
+        this.stamina, this.hp, this.damage, this.buriedness);
   }
 
-
   @Override
-  public Property<?> getProperty( String urn ) {
+  public Property<?> getProperty(String urn) {
     StandardPropertyURN type;
     try {
-      type = StandardPropertyURN.fromString( urn );
-    } catch ( IllegalArgumentException e ) {
-      return super.getProperty( urn );
+      type = StandardPropertyURN.fromString(urn);
+    } catch (IllegalArgumentException e) {
+      return super.getProperty(urn);
     }
-    switch ( type ) {
+    switch (type) {
       case POSITION:
-        return position;
+        return this.position;
       case POSITION_HISTORY:
-        return positionHistory;
+        return this.positionHistory;
       case DIRECTION:
-        return direction;
+        return this.direction;
       case STAMINA:
-        return stamina;
+        return this.stamina;
       case HP:
-        return hp;
+        return this.hp;
       case X:
-        return x;
+        return this.x;
       case Y:
-        return y;
+        return this.y;
       case DAMAGE:
-        return damage;
+        return this.damage;
       case BURIEDNESS:
-        return buriedness;
+        return this.buriedness;
       case TRAVEL_DISTANCE:
-        return travelDistance;
+        return this.travelDistance;
       default:
-        return super.getProperty( urn );
+        return super.getProperty(urn);
     }
   }
 
-
   @Override
-  public Pair<Integer, Integer>
-      getLocation( WorldModel<? extends StandardEntity> world ) {
-    if ( x.isDefined() && y.isDefined() ) {
-      return new Pair<Integer, Integer>( x.getValue(), y.getValue() );
+  public Pair<Integer, Integer> getLocation(WorldModel<? extends StandardEntity> world) {
+    if (this.x.isDefined() && this.y.isDefined()) {
+      return new Pair<Integer, Integer>(this.x.getValue(), this.y.getValue());
     }
-    if ( position.isDefined() ) {
+    if (this.position.isDefined()) {
       EntityID pos = getPosition();
-      StandardEntity e = world.getEntity( pos );
-      return e.getLocation( world );
+      StandardEntity e = world.getEntity(pos);
+      return e.getLocation(world);
     }
     return null;
   }
-
 
   /**
    * Get the position property.
@@ -132,9 +126,8 @@ public abstract class Human extends StandardEntity {
    * @return The position property.
    */
   public EntityRefProperty getPositionProperty() {
-    return position;
+    return this.position;
   }
-
 
   /**
    * Get the position of this human.
@@ -142,20 +135,17 @@ public abstract class Human extends StandardEntity {
    * @return The position.
    */
   public EntityID getPosition() {
-    return position.getValue();
+    return this.position.getValue();
   }
-
 
   /**
    * Set the position of this human.
    *
-   * @param position
-   *          The new position.
+   * @param position The new position.
    */
-  public void setPosition( EntityID position ) {
-    this.position.setValue( position );
+  public void setPosition(EntityID position) {
+    this.position.setValue(position);
   }
-
 
   /**
    * Find out if the position property has been defined.
@@ -163,17 +153,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the position property has been defined, false otherwise.
    */
   public boolean isPositionDefined() {
-    return position.isDefined();
+    return this.position.isDefined();
   }
-
 
   /**
    * Undefine the position property.
    */
   public void undefinePosition() {
-    position.undefine();
+    this.position.undefine();
   }
-
 
   /**
    * Get the position history property.
@@ -181,9 +169,8 @@ public abstract class Human extends StandardEntity {
    * @return The position history property.
    */
   public IntArrayProperty getPositionHistoryProperty() {
-    return positionHistory;
+    return this.positionHistory;
   }
-
 
   /**
    * Get the position history.
@@ -191,21 +178,17 @@ public abstract class Human extends StandardEntity {
    * @return The position history.
    */
   public int[] getPositionHistory() {
-    return positionHistory.getValue().stream().mapToInt( i -> i ).toArray();
+    return this.positionHistory.getValue().stream().mapToInt(i -> i).toArray();
   }
-
 
   /**
    * Set the position history.
    *
-   * @param history
-   *          The new position history.
+   * @param history The new position history.
    */
-  public void setPositionHistory( int[] history ) {
-    this.positionHistory.setValue(
-        Arrays.stream( history ).boxed().collect( Collectors.toList() ) );
+  public void setPositionHistory(int[] history) {
+    this.positionHistory.setValue(Arrays.stream(history).boxed().collect(Collectors.toList()));
   }
-
 
   /**
    * Find out if the position history property has been defined.
@@ -214,17 +197,15 @@ public abstract class Human extends StandardEntity {
    *         otherwise.
    */
   public boolean isPositionHistoryDefined() {
-    return positionHistory.isDefined();
+    return this.positionHistory.isDefined();
   }
-
 
   /**
    * Undefine the position history property.
    */
   public void undefinePositionHistory() {
-    positionHistory.undefine();
+    this.positionHistory.undefine();
   }
-
 
   /**
    * Get the direction property.
@@ -232,9 +213,8 @@ public abstract class Human extends StandardEntity {
    * @return The direction property.
    */
   public IntProperty getDirectionProperty() {
-    return direction;
+    return this.direction;
   }
-
 
   /**
    * Get the direction.
@@ -242,20 +222,17 @@ public abstract class Human extends StandardEntity {
    * @return The direction.
    */
   public int getDirection() {
-    return direction.getValue();
+    return this.direction.getValue();
   }
-
 
   /**
    * Set the direction.
    *
-   * @param direction
-   *          The new direction.
+   * @param direction The new direction.
    */
-  public void setDirection( int direction ) {
-    this.direction.setValue( direction );
+  public void setDirection(int direction) {
+    this.direction.setValue(direction);
   }
-
 
   /**
    * Find out if the direction property has been defined.
@@ -263,17 +240,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the direction property has been defined, false otherwise.
    */
   public boolean isDirectionDefined() {
-    return direction.isDefined();
+    return this.direction.isDefined();
   }
-
 
   /**
    * Undefine the direction property.
    */
   public void undefineDirection() {
-    direction.undefine();
+    this.direction.undefine();
   }
-
 
   /**
    * Get the stamina property.
@@ -281,9 +256,8 @@ public abstract class Human extends StandardEntity {
    * @return The stamina property.
    */
   public IntProperty getStaminaProperty() {
-    return stamina;
+    return this.stamina;
   }
-
 
   /**
    * Get the stamina of this human.
@@ -291,20 +265,17 @@ public abstract class Human extends StandardEntity {
    * @return The stamina.
    */
   public int getStamina() {
-    return stamina.getValue();
+    return this.stamina.getValue();
   }
-
 
   /**
    * Set the stamina of this human.
    *
-   * @param stamina
-   *          The new stamina.
+   * @param stamina The new stamina.
    */
-  public void setStamina( int stamina ) {
-    this.stamina.setValue( stamina );
+  public void setStamina(int stamina) {
+    this.stamina.setValue(stamina);
   }
-
 
   /**
    * Find out if the stamina property has been defined.
@@ -312,17 +283,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the stamina property has been defined, false otherwise.
    */
   public boolean isStaminaDefined() {
-    return stamina.isDefined();
+    return this.stamina.isDefined();
   }
-
 
   /**
    * Undefine the stamina property.
    */
   public void undefineStamina() {
-    stamina.undefine();
+    this.stamina.undefine();
   }
-
 
   /**
    * Get the hp property.
@@ -330,9 +299,8 @@ public abstract class Human extends StandardEntity {
    * @return The hp property.
    */
   public IntProperty getHPProperty() {
-    return hp;
+    return this.hp;
   }
-
 
   /**
    * Get the hp of this human.
@@ -340,20 +308,17 @@ public abstract class Human extends StandardEntity {
    * @return The hp of this human.
    */
   public int getHP() {
-    return hp.getValue();
+    return this.hp.getValue();
   }
-
 
   /**
    * Set the hp of this human.
    *
-   * @param newHP
-   *          The new hp.
+   * @param newHP The new hp.
    */
-  public void setHP( int newHP ) {
-    this.hp.setValue( newHP );
+  public void setHP(int newHP) {
+    this.hp.setValue(newHP);
   }
-
 
   /**
    * Find out if the hp property has been defined.
@@ -361,17 +326,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the hp property has been defined, false otherwise.
    */
   public boolean isHPDefined() {
-    return hp.isDefined();
+    return this.hp.isDefined();
   }
-
 
   /**
    * Undefine the hp property.
    */
   public void undefineHP() {
-    hp.undefine();
+    this.hp.undefine();
   }
-
 
   /**
    * Get the damage property.
@@ -379,9 +342,8 @@ public abstract class Human extends StandardEntity {
    * @return The damage property.
    */
   public IntProperty getDamageProperty() {
-    return damage;
+    return this.damage;
   }
-
 
   /**
    * Get the damage of this human.
@@ -389,20 +351,17 @@ public abstract class Human extends StandardEntity {
    * @return The damage of this human.
    */
   public int getDamage() {
-    return damage.getValue();
+    return this.damage.getValue();
   }
-
 
   /**
    * Set the damage of this human.
    *
-   * @param damage
-   *          The new damage.
+   * @param damage The new damage.
    */
-  public void setDamage( int damage ) {
-    this.damage.setValue( damage );
+  public void setDamage(int damage) {
+    this.damage.setValue(damage);
   }
-
 
   /**
    * Find out if the damage property has been defined.
@@ -410,17 +369,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the damage property has been defined, false otherwise.
    */
   public boolean isDamageDefined() {
-    return damage.isDefined();
+    return this.damage.isDefined();
   }
-
 
   /**
    * Undefine the damage property.
    */
   public void undefineDamage() {
-    damage.undefine();
+    this.damage.undefine();
   }
-
 
   /**
    * Get the buriedness property.
@@ -428,9 +385,8 @@ public abstract class Human extends StandardEntity {
    * @return The buriedness property.
    */
   public IntProperty getBuriednessProperty() {
-    return buriedness;
+    return this.buriedness;
   }
-
 
   /**
    * Get the buriedness of this human.
@@ -438,20 +394,17 @@ public abstract class Human extends StandardEntity {
    * @return The buriedness of this human.
    */
   public int getBuriedness() {
-    return buriedness.getValue();
+    return this.buriedness.getValue();
   }
-
 
   /**
    * Set the buriedness of this human.
    *
-   * @param buriedness
-   *          The new buriedness.
+   * @param buriedness The new buriedness.
    */
-  public void setBuriedness( int buriedness ) {
-    this.buriedness.setValue( buriedness );
+  public void setBuriedness(int buriedness) {
+    this.buriedness.setValue(buriedness);
   }
-
 
   /**
    * Find out if the buriedness property has been defined.
@@ -459,17 +412,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the buriedness property has been defined, false otherwise.
    */
   public boolean isBuriednessDefined() {
-    return buriedness.isDefined();
+    return this.buriedness.isDefined();
   }
-
 
   /**
    * Undefine the buriedness property.
    */
   public void undefineBuriedness() {
-    buriedness.undefine();
+    this.buriedness.undefine();
   }
-
 
   /**
    * Get the X property.
@@ -477,9 +428,8 @@ public abstract class Human extends StandardEntity {
    * @return The X property.
    */
   public IntProperty getXProperty() {
-    return x;
+    return this.x;
   }
-
 
   /**
    * Get the X coordinate of this human.
@@ -487,20 +437,17 @@ public abstract class Human extends StandardEntity {
    * @return The x coordinate of this human.
    */
   public int getX() {
-    return x.getValue();
+    return this.x.getValue();
   }
-
 
   /**
    * Set the X coordinate of this human.
    *
-   * @param x
-   *          The new x coordinate.
+   * @param x The new x coordinate.
    */
-  public void setX( int x ) {
-    this.x.setValue( x );
+  public void setX(int x) {
+    this.x.setValue(x);
   }
-
 
   /**
    * Find out if the x property has been defined.
@@ -508,17 +455,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the x property has been defined, false otherwise.
    */
   public boolean isXDefined() {
-    return x.isDefined();
+    return this.x.isDefined();
   }
-
 
   /**
    * Undefine the X property.
    */
   public void undefineX() {
-    x.undefine();
+    this.x.undefine();
   }
-
 
   /**
    * Get the y property.
@@ -526,9 +471,8 @@ public abstract class Human extends StandardEntity {
    * @return The y property.
    */
   public IntProperty getYProperty() {
-    return y;
+    return this.y;
   }
-
 
   /**
    * Get the y coordinate of this human.
@@ -536,20 +480,17 @@ public abstract class Human extends StandardEntity {
    * @return The y coordinate of this human.
    */
   public int getY() {
-    return y.getValue();
+    return this.y.getValue();
   }
-
 
   /**
    * Set the y coordinate of this human.
    *
-   * @param y
-   *          The new y coordinate.
+   * @param y The new y coordinate.
    */
-  public void setY( int y ) {
-    this.y.setValue( y );
+  public void setY(int y) {
+    this.y.setValue(y);
   }
-
 
   /**
    * Find out if the y property has been defined.
@@ -557,17 +498,15 @@ public abstract class Human extends StandardEntity {
    * @return True if the y property has been defined, false otherwise.
    */
   public boolean isYDefined() {
-    return y.isDefined();
+    return this.y.isDefined();
   }
-
 
   /**
    * Undefine the y property.
    */
   public void undefineY() {
-    y.undefine();
+    this.y.undefine();
   }
-
 
   /**
    * Get the travel distance property.
@@ -575,9 +514,8 @@ public abstract class Human extends StandardEntity {
    * @return The travel distance property.
    */
   public IntProperty getTravelDistanceProperty() {
-    return travelDistance;
+    return this.travelDistance;
   }
-
 
   /**
    * Get the travel distance.
@@ -585,20 +523,17 @@ public abstract class Human extends StandardEntity {
    * @return The travel distance.
    */
   public int getTravelDistance() {
-    return travelDistance.getValue();
+    return this.travelDistance.getValue();
   }
-
 
   /**
    * Set the travel distance.
    *
-   * @param d
-   *          The new travel distance.
+   * @param d The new travel distance.
    */
-  public void setTravelDistance( int d ) {
-    this.travelDistance.setValue( d );
+  public void setTravelDistance(int d) {
+    this.travelDistance.setValue(d);
   }
-
 
   /**
    * Find out if the travel distance property has been defined.
@@ -607,101 +542,99 @@ public abstract class Human extends StandardEntity {
    *         otherwise.
    */
   public boolean isTravelDistanceDefined() {
-    return travelDistance.isDefined();
+    return this.travelDistance.isDefined();
   }
-
 
   /**
    * Undefine the travel distance property.
    */
   public void undefineTravelDistance() {
-    travelDistance.undefine();
+    this.travelDistance.undefine();
   }
-
 
   /**
-   * Get the entity represented by the position property. The result will be
-   * null if the position property has not been set or if the entity reference
-   * is invalid.
+   * Get the entity represented by the position property. The result will be null
+   * if the position property has not been set or if the entity reference is
+   * invalid.
    *
-   * @param model
-   *          The WorldModel to look up entity references.
+   * @param model The WorldModel to look up entity references.
    * @return The entity represented by the position property.
    */
-  public StandardEntity
-      getPosition( WorldModel<? extends StandardEntity> model ) {
-    if ( !position.isDefined() ) {
+  public StandardEntity getPosition(WorldModel<? extends StandardEntity> model) {
+    if (!this.position.isDefined()) {
       return null;
     }
-    return model.getEntity( position.getValue() );
+    return model.getEntity(this.position.getValue());
   }
-
 
   /**
    * Set the position of this human.
    *
-   * @param newPosition
-   *          The new position.
-   * @param newX
-   *          The x coordinate of this agent.
-   * @param newY
-   *          The y coordinate if this agent.
+   * @param newPosition The new position.
+   * @param newX        The x coordinate of this agent.
+   * @param newY        The y coordinate if this agent.
    */
-  public void setPosition( EntityID newPosition, int newX, int newY ) {
-    this.position.setValue( newPosition );
-    this.x.setValue( newX );
-    this.y.setValue( newY );
+  public void setPosition(EntityID newPosition, int newX, int newY) {
+    this.position.setValue(newPosition);
+    this.x.setValue(newX);
+    this.y.setValue(newY);
   }
 
-
   @Override
-  public void setEntity( Map<String, List<Object>> properties ) {
+  public void setEntity(Map<String, List<Object>> properties) {
     StandardPropertyURN type;
 
-    for ( String urn : properties.keySet() ) {
-      List<Object> fields = properties.get( urn );
+    for (String urn : properties.keySet()) {
+      List<Object> fields = properties.get(urn);
 
-      type = StandardPropertyURN.fromString( urn );
-      switch ( type ) {
+      type = StandardPropertyURN.fromString(urn);
+      switch (type) {
         case X:
-          this.setX( this.getXProperty().convertToValue( fields ) );
+          this.setX(this.getXProperty().convertToValue(fields));
           break;
         case Y:
-          this.setY( this.getYProperty().convertToValue( fields ) );
+          this.setY(this.getYProperty().convertToValue(fields));
           break;
         case POSITION:
-          this.setPosition(
-              this.getPositionProperty().convertToValue( fields ) );
+          this.setPosition(this.getPositionProperty().convertToValue(fields));
           break;
         case POSITION_HISTORY:
-          List<Integer> history = this.getPositionHistoryProperty()
-              .convertToValue( fields );
-          this.setPositionHistory(
-              history.stream().mapToInt( i -> i ).toArray() );
+          List<Integer> history = this.getPositionHistoryProperty().convertToValue(fields);
+          this.setPositionHistory(history.stream().mapToInt(i -> i).toArray());
           break;
         case DIRECTION:
-          this.setDirection(
-              this.getDirectionProperty().convertToValue( fields ) );
+          this.setDirection(this.getDirectionProperty().convertToValue(fields));
           break;
         case STAMINA:
-          this.setStamina( this.getStaminaProperty().convertToValue( fields ) );
+          this.setStamina(this.getStaminaProperty().convertToValue(fields));
           break;
         case HP:
-          this.setHP( this.getHPProperty().convertToValue( fields ) );
+          this.setHP(this.getHPProperty().convertToValue(fields));
           break;
         case DAMAGE:
-          this.setDamage( this.getDamageProperty().convertToValue( fields ) );
+          this.setDamage(this.getDamageProperty().convertToValue(fields));
           break;
         case BURIEDNESS:
-          this.setBuriedness(
-              this.getBuriednessProperty().convertToValue( fields ) );
+          this.setBuriedness(this.getBuriednessProperty().convertToValue(fields));
           break;
         case TRAVEL_DISTANCE:
-          this.setTravelDistance(
-              this.getTravelDistanceProperty().convertToValue( fields ) );
+          this.setTravelDistance(this.getTravelDistanceProperty().convertToValue(fields));
           break;
         default:
       }
     }
+  }
+
+  @Override
+  public JSONObject toJson() {
+    JSONObject jsonObject = super.toJson();
+    jsonObject.put(StandardPropertyURN.DAMAGE.toString(), this.isDamageDefined() ? this.getDamage() : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.HP.toString(), this.isHPDefined() ? this.getHP() : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.POSITION.toString(),
+        this.isPositionDefined() ? new int[] { getX(), getY() } : JSONObject.NULL);
+    jsonObject.put(StandardPropertyURN.POSITION_HISTORY.toString(),
+        this.isPositionHistoryDefined() ? this.getPositionHistory() : JSONObject.NULL);
+
+    return jsonObject;
   }
 }

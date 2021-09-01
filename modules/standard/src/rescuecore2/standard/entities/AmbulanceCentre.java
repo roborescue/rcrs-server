@@ -2,6 +2,7 @@ package rescuecore2.standard.entities;
 
 import java.util.List;
 import java.util.Map;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -13,56 +14,47 @@ public class AmbulanceCentre extends Building {
   /**
    * Construct a AmbulanceCentre object with entirely undefined values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  public AmbulanceCentre( EntityID id ) {
-    super( id );
+  public AmbulanceCentre(EntityID id) {
+    super(id);
   }
-
 
   /**
    * AmbulanceCentre copy constructor.
    *
-   * @param other
-   *          The AmbulanceCentre to copy.
+   * @param other The AmbulanceCentre to copy.
    */
-  public AmbulanceCentre( AmbulanceCentre other ) {
-    super( other );
+  public AmbulanceCentre(AmbulanceCentre other) {
+    super(other);
   }
-
 
   /**
    * Create an ambulance centre based on another Building.
    *
-   * @param other
-   *          The Building to copy.
+   * @param other The Building to copy.
    */
-  public AmbulanceCentre( Building other ) {
-    super( other );
+  public AmbulanceCentre(Building other) {
+    super(other);
   }
-
 
   @Override
   protected Entity copyImpl() {
-    return new AmbulanceCentre( getID() );
+    return new AmbulanceCentre(getID());
   }
-
 
   @Override
   public StandardEntityURN getStandardURN() {
     return StandardEntityURN.AMBULANCE_CENTRE;
   }
 
-
   @Override
   protected String getEntityName() {
     return "Ambulance centre";
   }
 
-
   @Override
-  public void setEntity( Map<String, List<Object>> properties ) {
-    super.setEntity( properties );
+  public void setEntity(Map<String, List<Object>> properties) {
+    super.setEntity(properties);
   }
 }

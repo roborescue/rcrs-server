@@ -1,18 +1,17 @@
 package gis2.scenario;
 
 import gis2.GisScenario;
-import gis2.RandomScenarioGenerator;
 
 import java.util.Random;
 
 /**
- * Function for randomising a scenario.
+ * Function for randomizing a scenario.
  */
 public class RandomiseFunction extends AbstractFunction {
   private Random random;
 
   /**
-   * Construct a randomiser function.
+   * Construct a randomizer function.
    *
    * @param editor The editor instance.
    */

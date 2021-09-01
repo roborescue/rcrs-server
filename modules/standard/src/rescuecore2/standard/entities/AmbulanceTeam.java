@@ -2,6 +2,7 @@ package rescuecore2.standard.entities;
 
 import java.util.List;
 import java.util.Map;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -13,45 +14,38 @@ public class AmbulanceTeam extends Human {
   /**
    * Construct a AmbulanceTeam object with entirely undefined values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  public AmbulanceTeam( EntityID id ) {
-    super( id );
+  public AmbulanceTeam(EntityID id) {
+    super(id);
   }
-
 
   /**
    * AmbulanceTeam copy constructor.
    *
-   * @param other
-   *          The AmbulanceTeam to copy.
+   * @param other The AmbulanceTeam to copy.
    */
-  public AmbulanceTeam( AmbulanceTeam other ) {
-    super( other );
+  public AmbulanceTeam(AmbulanceTeam other) {
+    super(other);
   }
-
 
   @Override
   protected Entity copyImpl() {
-    return new AmbulanceTeam( getID() );
+    return new AmbulanceTeam(getID());
   }
-
 
   @Override
   public StandardEntityURN getStandardURN() {
     return StandardEntityURN.AMBULANCE_TEAM;
   }
 
-
   @Override
   protected String getEntityName() {
     return "Ambulance team";
   }
 
-
   @Override
-  public void setEntity( Map<String, List<Object>> properties ) {
-    super.setEntity( properties );
+  public void setEntity(Map<String, List<Object>> properties) {
+    super.setEntity(properties);
   }
 }

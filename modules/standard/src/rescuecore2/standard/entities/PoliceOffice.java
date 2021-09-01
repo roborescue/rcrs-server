@@ -2,6 +2,7 @@ package rescuecore2.standard.entities;
 
 import java.util.List;
 import java.util.Map;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -13,56 +14,47 @@ public class PoliceOffice extends Building {
   /**
    * Construct a PoliceOffice object with entirely undefined property values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  public PoliceOffice( EntityID id ) {
-    super( id );
+  public PoliceOffice(EntityID id) {
+    super(id);
   }
-
 
   /**
    * PoliceOffice copy constructor.
    *
-   * @param other
-   *          The PoliceOffice to copy.
+   * @param other The PoliceOffice to copy.
    */
-  public PoliceOffice( PoliceOffice other ) {
-    super( other );
+  public PoliceOffice(PoliceOffice other) {
+    super(other);
   }
-
 
   /**
    * Create a police office based on another Building.
    *
-   * @param other
-   *          The Building to copy.
+   * @param other The Building to copy.
    */
-  public PoliceOffice( Building other ) {
-    super( other );
+  public PoliceOffice(Building other) {
+    super(other);
   }
-
 
   @Override
   protected Entity copyImpl() {
-    return new PoliceOffice( getID() );
+    return new PoliceOffice(getID());
   }
-
 
   @Override
   public StandardEntityURN getStandardURN() {
     return StandardEntityURN.POLICE_OFFICE;
   }
 
-
   @Override
   protected String getEntityName() {
     return "Police office";
   }
 
-
   @Override
-  public void setEntity( Map<String, List<Object>> properties ) {
-    super.setEntity( properties );
+  public void setEntity(Map<String, List<Object>> properties) {
+    super.setEntity(properties);
   }
 }

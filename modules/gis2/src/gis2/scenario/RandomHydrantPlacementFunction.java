@@ -16,14 +16,11 @@ import javax.swing.JTextField;
 import maps.gml.GMLMap;
 import maps.gml.GMLShape;
 
-import org.apache.log4j.Logger;
-
 /**
  * Function for placing agents.
  */
 public class RandomHydrantPlacementFunction extends AbstractFunction {
   private Random random;
-  private static final Logger LOG = Logger.getLogger(RandomHydrantPlacementFunction.class);
 
   /**
    * Construct a place agents function.
@@ -42,14 +39,12 @@ public class RandomHydrantPlacementFunction extends AbstractFunction {
 
   @Override
   public void execute() {
-    // CHECKSTYLE:OFF:MagicNumber
     JPanel panel = new JPanel(new GridLayout(3, 2));
-    // CHECKSTYLE:ON:MagicNumber
     JTextField numberField = new JTextField("1");
     GMLMap map = editor.getMap();
-    double heigth = (map.getMaxX() - map.getMinX());
+    double height = (map.getMaxX() - map.getMinX());
     double width = (map.getMaxY() - map.getMinY());
-    int suggestedCount = (int) (heigth * width / 30000);
+    int suggestedCount = (int) (height * width / 30000);
     panel.add(new JLabel("Number: suggested number:" + suggestedCount));
     panel.add(numberField);
     HashSet<Integer> selectedIds = new HashSet<>();
@@ -69,7 +64,7 @@ public class RandomHydrantPlacementFunction extends AbstractFunction {
           }
         }
       } catch (NumberFormatException e) {
-        LOG.error("Error parsing number", e);
+        e.printStackTrace();
       }
     }
     editor.setChanged();

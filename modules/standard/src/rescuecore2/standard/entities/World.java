@@ -2,6 +2,7 @@ package rescuecore2.standard.entities;
 
 import java.util.List;
 import java.util.Map;
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -18,79 +19,69 @@ public class World extends StandardEntity {
   private IntProperty windForce;
   private IntProperty windDirection;
 
-
   /**
    * Construct a World object with entirely undefined property values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  public World( EntityID id ) {
-    super( id );
-    startTime = new IntProperty( StandardPropertyURN.START_TIME );
-    longitude = new IntProperty( StandardPropertyURN.LONGITUDE );
-    latitude = new IntProperty( StandardPropertyURN.LATITUDE );
-    windForce = new IntProperty( StandardPropertyURN.WIND_FORCE );
-    windDirection = new IntProperty( StandardPropertyURN.WIND_DIRECTION );
-    registerProperties( startTime, longitude, latitude, windForce,
-        windDirection );
+  public World(EntityID id) {
+    super(id);
+    this.startTime = new IntProperty(StandardPropertyURN.START_TIME);
+    this.longitude = new IntProperty(StandardPropertyURN.LONGITUDE);
+    this.latitude = new IntProperty(StandardPropertyURN.LATITUDE);
+    this.windForce = new IntProperty(StandardPropertyURN.WIND_FORCE);
+    this.windDirection = new IntProperty(StandardPropertyURN.WIND_DIRECTION);
+    registerProperties(this.startTime, this.longitude, this.latitude, this.windForce, this.windDirection);
   }
-
 
   /**
    * World copy constructor.
    *
-   * @param other
-   *          The World to copy.
+   * @param other The World to copy.
    */
-  public World( World other ) {
-    super( other );
-    startTime = new IntProperty( other.startTime );
-    longitude = new IntProperty( other.longitude );
-    latitude = new IntProperty( other.latitude );
-    windForce = new IntProperty( other.windForce );
-    windDirection = new IntProperty( other.windDirection );
-    registerProperties( startTime, longitude, latitude, windForce,
-        windDirection );
+  public World(World other) {
+    super(other);
+    this.startTime = new IntProperty(other.startTime);
+    this.longitude = new IntProperty(other.longitude);
+    this.latitude = new IntProperty(other.latitude);
+    this.windForce = new IntProperty(other.windForce);
+    this.windDirection = new IntProperty(other.windDirection);
+    registerProperties(this.startTime, this.longitude, this.latitude, this.windForce, this.windDirection);
   }
-
 
   @Override
   protected Entity copyImpl() {
-    return new World( getID() );
+    return new World(getID());
   }
-
 
   @Override
   public StandardEntityURN getStandardURN() {
     return StandardEntityURN.WORLD;
   }
 
-
   @Override
-  public Property getProperty( String urn ) {
+  public Property<?> getProperty(String urn) {
     StandardPropertyURN type;
     try {
-      type = StandardPropertyURN.fromString( urn );
-    } catch ( IllegalArgumentException e ) {
-      return super.getProperty( urn );
+      type = StandardPropertyURN.fromString(urn);
+    } catch (IllegalArgumentException e) {
+      return super.getProperty(urn);
     }
-    switch ( type ) {
+    switch (type) {
       case START_TIME:
-        return startTime;
+        return this.startTime;
       case LONGITUDE:
-        return longitude;
+        return this.longitude;
       case LATITUDE:
-        return latitude;
+        return this.latitude;
       case WIND_FORCE:
-        return windForce;
+        return this.windForce;
       case WIND_DIRECTION:
-        return windDirection;
+        return this.windDirection;
       default:
-        return super.getProperty( urn );
+        return super.getProperty(urn);
     }
   }
-
 
   /**
    * Get the startTime property.
@@ -98,9 +89,8 @@ public class World extends StandardEntity {
    * @return The startTime property.
    */
   public IntProperty getStartTimeProperty() {
-    return startTime;
+    return this.startTime;
   }
-
 
   /**
    * Get the value of the startTime property.
@@ -108,20 +98,17 @@ public class World extends StandardEntity {
    * @return The value of the startTime property.
    */
   public int getStartTime() {
-    return startTime.getValue();
+    return this.startTime.getValue();
   }
-
 
   /**
    * Set the startTime property.
    *
-   * @param startTime
-   *          The new startTime.
+   * @param startTime The new startTime.
    */
-  public void setStartTime( int startTime ) {
-    this.startTime.setValue( startTime );
+  public void setStartTime(int startTime) {
+    this.startTime.setValue(startTime);
   }
-
 
   /**
    * Find out if the startTime property has been defined.
@@ -129,17 +116,15 @@ public class World extends StandardEntity {
    * @return True if the startTime property has been defined, false otherwise.
    */
   public boolean isStartTimeDefined() {
-    return startTime.isDefined();
+    return this.startTime.isDefined();
   }
-
 
   /**
    * Undefine the startTime property.
    */
   public void undefineStartTime() {
-    startTime.undefine();
+    this.startTime.undefine();
   }
-
 
   /**
    * Get the latitude property.
@@ -147,9 +132,8 @@ public class World extends StandardEntity {
    * @return The latitude property.
    */
   public IntProperty getLatitudeProperty() {
-    return latitude;
+    return this.latitude;
   }
-
 
   /**
    * Get the value of the latitude property.
@@ -157,20 +141,17 @@ public class World extends StandardEntity {
    * @return The value of the latitude property.
    */
   public int getLatitude() {
-    return latitude.getValue();
+    return this.latitude.getValue();
   }
-
 
   /**
    * Set the latitude property.
    *
-   * @param latitude
-   *          The new latitude.
+   * @param latitude The new latitude.
    */
-  public void setLatitude( int latitude ) {
-    this.latitude.setValue( latitude );
+  public void setLatitude(int latitude) {
+    this.latitude.setValue(latitude);
   }
-
 
   /**
    * Find out if the latitude property has been defined.
@@ -178,17 +159,15 @@ public class World extends StandardEntity {
    * @return True if the latitude property has been defined, false otherwise.
    */
   public boolean isLatitudeDefined() {
-    return latitude.isDefined();
+    return this.latitude.isDefined();
   }
-
 
   /**
    * Undefine the latitude property.
    */
   public void undefineLatitude() {
-    latitude.undefine();
+    this.latitude.undefine();
   }
-
 
   /**
    * Get the longitude property.
@@ -196,9 +175,8 @@ public class World extends StandardEntity {
    * @return The longitude property.
    */
   public IntProperty getLongitudeProperty() {
-    return longitude;
+    return this.longitude;
   }
-
 
   /**
    * Get the value of the longitude property.
@@ -206,20 +184,17 @@ public class World extends StandardEntity {
    * @return The value of the longitude property.
    */
   public int getLongitude() {
-    return longitude.getValue();
+    return this.longitude.getValue();
   }
-
 
   /**
    * Set the longitude property.
    *
-   * @param longitude
-   *          The new longitude.
+   * @param longitude The new longitude.
    */
-  public void setLongitude( int longitude ) {
-    this.longitude.setValue( longitude );
+  public void setLongitude(int longitude) {
+    this.longitude.setValue(longitude);
   }
-
 
   /**
    * Find out if the longitude property has been defined.
@@ -227,17 +202,15 @@ public class World extends StandardEntity {
    * @return True if the longitude property has been defined, false otherwise.
    */
   public boolean isLongitudeDefined() {
-    return longitude.isDefined();
+    return this.longitude.isDefined();
   }
-
 
   /**
    * Undefine the longitude property.
    */
   public void undefineLongitude() {
-    longitude.undefine();
+    this.longitude.undefine();
   }
-
 
   /**
    * Get the windForce property.
@@ -245,9 +218,8 @@ public class World extends StandardEntity {
    * @return The windForce property.
    */
   public IntProperty getWindForceProperty() {
-    return windForce;
+    return this.windForce;
   }
-
 
   /**
    * Get the value of the windForce property.
@@ -255,20 +227,17 @@ public class World extends StandardEntity {
    * @return The value of the windForce property.
    */
   public int getWindForce() {
-    return windForce.getValue();
+    return this.windForce.getValue();
   }
-
 
   /**
    * Set the windForce property.
    *
-   * @param windForce
-   *          The new windForce.
+   * @param windForce The new windForce.
    */
-  public void setWindForce( int windForce ) {
-    this.windForce.setValue( windForce );
+  public void setWindForce(int windForce) {
+    this.windForce.setValue(windForce);
   }
-
 
   /**
    * Find out if the windForce property has been defined.
@@ -276,17 +245,15 @@ public class World extends StandardEntity {
    * @return True if the windForce property has been defined, false otherwise.
    */
   public boolean isWindForceDefined() {
-    return windForce.isDefined();
+    return this.windForce.isDefined();
   }
-
 
   /**
    * Undefine the windForce property.
    */
   public void undefineWindForce() {
-    windForce.undefine();
+    this.windForce.undefine();
   }
-
 
   /**
    * Get the windDirection property.
@@ -294,9 +261,8 @@ public class World extends StandardEntity {
    * @return The windDirection property.
    */
   public IntProperty getWindDirectionProperty() {
-    return windDirection;
+    return this.windDirection;
   }
-
 
   /**
    * Get the value of the windDirection property.
@@ -304,68 +270,57 @@ public class World extends StandardEntity {
    * @return The value of the windDirection property.
    */
   public int getWindDirection() {
-    return windDirection.getValue();
+    return this.windDirection.getValue();
   }
-
 
   /**
    * Set the windDirection property.
    *
-   * @param windDirection
-   *          The new windDirection.
+   * @param windDirection The new windDirection.
    */
-  public void setWindDirection( int windDirection ) {
-    this.windDirection.setValue( windDirection );
+  public void setWindDirection(int windDirection) {
+    this.windDirection.setValue(windDirection);
   }
-
 
   /**
    * Find out if the windDirection property has been defined.
    *
-   * @return True if the windDirection property has been defined, false
-   *         otherwise.
+   * @return True if the windDirection property has been defined, false otherwise.
    */
   public boolean isWindDirectionDefined() {
-    return windDirection.isDefined();
+    return this.windDirection.isDefined();
   }
-
 
   /**
    * Undefine the windDirection property.
    */
   public void undefineWindDirection() {
-    windDirection.undefine();
+    this.windDirection.undefine();
   }
 
-
   @Override
-  public void setEntity( Map<String, List<Object>> properties ) {
+  public void setEntity(Map<String, List<Object>> properties) {
     StandardPropertyURN type;
 
-    for ( String urn : properties.keySet() ) {
-      List<Object> fields = properties.get( urn );
+    for (String urn : properties.keySet()) {
+      List<Object> fields = properties.get(urn);
 
-      type = StandardPropertyURN.fromString( urn );
-      switch ( type ) {
+      type = StandardPropertyURN.fromString(urn);
+      switch (type) {
         case START_TIME:
-          this.setStartTime(
-              this.getStartTimeProperty().convertToValue( fields ) );
+          this.setStartTime(this.getStartTimeProperty().convertToValue(fields));
           break;
         case LONGITUDE:
-          this.setLongitude(
-              this.getLongitudeProperty().convertToValue( fields ) );
+          this.setLongitude(this.getLongitudeProperty().convertToValue(fields));
           break;
         case LATITUDE:
-          this.setLatitude(
-              this.getLatitudeProperty().convertToValue( fields ) );
+          this.setLatitude(this.getLatitudeProperty().convertToValue(fields));
           break;
         case WIND_FORCE:
-          this.setWindForce(
-              this.getWindForceProperty().convertToValue( fields ) );
+          this.setWindForce(this.getWindForceProperty().convertToValue(fields));
           break;
         case WIND_DIRECTION:
-          this.setWindDirection(
-              this.getWindDirectionProperty().convertToValue( fields ) );
+          this.setWindDirection(this.getWindDirectionProperty().convertToValue(fields));
           break;
         default:
       }

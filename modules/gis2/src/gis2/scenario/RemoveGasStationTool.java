@@ -20,7 +20,7 @@ public class RemoveGasStationTool extends ShapeTool {
 
   @Override
   public String getName() {
-    return "Remove GasStation";
+    return "Remove gas station";
   }
 
   @Override
