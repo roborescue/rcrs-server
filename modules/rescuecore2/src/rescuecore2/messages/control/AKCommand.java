@@ -68,8 +68,7 @@ public class AKCommand extends AbstractMessage {
     AKCommandProto.Builder akCommandBuilder = AKCommandProto.newBuilder();
 
     for (Command command : this.command) {
-      CommandProto commandProto = MsgProtoBuf.setCommandProto(command);
-      akCommandBuilder.addCommands(commandProto);
+      akCommandBuilder.addCommands(MsgProtoBuf.setCommandProto(command));
     }
 
     AKCommandProto akCommand = akCommandBuilder.build();
@@ -84,13 +83,7 @@ public class AKCommand extends AbstractMessage {
     this.command = new ArrayList<Command>();
 
     for (CommandProto commandProto : akCommand.getCommandsList()) {
-      Command command = Registry.getCurrentRegistry().createCommand(commandProto.getUrn());
-
-      Map<String, Object> fields = MsgProtoBuf.setCommandFields(commandProto);
-
-      command.setFields(fields);
-
-      this.command.add(command);
+        this.command.add(MsgProtoBuf.setCommand(commandProto));
     }
   }
 }

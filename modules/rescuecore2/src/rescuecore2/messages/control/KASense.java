@@ -101,8 +101,7 @@ public class KASense extends AbstractMessage {
     kaSenseBuilder.setChanges(MsgProtoBuf.setChangeSetProto(this.changes));
 
     for (Command command : this.hear) {
-      CommandProto commandProto = MsgProtoBuf.setCommandProto(command);
-      kaSenseBuilder.addHears(commandProto);
+      kaSenseBuilder.addHears(MsgProtoBuf.setCommandProto(command));
     }
 
     KASenseProto kaSense = kaSenseBuilder.build();
@@ -116,17 +115,11 @@ public class KASense extends AbstractMessage {
     this.agentID = new EntityID(kaSense.getAgentID());
     this.time = kaSense.getTime();
 
-    this.changes=MsgProtoBuf.setChangeSet(kaSense.getChanges());
+    this.changes = MsgProtoBuf.setChangeSet(kaSense.getChanges());
 
     this.hear = new ArrayList<Command>();
     for (CommandProto commandProto : kaSense.getHearsList()) {
-      Command command = Registry.getCurrentRegistry().createCommand(commandProto.getUrn());
-
-      Map<String, Object> fields = MsgProtoBuf.setCommandFields(commandProto);
-
-      command.setFields(fields);
-
-      this.hear.add(command);
+      this.hear.add(MsgProtoBuf.setCommand(commandProto));
     }
   }
 }

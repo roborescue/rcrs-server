@@ -103,16 +103,7 @@ public class KAConnectOK extends AbstractMessage {
         .setAgentID(this.agentID.getValue());
 
     for (Entity entity : this.world) {
-      EntityProto.Builder entityProtoBuilder = EntityProto.newBuilder()
-          .setUrnID(StandardEntityURN.fromString(entity.getURN()).ordinal()).setEntityID(entity.getID().getValue());
-
-      for (Property<?> property : entity.getProperties()) {
-        if (property.isDefined()) {
-          PropertyProto propertyProto = MsgProtoBuf.setPropertyProto(property);
-          entityProtoBuilder.addProperties(propertyProto);
-        }
-      }
-      kaConnectOKBuilder.addEntities(entityProtoBuilder.build());
+      kaConnectOKBuilder.addEntities(MsgProtoBuf.setEntityProto(entity));
     }
 
     ConfigProto configProto = MsgProtoBuf.setConfigProto(this.config);
@@ -133,23 +124,8 @@ public class KAConnectOK extends AbstractMessage {
 
     List<EntityProto> entityList = kaConnectOK.getEntitiesList();
     for (EntityProto entityProto : entityList) {
-      String entityURN = StandardEntityURN.formInt(entityProto.getUrnID()).toString();
-      int entityID = entityProto.getEntityID();
-
-      Entity entity = Registry.getCurrentRegistry().createEntity(entityURN, new EntityID(entityID));
-
+      Entity entity = MsgProtoBuf.setEntity(entityProto);
       if (entity != null) {
-        Map<String, List<Object>> properties = new HashMap<String, List<Object>>();
-        for (PropertyProto propertyProto : entityProto.getPropertiesList()) {
-          String propertyURN = StandardPropertyURN.fromInt(propertyProto.getUrnID()).toString();
-
-          List<Object> property = MsgProtoBuf.setPropertyFields(propertyProto);
-
-          properties.put(propertyURN, property);
-        }
-
-        entity.setEntity(properties);
-
         this.world.add(entity);
       }
     }

@@ -82,8 +82,7 @@ public class KSCommands extends AbstractMessage {
     KSCommandsProto.Builder ksCommandsBuilder = KSCommandsProto.newBuilder().setSimID(this.simID).setTime(this.time);
 
     for (Command command : this.commands) {
-      CommandProto commandProto = MsgProtoBuf.setCommandProto(command);
-      ksCommandsBuilder.addCommands(commandProto);
+      ksCommandsBuilder.addCommands(MsgProtoBuf.setCommandProto(command));
     }
 
     KSCommandsProto ksCommand = ksCommandsBuilder.build();
@@ -99,13 +98,7 @@ public class KSCommands extends AbstractMessage {
 
     this.commands = new ArrayList<Command>();
     for (CommandProto commandProto : ksCommands.getCommandsList()) {
-      Command command = Registry.getCurrentRegistry().createCommand(commandProto.getUrn());
-
-      Map<String, Object> fields = MsgProtoBuf.setCommandFields(commandProto);
-
-      command.setFields(fields);
-
-      this.commands.add(command);
+      this.commands.add(MsgProtoBuf.setCommand(commandProto));
     }
   }
 }
