@@ -90,7 +90,7 @@ public class KVTimestep extends AbstractMessage {
    *
    * @return The changes.
    */
-  public ChangeSet getChanges() {
+  public ChangeSet getChangeSet() {
     return this.changes;
   }
 

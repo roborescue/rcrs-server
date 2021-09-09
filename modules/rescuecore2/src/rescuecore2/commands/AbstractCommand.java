@@ -2,6 +2,8 @@ package rescuecore2.commands;
 
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -91,6 +93,14 @@ public abstract class AbstractCommand implements Command {
   private void init(EntityID agentID, int time) {
     this.agentID = agentID;
     this.time = time;
+  }
+
+  @Override
+  public JSONObject toJson() {
+    JSONObject json = new JSONObject();
+    json.put("Name", getURN());
+    json.put("AgentId", this.getAgentID().getValue());
+    return json;
   }
 
   @Override

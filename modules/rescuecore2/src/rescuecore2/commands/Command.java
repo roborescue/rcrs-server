@@ -1,6 +1,9 @@
 package rescuecore2.commands;
 
 import java.util.Map;
+
+import org.json.JSONObject;
+
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -32,10 +35,9 @@ public interface Command {
   /**
    * Set this command with the mapping content.
    *
-   * @param fields
-   *          The mapping content to set the command object.
+   * @param fields The mapping content to set the command object.
    */
-  void setFields( Map<String, Object> fields );
+  void setFields(Map<String, Object> fields);
 
   /**
    * Get the command in the mapping content format
@@ -44,4 +46,11 @@ public interface Command {
    *
    */
   Map<String, Object> getFields();
+
+  /**
+   * Get the command in JSON format
+   *
+   * @return The command in JSON format
+   */
+  JSONObject toJson();
 }
