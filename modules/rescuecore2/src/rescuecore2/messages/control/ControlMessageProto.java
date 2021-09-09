@@ -9588,7 +9588,7 @@ public final class ControlMessageProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(urn_)) {
+      if (!getUrnBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, urn_);
       }
       com.google.protobuf.GeneratedMessageV3
@@ -9606,7 +9606,7 @@ public final class ControlMessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(urn_)) {
+      if (!getUrnBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, urn_);
       }
       for (java.util.Map.Entry<java.lang.String, rescuecore2.messages.control.ControlMessageProto.ValueProto> entry
@@ -11810,7 +11810,7 @@ public final class ControlMessageProto {
       if (version_ != 0) {
         output.writeInt32(2, version_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(agentName_)) {
+      if (!getAgentNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, agentName_);
       }
       for (int i = 0; i < requestedEntityTypes_.size(); i++) {
@@ -11833,7 +11833,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, version_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(agentName_)) {
+      if (!getAgentNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, agentName_);
       }
       {
@@ -13997,7 +13997,7 @@ public final class ControlMessageProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, reason_);
       }
       unknownFields.writeTo(output);
@@ -14009,7 +14009,7 @@ public final class ControlMessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -15383,7 +15383,7 @@ public final class ControlMessageProto {
       if (requestID_ != 0) {
         output.writeInt32(1, requestID_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
       }
       unknownFields.writeTo(output);
@@ -15399,7 +15399,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, requestID_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -20937,7 +20937,7 @@ public final class ControlMessageProto {
       if (requestID_ != 0) {
         output.writeInt32(1, requestID_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
       }
       unknownFields.writeTo(output);
@@ -20953,7 +20953,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, requestID_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -23472,7 +23472,7 @@ public final class ControlMessageProto {
       if (requestID_ != 0) {
         output.writeInt32(1, requestID_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
       }
       unknownFields.writeTo(output);
@@ -23488,7 +23488,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, requestID_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
+      if (!getReasonBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -27383,7 +27383,7 @@ public final class ControlMessageProto {
       if (version_ != 0) {
         output.writeInt32(2, version_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(simulatorName_)) {
+      if (!getSimulatorNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, simulatorName_);
       }
       unknownFields.writeTo(output);
@@ -27403,7 +27403,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, version_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(simulatorName_)) {
+      if (!getSimulatorNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, simulatorName_);
       }
       size += unknownFields.getSerializedSize();
@@ -29410,7 +29410,7 @@ public final class ControlMessageProto {
       if (version_ != 0) {
         output.writeInt32(2, version_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(viewerName_)) {
+      if (!getViewerNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, viewerName_);
       }
       unknownFields.writeTo(output);
@@ -29430,7 +29430,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, version_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(viewerName_)) {
+      if (!getViewerNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, viewerName_);
       }
       size += unknownFields.getSerializedSize();
