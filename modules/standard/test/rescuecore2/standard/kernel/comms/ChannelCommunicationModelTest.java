@@ -1,41 +1,36 @@
 package rescuecore2.standard.kernel.comms;
 
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
-import rescuecore2.config.Config;
-import rescuecore2.messages.Command;
-import rescuecore2.worldmodel.WorldModel;
-import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.Civilian;
-import rescuecore2.standard.entities.FireStation;
-import rescuecore2.standard.entities.AmbulanceCentre;
-import rescuecore2.standard.entities.PoliceOffice;
-import rescuecore2.standard.entities.FireBrigade;
-import rescuecore2.standard.entities.AmbulanceTeam;
-import rescuecore2.standard.entities.PoliceForce;
-import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.messages.AKSubscribe;
-import rescuecore2.standard.messages.AKSpeak;
-
-import java.util.Collection;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
-import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import rescuecore2.commands.Command;
+import rescuecore2.config.Config;
+import rescuecore2.standard.commands.AKSpeak;
+import rescuecore2.standard.commands.AKSubscribe;
+import rescuecore2.standard.entities.AmbulanceCentre;
+import rescuecore2.standard.entities.AmbulanceTeam;
+import rescuecore2.standard.entities.Civilian;
+import rescuecore2.standard.entities.FireBrigade;
+import rescuecore2.standard.entities.FireStation;
+import rescuecore2.standard.entities.PoliceForce;
+import rescuecore2.standard.entities.PoliceOffice;
+import rescuecore2.standard.entities.Road;
+import rescuecore2.standard.entities.StandardWorldModel;
+import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.EntityID;
+import rescuecore2.worldmodel.WorldModel;
 
 public class ChannelCommunicationModelTest {
     private final static byte[] TEST_BYTES = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
