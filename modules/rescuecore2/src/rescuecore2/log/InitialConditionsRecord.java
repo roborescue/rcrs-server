@@ -1,18 +1,17 @@
 package rescuecore2.log;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
-// import static rescuecore2.misc.EncodingTools.writeEntity;
-import static rescuecore2.misc.EncodingTools.readInt32;
-// import static rescuecore2.misc.EncodingTools.readEntity;
 
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.util.Collection;
+import java.util.List;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.messages.control.ControlMessageProto.EntityProto;
+import rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto;
+import rescuecore2.messages.control.MsgProtoBuf;
 import rescuecore2.worldmodel.DefaultWorldModel;
 
 /**
@@ -58,25 +57,38 @@ public class InitialConditionsRecord implements LogRecord {
 
   @Override
   public void write( OutputStream out ) throws IOException {
-    Collection<? extends Entity> all = model.getAllEntities();
-    writeInt32( all.size(), out );
-    for ( Entity e : all ) {
-      // writeEntity(e, out);
-    }
+	  InitialConditionsLogProto.Builder builder=InitialConditionsLogProto.newBuilder();
+	  for ( Entity e : model.getAllEntities()) {
+		  builder.addEntities(MsgProtoBuf.setEntityProto(e));
+	  }
+	  builder.build().writeTo(out);
+//    Collection<? extends Entity> all = model.getAllEntities();
+//    writeInt32( all.size(), out );
+//    for ( Entity e : all ) {
+//      // writeEntity(e, out);
+//    }
   }
 
 
   @Override
   public void read( InputStream in ) throws IOException, LogException {
-    model = DefaultWorldModel.create();
-    int size = readInt32( in );
-    for ( int i = 0; i < size; ++i ) {
-      // Entity e = readEntity(in);
-      // if (e == null) {
-      // throw new LogException("Could not read entity from stream");
-      // }
-      // model.addEntity(e);
+	InitialConditionsLogProto initialConditionsLogProto=InitialConditionsLogProto.parseFrom(in);
+    this.model = DefaultWorldModel.create();
+    List<EntityProto> entityList = initialConditionsLogProto.getEntitiesList();
+    for (EntityProto entityProto : entityList) {
+      Entity entity = MsgProtoBuf.setEntity(entityProto);
+      if (entity != null) {
+        this.model.addEntity(entity);
+      }
     }
+//    int size = readInt32( in );
+//    for ( int i = 0; i < size; ++i ) {
+//      // Entity e = readEntity(in);
+//      // if (e == null) {
+//      // throw new LogException("Could not read entity from stream");
+//      // }
+//      // model.addEntity(e);
+//    }
   }
 
 

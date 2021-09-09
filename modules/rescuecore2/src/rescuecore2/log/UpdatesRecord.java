@@ -1,12 +1,11 @@
 package rescuecore2.log;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readInt32;
-
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
+import rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto;
+import rescuecore2.messages.control.MsgProtoBuf;
 import rescuecore2.worldmodel.ChangeSet;
 
 /**
@@ -55,16 +54,17 @@ public class UpdatesRecord implements LogRecord {
 
   @Override
   public void write( OutputStream out ) throws IOException {
-    writeInt32( time, out );
-    // changes.write( out );
+	UpdatesLogProto.newBuilder()
+		.setTime(time)
+		.setChanges(MsgProtoBuf.setChangeSetProto(changes)).build().writeTo(out);
   }
 
 
   @Override
   public void read( InputStream in ) throws IOException, LogException {
-    time = readInt32( in );
-    changes = new ChangeSet();
-    // changes.read(in);
+	  UpdatesLogProto proto = UpdatesLogProto.parseFrom(in);
+	  time = proto.getTime();
+	  changes = MsgProtoBuf.setChangeSet(proto.getChanges());
   }
 
 

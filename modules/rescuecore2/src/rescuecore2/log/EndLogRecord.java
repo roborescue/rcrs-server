@@ -1,6 +1,9 @@
 package rescuecore2.log;
 
 import java.io.OutputStream;
+
+import rescuecore2.messages.control.ControlMessageProto.EndLogProto;
+
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -30,9 +33,11 @@ public class EndLogRecord implements LogRecord {
 
     @Override
     public void write(OutputStream out) throws IOException {
+    	EndLogProto.newBuilder().build().writeTo(out);
     }
 
     @Override
     public void read(InputStream in) throws IOException {
+    	EndLogProto.parseFrom(in);
     }
 }

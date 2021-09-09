@@ -1,8 +1,5 @@
 package rescuecore2.log;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readMessage;
-import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import rescuecore2.commands.Command;
+import rescuecore2.messages.control.MsgProtoBuf;
+import rescuecore2.messages.control.ControlMessageProto.CommandProto;
+import rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.EntityID;
 
@@ -57,30 +57,26 @@ public class PerceptionRecord implements LogRecord {
 
   @Override
   public void write(OutputStream out) throws IOException {
-    writeInt32(entityID.getValue(), out);
-    writeInt32(time, out);
-    // visible.write(out);
-    writeInt32(communications.size(), out);
-    // for (Command next : communications) {
-    // writeMessage(next, out);
-    // }
+	PerceptionLogProto.Builder builder=PerceptionLogProto.newBuilder()
+			.setEntityID(entityID.getValue())
+			.setTime(time)
+			.setVisible(MsgProtoBuf.setChangeSetProto(visible));
+	for (Command next : communications) {
+	    builder.addCommunications(MsgProtoBuf.setCommandProto(next));
+	}
+	builder.build().writeTo(out);
   }
 
   @Override
   public void read(InputStream in) throws IOException, LogException {
-    entityID = new EntityID(readInt32(in));
-    time = readInt32(in);
-    visible = new ChangeSet();
-    // visible.read( in );
-    communications = new ArrayList<Command>();
-    int count = readInt32(in);
-    for (int i = 0; i < count; ++i) {
-      Command c = (Command) readMessage(in);
-      if (c == null) {
-        throw new LogException("Could not read message from stream");
-      }
-      communications.add(c);
-    }
+	  PerceptionLogProto perceptionLogProto=PerceptionLogProto.parseFrom(in);
+	  entityID = new EntityID(perceptionLogProto.getEntityID());
+	  time = perceptionLogProto.getTime();
+	  visible = MsgProtoBuf.setChangeSet(perceptionLogProto.getVisible());
+	  communications = new ArrayList<Command>();
+	  for (CommandProto commandProto:perceptionLogProto.getCommunicationsList()) {
+	      communications.add(MsgProtoBuf.setCommand(commandProto));
+	  }
   }
 
   /**

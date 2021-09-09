@@ -1,17 +1,15 @@
 package rescuecore2.log;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.writeMessage;
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readMessage;
-
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import rescuecore2.commands.Command;
-import rescuecore2.messages.Message;
+import rescuecore2.messages.control.ControlMessageProto.CommandLogProto;
+import rescuecore2.messages.control.ControlMessageProto.CommandProto;
+import rescuecore2.messages.control.MsgProtoBuf;
 
 /**
  * A commands record.
@@ -59,30 +57,22 @@ public class CommandsRecord implements LogRecord {
 
   @Override
   public void write( OutputStream out ) throws IOException {
-    writeInt32( time, out );
-    writeInt32( commands.size(), out );
-    for ( Command next : commands ) {
-      // writeMessage(next, out);
-    }
+	  CommandLogProto.Builder builder=CommandLogProto.newBuilder()
+			  .setTime(time);
+	  for ( Command next : commands ) {
+	      builder.addCommands(MsgProtoBuf.setCommandProto(next));
+	  }
   }
 
 
   @Override
   public void read( InputStream in ) throws IOException, LogException {
-    time = readInt32( in );
-    commands = new ArrayList<Command>();
-    int count = readInt32( in );
-    for ( int i = 0; i < count; ++i ) {
-      Message m = readMessage( in );
-      if ( m == null ) {
-        throw new LogException( "Could not read message from stream" );
-      }
-      if ( !( m instanceof Command ) ) {
-        throw new LogException(
-            "Illegal message type in commands record: " + m );
-      }
-      commands.add( (Command) m );
-    }
+	  CommandLogProto proto=CommandLogProto.parseFrom(in);
+	  time=proto.getTime();
+	  commands = new ArrayList<Command>();
+	  for (CommandProto commandProto : proto.getCommandsList()) {
+	      commands.add(MsgProtoBuf.setCommand(commandProto));
+	  }
   }
 
 
