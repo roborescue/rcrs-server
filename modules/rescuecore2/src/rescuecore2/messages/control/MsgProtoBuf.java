@@ -13,15 +13,19 @@ import rescuecore2.config.Config;
 import rescuecore2.messages.control.ControlMessageProto.ChangeSetProto;
 import rescuecore2.messages.control.ControlMessageProto.CommandProto;
 import rescuecore2.messages.control.ControlMessageProto.ConfigProto;
+import rescuecore2.messages.control.ControlMessageProto.EntityProto;
 import rescuecore2.messages.control.ControlMessageProto.IntListProto;
 import rescuecore2.messages.control.ControlMessageProto.IntMatrixProto;
 import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto;
 import rescuecore2.messages.control.ControlMessageProto.PropertyMapProto.Builder;
+import rescuecore2.registry.Registry;
 import rescuecore2.messages.control.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.control.ControlMessageProto.StrListProto;
 import rescuecore2.messages.control.ControlMessageProto.ValueProto;
+import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 
@@ -75,7 +79,14 @@ public class MsgProtoBuf {
 
     return commandProtoBuilder.build();
   }
+  public static Command setCommand(CommandProto commandProto) {
+	  Command command = Registry.getCurrentRegistry().createCommand(commandProto.getUrn());
 
+      Map<String, Object> fields = MsgProtoBuf.setCommandFields(commandProto);
+
+      command.setFields(fields);
+      return command;
+  }
   public static Map<String, Object> setCommandFields(CommandProto commandProto) {
     Map<String, Object> fields = new HashMap<String, Object>();
 
@@ -204,6 +215,35 @@ public class MsgProtoBuf {
     }
 
     return changeSetProtoBuilder.build();
+  }
+  
+  public static ChangeSet setChangeSet(ChangeSetProto changeSetProto) {
+	    ChangeSet changes = new ChangeSet();
+	    // Add changed entities and properties
+	    Map<Integer, PropertyMapProto> changesMap = changeSetProto.getChangesMap();
+	    Map<Integer, String> entitiesURN = changeSetProto.getEntitiesURNsMap();
+	    for (Integer entityIDProto : changesMap.keySet()) {
+	      EntityID entityID = new EntityID(entityIDProto);
+	      String urn = entitiesURN.get(entityIDProto);
+
+	      PropertyMapProto propertyMapProto = changesMap.get(entityIDProto);
+	      for (String propertyURN : propertyMapProto.getPropertyMap().keySet()) {
+	        Property<?> property = Registry.getCurrentRegistry().createProperty(propertyURN);
+
+	        if (property != null) {
+	          List<Object> fields = MsgProtoBuf.setPropertyFields(propertyMapProto.getPropertyMap().get(propertyURN));
+
+	          property.setFields(fields);
+
+	          changes.addChange(entityID, urn, property);
+	        }
+	      }
+	    }
+	 // Add deleted entities
+	    for (Integer entityID : changeSetProto.getDeletesList()) {
+	      changes.entityDeleted(new EntityID(entityID));
+	    }
+	    return changes;
   }
 
   public static List<Object> setPropertyFields(PropertyProto propertyProto) {
@@ -338,5 +378,41 @@ public class MsgProtoBuf {
     }
 
     return config;
+  }
+  
+  public static EntityProto setEntityProto(Entity entity) {
+	  EntityProto.Builder entityProtoBuilder = EntityProto.newBuilder()
+	          .setUrnID(StandardEntityURN.fromString(entity.getURN()).ordinal()).setEntityID(entity.getID().getValue());
+
+	      for (Property<?> property : entity.getProperties()) {
+	        if (property.isDefined()) {
+	          PropertyProto propertyProto = MsgProtoBuf.setPropertyProto(property);
+	          entityProtoBuilder.addProperties(propertyProto);
+	        }
+	      }
+	      return entityProtoBuilder.build();
+  }
+  
+  public static Entity setEntity(EntityProto entityProto) {
+	  String entityURN = StandardEntityURN.formInt(entityProto.getUrnID()).toString();
+      int entityID = entityProto.getEntityID();
+
+      Entity entity = Registry.getCurrentRegistry().createEntity(entityURN, new EntityID(entityID));
+
+      if (entity != null) {
+
+        Map<String, List<Object>> properties = new HashMap<String, List<Object>>();
+        for (PropertyProto propertyProto : entityProto.getPropertiesList()) {
+          String propertyURN = StandardPropertyURN.fromInt(propertyProto.getUrnID()).toString();
+
+          List<Object> property = MsgProtoBuf.setPropertyFields(propertyProto);
+
+          properties.put(propertyURN, property);
+        }
+
+        entity.setEntity(properties);
+
+      }
+      return entity;
   }
 }

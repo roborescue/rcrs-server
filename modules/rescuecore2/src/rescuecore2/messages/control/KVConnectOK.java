@@ -102,16 +102,7 @@ public class KVConnectOK extends AbstractMessage {
         .setRequestID(this.requestID);
 
     for (Entity entity : this.world) {
-      EntityProto.Builder entityProtoBuilder = EntityProto.newBuilder()
-          .setUrnID(StandardEntityURN.fromString(entity.getURN()).ordinal()).setEntityID(entity.getID().getValue());
-
-      for (Property<?> property : entity.getProperties()) {
-        if (property.isDefined()) {
-          PropertyProto propertyProto = MsgProtoBuf.setPropertyProto(property);
-          entityProtoBuilder.addProperties(propertyProto);
-        }
-      }
-      kvConnectOKBuilder.addEntities(entityProtoBuilder.build());
+      kvConnectOKBuilder.addEntities(MsgProtoBuf.setEntityProto(entity));
     }
 
     ConfigProto configProto = MsgProtoBuf.setConfigProto(this.config);

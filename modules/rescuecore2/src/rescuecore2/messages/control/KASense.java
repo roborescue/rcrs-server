@@ -116,34 +116,7 @@ public class KASense extends AbstractMessage {
     this.agentID = new EntityID(kaSense.getAgentID());
     this.time = kaSense.getTime();
 
-    this.changes = new ChangeSet();
-    ChangeSetProto changeSetProto = kaSense.getChanges();
-
-    // Add changed entities and properties
-    Map<Integer, PropertyMapProto> changesMap = changeSetProto.getChangesMap();
-    Map<Integer, String> entitiesURN = changeSetProto.getEntitiesURNsMap();
-    for (Integer entityIDProto : changesMap.keySet()) {
-      EntityID entityID = new EntityID(entityIDProto);
-      String urn = entitiesURN.get(entityIDProto);
-
-      PropertyMapProto propertyMapProto = changesMap.get(entityIDProto);
-      for (String propertyURN : propertyMapProto.getPropertyMap().keySet()) {
-        Property<?> property = Registry.getCurrentRegistry().createProperty(propertyURN);
-
-        if (property != null) {
-          List<Object> fields = MsgProtoBuf.setPropertyFields(propertyMapProto.getPropertyMap().get(propertyURN));
-
-          property.setFields(fields);
-
-          this.changes.addChange(entityID, urn, property);
-        }
-      }
-    }
-
-    // Add deleted entities
-    for (Integer entityID : changeSetProto.getDeletesList()) {
-      this.changes.entityDeleted(new EntityID(entityID));
-    }
+    this.changes=MsgProtoBuf.setChangeSet(kaSense.getChanges());
 
     this.hear = new ArrayList<Command>();
     for (CommandProto commandProto : kaSense.getHearsList()) {
