@@ -62,11 +62,6 @@ public class InitialConditionsRecord implements LogRecord {
 		  builder.addEntities(MsgProtoBuf.setEntityProto(e));
 	  }
 	  builder.build().writeTo(out);
-//    Collection<? extends Entity> all = model.getAllEntities();
-//    writeInt32( all.size(), out );
-//    for ( Entity e : all ) {
-//      // writeEntity(e, out);
-//    }
   }
 
 
@@ -81,14 +76,6 @@ public class InitialConditionsRecord implements LogRecord {
         this.model.addEntity(entity);
       }
     }
-//    int size = readInt32( in );
-//    for ( int i = 0; i < size; ++i ) {
-//      // Entity e = readEntity(in);
-//      // if (e == null) {
-//      // throw new LogException("Could not read entity from stream");
-//      // }
-//      // model.addEntity(e);
-//    }
   }
 
 
