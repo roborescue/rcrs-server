@@ -2066,10 +2066,20 @@ public final class ControlMessageProto {
 
     /**
      * <code>int32 valueInt = 1;</code>
+     * @return Whether the valueInt field is set.
+     */
+    boolean hasValueInt();
+    /**
+     * <code>int32 valueInt = 1;</code>
      * @return The valueInt.
      */
     int getValueInt();
 
+    /**
+     * <code>bool valueBool = 2;</code>
+     * @return Whether the valueBool field is set.
+     */
+    boolean hasValueBool();
     /**
      * <code>bool valueBool = 2;</code>
      * @return The valueBool.
@@ -2078,10 +2088,20 @@ public final class ControlMessageProto {
 
     /**
      * <code>double valueDouble = 3;</code>
+     * @return Whether the valueDouble field is set.
+     */
+    boolean hasValueDouble();
+    /**
+     * <code>double valueDouble = 3;</code>
      * @return The valueDouble.
      */
     double getValueDouble();
 
+    /**
+     * <code>bytes listByte = 4;</code>
+     * @return Whether the listByte field is set.
+     */
+    boolean hasListByte();
     /**
      * <code>bytes listByte = 4;</code>
      * @return The listByte.
@@ -2297,6 +2317,14 @@ public final class ControlMessageProto {
     public static final int VALUEINT_FIELD_NUMBER = 1;
     /**
      * <code>int32 valueInt = 1;</code>
+     * @return Whether the valueInt field is set.
+     */
+    @java.lang.Override
+    public boolean hasValueInt() {
+      return valueCase_ == 1;
+    }
+    /**
+     * <code>int32 valueInt = 1;</code>
      * @return The valueInt.
      */
     @java.lang.Override
@@ -2308,6 +2336,14 @@ public final class ControlMessageProto {
     }
 
     public static final int VALUEBOOL_FIELD_NUMBER = 2;
+    /**
+     * <code>bool valueBool = 2;</code>
+     * @return Whether the valueBool field is set.
+     */
+    @java.lang.Override
+    public boolean hasValueBool() {
+      return valueCase_ == 2;
+    }
     /**
      * <code>bool valueBool = 2;</code>
      * @return The valueBool.
@@ -2323,6 +2359,14 @@ public final class ControlMessageProto {
     public static final int VALUEDOUBLE_FIELD_NUMBER = 3;
     /**
      * <code>double valueDouble = 3;</code>
+     * @return Whether the valueDouble field is set.
+     */
+    @java.lang.Override
+    public boolean hasValueDouble() {
+      return valueCase_ == 3;
+    }
+    /**
+     * <code>double valueDouble = 3;</code>
      * @return The valueDouble.
      */
     @java.lang.Override
@@ -2334,6 +2378,14 @@ public final class ControlMessageProto {
     }
 
     public static final int LISTBYTE_FIELD_NUMBER = 4;
+    /**
+     * <code>bytes listByte = 4;</code>
+     * @return Whether the listByte field is set.
+     */
+    @java.lang.Override
+    public boolean hasListByte() {
+      return valueCase_ == 4;
+    }
     /**
      * <code>bytes listByte = 4;</code>
      * @return The listByte.
@@ -2878,6 +2930,13 @@ public final class ControlMessageProto {
 
       /**
        * <code>int32 valueInt = 1;</code>
+       * @return Whether the valueInt field is set.
+       */
+      public boolean hasValueInt() {
+        return valueCase_ == 1;
+      }
+      /**
+       * <code>int32 valueInt = 1;</code>
        * @return The valueInt.
        */
       public int getValueInt() {
@@ -2910,6 +2969,13 @@ public final class ControlMessageProto {
         return this;
       }
 
+      /**
+       * <code>bool valueBool = 2;</code>
+       * @return Whether the valueBool field is set.
+       */
+      public boolean hasValueBool() {
+        return valueCase_ == 2;
+      }
       /**
        * <code>bool valueBool = 2;</code>
        * @return The valueBool.
@@ -2946,6 +3012,13 @@ public final class ControlMessageProto {
 
       /**
        * <code>double valueDouble = 3;</code>
+       * @return Whether the valueDouble field is set.
+       */
+      public boolean hasValueDouble() {
+        return valueCase_ == 3;
+      }
+      /**
+       * <code>double valueDouble = 3;</code>
        * @return The valueDouble.
        */
       public double getValueDouble() {
@@ -2978,6 +3051,13 @@ public final class ControlMessageProto {
         return this;
       }
 
+      /**
+       * <code>bytes listByte = 4;</code>
+       * @return Whether the listByte field is set.
+       */
+      public boolean hasListByte() {
+        return valueCase_ == 4;
+      }
       /**
        * <code>bytes listByte = 4;</code>
        * @return The listByte.
@@ -9508,7 +9588,7 @@ public final class ControlMessageProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getUrnBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(urn_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, urn_);
       }
       com.google.protobuf.GeneratedMessageV3
@@ -9526,7 +9606,7 @@ public final class ControlMessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getUrnBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(urn_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, urn_);
       }
       for (java.util.Map.Entry<java.lang.String, rescuecore2.messages.control.ControlMessageProto.ValueProto> entry
@@ -11730,7 +11810,7 @@ public final class ControlMessageProto {
       if (version_ != 0) {
         output.writeInt32(2, version_);
       }
-      if (!getAgentNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(agentName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, agentName_);
       }
       for (int i = 0; i < requestedEntityTypes_.size(); i++) {
@@ -11753,7 +11833,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, version_);
       }
-      if (!getAgentNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(agentName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, agentName_);
       }
       {
@@ -13917,7 +13997,7 @@ public final class ControlMessageProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, reason_);
       }
       unknownFields.writeTo(output);
@@ -13929,7 +14009,7 @@ public final class ControlMessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -15303,7 +15383,7 @@ public final class ControlMessageProto {
       if (requestID_ != 0) {
         output.writeInt32(1, requestID_);
       }
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
       }
       unknownFields.writeTo(output);
@@ -15319,7 +15399,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, requestID_);
       }
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -20857,7 +20937,7 @@ public final class ControlMessageProto {
       if (requestID_ != 0) {
         output.writeInt32(1, requestID_);
       }
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
       }
       unknownFields.writeTo(output);
@@ -20873,7 +20953,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, requestID_);
       }
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -23392,7 +23472,7 @@ public final class ControlMessageProto {
       if (requestID_ != 0) {
         output.writeInt32(1, requestID_);
       }
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
       }
       unknownFields.writeTo(output);
@@ -23408,7 +23488,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, requestID_);
       }
-      if (!getReasonBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(reason_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
       }
       size += unknownFields.getSerializedSize();
@@ -27303,7 +27383,7 @@ public final class ControlMessageProto {
       if (version_ != 0) {
         output.writeInt32(2, version_);
       }
-      if (!getSimulatorNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(simulatorName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, simulatorName_);
       }
       unknownFields.writeTo(output);
@@ -27323,7 +27403,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, version_);
       }
-      if (!getSimulatorNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(simulatorName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, simulatorName_);
       }
       size += unknownFields.getSerializedSize();
@@ -29330,7 +29410,7 @@ public final class ControlMessageProto {
       if (version_ != 0) {
         output.writeInt32(2, version_);
       }
-      if (!getViewerNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(viewerName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, viewerName_);
       }
       unknownFields.writeTo(output);
@@ -29350,7 +29430,7 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, version_);
       }
-      if (!getViewerNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(viewerName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, viewerName_);
       }
       size += unknownFields.getSerializedSize();
@@ -29836,6 +29916,4946 @@ public final class ControlMessageProto {
 
   }
 
+  public interface CommandLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:CommandLogProto)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 time = 1;</code>
+     * @return The time.
+     */
+    int getTime();
+
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> 
+        getCommandsList();
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.CommandProto getCommands(int index);
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    int getCommandsCount();
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+        getCommandsOrBuilderList();
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder getCommandsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code CommandLogProto}
+   */
+  public static final class CommandLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:CommandLogProto)
+      CommandLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use CommandLogProto.newBuilder() to construct.
+    private CommandLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private CommandLogProto() {
+      commands_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CommandLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private CommandLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              time_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                commands_ = new java.util.ArrayList<rescuecore2.messages.control.ControlMessageProto.CommandProto>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              commands_.add(
+                  input.readMessage(rescuecore2.messages.control.ControlMessageProto.CommandProto.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          commands_ = java.util.Collections.unmodifiableList(commands_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_CommandLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_CommandLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.CommandLogProto.class, rescuecore2.messages.control.ControlMessageProto.CommandLogProto.Builder.class);
+    }
+
+    public static final int TIME_FIELD_NUMBER = 1;
+    private int time_;
+    /**
+     * <code>int32 time = 1;</code>
+     * @return The time.
+     */
+    @java.lang.Override
+    public int getTime() {
+      return time_;
+    }
+
+    public static final int COMMANDS_FIELD_NUMBER = 2;
+    private java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> commands_;
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> getCommandsList() {
+      return commands_;
+    }
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+        getCommandsOrBuilderList() {
+      return commands_;
+    }
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    @java.lang.Override
+    public int getCommandsCount() {
+      return commands_.size();
+    }
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.CommandProto getCommands(int index) {
+      return commands_.get(index);
+    }
+    /**
+     * <code>repeated .CommandProto commands = 2;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder getCommandsOrBuilder(
+        int index) {
+      return commands_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (time_ != 0) {
+        output.writeInt32(1, time_);
+      }
+      for (int i = 0; i < commands_.size(); i++) {
+        output.writeMessage(2, commands_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (time_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, time_);
+      }
+      for (int i = 0; i < commands_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, commands_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.CommandLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.CommandLogProto other = (rescuecore2.messages.control.ControlMessageProto.CommandLogProto) obj;
+
+      if (getTime()
+          != other.getTime()) return false;
+      if (!getCommandsList()
+          .equals(other.getCommandsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + getTime();
+      if (getCommandsCount() > 0) {
+        hash = (37 * hash) + COMMANDS_FIELD_NUMBER;
+        hash = (53 * hash) + getCommandsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.CommandLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code CommandLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:CommandLogProto)
+        rescuecore2.messages.control.ControlMessageProto.CommandLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_CommandLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_CommandLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.CommandLogProto.class, rescuecore2.messages.control.ControlMessageProto.CommandLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.CommandLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getCommandsFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        time_ = 0;
+
+        if (commandsBuilder_ == null) {
+          commands_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          commandsBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_CommandLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.CommandLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.CommandLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.CommandLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.CommandLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.CommandLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.CommandLogProto result = new rescuecore2.messages.control.ControlMessageProto.CommandLogProto(this);
+        int from_bitField0_ = bitField0_;
+        result.time_ = time_;
+        if (commandsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            commands_ = java.util.Collections.unmodifiableList(commands_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.commands_ = commands_;
+        } else {
+          result.commands_ = commandsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.CommandLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.CommandLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.CommandLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.CommandLogProto.getDefaultInstance()) return this;
+        if (other.getTime() != 0) {
+          setTime(other.getTime());
+        }
+        if (commandsBuilder_ == null) {
+          if (!other.commands_.isEmpty()) {
+            if (commands_.isEmpty()) {
+              commands_ = other.commands_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureCommandsIsMutable();
+              commands_.addAll(other.commands_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.commands_.isEmpty()) {
+            if (commandsBuilder_.isEmpty()) {
+              commandsBuilder_.dispose();
+              commandsBuilder_ = null;
+              commands_ = other.commands_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              commandsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getCommandsFieldBuilder() : null;
+            } else {
+              commandsBuilder_.addAllMessages(other.commands_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.CommandLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.CommandLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int time_ ;
+      /**
+       * <code>int32 time = 1;</code>
+       * @return The time.
+       */
+      @java.lang.Override
+      public int getTime() {
+        return time_;
+      }
+      /**
+       * <code>int32 time = 1;</code>
+       * @param value The time to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTime(int value) {
+        
+        time_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 time = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTime() {
+        
+        time_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> commands_ =
+        java.util.Collections.emptyList();
+      private void ensureCommandsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          commands_ = new java.util.ArrayList<rescuecore2.messages.control.ControlMessageProto.CommandProto>(commands_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.CommandProto, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder, rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> commandsBuilder_;
+
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> getCommandsList() {
+        if (commandsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(commands_);
+        } else {
+          return commandsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public int getCommandsCount() {
+        if (commandsBuilder_ == null) {
+          return commands_.size();
+        } else {
+          return commandsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto getCommands(int index) {
+        if (commandsBuilder_ == null) {
+          return commands_.get(index);
+        } else {
+          return commandsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder setCommands(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto value) {
+        if (commandsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommandsIsMutable();
+          commands_.set(index, value);
+          onChanged();
+        } else {
+          commandsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder setCommands(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder builderForValue) {
+        if (commandsBuilder_ == null) {
+          ensureCommandsIsMutable();
+          commands_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          commandsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder addCommands(rescuecore2.messages.control.ControlMessageProto.CommandProto value) {
+        if (commandsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommandsIsMutable();
+          commands_.add(value);
+          onChanged();
+        } else {
+          commandsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder addCommands(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto value) {
+        if (commandsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommandsIsMutable();
+          commands_.add(index, value);
+          onChanged();
+        } else {
+          commandsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder addCommands(
+          rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder builderForValue) {
+        if (commandsBuilder_ == null) {
+          ensureCommandsIsMutable();
+          commands_.add(builderForValue.build());
+          onChanged();
+        } else {
+          commandsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder addCommands(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder builderForValue) {
+        if (commandsBuilder_ == null) {
+          ensureCommandsIsMutable();
+          commands_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          commandsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder addAllCommands(
+          java.lang.Iterable<? extends rescuecore2.messages.control.ControlMessageProto.CommandProto> values) {
+        if (commandsBuilder_ == null) {
+          ensureCommandsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, commands_);
+          onChanged();
+        } else {
+          commandsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder clearCommands() {
+        if (commandsBuilder_ == null) {
+          commands_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          commandsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public Builder removeCommands(int index) {
+        if (commandsBuilder_ == null) {
+          ensureCommandsIsMutable();
+          commands_.remove(index);
+          onChanged();
+        } else {
+          commandsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder getCommandsBuilder(
+          int index) {
+        return getCommandsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder getCommandsOrBuilder(
+          int index) {
+        if (commandsBuilder_ == null) {
+          return commands_.get(index);  } else {
+          return commandsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+           getCommandsOrBuilderList() {
+        if (commandsBuilder_ != null) {
+          return commandsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(commands_);
+        }
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder addCommandsBuilder() {
+        return getCommandsFieldBuilder().addBuilder(
+            rescuecore2.messages.control.ControlMessageProto.CommandProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder addCommandsBuilder(
+          int index) {
+        return getCommandsFieldBuilder().addBuilder(
+            index, rescuecore2.messages.control.ControlMessageProto.CommandProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .CommandProto commands = 2;</code>
+       */
+      public java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder> 
+           getCommandsBuilderList() {
+        return getCommandsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.CommandProto, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder, rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+          getCommandsFieldBuilder() {
+        if (commandsBuilder_ == null) {
+          commandsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              rescuecore2.messages.control.ControlMessageProto.CommandProto, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder, rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder>(
+                  commands_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          commands_ = null;
+        }
+        return commandsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:CommandLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:CommandLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.CommandLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.CommandLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.CommandLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CommandLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<CommandLogProto>() {
+      @java.lang.Override
+      public CommandLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new CommandLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<CommandLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CommandLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.CommandLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface InitialConditionsLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:InitialConditionsLogProto)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    java.util.List<rescuecore2.messages.control.ControlMessageProto.EntityProto> 
+        getEntitiesList();
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.EntityProto getEntities(int index);
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    int getEntitiesCount();
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder> 
+        getEntitiesOrBuilderList();
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder getEntitiesOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code InitialConditionsLogProto}
+   */
+  public static final class InitialConditionsLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:InitialConditionsLogProto)
+      InitialConditionsLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use InitialConditionsLogProto.newBuilder() to construct.
+    private InitialConditionsLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private InitialConditionsLogProto() {
+      entities_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new InitialConditionsLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private InitialConditionsLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                entities_ = new java.util.ArrayList<rescuecore2.messages.control.ControlMessageProto.EntityProto>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              entities_.add(
+                  input.readMessage(rescuecore2.messages.control.ControlMessageProto.EntityProto.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          entities_ = java.util.Collections.unmodifiableList(entities_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_InitialConditionsLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_InitialConditionsLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.class, rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.Builder.class);
+    }
+
+    public static final int ENTITIES_FIELD_NUMBER = 1;
+    private java.util.List<rescuecore2.messages.control.ControlMessageProto.EntityProto> entities_;
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<rescuecore2.messages.control.ControlMessageProto.EntityProto> getEntitiesList() {
+      return entities_;
+    }
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder> 
+        getEntitiesOrBuilderList() {
+      return entities_;
+    }
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    @java.lang.Override
+    public int getEntitiesCount() {
+      return entities_.size();
+    }
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.EntityProto getEntities(int index) {
+      return entities_.get(index);
+    }
+    /**
+     * <code>repeated .EntityProto entities = 1;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder getEntitiesOrBuilder(
+        int index) {
+      return entities_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < entities_.size(); i++) {
+        output.writeMessage(1, entities_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < entities_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, entities_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto other = (rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto) obj;
+
+      if (!getEntitiesList()
+          .equals(other.getEntitiesList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getEntitiesCount() > 0) {
+        hash = (37 * hash) + ENTITIES_FIELD_NUMBER;
+        hash = (53 * hash) + getEntitiesList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code InitialConditionsLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:InitialConditionsLogProto)
+        rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_InitialConditionsLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_InitialConditionsLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.class, rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getEntitiesFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (entitiesBuilder_ == null) {
+          entities_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          entitiesBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_InitialConditionsLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto result = new rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto(this);
+        int from_bitField0_ = bitField0_;
+        if (entitiesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            entities_ = java.util.Collections.unmodifiableList(entities_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.entities_ = entities_;
+        } else {
+          result.entities_ = entitiesBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto.getDefaultInstance()) return this;
+        if (entitiesBuilder_ == null) {
+          if (!other.entities_.isEmpty()) {
+            if (entities_.isEmpty()) {
+              entities_ = other.entities_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEntitiesIsMutable();
+              entities_.addAll(other.entities_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.entities_.isEmpty()) {
+            if (entitiesBuilder_.isEmpty()) {
+              entitiesBuilder_.dispose();
+              entitiesBuilder_ = null;
+              entities_ = other.entities_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              entitiesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getEntitiesFieldBuilder() : null;
+            } else {
+              entitiesBuilder_.addAllMessages(other.entities_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<rescuecore2.messages.control.ControlMessageProto.EntityProto> entities_ =
+        java.util.Collections.emptyList();
+      private void ensureEntitiesIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          entities_ = new java.util.ArrayList<rescuecore2.messages.control.ControlMessageProto.EntityProto>(entities_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.EntityProto, rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder, rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder> entitiesBuilder_;
+
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public java.util.List<rescuecore2.messages.control.ControlMessageProto.EntityProto> getEntitiesList() {
+        if (entitiesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(entities_);
+        } else {
+          return entitiesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public int getEntitiesCount() {
+        if (entitiesBuilder_ == null) {
+          return entities_.size();
+        } else {
+          return entitiesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.EntityProto getEntities(int index) {
+        if (entitiesBuilder_ == null) {
+          return entities_.get(index);
+        } else {
+          return entitiesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder setEntities(
+          int index, rescuecore2.messages.control.ControlMessageProto.EntityProto value) {
+        if (entitiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntitiesIsMutable();
+          entities_.set(index, value);
+          onChanged();
+        } else {
+          entitiesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder setEntities(
+          int index, rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder builderForValue) {
+        if (entitiesBuilder_ == null) {
+          ensureEntitiesIsMutable();
+          entities_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          entitiesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder addEntities(rescuecore2.messages.control.ControlMessageProto.EntityProto value) {
+        if (entitiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntitiesIsMutable();
+          entities_.add(value);
+          onChanged();
+        } else {
+          entitiesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder addEntities(
+          int index, rescuecore2.messages.control.ControlMessageProto.EntityProto value) {
+        if (entitiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntitiesIsMutable();
+          entities_.add(index, value);
+          onChanged();
+        } else {
+          entitiesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder addEntities(
+          rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder builderForValue) {
+        if (entitiesBuilder_ == null) {
+          ensureEntitiesIsMutable();
+          entities_.add(builderForValue.build());
+          onChanged();
+        } else {
+          entitiesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder addEntities(
+          int index, rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder builderForValue) {
+        if (entitiesBuilder_ == null) {
+          ensureEntitiesIsMutable();
+          entities_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          entitiesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder addAllEntities(
+          java.lang.Iterable<? extends rescuecore2.messages.control.ControlMessageProto.EntityProto> values) {
+        if (entitiesBuilder_ == null) {
+          ensureEntitiesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, entities_);
+          onChanged();
+        } else {
+          entitiesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder clearEntities() {
+        if (entitiesBuilder_ == null) {
+          entities_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          entitiesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public Builder removeEntities(int index) {
+        if (entitiesBuilder_ == null) {
+          ensureEntitiesIsMutable();
+          entities_.remove(index);
+          onChanged();
+        } else {
+          entitiesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder getEntitiesBuilder(
+          int index) {
+        return getEntitiesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder getEntitiesOrBuilder(
+          int index) {
+        if (entitiesBuilder_ == null) {
+          return entities_.get(index);  } else {
+          return entitiesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder> 
+           getEntitiesOrBuilderList() {
+        if (entitiesBuilder_ != null) {
+          return entitiesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(entities_);
+        }
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder addEntitiesBuilder() {
+        return getEntitiesFieldBuilder().addBuilder(
+            rescuecore2.messages.control.ControlMessageProto.EntityProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder addEntitiesBuilder(
+          int index) {
+        return getEntitiesFieldBuilder().addBuilder(
+            index, rescuecore2.messages.control.ControlMessageProto.EntityProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .EntityProto entities = 1;</code>
+       */
+      public java.util.List<rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder> 
+           getEntitiesBuilderList() {
+        return getEntitiesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.EntityProto, rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder, rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder> 
+          getEntitiesFieldBuilder() {
+        if (entitiesBuilder_ == null) {
+          entitiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              rescuecore2.messages.control.ControlMessageProto.EntityProto, rescuecore2.messages.control.ControlMessageProto.EntityProto.Builder, rescuecore2.messages.control.ControlMessageProto.EntityProtoOrBuilder>(
+                  entities_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          entities_ = null;
+        }
+        return entitiesBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:InitialConditionsLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:InitialConditionsLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<InitialConditionsLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<InitialConditionsLogProto>() {
+      @java.lang.Override
+      public InitialConditionsLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new InitialConditionsLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<InitialConditionsLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<InitialConditionsLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.InitialConditionsLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PerceptionLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:PerceptionLogProto)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 time = 1;</code>
+     * @return The time.
+     */
+    int getTime();
+
+    /**
+     * <code>int32 entityID = 2;</code>
+     * @return The entityID.
+     */
+    int getEntityID();
+
+    /**
+     * <code>.ChangeSetProto visible = 3;</code>
+     * @return Whether the visible field is set.
+     */
+    boolean hasVisible();
+    /**
+     * <code>.ChangeSetProto visible = 3;</code>
+     * @return The visible.
+     */
+    rescuecore2.messages.control.ControlMessageProto.ChangeSetProto getVisible();
+    /**
+     * <code>.ChangeSetProto visible = 3;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder getVisibleOrBuilder();
+
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> 
+        getCommunicationsList();
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.CommandProto getCommunications(int index);
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    int getCommunicationsCount();
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+        getCommunicationsOrBuilderList();
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder getCommunicationsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code PerceptionLogProto}
+   */
+  public static final class PerceptionLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:PerceptionLogProto)
+      PerceptionLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PerceptionLogProto.newBuilder() to construct.
+    private PerceptionLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PerceptionLogProto() {
+      communications_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PerceptionLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PerceptionLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              time_ = input.readInt32();
+              break;
+            }
+            case 16: {
+
+              entityID_ = input.readInt32();
+              break;
+            }
+            case 26: {
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder subBuilder = null;
+              if (visible_ != null) {
+                subBuilder = visible_.toBuilder();
+              }
+              visible_ = input.readMessage(rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(visible_);
+                visible_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                communications_ = new java.util.ArrayList<rescuecore2.messages.control.ControlMessageProto.CommandProto>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              communications_.add(
+                  input.readMessage(rescuecore2.messages.control.ControlMessageProto.CommandProto.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          communications_ = java.util.Collections.unmodifiableList(communications_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_PerceptionLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_PerceptionLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.class, rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.Builder.class);
+    }
+
+    public static final int TIME_FIELD_NUMBER = 1;
+    private int time_;
+    /**
+     * <code>int32 time = 1;</code>
+     * @return The time.
+     */
+    @java.lang.Override
+    public int getTime() {
+      return time_;
+    }
+
+    public static final int ENTITYID_FIELD_NUMBER = 2;
+    private int entityID_;
+    /**
+     * <code>int32 entityID = 2;</code>
+     * @return The entityID.
+     */
+    @java.lang.Override
+    public int getEntityID() {
+      return entityID_;
+    }
+
+    public static final int VISIBLE_FIELD_NUMBER = 3;
+    private rescuecore2.messages.control.ControlMessageProto.ChangeSetProto visible_;
+    /**
+     * <code>.ChangeSetProto visible = 3;</code>
+     * @return Whether the visible field is set.
+     */
+    @java.lang.Override
+    public boolean hasVisible() {
+      return visible_ != null;
+    }
+    /**
+     * <code>.ChangeSetProto visible = 3;</code>
+     * @return The visible.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ChangeSetProto getVisible() {
+      return visible_ == null ? rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.getDefaultInstance() : visible_;
+    }
+    /**
+     * <code>.ChangeSetProto visible = 3;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder getVisibleOrBuilder() {
+      return getVisible();
+    }
+
+    public static final int COMMUNICATIONS_FIELD_NUMBER = 4;
+    private java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> communications_;
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    @java.lang.Override
+    public java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> getCommunicationsList() {
+      return communications_;
+    }
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+        getCommunicationsOrBuilderList() {
+      return communications_;
+    }
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    @java.lang.Override
+    public int getCommunicationsCount() {
+      return communications_.size();
+    }
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.CommandProto getCommunications(int index) {
+      return communications_.get(index);
+    }
+    /**
+     * <code>repeated .CommandProto communications = 4;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder getCommunicationsOrBuilder(
+        int index) {
+      return communications_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (time_ != 0) {
+        output.writeInt32(1, time_);
+      }
+      if (entityID_ != 0) {
+        output.writeInt32(2, entityID_);
+      }
+      if (visible_ != null) {
+        output.writeMessage(3, getVisible());
+      }
+      for (int i = 0; i < communications_.size(); i++) {
+        output.writeMessage(4, communications_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (time_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, time_);
+      }
+      if (entityID_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, entityID_);
+      }
+      if (visible_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getVisible());
+      }
+      for (int i = 0; i < communications_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, communications_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto other = (rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto) obj;
+
+      if (getTime()
+          != other.getTime()) return false;
+      if (getEntityID()
+          != other.getEntityID()) return false;
+      if (hasVisible() != other.hasVisible()) return false;
+      if (hasVisible()) {
+        if (!getVisible()
+            .equals(other.getVisible())) return false;
+      }
+      if (!getCommunicationsList()
+          .equals(other.getCommunicationsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + getTime();
+      hash = (37 * hash) + ENTITYID_FIELD_NUMBER;
+      hash = (53 * hash) + getEntityID();
+      if (hasVisible()) {
+        hash = (37 * hash) + VISIBLE_FIELD_NUMBER;
+        hash = (53 * hash) + getVisible().hashCode();
+      }
+      if (getCommunicationsCount() > 0) {
+        hash = (37 * hash) + COMMUNICATIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getCommunicationsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code PerceptionLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:PerceptionLogProto)
+        rescuecore2.messages.control.ControlMessageProto.PerceptionLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_PerceptionLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_PerceptionLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.class, rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getCommunicationsFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        time_ = 0;
+
+        entityID_ = 0;
+
+        if (visibleBuilder_ == null) {
+          visible_ = null;
+        } else {
+          visible_ = null;
+          visibleBuilder_ = null;
+        }
+        if (communicationsBuilder_ == null) {
+          communications_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          communicationsBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_PerceptionLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto result = new rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto(this);
+        int from_bitField0_ = bitField0_;
+        result.time_ = time_;
+        result.entityID_ = entityID_;
+        if (visibleBuilder_ == null) {
+          result.visible_ = visible_;
+        } else {
+          result.visible_ = visibleBuilder_.build();
+        }
+        if (communicationsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            communications_ = java.util.Collections.unmodifiableList(communications_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.communications_ = communications_;
+        } else {
+          result.communications_ = communicationsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto.getDefaultInstance()) return this;
+        if (other.getTime() != 0) {
+          setTime(other.getTime());
+        }
+        if (other.getEntityID() != 0) {
+          setEntityID(other.getEntityID());
+        }
+        if (other.hasVisible()) {
+          mergeVisible(other.getVisible());
+        }
+        if (communicationsBuilder_ == null) {
+          if (!other.communications_.isEmpty()) {
+            if (communications_.isEmpty()) {
+              communications_ = other.communications_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureCommunicationsIsMutable();
+              communications_.addAll(other.communications_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.communications_.isEmpty()) {
+            if (communicationsBuilder_.isEmpty()) {
+              communicationsBuilder_.dispose();
+              communicationsBuilder_ = null;
+              communications_ = other.communications_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              communicationsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getCommunicationsFieldBuilder() : null;
+            } else {
+              communicationsBuilder_.addAllMessages(other.communications_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int time_ ;
+      /**
+       * <code>int32 time = 1;</code>
+       * @return The time.
+       */
+      @java.lang.Override
+      public int getTime() {
+        return time_;
+      }
+      /**
+       * <code>int32 time = 1;</code>
+       * @param value The time to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTime(int value) {
+        
+        time_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 time = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTime() {
+        
+        time_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int entityID_ ;
+      /**
+       * <code>int32 entityID = 2;</code>
+       * @return The entityID.
+       */
+      @java.lang.Override
+      public int getEntityID() {
+        return entityID_;
+      }
+      /**
+       * <code>int32 entityID = 2;</code>
+       * @param value The entityID to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEntityID(int value) {
+        
+        entityID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 entityID = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearEntityID() {
+        
+        entityID_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private rescuecore2.messages.control.ControlMessageProto.ChangeSetProto visible_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.ChangeSetProto, rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder, rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder> visibleBuilder_;
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       * @return Whether the visible field is set.
+       */
+      public boolean hasVisible() {
+        return visibleBuilder_ != null || visible_ != null;
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       * @return The visible.
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ChangeSetProto getVisible() {
+        if (visibleBuilder_ == null) {
+          return visible_ == null ? rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.getDefaultInstance() : visible_;
+        } else {
+          return visibleBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      public Builder setVisible(rescuecore2.messages.control.ControlMessageProto.ChangeSetProto value) {
+        if (visibleBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          visible_ = value;
+          onChanged();
+        } else {
+          visibleBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      public Builder setVisible(
+          rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder builderForValue) {
+        if (visibleBuilder_ == null) {
+          visible_ = builderForValue.build();
+          onChanged();
+        } else {
+          visibleBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      public Builder mergeVisible(rescuecore2.messages.control.ControlMessageProto.ChangeSetProto value) {
+        if (visibleBuilder_ == null) {
+          if (visible_ != null) {
+            visible_ =
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.newBuilder(visible_).mergeFrom(value).buildPartial();
+          } else {
+            visible_ = value;
+          }
+          onChanged();
+        } else {
+          visibleBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      public Builder clearVisible() {
+        if (visibleBuilder_ == null) {
+          visible_ = null;
+          onChanged();
+        } else {
+          visible_ = null;
+          visibleBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder getVisibleBuilder() {
+        
+        onChanged();
+        return getVisibleFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder getVisibleOrBuilder() {
+        if (visibleBuilder_ != null) {
+          return visibleBuilder_.getMessageOrBuilder();
+        } else {
+          return visible_ == null ?
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.getDefaultInstance() : visible_;
+        }
+      }
+      /**
+       * <code>.ChangeSetProto visible = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.ChangeSetProto, rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder, rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder> 
+          getVisibleFieldBuilder() {
+        if (visibleBuilder_ == null) {
+          visibleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto, rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder, rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder>(
+                  getVisible(),
+                  getParentForChildren(),
+                  isClean());
+          visible_ = null;
+        }
+        return visibleBuilder_;
+      }
+
+      private java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> communications_ =
+        java.util.Collections.emptyList();
+      private void ensureCommunicationsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          communications_ = new java.util.ArrayList<rescuecore2.messages.control.ControlMessageProto.CommandProto>(communications_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.CommandProto, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder, rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> communicationsBuilder_;
+
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto> getCommunicationsList() {
+        if (communicationsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(communications_);
+        } else {
+          return communicationsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public int getCommunicationsCount() {
+        if (communicationsBuilder_ == null) {
+          return communications_.size();
+        } else {
+          return communicationsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto getCommunications(int index) {
+        if (communicationsBuilder_ == null) {
+          return communications_.get(index);
+        } else {
+          return communicationsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder setCommunications(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto value) {
+        if (communicationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommunicationsIsMutable();
+          communications_.set(index, value);
+          onChanged();
+        } else {
+          communicationsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder setCommunications(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder builderForValue) {
+        if (communicationsBuilder_ == null) {
+          ensureCommunicationsIsMutable();
+          communications_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          communicationsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder addCommunications(rescuecore2.messages.control.ControlMessageProto.CommandProto value) {
+        if (communicationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommunicationsIsMutable();
+          communications_.add(value);
+          onChanged();
+        } else {
+          communicationsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder addCommunications(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto value) {
+        if (communicationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommunicationsIsMutable();
+          communications_.add(index, value);
+          onChanged();
+        } else {
+          communicationsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder addCommunications(
+          rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder builderForValue) {
+        if (communicationsBuilder_ == null) {
+          ensureCommunicationsIsMutable();
+          communications_.add(builderForValue.build());
+          onChanged();
+        } else {
+          communicationsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder addCommunications(
+          int index, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder builderForValue) {
+        if (communicationsBuilder_ == null) {
+          ensureCommunicationsIsMutable();
+          communications_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          communicationsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder addAllCommunications(
+          java.lang.Iterable<? extends rescuecore2.messages.control.ControlMessageProto.CommandProto> values) {
+        if (communicationsBuilder_ == null) {
+          ensureCommunicationsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, communications_);
+          onChanged();
+        } else {
+          communicationsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder clearCommunications() {
+        if (communicationsBuilder_ == null) {
+          communications_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          communicationsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public Builder removeCommunications(int index) {
+        if (communicationsBuilder_ == null) {
+          ensureCommunicationsIsMutable();
+          communications_.remove(index);
+          onChanged();
+        } else {
+          communicationsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder getCommunicationsBuilder(
+          int index) {
+        return getCommunicationsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder getCommunicationsOrBuilder(
+          int index) {
+        if (communicationsBuilder_ == null) {
+          return communications_.get(index);  } else {
+          return communicationsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public java.util.List<? extends rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+           getCommunicationsOrBuilderList() {
+        if (communicationsBuilder_ != null) {
+          return communicationsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(communications_);
+        }
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder addCommunicationsBuilder() {
+        return getCommunicationsFieldBuilder().addBuilder(
+            rescuecore2.messages.control.ControlMessageProto.CommandProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder addCommunicationsBuilder(
+          int index) {
+        return getCommunicationsFieldBuilder().addBuilder(
+            index, rescuecore2.messages.control.ControlMessageProto.CommandProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .CommandProto communications = 4;</code>
+       */
+      public java.util.List<rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder> 
+           getCommunicationsBuilderList() {
+        return getCommunicationsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.CommandProto, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder, rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder> 
+          getCommunicationsFieldBuilder() {
+        if (communicationsBuilder_ == null) {
+          communicationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              rescuecore2.messages.control.ControlMessageProto.CommandProto, rescuecore2.messages.control.ControlMessageProto.CommandProto.Builder, rescuecore2.messages.control.ControlMessageProto.CommandProtoOrBuilder>(
+                  communications_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          communications_ = null;
+        }
+        return communicationsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:PerceptionLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:PerceptionLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PerceptionLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<PerceptionLogProto>() {
+      @java.lang.Override
+      public PerceptionLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PerceptionLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PerceptionLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PerceptionLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.PerceptionLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface StartLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:StartLogProto)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code StartLogProto}
+   */
+  public static final class StartLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:StartLogProto)
+      StartLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use StartLogProto.newBuilder() to construct.
+    private StartLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private StartLogProto() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new StartLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private StartLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_StartLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_StartLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.StartLogProto.class, rescuecore2.messages.control.ControlMessageProto.StartLogProto.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.StartLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.StartLogProto other = (rescuecore2.messages.control.ControlMessageProto.StartLogProto) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.StartLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code StartLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:StartLogProto)
+        rescuecore2.messages.control.ControlMessageProto.StartLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_StartLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_StartLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.StartLogProto.class, rescuecore2.messages.control.ControlMessageProto.StartLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.StartLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_StartLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.StartLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.StartLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.StartLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.StartLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.StartLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.StartLogProto result = new rescuecore2.messages.control.ControlMessageProto.StartLogProto(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.StartLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.StartLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.StartLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.StartLogProto.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.StartLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.StartLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:StartLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:StartLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.StartLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.StartLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.StartLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<StartLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<StartLogProto>() {
+      @java.lang.Override
+      public StartLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new StartLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<StartLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<StartLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.StartLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface EndLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:EndLogProto)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code EndLogProto}
+   */
+  public static final class EndLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:EndLogProto)
+      EndLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use EndLogProto.newBuilder() to construct.
+    private EndLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private EndLogProto() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new EndLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private EndLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_EndLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_EndLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.EndLogProto.class, rescuecore2.messages.control.ControlMessageProto.EndLogProto.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.EndLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.EndLogProto other = (rescuecore2.messages.control.ControlMessageProto.EndLogProto) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.EndLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code EndLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:EndLogProto)
+        rescuecore2.messages.control.ControlMessageProto.EndLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_EndLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_EndLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.EndLogProto.class, rescuecore2.messages.control.ControlMessageProto.EndLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.EndLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_EndLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.EndLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.EndLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.EndLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.EndLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.EndLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.EndLogProto result = new rescuecore2.messages.control.ControlMessageProto.EndLogProto(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.EndLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.EndLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.EndLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.EndLogProto.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.EndLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.EndLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:EndLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:EndLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.EndLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.EndLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.EndLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<EndLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<EndLogProto>() {
+      @java.lang.Override
+      public EndLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new EndLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<EndLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<EndLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.EndLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface ConfigLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:ConfigLogProto)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.ConfigProto config = 1;</code>
+     * @return Whether the config field is set.
+     */
+    boolean hasConfig();
+    /**
+     * <code>.ConfigProto config = 1;</code>
+     * @return The config.
+     */
+    rescuecore2.messages.control.ControlMessageProto.ConfigProto getConfig();
+    /**
+     * <code>.ConfigProto config = 1;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.ConfigProtoOrBuilder getConfigOrBuilder();
+  }
+  /**
+   * Protobuf type {@code ConfigLogProto}
+   */
+  public static final class ConfigLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:ConfigLogProto)
+      ConfigLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use ConfigLogProto.newBuilder() to construct.
+    private ConfigLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private ConfigLogProto() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new ConfigLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ConfigLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              rescuecore2.messages.control.ControlMessageProto.ConfigProto.Builder subBuilder = null;
+              if (config_ != null) {
+                subBuilder = config_.toBuilder();
+              }
+              config_ = input.readMessage(rescuecore2.messages.control.ControlMessageProto.ConfigProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(config_);
+                config_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_ConfigLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_ConfigLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.class, rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.Builder.class);
+    }
+
+    public static final int CONFIG_FIELD_NUMBER = 1;
+    private rescuecore2.messages.control.ControlMessageProto.ConfigProto config_;
+    /**
+     * <code>.ConfigProto config = 1;</code>
+     * @return Whether the config field is set.
+     */
+    @java.lang.Override
+    public boolean hasConfig() {
+      return config_ != null;
+    }
+    /**
+     * <code>.ConfigProto config = 1;</code>
+     * @return The config.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ConfigProto getConfig() {
+      return config_ == null ? rescuecore2.messages.control.ControlMessageProto.ConfigProto.getDefaultInstance() : config_;
+    }
+    /**
+     * <code>.ConfigProto config = 1;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ConfigProtoOrBuilder getConfigOrBuilder() {
+      return getConfig();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (config_ != null) {
+        output.writeMessage(1, getConfig());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (config_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getConfig());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.ConfigLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.ConfigLogProto other = (rescuecore2.messages.control.ControlMessageProto.ConfigLogProto) obj;
+
+      if (hasConfig() != other.hasConfig()) return false;
+      if (hasConfig()) {
+        if (!getConfig()
+            .equals(other.getConfig())) return false;
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasConfig()) {
+        hash = (37 * hash) + CONFIG_FIELD_NUMBER;
+        hash = (53 * hash) + getConfig().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.ConfigLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code ConfigLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:ConfigLogProto)
+        rescuecore2.messages.control.ControlMessageProto.ConfigLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_ConfigLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_ConfigLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.class, rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (configBuilder_ == null) {
+          config_ = null;
+        } else {
+          config_ = null;
+          configBuilder_ = null;
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_ConfigLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.ConfigLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.ConfigLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.ConfigLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.ConfigLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.ConfigLogProto result = new rescuecore2.messages.control.ControlMessageProto.ConfigLogProto(this);
+        if (configBuilder_ == null) {
+          result.config_ = config_;
+        } else {
+          result.config_ = configBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.ConfigLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.ConfigLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.ConfigLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.ConfigLogProto.getDefaultInstance()) return this;
+        if (other.hasConfig()) {
+          mergeConfig(other.getConfig());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.ConfigLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.ConfigLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private rescuecore2.messages.control.ControlMessageProto.ConfigProto config_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.ConfigProto, rescuecore2.messages.control.ControlMessageProto.ConfigProto.Builder, rescuecore2.messages.control.ControlMessageProto.ConfigProtoOrBuilder> configBuilder_;
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       * @return Whether the config field is set.
+       */
+      public boolean hasConfig() {
+        return configBuilder_ != null || config_ != null;
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       * @return The config.
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ConfigProto getConfig() {
+        if (configBuilder_ == null) {
+          return config_ == null ? rescuecore2.messages.control.ControlMessageProto.ConfigProto.getDefaultInstance() : config_;
+        } else {
+          return configBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      public Builder setConfig(rescuecore2.messages.control.ControlMessageProto.ConfigProto value) {
+        if (configBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          config_ = value;
+          onChanged();
+        } else {
+          configBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      public Builder setConfig(
+          rescuecore2.messages.control.ControlMessageProto.ConfigProto.Builder builderForValue) {
+        if (configBuilder_ == null) {
+          config_ = builderForValue.build();
+          onChanged();
+        } else {
+          configBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      public Builder mergeConfig(rescuecore2.messages.control.ControlMessageProto.ConfigProto value) {
+        if (configBuilder_ == null) {
+          if (config_ != null) {
+            config_ =
+              rescuecore2.messages.control.ControlMessageProto.ConfigProto.newBuilder(config_).mergeFrom(value).buildPartial();
+          } else {
+            config_ = value;
+          }
+          onChanged();
+        } else {
+          configBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      public Builder clearConfig() {
+        if (configBuilder_ == null) {
+          config_ = null;
+          onChanged();
+        } else {
+          config_ = null;
+          configBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ConfigProto.Builder getConfigBuilder() {
+        
+        onChanged();
+        return getConfigFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ConfigProtoOrBuilder getConfigOrBuilder() {
+        if (configBuilder_ != null) {
+          return configBuilder_.getMessageOrBuilder();
+        } else {
+          return config_ == null ?
+              rescuecore2.messages.control.ControlMessageProto.ConfigProto.getDefaultInstance() : config_;
+        }
+      }
+      /**
+       * <code>.ConfigProto config = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.ConfigProto, rescuecore2.messages.control.ControlMessageProto.ConfigProto.Builder, rescuecore2.messages.control.ControlMessageProto.ConfigProtoOrBuilder> 
+          getConfigFieldBuilder() {
+        if (configBuilder_ == null) {
+          configBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.control.ControlMessageProto.ConfigProto, rescuecore2.messages.control.ControlMessageProto.ConfigProto.Builder, rescuecore2.messages.control.ControlMessageProto.ConfigProtoOrBuilder>(
+                  getConfig(),
+                  getParentForChildren(),
+                  isClean());
+          config_ = null;
+        }
+        return configBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:ConfigLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:ConfigLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.ConfigLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.ConfigLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.ConfigLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<ConfigLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<ConfigLogProto>() {
+      @java.lang.Override
+      public ConfigLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ConfigLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<ConfigLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ConfigLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ConfigLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface UpdatesLogProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:UpdatesLogProto)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 time = 1;</code>
+     * @return The time.
+     */
+    int getTime();
+
+    /**
+     * <code>.ChangeSetProto changes = 2;</code>
+     * @return Whether the changes field is set.
+     */
+    boolean hasChanges();
+    /**
+     * <code>.ChangeSetProto changes = 2;</code>
+     * @return The changes.
+     */
+    rescuecore2.messages.control.ControlMessageProto.ChangeSetProto getChanges();
+    /**
+     * <code>.ChangeSetProto changes = 2;</code>
+     */
+    rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder getChangesOrBuilder();
+  }
+  /**
+   * Protobuf type {@code UpdatesLogProto}
+   */
+  public static final class UpdatesLogProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:UpdatesLogProto)
+      UpdatesLogProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use UpdatesLogProto.newBuilder() to construct.
+    private UpdatesLogProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private UpdatesLogProto() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new UpdatesLogProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private UpdatesLogProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              time_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder subBuilder = null;
+              if (changes_ != null) {
+                subBuilder = changes_.toBuilder();
+              }
+              changes_ = input.readMessage(rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(changes_);
+                changes_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_UpdatesLogProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.control.ControlMessageProto.internal_static_UpdatesLogProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.class, rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.Builder.class);
+    }
+
+    public static final int TIME_FIELD_NUMBER = 1;
+    private int time_;
+    /**
+     * <code>int32 time = 1;</code>
+     * @return The time.
+     */
+    @java.lang.Override
+    public int getTime() {
+      return time_;
+    }
+
+    public static final int CHANGES_FIELD_NUMBER = 2;
+    private rescuecore2.messages.control.ControlMessageProto.ChangeSetProto changes_;
+    /**
+     * <code>.ChangeSetProto changes = 2;</code>
+     * @return Whether the changes field is set.
+     */
+    @java.lang.Override
+    public boolean hasChanges() {
+      return changes_ != null;
+    }
+    /**
+     * <code>.ChangeSetProto changes = 2;</code>
+     * @return The changes.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ChangeSetProto getChanges() {
+      return changes_ == null ? rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.getDefaultInstance() : changes_;
+    }
+    /**
+     * <code>.ChangeSetProto changes = 2;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder getChangesOrBuilder() {
+      return getChanges();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (time_ != 0) {
+        output.writeInt32(1, time_);
+      }
+      if (changes_ != null) {
+        output.writeMessage(2, getChanges());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (time_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, time_);
+      }
+      if (changes_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getChanges());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto other = (rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto) obj;
+
+      if (getTime()
+          != other.getTime()) return false;
+      if (hasChanges() != other.hasChanges()) return false;
+      if (hasChanges()) {
+        if (!getChanges()
+            .equals(other.getChanges())) return false;
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TIME_FIELD_NUMBER;
+      hash = (53 * hash) + getTime();
+      if (hasChanges()) {
+        hash = (37 * hash) + CHANGES_FIELD_NUMBER;
+        hash = (53 * hash) + getChanges().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code UpdatesLogProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:UpdatesLogProto)
+        rescuecore2.messages.control.ControlMessageProto.UpdatesLogProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_UpdatesLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_UpdatesLogProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.class, rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        time_ = 0;
+
+        if (changesBuilder_ == null) {
+          changes_ = null;
+        } else {
+          changes_ = null;
+          changesBuilder_ = null;
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.control.ControlMessageProto.internal_static_UpdatesLogProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto getDefaultInstanceForType() {
+        return rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto build() {
+        rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto buildPartial() {
+        rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto result = new rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto(this);
+        result.time_ = time_;
+        if (changesBuilder_ == null) {
+          result.changes_ = changes_;
+        } else {
+          result.changes_ = changesBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto) {
+          return mergeFrom((rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto other) {
+        if (other == rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto.getDefaultInstance()) return this;
+        if (other.getTime() != 0) {
+          setTime(other.getTime());
+        }
+        if (other.hasChanges()) {
+          mergeChanges(other.getChanges());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int time_ ;
+      /**
+       * <code>int32 time = 1;</code>
+       * @return The time.
+       */
+      @java.lang.Override
+      public int getTime() {
+        return time_;
+      }
+      /**
+       * <code>int32 time = 1;</code>
+       * @param value The time to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTime(int value) {
+        
+        time_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 time = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTime() {
+        
+        time_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private rescuecore2.messages.control.ControlMessageProto.ChangeSetProto changes_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.ChangeSetProto, rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder, rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder> changesBuilder_;
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       * @return Whether the changes field is set.
+       */
+      public boolean hasChanges() {
+        return changesBuilder_ != null || changes_ != null;
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       * @return The changes.
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ChangeSetProto getChanges() {
+        if (changesBuilder_ == null) {
+          return changes_ == null ? rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.getDefaultInstance() : changes_;
+        } else {
+          return changesBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      public Builder setChanges(rescuecore2.messages.control.ControlMessageProto.ChangeSetProto value) {
+        if (changesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          changes_ = value;
+          onChanged();
+        } else {
+          changesBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      public Builder setChanges(
+          rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder builderForValue) {
+        if (changesBuilder_ == null) {
+          changes_ = builderForValue.build();
+          onChanged();
+        } else {
+          changesBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      public Builder mergeChanges(rescuecore2.messages.control.ControlMessageProto.ChangeSetProto value) {
+        if (changesBuilder_ == null) {
+          if (changes_ != null) {
+            changes_ =
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.newBuilder(changes_).mergeFrom(value).buildPartial();
+          } else {
+            changes_ = value;
+          }
+          onChanged();
+        } else {
+          changesBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      public Builder clearChanges() {
+        if (changesBuilder_ == null) {
+          changes_ = null;
+          onChanged();
+        } else {
+          changes_ = null;
+          changesBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder getChangesBuilder() {
+        
+        onChanged();
+        return getChangesFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      public rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder getChangesOrBuilder() {
+        if (changesBuilder_ != null) {
+          return changesBuilder_.getMessageOrBuilder();
+        } else {
+          return changes_ == null ?
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.getDefaultInstance() : changes_;
+        }
+      }
+      /**
+       * <code>.ChangeSetProto changes = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.control.ControlMessageProto.ChangeSetProto, rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder, rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder> 
+          getChangesFieldBuilder() {
+        if (changesBuilder_ == null) {
+          changesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.control.ControlMessageProto.ChangeSetProto, rescuecore2.messages.control.ControlMessageProto.ChangeSetProto.Builder, rescuecore2.messages.control.ControlMessageProto.ChangeSetProtoOrBuilder>(
+                  getChanges(),
+                  getParentForChildren(),
+                  isClean());
+          changes_ = null;
+        }
+        return changesBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:UpdatesLogProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:UpdatesLogProto)
+    private static final rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto();
+    }
+
+    public static rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<UpdatesLogProto>
+        PARSER = new com.google.protobuf.AbstractParser<UpdatesLogProto>() {
+      @java.lang.Override
+      public UpdatesLogProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new UpdatesLogProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<UpdatesLogProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<UpdatesLogProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.control.ControlMessageProto.UpdatesLogProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_StrListProto_descriptor;
   private static final 
@@ -30061,6 +35081,41 @@ public final class ControlMessageProto {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_VKConnectProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_CommandLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_CommandLogProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_InitialConditionsLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_InitialConditionsLogProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_PerceptionLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_PerceptionLogProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_StartLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_StartLogProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_EndLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_EndLogProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ConfigLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_ConfigLogProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_UpdatesLogProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_UpdatesLogProto_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -30154,8 +35209,18 @@ public final class ControlMessageProto {
       "KAcknowledgeProto\022\021\n\trequestID\030\001 \001(\005\022\020\n\010" +
       "viewerID\030\002 \001(\005\"H\n\016VKConnectProto\022\021\n\trequ" +
       "estID\030\001 \001(\005\022\017\n\007version\030\002 \001(\005\022\022\n\nviewerNa" +
-      "me\030\003 \001(\tB3\n\034rescuecore2.messages.control" +
-      "B\023ControlMessageProtob\006proto3"
+      "me\030\003 \001(\t\"@\n\017CommandLogProto\022\014\n\004time\030\001 \001(" +
+      "\005\022\037\n\010commands\030\002 \003(\0132\r.CommandProto\";\n\031In" +
+      "itialConditionsLogProto\022\036\n\010entities\030\001 \003(" +
+      "\0132\014.EntityProto\"}\n\022PerceptionLogProto\022\014\n" +
+      "\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 \n\007visible" +
+      "\030\003 \001(\0132\017.ChangeSetProto\022%\n\016communication" +
+      "s\030\004 \003(\0132\r.CommandProto\"\017\n\rStartLogProto\"" +
+      "\r\n\013EndLogProto\".\n\016ConfigLogProto\022\034\n\006conf" +
+      "ig\030\001 \001(\0132\014.ConfigProto\"A\n\017UpdatesLogProt" +
+      "o\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(\0132\017.Chang" +
+      "eSetProtoB3\n\034rescuecore2.messages.contro" +
+      "lB\023ControlMessageProtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -30431,6 +35496,48 @@ public final class ControlMessageProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_VKConnectProto_descriptor,
         new java.lang.String[] { "RequestID", "Version", "ViewerName", });
+    internal_static_CommandLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(36);
+    internal_static_CommandLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_CommandLogProto_descriptor,
+        new java.lang.String[] { "Time", "Commands", });
+    internal_static_InitialConditionsLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(37);
+    internal_static_InitialConditionsLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_InitialConditionsLogProto_descriptor,
+        new java.lang.String[] { "Entities", });
+    internal_static_PerceptionLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(38);
+    internal_static_PerceptionLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_PerceptionLogProto_descriptor,
+        new java.lang.String[] { "Time", "EntityID", "Visible", "Communications", });
+    internal_static_StartLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(39);
+    internal_static_StartLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_StartLogProto_descriptor,
+        new java.lang.String[] { });
+    internal_static_EndLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(40);
+    internal_static_EndLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_EndLogProto_descriptor,
+        new java.lang.String[] { });
+    internal_static_ConfigLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(41);
+    internal_static_ConfigLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_ConfigLogProto_descriptor,
+        new java.lang.String[] { "Config", });
+    internal_static_UpdatesLogProto_descriptor =
+      getDescriptor().getMessageTypes().get(42);
+    internal_static_UpdatesLogProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_UpdatesLogProto_descriptor,
+        new java.lang.String[] { "Time", "Changes", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -201,3 +201,34 @@ message VKConnectProto {
   int32 version = 2;
   string viewerName = 3;
 }
+
+message CommandLogProto {
+  int32 time = 1;
+  repeated CommandProto commands = 2;
+}
+
+message InitialConditionsLogProto {
+  repeated EntityProto entities = 1;
+}
+
+message PerceptionLogProto {
+  int32 time = 1;
+  int32 entityID = 2;
+  ChangeSetProto visible = 3;
+  repeated CommandProto communications = 4;
+}
+
+message StartLogProto {
+}
+
+message EndLogProto {
+}
+
+message ConfigLogProto {
+  ConfigProto config = 1;
+}
+
+message UpdatesLogProto {
+  int32 time = 1;
+  ChangeSetProto changes = 2;
+}
