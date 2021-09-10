@@ -23,8 +23,8 @@ import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 public class StreamConnection extends AbstractConnection {
     private static final int SEND_WAIT = 10000;
 
-    private InputStream in;
-    private OutputStream out;
+    protected InputStream in;
+    protected OutputStream out;
     private ReadThread readThread;
     private WriteThread writeThread;
     private List<MessageProto> toWrite;
@@ -97,6 +97,14 @@ public class StreamConnection extends AbstractConnection {
 //            toWrite.notifyAll();
 //        }
 //    }
+    
+    protected void serializeMessageProto(MessageProto messageProto) throws IOException {
+    	messageProto.writeDelimitedTo(out);
+    }
+    protected MessageProto deserializeMessageProto() throws IOException {
+    	return MessageProto.parseDelimitedFrom(in);
+    }
+    
     protected void sendMessageProto(MessageProto  messageProto) throws IOException{
     	synchronized (toWrite) {
     		toWrite.add(messageProto);
@@ -118,7 +126,7 @@ public class StreamConnection extends AbstractConnection {
 //                    bytesReceived(buffer);
 //                }
 //                return true;
-            	MessageProto messageProto = MessageProto.parseDelimitedFrom(in);
+            	MessageProto messageProto = deserializeMessageProto();
             	messageProtoReceived(messageProto);
                 return true;
             }
@@ -157,7 +165,7 @@ public class StreamConnection extends AbstractConnection {
             try {
 //                writeInt32(bytes.length, out);
 //                out.write(bytes);
-            	messageProto.writeDelimitedTo(out);
+            	serializeMessageProto(messageProto);
                 out.flush();
                 return true;
             }

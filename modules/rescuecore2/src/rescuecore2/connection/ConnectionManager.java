@@ -48,6 +48,13 @@ public class ConnectionManager {
             Reader r = new Reader(socket, registry, listener);
             readers.add(r);
             r.start();
+            
+            ServerSocket socketJson = new ServerSocket(port+1);
+            socketJson.setSoTimeout(1000);
+            socketJson.setReuseAddress(true);
+            ReaderJson rjson = new ReaderJson(socketJson, registry, listener);
+            readers.add(rjson);
+            rjson.start();
         }
     }
 
@@ -92,11 +99,14 @@ public class ConnectionManager {
             this.callback = callback;
         }
 
+        protected TCPConnection getTCPConnection(Socket s) throws IOException {
+			return new TCPConnection(s);
+		}
         @Override
         protected boolean work() {
             try {
                 Socket s = socket.accept();
-                TCPConnection conn = new TCPConnection(s);
+                TCPConnection conn = getTCPConnection(s);
                 if (ConnectionManager.this.isAlive()) {
                     conn.setRegistry(registry);
                     callback.newConnection(conn);
@@ -122,6 +132,17 @@ public class ConnectionManager {
             catch (IOException e) {
                 Logger.error("Error closing server socket", e);
             }
+        }
+    }
+    
+    private class ReaderJson extends Reader {
+
+        public ReaderJson(ServerSocket socket, Registry registry, ConnectionManagerListener callback) {
+        	super(socket, registry, callback);
+        }
+        @Override
+        protected TCPConnection getTCPConnection(Socket s) throws IOException {
+        	return new JsonTCPConnection(s);
         }
     }
 }
