@@ -1,0 +1,309 @@
+syntax = "proto3";
+
+option java_package = "rescuecore2.messages.protobuf";
+option java_outer_classname = "ControlMessageProto";
+
+message MessageProto {
+   string urn = 1;
+   repeated MessageComponentProto components = 2;
+//   oneof msg {
+//    	AKAcknowledgeProto	msgAKAcknowledge = 2;
+//		AKCommandProto	msgAKCommand = 3;
+//		AKConnectProto	msgAKConnect = 4;
+//		EntityIDRequestProto	msgEntityIDRequest = 5;
+//		EntityIDResponseProto	msgEntityIDResponse = 6;
+//		GKConnectErrorProto	msgGKConnectError = 7;
+//		GKConnectOKProto	msgGKConnectOK = 8;
+//		KAConnectErrorProto	msgKAConnectError = 9;
+//		KAConnectOKProto	msgKAConnectOK = 10;
+//		KASenseProto	msgKASense = 11;
+//		KGAcknowledgeProto	msgKGAcknowledge = 12;
+//		KGConnectProto	msgKGConnect = 13;
+//		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
+//		KSCommandsProto	msgKSCommands = 15;
+//		KSConnectErrorProto	msgKSConnectError = 16;
+//		KSConnectOKProto	msgKSConnectOK = 17;
+//		KSUpdateProto	msgKSUpdate = 18;
+//		KVConnectErrorProto 	msgKVConnectError = 19; 
+//		KVConnectOKProto	msgKVConnectOK = 20;
+//		KVTimestepProto	msgKVTimestep = 21;
+//		ShutdownProto	msgShutdown = 22;
+//		SKAcknowledgeProto	msgSKAcknowledge = 23;
+//		SKConnectProto	msgSKConnect = 24;
+//		SKUpdateProto	msgSKUpdate = 25;
+//		VKAcknowledgeProto	msgVKAcknowledge = 26;
+//		VKConnectProto	msgVKConnect = 27;
+//  }
+}
+message MessageListProto{
+	repeated MessageProto commands = 1;	
+}
+
+message MessageComponentProto {
+   oneof component {
+		   ChangeSetProto changeSet=1;
+		   MessageListProto commandList=2;
+		   ConfigProto config=3;
+		   EntityProto entity=4;
+		   int32 entityID=5;
+		   IntListProto entityIDList=6;
+		   EntityListProto entityList=7;
+		   FloatListProto floatList=8;
+		   int32 intValue=9;
+		   IntListProto intList=10;
+		   bytes rawData=11;
+		   string stringValue=12;
+		   StrListProto stringList=13;
+  }
+}
+
+
+message StrListProto {
+  repeated string values = 1;
+}
+
+message IntListProto {
+  repeated int32 values = 1;
+}
+
+message FloatListProto {
+	  repeated float values = 1;
+}
+
+message IntMatrixProto {
+  repeated IntListProto values = 1;
+}
+
+message ValueProto {
+  enum Name {
+	  Value=0;
+	  X=1;
+	  Y=2;
+	  EntityRef=3;
+	  EntityRefList=4;
+  }
+  Name name = 1;
+  oneof value {
+    int32 valueInt = 2;
+    bool valueBool = 3;
+    double valueDouble = 4;
+    bytes listByte = 5;
+    IntListProto listInt = 6;
+    IntMatrixProto matrixInt = 7;
+    EdgeListProto listEdge = 8; 
+  }
+}
+
+message PropertyProto {
+  string urn = 1;
+  bool defined = 2;
+  repeated ValueProto fields = 3;
+}
+
+message EntityProto {
+  string urn = 1;
+  int32 entityID = 2;
+  repeated PropertyProto properties = 3;
+}
+
+message EntityListProto {
+	repeated EntityProto entities = 1;	
+}
+message ConfigProto {
+  map<string, string> data = 1;
+}
+
+message EdgeListProto {
+	repeated EdgeProto edges=1;
+};
+message EdgeProto {
+	int32 startX = 1;
+    int32 startY = 2;
+    int32 endX = 3;
+    int32 endY = 4;
+    int32 neighbour = 5;
+};
+
+message ChangeSetProto {
+	message EntityChangeProto {
+		int32 enitityId=1;
+		string urn=2;
+		repeated PropertyProto property = 3;
+	}
+  repeated EntityChangeProto changes = 1;
+  repeated int32 deletes = 2; /*entity ids*/
+}
+
+
+
+message AKAcknowledgeProto {
+  int32 requestID = 1;
+  int32 agentID = 2;
+}
+
+message AKCommandProto {
+  repeated MessageProto commands = 1;
+}
+
+message AKConnectProto {
+  int32 requestID = 1;
+  int32 version = 2;
+  string agentName = 3;
+  repeated string requestedEntityTypes = 4;
+}
+
+message EntityIDRequestProto {
+  int32 simID = 1;
+  int32 requestID = 2;
+  int32 count = 3;
+}
+
+message EntityIDResponseProto {
+  int32 simID = 1;
+  int32 requestID = 2;
+  repeated int32 newIDs = 3;
+}
+
+message GKConnectErrorProto {
+  string reason = 1;
+}
+
+message GKConnectOKProto {
+  repeated EntityProto entities = 1;
+}
+
+message KAConnectErrorProto {
+  int32 requestID = 1;
+  string reason = 2;
+}
+
+message KAConnectOKProto {
+  int32 requestID = 1;
+  int32 agentID = 2;
+  repeated EntityProto entities = 3;
+  ConfigProto config = 4;
+}
+
+message KASenseProto {
+  int32 agentID = 1;
+  int32 time = 2;
+  ChangeSetProto changes = 3;
+  repeated MessageProto hears = 4;
+}
+
+message KGAcknowledgeProto {
+}
+
+message KGConnectProto {
+  int32 version = 1;
+}
+
+message KSAfterShockInfoProto {
+  repeated int32 times = 1;
+  repeated float intensities = 2;
+}
+
+message KSCommandsProto {
+  int32 simID = 1;
+  int32 time = 2;
+  repeated MessageProto commands = 3;
+}
+
+message KSConnectErrorProto {
+  int32 requestID = 1;
+  string reason = 2;
+}
+
+message KSConnectOKProto {
+  int32 simID = 1;
+  int32 requestID = 2;
+  repeated EntityProto entities = 3;
+  ConfigProto config = 4;
+}
+
+message KSUpdateProto {
+  int32 simID = 1;
+  int32 time = 2;
+  ChangeSetProto changes = 3;
+}
+
+message KVConnectErrorProto {
+  int32 requestID = 1;
+  string reason = 2;
+}
+
+message KVConnectOKProto {
+  int32 viewerID = 1;
+  int32 requestID = 2;
+  repeated EntityProto entities = 3;
+  ConfigProto config = 4;
+}
+
+message KVTimestepProto {
+  int32 viewerID = 1;
+  int32 time = 2;
+  repeated MessageProto commands = 3;
+  ChangeSetProto changes = 4;
+}
+
+message ShutdownProto {
+}
+
+message SKAcknowledgeProto {
+  int32 simID = 1;
+  int32 requestID = 2;
+}
+
+message SKConnectProto {
+  int32 requestID = 1;
+  int32 version = 2;
+  string simulatorName = 3;
+}
+
+message SKUpdateProto {
+  int32 simID = 1;
+  int32 time = 2;
+  ChangeSetProto changes = 3;
+}
+
+message VKAcknowledgeProto {
+  int32 requestID = 1;
+  int32 viewerID = 2;
+}
+
+message VKConnectProto {
+  int32 requestID = 1;
+  int32 version = 2;
+  string viewerName = 3;
+}
+
+message CommandLogProto {
+  int32 time = 1;
+  repeated MessageProto commands = 2;
+}
+
+message InitialConditionsLogProto {
+  repeated EntityProto entities = 1;
+}
+
+message PerceptionLogProto {
+  int32 time = 1;
+  int32 entityID = 2;
+  ChangeSetProto visible = 3;
+  repeated MessageProto communications = 4;
+}
+
+message StartLogProto {
+}
+
+message EndLogProto {
+}
+
+message ConfigLogProto {
+  ConfigProto config = 1;
+}
+
+message UpdatesLogProto {
+  int32 time = 1;
+  ChangeSetProto changes = 2;
+}
