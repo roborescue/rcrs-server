@@ -1011,4 +1011,8 @@ public class Config {
             throw new ConfigException(context.getName(), lineNumber, "Unrecognised config option: '" + line + "'");
         }
     }
+    
+    public Map<String, String> getData() {
+		return data;
+	}
 }
