@@ -13,10 +13,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import rescuecore2.log.Logger;
+import rescuecore2.messages.protobuf.ControlMessageProto.ChangeSetProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.ChangeSetProto.EntityChangeProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.registry.Registry;
 //import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 
@@ -25,327 +32,341 @@ import rescuecore2.worldmodel.properties.EntityRefListProperty;
  */
 public class ChangeSet {
 
-  private Map<EntityID, Map<String, Property>> changes;
-  private Set<EntityID>                        deleted;
-  private Map<EntityID, String>                entityURNs;
+	private Map<EntityID, Map<String, Property>> changes;
+	private Set<EntityID> deleted;
+	private Map<EntityID, String> entityURNs;
 
+	/**
+	 * Create an empty ChangeSet.
+	 */
+	public ChangeSet() {
+		changes = new LazyMap<EntityID, Map<String, Property>>() {
 
-  /**
-   * Create an empty ChangeSet.
-   */
-  public ChangeSet() {
-    changes = new LazyMap<EntityID, Map<String, Property>>() {
+			@Override
+			public Map<String, Property> createValue() {
+				return new HashMap<String, Property>();
+			}
+		};
+		entityURNs = new HashMap<EntityID, String>();
+		deleted = new HashSet<EntityID>();
+	}
 
-      @Override
-      public Map<String, Property> createValue() {
-        return new HashMap<String, Property>();
-      }
-    };
-    entityURNs = new HashMap<EntityID, String>();
-    deleted = new HashSet<EntityID>();
-  }
+	/**
+	 * Copy constructor.
+	 *
+	 * @param other The ChangeSet to copy.
+	 */
+	public ChangeSet(ChangeSet other) {
+		this();
+		merge(other);
+	}
 
+	/**
+	 * Add a change.
+	 *
+	 * @param e The entity that has changed.
+	 * @param p The property that has changed.
+	 */
+	public void addChange(Entity e, Property p) {
+		addChange(e.getID(), e.getURN(), p);
+	}
 
-  /**
-   * Copy constructor.
-   *
-   * @param other
-   *          The ChangeSet to copy.
-   */
-  public ChangeSet( ChangeSet other ) {
-    this();
-    merge( other );
-  }
+	/**
+	 * Add a change.
+	 *
+	 * @param e   The ID of the entity that has changed.
+	 * @param urn The URN of the entity that has changed.
+	 * @param p   The property that has changed.
+	 */
+	public void addChange(EntityID e, String urn, Property p) {
+		if (deleted.contains(e)) {
+			return;
+		}
+		Property prop = p.copy();
+		changes.get(e).put(prop.getURN(), prop);
+		entityURNs.put(e, urn);
+	}
 
+	/**
+	 * Register a deleted entity.
+	 *
+	 * @param e The ID of the entity that has been deleted.
+	 */
+	public void entityDeleted(EntityID e) {
+		deleted.add(e);
+		changes.remove(e);
+	}
 
-  /**
-   * Add a change.
-   *
-   * @param e
-   *          The entity that has changed.
-   * @param p
-   *          The property that has changed.
-   */
-  public void addChange( Entity e, Property p ) {
-    addChange( e.getID(), e.getURN(), p );
-  }
+	/**
+	 * Get the properties that have changed for an entity.
+	 *
+	 * @param e The entity ID to look up.
+	 * @return The set of changed properties. This may be empty but will never
+	 *         be null.
+	 */
+	public Set<Property> getChangedProperties(EntityID e) {
+		return new HashSet<Property>(changes.get(e).values());
+	}
 
+	/**
+	 * Look up a property change for an entity by property URN.
+	 *
+	 * @param e   The entity ID to look up.
+	 * @param urn The property URN to look up.
+	 * @return The changed property with the right URN, or null if the property
+	 *         is not found or has not changed.
+	 */
+	public Property getChangedProperty(EntityID e, String urn) {
+		Map<String, Property> props = changes.get(e);
+		if (props != null) {
+			return props.get(urn);
+		}
+		return null;
+	}
 
-  /**
-   * Add a change.
-   *
-   * @param e
-   *          The ID of the entity that has changed.
-   * @param urn
-   *          The URN of the entity that has changed.
-   * @param p
-   *          The property that has changed.
-   */
-  public void addChange( EntityID e, String urn, Property p ) {
-    if ( deleted.contains( e ) ) {
-      return;
-    }
-    Property prop = p.copy();
-    changes.get( e ).put( prop.getURN(), prop );
-    entityURNs.put( e, urn );
-  }
+	/**
+	 * Get the IDs of all changed entities.
+	 *
+	 * @return A set of IDs of changed entities.
+	 */
+	public Set<EntityID> getChangedEntities() {
+		return new HashSet<EntityID>(changes.keySet());
+	}
 
+	/**
+	 * Get the IDs of all deleted entities.
+	 *
+	 * @return A set of IDs of deleted entities.
+	 */
+	public Set<EntityID> getDeletedEntities() {
+		return new HashSet<EntityID>(deleted);
+	}
 
-  /**
-   * Register a deleted entity.
-   *
-   * @param e
-   *          The ID of the entity that has been deleted.
-   */
-  public void entityDeleted( EntityID e ) {
-    deleted.add( e );
-    changes.remove( e );
-  }
+	/**
+	 * Get the URN of a changed entity.
+	 *
+	 * @param id The ID of the entity.
+	 * @return The URN of the changed entity.
+	 */
+	public String getEntityURN(EntityID id) {
+		return entityURNs.get(id);
+	}
 
+	/**
+	 * Merge another ChangeSet into this one.
+	 *
+	 * @param other The other ChangeSet.
+	 */
+	// private static final String BLOCKADES_URN = StandardPropertyURN.BLOCKADES
+	// .toString();
 
-  /**
-   * Get the properties that have changed for an entity.
-   *
-   * @param e
-   *          The entity ID to look up.
-   * @return The set of changed properties. This may be empty but will never be
-   *         null.
-   */
-  public Set<Property> getChangedProperties( EntityID e ) {
-    return new HashSet<Property>( changes.get( e ).values() );
-  }
+	public void merge(ChangeSet other) {
+		for (Map.Entry<EntityID, Map<String, Property>> next : other.changes
+				.entrySet()) {
+			EntityID e = next.getKey();
+			String urn = other.getEntityURN(e);
+			for (Property p : next.getValue().values()) {
 
+				// if ( p.getURN().equals( BLOCKADES_URN )
+				// && changes.get( e ).containsKey( BLOCKADES_URN ) ) {
 
-  /**
-   * Look up a property change for an entity by property URN.
-   *
-   * @param e
-   *          The entity ID to look up.
-   * @param urn
-   *          The property URN to look up.
-   * @return The changed property with the right URN, or null if the property is
-   *         not found or has not changed.
-   */
-  public Property getChangedProperty( EntityID e, String urn ) {
-    Map<String, Property> props = changes.get( e );
-    if ( props != null ) {
-      return props.get( urn );
-    }
-    return null;
-  }
+				if ((p instanceof EntityRefListProperty)
+						&& (changes.get(e).containsKey(urn) && (changes.get(e)
+								.get(urn) instanceof EntityRefListProperty))) {
 
+					EntityRefListProperty bp1 = (EntityRefListProperty) p
+							.copy();
+					// EntityRefListProperty bp2 = (EntityRefListProperty)
+					// changes.get( e )
+					// .get( BLOCKADES_URN );
+					EntityRefListProperty bp2 = (EntityRefListProperty) changes
+							.get(e).get(urn);
 
-  /**
-   * Get the IDs of all changed entities.
-   *
-   * @return A set of IDs of changed entities.
-   */
-  public Set<EntityID> getChangedEntities() {
-    return new HashSet<EntityID>( changes.keySet() );
-  }
+					if (bp2.isDefined()) {
+						for (EntityID id : bp2.getValue())
+							bp1.addValue(id);
+					}
 
+					for (EntityID id : deleted) {
+						bp1.removeValue(id);
+					}
 
-  /**
-   * Get the IDs of all deleted entities.
-   *
-   * @return A set of IDs of deleted entities.
-   */
-  public Set<EntityID> getDeletedEntities() {
-    return new HashSet<EntityID>( deleted );
-  }
+					for (EntityID id : other.deleted) {
+						bp1.removeValue(id);
+					}
 
+					p = bp1;
+				}
 
-  /**
-   * Get the URN of a changed entity.
-   *
-   * @param id
-   *          The ID of the entity.
-   * @return The URN of the changed entity.
-   */
-  public String getEntityURN( EntityID id ) {
-    return entityURNs.get( id );
-  }
+				addChange(e, urn, p);
+			}
+		}
+		deleted.addAll(other.deleted);
+	}
 
+	/**
+	 * Add all defined properties from a collection.
+	 *
+	 * @param c The collection to copy changes from.
+	 */
+	public void addAll(Collection<? extends Entity> c) {
+		for (Entity entity : c) {
+			for (Property property : entity.getProperties()) {
+				if (property.isDefined()) {
+					addChange(entity, property);
+				}
+			}
+		}
+	}
 
-  /**
-   * Merge another ChangeSet into this one.
-   *
-   * @param other
-   *          The other ChangeSet.
-   */
-  //private static final String BLOCKADES_URN = StandardPropertyURN.BLOCKADES
-  //    .toString();
+	/**
+	 * Write this ChangeSet to a stream.
+	 *
+	 * @param out The stream to write to.
+	 * @throws IOException If there is a problem.
+	 */
+	public void write(OutputStream out) throws IOException {
+		// Number of entity IDs
+		writeInt32(changes.size(), out);
+		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+				.entrySet()) {
+			EntityID id = next.getKey();
+			Collection<Property> props = next.getValue().values();
+			// EntityID, URN, number of properties
+			writeInt32(id.getValue(), out);
+			writeString(getEntityURN(id), out);
+			writeInt32(props.size(), out);
+			for (Property prop : props) {
+				writeProperty(prop, out);
+			}
+		}
+		writeInt32(deleted.size(), out);
+		for (EntityID next : deleted) {
+			writeInt32(next.getValue(), out);
+		}
+	}
 
+	/**
+	 * Read this ChangeSet from a stream.
+	 *
+	 * @param in The stream to read from.
+	 * @throws IOException If there is a problem.
+	 */
+	public void read(InputStream in) throws IOException {
+		changes.clear();
+		deleted.clear();
+		int entityCount = readInt32(in);
+		for (int i = 0; i < entityCount; ++i) {
+			EntityID id = new EntityID(readInt32(in));
+			String urn = readString(in);
+			int propCount = readInt32(in);
+			for (int j = 0; j < propCount; ++j) {
+				Property p = readProperty(in);
+				if (p != null) {
+					addChange(id, urn, p);
+				}
+			}
+		}
+		int deletedCount = readInt32(in);
+		for (int i = 0; i < deletedCount; ++i) {
+			EntityID id = new EntityID(readInt32(in));
+			deleted.add(id);
+		}
+	}
 
-  public void merge( ChangeSet other ) {
-    for ( Map.Entry<EntityID, Map<String, Property>> next : other.changes
-        .entrySet() ) {
-      EntityID e = next.getKey();
-      String urn = other.getEntityURN( e );
-      for ( Property p : next.getValue().values() ) {
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("ChangeSet:");
+		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+				.entrySet()) {
+			result.append(" Entity ");
+			result.append(next.getKey());
+			result.append(" (");
+			result.append(getEntityURN(next.getKey()));
+			result.append(") [");
+			for (Iterator<Property> it = next.getValue().values().iterator(); it
+					.hasNext();) {
+				result.append(it.next());
+				if (it.hasNext()) {
+					result.append(", ");
+				}
+			}
+			result.append("]");
+		}
+		result.append(" {Deleted ");
+		for (Iterator<EntityID> it = deleted.iterator(); it.hasNext();) {
+			result.append(it.next());
+			if (it.hasNext()) {
+				result.append(", ");
+			}
+		}
+		result.append("}");
+		return result.toString();
+	}
 
-        //if ( p.getURN().equals( BLOCKADES_URN )
-        //    && changes.get( e ).containsKey( BLOCKADES_URN ) ) {
+	/**
+	 * Write this changeset to Logger.debug in a readable form.
+	 */
+	public void debug() {
+		Logger.debug("ChangeSet");
+		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+				.entrySet()) {
+			Logger.debug("  Entity " + next.getKey() + "("
+					+ getEntityURN(next.getKey()) + ")");
+			for (Iterator<Property> it = next.getValue().values().iterator(); it
+					.hasNext();) {
+				Logger.debug("    " + it.next());
+			}
+		}
+		for (Iterator<EntityID> it = deleted.iterator(); it.hasNext();) {
+			Logger.debug("  Deleted: " + it.next());
+		}
+	}
 
-        if ((p instanceof EntityRefListProperty) &&
-             (changes.get(e).containsKey( urn ) &&
-               (changes.get(e).get( urn ) instanceof EntityRefListProperty))) {
+	public void fromChangeSetProto(ChangeSetProto changeSetProto) {
+		changes.clear();
+		deleted.clear();
+		List<EntityChangeProto> changesList = changeSetProto.getChangesList();
+		for (EntityChangeProto entityChange : changesList) {
+			EntityID entityID = new EntityID(entityChange.getEnitityId());
+			String urn = entityChange.getUrn();
 
-          EntityRefListProperty bp1 = (EntityRefListProperty) p.copy();
-          //EntityRefListProperty bp2 = (EntityRefListProperty) changes.get( e )
-          //    .get( BLOCKADES_URN );
-          EntityRefListProperty bp2 = (EntityRefListProperty) changes.get( e )
-              .get( urn );
+			List<PropertyProto> propertyProtoList = entityChange
+					.getPropertyList();
+			for (PropertyProto propertyProto : propertyProtoList) {
+				Property prop = MsgProtoBuf
+						.propertyProto2Property(propertyProto);
+				if (prop != null) {
+					this.addChange(entityID, urn, prop);
+				}
+			}
+		}
+		// Add deleted entities
+		for (Integer entityID : changeSetProto.getDeletesList()) {
+			this.entityDeleted(new EntityID(entityID));
+		}
 
-          if ( bp2.isDefined() ) {
-            for ( EntityID id : bp2.getValue() )
-              bp1.addValue( id );
-          }
+	}
 
-          for ( EntityID id : deleted ) {
-            bp1.removeValue( id );
-          }
-
-          for ( EntityID id : other.deleted ) {
-            bp1.removeValue( id );
-          }
-
-          p = bp1;
-        }
-
-        addChange( e, urn, p );
-      }
-    }
-    deleted.addAll( other.deleted );
-  }
-
-
-  /**
-   * Add all defined properties from a collection.
-   *
-   * @param c
-   *          The collection to copy changes from.
-   */
-  public void addAll( Collection<? extends Entity> c ) {
-    for ( Entity entity : c ) {
-      for ( Property property : entity.getProperties() ) {
-        if ( property.isDefined() ) {
-          addChange( entity, property );
-        }
-      }
-    }
-  }
-
-
-  /**
-   * Write this ChangeSet to a stream.
-   *
-   * @param out
-   *          The stream to write to.
-   * @throws IOException
-   *           If there is a problem.
-   */
-  public void write( OutputStream out ) throws IOException {
-    // Number of entity IDs
-    writeInt32( changes.size(), out );
-    for ( Map.Entry<EntityID, Map<String, Property>> next : changes
-        .entrySet() ) {
-      EntityID id = next.getKey();
-      Collection<Property> props = next.getValue().values();
-      // EntityID, URN, number of properties
-      writeInt32( id.getValue(), out );
-      writeString( getEntityURN( id ), out );
-      writeInt32( props.size(), out );
-      for ( Property prop : props ) {
-        writeProperty( prop, out );
-      }
-    }
-    writeInt32( deleted.size(), out );
-    for ( EntityID next : deleted ) {
-      writeInt32( next.getValue(), out );
-    }
-  }
-
-
-  /**
-   * Read this ChangeSet from a stream.
-   *
-   * @param in
-   *          The stream to read from.
-   * @throws IOException
-   *           If there is a problem.
-   */
-  public void read( InputStream in ) throws IOException {
-    changes.clear();
-    deleted.clear();
-    int entityCount = readInt32( in );
-    for ( int i = 0; i < entityCount; ++i ) {
-      EntityID id = new EntityID( readInt32( in ) );
-      String urn = readString( in );
-      int propCount = readInt32( in );
-      for ( int j = 0; j < propCount; ++j ) {
-        Property p = readProperty( in );
-        if ( p != null ) {
-          addChange( id, urn, p );
-        }
-      }
-    }
-    int deletedCount = readInt32( in );
-    for ( int i = 0; i < deletedCount; ++i ) {
-      EntityID id = new EntityID( readInt32( in ) );
-      deleted.add( id );
-    }
-  }
-
-
-  @Override
-  public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append( "ChangeSet:" );
-    for ( Map.Entry<EntityID, Map<String, Property>> next : changes
-        .entrySet() ) {
-      result.append( " Entity " );
-      result.append( next.getKey() );
-      result.append( " (" );
-      result.append( getEntityURN( next.getKey() ) );
-      result.append( ") [" );
-      for ( Iterator<Property> it = next.getValue().values().iterator(); it
-          .hasNext(); ) {
-        result.append( it.next() );
-        if ( it.hasNext() ) {
-          result.append( ", " );
-        }
-      }
-      result.append( "]" );
-    }
-    result.append( " {Deleted " );
-    for ( Iterator<EntityID> it = deleted.iterator(); it.hasNext(); ) {
-      result.append( it.next() );
-      if ( it.hasNext() ) {
-        result.append( ", " );
-      }
-    }
-    result.append( "}" );
-    return result.toString();
-  }
-
-
-  /**
-   * Write this changeset to Logger.debug in a readable form.
-   */
-  public void debug() {
-    Logger.debug( "ChangeSet" );
-    for ( Map.Entry<EntityID, Map<String, Property>> next : changes
-        .entrySet() ) {
-      Logger.debug( "  Entity " + next.getKey() + "("
-          + getEntityURN( next.getKey() ) + ")" );
-      for ( Iterator<Property> it = next.getValue().values().iterator(); it
-          .hasNext(); ) {
-        Logger.debug( "    " + it.next() );
-      }
-    }
-    for ( Iterator<EntityID> it = deleted.iterator(); it.hasNext(); ) {
-      Logger.debug( "  Deleted: " + it.next() );
-    }
-  }
+	public ChangeSetProto toChangeSetProto() {
+		ChangeSetProto.Builder builder =ChangeSetProto.newBuilder();
+		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+				.entrySet()) {
+			EntityID id = next.getKey();
+			Collection<Property> props = next.getValue().values();
+			// EntityID, URN, number of properties
+			EntityChangeProto.Builder entityChangeBuilder=EntityChangeProto.newBuilder()
+				.setEnitityId(id.getValue())
+				.setUrn(getEntityURN(id));
+			for (Property prop : props) {
+				entityChangeBuilder.addProperty(prop.toPropertyProto());
+			}
+			builder.addChanges(entityChangeBuilder);
+		}
+		for (EntityID next : deleted) {
+			builder.addDeletes(next.getValue());
+		}
+		return builder.build();
+	}
 }
