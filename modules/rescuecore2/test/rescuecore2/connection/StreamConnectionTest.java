@@ -61,7 +61,8 @@ public class StreamConnectionTest extends ConnectionTestCommon {
         TestOutputStream out = new TestOutputStream(bout);
         StreamConnection c = new StreamConnection(in, out);
         c.startup();
-        c.sendBytes(TEST_DATA);
+//        c.sendBytes(TEST_DATA);
+//        c.se
         // Wait for a bit
         Thread.sleep(DELAY);
         assertArrayEquals(EXPECTED_TEST_OUTPUT, bout.toByteArray());

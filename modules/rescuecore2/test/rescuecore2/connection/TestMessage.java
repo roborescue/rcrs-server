@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 public class TestMessage implements Message {
     private String urn;
@@ -85,4 +86,16 @@ public class TestMessage implements Message {
     public String toString() {
         return "Test message (" + urn + "): " + description + ": " + Arrays.asList(data);
     }
+
+	@Override
+	public MessageProto toMessageProto() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void fromMessageProto(MessageProto proto) {
+		// TODO Auto-generated method stub
+		
+	}
 }
