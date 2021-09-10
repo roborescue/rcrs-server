@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 /**
    An abstract message factory with helper methods for defining URNs with enums.
@@ -62,6 +63,27 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
         }
         return makeMessage(t, data);
     }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public Message makeMessage(String urn, MessageProto data){
+        T t = null;
+        if (fromString != null) {
+            try {
+                t = (T)fromString.invoke(null, urn);
+            }
+            catch (IllegalAccessException e) {
+                t = null;
+            }
+            catch (InvocationTargetException e) {
+                t = null;
+            }
+        }
+        if (t == null) {
+            t = Enum.valueOf(clazz, urn);
+        }
+        return makeMessage(t, data);
+    }
 
     /**
        Get an EnumSet containing known message URNs. Default implementation returns EnumSet.allOf(T).
@@ -79,4 +101,5 @@ public abstract class AbstractMessageFactory<T extends Enum<T>> implements Messa
        @throws IOException If there is a problem reading the stream.
      */
     protected abstract Message makeMessage(T urn, InputStream data) throws IOException;
+    protected abstract Message makeMessage(T urn, MessageProto data);
 }

@@ -9,6 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 import rescuecore2.log.Logger;
 
 /**
@@ -289,7 +290,15 @@ public final class Registry {
 		}
 		return factory.makeMessage(urn, data);
 	}
-
+	
+	public Message createMessage(String urn, MessageProto data){
+		MessageFactory factory = getMessageFactory(urn);
+		if (factory == null) {
+			Logger.warn(getName() + ": Message " + urn + " not recognised.");
+			return null;
+		}
+		return factory.makeMessage(urn, data);
+	}
 	/**
 	 * Get the entity factory for a URN, delegating to the parent if required.
 	 * 

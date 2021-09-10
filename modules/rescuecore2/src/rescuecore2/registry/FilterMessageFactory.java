@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 /**
    A message factory that filters urns that do not match a given set.
@@ -33,6 +34,17 @@ public class FilterMessageFactory implements MessageFactory {
 
     @Override
     public Message makeMessage(String urn, InputStream data) throws IOException {
+        if (inclusive && !urns.contains(urn)) {
+            return null;
+        }
+        if (!inclusive && urns.contains(urn)) {
+            return null;
+        }
+        return downstream.makeMessage(urn, data);
+    }
+    
+    @Override
+    public Message makeMessage(String urn, MessageProto data) {
         if (inclusive && !urns.contains(urn)) {
             return null;
         }

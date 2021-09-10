@@ -1,6 +1,7 @@
 package rescuecore2.registry;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public interface MessageFactory {
        @throws IOException If there is a problem reading the stream.
      */
     Message makeMessage(String urn, InputStream data) throws IOException;
+    Message makeMessage(String urn, MessageProto proto) ;
 
     /**
        Get all message urns understood by this factory.
