@@ -3,6 +3,7 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.StringComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -38,7 +39,12 @@ public class GKConnectError extends AbstractMessage implements Control {
         addMessageComponent(reason);
     }
 
-    /**
+    public GKConnectError(MessageProto proto) {
+    	this();
+    	fromMessageProto(proto);
+    }
+
+	/**
        Get the reason for the error.
        @return The reason for the error.
      */

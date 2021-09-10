@@ -4,6 +4,7 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.components.StringComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -49,7 +50,12 @@ public class VKConnect extends AbstractMessage implements Control {
         addMessageComponent(viewerName);
     }
 
-    /**
+    public VKConnect(MessageProto proto) {
+    	this();
+    	fromMessageProto(proto);
+    }
+
+	/**
        Get the version number of this request.
        @return The version number.
      */

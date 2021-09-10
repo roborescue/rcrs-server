@@ -3,6 +3,7 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 import rescuecore2.messages.components.ChangeSetComponent;
 import rescuecore2.worldmodel.ChangeSet;
 
@@ -50,7 +51,12 @@ public class KSUpdate extends AbstractMessage implements Control {
         addMessageComponent(changes);
     }
 
-    /**
+    public KSUpdate(MessageProto proto) {
+    	this();
+    	fromMessageProto(proto);
+    }
+
+	/**
        Get the id of the component that this message is addressed to.
        @return The ID of the target component.
      */

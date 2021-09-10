@@ -5,6 +5,7 @@ import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.components.StringComponent;
 import rescuecore2.messages.components.StringListComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 import java.util.List;
 
@@ -57,7 +58,12 @@ public class AKConnect extends AbstractMessage implements Control {
         addMessageComponent(requestedEntityTypes);
     }
 
-    /**
+    public AKConnect(MessageProto proto) {
+    	this();
+    	fromMessageProto(proto);
+    }
+
+	/**
        Get the version number of this request.
        @return The version number.
      */

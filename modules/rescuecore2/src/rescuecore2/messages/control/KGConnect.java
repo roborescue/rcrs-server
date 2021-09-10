@@ -3,6 +3,7 @@ package rescuecore2.messages.control;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -38,7 +39,12 @@ public class KGConnect extends AbstractMessage implements Control {
         addMessageComponent(version);
     }
 
-    /**
+    public KGConnect(MessageProto proto) {
+    	this();
+    	fromMessageProto(proto);
+	}
+
+	/**
        Get the version number of the message.
        @return The version number field.
     */

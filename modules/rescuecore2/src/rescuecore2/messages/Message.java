@@ -2,6 +2,9 @@ package rescuecore2.messages;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+
 import java.io.IOException;
 
 /**
@@ -27,4 +30,8 @@ public interface Message {
        @throws IOException If the read fails.
      */
     void read(InputStream in) throws IOException;
+    
+    
+    MessageProto toMessageProto();
+    void fromMessageProto(MessageProto proto);
 }

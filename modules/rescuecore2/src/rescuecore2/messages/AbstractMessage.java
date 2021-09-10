@@ -1,6 +1,10 @@
 package rescuecore2.messages;
 
 import java.util.List;
+
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.InputStream;
@@ -79,5 +83,24 @@ public abstract class AbstractMessage implements Message {
         for (MessageComponent next : components) {
             next.read(in);
         }
+    }
+    
+    @Override
+    public MessageProto toMessageProto() {
+    	MessageProto.Builder builder=MessageProto.newBuilder()
+    			.setUrn(getURN());
+    	for (MessageComponent next : components) {
+            builder.addComponents(next.toMessageComponentProto());
+        }
+    	return builder.build();
+    }
+    @Override
+    public void fromMessageProto(MessageProto proto) {
+    	List<MessageComponentProto> receivedcomponents = proto.getComponentsList();
+    	if(receivedcomponents.size()!=components.size())
+    		throw new Error("Encoding error");
+    	for(int i=0;i<receivedcomponents.size();i++) {
+    		components.get(i).fromMessageComponentProto(receivedcomponents.get(i));
+    	}
     }
 }
