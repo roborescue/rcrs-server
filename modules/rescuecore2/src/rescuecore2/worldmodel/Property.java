@@ -2,6 +2,9 @@ package rescuecore2.worldmodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+
 import java.io.IOException;
 
 /**
@@ -57,4 +60,8 @@ public interface Property {
        @return A copy of this property.
     */
     Property copy();
+    
+    PropertyProto toPropertyProto();
+    void fromPropertyProto(PropertyProto proto);
 }
+

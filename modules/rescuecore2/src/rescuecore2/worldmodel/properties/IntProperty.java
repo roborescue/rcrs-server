@@ -8,6 +8,9 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -113,4 +116,20 @@ public class IntProperty extends AbstractProperty {
     public IntProperty copy() {
         return new IntProperty(this);
     }
+    
+	@Override
+	public PropertyProto toPropertyProto() {
+		PropertyProto.Builder builder=PropertyProto.newBuilder().setUrn(getURN()).setDefined(isDefined());
+		if(isDefined())
+			builder.addFields(ValueProto.newBuilder()
+				.setName(Name.Value).setValueInt(value));
+		return builder.build();
+	}
+
+	@Override
+	public void fromPropertyProto(PropertyProto proto) {
+		if (!proto.getDefined())
+			return;
+		setValue(proto.getFields(0).getValueInt());
+	}
 }
