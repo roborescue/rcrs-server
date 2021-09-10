@@ -5,6 +5,8 @@ import static rescuecore2.misc.EncodingTools.readMessage;
 import static rescuecore2.misc.EncodingTools.writeMessage;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.registry.Registry;
 import rescuecore2.log.Logger;
@@ -138,17 +140,21 @@ public abstract class AbstractConnection implements Connection {
             }
         }
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            for (Message next : messages) {
-                writeMessage(next, out);
-            }
-            // Add a zero to indicate no more messages
-            writeInt32(0, out);
-            // Send the bytes
-            if (logBytes) {
-                ByteLogger.log(out.toByteArray());
-            }
-            sendBytes(out.toByteArray());
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            for (Message next : messages) {
+//                writeMessage(next, out);
+//            }
+//            // Add a zero to indicate no more messages
+//            writeInt32(0, out);
+//            // Send the bytes
+//            if (logBytes) {
+//                ByteLogger.log(out.toByteArray());
+//            }
+//            sendBytes(out.toByteArray());
+      	  for ( Message msg : messages ) {
+//      	    builder.addMessages(MsgProtoBuf.setMessageProto(msg));
+      	    sendMessageProto( msg.toMessageProto());
+      	  }
         }
         catch (IOException e) {
             throw new ConnectionException(e);
@@ -188,7 +194,8 @@ public abstract class AbstractConnection implements Connection {
        @param b The bytes to send.
        @throws IOException If the data cannot be sent.
     */
-    protected abstract void sendBytes(byte[] b) throws IOException;
+//    protected abstract void sendBytes(byte[] b) throws IOException;
+    protected abstract void sendMessageProto(MessageProto  messageProto) throws IOException;
 
     /**
        Perform startup actions. This will only ever be called once.
@@ -204,35 +211,37 @@ public abstract class AbstractConnection implements Connection {
        Process some bytes that were received. The default implementation will use the Registry to decode all messages in the buffer and send them to listeners.
        @param b The received bytes.
     */
-    protected void bytesReceived(byte[] b) {
-        InputStream decode = new ByteArrayInputStream(b);
-        Message m = null;
-        try {
-            do {
-                m = readMessage(decode);
-                if (m != null) {
-                    fireMessageReceived(m);
-                }
-            } while (m != null);
-        }
-        catch (IOException e) {
-            Logger.error("AbstractConnection error reading message", e);
-            ByteLogger.log(b, this.toString());
-        }
-        // CHECKSTYLE:OFF:IllegalCatch
-        catch (RuntimeException e) {
-            Logger.error("AbstractConnection error reading message", e);
-            ByteLogger.log(b, this.toString());
-            throw e;
-        }
-        catch (Error e) {
-            Logger.error("AbstractConnection error reading message", e);
-            ByteLogger.log(b, this.toString());
-            throw e;
-        }
-        // CHECKSTYLE:ON:IllegalCatch
-    }
-
+//    protected void bytesReceived(byte[] b) {
+//        InputStream decode = new ByteArrayInputStream(b);
+//        Message m = null;
+//        try {
+//            do {
+//                m = readMessage(decode);
+//                if (m != null) {
+//                    fireMessageReceived(m);
+//                }
+//            } while (m != null);
+//        }
+//        catch (IOException e) {
+//            Logger.error("AbstractConnection error reading message", e);
+//            ByteLogger.log(b, this.toString());
+//        }
+//        // CHECKSTYLE:OFF:IllegalCatch
+//        catch (RuntimeException e) {
+//            Logger.error("AbstractConnection error reading message", e);
+//            ByteLogger.log(b, this.toString());
+//            throw e;
+//        }
+//        catch (Error e) {
+//            Logger.error("AbstractConnection error reading message", e);
+//            ByteLogger.log(b, this.toString());
+//            throw e;
+//        }
+//        // CHECKSTYLE:ON:IllegalCatch
+//    }
+    protected void messageProtoReceived(MessageProto messageProto) {
+		  fireMessageReceived(MsgProtoBuf.messageProto2Message(messageProto));
+}
     /**
        Fire a messageReceived event to all registered listeners.
        @param m The message that was received.

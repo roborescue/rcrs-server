@@ -1,8 +1,5 @@
 package rescuecore2.connection;
 
-import static rescuecore2.misc.EncodingTools.writeInt32;
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.readBytes;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,6 +15,7 @@ import rescuecore2.misc.WorkerThread;
 import rescuecore2.misc.Pair;
 import rescuecore2.registry.Registry;
 import rescuecore2.log.Logger;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 
 /**
    Connection implementation that uses InputStreams and OutputStreams.
@@ -29,8 +27,8 @@ public class StreamConnection extends AbstractConnection {
     private OutputStream out;
     private ReadThread readThread;
     private WriteThread writeThread;
-    private List<byte[]> toWrite;
-
+    private List<MessageProto> toWrite;
+    
     /**
        Create a StreamConnection.
        @param in The InputStream to read.
@@ -40,7 +38,7 @@ public class StreamConnection extends AbstractConnection {
         super();
         this.in = in;
         this.out = out;
-        toWrite = new LinkedList<byte[]>();
+        toWrite = new LinkedList<MessageProto>();
     }
 
     @Override
@@ -92,28 +90,36 @@ public class StreamConnection extends AbstractConnection {
         }
     }
 
-    @Override
-    protected void sendBytes(byte[] b) throws IOException {
-        synchronized (toWrite) {
-            toWrite.add(b);
-            toWrite.notifyAll();
+//    @Override
+//    protected void sendBytes(byte[] b) throws IOException {
+//        synchronized (toWrite) {
+//            toWrite.add(b);
+//            toWrite.notifyAll();
+//        }
+//    }
+    protected void sendMessageProto(MessageProto  messageProto) throws IOException{
+    	synchronized (toWrite) {
+    		toWrite.add(messageProto);
+    		toWrite.notifyAll();
         }
     }
-
     /**
        Worker thread that reads from the input stream.
     */
     private class ReadThread extends WorkerThread {
         @Override
         protected boolean work() {
-            byte[] buffer = {};
-	    int size = -1;
+//            byte[] buffer = {};
+//	    int size = -1;
             try {
-                size = readInt32(in);
-                if (size > 0) {
-                    buffer = readBytes(size, in);
-                    bytesReceived(buffer);
-                }
+//                size = readInt32(in);
+//                if (size > 0) {
+//                    buffer = readBytes(size, in);
+//                    bytesReceived(buffer);
+//                }
+//                return true;
+            	MessageProto messageProto = MessageProto.parseDelimitedFrom(in);
+            	messageProtoReceived(messageProto);
                 return true;
             }
             catch (InterruptedIOException e) {
@@ -135,22 +141,23 @@ public class StreamConnection extends AbstractConnection {
     private class WriteThread extends WorkerThread {
         @Override
         protected boolean work() throws InterruptedException {
-            byte[] bytes = null;
+        	MessageProto messageProto = null;
             synchronized (toWrite) {
                 if (toWrite.isEmpty()) {
                     toWrite.wait(SEND_WAIT);
                     return true;
                 }
                 else {
-                    bytes = toWrite.remove(0);
+                	messageProto = toWrite.remove(0);
                 }
             }
-            if (bytes == null) {
+            if (messageProto == null) {
                 return true;
             }
             try {
-                writeInt32(bytes.length, out);
-                out.write(bytes);
+//                writeInt32(bytes.length, out);
+//                out.write(bytes);
+            	messageProto.writeDelimitedTo(out);
                 out.flush();
                 return true;
             }
