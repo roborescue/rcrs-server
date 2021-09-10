@@ -1,6 +1,9 @@
 package rescuecore2.worldmodel;
 
 import org.json.JSONObject;
+
+import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
+
 import java.util.Set;
 
 import java.io.InputStream;
@@ -93,4 +96,8 @@ public interface Entity {
    * @return Entity states
    */
   JSONObject toJson();
+  
+  EntityProto toEntityProto();
+  void fromEntityProto(EntityProto proto);
+  
 }

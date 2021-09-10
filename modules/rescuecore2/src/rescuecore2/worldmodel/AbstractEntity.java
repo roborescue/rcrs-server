@@ -2,6 +2,10 @@ package rescuecore2.worldmodel;
 
 import org.json.JSONObject;
 
+import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
+
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeProperty;
 import static rescuecore2.misc.EncodingTools.readInt32;
@@ -239,5 +243,31 @@ public abstract class AbstractEntity implements Entity {
     for ( EntityListener next : copy ) {
       next.propertyChanged( this, p, oldValue, newValue );
     }
+  }
+  
+  @Override
+  public EntityProto toEntityProto() {
+	  EntityProto.Builder builder= EntityProto.newBuilder()
+			  .setEntityID(id.getValue())
+			  .setUrn(getURN());
+    for ( Property next : getProperties() ) {
+      if ( next.isDefined() ) {
+        builder.addProperties(next.toPropertyProto());
+      }
+    }
+    return builder.build();
+  }
+
+
+  @Override
+  public void fromEntityProto(EntityProto proto) {
+	  for (PropertyProto propertyProto : proto.getPropertiesList()) {
+		Property prop = MsgProtoBuf.propertyProto2Property(propertyProto);
+		if ( prop == null ) {
+	        continue;
+	      }
+	      Property existing = getProperty( prop.getURN() );
+	      existing.takeValue( prop );
+	  }
   }
 }
