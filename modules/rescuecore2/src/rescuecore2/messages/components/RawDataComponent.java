@@ -5,9 +5,13 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.google.protobuf.ByteString;
+
 import java.io.IOException;
 
 /**
@@ -69,4 +73,14 @@ public class RawDataComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + data.length + " bytes of raw data";
     }
+    
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data = proto.getRawData().toByteArray();
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setRawData(ByteString.copyFrom((byte[]) data)).build();
+	}
 }

@@ -4,6 +4,8 @@ import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.worldmodel.EntityID;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,4 +65,13 @@ public class IntComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + value;
     }
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		value = proto.getIntValue();
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setIntValue(value).build();
+	}
 }

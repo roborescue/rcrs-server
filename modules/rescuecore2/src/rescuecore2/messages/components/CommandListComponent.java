@@ -8,6 +8,11 @@ import static rescuecore2.misc.EncodingTools.writeMessage;
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageListProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
+import rescuecore2.worldmodel.ChangeSet;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -85,4 +90,29 @@ public class CommandListComponent extends AbstractMessageComponent {
     public String toString() {
         return commands.size() + " commands";
     }
+    
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		commands.clear();
+		for (MessageProto commandProto : proto.getCommandList().getCommandsList()) {
+			
+            Message m = MsgProtoBuf.messageProto2Message(commandProto);
+            if (m instanceof Command) {
+                commands.add((Command)m);
+            }
+            else {
+                throw new Error("Command list stream contained a non-command message: " + m + " (" + m.getClass().getName() + ")");
+            }
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		MessageListProto.Builder builder=MessageListProto.newBuilder();
+		for (Command next : commands) {
+            builder.addCommands(next.toMessageProto());
+        }
+		return MessageComponentProto.newBuilder().setCommandList(builder).build();
+	}
+
 }

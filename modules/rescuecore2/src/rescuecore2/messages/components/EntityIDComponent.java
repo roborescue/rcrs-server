@@ -4,6 +4,7 @@ import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.worldmodel.EntityID;
 
 import java.io.InputStream;
@@ -65,4 +66,14 @@ public class EntityIDComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + value;
     }
+
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		value = new EntityID(proto.getEntityID());
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setEntityID(value.getValue()).build();
+	}
 }

@@ -7,6 +7,10 @@ import static rescuecore2.misc.EncodingTools.readFloat32;
 import static rescuecore2.misc.EncodingTools.writeFloat32;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.FloatListProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.worldmodel.EntityID;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -100,7 +104,25 @@ public class FloatListComponent extends AbstractMessageComponent {
 	public String toString() {
 		return getName() + " = " + data.toString();
 	}
-//
+	
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data.clear();
+		for (Float val : proto.getFloatList().getValuesList()) {
+			data.add(val);			
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		FloatListProto.Builder builder=FloatListProto.newBuilder();
+		for (float next : data) {
+            builder.addValues(next);
+        }
+		return MessageComponentProto.newBuilder().setFloatList(builder).build();
+	}
+	
+	//
 //	public static void main(String[] args) throws IOException {
 //		System.out.println("Test starts...");
 //		FloatListComponent flc = new FloatListComponent("test1");

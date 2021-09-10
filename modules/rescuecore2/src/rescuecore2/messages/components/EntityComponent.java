@@ -4,6 +4,8 @@ import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.writeEntity;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.worldmodel.Entity;
 
 import java.io.InputStream;
@@ -65,4 +67,15 @@ public class EntityComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + entity.toString();
     }
+
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		entity=MsgProtoBuf.entityProto2Entity(proto.getEntity());
+		
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setEntity(entity.toEntityProto()).build();
+	}
 }

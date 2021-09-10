@@ -4,6 +4,13 @@ import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.Command;
+import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
+import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageListProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 import rescuecore2.worldmodel.EntityID;
 
 import java.io.InputStream;
@@ -75,4 +82,20 @@ public class EntityIDListComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + ids.toString();
     }
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		ids.clear();
+		for (Integer val : proto.getEntityIDList().getValuesList()) {
+			ids.add(new EntityID(val));			
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		IntListProto.Builder builder=IntListProto.newBuilder();
+		for (EntityID next : ids) {
+            builder.addValues(next.getValue());
+        }
+		return MessageComponentProto.newBuilder().setEntityIDList(builder).build();
+	}
 }

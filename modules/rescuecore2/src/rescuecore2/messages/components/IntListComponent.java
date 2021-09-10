@@ -4,6 +4,9 @@ import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.worldmodel.EntityID;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,4 +88,21 @@ public class IntListComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + data.toString();
     }
+    
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data.clear();
+		for (Integer val : proto.getIntList().getValuesList()) {
+			data.add(val);
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		IntListProto.Builder builder=IntListProto.newBuilder();
+		for (Integer next : data) {
+            builder.addValues(next);
+        }
+		return MessageComponentProto.newBuilder().setIntList(builder).build();
+	}
 }

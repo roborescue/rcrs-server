@@ -6,6 +6,8 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeString;
 
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.StrListProto;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -87,4 +89,21 @@ public class StringListComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + data.toString();
     }
+    
+    @Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data.clear();
+		for (String val : proto.getStringList().getValuesList()) {
+			data.add(val);
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		StrListProto.Builder builder=StrListProto.newBuilder();
+		for (String next : data) {
+            builder.addValues(next);
+        }
+		return MessageComponentProto.newBuilder().setStringList(builder).build();
+	}
 }

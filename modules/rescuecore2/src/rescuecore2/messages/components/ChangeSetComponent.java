@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 
 /**
    An ChangeSet component to a message.
@@ -63,4 +64,15 @@ public class ChangeSetComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + changes.getChangedEntities().size() + " entities";
     }
+
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		changes=new ChangeSet();
+		changes.fromChangeSetProto(proto.getChangeSet());
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setChangeSet(changes.toChangeSetProto()).build();
+	}
 }
