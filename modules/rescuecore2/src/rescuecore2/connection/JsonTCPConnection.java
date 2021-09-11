@@ -28,7 +28,6 @@ public class JsonTCPConnection extends TCPConnection{
 	@Override
     protected MessageProto deserializeMessageProto() throws IOException {
     	MessageProto.Builder builder=MessageProto.newBuilder();
-    	
     	JsonFormat.parser().merge(reader, builder);
     	return builder.build();
     }
