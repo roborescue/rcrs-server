@@ -5,7 +5,8 @@ option java_outer_classname = "ControlMessageProto";
 
 message MessageProto {
    string urn = 1;
-   repeated MessageComponentProto components = 2;
+   map<string,MessageComponentProto> components=2;
+   //repeated MessageComponentProto components = 2;
 //   oneof msg {
 //    	AKAcknowledgeProto	msgAKAcknowledge = 2;
 //		AKCommandProto	msgAKCommand = 3;

@@ -32,6 +32,7 @@ public final class ControlMessageProto {
 
     /**
      * <pre>
+     *repeated MessageComponentProto components = 2;
      *   oneof msg {
      *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
      *		AKCommandProto	msgAKCommand = 3;
@@ -62,82 +63,12 @@ public final class ControlMessageProto {
      *  }
      * </pre>
      *
-     * <code>repeated .MessageComponentProto components = 2;</code>
-     */
-    java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> 
-        getComponentsList();
-    /**
-     * <pre>
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
-     * <code>repeated .MessageComponentProto components = 2;</code>
-     */
-    rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponents(int index);
-    /**
-     * <pre>
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
-     * <code>repeated .MessageComponentProto components = 2;</code>
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     int getComponentsCount();
     /**
      * <pre>
+     *repeated MessageComponentProto components = 2;
      *   oneof msg {
      *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
      *		AKCommandProto	msgAKCommand = 3;
@@ -168,12 +99,19 @@ public final class ControlMessageProto {
      *  }
      * </pre>
      *
-     * <code>repeated .MessageComponentProto components = 2;</code>
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
-    java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder> 
-        getComponentsOrBuilderList();
+    boolean containsComponents(
+        java.lang.String key);
+    /**
+     * Use {@link #getComponentsMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+    getComponents();
     /**
      * <pre>
+     *repeated MessageComponentProto components = 2;
      *   oneof msg {
      *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
      *		AKCommandProto	msgAKCommand = 3;
@@ -204,10 +142,87 @@ public final class ControlMessageProto {
      *  }
      * </pre>
      *
-     * <code>repeated .MessageComponentProto components = 2;</code>
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder getComponentsOrBuilder(
-        int index);
+    java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+    getComponentsMap();
+    /**
+     * <pre>
+     *repeated MessageComponentProto components = 2;
+     *   oneof msg {
+     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
+     *		AKCommandProto	msgAKCommand = 3;
+     *		AKConnectProto	msgAKConnect = 4;
+     *		EntityIDRequestProto	msgEntityIDRequest = 5;
+     *		EntityIDResponseProto	msgEntityIDResponse = 6;
+     *		GKConnectErrorProto	msgGKConnectError = 7;
+     *		GKConnectOKProto	msgGKConnectOK = 8;
+     *		KAConnectErrorProto	msgKAConnectError = 9;
+     *		KAConnectOKProto	msgKAConnectOK = 10;
+     *		KASenseProto	msgKASense = 11;
+     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
+     *		KGConnectProto	msgKGConnect = 13;
+     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
+     *		KSCommandsProto	msgKSCommands = 15;
+     *		KSConnectErrorProto	msgKSConnectError = 16;
+     *		KSConnectOKProto	msgKSConnectOK = 17;
+     *		KSUpdateProto	msgKSUpdate = 18;
+     *		KVConnectErrorProto 	msgKVConnectError = 19; 
+     *		KVConnectOKProto	msgKVConnectOK = 20;
+     *		KVTimestepProto	msgKVTimestep = 21;
+     *		ShutdownProto	msgShutdown = 22;
+     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
+     *		SKConnectProto	msgSKConnect = 24;
+     *		SKUpdateProto	msgSKUpdate = 25;
+     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
+     *		VKConnectProto	msgVKConnect = 27;
+     *  }
+     * </pre>
+     *
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     */
+
+    rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponentsOrDefault(
+        java.lang.String key,
+        rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto defaultValue);
+    /**
+     * <pre>
+     *repeated MessageComponentProto components = 2;
+     *   oneof msg {
+     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
+     *		AKCommandProto	msgAKCommand = 3;
+     *		AKConnectProto	msgAKConnect = 4;
+     *		EntityIDRequestProto	msgEntityIDRequest = 5;
+     *		EntityIDResponseProto	msgEntityIDResponse = 6;
+     *		GKConnectErrorProto	msgGKConnectError = 7;
+     *		GKConnectOKProto	msgGKConnectOK = 8;
+     *		KAConnectErrorProto	msgKAConnectError = 9;
+     *		KAConnectOKProto	msgKAConnectOK = 10;
+     *		KASenseProto	msgKASense = 11;
+     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
+     *		KGConnectProto	msgKGConnect = 13;
+     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
+     *		KSCommandsProto	msgKSCommands = 15;
+     *		KSConnectErrorProto	msgKSConnectError = 16;
+     *		KSConnectOKProto	msgKSConnectOK = 17;
+     *		KSUpdateProto	msgKSUpdate = 18;
+     *		KVConnectErrorProto 	msgKVConnectError = 19; 
+     *		KVConnectOKProto	msgKVConnectOK = 20;
+     *		KVTimestepProto	msgKVTimestep = 21;
+     *		ShutdownProto	msgShutdown = 22;
+     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
+     *		SKConnectProto	msgSKConnect = 24;
+     *		SKUpdateProto	msgSKUpdate = 25;
+     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
+     *		VKConnectProto	msgVKConnect = 27;
+     *  }
+     * </pre>
+     *
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     */
+
+    rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponentsOrThrow(
+        java.lang.String key);
   }
   /**
    * Protobuf type {@code MessageProto}
@@ -223,7 +238,6 @@ public final class ControlMessageProto {
     }
     private MessageProto() {
       urn_ = "";
-      components_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -265,11 +279,15 @@ public final class ControlMessageProto {
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                components_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>();
+                components_ = com.google.protobuf.MapField.newMapField(
+                    ComponentsDefaultEntryHolder.defaultEntry);
                 mutable_bitField0_ |= 0x00000001;
               }
-              components_.add(
-                  input.readMessage(rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.parser(), extensionRegistry));
+              com.google.protobuf.MapEntry<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+              components__ = input.readMessage(
+                  ComponentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              components_.getMutableMap().put(
+                  components__.getKey(), components__.getValue());
               break;
             }
             default: {
@@ -287,9 +305,6 @@ public final class ControlMessageProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          components_ = java.util.Collections.unmodifiableList(components_);
-        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -299,6 +314,18 @@ public final class ControlMessageProto {
       return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_MessageProto_descriptor;
     }
 
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(
+        int number) {
+      switch (number) {
+        case 2:
+          return internalGetComponents();
+        default:
+          throw new RuntimeException(
+              "Invalid map field number: " + number);
+      }
+    }
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
@@ -346,124 +373,34 @@ public final class ControlMessageProto {
     }
 
     public static final int COMPONENTS_FIELD_NUMBER = 2;
-    private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> components_;
-    /**
-     * <pre>
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
-     * <code>repeated .MessageComponentProto components = 2;</code>
-     */
-    @java.lang.Override
-    public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> getComponentsList() {
+    private static final class ComponentsDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>newDefaultInstance(
+                  rescuecore2.messages.protobuf.ControlMessageProto.internal_static_MessageProto_ComponentsEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                  rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.getDefaultInstance());
+    }
+    private com.google.protobuf.MapField<
+        java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> components_;
+    private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+    internalGetComponents() {
+      if (components_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            ComponentsDefaultEntryHolder.defaultEntry);
+      }
       return components_;
     }
-    /**
-     * <pre>
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
-     * <code>repeated .MessageComponentProto components = 2;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder> 
-        getComponentsOrBuilderList() {
-      return components_;
-    }
-    /**
-     * <pre>
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
-     * <code>repeated .MessageComponentProto components = 2;</code>
-     */
-    @java.lang.Override
+
     public int getComponentsCount() {
-      return components_.size();
+      return internalGetComponents().getMap().size();
     }
     /**
      * <pre>
+     *repeated MessageComponentProto components = 2;
      *   oneof msg {
      *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
      *		AKCommandProto	msgAKCommand = 3;
@@ -494,14 +431,26 @@ public final class ControlMessageProto {
      *  }
      * </pre>
      *
-     * <code>repeated .MessageComponentProto components = 2;</code>
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsComponents(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      return internalGetComponents().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getComponentsMap()} instead.
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponents(int index) {
-      return components_.get(index);
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> getComponents() {
+      return getComponentsMap();
     }
     /**
      * <pre>
+     *repeated MessageComponentProto components = 2;
      *   oneof msg {
      *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
      *		AKCommandProto	msgAKCommand = 3;
@@ -532,12 +481,104 @@ public final class ControlMessageProto {
      *  }
      * </pre>
      *
-     * <code>repeated .MessageComponentProto components = 2;</code>
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder getComponentsOrBuilder(
-        int index) {
-      return components_.get(index);
+
+    public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> getComponentsMap() {
+      return internalGetComponents().getMap();
+    }
+    /**
+     * <pre>
+     *repeated MessageComponentProto components = 2;
+     *   oneof msg {
+     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
+     *		AKCommandProto	msgAKCommand = 3;
+     *		AKConnectProto	msgAKConnect = 4;
+     *		EntityIDRequestProto	msgEntityIDRequest = 5;
+     *		EntityIDResponseProto	msgEntityIDResponse = 6;
+     *		GKConnectErrorProto	msgGKConnectError = 7;
+     *		GKConnectOKProto	msgGKConnectOK = 8;
+     *		KAConnectErrorProto	msgKAConnectError = 9;
+     *		KAConnectOKProto	msgKAConnectOK = 10;
+     *		KASenseProto	msgKASense = 11;
+     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
+     *		KGConnectProto	msgKGConnect = 13;
+     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
+     *		KSCommandsProto	msgKSCommands = 15;
+     *		KSConnectErrorProto	msgKSConnectError = 16;
+     *		KSConnectOKProto	msgKSConnectOK = 17;
+     *		KSUpdateProto	msgKSUpdate = 18;
+     *		KVConnectErrorProto 	msgKVConnectError = 19; 
+     *		KVConnectOKProto	msgKVConnectOK = 20;
+     *		KVTimestepProto	msgKVTimestep = 21;
+     *		ShutdownProto	msgShutdown = 22;
+     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
+     *		SKConnectProto	msgSKConnect = 24;
+     *		SKUpdateProto	msgSKUpdate = 25;
+     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
+     *		VKConnectProto	msgVKConnect = 27;
+     *  }
+     * </pre>
+     *
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     */
+    @java.lang.Override
+
+    public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponentsOrDefault(
+        java.lang.String key,
+        rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> map =
+          internalGetComponents().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <pre>
+     *repeated MessageComponentProto components = 2;
+     *   oneof msg {
+     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
+     *		AKCommandProto	msgAKCommand = 3;
+     *		AKConnectProto	msgAKConnect = 4;
+     *		EntityIDRequestProto	msgEntityIDRequest = 5;
+     *		EntityIDResponseProto	msgEntityIDResponse = 6;
+     *		GKConnectErrorProto	msgGKConnectError = 7;
+     *		GKConnectOKProto	msgGKConnectOK = 8;
+     *		KAConnectErrorProto	msgKAConnectError = 9;
+     *		KAConnectOKProto	msgKAConnectOK = 10;
+     *		KASenseProto	msgKASense = 11;
+     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
+     *		KGConnectProto	msgKGConnect = 13;
+     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
+     *		KSCommandsProto	msgKSCommands = 15;
+     *		KSConnectErrorProto	msgKSConnectError = 16;
+     *		KSConnectOKProto	msgKSConnectOK = 17;
+     *		KSUpdateProto	msgKSUpdate = 18;
+     *		KVConnectErrorProto 	msgKVConnectError = 19; 
+     *		KVConnectOKProto	msgKVConnectOK = 20;
+     *		KVTimestepProto	msgKVTimestep = 21;
+     *		ShutdownProto	msgShutdown = 22;
+     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
+     *		SKConnectProto	msgSKConnect = 24;
+     *		SKUpdateProto	msgSKUpdate = 25;
+     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
+     *		VKConnectProto	msgVKConnect = 27;
+     *  }
+     * </pre>
+     *
+     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     */
+    @java.lang.Override
+
+    public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponentsOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> map =
+          internalGetComponents().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -557,9 +598,12 @@ public final class ControlMessageProto {
       if (!getUrnBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, urn_);
       }
-      for (int i = 0; i < components_.size(); i++) {
-        output.writeMessage(2, components_.get(i));
-      }
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetComponents(),
+          ComponentsDefaultEntryHolder.defaultEntry,
+          2);
       unknownFields.writeTo(output);
     }
 
@@ -572,9 +616,15 @@ public final class ControlMessageProto {
       if (!getUrnBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, urn_);
       }
-      for (int i = 0; i < components_.size(); i++) {
+      for (java.util.Map.Entry<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> entry
+           : internalGetComponents().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+        components__ = ComponentsDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, components_.get(i));
+            .computeMessageSize(2, components__);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -593,8 +643,8 @@ public final class ControlMessageProto {
 
       if (!getUrn()
           .equals(other.getUrn())) return false;
-      if (!getComponentsList()
-          .equals(other.getComponentsList())) return false;
+      if (!internalGetComponents().equals(
+          other.internalGetComponents())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -608,9 +658,9 @@ public final class ControlMessageProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + URN_FIELD_NUMBER;
       hash = (53 * hash) + getUrn().hashCode();
-      if (getComponentsCount() > 0) {
+      if (!internalGetComponents().getMap().isEmpty()) {
         hash = (37 * hash) + COMPONENTS_FIELD_NUMBER;
-        hash = (53 * hash) + getComponentsList().hashCode();
+        hash = (53 * hash) + internalGetComponents().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -719,6 +769,28 @@ public final class ControlMessageProto {
         return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_MessageProto_descriptor;
       }
 
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(
+          int number) {
+        switch (number) {
+          case 2:
+            return internalGetComponents();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(
+          int number) {
+        switch (number) {
+          case 2:
+            return internalGetMutableComponents();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
@@ -740,7 +812,6 @@ public final class ControlMessageProto {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getComponentsFieldBuilder();
         }
       }
       @java.lang.Override
@@ -748,12 +819,7 @@ public final class ControlMessageProto {
         super.clear();
         urn_ = "";
 
-        if (componentsBuilder_ == null) {
-          components_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          componentsBuilder_.clear();
-        }
+        internalGetMutableComponents().clear();
         return this;
       }
 
@@ -782,15 +848,8 @@ public final class ControlMessageProto {
         rescuecore2.messages.protobuf.ControlMessageProto.MessageProto result = new rescuecore2.messages.protobuf.ControlMessageProto.MessageProto(this);
         int from_bitField0_ = bitField0_;
         result.urn_ = urn_;
-        if (componentsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            components_ = java.util.Collections.unmodifiableList(components_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.components_ = components_;
-        } else {
-          result.components_ = componentsBuilder_.build();
-        }
+        result.components_ = internalGetComponents();
+        result.components_.makeImmutable();
         onBuilt();
         return result;
       }
@@ -843,32 +902,8 @@ public final class ControlMessageProto {
           urn_ = other.urn_;
           onChanged();
         }
-        if (componentsBuilder_ == null) {
-          if (!other.components_.isEmpty()) {
-            if (components_.isEmpty()) {
-              components_ = other.components_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureComponentsIsMutable();
-              components_.addAll(other.components_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.components_.isEmpty()) {
-            if (componentsBuilder_.isEmpty()) {
-              componentsBuilder_.dispose();
-              componentsBuilder_ = null;
-              components_ = other.components_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              componentsBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getComponentsFieldBuilder() : null;
-            } else {
-              componentsBuilder_.addAllMessages(other.components_);
-            }
-          }
-        }
+        internalGetMutableComponents().mergeFrom(
+            other.internalGetComponents());
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -975,102 +1010,35 @@ public final class ControlMessageProto {
         return this;
       }
 
-      private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> components_ =
-        java.util.Collections.emptyList();
-      private void ensureComponentsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          components_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>(components_);
-          bitField0_ |= 0x00000001;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder> componentsBuilder_;
-
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> getComponentsList() {
-        if (componentsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(components_);
-        } else {
-          return componentsBuilder_.getMessageList();
+      private com.google.protobuf.MapField<
+          java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> components_;
+      private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+      internalGetComponents() {
+        if (components_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              ComponentsDefaultEntryHolder.defaultEntry);
         }
+        return components_;
       }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
+      private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+      internalGetMutableComponents() {
+        onChanged();;
+        if (components_ == null) {
+          components_ = com.google.protobuf.MapField.newMapField(
+              ComponentsDefaultEntryHolder.defaultEntry);
+        }
+        if (!components_.isMutable()) {
+          components_ = components_.copy();
+        }
+        return components_;
+      }
+
       public int getComponentsCount() {
-        if (componentsBuilder_ == null) {
-          return components_.size();
-        } else {
-          return componentsBuilder_.getCount();
-        }
+        return internalGetComponents().getMap().size();
       }
       /**
        * <pre>
+       *repeated MessageComponentProto components = 2;
        *   oneof msg {
        *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
        *		AKCommandProto	msgAKCommand = 3;
@@ -1101,17 +1069,26 @@ public final class ControlMessageProto {
        *  }
        * </pre>
        *
-       * <code>repeated .MessageComponentProto components = 2;</code>
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
-      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponents(int index) {
-        if (componentsBuilder_ == null) {
-          return components_.get(index);
-        } else {
-          return componentsBuilder_.getMessage(index);
-        }
+
+      @java.lang.Override
+      public boolean containsComponents(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetComponents().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getComponentsMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> getComponents() {
+        return getComponentsMap();
       }
       /**
        * <pre>
+       *repeated MessageComponentProto components = 2;
        *   oneof msg {
        *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
        *		AKCommandProto	msgAKCommand = 3;
@@ -1142,24 +1119,16 @@ public final class ControlMessageProto {
        *  }
        * </pre>
        *
-       * <code>repeated .MessageComponentProto components = 2;</code>
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
-      public Builder setComponents(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto value) {
-        if (componentsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureComponentsIsMutable();
-          components_.set(index, value);
-          onChanged();
-        } else {
-          componentsBuilder_.setMessage(index, value);
-        }
-        return this;
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> getComponentsMap() {
+        return internalGetComponents().getMap();
       }
       /**
        * <pre>
+       *repeated MessageComponentProto components = 2;
        *   oneof msg {
        *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
        *		AKCommandProto	msgAKCommand = 3;
@@ -1190,21 +1159,21 @@ public final class ControlMessageProto {
        *  }
        * </pre>
        *
-       * <code>repeated .MessageComponentProto components = 2;</code>
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
-      public Builder setComponents(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder builderForValue) {
-        if (componentsBuilder_ == null) {
-          ensureComponentsIsMutable();
-          components_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          componentsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
+      @java.lang.Override
+
+      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponentsOrDefault(
+          java.lang.String key,
+          rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> map =
+            internalGetComponents().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
        * <pre>
+       *repeated MessageComponentProto components = 2;
        *   oneof msg {
        *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
        *		AKCommandProto	msgAKCommand = 3;
@@ -1235,251 +1204,29 @@ public final class ControlMessageProto {
        *  }
        * </pre>
        *
-       * <code>repeated .MessageComponentProto components = 2;</code>
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
-      public Builder addComponents(rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto value) {
-        if (componentsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureComponentsIsMutable();
-          components_.add(value);
-          onChanged();
-        } else {
-          componentsBuilder_.addMessage(value);
+      @java.lang.Override
+
+      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto getComponentsOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> map =
+            internalGetComponents().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
         }
-        return this;
+        return map.get(key);
       }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public Builder addComponents(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto value) {
-        if (componentsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureComponentsIsMutable();
-          components_.add(index, value);
-          onChanged();
-        } else {
-          componentsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public Builder addComponents(
-          rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder builderForValue) {
-        if (componentsBuilder_ == null) {
-          ensureComponentsIsMutable();
-          components_.add(builderForValue.build());
-          onChanged();
-        } else {
-          componentsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public Builder addComponents(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder builderForValue) {
-        if (componentsBuilder_ == null) {
-          ensureComponentsIsMutable();
-          components_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          componentsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public Builder addAllComponents(
-          java.lang.Iterable<? extends rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> values) {
-        if (componentsBuilder_ == null) {
-          ensureComponentsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, components_);
-          onChanged();
-        } else {
-          componentsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
+
       public Builder clearComponents() {
-        if (componentsBuilder_ == null) {
-          components_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-        } else {
-          componentsBuilder_.clear();
-        }
+        internalGetMutableComponents().getMutableMap()
+            .clear();
         return this;
       }
       /**
        * <pre>
+       *repeated MessageComponentProto components = 2;
        *   oneof msg {
        *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
        *		AKCommandProto	msgAKCommand = 3;
@@ -1510,20 +1257,71 @@ public final class ControlMessageProto {
        *  }
        * </pre>
        *
-       * <code>repeated .MessageComponentProto components = 2;</code>
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
-      public Builder removeComponents(int index) {
-        if (componentsBuilder_ == null) {
-          ensureComponentsIsMutable();
-          components_.remove(index);
-          onChanged();
-        } else {
-          componentsBuilder_.remove(index);
-        }
+
+      public Builder removeComponents(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableComponents().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
+      getMutableComponents() {
+        return internalGetMutableComponents().getMutableMap();
+      }
+      /**
+       * <pre>
+       *repeated MessageComponentProto components = 2;
+       *   oneof msg {
+       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
+       *		AKCommandProto	msgAKCommand = 3;
+       *		AKConnectProto	msgAKConnect = 4;
+       *		EntityIDRequestProto	msgEntityIDRequest = 5;
+       *		EntityIDResponseProto	msgEntityIDResponse = 6;
+       *		GKConnectErrorProto	msgGKConnectError = 7;
+       *		GKConnectOKProto	msgGKConnectOK = 8;
+       *		KAConnectErrorProto	msgKAConnectError = 9;
+       *		KAConnectOKProto	msgKAConnectOK = 10;
+       *		KASenseProto	msgKASense = 11;
+       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
+       *		KGConnectProto	msgKGConnect = 13;
+       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
+       *		KSCommandsProto	msgKSCommands = 15;
+       *		KSConnectErrorProto	msgKSConnectError = 16;
+       *		KSConnectOKProto	msgKSConnectOK = 17;
+       *		KSUpdateProto	msgKSUpdate = 18;
+       *		KVConnectErrorProto 	msgKVConnectError = 19; 
+       *		KVConnectOKProto	msgKVConnectOK = 20;
+       *		KVTimestepProto	msgKVTimestep = 21;
+       *		ShutdownProto	msgShutdown = 22;
+       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
+       *		SKConnectProto	msgSKConnect = 24;
+       *		SKUpdateProto	msgSKUpdate = 25;
+       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
+       *		VKConnectProto	msgVKConnect = 27;
+       *  }
+       * </pre>
+       *
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       */
+      public Builder putComponents(
+          java.lang.String key,
+          rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (value == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableComponents().getMutableMap()
+            .put(key, value);
         return this;
       }
       /**
        * <pre>
+       *repeated MessageComponentProto components = 2;
        *   oneof msg {
        *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
        *		AKCommandProto	msgAKCommand = 3;
@@ -1554,223 +1352,14 @@ public final class ControlMessageProto {
        *  }
        * </pre>
        *
-       * <code>repeated .MessageComponentProto components = 2;</code>
+       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
-      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder getComponentsBuilder(
-          int index) {
-        return getComponentsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder getComponentsOrBuilder(
-          int index) {
-        if (componentsBuilder_ == null) {
-          return components_.get(index);  } else {
-          return componentsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder> 
-           getComponentsOrBuilderList() {
-        if (componentsBuilder_ != null) {
-          return componentsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(components_);
-        }
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder addComponentsBuilder() {
-        return getComponentsFieldBuilder().addBuilder(
-            rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.getDefaultInstance());
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder addComponentsBuilder(
-          int index) {
-        return getComponentsFieldBuilder().addBuilder(
-            index, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.getDefaultInstance());
-      }
-      /**
-       * <pre>
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
-       * <code>repeated .MessageComponentProto components = 2;</code>
-       */
-      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder> 
-           getComponentsBuilderList() {
-        return getComponentsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder> 
-          getComponentsFieldBuilder() {
-        if (componentsBuilder_ == null) {
-          componentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProtoOrBuilder>(
-                  components_,
-                  ((bitField0_ & 0x00000001) != 0),
-                  getParentForChildren(),
-                  isClean());
-          components_ = null;
-        }
-        return componentsBuilder_;
+
+      public Builder putAllComponents(
+          java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto> values) {
+        internalGetMutableComponents().getMutableMap()
+            .putAll(values);
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -42028,6 +41617,11 @@ public final class ControlMessageProto {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_MessageProto_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_MessageProto_ComponentsEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_MessageProto_ComponentsEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MessageListProto_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -42281,106 +41875,109 @@ public final class ControlMessageProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\031ControlMessageProto.proto\"G\n\014MessagePr" +
-      "oto\022\013\n\003urn\030\001 \001(\t\022*\n\ncomponents\030\002 \003(\0132\026.M" +
-      "essageComponentProto\"3\n\020MessageListProto" +
-      "\022\037\n\010commands\030\001 \003(\0132\r.MessageProto\"\302\003\n\025Me" +
-      "ssageComponentProto\022$\n\tchangeSet\030\001 \001(\0132\017" +
-      ".ChangeSetProtoH\000\022(\n\013commandList\030\002 \001(\0132\021" +
-      ".MessageListProtoH\000\022\036\n\006config\030\003 \001(\0132\014.Co" +
-      "nfigProtoH\000\022\036\n\006entity\030\004 \001(\0132\014.EntityProt" +
-      "oH\000\022\022\n\010entityID\030\005 \001(\005H\000\022%\n\014entityIDList\030" +
-      "\006 \001(\0132\r.IntListProtoH\000\022&\n\nentityList\030\007 \001" +
-      "(\0132\020.EntityListProtoH\000\022$\n\tfloatList\030\010 \001(" +
-      "\0132\017.FloatListProtoH\000\022\022\n\010intValue\030\t \001(\005H\000" +
-      "\022 \n\007intList\030\n \001(\0132\r.IntListProtoH\000\022\021\n\007ra" +
-      "wData\030\013 \001(\014H\000\022\025\n\013stringValue\030\014 \001(\tH\000\022#\n\n" +
-      "stringList\030\r \001(\0132\r.StrListProtoH\000B\013\n\tcom" +
-      "ponent\"\036\n\014StrListProto\022\016\n\006values\030\001 \003(\t\"\036" +
-      "\n\014IntListProto\022\016\n\006values\030\001 \003(\005\" \n\016FloatL" +
-      "istProto\022\016\n\006values\030\001 \003(\002\"/\n\016IntMatrixPro" +
-      "to\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\270\002\n\nVa" +
-      "lueProto\022\036\n\004name\030\001 \001(\0162\020.ValueProto.Name" +
-      "\022\022\n\010valueInt\030\002 \001(\005H\000\022\023\n\tvalueBool\030\003 \001(\010H" +
-      "\000\022\025\n\013valueDouble\030\004 \001(\001H\000\022\022\n\010listByte\030\005 \001" +
-      "(\014H\000\022 \n\007listInt\030\006 \001(\0132\r.IntListProtoH\000\022$" +
-      "\n\tmatrixInt\030\007 \001(\0132\017.IntMatrixProtoH\000\022\"\n\010" +
-      "listEdge\030\010 \001(\0132\016.EdgeListProtoH\000\"A\n\004Name" +
-      "\022\t\n\005Value\020\000\022\005\n\001X\020\001\022\005\n\001Y\020\002\022\r\n\tEntityRef\020\003" +
-      "\022\021\n\rEntityRefList\020\004B\007\n\005value\"J\n\rProperty" +
-      "Proto\022\013\n\003urn\030\001 \001(\t\022\017\n\007defined\030\002 \001(\010\022\033\n\006f" +
-      "ields\030\003 \003(\0132\013.ValueProto\"P\n\013EntityProto\022" +
-      "\013\n\003urn\030\001 \001(\t\022\020\n\010entityID\030\002 \001(\005\022\"\n\nproper" +
-      "ties\030\003 \003(\0132\016.PropertyProto\"1\n\017EntityList" +
-      "Proto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto\"`\n" +
-      "\013ConfigProto\022$\n\004data\030\001 \003(\0132\026.ConfigProto" +
-      ".DataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005" +
-      "value\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n\005edge" +
-      "s\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n\006star" +
-      "tX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014" +
-      "\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\254\001\n\016Chan" +
-      "geSetProto\0222\n\007changes\030\001 \003(\0132!.ChangeSetP" +
-      "roto.EntityChangeProto\022\017\n\007deletes\030\002 \003(\005\032" +
-      "U\n\021EntityChangeProto\022\021\n\tenitityId\030\001 \001(\005\022" +
-      "\013\n\003urn\030\002 \001(\t\022 \n\010property\030\003 \003(\0132\016.Propert" +
-      "yProto\"8\n\022AKAcknowledgeProto\022\021\n\trequestI" +
-      "D\030\001 \001(\005\022\017\n\007agentID\030\002 \001(\005\"1\n\016AKCommandPro" +
-      "to\022\037\n\010commands\030\001 \003(\0132\r.MessageProto\"e\n\016A" +
-      "KConnectProto\022\021\n\trequestID\030\001 \001(\005\022\017\n\007vers" +
-      "ion\030\002 \001(\005\022\021\n\tagentName\030\003 \001(\t\022\034\n\024requeste" +
-      "dEntityTypes\030\004 \003(\t\"G\n\024EntityIDRequestPro" +
-      "to\022\r\n\005simID\030\001 \001(\005\022\021\n\trequestID\030\002 \001(\005\022\r\n\005" +
-      "count\030\003 \001(\005\"I\n\025EntityIDResponseProto\022\r\n\005" +
-      "simID\030\001 \001(\005\022\021\n\trequestID\030\002 \001(\005\022\016\n\006newIDs" +
-      "\030\003 \003(\005\"%\n\023GKConnectErrorProto\022\016\n\006reason\030" +
-      "\001 \001(\t\"2\n\020GKConnectOKProto\022\036\n\010entities\030\001 " +
-      "\003(\0132\014.EntityProto\"8\n\023KAConnectErrorProto" +
-      "\022\021\n\trequestID\030\001 \001(\005\022\016\n\006reason\030\002 \001(\t\"t\n\020K" +
-      "AConnectOKProto\022\021\n\trequestID\030\001 \001(\005\022\017\n\007ag" +
-      "entID\030\002 \001(\005\022\036\n\010entities\030\003 \003(\0132\014.EntityPr" +
-      "oto\022\034\n\006config\030\004 \001(\0132\014.ConfigProto\"m\n\014KAS" +
-      "enseProto\022\017\n\007agentID\030\001 \001(\005\022\014\n\004time\030\002 \001(\005" +
-      "\022 \n\007changes\030\003 \001(\0132\017.ChangeSetProto\022\034\n\005he" +
-      "ars\030\004 \003(\0132\r.MessageProto\"\024\n\022KGAcknowledg" +
-      "eProto\"!\n\016KGConnectProto\022\017\n\007version\030\001 \001(" +
-      "\005\";\n\025KSAfterShockInfoProto\022\r\n\005times\030\001 \003(" +
-      "\005\022\023\n\013intensities\030\002 \003(\002\"O\n\017KSCommandsProt" +
-      "o\022\r\n\005simID\030\001 \001(\005\022\014\n\004time\030\002 \001(\005\022\037\n\010comman" +
-      "ds\030\003 \003(\0132\r.MessageProto\"8\n\023KSConnectErro" +
-      "rProto\022\021\n\trequestID\030\001 \001(\005\022\016\n\006reason\030\002 \001(" +
-      "\t\"r\n\020KSConnectOKProto\022\r\n\005simID\030\001 \001(\005\022\021\n\t" +
-      "requestID\030\002 \001(\005\022\036\n\010entities\030\003 \003(\0132\014.Enti" +
-      "tyProto\022\034\n\006config\030\004 \001(\0132\014.ConfigProto\"N\n" +
-      "\rKSUpdateProto\022\r\n\005simID\030\001 \001(\005\022\014\n\004time\030\002 " +
-      "\001(\005\022 \n\007changes\030\003 \001(\0132\017.ChangeSetProto\"8\n" +
-      "\023KVConnectErrorProto\022\021\n\trequestID\030\001 \001(\005\022" +
-      "\016\n\006reason\030\002 \001(\t\"u\n\020KVConnectOKProto\022\020\n\010v" +
-      "iewerID\030\001 \001(\005\022\021\n\trequestID\030\002 \001(\005\022\036\n\010enti" +
-      "ties\030\003 \003(\0132\014.EntityProto\022\034\n\006config\030\004 \001(\013" +
-      "2\014.ConfigProto\"t\n\017KVTimestepProto\022\020\n\010vie" +
-      "werID\030\001 \001(\005\022\014\n\004time\030\002 \001(\005\022\037\n\010commands\030\003 " +
-      "\003(\0132\r.MessageProto\022 \n\007changes\030\004 \001(\0132\017.Ch" +
-      "angeSetProto\"\017\n\rShutdownProto\"6\n\022SKAckno" +
-      "wledgeProto\022\r\n\005simID\030\001 \001(\005\022\021\n\trequestID\030" +
-      "\002 \001(\005\"K\n\016SKConnectProto\022\021\n\trequestID\030\001 \001" +
-      "(\005\022\017\n\007version\030\002 \001(\005\022\025\n\rsimulatorName\030\003 \001" +
-      "(\t\"N\n\rSKUpdateProto\022\r\n\005simID\030\001 \001(\005\022\014\n\004ti" +
-      "me\030\002 \001(\005\022 \n\007changes\030\003 \001(\0132\017.ChangeSetPro" +
-      "to\"9\n\022VKAcknowledgeProto\022\021\n\trequestID\030\001 " +
-      "\001(\005\022\020\n\010viewerID\030\002 \001(\005\"H\n\016VKConnectProto\022" +
-      "\021\n\trequestID\030\001 \001(\005\022\017\n\007version\030\002 \001(\005\022\022\n\nv" +
-      "iewerName\030\003 \001(\t\"@\n\017CommandLogProto\022\014\n\004ti" +
-      "me\030\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessageProt" +
-      "o\";\n\031InitialConditionsLogProto\022\036\n\010entiti" +
-      "es\030\001 \003(\0132\014.EntityProto\"}\n\022PerceptionLogP" +
-      "roto\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 \n\007" +
-      "visible\030\003 \001(\0132\017.ChangeSetProto\022%\n\016commun" +
-      "ications\030\004 \003(\0132\r.MessageProto\"\017\n\rStartLo" +
-      "gProto\"\r\n\013EndLogProto\".\n\016ConfigLogProto\022" +
-      "\034\n\006config\030\001 \001(\0132\014.ConfigProto\"A\n\017Updates" +
-      "LogProto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(\0132" +
-      "\017.ChangeSetProtoB4\n\035rescuecore2.messages" +
-      ".protobufB\023ControlMessageProtob\006proto3"
+      "\n\031ControlMessageProto.proto\"\231\001\n\014MessageP" +
+      "roto\022\013\n\003urn\030\001 \001(\t\0221\n\ncomponents\030\002 \003(\0132\035." +
+      "MessageProto.ComponentsEntry\032I\n\017Componen" +
+      "tsEntry\022\013\n\003key\030\001 \001(\t\022%\n\005value\030\002 \001(\0132\026.Me" +
+      "ssageComponentProto:\0028\001\"3\n\020MessageListPr" +
+      "oto\022\037\n\010commands\030\001 \003(\0132\r.MessageProto\"\302\003\n" +
+      "\025MessageComponentProto\022$\n\tchangeSet\030\001 \001(" +
+      "\0132\017.ChangeSetProtoH\000\022(\n\013commandList\030\002 \001(" +
+      "\0132\021.MessageListProtoH\000\022\036\n\006config\030\003 \001(\0132\014" +
+      ".ConfigProtoH\000\022\036\n\006entity\030\004 \001(\0132\014.EntityP" +
+      "rotoH\000\022\022\n\010entityID\030\005 \001(\005H\000\022%\n\014entityIDLi" +
+      "st\030\006 \001(\0132\r.IntListProtoH\000\022&\n\nentityList\030" +
+      "\007 \001(\0132\020.EntityListProtoH\000\022$\n\tfloatList\030\010" +
+      " \001(\0132\017.FloatListProtoH\000\022\022\n\010intValue\030\t \001(" +
+      "\005H\000\022 \n\007intList\030\n \001(\0132\r.IntListProtoH\000\022\021\n" +
+      "\007rawData\030\013 \001(\014H\000\022\025\n\013stringValue\030\014 \001(\tH\000\022" +
+      "#\n\nstringList\030\r \001(\0132\r.StrListProtoH\000B\013\n\t" +
+      "component\"\036\n\014StrListProto\022\016\n\006values\030\001 \003(" +
+      "\t\"\036\n\014IntListProto\022\016\n\006values\030\001 \003(\005\" \n\016Flo" +
+      "atListProto\022\016\n\006values\030\001 \003(\002\"/\n\016IntMatrix" +
+      "Proto\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\270\002\n" +
+      "\nValueProto\022\036\n\004name\030\001 \001(\0162\020.ValueProto.N" +
+      "ame\022\022\n\010valueInt\030\002 \001(\005H\000\022\023\n\tvalueBool\030\003 \001" +
+      "(\010H\000\022\025\n\013valueDouble\030\004 \001(\001H\000\022\022\n\010listByte\030" +
+      "\005 \001(\014H\000\022 \n\007listInt\030\006 \001(\0132\r.IntListProtoH" +
+      "\000\022$\n\tmatrixInt\030\007 \001(\0132\017.IntMatrixProtoH\000\022" +
+      "\"\n\010listEdge\030\010 \001(\0132\016.EdgeListProtoH\000\"A\n\004N" +
+      "ame\022\t\n\005Value\020\000\022\005\n\001X\020\001\022\005\n\001Y\020\002\022\r\n\tEntityRe" +
+      "f\020\003\022\021\n\rEntityRefList\020\004B\007\n\005value\"J\n\rPrope" +
+      "rtyProto\022\013\n\003urn\030\001 \001(\t\022\017\n\007defined\030\002 \001(\010\022\033" +
+      "\n\006fields\030\003 \003(\0132\013.ValueProto\"P\n\013EntityPro" +
+      "to\022\013\n\003urn\030\001 \001(\t\022\020\n\010entityID\030\002 \001(\005\022\"\n\npro" +
+      "perties\030\003 \003(\0132\016.PropertyProto\"1\n\017EntityL" +
+      "istProto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto" +
+      "\"`\n\013ConfigProto\022$\n\004data\030\001 \003(\0132\026.ConfigPr" +
+      "oto.DataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022" +
+      "\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n\005e" +
+      "dges\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n\006s" +
+      "tartX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 \001(" +
+      "\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\254\001\n\016C" +
+      "hangeSetProto\0222\n\007changes\030\001 \003(\0132!.ChangeS" +
+      "etProto.EntityChangeProto\022\017\n\007deletes\030\002 \003" +
+      "(\005\032U\n\021EntityChangeProto\022\021\n\tenitityId\030\001 \001" +
+      "(\005\022\013\n\003urn\030\002 \001(\t\022 \n\010property\030\003 \003(\0132\016.Prop" +
+      "ertyProto\"8\n\022AKAcknowledgeProto\022\021\n\treque" +
+      "stID\030\001 \001(\005\022\017\n\007agentID\030\002 \001(\005\"1\n\016AKCommand" +
+      "Proto\022\037\n\010commands\030\001 \003(\0132\r.MessageProto\"e" +
+      "\n\016AKConnectProto\022\021\n\trequestID\030\001 \001(\005\022\017\n\007v" +
+      "ersion\030\002 \001(\005\022\021\n\tagentName\030\003 \001(\t\022\034\n\024reque" +
+      "stedEntityTypes\030\004 \003(\t\"G\n\024EntityIDRequest" +
+      "Proto\022\r\n\005simID\030\001 \001(\005\022\021\n\trequestID\030\002 \001(\005\022" +
+      "\r\n\005count\030\003 \001(\005\"I\n\025EntityIDResponseProto\022" +
+      "\r\n\005simID\030\001 \001(\005\022\021\n\trequestID\030\002 \001(\005\022\016\n\006new" +
+      "IDs\030\003 \003(\005\"%\n\023GKConnectErrorProto\022\016\n\006reas" +
+      "on\030\001 \001(\t\"2\n\020GKConnectOKProto\022\036\n\010entities" +
+      "\030\001 \003(\0132\014.EntityProto\"8\n\023KAConnectErrorPr" +
+      "oto\022\021\n\trequestID\030\001 \001(\005\022\016\n\006reason\030\002 \001(\t\"t" +
+      "\n\020KAConnectOKProto\022\021\n\trequestID\030\001 \001(\005\022\017\n" +
+      "\007agentID\030\002 \001(\005\022\036\n\010entities\030\003 \003(\0132\014.Entit" +
+      "yProto\022\034\n\006config\030\004 \001(\0132\014.ConfigProto\"m\n\014" +
+      "KASenseProto\022\017\n\007agentID\030\001 \001(\005\022\014\n\004time\030\002 " +
+      "\001(\005\022 \n\007changes\030\003 \001(\0132\017.ChangeSetProto\022\034\n" +
+      "\005hears\030\004 \003(\0132\r.MessageProto\"\024\n\022KGAcknowl" +
+      "edgeProto\"!\n\016KGConnectProto\022\017\n\007version\030\001" +
+      " \001(\005\";\n\025KSAfterShockInfoProto\022\r\n\005times\030\001" +
+      " \003(\005\022\023\n\013intensities\030\002 \003(\002\"O\n\017KSCommandsP" +
+      "roto\022\r\n\005simID\030\001 \001(\005\022\014\n\004time\030\002 \001(\005\022\037\n\010com" +
+      "mands\030\003 \003(\0132\r.MessageProto\"8\n\023KSConnectE" +
+      "rrorProto\022\021\n\trequestID\030\001 \001(\005\022\016\n\006reason\030\002" +
+      " \001(\t\"r\n\020KSConnectOKProto\022\r\n\005simID\030\001 \001(\005\022" +
+      "\021\n\trequestID\030\002 \001(\005\022\036\n\010entities\030\003 \003(\0132\014.E" +
+      "ntityProto\022\034\n\006config\030\004 \001(\0132\014.ConfigProto" +
+      "\"N\n\rKSUpdateProto\022\r\n\005simID\030\001 \001(\005\022\014\n\004time" +
+      "\030\002 \001(\005\022 \n\007changes\030\003 \001(\0132\017.ChangeSetProto" +
+      "\"8\n\023KVConnectErrorProto\022\021\n\trequestID\030\001 \001" +
+      "(\005\022\016\n\006reason\030\002 \001(\t\"u\n\020KVConnectOKProto\022\020" +
+      "\n\010viewerID\030\001 \001(\005\022\021\n\trequestID\030\002 \001(\005\022\036\n\010e" +
+      "ntities\030\003 \003(\0132\014.EntityProto\022\034\n\006config\030\004 " +
+      "\001(\0132\014.ConfigProto\"t\n\017KVTimestepProto\022\020\n\010" +
+      "viewerID\030\001 \001(\005\022\014\n\004time\030\002 \001(\005\022\037\n\010commands" +
+      "\030\003 \003(\0132\r.MessageProto\022 \n\007changes\030\004 \001(\0132\017" +
+      ".ChangeSetProto\"\017\n\rShutdownProto\"6\n\022SKAc" +
+      "knowledgeProto\022\r\n\005simID\030\001 \001(\005\022\021\n\trequest" +
+      "ID\030\002 \001(\005\"K\n\016SKConnectProto\022\021\n\trequestID\030" +
+      "\001 \001(\005\022\017\n\007version\030\002 \001(\005\022\025\n\rsimulatorName\030" +
+      "\003 \001(\t\"N\n\rSKUpdateProto\022\r\n\005simID\030\001 \001(\005\022\014\n" +
+      "\004time\030\002 \001(\005\022 \n\007changes\030\003 \001(\0132\017.ChangeSet" +
+      "Proto\"9\n\022VKAcknowledgeProto\022\021\n\trequestID" +
+      "\030\001 \001(\005\022\020\n\010viewerID\030\002 \001(\005\"H\n\016VKConnectPro" +
+      "to\022\021\n\trequestID\030\001 \001(\005\022\017\n\007version\030\002 \001(\005\022\022" +
+      "\n\nviewerName\030\003 \001(\t\"@\n\017CommandLogProto\022\014\n" +
+      "\004time\030\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessageP" +
+      "roto\";\n\031InitialConditionsLogProto\022\036\n\010ent" +
+      "ities\030\001 \003(\0132\014.EntityProto\"}\n\022PerceptionL" +
+      "ogProto\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022" +
+      " \n\007visible\030\003 \001(\0132\017.ChangeSetProto\022%\n\016com" +
+      "munications\030\004 \003(\0132\r.MessageProto\"\017\n\rStar" +
+      "tLogProto\"\r\n\013EndLogProto\".\n\016ConfigLogPro" +
+      "to\022\034\n\006config\030\001 \001(\0132\014.ConfigProto\"A\n\017Upda" +
+      "tesLogProto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001" +
+      "(\0132\017.ChangeSetProtoB4\n\035rescuecore2.messa" +
+      "ges.protobufB\023ControlMessageProtob\006proto" +
+      "3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -42392,6 +41989,12 @@ public final class ControlMessageProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_MessageProto_descriptor,
         new java.lang.String[] { "Urn", "Components", });
+    internal_static_MessageProto_ComponentsEntry_descriptor =
+      internal_static_MessageProto_descriptor.getNestedTypes().get(0);
+    internal_static_MessageProto_ComponentsEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_MessageProto_ComponentsEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
     internal_static_MessageListProto_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_MessageListProto_fieldAccessorTable = new

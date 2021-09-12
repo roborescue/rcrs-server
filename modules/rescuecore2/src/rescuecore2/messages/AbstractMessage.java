@@ -1,6 +1,7 @@
 package rescuecore2.messages;
 
 import java.util.List;
+import java.util.Map;
 
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
@@ -90,17 +91,22 @@ public abstract class AbstractMessage implements Message {
     	MessageProto.Builder builder=MessageProto.newBuilder()
     			.setUrn(getURN());
     	for (MessageComponent next : components) {
-            builder.addComponents(next.toMessageComponentProto());
+            builder.putComponents(next.getName(),next.toMessageComponentProto());
         }
     	return builder.build();
     }
     @Override
     public void fromMessageProto(MessageProto proto) {
-    	List<MessageComponentProto> receivedcomponents = proto.getComponentsList();
-    	if(receivedcomponents.size()!=components.size())
-    		throw new Error("Encoding error");
-    	for(int i=0;i<receivedcomponents.size();i++) {
-    		components.get(i).fromMessageComponentProto(receivedcomponents.get(i));
-    	}
+//    	List<MessageComponentProto> receivedcomponents = proto.getComponentsList();
+//    	if(receivedcomponents.size()!=components.size())
+//    		throw new Error("Encoding error");
+//    	for(int i=0;i<receivedcomponents.size();i++) {
+//    		components.get(i).fromMessageComponentProto(receivedcomponents.get(i));
+//    	}
+    	Map<String, MessageComponentProto> receivedcomponents = proto.getComponentsMap();
+    	for (MessageComponent next : components) {
+            next.fromMessageComponentProto(receivedcomponents.get(next.getName()));
+        }
+    	
     }
 }
