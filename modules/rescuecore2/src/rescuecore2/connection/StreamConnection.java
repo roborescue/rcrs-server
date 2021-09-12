@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 import rescuecore2.misc.WorkerThread;
+import rescuecore2.misc.EncodingTools;
 import rescuecore2.misc.Pair;
 import rescuecore2.registry.Registry;
 import rescuecore2.log.Logger;
@@ -99,10 +100,19 @@ public class StreamConnection extends AbstractConnection {
 //    }
     
     protected void serializeMessageProto(MessageProto messageProto) throws IOException {
-    	messageProto.writeDelimitedTo(out);
+//    	messageProto.writeDelimitedTo(out);
+    	byte[] bytes = messageProto.toByteArray();
+    	out.write(bytes.length);
+    	EncodingTools.writeInt32(bytes.length,out);
+    	out.write(bytes);
+    	
     }
     protected MessageProto deserializeMessageProto() throws IOException {
-    	return MessageProto.parseDelimitedFrom(in);
+//    	return MessageProto.parseDelimitedFrom(in);
+//    	int size=in.read();
+    	int size=EncodingTools.readInt32(in);
+    	byte[] bytes = in.readNBytes(size);
+    	return MessageProto.parseFrom(bytes);
     }
     
     protected void sendMessageProto(MessageProto  messageProto) throws IOException{
