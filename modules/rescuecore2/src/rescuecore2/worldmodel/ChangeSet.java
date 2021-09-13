@@ -329,7 +329,7 @@ public class ChangeSet {
 		deleted.clear();
 		List<EntityChangeProto> changesList = changeSetProto.getChangesList();
 		for (EntityChangeProto entityChange : changesList) {
-			EntityID entityID = new EntityID(entityChange.getEnitityId());
+			EntityID entityID = new EntityID(entityChange.getEntityID());
 			String urn = entityChange.getUrn();
 
 			List<PropertyProto> propertyProtoList = entityChange
@@ -357,7 +357,7 @@ public class ChangeSet {
 			Collection<Property> props = next.getValue().values();
 			// EntityID, URN, number of properties
 			EntityChangeProto.Builder entityChangeBuilder=EntityChangeProto.newBuilder()
-				.setEnitityId(id.getValue())
+				.setEntityID(id.getValue())
 				.setUrn(getEntityURN(id));
 			for (Property prop : props) {
 				entityChangeBuilder.addProperty(prop.toPropertyProto());
