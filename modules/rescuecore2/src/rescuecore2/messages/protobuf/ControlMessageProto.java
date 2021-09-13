@@ -15027,27 +15027,27 @@ public final class ControlMessageProto {
           getUrnBytes();
 
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> 
-          getPropertyList();
+          getPropertiesList();
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-      rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperty(int index);
+      rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperties(int index);
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-      int getPropertyCount();
+      int getPropertiesCount();
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
-          getPropertyOrBuilderList();
+          getPropertiesOrBuilderList();
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-      rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertyOrBuilder(
+      rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertiesOrBuilder(
           int index);
     }
     /**
@@ -15064,7 +15064,7 @@ public final class ControlMessageProto {
       }
       private EntityChangeProto() {
         urn_ = "";
-        property_ = java.util.Collections.emptyList();
+        properties_ = java.util.Collections.emptyList();
       }
 
       @java.lang.Override
@@ -15111,10 +15111,10 @@ public final class ControlMessageProto {
               }
               case 26: {
                 if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                  property_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>();
+                  properties_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>();
                   mutable_bitField0_ |= 0x00000001;
                 }
-                property_.add(
+                properties_.add(
                     input.readMessage(rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.parser(), extensionRegistry));
                 break;
               }
@@ -15134,7 +15134,7 @@ public final class ControlMessageProto {
               e).setUnfinishedMessage(this);
         } finally {
           if (((mutable_bitField0_ & 0x00000001) != 0)) {
-            property_ = java.util.Collections.unmodifiableList(property_);
+            properties_ = java.util.Collections.unmodifiableList(properties_);
           }
           this.unknownFields = unknownFields.build();
           makeExtensionsImmutable();
@@ -15202,44 +15202,44 @@ public final class ControlMessageProto {
         }
       }
 
-      public static final int PROPERTY_FIELD_NUMBER = 3;
-      private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> property_;
+      public static final int PROPERTIES_FIELD_NUMBER = 3;
+      private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> properties_;
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       @java.lang.Override
-      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertyList() {
-        return property_;
+      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertiesList() {
+        return properties_;
       }
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       @java.lang.Override
       public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
-          getPropertyOrBuilderList() {
-        return property_;
+          getPropertiesOrBuilderList() {
+        return properties_;
       }
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       @java.lang.Override
-      public int getPropertyCount() {
-        return property_.size();
+      public int getPropertiesCount() {
+        return properties_.size();
       }
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperty(int index) {
-        return property_.get(index);
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperties(int index) {
+        return properties_.get(index);
       }
       /**
-       * <code>repeated .PropertyProto property = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertyOrBuilder(
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertiesOrBuilder(
           int index) {
-        return property_.get(index);
+        return properties_.get(index);
       }
 
       private byte memoizedIsInitialized = -1;
@@ -15262,8 +15262,8 @@ public final class ControlMessageProto {
         if (!getUrnBytes().isEmpty()) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 2, urn_);
         }
-        for (int i = 0; i < property_.size(); i++) {
-          output.writeMessage(3, property_.get(i));
+        for (int i = 0; i < properties_.size(); i++) {
+          output.writeMessage(3, properties_.get(i));
         }
         unknownFields.writeTo(output);
       }
@@ -15281,9 +15281,9 @@ public final class ControlMessageProto {
         if (!getUrnBytes().isEmpty()) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, urn_);
         }
-        for (int i = 0; i < property_.size(); i++) {
+        for (int i = 0; i < properties_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(3, property_.get(i));
+            .computeMessageSize(3, properties_.get(i));
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -15304,8 +15304,8 @@ public final class ControlMessageProto {
             != other.getEntityID()) return false;
         if (!getUrn()
             .equals(other.getUrn())) return false;
-        if (!getPropertyList()
-            .equals(other.getPropertyList())) return false;
+        if (!getPropertiesList()
+            .equals(other.getPropertiesList())) return false;
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
       }
@@ -15321,9 +15321,9 @@ public final class ControlMessageProto {
         hash = (53 * hash) + getEntityID();
         hash = (37 * hash) + URN_FIELD_NUMBER;
         hash = (53 * hash) + getUrn().hashCode();
-        if (getPropertyCount() > 0) {
-          hash = (37 * hash) + PROPERTY_FIELD_NUMBER;
-          hash = (53 * hash) + getPropertyList().hashCode();
+        if (getPropertiesCount() > 0) {
+          hash = (37 * hash) + PROPERTIES_FIELD_NUMBER;
+          hash = (53 * hash) + getPropertiesList().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -15453,7 +15453,7 @@ public final class ControlMessageProto {
         private void maybeForceBuilderInitialization() {
           if (com.google.protobuf.GeneratedMessageV3
                   .alwaysUseFieldBuilders) {
-            getPropertyFieldBuilder();
+            getPropertiesFieldBuilder();
           }
         }
         @java.lang.Override
@@ -15463,11 +15463,11 @@ public final class ControlMessageProto {
 
           urn_ = "";
 
-          if (propertyBuilder_ == null) {
-            property_ = java.util.Collections.emptyList();
+          if (propertiesBuilder_ == null) {
+            properties_ = java.util.Collections.emptyList();
             bitField0_ = (bitField0_ & ~0x00000001);
           } else {
-            propertyBuilder_.clear();
+            propertiesBuilder_.clear();
           }
           return this;
         }
@@ -15498,14 +15498,14 @@ public final class ControlMessageProto {
           int from_bitField0_ = bitField0_;
           result.entityID_ = entityID_;
           result.urn_ = urn_;
-          if (propertyBuilder_ == null) {
+          if (propertiesBuilder_ == null) {
             if (((bitField0_ & 0x00000001) != 0)) {
-              property_ = java.util.Collections.unmodifiableList(property_);
+              properties_ = java.util.Collections.unmodifiableList(properties_);
               bitField0_ = (bitField0_ & ~0x00000001);
             }
-            result.property_ = property_;
+            result.properties_ = properties_;
           } else {
-            result.property_ = propertyBuilder_.build();
+            result.properties_ = propertiesBuilder_.build();
           }
           onBuilt();
           return result;
@@ -15562,29 +15562,29 @@ public final class ControlMessageProto {
             urn_ = other.urn_;
             onChanged();
           }
-          if (propertyBuilder_ == null) {
-            if (!other.property_.isEmpty()) {
-              if (property_.isEmpty()) {
-                property_ = other.property_;
+          if (propertiesBuilder_ == null) {
+            if (!other.properties_.isEmpty()) {
+              if (properties_.isEmpty()) {
+                properties_ = other.properties_;
                 bitField0_ = (bitField0_ & ~0x00000001);
               } else {
-                ensurePropertyIsMutable();
-                property_.addAll(other.property_);
+                ensurePropertiesIsMutable();
+                properties_.addAll(other.properties_);
               }
               onChanged();
             }
           } else {
-            if (!other.property_.isEmpty()) {
-              if (propertyBuilder_.isEmpty()) {
-                propertyBuilder_.dispose();
-                propertyBuilder_ = null;
-                property_ = other.property_;
+            if (!other.properties_.isEmpty()) {
+              if (propertiesBuilder_.isEmpty()) {
+                propertiesBuilder_.dispose();
+                propertiesBuilder_ = null;
+                properties_ = other.properties_;
                 bitField0_ = (bitField0_ & ~0x00000001);
-                propertyBuilder_ = 
+                propertiesBuilder_ = 
                   com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                     getPropertyFieldBuilder() : null;
+                     getPropertiesFieldBuilder() : null;
               } else {
-                propertyBuilder_.addAllMessages(other.property_);
+                propertiesBuilder_.addAllMessages(other.properties_);
               }
             }
           }
@@ -15725,244 +15725,244 @@ public final class ControlMessageProto {
           return this;
         }
 
-        private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> property_ =
+        private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> properties_ =
           java.util.Collections.emptyList();
-        private void ensurePropertyIsMutable() {
+        private void ensurePropertiesIsMutable() {
           if (!((bitField0_ & 0x00000001) != 0)) {
-            property_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>(property_);
+            properties_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>(properties_);
             bitField0_ |= 0x00000001;
            }
         }
 
         private com.google.protobuf.RepeatedFieldBuilderV3<
-            rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> propertyBuilder_;
+            rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> propertiesBuilder_;
 
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertyList() {
-          if (propertyBuilder_ == null) {
-            return java.util.Collections.unmodifiableList(property_);
+        public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertiesList() {
+          if (propertiesBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(properties_);
           } else {
-            return propertyBuilder_.getMessageList();
+            return propertiesBuilder_.getMessageList();
           }
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public int getPropertyCount() {
-          if (propertyBuilder_ == null) {
-            return property_.size();
+        public int getPropertiesCount() {
+          if (propertiesBuilder_ == null) {
+            return properties_.size();
           } else {
-            return propertyBuilder_.getCount();
+            return propertiesBuilder_.getCount();
           }
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperty(int index) {
-          if (propertyBuilder_ == null) {
-            return property_.get(index);
+        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperties(int index) {
+          if (propertiesBuilder_ == null) {
+            return properties_.get(index);
           } else {
-            return propertyBuilder_.getMessage(index);
+            return propertiesBuilder_.getMessage(index);
           }
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder setProperty(
+        public Builder setProperties(
             int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
-          if (propertyBuilder_ == null) {
+          if (propertiesBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
             }
-            ensurePropertyIsMutable();
-            property_.set(index, value);
+            ensurePropertiesIsMutable();
+            properties_.set(index, value);
             onChanged();
           } else {
-            propertyBuilder_.setMessage(index, value);
+            propertiesBuilder_.setMessage(index, value);
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder setProperty(
+        public Builder setProperties(
             int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder builderForValue) {
-          if (propertyBuilder_ == null) {
-            ensurePropertyIsMutable();
-            property_.set(index, builderForValue.build());
+          if (propertiesBuilder_ == null) {
+            ensurePropertiesIsMutable();
+            properties_.set(index, builderForValue.build());
             onChanged();
           } else {
-            propertyBuilder_.setMessage(index, builderForValue.build());
+            propertiesBuilder_.setMessage(index, builderForValue.build());
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder addProperty(rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
-          if (propertyBuilder_ == null) {
+        public Builder addProperties(rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
+          if (propertiesBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
             }
-            ensurePropertyIsMutable();
-            property_.add(value);
+            ensurePropertiesIsMutable();
+            properties_.add(value);
             onChanged();
           } else {
-            propertyBuilder_.addMessage(value);
+            propertiesBuilder_.addMessage(value);
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder addProperty(
+        public Builder addProperties(
             int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
-          if (propertyBuilder_ == null) {
+          if (propertiesBuilder_ == null) {
             if (value == null) {
               throw new NullPointerException();
             }
-            ensurePropertyIsMutable();
-            property_.add(index, value);
+            ensurePropertiesIsMutable();
+            properties_.add(index, value);
             onChanged();
           } else {
-            propertyBuilder_.addMessage(index, value);
+            propertiesBuilder_.addMessage(index, value);
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder addProperty(
+        public Builder addProperties(
             rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder builderForValue) {
-          if (propertyBuilder_ == null) {
-            ensurePropertyIsMutable();
-            property_.add(builderForValue.build());
+          if (propertiesBuilder_ == null) {
+            ensurePropertiesIsMutable();
+            properties_.add(builderForValue.build());
             onChanged();
           } else {
-            propertyBuilder_.addMessage(builderForValue.build());
+            propertiesBuilder_.addMessage(builderForValue.build());
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder addProperty(
+        public Builder addProperties(
             int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder builderForValue) {
-          if (propertyBuilder_ == null) {
-            ensurePropertyIsMutable();
-            property_.add(index, builderForValue.build());
+          if (propertiesBuilder_ == null) {
+            ensurePropertiesIsMutable();
+            properties_.add(index, builderForValue.build());
             onChanged();
           } else {
-            propertyBuilder_.addMessage(index, builderForValue.build());
+            propertiesBuilder_.addMessage(index, builderForValue.build());
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder addAllProperty(
+        public Builder addAllProperties(
             java.lang.Iterable<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> values) {
-          if (propertyBuilder_ == null) {
-            ensurePropertyIsMutable();
+          if (propertiesBuilder_ == null) {
+            ensurePropertiesIsMutable();
             com.google.protobuf.AbstractMessageLite.Builder.addAll(
-                values, property_);
+                values, properties_);
             onChanged();
           } else {
-            propertyBuilder_.addAllMessages(values);
+            propertiesBuilder_.addAllMessages(values);
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder clearProperty() {
-          if (propertyBuilder_ == null) {
-            property_ = java.util.Collections.emptyList();
+        public Builder clearProperties() {
+          if (propertiesBuilder_ == null) {
+            properties_ = java.util.Collections.emptyList();
             bitField0_ = (bitField0_ & ~0x00000001);
             onChanged();
           } else {
-            propertyBuilder_.clear();
+            propertiesBuilder_.clear();
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public Builder removeProperty(int index) {
-          if (propertyBuilder_ == null) {
-            ensurePropertyIsMutable();
-            property_.remove(index);
+        public Builder removeProperties(int index) {
+          if (propertiesBuilder_ == null) {
+            ensurePropertiesIsMutable();
+            properties_.remove(index);
             onChanged();
           } else {
-            propertyBuilder_.remove(index);
+            propertiesBuilder_.remove(index);
           }
           return this;
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder getPropertyBuilder(
+        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder getPropertiesBuilder(
             int index) {
-          return getPropertyFieldBuilder().getBuilder(index);
+          return getPropertiesFieldBuilder().getBuilder(index);
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertyOrBuilder(
+        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertiesOrBuilder(
             int index) {
-          if (propertyBuilder_ == null) {
-            return property_.get(index);  } else {
-            return propertyBuilder_.getMessageOrBuilder(index);
+          if (propertiesBuilder_ == null) {
+            return properties_.get(index);  } else {
+            return propertiesBuilder_.getMessageOrBuilder(index);
           }
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
         public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
-             getPropertyOrBuilderList() {
-          if (propertyBuilder_ != null) {
-            return propertyBuilder_.getMessageOrBuilderList();
+             getPropertiesOrBuilderList() {
+          if (propertiesBuilder_ != null) {
+            return propertiesBuilder_.getMessageOrBuilderList();
           } else {
-            return java.util.Collections.unmodifiableList(property_);
+            return java.util.Collections.unmodifiableList(properties_);
           }
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder addPropertyBuilder() {
-          return getPropertyFieldBuilder().addBuilder(
+        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder addPropertiesBuilder() {
+          return getPropertiesFieldBuilder().addBuilder(
               rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.getDefaultInstance());
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
-        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder addPropertyBuilder(
+        public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder addPropertiesBuilder(
             int index) {
-          return getPropertyFieldBuilder().addBuilder(
+          return getPropertiesFieldBuilder().addBuilder(
               index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.getDefaultInstance());
         }
         /**
-         * <code>repeated .PropertyProto property = 3;</code>
+         * <code>repeated .PropertyProto properties = 3;</code>
          */
         public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder> 
-             getPropertyBuilderList() {
-          return getPropertyFieldBuilder().getBuilderList();
+             getPropertiesBuilderList() {
+          return getPropertiesFieldBuilder().getBuilderList();
         }
         private com.google.protobuf.RepeatedFieldBuilderV3<
             rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
-            getPropertyFieldBuilder() {
-          if (propertyBuilder_ == null) {
-            propertyBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            getPropertiesFieldBuilder() {
+          if (propertiesBuilder_ == null) {
+            propertiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder>(
-                    property_,
+                    properties_,
                     ((bitField0_ & 0x00000001) != 0),
                     getParentForChildren(),
                     isClean());
-            property_ = null;
+            properties_ = null;
           }
-          return propertyBuilder_;
+          return propertiesBuilder_;
         }
         @java.lang.Override
         public final Builder setUnknownFields(
@@ -22003,23 +22003,23 @@ public final class ControlMessageProto {
       "\t\022\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n" +
       "\005edges\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n" +
       "\006startX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 " +
-      "\001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\253\001\n" +
+      "\001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\255\001\n" +
       "\016ChangeSetProto\0222\n\007changes\030\001 \003(\0132!.Chang" +
       "eSetProto.EntityChangeProto\022\017\n\007deletes\030\002" +
-      " \003(\005\032T\n\021EntityChangeProto\022\020\n\010entityID\030\001 " +
-      "\001(\005\022\013\n\003urn\030\002 \001(\t\022 \n\010property\030\003 \003(\0132\016.Pro" +
-      "pertyProto\"@\n\017CommandLogProto\022\014\n\004time\030\001 " +
-      "\001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessageProto\";\n\031" +
-      "InitialConditionsLogProto\022\036\n\010entities\030\001 " +
-      "\003(\0132\014.EntityProto\"}\n\022PerceptionLogProto\022" +
-      "\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 \n\007visib" +
-      "le\030\003 \001(\0132\017.ChangeSetProto\022%\n\016communicati" +
-      "ons\030\004 \003(\0132\r.MessageProto\"\017\n\rStartLogProt" +
-      "o\"\r\n\013EndLogProto\".\n\016ConfigLogProto\022\034\n\006co" +
-      "nfig\030\001 \001(\0132\014.ConfigProto\"A\n\017UpdatesLogPr" +
-      "oto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(\0132\017.Cha" +
-      "ngeSetProtoB4\n\035rescuecore2.messages.prot" +
-      "obufB\023ControlMessageProtob\006proto3"
+      " \003(\005\032V\n\021EntityChangeProto\022\020\n\010entityID\030\001 " +
+      "\001(\005\022\013\n\003urn\030\002 \001(\t\022\"\n\nproperties\030\003 \003(\0132\016.P" +
+      "ropertyProto\"@\n\017CommandLogProto\022\014\n\004time\030" +
+      "\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessageProto\";" +
+      "\n\031InitialConditionsLogProto\022\036\n\010entities\030" +
+      "\001 \003(\0132\014.EntityProto\"}\n\022PerceptionLogProt" +
+      "o\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 \n\007vis" +
+      "ible\030\003 \001(\0132\017.ChangeSetProto\022%\n\016communica" +
+      "tions\030\004 \003(\0132\r.MessageProto\"\017\n\rStartLogPr" +
+      "oto\"\r\n\013EndLogProto\".\n\016ConfigLogProto\022\034\n\006" +
+      "config\030\001 \001(\0132\014.ConfigProto\"A\n\017UpdatesLog" +
+      "Proto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(\0132\017.C" +
+      "hangeSetProtoB4\n\035rescuecore2.messages.pr" +
+      "otobufB\023ControlMessageProtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -22138,7 +22138,7 @@ public final class ControlMessageProto {
     internal_static_ChangeSetProto_EntityChangeProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ChangeSetProto_EntityChangeProto_descriptor,
-        new java.lang.String[] { "EntityID", "Urn", "Property", });
+        new java.lang.String[] { "EntityID", "Urn", "Properties", });
     internal_static_CommandLogProto_descriptor =
       getDescriptor().getMessageTypes().get(15);
     internal_static_CommandLogProto_fieldAccessorTable = new

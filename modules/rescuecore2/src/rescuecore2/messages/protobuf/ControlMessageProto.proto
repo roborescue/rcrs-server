@@ -129,7 +129,7 @@ message ChangeSetProto {
 	message EntityChangeProto {
 		int32 entityID=1;
 		string urn=2;
-		repeated PropertyProto property = 3;
+		repeated PropertyProto properties = 3;
 	}
   repeated EntityChangeProto changes = 1;
   repeated int32 deletes = 2; /*entity ids*/

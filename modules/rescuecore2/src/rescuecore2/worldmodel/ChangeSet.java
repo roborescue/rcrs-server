@@ -333,7 +333,7 @@ public class ChangeSet {
 			String urn = entityChange.getUrn();
 
 			List<PropertyProto> propertyProtoList = entityChange
-					.getPropertyList();
+					.getPropertiesList();
 			for (PropertyProto propertyProto : propertyProtoList) {
 				Property prop = MsgProtoBuf
 						.propertyProto2Property(propertyProto);
@@ -360,7 +360,7 @@ public class ChangeSet {
 				.setEntityID(id.getValue())
 				.setUrn(getEntityURN(id));
 			for (Property prop : props) {
-				entityChangeBuilder.addProperty(prop.toPropertyProto());
+				entityChangeBuilder.addProperties(prop.toPropertyProto());
 			}
 			builder.addChanges(entityChangeBuilder);
 		}
