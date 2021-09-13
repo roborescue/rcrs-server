@@ -12,7 +12,6 @@ import java.util.List;
 import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -191,8 +190,8 @@ public class EntityRefListProperty extends AbstractProperty {
 			for (EntityID next : ids) {
 				intListBuilder.addValues(next.getValue());
 			}
-			builder.addFields(ValueProto.newBuilder()
-					.setName(Name.EntityRefList).setListInt(intListBuilder));
+			builder.setValue(ValueProto.newBuilder()
+					.setIntList(intListBuilder));
 		}
 		return builder.build();
 	}
@@ -201,7 +200,7 @@ public class EntityRefListProperty extends AbstractProperty {
 	public void fromPropertyProto(PropertyProto proto) {
 		if (!proto.getDefined())
 			return;
-		List<Integer> values = proto.getFields(0).getListInt().getValuesList();
+		List<Integer> values = proto.getValue().getIntList().getValuesList();
 		List<EntityID> newIDs = new ArrayList<EntityID>(values.size());
 		for (Integer val : values) {
 			newIDs.add(new EntityID(val));

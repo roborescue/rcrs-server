@@ -14,7 +14,6 @@ import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -179,8 +178,8 @@ public class IntArrayProperty extends AbstractProperty {
 	public PropertyProto toPropertyProto() {
 		PropertyProto.Builder builder=PropertyProto.newBuilder().setUrn(getURN()).setDefined(isDefined());
 		if(isDefined())
-			builder.addFields(ValueProto.newBuilder()
-				.setName(Name.Value).setListInt(IntListProto.newBuilder().addAllValues(data)));
+			builder.setValue(ValueProto.newBuilder()
+				.setIntList(IntListProto.newBuilder().addAllValues(data)));
 		return builder.build();
 	}
 
@@ -188,7 +187,7 @@ public class IntArrayProperty extends AbstractProperty {
 	public void fromPropertyProto(PropertyProto proto) {
 		if (!proto.getDefined())
 			return;
-		List<Integer> list = proto.getFields(0).getListInt().getValuesList();
+		List<Integer> list = proto.getValue().getIntList().getValuesList();
 		int[] result = new int[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			result[i]=list.get(i);

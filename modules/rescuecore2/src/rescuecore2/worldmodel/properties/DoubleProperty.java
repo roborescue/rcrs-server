@@ -10,7 +10,6 @@ import java.io.IOException;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -121,8 +120,8 @@ public class DoubleProperty extends AbstractProperty {
 	public PropertyProto toPropertyProto() {
 		PropertyProto.Builder builder=PropertyProto.newBuilder().setUrn(getURN()).setDefined(isDefined());
 		if(isDefined())
-			builder.addFields(ValueProto.newBuilder()
-				.setName(Name.Value).setValueDouble(value));
+			builder.setValue(ValueProto.newBuilder()
+				.setDoubleValue(value));
 		return builder.build();
 	}
 
@@ -130,6 +129,6 @@ public class DoubleProperty extends AbstractProperty {
 	public void fromPropertyProto(PropertyProto proto) {
 		if (!proto.getDefined())
 			return;
-		setValue(proto.getFields(0).getValueDouble());
+		setValue(proto.getValue().getDoubleValue());
 	}
 }

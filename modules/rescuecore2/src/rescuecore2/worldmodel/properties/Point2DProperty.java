@@ -9,9 +9,9 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.AbstractProperty;
+import rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.misc.geometry.Point2D;
 
 /**
@@ -127,10 +127,8 @@ public class Point2DProperty extends AbstractProperty {
 		PropertyProto.Builder builder = PropertyProto.newBuilder()
 				.setUrn(getURN()).setDefined(isDefined());
 		if (isDefined())
-			builder.addFields(ValueProto.newBuilder().setName(Name.X)
-					.setValueDouble(value.getX()))
-					.addFields(ValueProto.newBuilder().setName(Name.Y)
-							.setValueDouble(value.getY()));
+			builder.setValue(ValueProto.newBuilder().setPoint2D(Point2DProto
+					.newBuilder().setX(value.getX()).setY(value.getY())));
 		return builder.build();
 	}
 
@@ -138,16 +136,7 @@ public class Point2DProperty extends AbstractProperty {
 	public void fromPropertyProto(PropertyProto proto) {
 		if (!proto.getDefined())
 			return;
-		Double x = null;
-		Double y = null;
-		for (ValueProto valp : proto.getFieldsList()) {
-			if (valp.getName() == Name.X)
-				x = valp.getValueDouble();
-			if (valp.getName() == Name.Y)
-				y = valp.getValueDouble();
-		}
-		if (x == null || y == null)
-			throw new Error("x or y in null");
-		setValue(new Point2D(x, y));
+		Point2DProto point = proto.getValue().getPoint2D();
+		setValue(new Point2D(point.getX(), point.getY()));
 	}
 }

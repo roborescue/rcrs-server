@@ -10,7 +10,6 @@ import java.io.IOException;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -127,7 +126,7 @@ public class BooleanProperty extends AbstractProperty {
 	public PropertyProto toPropertyProto() {
 		PropertyProto.Builder builder=PropertyProto.newBuilder().setUrn(getURN()).setDefined(isDefined());
 		if(isDefined())
-			builder.addFields(ValueProto.newBuilder().setName(Name.Value).setValueBool(value));
+			builder.setValue(ValueProto.newBuilder().setBoolValue(value));
 		return builder.build();
 	}
 
@@ -135,6 +134,6 @@ public class BooleanProperty extends AbstractProperty {
 	public void fromPropertyProto(PropertyProto proto) {
 		if (!proto.getDefined())
 			return;
-		setValue(proto.getFields(0).getValueBool());
+		setValue(proto.getValue().getBoolValue());
 	}
 }

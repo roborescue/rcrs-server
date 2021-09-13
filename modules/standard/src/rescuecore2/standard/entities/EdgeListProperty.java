@@ -186,8 +186,8 @@ public class EdgeListProperty extends AbstractProperty {
 						.setNeighbour(neighbour));
 			}
 
-			builder.addFields(
-					ValueProto.newBuilder().setListEdge(edgeListbuilder));
+			builder.setValue(
+					ValueProto.newBuilder().setEdgeList(edgeListbuilder));
 		}
 		return builder.build();
 	}
@@ -197,7 +197,7 @@ public class EdgeListProperty extends AbstractProperty {
 		if (!proto.getDefined())
 			return;
 		edges.clear();
-		List<EdgeProto> edgesProto = proto.getFieldsList().get(0).getListEdge()
+		List<EdgeProto> edgesProto = proto.getValue().getEdgeList()
 				.getEdgesList();
 		for (EdgeProto edgeProto : edgesProto) {
 			int startX = edgeProto.getStartX();

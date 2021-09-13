@@ -31,74 +31,10 @@ public final class ControlMessageProto {
         getUrnBytes();
 
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     int getComponentsCount();
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     boolean containsComponents(
@@ -110,75 +46,11 @@ public final class ControlMessageProto {
     java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
     getComponents();
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto>
     getComponentsMap();
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
 
@@ -186,38 +58,6 @@ public final class ControlMessageProto {
         java.lang.String key,
         rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto defaultValue);
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
 
@@ -399,38 +239,6 @@ public final class ControlMessageProto {
       return internalGetComponents().getMap().size();
     }
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
 
@@ -449,38 +257,6 @@ public final class ControlMessageProto {
       return getComponentsMap();
     }
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
@@ -489,38 +265,6 @@ public final class ControlMessageProto {
       return internalGetComponents().getMap();
     }
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
@@ -534,38 +278,6 @@ public final class ControlMessageProto {
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <pre>
-     *repeated MessageComponentProto components = 2;
-     *   oneof msg {
-     *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-     *		AKCommandProto	msgAKCommand = 3;
-     *		AKConnectProto	msgAKConnect = 4;
-     *		EntityIDRequestProto	msgEntityIDRequest = 5;
-     *		EntityIDResponseProto	msgEntityIDResponse = 6;
-     *		GKConnectErrorProto	msgGKConnectError = 7;
-     *		GKConnectOKProto	msgGKConnectOK = 8;
-     *		KAConnectErrorProto	msgKAConnectError = 9;
-     *		KAConnectOKProto	msgKAConnectOK = 10;
-     *		KASenseProto	msgKASense = 11;
-     *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-     *		KGConnectProto	msgKGConnect = 13;
-     *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-     *		KSCommandsProto	msgKSCommands = 15;
-     *		KSConnectErrorProto	msgKSConnectError = 16;
-     *		KSConnectOKProto	msgKSConnectOK = 17;
-     *		KSUpdateProto	msgKSUpdate = 18;
-     *		KVConnectErrorProto 	msgKVConnectError = 19; 
-     *		KVConnectOKProto	msgKVConnectOK = 20;
-     *		KVTimestepProto	msgKVTimestep = 21;
-     *		ShutdownProto	msgShutdown = 22;
-     *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-     *		SKConnectProto	msgSKConnect = 24;
-     *		SKUpdateProto	msgSKUpdate = 25;
-     *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-     *		VKConnectProto	msgVKConnect = 27;
-     *  }
-     * </pre>
-     *
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
@@ -1037,38 +749,6 @@ public final class ControlMessageProto {
         return internalGetComponents().getMap().size();
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
 
@@ -1087,38 +767,6 @@ public final class ControlMessageProto {
         return getComponentsMap();
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
       @java.lang.Override
@@ -1127,38 +775,6 @@ public final class ControlMessageProto {
         return internalGetComponents().getMap();
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
       @java.lang.Override
@@ -1172,38 +788,6 @@ public final class ControlMessageProto {
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
       @java.lang.Override
@@ -1225,38 +809,6 @@ public final class ControlMessageProto {
         return this;
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
 
@@ -1276,38 +828,6 @@ public final class ControlMessageProto {
         return internalGetMutableComponents().getMutableMap();
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
       public Builder putComponents(
@@ -1320,38 +840,6 @@ public final class ControlMessageProto {
         return this;
       }
       /**
-       * <pre>
-       *repeated MessageComponentProto components = 2;
-       *   oneof msg {
-       *    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-       *		AKCommandProto	msgAKCommand = 3;
-       *		AKConnectProto	msgAKConnect = 4;
-       *		EntityIDRequestProto	msgEntityIDRequest = 5;
-       *		EntityIDResponseProto	msgEntityIDResponse = 6;
-       *		GKConnectErrorProto	msgGKConnectError = 7;
-       *		GKConnectOKProto	msgGKConnectOK = 8;
-       *		KAConnectErrorProto	msgKAConnectError = 9;
-       *		KAConnectOKProto	msgKAConnectOK = 10;
-       *		KASenseProto	msgKASense = 11;
-       *		KGAcknowledgeProto	msgKGAcknowledge = 12;
-       *		KGConnectProto	msgKGConnect = 13;
-       *		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-       *		KSCommandsProto	msgKSCommands = 15;
-       *		KSConnectErrorProto	msgKSConnectError = 16;
-       *		KSConnectOKProto	msgKSConnectOK = 17;
-       *		KSUpdateProto	msgKSUpdate = 18;
-       *		KVConnectErrorProto 	msgKVConnectError = 19; 
-       *		KVConnectOKProto	msgKVConnectOK = 20;
-       *		KVTimestepProto	msgKVTimestep = 21;
-       *		ShutdownProto	msgShutdown = 22;
-       *		SKAcknowledgeProto	msgSKAcknowledge = 23;
-       *		SKConnectProto	msgSKConnect = 24;
-       *		SKUpdateProto	msgSKUpdate = 25;
-       *		VKAcknowledgeProto	msgVKAcknowledge = 26;
-       *		VKConnectProto	msgVKConnect = 27;
-       *  }
-       * </pre>
-       *
        * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
        */
 
@@ -7932,104 +7420,108 @@ public final class ControlMessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.ValueProto.Name name = 1;</code>
-     * @return The enum numeric value on the wire for name.
+     * <code>int32 intValue = 2;</code>
+     * @return Whether the intValue field is set.
      */
-    int getNameValue();
+    boolean hasIntValue();
     /**
-     * <code>.ValueProto.Name name = 1;</code>
-     * @return The name.
+     * <code>int32 intValue = 2;</code>
+     * @return The intValue.
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name getName();
+    int getIntValue();
 
     /**
-     * <code>int32 valueInt = 2;</code>
-     * @return Whether the valueInt field is set.
+     * <code>bool boolValue = 3;</code>
+     * @return Whether the boolValue field is set.
      */
-    boolean hasValueInt();
+    boolean hasBoolValue();
     /**
-     * <code>int32 valueInt = 2;</code>
-     * @return The valueInt.
+     * <code>bool boolValue = 3;</code>
+     * @return The boolValue.
      */
-    int getValueInt();
+    boolean getBoolValue();
 
     /**
-     * <code>bool valueBool = 3;</code>
-     * @return Whether the valueBool field is set.
+     * <code>double doubleValue = 4;</code>
+     * @return Whether the doubleValue field is set.
      */
-    boolean hasValueBool();
+    boolean hasDoubleValue();
     /**
-     * <code>bool valueBool = 3;</code>
-     * @return The valueBool.
+     * <code>double doubleValue = 4;</code>
+     * @return The doubleValue.
      */
-    boolean getValueBool();
+    double getDoubleValue();
 
     /**
-     * <code>double valueDouble = 4;</code>
-     * @return Whether the valueDouble field is set.
+     * <code>bytes byteList = 5;</code>
+     * @return Whether the byteList field is set.
      */
-    boolean hasValueDouble();
+    boolean hasByteList();
     /**
-     * <code>double valueDouble = 4;</code>
-     * @return The valueDouble.
+     * <code>bytes byteList = 5;</code>
+     * @return The byteList.
      */
-    double getValueDouble();
+    com.google.protobuf.ByteString getByteList();
 
     /**
-     * <code>bytes listByte = 5;</code>
-     * @return Whether the listByte field is set.
+     * <code>.IntListProto intList = 6;</code>
+     * @return Whether the intList field is set.
      */
-    boolean hasListByte();
+    boolean hasIntList();
     /**
-     * <code>bytes listByte = 5;</code>
-     * @return The listByte.
+     * <code>.IntListProto intList = 6;</code>
+     * @return The intList.
      */
-    com.google.protobuf.ByteString getListByte();
+    rescuecore2.messages.protobuf.ControlMessageProto.IntListProto getIntList();
+    /**
+     * <code>.IntListProto intList = 6;</code>
+     */
+    rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder getIntListOrBuilder();
 
     /**
-     * <code>.IntListProto listInt = 6;</code>
-     * @return Whether the listInt field is set.
+     * <code>.IntMatrixProto intMatrix = 7;</code>
+     * @return Whether the intMatrix field is set.
      */
-    boolean hasListInt();
+    boolean hasIntMatrix();
     /**
-     * <code>.IntListProto listInt = 6;</code>
-     * @return The listInt.
+     * <code>.IntMatrixProto intMatrix = 7;</code>
+     * @return The intMatrix.
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.IntListProto getListInt();
+    rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto getIntMatrix();
     /**
-     * <code>.IntListProto listInt = 6;</code>
+     * <code>.IntMatrixProto intMatrix = 7;</code>
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder getListIntOrBuilder();
+    rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder getIntMatrixOrBuilder();
 
     /**
-     * <code>.IntMatrixProto matrixInt = 7;</code>
-     * @return Whether the matrixInt field is set.
+     * <code>.EdgeListProto edgeList = 8;</code>
+     * @return Whether the edgeList field is set.
      */
-    boolean hasMatrixInt();
+    boolean hasEdgeList();
     /**
-     * <code>.IntMatrixProto matrixInt = 7;</code>
-     * @return The matrixInt.
+     * <code>.EdgeListProto edgeList = 8;</code>
+     * @return The edgeList.
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto getMatrixInt();
+    rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto getEdgeList();
     /**
-     * <code>.IntMatrixProto matrixInt = 7;</code>
+     * <code>.EdgeListProto edgeList = 8;</code>
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder getMatrixIntOrBuilder();
+    rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder getEdgeListOrBuilder();
 
     /**
-     * <code>.EdgeListProto listEdge = 8;</code>
-     * @return Whether the listEdge field is set.
+     * <code>.Point2DProto point2D = 9;</code>
+     * @return Whether the point2D field is set.
      */
-    boolean hasListEdge();
+    boolean hasPoint2D();
     /**
-     * <code>.EdgeListProto listEdge = 8;</code>
-     * @return The listEdge.
+     * <code>.Point2DProto point2D = 9;</code>
+     * @return The point2D.
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto getListEdge();
+    rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto getPoint2D();
     /**
-     * <code>.EdgeListProto listEdge = 8;</code>
+     * <code>.Point2DProto point2D = 9;</code>
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder getListEdgeOrBuilder();
+    rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder getPoint2DOrBuilder();
 
     public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.ValueCase getValueCase();
   }
@@ -8046,7 +7538,6 @@ public final class ControlMessageProto {
       super(builder);
     }
     private ValueProto() {
-      name_ = 0;
     }
 
     @java.lang.Override
@@ -8079,12 +7570,6 @@ public final class ControlMessageProto {
             case 0:
               done = true;
               break;
-            case 8: {
-              int rawValue = input.readEnum();
-
-              name_ = rawValue;
-              break;
-            }
             case 16: {
               valueCase_ = 2;
               value_ = input.readInt32();
@@ -8147,6 +7632,20 @@ public final class ControlMessageProto {
               valueCase_ = 8;
               break;
             }
+            case 74: {
+              rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder subBuilder = null;
+              if (valueCase_ == 9) {
+                subBuilder = ((rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_).toBuilder();
+              }
+              value_ =
+                  input.readMessage(rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_);
+                value_ = subBuilder.buildPartial();
+              }
+              valueCase_ = 9;
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -8179,153 +7678,19 @@ public final class ControlMessageProto {
               rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.class, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder.class);
     }
 
-    /**
-     * Protobuf enum {@code ValueProto.Name}
-     */
-    public enum Name
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>Value = 0;</code>
-       */
-      Value(0),
-      /**
-       * <code>X = 1;</code>
-       */
-      X(1),
-      /**
-       * <code>Y = 2;</code>
-       */
-      Y(2),
-      /**
-       * <code>EntityRef = 3;</code>
-       */
-      EntityRef(3),
-      /**
-       * <code>EntityRefList = 4;</code>
-       */
-      EntityRefList(4),
-      UNRECOGNIZED(-1),
-      ;
-
-      /**
-       * <code>Value = 0;</code>
-       */
-      public static final int Value_VALUE = 0;
-      /**
-       * <code>X = 1;</code>
-       */
-      public static final int X_VALUE = 1;
-      /**
-       * <code>Y = 2;</code>
-       */
-      public static final int Y_VALUE = 2;
-      /**
-       * <code>EntityRef = 3;</code>
-       */
-      public static final int EntityRef_VALUE = 3;
-      /**
-       * <code>EntityRefList = 4;</code>
-       */
-      public static final int EntityRefList_VALUE = 4;
-
-
-      public final int getNumber() {
-        if (this == UNRECOGNIZED) {
-          throw new java.lang.IllegalArgumentException(
-              "Can't get the number of an unknown enum value.");
-        }
-        return value;
-      }
-
-      /**
-       * @param value The numeric wire value of the corresponding enum entry.
-       * @return The enum associated with the given numeric wire value.
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static Name valueOf(int value) {
-        return forNumber(value);
-      }
-
-      /**
-       * @param value The numeric wire value of the corresponding enum entry.
-       * @return The enum associated with the given numeric wire value.
-       */
-      public static Name forNumber(int value) {
-        switch (value) {
-          case 0: return Value;
-          case 1: return X;
-          case 2: return Y;
-          case 3: return EntityRef;
-          case 4: return EntityRefList;
-          default: return null;
-        }
-      }
-
-      public static com.google.protobuf.Internal.EnumLiteMap<Name>
-          internalGetValueMap() {
-        return internalValueMap;
-      }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          Name> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<Name>() {
-              public Name findValueByNumber(int number) {
-                return Name.forNumber(number);
-              }
-            };
-
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
-        if (this == UNRECOGNIZED) {
-          throw new java.lang.IllegalStateException(
-              "Can't get the descriptor of an unrecognized enum value.");
-        }
-        return getDescriptor().getValues().get(ordinal());
-      }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
-        return getDescriptor();
-      }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
-        return rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDescriptor().getEnumTypes().get(0);
-      }
-
-      private static final Name[] VALUES = values();
-
-      public static Name valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-        if (desc.getType() != getDescriptor()) {
-          throw new java.lang.IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
-        }
-        if (desc.getIndex() == -1) {
-          return UNRECOGNIZED;
-        }
-        return VALUES[desc.getIndex()];
-      }
-
-      private final int value;
-
-      private Name(int value) {
-        this.value = value;
-      }
-
-      // @@protoc_insertion_point(enum_scope:ValueProto.Name)
-    }
-
     private int valueCase_ = 0;
     private java.lang.Object value_;
     public enum ValueCase
         implements com.google.protobuf.Internal.EnumLite,
             com.google.protobuf.AbstractMessage.InternalOneOfEnum {
-      VALUEINT(2),
-      VALUEBOOL(3),
-      VALUEDOUBLE(4),
-      LISTBYTE(5),
-      LISTINT(6),
-      MATRIXINT(7),
-      LISTEDGE(8),
+      INTVALUE(2),
+      BOOLVALUE(3),
+      DOUBLEVALUE(4),
+      BYTELIST(5),
+      INTLIST(6),
+      INTMATRIX(7),
+      EDGELIST(8),
+      POINT2D(9),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -8343,13 +7708,14 @@ public final class ControlMessageProto {
 
       public static ValueCase forNumber(int value) {
         switch (value) {
-          case 2: return VALUEINT;
-          case 3: return VALUEBOOL;
-          case 4: return VALUEDOUBLE;
-          case 5: return LISTBYTE;
-          case 6: return LISTINT;
-          case 7: return MATRIXINT;
-          case 8: return LISTEDGE;
+          case 2: return INTVALUE;
+          case 3: return BOOLVALUE;
+          case 4: return DOUBLEVALUE;
+          case 5: return BYTELIST;
+          case 6: return INTLIST;
+          case 7: return INTMATRIX;
+          case 8: return EDGELIST;
+          case 9: return POINT2D;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -8365,200 +7731,212 @@ public final class ControlMessageProto {
           valueCase_);
     }
 
-    public static final int NAME_FIELD_NUMBER = 1;
-    private int name_;
+    public static final int INTVALUE_FIELD_NUMBER = 2;
     /**
-     * <code>.ValueProto.Name name = 1;</code>
-     * @return The enum numeric value on the wire for name.
-     */
-    @java.lang.Override public int getNameValue() {
-      return name_;
-    }
-    /**
-     * <code>.ValueProto.Name name = 1;</code>
-     * @return The name.
-     */
-    @java.lang.Override public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name getName() {
-      @SuppressWarnings("deprecation")
-      rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name result = rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name.valueOf(name_);
-      return result == null ? rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name.UNRECOGNIZED : result;
-    }
-
-    public static final int VALUEINT_FIELD_NUMBER = 2;
-    /**
-     * <code>int32 valueInt = 2;</code>
-     * @return Whether the valueInt field is set.
+     * <code>int32 intValue = 2;</code>
+     * @return Whether the intValue field is set.
      */
     @java.lang.Override
-    public boolean hasValueInt() {
+    public boolean hasIntValue() {
       return valueCase_ == 2;
     }
     /**
-     * <code>int32 valueInt = 2;</code>
-     * @return The valueInt.
+     * <code>int32 intValue = 2;</code>
+     * @return The intValue.
      */
     @java.lang.Override
-    public int getValueInt() {
+    public int getIntValue() {
       if (valueCase_ == 2) {
         return (java.lang.Integer) value_;
       }
       return 0;
     }
 
-    public static final int VALUEBOOL_FIELD_NUMBER = 3;
+    public static final int BOOLVALUE_FIELD_NUMBER = 3;
     /**
-     * <code>bool valueBool = 3;</code>
-     * @return Whether the valueBool field is set.
+     * <code>bool boolValue = 3;</code>
+     * @return Whether the boolValue field is set.
      */
     @java.lang.Override
-    public boolean hasValueBool() {
+    public boolean hasBoolValue() {
       return valueCase_ == 3;
     }
     /**
-     * <code>bool valueBool = 3;</code>
-     * @return The valueBool.
+     * <code>bool boolValue = 3;</code>
+     * @return The boolValue.
      */
     @java.lang.Override
-    public boolean getValueBool() {
+    public boolean getBoolValue() {
       if (valueCase_ == 3) {
         return (java.lang.Boolean) value_;
       }
       return false;
     }
 
-    public static final int VALUEDOUBLE_FIELD_NUMBER = 4;
+    public static final int DOUBLEVALUE_FIELD_NUMBER = 4;
     /**
-     * <code>double valueDouble = 4;</code>
-     * @return Whether the valueDouble field is set.
+     * <code>double doubleValue = 4;</code>
+     * @return Whether the doubleValue field is set.
      */
     @java.lang.Override
-    public boolean hasValueDouble() {
+    public boolean hasDoubleValue() {
       return valueCase_ == 4;
     }
     /**
-     * <code>double valueDouble = 4;</code>
-     * @return The valueDouble.
+     * <code>double doubleValue = 4;</code>
+     * @return The doubleValue.
      */
     @java.lang.Override
-    public double getValueDouble() {
+    public double getDoubleValue() {
       if (valueCase_ == 4) {
         return (java.lang.Double) value_;
       }
       return 0D;
     }
 
-    public static final int LISTBYTE_FIELD_NUMBER = 5;
+    public static final int BYTELIST_FIELD_NUMBER = 5;
     /**
-     * <code>bytes listByte = 5;</code>
-     * @return Whether the listByte field is set.
+     * <code>bytes byteList = 5;</code>
+     * @return Whether the byteList field is set.
      */
     @java.lang.Override
-    public boolean hasListByte() {
+    public boolean hasByteList() {
       return valueCase_ == 5;
     }
     /**
-     * <code>bytes listByte = 5;</code>
-     * @return The listByte.
+     * <code>bytes byteList = 5;</code>
+     * @return The byteList.
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString getListByte() {
+    public com.google.protobuf.ByteString getByteList() {
       if (valueCase_ == 5) {
         return (com.google.protobuf.ByteString) value_;
       }
       return com.google.protobuf.ByteString.EMPTY;
     }
 
-    public static final int LISTINT_FIELD_NUMBER = 6;
+    public static final int INTLIST_FIELD_NUMBER = 6;
     /**
-     * <code>.IntListProto listInt = 6;</code>
-     * @return Whether the listInt field is set.
+     * <code>.IntListProto intList = 6;</code>
+     * @return Whether the intList field is set.
      */
     @java.lang.Override
-    public boolean hasListInt() {
+    public boolean hasIntList() {
       return valueCase_ == 6;
     }
     /**
-     * <code>.IntListProto listInt = 6;</code>
-     * @return The listInt.
+     * <code>.IntListProto intList = 6;</code>
+     * @return The intList.
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.IntListProto getListInt() {
+    public rescuecore2.messages.protobuf.ControlMessageProto.IntListProto getIntList() {
       if (valueCase_ == 6) {
          return (rescuecore2.messages.protobuf.ControlMessageProto.IntListProto) value_;
       }
       return rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.getDefaultInstance();
     }
     /**
-     * <code>.IntListProto listInt = 6;</code>
+     * <code>.IntListProto intList = 6;</code>
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder getListIntOrBuilder() {
+    public rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder getIntListOrBuilder() {
       if (valueCase_ == 6) {
          return (rescuecore2.messages.protobuf.ControlMessageProto.IntListProto) value_;
       }
       return rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.getDefaultInstance();
     }
 
-    public static final int MATRIXINT_FIELD_NUMBER = 7;
+    public static final int INTMATRIX_FIELD_NUMBER = 7;
     /**
-     * <code>.IntMatrixProto matrixInt = 7;</code>
-     * @return Whether the matrixInt field is set.
+     * <code>.IntMatrixProto intMatrix = 7;</code>
+     * @return Whether the intMatrix field is set.
      */
     @java.lang.Override
-    public boolean hasMatrixInt() {
+    public boolean hasIntMatrix() {
       return valueCase_ == 7;
     }
     /**
-     * <code>.IntMatrixProto matrixInt = 7;</code>
-     * @return The matrixInt.
+     * <code>.IntMatrixProto intMatrix = 7;</code>
+     * @return The intMatrix.
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto getMatrixInt() {
+    public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto getIntMatrix() {
       if (valueCase_ == 7) {
          return (rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto) value_;
       }
       return rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.getDefaultInstance();
     }
     /**
-     * <code>.IntMatrixProto matrixInt = 7;</code>
+     * <code>.IntMatrixProto intMatrix = 7;</code>
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder getMatrixIntOrBuilder() {
+    public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder getIntMatrixOrBuilder() {
       if (valueCase_ == 7) {
          return (rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto) value_;
       }
       return rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.getDefaultInstance();
     }
 
-    public static final int LISTEDGE_FIELD_NUMBER = 8;
+    public static final int EDGELIST_FIELD_NUMBER = 8;
     /**
-     * <code>.EdgeListProto listEdge = 8;</code>
-     * @return Whether the listEdge field is set.
+     * <code>.EdgeListProto edgeList = 8;</code>
+     * @return Whether the edgeList field is set.
      */
     @java.lang.Override
-    public boolean hasListEdge() {
+    public boolean hasEdgeList() {
       return valueCase_ == 8;
     }
     /**
-     * <code>.EdgeListProto listEdge = 8;</code>
-     * @return The listEdge.
+     * <code>.EdgeListProto edgeList = 8;</code>
+     * @return The edgeList.
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto getListEdge() {
+    public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto getEdgeList() {
       if (valueCase_ == 8) {
          return (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_;
       }
       return rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.getDefaultInstance();
     }
     /**
-     * <code>.EdgeListProto listEdge = 8;</code>
+     * <code>.EdgeListProto edgeList = 8;</code>
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder getListEdgeOrBuilder() {
+    public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder getEdgeListOrBuilder() {
       if (valueCase_ == 8) {
          return (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_;
       }
       return rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.getDefaultInstance();
+    }
+
+    public static final int POINT2D_FIELD_NUMBER = 9;
+    /**
+     * <code>.Point2DProto point2D = 9;</code>
+     * @return Whether the point2D field is set.
+     */
+    @java.lang.Override
+    public boolean hasPoint2D() {
+      return valueCase_ == 9;
+    }
+    /**
+     * <code>.Point2DProto point2D = 9;</code>
+     * @return The point2D.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto getPoint2D() {
+      if (valueCase_ == 9) {
+         return (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_;
+      }
+      return rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
+    }
+    /**
+     * <code>.Point2DProto point2D = 9;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder getPoint2DOrBuilder() {
+      if (valueCase_ == 9) {
+         return (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_;
+      }
+      return rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -8575,9 +7953,6 @@ public final class ControlMessageProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (name_ != rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name.Value.getNumber()) {
-        output.writeEnum(1, name_);
-      }
       if (valueCase_ == 2) {
         output.writeInt32(
             2, (int)((java.lang.Integer) value_));
@@ -8603,6 +7978,9 @@ public final class ControlMessageProto {
       if (valueCase_ == 8) {
         output.writeMessage(8, (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_);
       }
+      if (valueCase_ == 9) {
+        output.writeMessage(9, (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -8612,10 +7990,6 @@ public final class ControlMessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (name_ != rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name.Value.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(1, name_);
-      }
       if (valueCase_ == 2) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(
@@ -8648,6 +8022,10 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_);
       }
+      if (valueCase_ == 9) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -8663,37 +8041,40 @@ public final class ControlMessageProto {
       }
       rescuecore2.messages.protobuf.ControlMessageProto.ValueProto other = (rescuecore2.messages.protobuf.ControlMessageProto.ValueProto) obj;
 
-      if (name_ != other.name_) return false;
       if (!getValueCase().equals(other.getValueCase())) return false;
       switch (valueCase_) {
         case 2:
-          if (getValueInt()
-              != other.getValueInt()) return false;
+          if (getIntValue()
+              != other.getIntValue()) return false;
           break;
         case 3:
-          if (getValueBool()
-              != other.getValueBool()) return false;
+          if (getBoolValue()
+              != other.getBoolValue()) return false;
           break;
         case 4:
-          if (java.lang.Double.doubleToLongBits(getValueDouble())
+          if (java.lang.Double.doubleToLongBits(getDoubleValue())
               != java.lang.Double.doubleToLongBits(
-                  other.getValueDouble())) return false;
+                  other.getDoubleValue())) return false;
           break;
         case 5:
-          if (!getListByte()
-              .equals(other.getListByte())) return false;
+          if (!getByteList()
+              .equals(other.getByteList())) return false;
           break;
         case 6:
-          if (!getListInt()
-              .equals(other.getListInt())) return false;
+          if (!getIntList()
+              .equals(other.getIntList())) return false;
           break;
         case 7:
-          if (!getMatrixInt()
-              .equals(other.getMatrixInt())) return false;
+          if (!getIntMatrix()
+              .equals(other.getIntMatrix())) return false;
           break;
         case 8:
-          if (!getListEdge()
-              .equals(other.getListEdge())) return false;
+          if (!getEdgeList()
+              .equals(other.getEdgeList())) return false;
+          break;
+        case 9:
+          if (!getPoint2D()
+              .equals(other.getPoint2D())) return false;
           break;
         case 0:
         default:
@@ -8709,38 +8090,40 @@ public final class ControlMessageProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + NAME_FIELD_NUMBER;
-      hash = (53 * hash) + name_;
       switch (valueCase_) {
         case 2:
-          hash = (37 * hash) + VALUEINT_FIELD_NUMBER;
-          hash = (53 * hash) + getValueInt();
+          hash = (37 * hash) + INTVALUE_FIELD_NUMBER;
+          hash = (53 * hash) + getIntValue();
           break;
         case 3:
-          hash = (37 * hash) + VALUEBOOL_FIELD_NUMBER;
+          hash = (37 * hash) + BOOLVALUE_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-              getValueBool());
+              getBoolValue());
           break;
         case 4:
-          hash = (37 * hash) + VALUEDOUBLE_FIELD_NUMBER;
+          hash = (37 * hash) + DOUBLEVALUE_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-              java.lang.Double.doubleToLongBits(getValueDouble()));
+              java.lang.Double.doubleToLongBits(getDoubleValue()));
           break;
         case 5:
-          hash = (37 * hash) + LISTBYTE_FIELD_NUMBER;
-          hash = (53 * hash) + getListByte().hashCode();
+          hash = (37 * hash) + BYTELIST_FIELD_NUMBER;
+          hash = (53 * hash) + getByteList().hashCode();
           break;
         case 6:
-          hash = (37 * hash) + LISTINT_FIELD_NUMBER;
-          hash = (53 * hash) + getListInt().hashCode();
+          hash = (37 * hash) + INTLIST_FIELD_NUMBER;
+          hash = (53 * hash) + getIntList().hashCode();
           break;
         case 7:
-          hash = (37 * hash) + MATRIXINT_FIELD_NUMBER;
-          hash = (53 * hash) + getMatrixInt().hashCode();
+          hash = (37 * hash) + INTMATRIX_FIELD_NUMBER;
+          hash = (53 * hash) + getIntMatrix().hashCode();
           break;
         case 8:
-          hash = (37 * hash) + LISTEDGE_FIELD_NUMBER;
-          hash = (53 * hash) + getListEdge().hashCode();
+          hash = (37 * hash) + EDGELIST_FIELD_NUMBER;
+          hash = (53 * hash) + getEdgeList().hashCode();
+          break;
+        case 9:
+          hash = (37 * hash) + POINT2D_FIELD_NUMBER;
+          hash = (53 * hash) + getPoint2D().hashCode();
           break;
         case 0:
         default:
@@ -8878,8 +8261,6 @@ public final class ControlMessageProto {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        name_ = 0;
-
         valueCase_ = 0;
         value_ = null;
         return this;
@@ -8908,7 +8289,6 @@ public final class ControlMessageProto {
       @java.lang.Override
       public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto buildPartial() {
         rescuecore2.messages.protobuf.ControlMessageProto.ValueProto result = new rescuecore2.messages.protobuf.ControlMessageProto.ValueProto(this);
-        result.name_ = name_;
         if (valueCase_ == 2) {
           result.value_ = value_;
         }
@@ -8922,24 +8302,31 @@ public final class ControlMessageProto {
           result.value_ = value_;
         }
         if (valueCase_ == 6) {
-          if (listIntBuilder_ == null) {
+          if (intListBuilder_ == null) {
             result.value_ = value_;
           } else {
-            result.value_ = listIntBuilder_.build();
+            result.value_ = intListBuilder_.build();
           }
         }
         if (valueCase_ == 7) {
-          if (matrixIntBuilder_ == null) {
+          if (intMatrixBuilder_ == null) {
             result.value_ = value_;
           } else {
-            result.value_ = matrixIntBuilder_.build();
+            result.value_ = intMatrixBuilder_.build();
           }
         }
         if (valueCase_ == 8) {
-          if (listEdgeBuilder_ == null) {
+          if (edgeListBuilder_ == null) {
             result.value_ = value_;
           } else {
-            result.value_ = listEdgeBuilder_.build();
+            result.value_ = edgeListBuilder_.build();
+          }
+        }
+        if (valueCase_ == 9) {
+          if (point2DBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = point2DBuilder_.build();
           }
         }
         result.valueCase_ = valueCase_;
@@ -8991,36 +8378,37 @@ public final class ControlMessageProto {
 
       public Builder mergeFrom(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto other) {
         if (other == rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDefaultInstance()) return this;
-        if (other.name_ != 0) {
-          setNameValue(other.getNameValue());
-        }
         switch (other.getValueCase()) {
-          case VALUEINT: {
-            setValueInt(other.getValueInt());
+          case INTVALUE: {
+            setIntValue(other.getIntValue());
             break;
           }
-          case VALUEBOOL: {
-            setValueBool(other.getValueBool());
+          case BOOLVALUE: {
+            setBoolValue(other.getBoolValue());
             break;
           }
-          case VALUEDOUBLE: {
-            setValueDouble(other.getValueDouble());
+          case DOUBLEVALUE: {
+            setDoubleValue(other.getDoubleValue());
             break;
           }
-          case LISTBYTE: {
-            setListByte(other.getListByte());
+          case BYTELIST: {
+            setByteList(other.getByteList());
             break;
           }
-          case LISTINT: {
-            mergeListInt(other.getListInt());
+          case INTLIST: {
+            mergeIntList(other.getIntList());
             break;
           }
-          case MATRIXINT: {
-            mergeMatrixInt(other.getMatrixInt());
+          case INTMATRIX: {
+            mergeIntMatrix(other.getIntMatrix());
             break;
           }
-          case LISTEDGE: {
-            mergeListEdge(other.getListEdge());
+          case EDGELIST: {
+            mergeEdgeList(other.getEdgeList());
+            break;
+          }
+          case POINT2D: {
+            mergePoint2D(other.getPoint2D());
             break;
           }
           case VALUE_NOT_SET: {
@@ -9071,93 +8459,39 @@ public final class ControlMessageProto {
       }
 
 
-      private int name_ = 0;
       /**
-       * <code>.ValueProto.Name name = 1;</code>
-       * @return The enum numeric value on the wire for name.
+       * <code>int32 intValue = 2;</code>
+       * @return Whether the intValue field is set.
        */
-      @java.lang.Override public int getNameValue() {
-        return name_;
-      }
-      /**
-       * <code>.ValueProto.Name name = 1;</code>
-       * @param value The enum numeric value on the wire for name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setNameValue(int value) {
-        
-        name_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.ValueProto.Name name = 1;</code>
-       * @return The name.
-       */
-      @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name getName() {
-        @SuppressWarnings("deprecation")
-        rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name result = rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name.valueOf(name_);
-        return result == null ? rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>.ValueProto.Name name = 1;</code>
-       * @param value The name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setName(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        name_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.ValueProto.Name name = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearName() {
-        
-        name_ = 0;
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>int32 valueInt = 2;</code>
-       * @return Whether the valueInt field is set.
-       */
-      public boolean hasValueInt() {
+      public boolean hasIntValue() {
         return valueCase_ == 2;
       }
       /**
-       * <code>int32 valueInt = 2;</code>
-       * @return The valueInt.
+       * <code>int32 intValue = 2;</code>
+       * @return The intValue.
        */
-      public int getValueInt() {
+      public int getIntValue() {
         if (valueCase_ == 2) {
           return (java.lang.Integer) value_;
         }
         return 0;
       }
       /**
-       * <code>int32 valueInt = 2;</code>
-       * @param value The valueInt to set.
+       * <code>int32 intValue = 2;</code>
+       * @param value The intValue to set.
        * @return This builder for chaining.
        */
-      public Builder setValueInt(int value) {
+      public Builder setIntValue(int value) {
         valueCase_ = 2;
         value_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 valueInt = 2;</code>
+       * <code>int32 intValue = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearValueInt() {
+      public Builder clearIntValue() {
         if (valueCase_ == 2) {
           valueCase_ = 0;
           value_ = null;
@@ -9167,38 +8501,38 @@ public final class ControlMessageProto {
       }
 
       /**
-       * <code>bool valueBool = 3;</code>
-       * @return Whether the valueBool field is set.
+       * <code>bool boolValue = 3;</code>
+       * @return Whether the boolValue field is set.
        */
-      public boolean hasValueBool() {
+      public boolean hasBoolValue() {
         return valueCase_ == 3;
       }
       /**
-       * <code>bool valueBool = 3;</code>
-       * @return The valueBool.
+       * <code>bool boolValue = 3;</code>
+       * @return The boolValue.
        */
-      public boolean getValueBool() {
+      public boolean getBoolValue() {
         if (valueCase_ == 3) {
           return (java.lang.Boolean) value_;
         }
         return false;
       }
       /**
-       * <code>bool valueBool = 3;</code>
-       * @param value The valueBool to set.
+       * <code>bool boolValue = 3;</code>
+       * @param value The boolValue to set.
        * @return This builder for chaining.
        */
-      public Builder setValueBool(boolean value) {
+      public Builder setBoolValue(boolean value) {
         valueCase_ = 3;
         value_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool valueBool = 3;</code>
+       * <code>bool boolValue = 3;</code>
        * @return This builder for chaining.
        */
-      public Builder clearValueBool() {
+      public Builder clearBoolValue() {
         if (valueCase_ == 3) {
           valueCase_ = 0;
           value_ = null;
@@ -9208,38 +8542,38 @@ public final class ControlMessageProto {
       }
 
       /**
-       * <code>double valueDouble = 4;</code>
-       * @return Whether the valueDouble field is set.
+       * <code>double doubleValue = 4;</code>
+       * @return Whether the doubleValue field is set.
        */
-      public boolean hasValueDouble() {
+      public boolean hasDoubleValue() {
         return valueCase_ == 4;
       }
       /**
-       * <code>double valueDouble = 4;</code>
-       * @return The valueDouble.
+       * <code>double doubleValue = 4;</code>
+       * @return The doubleValue.
        */
-      public double getValueDouble() {
+      public double getDoubleValue() {
         if (valueCase_ == 4) {
           return (java.lang.Double) value_;
         }
         return 0D;
       }
       /**
-       * <code>double valueDouble = 4;</code>
-       * @param value The valueDouble to set.
+       * <code>double doubleValue = 4;</code>
+       * @param value The doubleValue to set.
        * @return This builder for chaining.
        */
-      public Builder setValueDouble(double value) {
+      public Builder setDoubleValue(double value) {
         valueCase_ = 4;
         value_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>double valueDouble = 4;</code>
+       * <code>double doubleValue = 4;</code>
        * @return This builder for chaining.
        */
-      public Builder clearValueDouble() {
+      public Builder clearDoubleValue() {
         if (valueCase_ == 4) {
           valueCase_ = 0;
           value_ = null;
@@ -9249,28 +8583,28 @@ public final class ControlMessageProto {
       }
 
       /**
-       * <code>bytes listByte = 5;</code>
-       * @return Whether the listByte field is set.
+       * <code>bytes byteList = 5;</code>
+       * @return Whether the byteList field is set.
        */
-      public boolean hasListByte() {
+      public boolean hasByteList() {
         return valueCase_ == 5;
       }
       /**
-       * <code>bytes listByte = 5;</code>
-       * @return The listByte.
+       * <code>bytes byteList = 5;</code>
+       * @return The byteList.
        */
-      public com.google.protobuf.ByteString getListByte() {
+      public com.google.protobuf.ByteString getByteList() {
         if (valueCase_ == 5) {
           return (com.google.protobuf.ByteString) value_;
         }
         return com.google.protobuf.ByteString.EMPTY;
       }
       /**
-       * <code>bytes listByte = 5;</code>
-       * @param value The listByte to set.
+       * <code>bytes byteList = 5;</code>
+       * @param value The byteList to set.
        * @return This builder for chaining.
        */
-      public Builder setListByte(com.google.protobuf.ByteString value) {
+      public Builder setByteList(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -9280,10 +8614,10 @@ public final class ControlMessageProto {
         return this;
       }
       /**
-       * <code>bytes listByte = 5;</code>
+       * <code>bytes byteList = 5;</code>
        * @return This builder for chaining.
        */
-      public Builder clearListByte() {
+      public Builder clearByteList() {
         if (valueCase_ == 5) {
           valueCase_ = 0;
           value_ = null;
@@ -9293,68 +8627,68 @@ public final class ControlMessageProto {
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
-          rescuecore2.messages.protobuf.ControlMessageProto.IntListProto, rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder> listIntBuilder_;
+          rescuecore2.messages.protobuf.ControlMessageProto.IntListProto, rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder> intListBuilder_;
       /**
-       * <code>.IntListProto listInt = 6;</code>
-       * @return Whether the listInt field is set.
+       * <code>.IntListProto intList = 6;</code>
+       * @return Whether the intList field is set.
        */
       @java.lang.Override
-      public boolean hasListInt() {
+      public boolean hasIntList() {
         return valueCase_ == 6;
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
-       * @return The listInt.
+       * <code>.IntListProto intList = 6;</code>
+       * @return The intList.
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.IntListProto getListInt() {
-        if (listIntBuilder_ == null) {
+      public rescuecore2.messages.protobuf.ControlMessageProto.IntListProto getIntList() {
+        if (intListBuilder_ == null) {
           if (valueCase_ == 6) {
             return (rescuecore2.messages.protobuf.ControlMessageProto.IntListProto) value_;
           }
           return rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.getDefaultInstance();
         } else {
           if (valueCase_ == 6) {
-            return listIntBuilder_.getMessage();
+            return intListBuilder_.getMessage();
           }
           return rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.getDefaultInstance();
         }
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
-      public Builder setListInt(rescuecore2.messages.protobuf.ControlMessageProto.IntListProto value) {
-        if (listIntBuilder_ == null) {
+      public Builder setIntList(rescuecore2.messages.protobuf.ControlMessageProto.IntListProto value) {
+        if (intListBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
           value_ = value;
           onChanged();
         } else {
-          listIntBuilder_.setMessage(value);
+          intListBuilder_.setMessage(value);
         }
         valueCase_ = 6;
         return this;
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
-      public Builder setListInt(
+      public Builder setIntList(
           rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder builderForValue) {
-        if (listIntBuilder_ == null) {
+        if (intListBuilder_ == null) {
           value_ = builderForValue.build();
           onChanged();
         } else {
-          listIntBuilder_.setMessage(builderForValue.build());
+          intListBuilder_.setMessage(builderForValue.build());
         }
         valueCase_ = 6;
         return this;
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
-      public Builder mergeListInt(rescuecore2.messages.protobuf.ControlMessageProto.IntListProto value) {
-        if (listIntBuilder_ == null) {
+      public Builder mergeIntList(rescuecore2.messages.protobuf.ControlMessageProto.IntListProto value) {
+        if (intListBuilder_ == null) {
           if (valueCase_ == 6 &&
               value_ != rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.getDefaultInstance()) {
             value_ = rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.newBuilder((rescuecore2.messages.protobuf.ControlMessageProto.IntListProto) value_)
@@ -9365,18 +8699,18 @@ public final class ControlMessageProto {
           onChanged();
         } else {
           if (valueCase_ == 6) {
-            listIntBuilder_.mergeFrom(value);
+            intListBuilder_.mergeFrom(value);
           }
-          listIntBuilder_.setMessage(value);
+          intListBuilder_.setMessage(value);
         }
         valueCase_ = 6;
         return this;
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
-      public Builder clearListInt() {
-        if (listIntBuilder_ == null) {
+      public Builder clearIntList() {
+        if (intListBuilder_ == null) {
           if (valueCase_ == 6) {
             valueCase_ = 0;
             value_ = null;
@@ -9387,23 +8721,23 @@ public final class ControlMessageProto {
             valueCase_ = 0;
             value_ = null;
           }
-          listIntBuilder_.clear();
+          intListBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
-      public rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder getListIntBuilder() {
-        return getListIntFieldBuilder().getBuilder();
+      public rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder getIntListBuilder() {
+        return getIntListFieldBuilder().getBuilder();
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder getListIntOrBuilder() {
-        if ((valueCase_ == 6) && (listIntBuilder_ != null)) {
-          return listIntBuilder_.getMessageOrBuilder();
+      public rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder getIntListOrBuilder() {
+        if ((valueCase_ == 6) && (intListBuilder_ != null)) {
+          return intListBuilder_.getMessageOrBuilder();
         } else {
           if (valueCase_ == 6) {
             return (rescuecore2.messages.protobuf.ControlMessageProto.IntListProto) value_;
@@ -9412,16 +8746,16 @@ public final class ControlMessageProto {
         }
       }
       /**
-       * <code>.IntListProto listInt = 6;</code>
+       * <code>.IntListProto intList = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           rescuecore2.messages.protobuf.ControlMessageProto.IntListProto, rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder> 
-          getListIntFieldBuilder() {
-        if (listIntBuilder_ == null) {
+          getIntListFieldBuilder() {
+        if (intListBuilder_ == null) {
           if (!(valueCase_ == 6)) {
             value_ = rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.getDefaultInstance();
           }
-          listIntBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          intListBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               rescuecore2.messages.protobuf.ControlMessageProto.IntListProto, rescuecore2.messages.protobuf.ControlMessageProto.IntListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntListProtoOrBuilder>(
                   (rescuecore2.messages.protobuf.ControlMessageProto.IntListProto) value_,
                   getParentForChildren(),
@@ -9430,72 +8764,72 @@ public final class ControlMessageProto {
         }
         valueCase_ = 6;
         onChanged();;
-        return listIntBuilder_;
+        return intListBuilder_;
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
-          rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder> matrixIntBuilder_;
+          rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder> intMatrixBuilder_;
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
-       * @return Whether the matrixInt field is set.
+       * <code>.IntMatrixProto intMatrix = 7;</code>
+       * @return Whether the intMatrix field is set.
        */
       @java.lang.Override
-      public boolean hasMatrixInt() {
+      public boolean hasIntMatrix() {
         return valueCase_ == 7;
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
-       * @return The matrixInt.
+       * <code>.IntMatrixProto intMatrix = 7;</code>
+       * @return The intMatrix.
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto getMatrixInt() {
-        if (matrixIntBuilder_ == null) {
+      public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto getIntMatrix() {
+        if (intMatrixBuilder_ == null) {
           if (valueCase_ == 7) {
             return (rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto) value_;
           }
           return rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.getDefaultInstance();
         } else {
           if (valueCase_ == 7) {
-            return matrixIntBuilder_.getMessage();
+            return intMatrixBuilder_.getMessage();
           }
           return rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.getDefaultInstance();
         }
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
-      public Builder setMatrixInt(rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto value) {
-        if (matrixIntBuilder_ == null) {
+      public Builder setIntMatrix(rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto value) {
+        if (intMatrixBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
           value_ = value;
           onChanged();
         } else {
-          matrixIntBuilder_.setMessage(value);
+          intMatrixBuilder_.setMessage(value);
         }
         valueCase_ = 7;
         return this;
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
-      public Builder setMatrixInt(
+      public Builder setIntMatrix(
           rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder builderForValue) {
-        if (matrixIntBuilder_ == null) {
+        if (intMatrixBuilder_ == null) {
           value_ = builderForValue.build();
           onChanged();
         } else {
-          matrixIntBuilder_.setMessage(builderForValue.build());
+          intMatrixBuilder_.setMessage(builderForValue.build());
         }
         valueCase_ = 7;
         return this;
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
-      public Builder mergeMatrixInt(rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto value) {
-        if (matrixIntBuilder_ == null) {
+      public Builder mergeIntMatrix(rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto value) {
+        if (intMatrixBuilder_ == null) {
           if (valueCase_ == 7 &&
               value_ != rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.getDefaultInstance()) {
             value_ = rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.newBuilder((rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto) value_)
@@ -9506,18 +8840,18 @@ public final class ControlMessageProto {
           onChanged();
         } else {
           if (valueCase_ == 7) {
-            matrixIntBuilder_.mergeFrom(value);
+            intMatrixBuilder_.mergeFrom(value);
           }
-          matrixIntBuilder_.setMessage(value);
+          intMatrixBuilder_.setMessage(value);
         }
         valueCase_ = 7;
         return this;
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
-      public Builder clearMatrixInt() {
-        if (matrixIntBuilder_ == null) {
+      public Builder clearIntMatrix() {
+        if (intMatrixBuilder_ == null) {
           if (valueCase_ == 7) {
             valueCase_ = 0;
             value_ = null;
@@ -9528,23 +8862,23 @@ public final class ControlMessageProto {
             valueCase_ = 0;
             value_ = null;
           }
-          matrixIntBuilder_.clear();
+          intMatrixBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
-      public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder getMatrixIntBuilder() {
-        return getMatrixIntFieldBuilder().getBuilder();
+      public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder getIntMatrixBuilder() {
+        return getIntMatrixFieldBuilder().getBuilder();
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder getMatrixIntOrBuilder() {
-        if ((valueCase_ == 7) && (matrixIntBuilder_ != null)) {
-          return matrixIntBuilder_.getMessageOrBuilder();
+      public rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder getIntMatrixOrBuilder() {
+        if ((valueCase_ == 7) && (intMatrixBuilder_ != null)) {
+          return intMatrixBuilder_.getMessageOrBuilder();
         } else {
           if (valueCase_ == 7) {
             return (rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto) value_;
@@ -9553,16 +8887,16 @@ public final class ControlMessageProto {
         }
       }
       /**
-       * <code>.IntMatrixProto matrixInt = 7;</code>
+       * <code>.IntMatrixProto intMatrix = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder> 
-          getMatrixIntFieldBuilder() {
-        if (matrixIntBuilder_ == null) {
+          getIntMatrixFieldBuilder() {
+        if (intMatrixBuilder_ == null) {
           if (!(valueCase_ == 7)) {
             value_ = rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.getDefaultInstance();
           }
-          matrixIntBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          intMatrixBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProtoOrBuilder>(
                   (rescuecore2.messages.protobuf.ControlMessageProto.IntMatrixProto) value_,
                   getParentForChildren(),
@@ -9571,72 +8905,72 @@ public final class ControlMessageProto {
         }
         valueCase_ = 7;
         onChanged();;
-        return matrixIntBuilder_;
+        return intMatrixBuilder_;
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
-          rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder> listEdgeBuilder_;
+          rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder> edgeListBuilder_;
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
-       * @return Whether the listEdge field is set.
+       * <code>.EdgeListProto edgeList = 8;</code>
+       * @return Whether the edgeList field is set.
        */
       @java.lang.Override
-      public boolean hasListEdge() {
+      public boolean hasEdgeList() {
         return valueCase_ == 8;
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
-       * @return The listEdge.
+       * <code>.EdgeListProto edgeList = 8;</code>
+       * @return The edgeList.
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto getListEdge() {
-        if (listEdgeBuilder_ == null) {
+      public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto getEdgeList() {
+        if (edgeListBuilder_ == null) {
           if (valueCase_ == 8) {
             return (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_;
           }
           return rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.getDefaultInstance();
         } else {
           if (valueCase_ == 8) {
-            return listEdgeBuilder_.getMessage();
+            return edgeListBuilder_.getMessage();
           }
           return rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.getDefaultInstance();
         }
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
-      public Builder setListEdge(rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto value) {
-        if (listEdgeBuilder_ == null) {
+      public Builder setEdgeList(rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto value) {
+        if (edgeListBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
           value_ = value;
           onChanged();
         } else {
-          listEdgeBuilder_.setMessage(value);
+          edgeListBuilder_.setMessage(value);
         }
         valueCase_ = 8;
         return this;
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
-      public Builder setListEdge(
+      public Builder setEdgeList(
           rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder builderForValue) {
-        if (listEdgeBuilder_ == null) {
+        if (edgeListBuilder_ == null) {
           value_ = builderForValue.build();
           onChanged();
         } else {
-          listEdgeBuilder_.setMessage(builderForValue.build());
+          edgeListBuilder_.setMessage(builderForValue.build());
         }
         valueCase_ = 8;
         return this;
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
-      public Builder mergeListEdge(rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto value) {
-        if (listEdgeBuilder_ == null) {
+      public Builder mergeEdgeList(rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto value) {
+        if (edgeListBuilder_ == null) {
           if (valueCase_ == 8 &&
               value_ != rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.getDefaultInstance()) {
             value_ = rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.newBuilder((rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_)
@@ -9647,18 +8981,18 @@ public final class ControlMessageProto {
           onChanged();
         } else {
           if (valueCase_ == 8) {
-            listEdgeBuilder_.mergeFrom(value);
+            edgeListBuilder_.mergeFrom(value);
           }
-          listEdgeBuilder_.setMessage(value);
+          edgeListBuilder_.setMessage(value);
         }
         valueCase_ = 8;
         return this;
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
-      public Builder clearListEdge() {
-        if (listEdgeBuilder_ == null) {
+      public Builder clearEdgeList() {
+        if (edgeListBuilder_ == null) {
           if (valueCase_ == 8) {
             valueCase_ = 0;
             value_ = null;
@@ -9669,23 +9003,23 @@ public final class ControlMessageProto {
             valueCase_ = 0;
             value_ = null;
           }
-          listEdgeBuilder_.clear();
+          edgeListBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
-      public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder getListEdgeBuilder() {
-        return getListEdgeFieldBuilder().getBuilder();
+      public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder getEdgeListBuilder() {
+        return getEdgeListFieldBuilder().getBuilder();
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
       @java.lang.Override
-      public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder getListEdgeOrBuilder() {
-        if ((valueCase_ == 8) && (listEdgeBuilder_ != null)) {
-          return listEdgeBuilder_.getMessageOrBuilder();
+      public rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder getEdgeListOrBuilder() {
+        if ((valueCase_ == 8) && (edgeListBuilder_ != null)) {
+          return edgeListBuilder_.getMessageOrBuilder();
         } else {
           if (valueCase_ == 8) {
             return (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_;
@@ -9694,16 +9028,16 @@ public final class ControlMessageProto {
         }
       }
       /**
-       * <code>.EdgeListProto listEdge = 8;</code>
+       * <code>.EdgeListProto edgeList = 8;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder> 
-          getListEdgeFieldBuilder() {
-        if (listEdgeBuilder_ == null) {
+          getEdgeListFieldBuilder() {
+        if (edgeListBuilder_ == null) {
           if (!(valueCase_ == 8)) {
             value_ = rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.getDefaultInstance();
           }
-          listEdgeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          edgeListBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProtoOrBuilder>(
                   (rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto) value_,
                   getParentForChildren(),
@@ -9712,7 +9046,148 @@ public final class ControlMessageProto {
         }
         valueCase_ = 8;
         onChanged();;
-        return listEdgeBuilder_;
+        return edgeListBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder> point2DBuilder_;
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       * @return Whether the point2D field is set.
+       */
+      @java.lang.Override
+      public boolean hasPoint2D() {
+        return valueCase_ == 9;
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       * @return The point2D.
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto getPoint2D() {
+        if (point2DBuilder_ == null) {
+          if (valueCase_ == 9) {
+            return (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_;
+          }
+          return rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
+        } else {
+          if (valueCase_ == 9) {
+            return point2DBuilder_.getMessage();
+          }
+          return rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      public Builder setPoint2D(rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto value) {
+        if (point2DBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          point2DBuilder_.setMessage(value);
+        }
+        valueCase_ = 9;
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      public Builder setPoint2D(
+          rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder builderForValue) {
+        if (point2DBuilder_ == null) {
+          value_ = builderForValue.build();
+          onChanged();
+        } else {
+          point2DBuilder_.setMessage(builderForValue.build());
+        }
+        valueCase_ = 9;
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      public Builder mergePoint2D(rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto value) {
+        if (point2DBuilder_ == null) {
+          if (valueCase_ == 9 &&
+              value_ != rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance()) {
+            value_ = rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.newBuilder((rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
+          onChanged();
+        } else {
+          if (valueCase_ == 9) {
+            point2DBuilder_.mergeFrom(value);
+          }
+          point2DBuilder_.setMessage(value);
+        }
+        valueCase_ = 9;
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      public Builder clearPoint2D() {
+        if (point2DBuilder_ == null) {
+          if (valueCase_ == 9) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+        } else {
+          if (valueCase_ == 9) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          point2DBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder getPoint2DBuilder() {
+        return getPoint2DFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder getPoint2DOrBuilder() {
+        if ((valueCase_ == 9) && (point2DBuilder_ != null)) {
+          return point2DBuilder_.getMessageOrBuilder();
+        } else {
+          if (valueCase_ == 9) {
+            return (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_;
+          }
+          return rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Point2DProto point2D = 9;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder> 
+          getPoint2DFieldBuilder() {
+        if (point2DBuilder_ == null) {
+          if (!(valueCase_ == 9)) {
+            value_ = rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
+          }
+          point2DBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder>(
+                  (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) value_,
+                  getParentForChildren(),
+                  isClean());
+          value_ = null;
+        }
+        valueCase_ = 9;
+        onChanged();;
+        return point2DBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -9790,28 +9265,19 @@ public final class ControlMessageProto {
     boolean getDefined();
 
     /**
-     * <code>repeated .ValueProto fields = 3;</code>
+     * <code>.ValueProto value = 3;</code>
+     * @return Whether the value field is set.
      */
-    java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto> 
-        getFieldsList();
+    boolean hasValue();
     /**
-     * <code>repeated .ValueProto fields = 3;</code>
+     * <code>.ValueProto value = 3;</code>
+     * @return The value.
      */
-    rescuecore2.messages.protobuf.ControlMessageProto.ValueProto getFields(int index);
+    rescuecore2.messages.protobuf.ControlMessageProto.ValueProto getValue();
     /**
-     * <code>repeated .ValueProto fields = 3;</code>
+     * <code>.ValueProto value = 3;</code>
      */
-    int getFieldsCount();
-    /**
-     * <code>repeated .ValueProto fields = 3;</code>
-     */
-    java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder> 
-        getFieldsOrBuilderList();
-    /**
-     * <code>repeated .ValueProto fields = 3;</code>
-     */
-    rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder getFieldsOrBuilder(
-        int index);
+    rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder getValueOrBuilder();
   }
   /**
    * Protobuf type {@code PropertyProto}
@@ -9827,7 +9293,6 @@ public final class ControlMessageProto {
     }
     private PropertyProto() {
       urn_ = "";
-      fields_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -9850,7 +9315,6 @@ public final class ControlMessageProto {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -9873,12 +9337,16 @@ public final class ControlMessageProto {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                fields_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto>();
-                mutable_bitField0_ |= 0x00000001;
+              rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder subBuilder = null;
+              if (value_ != null) {
+                subBuilder = value_.toBuilder();
               }
-              fields_.add(
-                  input.readMessage(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.parser(), extensionRegistry));
+              value_ = input.readMessage(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(value_);
+                value_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -9896,9 +9364,6 @@ public final class ControlMessageProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          fields_ = java.util.Collections.unmodifiableList(fields_);
-        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -9965,44 +9430,30 @@ public final class ControlMessageProto {
       return defined_;
     }
 
-    public static final int FIELDS_FIELD_NUMBER = 3;
-    private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto> fields_;
+    public static final int VALUE_FIELD_NUMBER = 3;
+    private rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value_;
     /**
-     * <code>repeated .ValueProto fields = 3;</code>
+     * <code>.ValueProto value = 3;</code>
+     * @return Whether the value field is set.
      */
     @java.lang.Override
-    public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto> getFieldsList() {
-      return fields_;
+    public boolean hasValue() {
+      return value_ != null;
     }
     /**
-     * <code>repeated .ValueProto fields = 3;</code>
+     * <code>.ValueProto value = 3;</code>
+     * @return The value.
      */
     @java.lang.Override
-    public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder> 
-        getFieldsOrBuilderList() {
-      return fields_;
+    public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto getValue() {
+      return value_ == null ? rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDefaultInstance() : value_;
     }
     /**
-     * <code>repeated .ValueProto fields = 3;</code>
+     * <code>.ValueProto value = 3;</code>
      */
     @java.lang.Override
-    public int getFieldsCount() {
-      return fields_.size();
-    }
-    /**
-     * <code>repeated .ValueProto fields = 3;</code>
-     */
-    @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto getFields(int index) {
-      return fields_.get(index);
-    }
-    /**
-     * <code>repeated .ValueProto fields = 3;</code>
-     */
-    @java.lang.Override
-    public rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder getFieldsOrBuilder(
-        int index) {
-      return fields_.get(index);
+    public rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder getValueOrBuilder() {
+      return getValue();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -10025,8 +9476,8 @@ public final class ControlMessageProto {
       if (defined_ != false) {
         output.writeBool(2, defined_);
       }
-      for (int i = 0; i < fields_.size(); i++) {
-        output.writeMessage(3, fields_.get(i));
+      if (value_ != null) {
+        output.writeMessage(3, getValue());
       }
       unknownFields.writeTo(output);
     }
@@ -10044,9 +9495,9 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(2, defined_);
       }
-      for (int i = 0; i < fields_.size(); i++) {
+      if (value_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, fields_.get(i));
+          .computeMessageSize(3, getValue());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -10067,8 +9518,11 @@ public final class ControlMessageProto {
           .equals(other.getUrn())) return false;
       if (getDefined()
           != other.getDefined()) return false;
-      if (!getFieldsList()
-          .equals(other.getFieldsList())) return false;
+      if (hasValue() != other.hasValue()) return false;
+      if (hasValue()) {
+        if (!getValue()
+            .equals(other.getValue())) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -10085,9 +9539,9 @@ public final class ControlMessageProto {
       hash = (37 * hash) + DEFINED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getDefined());
-      if (getFieldsCount() > 0) {
-        hash = (37 * hash) + FIELDS_FIELD_NUMBER;
-        hash = (53 * hash) + getFieldsList().hashCode();
+      if (hasValue()) {
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValue().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -10217,7 +9671,6 @@ public final class ControlMessageProto {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getFieldsFieldBuilder();
         }
       }
       @java.lang.Override
@@ -10227,11 +9680,11 @@ public final class ControlMessageProto {
 
         defined_ = false;
 
-        if (fieldsBuilder_ == null) {
-          fields_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+        if (valueBuilder_ == null) {
+          value_ = null;
         } else {
-          fieldsBuilder_.clear();
+          value_ = null;
+          valueBuilder_ = null;
         }
         return this;
       }
@@ -10259,17 +9712,12 @@ public final class ControlMessageProto {
       @java.lang.Override
       public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto buildPartial() {
         rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto result = new rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto(this);
-        int from_bitField0_ = bitField0_;
         result.urn_ = urn_;
         result.defined_ = defined_;
-        if (fieldsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            fields_ = java.util.Collections.unmodifiableList(fields_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.fields_ = fields_;
+        if (valueBuilder_ == null) {
+          result.value_ = value_;
         } else {
-          result.fields_ = fieldsBuilder_.build();
+          result.value_ = valueBuilder_.build();
         }
         onBuilt();
         return result;
@@ -10326,31 +9774,8 @@ public final class ControlMessageProto {
         if (other.getDefined() != false) {
           setDefined(other.getDefined());
         }
-        if (fieldsBuilder_ == null) {
-          if (!other.fields_.isEmpty()) {
-            if (fields_.isEmpty()) {
-              fields_ = other.fields_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureFieldsIsMutable();
-              fields_.addAll(other.fields_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.fields_.isEmpty()) {
-            if (fieldsBuilder_.isEmpty()) {
-              fieldsBuilder_.dispose();
-              fieldsBuilder_ = null;
-              fields_ = other.fields_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              fieldsBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getFieldsFieldBuilder() : null;
-            } else {
-              fieldsBuilder_.addAllMessages(other.fields_);
-            }
-          }
+        if (other.hasValue()) {
+          mergeValue(other.getValue());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -10380,7 +9805,6 @@ public final class ControlMessageProto {
         }
         return this;
       }
-      private int bitField0_;
 
       private java.lang.Object urn_ = "";
       /**
@@ -10489,244 +9913,123 @@ public final class ControlMessageProto {
         return this;
       }
 
-      private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto> fields_ =
-        java.util.Collections.emptyList();
-      private void ensureFieldsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          fields_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto>(fields_);
-          bitField0_ |= 0x00000001;
-         }
+      private rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.ControlMessageProto.ValueProto, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder> valueBuilder_;
+      /**
+       * <code>.ValueProto value = 3;</code>
+       * @return Whether the value field is set.
+       */
+      public boolean hasValue() {
+        return valueBuilder_ != null || value_ != null;
       }
+      /**
+       * <code>.ValueProto value = 3;</code>
+       * @return The value.
+       */
+      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto getValue() {
+        if (valueBuilder_ == null) {
+          return value_ == null ? rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDefaultInstance() : value_;
+        } else {
+          return valueBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.ValueProto value = 3;</code>
+       */
+      public Builder setValue(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value) {
+        if (valueBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          valueBuilder_.setMessage(value);
+        }
 
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          rescuecore2.messages.protobuf.ControlMessageProto.ValueProto, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder> fieldsBuilder_;
-
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto> getFieldsList() {
-        if (fieldsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(fields_);
-        } else {
-          return fieldsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public int getFieldsCount() {
-        if (fieldsBuilder_ == null) {
-          return fields_.size();
-        } else {
-          return fieldsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto getFields(int index) {
-        if (fieldsBuilder_ == null) {
-          return fields_.get(index);
-        } else {
-          return fieldsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public Builder setFields(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value) {
-        if (fieldsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureFieldsIsMutable();
-          fields_.set(index, value);
-          onChanged();
-        } else {
-          fieldsBuilder_.setMessage(index, value);
-        }
         return this;
       }
       /**
-       * <code>repeated .ValueProto fields = 3;</code>
+       * <code>.ValueProto value = 3;</code>
        */
-      public Builder setFields(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder builderForValue) {
-        if (fieldsBuilder_ == null) {
-          ensureFieldsIsMutable();
-          fields_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          fieldsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public Builder addFields(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value) {
-        if (fieldsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureFieldsIsMutable();
-          fields_.add(value);
-          onChanged();
-        } else {
-          fieldsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public Builder addFields(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value) {
-        if (fieldsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureFieldsIsMutable();
-          fields_.add(index, value);
-          onChanged();
-        } else {
-          fieldsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public Builder addFields(
+      public Builder setValue(
           rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder builderForValue) {
-        if (fieldsBuilder_ == null) {
-          ensureFieldsIsMutable();
-          fields_.add(builderForValue.build());
+        if (valueBuilder_ == null) {
+          value_ = builderForValue.build();
           onChanged();
         } else {
-          fieldsBuilder_.addMessage(builderForValue.build());
+          valueBuilder_.setMessage(builderForValue.build());
         }
+
         return this;
       }
       /**
-       * <code>repeated .ValueProto fields = 3;</code>
+       * <code>.ValueProto value = 3;</code>
        */
-      public Builder addFields(
-          int index, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder builderForValue) {
-        if (fieldsBuilder_ == null) {
-          ensureFieldsIsMutable();
-          fields_.add(index, builderForValue.build());
+      public Builder mergeValue(rescuecore2.messages.protobuf.ControlMessageProto.ValueProto value) {
+        if (valueBuilder_ == null) {
+          if (value_ != null) {
+            value_ =
+              rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.newBuilder(value_).mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
           onChanged();
         } else {
-          fieldsBuilder_.addMessage(index, builderForValue.build());
+          valueBuilder_.mergeFrom(value);
         }
+
         return this;
       }
       /**
-       * <code>repeated .ValueProto fields = 3;</code>
+       * <code>.ValueProto value = 3;</code>
        */
-      public Builder addAllFields(
-          java.lang.Iterable<? extends rescuecore2.messages.protobuf.ControlMessageProto.ValueProto> values) {
-        if (fieldsBuilder_ == null) {
-          ensureFieldsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, fields_);
+      public Builder clearValue() {
+        if (valueBuilder_ == null) {
+          value_ = null;
           onChanged();
         } else {
-          fieldsBuilder_.addAllMessages(values);
+          value_ = null;
+          valueBuilder_ = null;
         }
+
         return this;
       }
       /**
-       * <code>repeated .ValueProto fields = 3;</code>
+       * <code>.ValueProto value = 3;</code>
        */
-      public Builder clearFields() {
-        if (fieldsBuilder_ == null) {
-          fields_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
+      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder getValueBuilder() {
+        
+        onChanged();
+        return getValueFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.ValueProto value = 3;</code>
+       */
+      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder getValueOrBuilder() {
+        if (valueBuilder_ != null) {
+          return valueBuilder_.getMessageOrBuilder();
         } else {
-          fieldsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public Builder removeFields(int index) {
-        if (fieldsBuilder_ == null) {
-          ensureFieldsIsMutable();
-          fields_.remove(index);
-          onChanged();
-        } else {
-          fieldsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder getFieldsBuilder(
-          int index) {
-        return getFieldsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder getFieldsOrBuilder(
-          int index) {
-        if (fieldsBuilder_ == null) {
-          return fields_.get(index);  } else {
-          return fieldsBuilder_.getMessageOrBuilder(index);
+          return value_ == null ?
+              rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDefaultInstance() : value_;
         }
       }
       /**
-       * <code>repeated .ValueProto fields = 3;</code>
+       * <code>.ValueProto value = 3;</code>
        */
-      public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder> 
-           getFieldsOrBuilderList() {
-        if (fieldsBuilder_ != null) {
-          return fieldsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(fields_);
-        }
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder addFieldsBuilder() {
-        return getFieldsFieldBuilder().addBuilder(
-            rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder addFieldsBuilder(
-          int index) {
-        return getFieldsFieldBuilder().addBuilder(
-            index, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .ValueProto fields = 3;</code>
-       */
-      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder> 
-           getFieldsBuilderList() {
-        return getFieldsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
+      private com.google.protobuf.SingleFieldBuilderV3<
           rescuecore2.messages.protobuf.ControlMessageProto.ValueProto, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder> 
-          getFieldsFieldBuilder() {
-        if (fieldsBuilder_ == null) {
-          fieldsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+          getValueFieldBuilder() {
+        if (valueBuilder_ == null) {
+          valueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               rescuecore2.messages.protobuf.ControlMessageProto.ValueProto, rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.ValueProtoOrBuilder>(
-                  fields_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  getValue(),
                   getParentForChildren(),
                   isClean());
-          fields_ = null;
+          value_ = null;
         }
-        return fieldsBuilder_;
+        return valueBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -10776,6 +10079,568 @@ public final class ControlMessageProto {
 
     @java.lang.Override
     public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface Point2DProtoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Point2DProto)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>double X = 1;</code>
+     * @return The x.
+     */
+    double getX();
+
+    /**
+     * <code>double Y = 2;</code>
+     * @return The y.
+     */
+    double getY();
+  }
+  /**
+   * Protobuf type {@code Point2DProto}
+   */
+  public static final class Point2DProto extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:Point2DProto)
+      Point2DProtoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Point2DProto.newBuilder() to construct.
+    private Point2DProto(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Point2DProto() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Point2DProto();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Point2DProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 9: {
+
+              x_ = input.readDouble();
+              break;
+            }
+            case 17: {
+
+              y_ = input.readDouble();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_Point2DProto_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_Point2DProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.class, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder.class);
+    }
+
+    public static final int X_FIELD_NUMBER = 1;
+    private double x_;
+    /**
+     * <code>double X = 1;</code>
+     * @return The x.
+     */
+    @java.lang.Override
+    public double getX() {
+      return x_;
+    }
+
+    public static final int Y_FIELD_NUMBER = 2;
+    private double y_;
+    /**
+     * <code>double Y = 2;</code>
+     * @return The y.
+     */
+    @java.lang.Override
+    public double getY() {
+      return y_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (x_ != 0D) {
+        output.writeDouble(1, x_);
+      }
+      if (y_ != 0D) {
+        output.writeDouble(2, y_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (x_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(1, x_);
+      }
+      if (y_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, y_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto)) {
+        return super.equals(obj);
+      }
+      rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto other = (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) obj;
+
+      if (java.lang.Double.doubleToLongBits(getX())
+          != java.lang.Double.doubleToLongBits(
+              other.getX())) return false;
+      if (java.lang.Double.doubleToLongBits(getY())
+          != java.lang.Double.doubleToLongBits(
+              other.getY())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + X_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getX()));
+      hash = (37 * hash) + Y_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getY()));
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Point2DProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Point2DProto)
+        rescuecore2.messages.protobuf.ControlMessageProto.Point2DProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_Point2DProto_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_Point2DProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.class, rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.Builder.class);
+      }
+
+      // Construct using rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        x_ = 0D;
+
+        y_ = 0D;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_Point2DProto_descriptor;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto getDefaultInstanceForType() {
+        return rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto build() {
+        rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto buildPartial() {
+        rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto result = new rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto(this);
+        result.x_ = x_;
+        result.y_ = y_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) {
+          return mergeFrom((rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto other) {
+        if (other == rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto.getDefaultInstance()) return this;
+        if (other.getX() != 0D) {
+          setX(other.getX());
+        }
+        if (other.getY() != 0D) {
+          setY(other.getY());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private double x_ ;
+      /**
+       * <code>double X = 1;</code>
+       * @return The x.
+       */
+      @java.lang.Override
+      public double getX() {
+        return x_;
+      }
+      /**
+       * <code>double X = 1;</code>
+       * @param value The x to set.
+       * @return This builder for chaining.
+       */
+      public Builder setX(double value) {
+        
+        x_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>double X = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearX() {
+        
+        x_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private double y_ ;
+      /**
+       * <code>double Y = 2;</code>
+       * @return The y.
+       */
+      @java.lang.Override
+      public double getY() {
+        return y_;
+      }
+      /**
+       * <code>double Y = 2;</code>
+       * @param value The y to set.
+       * @return This builder for chaining.
+       */
+      public Builder setY(double value) {
+        
+        y_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>double Y = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearY() {
+        
+        y_ = 0D;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:Point2DProto)
+    }
+
+    // @@protoc_insertion_point(class_scope:Point2DProto)
+    private static final rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto();
+    }
+
+    public static rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Point2DProto>
+        PARSER = new com.google.protobuf.AbstractParser<Point2DProto>() {
+      @java.lang.Override
+      public Point2DProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Point2DProto(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Point2DProto> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Point2DProto> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -21874,6 +21739,11 @@ public final class ControlMessageProto {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_PropertyProto_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Point2DProto_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_Point2DProto_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EntityProto_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -21982,44 +21852,44 @@ public final class ControlMessageProto {
       "component\"\036\n\014StrListProto\022\016\n\006values\030\001 \003(" +
       "\t\"\036\n\014IntListProto\022\016\n\006values\030\001 \003(\005\" \n\016Flo" +
       "atListProto\022\016\n\006values\030\001 \003(\002\"/\n\016IntMatrix" +
-      "Proto\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\270\002\n" +
-      "\nValueProto\022\036\n\004name\030\001 \001(\0162\020.ValueProto.N" +
-      "ame\022\022\n\010valueInt\030\002 \001(\005H\000\022\023\n\tvalueBool\030\003 \001" +
-      "(\010H\000\022\025\n\013valueDouble\030\004 \001(\001H\000\022\022\n\010listByte\030" +
-      "\005 \001(\014H\000\022 \n\007listInt\030\006 \001(\0132\r.IntListProtoH" +
-      "\000\022$\n\tmatrixInt\030\007 \001(\0132\017.IntMatrixProtoH\000\022" +
-      "\"\n\010listEdge\030\010 \001(\0132\016.EdgeListProtoH\000\"A\n\004N" +
-      "ame\022\t\n\005Value\020\000\022\005\n\001X\020\001\022\005\n\001Y\020\002\022\r\n\tEntityRe" +
-      "f\020\003\022\021\n\rEntityRefList\020\004B\007\n\005value\"J\n\rPrope" +
-      "rtyProto\022\013\n\003urn\030\001 \001(\t\022\017\n\007defined\030\002 \001(\010\022\033" +
-      "\n\006fields\030\003 \003(\0132\013.ValueProto\"\241\001\n\013EntityPr" +
-      "oto\022\013\n\003urn\030\001 \001(\t\022\020\n\010entityID\030\002 \001(\005\0220\n\npr" +
-      "operties\030\003 \003(\0132\034.EntityProto.PropertiesE" +
-      "ntry\032A\n\017PropertiesEntry\022\013\n\003key\030\001 \001(\t\022\035\n\005" +
-      "value\030\002 \001(\0132\016.PropertyProto:\0028\001\"1\n\017Entit" +
-      "yListProto\022\036\n\010entities\030\001 \003(\0132\014.EntityPro" +
-      "to\"`\n\013ConfigProto\022$\n\004data\030\001 \003(\0132\026.Config" +
-      "Proto.DataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(" +
-      "\t\022\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n" +
-      "\005edges\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n" +
-      "\006startX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 " +
-      "\001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\255\001\n" +
-      "\016ChangeSetProto\0222\n\007changes\030\001 \003(\0132!.Chang" +
-      "eSetProto.EntityChangeProto\022\017\n\007deletes\030\002" +
-      " \003(\005\032V\n\021EntityChangeProto\022\020\n\010entityID\030\001 " +
-      "\001(\005\022\013\n\003urn\030\002 \001(\t\022\"\n\nproperties\030\003 \003(\0132\016.P" +
-      "ropertyProto\"@\n\017CommandLogProto\022\014\n\004time\030" +
-      "\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessageProto\";" +
-      "\n\031InitialConditionsLogProto\022\036\n\010entities\030" +
-      "\001 \003(\0132\014.EntityProto\"}\n\022PerceptionLogProt" +
-      "o\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 \n\007vis" +
-      "ible\030\003 \001(\0132\017.ChangeSetProto\022%\n\016communica" +
-      "tions\030\004 \003(\0132\r.MessageProto\"\017\n\rStartLogPr" +
-      "oto\"\r\n\013EndLogProto\".\n\016ConfigLogProto\022\034\n\006" +
-      "config\030\001 \001(\0132\014.ConfigProto\"A\n\017UpdatesLog" +
-      "Proto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(\0132\017.C" +
-      "hangeSetProtoB4\n\035rescuecore2.messages.pr" +
-      "otobufB\023ControlMessageProtob\006proto3"
+      "Proto\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\367\001\n" +
+      "\nValueProto\022\022\n\010intValue\030\002 \001(\005H\000\022\023\n\tboolV" +
+      "alue\030\003 \001(\010H\000\022\025\n\013doubleValue\030\004 \001(\001H\000\022\022\n\010b" +
+      "yteList\030\005 \001(\014H\000\022 \n\007intList\030\006 \001(\0132\r.IntLi" +
+      "stProtoH\000\022$\n\tintMatrix\030\007 \001(\0132\017.IntMatrix" +
+      "ProtoH\000\022\"\n\010edgeList\030\010 \001(\0132\016.EdgeListProt" +
+      "oH\000\022 \n\007point2D\030\t \001(\0132\r.Point2DProtoH\000B\007\n" +
+      "\005value\"I\n\rPropertyProto\022\013\n\003urn\030\001 \001(\t\022\017\n\007" +
+      "defined\030\002 \001(\010\022\032\n\005value\030\003 \001(\0132\013.ValueProt" +
+      "o\"$\n\014Point2DProto\022\t\n\001X\030\001 \001(\001\022\t\n\001Y\030\002 \001(\001\"" +
+      "\241\001\n\013EntityProto\022\013\n\003urn\030\001 \001(\t\022\020\n\010entityID" +
+      "\030\002 \001(\005\0220\n\nproperties\030\003 \003(\0132\034.EntityProto" +
+      ".PropertiesEntry\032A\n\017PropertiesEntry\022\013\n\003k" +
+      "ey\030\001 \001(\t\022\035\n\005value\030\002 \001(\0132\016.PropertyProto:" +
+      "\0028\001\"1\n\017EntityListProto\022\036\n\010entities\030\001 \003(\013" +
+      "2\014.EntityProto\"`\n\013ConfigProto\022$\n\004data\030\001 " +
+      "\003(\0132\026.ConfigProto.DataEntry\032+\n\tDataEntry" +
+      "\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdge" +
+      "ListProto\022\031\n\005edges\030\001 \003(\0132\n.EdgeProto\"Z\n\t" +
+      "EdgeProto\022\016\n\006startX\030\001 \001(\005\022\016\n\006startY\030\002 \001(" +
+      "\005\022\014\n\004endX\030\003 \001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbo" +
+      "ur\030\005 \001(\005\"\255\001\n\016ChangeSetProto\0222\n\007changes\030\001" +
+      " \003(\0132!.ChangeSetProto.EntityChangeProto\022" +
+      "\017\n\007deletes\030\002 \003(\005\032V\n\021EntityChangeProto\022\020\n" +
+      "\010entityID\030\001 \001(\005\022\013\n\003urn\030\002 \001(\t\022\"\n\nproperti" +
+      "es\030\003 \003(\0132\016.PropertyProto\"@\n\017CommandLogPr" +
+      "oto\022\014\n\004time\030\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.Me" +
+      "ssageProto\";\n\031InitialConditionsLogProto\022" +
+      "\036\n\010entities\030\001 \003(\0132\014.EntityProto\"}\n\022Perce" +
+      "ptionLogProto\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030" +
+      "\002 \001(\005\022 \n\007visible\030\003 \001(\0132\017.ChangeSetProto\022" +
+      "%\n\016communications\030\004 \003(\0132\r.MessageProto\"\017" +
+      "\n\rStartLogProto\"\r\n\013EndLogProto\".\n\016Config" +
+      "LogProto\022\034\n\006config\030\001 \001(\0132\014.ConfigProto\"A" +
+      "\n\017UpdatesLogProto\022\014\n\004time\030\001 \001(\005\022 \n\007chang" +
+      "es\030\002 \001(\0132\017.ChangeSetProtoB4\n\035rescuecore2" +
+      ".messages.protobufB\023ControlMessageProtob" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -22078,15 +21948,21 @@ public final class ControlMessageProto {
     internal_static_ValueProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ValueProto_descriptor,
-        new java.lang.String[] { "Name", "ValueInt", "ValueBool", "ValueDouble", "ListByte", "ListInt", "MatrixInt", "ListEdge", "Value", });
+        new java.lang.String[] { "IntValue", "BoolValue", "DoubleValue", "ByteList", "IntList", "IntMatrix", "EdgeList", "Point2D", "Value", });
     internal_static_PropertyProto_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_PropertyProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PropertyProto_descriptor,
-        new java.lang.String[] { "Urn", "Defined", "Fields", });
-    internal_static_EntityProto_descriptor =
+        new java.lang.String[] { "Urn", "Defined", "Value", });
+    internal_static_Point2DProto_descriptor =
       getDescriptor().getMessageTypes().get(9);
+    internal_static_Point2DProto_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_Point2DProto_descriptor,
+        new java.lang.String[] { "X", "Y", });
+    internal_static_EntityProto_descriptor =
+      getDescriptor().getMessageTypes().get(10);
     internal_static_EntityProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EntityProto_descriptor,
@@ -22098,13 +21974,13 @@ public final class ControlMessageProto {
         internal_static_EntityProto_PropertiesEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_EntityListProto_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_EntityListProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EntityListProto_descriptor,
         new java.lang.String[] { "Entities", });
     internal_static_ConfigProto_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_ConfigProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ConfigProto_descriptor,
@@ -22116,19 +21992,19 @@ public final class ControlMessageProto {
         internal_static_ConfigProto_DataEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_EdgeListProto_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_EdgeListProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EdgeListProto_descriptor,
         new java.lang.String[] { "Edges", });
     internal_static_EdgeProto_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_EdgeProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EdgeProto_descriptor,
         new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Neighbour", });
     internal_static_ChangeSetProto_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_ChangeSetProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ChangeSetProto_descriptor,
@@ -22140,43 +22016,43 @@ public final class ControlMessageProto {
         internal_static_ChangeSetProto_EntityChangeProto_descriptor,
         new java.lang.String[] { "EntityID", "Urn", "Properties", });
     internal_static_CommandLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_CommandLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CommandLogProto_descriptor,
         new java.lang.String[] { "Time", "Commands", });
     internal_static_InitialConditionsLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_InitialConditionsLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_InitialConditionsLogProto_descriptor,
         new java.lang.String[] { "Entities", });
     internal_static_PerceptionLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_PerceptionLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PerceptionLogProto_descriptor,
         new java.lang.String[] { "Time", "EntityID", "Visible", "Communications", });
     internal_static_StartLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_StartLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StartLogProto_descriptor,
         new java.lang.String[] { });
     internal_static_EndLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_EndLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EndLogProto_descriptor,
         new java.lang.String[] { });
     internal_static_ConfigLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(21);
     internal_static_ConfigLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ConfigLogProto_descriptor,
         new java.lang.String[] { "Config", });
     internal_static_UpdatesLogProto_descriptor =
-      getDescriptor().getMessageTypes().get(21);
+      getDescriptor().getMessageTypes().get(22);
     internal_static_UpdatesLogProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_UpdatesLogProto_descriptor,

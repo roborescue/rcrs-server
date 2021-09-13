@@ -3,6 +3,7 @@ syntax = "proto3";
 option java_package = "rescuecore2.messages.protobuf";
 option java_outer_classname = "ControlMessageProto";
 
+
 message MessageProto {
    string urn = 1;
    map<string,MessageComponentProto> components=2;
@@ -47,31 +48,28 @@ message IntMatrixProto {
 }
 
 message ValueProto {
-  enum Name {
-	  Value=0;
-	  X=1;
-	  Y=2;
-	  EntityRef=3;
-	  EntityRefList=4;
-  }
-  Name name = 1;
   oneof value {
-    int32 valueInt = 2;
-    bool valueBool = 3;
-    double valueDouble = 4;
-    bytes listByte = 5;
-    IntListProto listInt = 6;
-    IntMatrixProto matrixInt = 7;
-    EdgeListProto listEdge = 8; 
+    int32 intValue = 2;
+    bool boolValue = 3;
+    double doubleValue = 4;
+    bytes byteList = 5;
+    IntListProto intList = 6;
+    IntMatrixProto intMatrix = 7;
+    EdgeListProto edgeList = 8;
+    Point2DProto point2D= 9;
   }
 }
 
 message PropertyProto {
   string urn = 1;
   bool defined = 2;
-  repeated ValueProto fields = 3;
+  ValueProto value = 3;
 }
 
+message Point2DProto {
+	double X = 1;
+	double Y = 2;
+}
 message EntityProto {
   string urn = 1;
   int32 entityID = 2;

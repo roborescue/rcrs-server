@@ -7,7 +7,6 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto.Name;
 import rescuecore2.worldmodel.AbstractProperty;
 
 import java.io.InputStream;
@@ -122,8 +121,8 @@ public class EntityRefProperty extends AbstractProperty {
 	public PropertyProto toPropertyProto() {
 		PropertyProto.Builder builder=PropertyProto.newBuilder().setUrn(getURN()).setDefined(isDefined());
 		if(isDefined())
-			builder.addFields(ValueProto.newBuilder()
-						.setName(Name.EntityRef).setValueInt(value.getValue()));
+			builder.setValue(ValueProto.newBuilder()
+						.setIntValue(value.getValue()));
 		return builder.build();
 	}
 
@@ -131,6 +130,6 @@ public class EntityRefProperty extends AbstractProperty {
 	public void fromPropertyProto(PropertyProto proto) {
 		if (!proto.getDefined())
 			return;
-		setValue(new EntityID(proto.getFields(0).getValueInt()));
+		setValue(new EntityID(proto.getValue().getIntValue()));
 	}
 }
