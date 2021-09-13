@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Iterator;
-
+import java.util.Map.Entry;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -252,7 +252,7 @@ public abstract class AbstractEntity implements Entity {
 			  .setUrn(getURN());
     for ( Property next : getProperties() ) {
       if ( next.isDefined() ) {
-        builder.addProperties(next.toPropertyProto());
+        builder.putProperties(next.getURN(),next.toPropertyProto());
       }
     }
     return builder.build();
@@ -261,8 +261,8 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void fromEntityProto(EntityProto proto) {
-	  for (PropertyProto propertyProto : proto.getPropertiesList()) {
-		Property prop = MsgProtoBuf.propertyProto2Property(propertyProto);
+	  for (Entry<String, PropertyProto> propertyProto : proto.getPropertiesMap().entrySet()) {
+		Property prop = MsgProtoBuf.propertyProto2Property(propertyProto.getValue());
 		if ( prop == null ) {
 	        continue;
 	      }

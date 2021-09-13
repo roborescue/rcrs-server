@@ -104,7 +104,7 @@ message PropertyProto {
 message EntityProto {
   string urn = 1;
   int32 entityID = 2;
-  repeated PropertyProto properties = 3;
+  map<string,PropertyProto> properties = 3;
 }
 
 message EntityListProto {
@@ -127,7 +127,7 @@ message EdgeProto {
 
 message ChangeSetProto {
 	message EntityChangeProto {
-		int32 enitityId=1;
+		int32 entityID=1;
 		string urn=2;
 		repeated PropertyProto property = 3;
 	}
@@ -136,147 +136,6 @@ message ChangeSetProto {
 }
 
 
-
-message AKAcknowledgeProto {
-  int32 requestID = 1;
-  int32 agentID = 2;
-}
-
-message AKCommandProto {
-  repeated MessageProto commands = 1;
-}
-
-message AKConnectProto {
-  int32 requestID = 1;
-  int32 version = 2;
-  string agentName = 3;
-  repeated string requestedEntityTypes = 4;
-}
-
-message EntityIDRequestProto {
-  int32 simID = 1;
-  int32 requestID = 2;
-  int32 count = 3;
-}
-
-message EntityIDResponseProto {
-  int32 simID = 1;
-  int32 requestID = 2;
-  repeated int32 newIDs = 3;
-}
-
-message GKConnectErrorProto {
-  string reason = 1;
-}
-
-message GKConnectOKProto {
-  repeated EntityProto entities = 1;
-}
-
-message KAConnectErrorProto {
-  int32 requestID = 1;
-  string reason = 2;
-}
-
-message KAConnectOKProto {
-  int32 requestID = 1;
-  int32 agentID = 2;
-  repeated EntityProto entities = 3;
-  ConfigProto config = 4;
-}
-
-message KASenseProto {
-  int32 agentID = 1;
-  int32 time = 2;
-  ChangeSetProto changes = 3;
-  repeated MessageProto hears = 4;
-}
-
-message KGAcknowledgeProto {
-}
-
-message KGConnectProto {
-  int32 version = 1;
-}
-
-message KSAfterShockInfoProto {
-  repeated int32 times = 1;
-  repeated float intensities = 2;
-}
-
-message KSCommandsProto {
-  int32 simID = 1;
-  int32 time = 2;
-  repeated MessageProto commands = 3;
-}
-
-message KSConnectErrorProto {
-  int32 requestID = 1;
-  string reason = 2;
-}
-
-message KSConnectOKProto {
-  int32 simID = 1;
-  int32 requestID = 2;
-  repeated EntityProto entities = 3;
-  ConfigProto config = 4;
-}
-
-message KSUpdateProto {
-  int32 simID = 1;
-  int32 time = 2;
-  ChangeSetProto changes = 3;
-}
-
-message KVConnectErrorProto {
-  int32 requestID = 1;
-  string reason = 2;
-}
-
-message KVConnectOKProto {
-  int32 viewerID = 1;
-  int32 requestID = 2;
-  repeated EntityProto entities = 3;
-  ConfigProto config = 4;
-}
-
-message KVTimestepProto {
-  int32 viewerID = 1;
-  int32 time = 2;
-  repeated MessageProto commands = 3;
-  ChangeSetProto changes = 4;
-}
-
-message ShutdownProto {
-}
-
-message SKAcknowledgeProto {
-  int32 simID = 1;
-  int32 requestID = 2;
-}
-
-message SKConnectProto {
-  int32 requestID = 1;
-  int32 version = 2;
-  string simulatorName = 3;
-}
-
-message SKUpdateProto {
-  int32 simID = 1;
-  int32 time = 2;
-  ChangeSetProto changes = 3;
-}
-
-message VKAcknowledgeProto {
-  int32 requestID = 1;
-  int32 viewerID = 2;
-}
-
-message VKConnectProto {
-  int32 requestID = 1;
-  int32 version = 2;
-  string viewerName = 3;
-}
 
 message CommandLogProto {
   int32 time = 1;
