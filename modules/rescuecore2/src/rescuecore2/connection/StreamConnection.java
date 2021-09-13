@@ -102,14 +102,12 @@ public class StreamConnection extends AbstractConnection {
     protected void serializeMessageProto(MessageProto messageProto) throws IOException {
 //    	messageProto.writeDelimitedTo(out);
     	byte[] bytes = messageProto.toByteArray();
-    	out.write(bytes.length);
     	EncodingTools.writeInt32(bytes.length,out);
     	out.write(bytes);
     	
     }
     protected MessageProto deserializeMessageProto() throws IOException {
 //    	return MessageProto.parseDelimitedFrom(in);
-//    	int size=in.read();
     	int size=EncodingTools.readInt32(in);
     	byte[] bytes = in.readNBytes(size);
     	return MessageProto.parseFrom(bytes);
