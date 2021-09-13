@@ -6,35 +6,6 @@ option java_outer_classname = "ControlMessageProto";
 message MessageProto {
    string urn = 1;
    map<string,MessageComponentProto> components=2;
-   //repeated MessageComponentProto components = 2;
-//   oneof msg {
-//    	AKAcknowledgeProto	msgAKAcknowledge = 2;
-//		AKCommandProto	msgAKCommand = 3;
-//		AKConnectProto	msgAKConnect = 4;
-//		EntityIDRequestProto	msgEntityIDRequest = 5;
-//		EntityIDResponseProto	msgEntityIDResponse = 6;
-//		GKConnectErrorProto	msgGKConnectError = 7;
-//		GKConnectOKProto	msgGKConnectOK = 8;
-//		KAConnectErrorProto	msgKAConnectError = 9;
-//		KAConnectOKProto	msgKAConnectOK = 10;
-//		KASenseProto	msgKASense = 11;
-//		KGAcknowledgeProto	msgKGAcknowledge = 12;
-//		KGConnectProto	msgKGConnect = 13;
-//		KSAfterShockInfoProto	msgKSAfterShockInfo = 14;
-//		KSCommandsProto	msgKSCommands = 15;
-//		KSConnectErrorProto	msgKSConnectError = 16;
-//		KSConnectOKProto	msgKSConnectOK = 17;
-//		KSUpdateProto	msgKSUpdate = 18;
-//		KVConnectErrorProto 	msgKVConnectError = 19; 
-//		KVConnectOKProto	msgKVConnectOK = 20;
-//		KVTimestepProto	msgKVTimestep = 21;
-//		ShutdownProto	msgShutdown = 22;
-//		SKAcknowledgeProto	msgSKAcknowledge = 23;
-//		SKConnectProto	msgSKConnect = 24;
-//		SKUpdateProto	msgSKUpdate = 25;
-//		VKAcknowledgeProto	msgVKAcknowledge = 26;
-//		VKConnectProto	msgVKConnect = 27;
-//  }
 }
 message MessageListProto{
 	repeated MessageProto commands = 1;	
