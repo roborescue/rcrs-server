@@ -3,10 +3,71 @@ syntax = "proto3";
 option java_package = "rescuecore2.messages.protobuf";
 option java_outer_classname = "ControlMessageProto";
 
+enum MsgURN{
+	NoneMsg=0;
+
+	KG_CONNECT = 1;
+	KG_ACKNOWLEDGE = 2;
+	GK_CONNECT_OK = 3;
+	GK_CONNECT_ERROR = 4;
+	SK_CONNECT = 5;
+	SK_ACKNOWLEDGE = 6;
+	SK_UPDATE = 7;
+	KS_CONNECT_OK = 8;
+	KS_CONNECT_ERROR = 9;
+	KS_UPDATE = 10;
+	KS_COMMANDS = 11;
+	KS_AFTERSHOCKS_INFO = 12;
+	VK_CONNECT = 13;
+	VK_ACKNOWLEDGE = 14;
+	KV_CONNECT_OK = 15;
+	KV_CONNECT_ERROR = 16;
+	KV_TIMESTEP = 17;
+	AK_CONNECT = 18;
+	AK_ACKNOWLEDGE = 19;
+	KA_CONNECT_OK = 20;
+	KA_CONNECT_ERROR = 21;
+	KA_SENSE = 22;
+	SHUTDOWN = 23;
+	ENTITY_ID_REQUEST = 24;
+	ENTITY_ID_RESPONSE = 25;
+
+	
+	AK_REST=26;
+	AK_MOVE= 27;
+	AK_LOAD= 28;
+	AK_UNLOAD= 29;
+	AK_SAY= 30;
+	AK_TELL= 31;
+	AK_EXTINGUISH= 32;
+	AK_RESCUE= 33;
+	AK_CLEAR= 34;
+	AK_CLEAR_AREA= 35;
+	AK_SUBSCRIBE= 36;
+	AK_SPEAK= 37;
+
+}
+enum EntityURN{
+	NoneEntity=0;
+	WORLD = 1;
+	ROAD = 2;
+	BLOCKADE = 3;
+	BUILDING = 4;
+	REFUGE = 5;
+	HYDRANT = 6;
+	GAS_STATION = 7;
+	FIRE_STATION = 8;
+	AMBULANCE_CENTRE = 9;
+	POLICE_OFFICE = 10;
+	CIVILIAN = 11;
+	FIRE_BRIGADE = 12;
+	AMBULANCE_TEAM = 13;
+	POLICE_FORCE = 14;
+}
 
 message MessageProto {
-   string urn = 1;
-   map<string,MessageComponentProto> components=2;
+	MsgURN urn = 1;
+	map<string,MessageComponentProto> components=2;
 }
 message MessageListProto{
 	repeated MessageProto commands = 1;	
@@ -71,7 +132,7 @@ message Point2DProto {
 	double Y = 2;
 }
 message EntityProto {
-  string urn = 1;
+  EntityURN urn=1;
   int32 entityID = 2;
   map<string,PropertyProto> properties = 3;
 }

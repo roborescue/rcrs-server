@@ -5,6 +5,7 @@ import java.util.Map;
 
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -89,7 +90,7 @@ public abstract class AbstractMessage implements Message {
     @Override
     public MessageProto toMessageProto() {
     	MessageProto.Builder builder=MessageProto.newBuilder()
-    			.setUrn(getURN());
+    			.setUrn(MsgURN.valueOf(getURN()));
     	for (MessageComponent next : components) {
             builder.putComponents(next.getName(),next.toMessageComponentProto());
         }

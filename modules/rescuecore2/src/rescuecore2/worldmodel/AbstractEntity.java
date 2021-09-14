@@ -1,8 +1,8 @@
 package rescuecore2.worldmodel;
 
-import org.json.JSONObject;
 
 import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 
@@ -249,7 +249,7 @@ public abstract class AbstractEntity implements Entity {
   public EntityProto toEntityProto() {
 	  EntityProto.Builder builder= EntityProto.newBuilder()
 			  .setEntityID(id.getValue())
-			  .setUrn(getURN());
+			  .setUrn(EntityURN.valueOf(getURN()));
     for ( Property next : getProperties() ) {
       if ( next.isDefined() ) {
         builder.putProperties(next.getURN(),next.toPropertyProto());

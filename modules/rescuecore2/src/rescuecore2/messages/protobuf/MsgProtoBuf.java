@@ -1,20 +1,12 @@
 package rescuecore2.messages.protobuf;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import rescuecore.commands.Command;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.registry.Registry;
-import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -28,16 +20,16 @@ public class MsgProtoBuf {
 		return property;
 	}
 	public static Entity entityProto2Entity(EntityProto entityProto) {
-		String urn = entityProto.getUrn();
-		Entity entity = Registry.getCurrentRegistry().createEntity(urn,
+		EntityURN urn = entityProto.getUrn();
+		Entity entity = Registry.getCurrentRegistry().createEntity(urn.toString(),
 				new EntityID(entityProto.getEntityID()));
 		if(entity!=null)
 			entity.fromEntityProto(entityProto);
 		return entity;
 	}
 	public static Message messageProto2Message(MessageProto messageProto) {
-		String urn = messageProto.getUrn();
-		Message msg = Registry.getCurrentRegistry().createMessage(urn,
+		MsgURN urn = messageProto.getUrn();
+		Message msg = Registry.getCurrentRegistry().createMessage(urn.toString(),
 				messageProto);
 		return msg;
 	}
