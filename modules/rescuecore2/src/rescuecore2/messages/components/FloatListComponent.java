@@ -1,25 +1,21 @@
 package rescuecore2.messages.components;
 
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readFloat32;
+import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeFloat32;
+import static rescuecore2.misc.EncodingTools.writeInt32;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.messages.protobuf.ControlMessageProto.FloatListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
-import rescuecore2.worldmodel.EntityID;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * A message component that is a list of floats.

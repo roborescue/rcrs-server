@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
@@ -123,17 +122,12 @@ public class BooleanProperty extends AbstractProperty {
 	}
 
 	@Override
-	public PropertyProto toPropertyProto() {
-		PropertyProto.Builder builder=PropertyProto.newBuilder().setUrn(getURN()).setDefined(isDefined());
-		if(isDefined())
-			builder.setValue(ValueProto.newBuilder().setBoolValue(value));
-		return builder.build();
+	protected void fromValueProto(ValueProto valueProto) {
+		setValue(valueProto.getBoolValue());
 	}
 
 	@Override
-	public void fromPropertyProto(PropertyProto proto) {
-		if (!proto.getDefined())
-			return;
-		setValue(proto.getValue().getBoolValue());
+	protected ValueProto toValueProto() {
+		return ValueProto.newBuilder().setBoolValue(value).build();
 	}
 }

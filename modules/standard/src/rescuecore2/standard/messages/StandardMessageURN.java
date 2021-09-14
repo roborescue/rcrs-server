@@ -1,6 +1,5 @@
 package rescuecore2.standard.messages;
 
-import static rescuecore2.standard.Constants.MESSAGE_URN_PREFIX;
 import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
 
 /**

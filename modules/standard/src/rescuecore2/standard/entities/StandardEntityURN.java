@@ -1,6 +1,5 @@
 package rescuecore2.standard.entities;
 
-import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX;
 
 import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
 

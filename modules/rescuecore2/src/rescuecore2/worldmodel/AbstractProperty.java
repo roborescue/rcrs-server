@@ -1,5 +1,9 @@
 package rescuecore2.worldmodel;
 
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN;
+import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+
 /**
    Abstract base class for Property implementations.
 */
@@ -112,4 +116,24 @@ public abstract class AbstractProperty implements Property {
         }
         return result.toString();
     }
+    
+    @Override
+    public final PropertyProto toPropertyProto() {
+    	PropertyProto.Builder builder = PropertyProto.newBuilder()
+				.setUrn(PropertyURN.valueOf(getURN())).setDefined(isDefined());
+		if (isDefined()) {
+			builder.setValue(toValueProto());
+		}
+    	return builder.build();
+    }
+    
+    @Override
+    public final void fromPropertyProto(PropertyProto proto) {
+    	if (!proto.getDefined())
+			return;
+    	fromValueProto(proto.getValue());
+    }
+    
+    protected abstract ValueProto toValueProto() ;
+    protected abstract void fromValueProto(ValueProto valueProto);
 }

@@ -1,27 +1,23 @@
 package rescuecore2.messages.components;
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readEntity;
+import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeEntity;
+import static rescuecore2.misc.EncodingTools.writeInt32;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.messages.protobuf.ControlMessageProto.EntityListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-
 import rescuecore2.worldmodel.Entity;
-import rescuecore2.worldmodel.EntityID;
 
 /**
  * An EntityList component to a message.

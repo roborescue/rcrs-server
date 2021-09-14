@@ -1,9 +1,16 @@
 package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readMessage;
+import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeMessage;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.messages.Command;
@@ -12,15 +19,6 @@ import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
-import rescuecore2.worldmodel.ChangeSet;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
 
 /**
    A message component made up of a list of agent commands.

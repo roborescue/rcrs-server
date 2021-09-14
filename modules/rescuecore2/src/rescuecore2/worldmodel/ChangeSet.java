@@ -20,11 +20,9 @@ import rescuecore2.log.Logger;
 import rescuecore2.messages.protobuf.ControlMessageProto.ChangeSetProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ChangeSetProto.EntityChangeProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.misc.collections.LazyMap;
-import rescuecore2.registry.Registry;
 //import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 

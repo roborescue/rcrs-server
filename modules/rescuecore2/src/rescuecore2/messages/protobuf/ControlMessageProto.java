@@ -671,6 +671,420 @@ public final class ControlMessageProto {
     // @@protoc_insertion_point(enum_scope:EntityURN)
   }
 
+  /**
+   * Protobuf enum {@code PropertyURN}
+   */
+  public enum PropertyURN
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>NoneProperty = 0;</code>
+     */
+    NoneProperty(0),
+    /**
+     * <code>START_TIME = 1;</code>
+     */
+    START_TIME(1),
+    /**
+     * <code>LONGITUDE = 2;</code>
+     */
+    LONGITUDE(2),
+    /**
+     * <code>LATITUDE = 3;</code>
+     */
+    LATITUDE(3),
+    /**
+     * <code>WIND_FORCE = 4;</code>
+     */
+    WIND_FORCE(4),
+    /**
+     * <code>WIND_DIRECTION = 5;</code>
+     */
+    WIND_DIRECTION(5),
+    /**
+     * <code>X = 6;</code>
+     */
+    X(6),
+    /**
+     * <code>Y = 7;</code>
+     */
+    Y(7),
+    /**
+     * <code>BLOCKADES = 8;</code>
+     */
+    BLOCKADES(8),
+    /**
+     * <code>REPAIR_COST = 9;</code>
+     */
+    REPAIR_COST(9),
+    /**
+     * <code>FLOORS = 10;</code>
+     */
+    FLOORS(10),
+    /**
+     * <code>BUILDING_ATTRIBUTES = 11;</code>
+     */
+    BUILDING_ATTRIBUTES(11),
+    /**
+     * <code>IGNITION = 12;</code>
+     */
+    IGNITION(12),
+    /**
+     * <code>FIERYNESS = 13;</code>
+     */
+    FIERYNESS(13),
+    /**
+     * <code>BROKENNESS = 14;</code>
+     */
+    BROKENNESS(14),
+    /**
+     * <code>BUILDING_CODE = 15;</code>
+     */
+    BUILDING_CODE(15),
+    /**
+     * <code>BUILDING_AREA_GROUND = 16;</code>
+     */
+    BUILDING_AREA_GROUND(16),
+    /**
+     * <code>BUILDING_AREA_TOTAL = 17;</code>
+     */
+    BUILDING_AREA_TOTAL(17),
+    /**
+     * <code>APEXES = 18;</code>
+     */
+    APEXES(18),
+    /**
+     * <code>EDGES = 19;</code>
+     */
+    EDGES(19),
+    /**
+     * <code>POSITION = 20;</code>
+     */
+    POSITION(20),
+    /**
+     * <code>DIRECTION = 21;</code>
+     */
+    DIRECTION(21),
+    /**
+     * <code>POSITION_HISTORY = 22;</code>
+     */
+    POSITION_HISTORY(22),
+    /**
+     * <code>STAMINA = 23;</code>
+     */
+    STAMINA(23),
+    /**
+     * <code>HP = 24;</code>
+     */
+    HP(24),
+    /**
+     * <code>DAMAGE = 25;</code>
+     */
+    DAMAGE(25),
+    /**
+     * <code>BURIEDNESS = 26;</code>
+     */
+    BURIEDNESS(26),
+    /**
+     * <code>TRAVEL_DISTANCE = 27;</code>
+     */
+    TRAVEL_DISTANCE(27),
+    /**
+     * <code>WATER_QUANTITY = 28;</code>
+     */
+    WATER_QUANTITY(28),
+    /**
+     * <code>TEMPERATURE = 29;</code>
+     */
+    TEMPERATURE(29),
+    /**
+     * <code>IMPORTANCE = 30;</code>
+     */
+    IMPORTANCE(30),
+    /**
+     * <code>CAPACITY = 31;</code>
+     */
+    CAPACITY(31),
+    /**
+     * <code>BEDCAPACITY = 32;</code>
+     */
+    BEDCAPACITY(32),
+    /**
+     * <code>OCCUPIEDBEDS = 33;</code>
+     */
+    OCCUPIEDBEDS(33),
+    /**
+     * <code>REFILLCAPACITY = 34;</code>
+     */
+    REFILLCAPACITY(34),
+    /**
+     * <code>WAITINGLISTSIZE = 35;</code>
+     */
+    WAITINGLISTSIZE(35),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>NoneProperty = 0;</code>
+     */
+    public static final int NoneProperty_VALUE = 0;
+    /**
+     * <code>START_TIME = 1;</code>
+     */
+    public static final int START_TIME_VALUE = 1;
+    /**
+     * <code>LONGITUDE = 2;</code>
+     */
+    public static final int LONGITUDE_VALUE = 2;
+    /**
+     * <code>LATITUDE = 3;</code>
+     */
+    public static final int LATITUDE_VALUE = 3;
+    /**
+     * <code>WIND_FORCE = 4;</code>
+     */
+    public static final int WIND_FORCE_VALUE = 4;
+    /**
+     * <code>WIND_DIRECTION = 5;</code>
+     */
+    public static final int WIND_DIRECTION_VALUE = 5;
+    /**
+     * <code>X = 6;</code>
+     */
+    public static final int X_VALUE = 6;
+    /**
+     * <code>Y = 7;</code>
+     */
+    public static final int Y_VALUE = 7;
+    /**
+     * <code>BLOCKADES = 8;</code>
+     */
+    public static final int BLOCKADES_VALUE = 8;
+    /**
+     * <code>REPAIR_COST = 9;</code>
+     */
+    public static final int REPAIR_COST_VALUE = 9;
+    /**
+     * <code>FLOORS = 10;</code>
+     */
+    public static final int FLOORS_VALUE = 10;
+    /**
+     * <code>BUILDING_ATTRIBUTES = 11;</code>
+     */
+    public static final int BUILDING_ATTRIBUTES_VALUE = 11;
+    /**
+     * <code>IGNITION = 12;</code>
+     */
+    public static final int IGNITION_VALUE = 12;
+    /**
+     * <code>FIERYNESS = 13;</code>
+     */
+    public static final int FIERYNESS_VALUE = 13;
+    /**
+     * <code>BROKENNESS = 14;</code>
+     */
+    public static final int BROKENNESS_VALUE = 14;
+    /**
+     * <code>BUILDING_CODE = 15;</code>
+     */
+    public static final int BUILDING_CODE_VALUE = 15;
+    /**
+     * <code>BUILDING_AREA_GROUND = 16;</code>
+     */
+    public static final int BUILDING_AREA_GROUND_VALUE = 16;
+    /**
+     * <code>BUILDING_AREA_TOTAL = 17;</code>
+     */
+    public static final int BUILDING_AREA_TOTAL_VALUE = 17;
+    /**
+     * <code>APEXES = 18;</code>
+     */
+    public static final int APEXES_VALUE = 18;
+    /**
+     * <code>EDGES = 19;</code>
+     */
+    public static final int EDGES_VALUE = 19;
+    /**
+     * <code>POSITION = 20;</code>
+     */
+    public static final int POSITION_VALUE = 20;
+    /**
+     * <code>DIRECTION = 21;</code>
+     */
+    public static final int DIRECTION_VALUE = 21;
+    /**
+     * <code>POSITION_HISTORY = 22;</code>
+     */
+    public static final int POSITION_HISTORY_VALUE = 22;
+    /**
+     * <code>STAMINA = 23;</code>
+     */
+    public static final int STAMINA_VALUE = 23;
+    /**
+     * <code>HP = 24;</code>
+     */
+    public static final int HP_VALUE = 24;
+    /**
+     * <code>DAMAGE = 25;</code>
+     */
+    public static final int DAMAGE_VALUE = 25;
+    /**
+     * <code>BURIEDNESS = 26;</code>
+     */
+    public static final int BURIEDNESS_VALUE = 26;
+    /**
+     * <code>TRAVEL_DISTANCE = 27;</code>
+     */
+    public static final int TRAVEL_DISTANCE_VALUE = 27;
+    /**
+     * <code>WATER_QUANTITY = 28;</code>
+     */
+    public static final int WATER_QUANTITY_VALUE = 28;
+    /**
+     * <code>TEMPERATURE = 29;</code>
+     */
+    public static final int TEMPERATURE_VALUE = 29;
+    /**
+     * <code>IMPORTANCE = 30;</code>
+     */
+    public static final int IMPORTANCE_VALUE = 30;
+    /**
+     * <code>CAPACITY = 31;</code>
+     */
+    public static final int CAPACITY_VALUE = 31;
+    /**
+     * <code>BEDCAPACITY = 32;</code>
+     */
+    public static final int BEDCAPACITY_VALUE = 32;
+    /**
+     * <code>OCCUPIEDBEDS = 33;</code>
+     */
+    public static final int OCCUPIEDBEDS_VALUE = 33;
+    /**
+     * <code>REFILLCAPACITY = 34;</code>
+     */
+    public static final int REFILLCAPACITY_VALUE = 34;
+    /**
+     * <code>WAITINGLISTSIZE = 35;</code>
+     */
+    public static final int WAITINGLISTSIZE_VALUE = 35;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static PropertyURN valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static PropertyURN forNumber(int value) {
+      switch (value) {
+        case 0: return NoneProperty;
+        case 1: return START_TIME;
+        case 2: return LONGITUDE;
+        case 3: return LATITUDE;
+        case 4: return WIND_FORCE;
+        case 5: return WIND_DIRECTION;
+        case 6: return X;
+        case 7: return Y;
+        case 8: return BLOCKADES;
+        case 9: return REPAIR_COST;
+        case 10: return FLOORS;
+        case 11: return BUILDING_ATTRIBUTES;
+        case 12: return IGNITION;
+        case 13: return FIERYNESS;
+        case 14: return BROKENNESS;
+        case 15: return BUILDING_CODE;
+        case 16: return BUILDING_AREA_GROUND;
+        case 17: return BUILDING_AREA_TOTAL;
+        case 18: return APEXES;
+        case 19: return EDGES;
+        case 20: return POSITION;
+        case 21: return DIRECTION;
+        case 22: return POSITION_HISTORY;
+        case 23: return STAMINA;
+        case 24: return HP;
+        case 25: return DAMAGE;
+        case 26: return BURIEDNESS;
+        case 27: return TRAVEL_DISTANCE;
+        case 28: return WATER_QUANTITY;
+        case 29: return TEMPERATURE;
+        case 30: return IMPORTANCE;
+        case 31: return CAPACITY;
+        case 32: return BEDCAPACITY;
+        case 33: return OCCUPIEDBEDS;
+        case 34: return REFILLCAPACITY;
+        case 35: return WAITINGLISTSIZE;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<PropertyURN>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        PropertyURN> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<PropertyURN>() {
+            public PropertyURN findValueByNumber(int number) {
+              return PropertyURN.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return rescuecore2.messages.protobuf.ControlMessageProto.getDescriptor().getEnumTypes().get(2);
+    }
+
+    private static final PropertyURN[] VALUES = values();
+
+    public static PropertyURN valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private PropertyURN(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:PropertyURN)
+  }
+
   public interface MessageProtoOrBuilder extends
       // @@protoc_insertion_point(interface_extends:MessageProto)
       com.google.protobuf.MessageOrBuilder {
@@ -9861,16 +10275,15 @@ public final class ControlMessageProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string urn = 1;</code>
+     * <code>.PropertyURN urn = 1;</code>
+     * @return The enum numeric value on the wire for urn.
+     */
+    int getUrnValue();
+    /**
+     * <code>.PropertyURN urn = 1;</code>
      * @return The urn.
      */
-    java.lang.String getUrn();
-    /**
-     * <code>string urn = 1;</code>
-     * @return The bytes for urn.
-     */
-    com.google.protobuf.ByteString
-        getUrnBytes();
+    rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN getUrn();
 
     /**
      * <code>bool defined = 2;</code>
@@ -9906,7 +10319,7 @@ public final class ControlMessageProto {
       super(builder);
     }
     private PropertyProto() {
-      urn_ = "";
+      urn_ = 0;
     }
 
     @java.lang.Override
@@ -9939,10 +10352,10 @@ public final class ControlMessageProto {
             case 0:
               done = true;
               break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
+            case 8: {
+              int rawValue = input.readEnum();
 
-              urn_ = s;
+              urn_ = rawValue;
               break;
             }
             case 16: {
@@ -9996,41 +10409,22 @@ public final class ControlMessageProto {
     }
 
     public static final int URN_FIELD_NUMBER = 1;
-    private volatile java.lang.Object urn_;
+    private int urn_;
     /**
-     * <code>string urn = 1;</code>
-     * @return The urn.
+     * <code>.PropertyURN urn = 1;</code>
+     * @return The enum numeric value on the wire for urn.
      */
-    @java.lang.Override
-    public java.lang.String getUrn() {
-      java.lang.Object ref = urn_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        urn_ = s;
-        return s;
-      }
+    @java.lang.Override public int getUrnValue() {
+      return urn_;
     }
     /**
-     * <code>string urn = 1;</code>
-     * @return The bytes for urn.
+     * <code>.PropertyURN urn = 1;</code>
+     * @return The urn.
      */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getUrnBytes() {
-      java.lang.Object ref = urn_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        urn_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    @java.lang.Override public rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN getUrn() {
+      @SuppressWarnings("deprecation")
+      rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN result = rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN.valueOf(urn_);
+      return result == null ? rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN.UNRECOGNIZED : result;
     }
 
     public static final int DEFINED_FIELD_NUMBER = 2;
@@ -10084,8 +10478,8 @@ public final class ControlMessageProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getUrnBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, urn_);
+      if (urn_ != rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN.NoneProperty.getNumber()) {
+        output.writeEnum(1, urn_);
       }
       if (defined_ != false) {
         output.writeBool(2, defined_);
@@ -10102,8 +10496,9 @@ public final class ControlMessageProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getUrnBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, urn_);
+      if (urn_ != rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN.NoneProperty.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, urn_);
       }
       if (defined_ != false) {
         size += com.google.protobuf.CodedOutputStream
@@ -10128,8 +10523,7 @@ public final class ControlMessageProto {
       }
       rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto other = (rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto) obj;
 
-      if (!getUrn()
-          .equals(other.getUrn())) return false;
+      if (urn_ != other.urn_) return false;
       if (getDefined()
           != other.getDefined()) return false;
       if (hasValue() != other.hasValue()) return false;
@@ -10149,7 +10543,7 @@ public final class ControlMessageProto {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + URN_FIELD_NUMBER;
-      hash = (53 * hash) + getUrn().hashCode();
+      hash = (53 * hash) + urn_;
       hash = (37 * hash) + DEFINED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getDefined());
@@ -10290,7 +10684,7 @@ public final class ControlMessageProto {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        urn_ = "";
+        urn_ = 0;
 
         defined_ = false;
 
@@ -10381,9 +10775,8 @@ public final class ControlMessageProto {
 
       public Builder mergeFrom(rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto other) {
         if (other == rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.getDefaultInstance()) return this;
-        if (!other.getUrn().isEmpty()) {
-          urn_ = other.urn_;
-          onChanged();
+        if (other.urn_ != 0) {
+          setUrnValue(other.getUrnValue());
         }
         if (other.getDefined() != false) {
           setDefined(other.getDefined());
@@ -10420,78 +10813,56 @@ public final class ControlMessageProto {
         return this;
       }
 
-      private java.lang.Object urn_ = "";
+      private int urn_ = 0;
       /**
-       * <code>string urn = 1;</code>
-       * @return The urn.
+       * <code>.PropertyURN urn = 1;</code>
+       * @return The enum numeric value on the wire for urn.
        */
-      public java.lang.String getUrn() {
-        java.lang.Object ref = urn_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          urn_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      @java.lang.Override public int getUrnValue() {
+        return urn_;
       }
       /**
-       * <code>string urn = 1;</code>
-       * @return The bytes for urn.
-       */
-      public com.google.protobuf.ByteString
-          getUrnBytes() {
-        java.lang.Object ref = urn_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          urn_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string urn = 1;</code>
-       * @param value The urn to set.
+       * <code>.PropertyURN urn = 1;</code>
+       * @param value The enum numeric value on the wire for urn to set.
        * @return This builder for chaining.
        */
-      public Builder setUrn(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      public Builder setUrnValue(int value) {
+        
         urn_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string urn = 1;</code>
+       * <code>.PropertyURN urn = 1;</code>
+       * @return The urn.
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN getUrn() {
+        @SuppressWarnings("deprecation")
+        rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN result = rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN.valueOf(urn_);
+        return result == null ? rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.PropertyURN urn = 1;</code>
+       * @param value The urn to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUrn(rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        urn_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.PropertyURN urn = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearUrn() {
         
-        urn_ = getDefaultInstance().getUrn();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string urn = 1;</code>
-       * @param value The bytes for urn to set.
-       * @return This builder for chaining.
-       */
-      public Builder setUrnBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        urn_ = value;
+        urn_ = 0;
         onChanged();
         return this;
       }
@@ -22387,61 +22758,76 @@ public final class ControlMessageProto {
       "\0132\r.IntListProtoH\000\022$\n\tintMatrix\030\007 \001(\0132\017." +
       "IntMatrixProtoH\000\022\"\n\010edgeList\030\010 \001(\0132\016.Edg" +
       "eListProtoH\000\022 \n\007point2D\030\t \001(\0132\r.Point2DP" +
-      "rotoH\000B\007\n\005value\"I\n\rPropertyProto\022\013\n\003urn\030" +
-      "\001 \001(\t\022\017\n\007defined\030\002 \001(\010\022\032\n\005value\030\003 \001(\0132\013." +
-      "ValueProto\"$\n\014Point2DProto\022\t\n\001X\030\001 \001(\001\022\t\n" +
-      "\001Y\030\002 \001(\001\"\255\001\n\013EntityProto\022\027\n\003urn\030\001 \001(\0162\n." +
-      "EntityURN\022\020\n\010entityID\030\002 \001(\005\0220\n\npropertie" +
-      "s\030\003 \003(\0132\034.EntityProto.PropertiesEntry\032A\n" +
-      "\017PropertiesEntry\022\013\n\003key\030\001 \001(\t\022\035\n\005value\030\002" +
-      " \001(\0132\016.PropertyProto:\0028\001\"1\n\017EntityListPr" +
-      "oto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto\"`\n\013C" +
-      "onfigProto\022$\n\004data\030\001 \003(\0132\026.ConfigProto.D" +
-      "ataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va" +
-      "lue\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n\005edges\030" +
-      "\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n\006startX" +
-      "\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014\n\004" +
-      "endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\271\001\n\016Change" +
-      "SetProto\0222\n\007changes\030\001 \003(\0132!.ChangeSetPro" +
-      "to.EntityChangeProto\022\017\n\007deletes\030\002 \003(\005\032b\n" +
-      "\021EntityChangeProto\022\020\n\010entityID\030\001 \001(\005\022\027\n\003" +
-      "urn\030\002 \001(\0162\n.EntityURN\022\"\n\nproperties\030\003 \003(" +
-      "\0132\016.PropertyProto\"@\n\017CommandLogProto\022\014\n\004" +
-      "time\030\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessagePr" +
-      "oto\";\n\031InitialConditionsLogProto\022\036\n\010enti" +
-      "ties\030\001 \003(\0132\014.EntityProto\"}\n\022PerceptionLo" +
-      "gProto\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 " +
-      "\n\007visible\030\003 \001(\0132\017.ChangeSetProto\022%\n\016comm" +
-      "unications\030\004 \003(\0132\r.MessageProto\"\017\n\rStart" +
-      "LogProto\"\r\n\013EndLogProto\".\n\016ConfigLogProt" +
-      "o\022\034\n\006config\030\001 \001(\0132\014.ConfigProto\"A\n\017Updat" +
-      "esLogProto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(" +
-      "\0132\017.ChangeSetProto*\237\005\n\006MsgURN\022\013\n\007NoneMsg" +
-      "\020\000\022\016\n\nKG_CONNECT\020\001\022\022\n\016KG_ACKNOWLEDGE\020\002\022\021" +
-      "\n\rGK_CONNECT_OK\020\003\022\024\n\020GK_CONNECT_ERROR\020\004\022" +
-      "\016\n\nSK_CONNECT\020\005\022\022\n\016SK_ACKNOWLEDGE\020\006\022\r\n\tS" +
-      "K_UPDATE\020\007\022\021\n\rKS_CONNECT_OK\020\010\022\024\n\020KS_CONN" +
-      "ECT_ERROR\020\t\022\r\n\tKS_UPDATE\020\n\022\017\n\013KS_COMMAND" +
-      "S\020\013\022\027\n\023KS_AFTERSHOCKS_INFO\020\014\022\016\n\nVK_CONNE" +
-      "CT\020\r\022\022\n\016VK_ACKNOWLEDGE\020\016\022\021\n\rKV_CONNECT_O" +
-      "K\020\017\022\024\n\020KV_CONNECT_ERROR\020\020\022\017\n\013KV_TIMESTEP" +
-      "\020\021\022\016\n\nAK_CONNECT\020\022\022\022\n\016AK_ACKNOWLEDGE\020\023\022\021" +
-      "\n\rKA_CONNECT_OK\020\024\022\024\n\020KA_CONNECT_ERROR\020\025\022" +
-      "\014\n\010KA_SENSE\020\026\022\014\n\010SHUTDOWN\020\027\022\025\n\021ENTITY_ID" +
-      "_REQUEST\020\030\022\026\n\022ENTITY_ID_RESPONSE\020\031\022\013\n\007AK" +
-      "_REST\020\032\022\013\n\007AK_MOVE\020\033\022\013\n\007AK_LOAD\020\034\022\r\n\tAK_" +
-      "UNLOAD\020\035\022\n\n\006AK_SAY\020\036\022\013\n\007AK_TELL\020\037\022\021\n\rAK_" +
-      "EXTINGUISH\020 \022\r\n\tAK_RESCUE\020!\022\014\n\010AK_CLEAR\020" +
-      "\"\022\021\n\rAK_CLEAR_AREA\020#\022\020\n\014AK_SUBSCRIBE\020$\022\014" +
-      "\n\010AK_SPEAK\020%*\367\001\n\tEntityURN\022\016\n\nNoneEntity" +
-      "\020\000\022\t\n\005WORLD\020\001\022\010\n\004ROAD\020\002\022\014\n\010BLOCKADE\020\003\022\014\n" +
-      "\010BUILDING\020\004\022\n\n\006REFUGE\020\005\022\013\n\007HYDRANT\020\006\022\017\n\013" +
-      "GAS_STATION\020\007\022\020\n\014FIRE_STATION\020\010\022\024\n\020AMBUL" +
-      "ANCE_CENTRE\020\t\022\021\n\rPOLICE_OFFICE\020\n\022\014\n\010CIVI" +
-      "LIAN\020\013\022\020\n\014FIRE_BRIGADE\020\014\022\022\n\016AMBULANCE_TE" +
-      "AM\020\r\022\020\n\014POLICE_FORCE\020\016B4\n\035rescuecore2.me" +
-      "ssages.protobufB\023ControlMessageProtob\006pr" +
-      "oto3"
+      "rotoH\000B\007\n\005value\"W\n\rPropertyProto\022\031\n\003urn\030" +
+      "\001 \001(\0162\014.PropertyURN\022\017\n\007defined\030\002 \001(\010\022\032\n\005" +
+      "value\030\003 \001(\0132\013.ValueProto\"$\n\014Point2DProto" +
+      "\022\t\n\001X\030\001 \001(\001\022\t\n\001Y\030\002 \001(\001\"\255\001\n\013EntityProto\022\027" +
+      "\n\003urn\030\001 \001(\0162\n.EntityURN\022\020\n\010entityID\030\002 \001(" +
+      "\005\0220\n\nproperties\030\003 \003(\0132\034.EntityProto.Prop" +
+      "ertiesEntry\032A\n\017PropertiesEntry\022\013\n\003key\030\001 " +
+      "\001(\t\022\035\n\005value\030\002 \001(\0132\016.PropertyProto:\0028\001\"1" +
+      "\n\017EntityListProto\022\036\n\010entities\030\001 \003(\0132\014.En" +
+      "tityProto\"`\n\013ConfigProto\022$\n\004data\030\001 \003(\0132\026" +
+      ".ConfigProto.DataEntry\032+\n\tDataEntry\022\013\n\003k" +
+      "ey\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdgeListP" +
+      "roto\022\031\n\005edges\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeP" +
+      "roto\022\016\n\006startX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004" +
+      "endX\030\003 \001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 " +
+      "\001(\005\"\271\001\n\016ChangeSetProto\0222\n\007changes\030\001 \003(\0132" +
+      "!.ChangeSetProto.EntityChangeProto\022\017\n\007de" +
+      "letes\030\002 \003(\005\032b\n\021EntityChangeProto\022\020\n\010enti" +
+      "tyID\030\001 \001(\005\022\027\n\003urn\030\002 \001(\0162\n.EntityURN\022\"\n\np" +
+      "roperties\030\003 \003(\0132\016.PropertyProto\"@\n\017Comma" +
+      "ndLogProto\022\014\n\004time\030\001 \001(\005\022\037\n\010commands\030\002 \003" +
+      "(\0132\r.MessageProto\";\n\031InitialConditionsLo" +
+      "gProto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto\"}" +
+      "\n\022PerceptionLogProto\022\014\n\004time\030\001 \001(\005\022\020\n\010en" +
+      "tityID\030\002 \001(\005\022 \n\007visible\030\003 \001(\0132\017.ChangeSe" +
+      "tProto\022%\n\016communications\030\004 \003(\0132\r.Message" +
+      "Proto\"\017\n\rStartLogProto\"\r\n\013EndLogProto\".\n" +
+      "\016ConfigLogProto\022\034\n\006config\030\001 \001(\0132\014.Config" +
+      "Proto\"A\n\017UpdatesLogProto\022\014\n\004time\030\001 \001(\005\022 " +
+      "\n\007changes\030\002 \001(\0132\017.ChangeSetProto*\237\005\n\006Msg" +
+      "URN\022\013\n\007NoneMsg\020\000\022\016\n\nKG_CONNECT\020\001\022\022\n\016KG_A" +
+      "CKNOWLEDGE\020\002\022\021\n\rGK_CONNECT_OK\020\003\022\024\n\020GK_CO" +
+      "NNECT_ERROR\020\004\022\016\n\nSK_CONNECT\020\005\022\022\n\016SK_ACKN" +
+      "OWLEDGE\020\006\022\r\n\tSK_UPDATE\020\007\022\021\n\rKS_CONNECT_O" +
+      "K\020\010\022\024\n\020KS_CONNECT_ERROR\020\t\022\r\n\tKS_UPDATE\020\n" +
+      "\022\017\n\013KS_COMMANDS\020\013\022\027\n\023KS_AFTERSHOCKS_INFO" +
+      "\020\014\022\016\n\nVK_CONNECT\020\r\022\022\n\016VK_ACKNOWLEDGE\020\016\022\021" +
+      "\n\rKV_CONNECT_OK\020\017\022\024\n\020KV_CONNECT_ERROR\020\020\022" +
+      "\017\n\013KV_TIMESTEP\020\021\022\016\n\nAK_CONNECT\020\022\022\022\n\016AK_A" +
+      "CKNOWLEDGE\020\023\022\021\n\rKA_CONNECT_OK\020\024\022\024\n\020KA_CO" +
+      "NNECT_ERROR\020\025\022\014\n\010KA_SENSE\020\026\022\014\n\010SHUTDOWN\020" +
+      "\027\022\025\n\021ENTITY_ID_REQUEST\020\030\022\026\n\022ENTITY_ID_RE" +
+      "SPONSE\020\031\022\013\n\007AK_REST\020\032\022\013\n\007AK_MOVE\020\033\022\013\n\007AK" +
+      "_LOAD\020\034\022\r\n\tAK_UNLOAD\020\035\022\n\n\006AK_SAY\020\036\022\013\n\007AK" +
+      "_TELL\020\037\022\021\n\rAK_EXTINGUISH\020 \022\r\n\tAK_RESCUE\020" +
+      "!\022\014\n\010AK_CLEAR\020\"\022\021\n\rAK_CLEAR_AREA\020#\022\020\n\014AK" +
+      "_SUBSCRIBE\020$\022\014\n\010AK_SPEAK\020%*\367\001\n\tEntityURN" +
+      "\022\016\n\nNoneEntity\020\000\022\t\n\005WORLD\020\001\022\010\n\004ROAD\020\002\022\014\n" +
+      "\010BLOCKADE\020\003\022\014\n\010BUILDING\020\004\022\n\n\006REFUGE\020\005\022\013\n" +
+      "\007HYDRANT\020\006\022\017\n\013GAS_STATION\020\007\022\020\n\014FIRE_STAT" +
+      "ION\020\010\022\024\n\020AMBULANCE_CENTRE\020\t\022\021\n\rPOLICE_OF" +
+      "FICE\020\n\022\014\n\010CIVILIAN\020\013\022\020\n\014FIRE_BRIGADE\020\014\022\022" +
+      "\n\016AMBULANCE_TEAM\020\r\022\020\n\014POLICE_FORCE\020\016*\325\004\n" +
+      "\013PropertyURN\022\020\n\014NoneProperty\020\000\022\016\n\nSTART_" +
+      "TIME\020\001\022\r\n\tLONGITUDE\020\002\022\014\n\010LATITUDE\020\003\022\016\n\nW" +
+      "IND_FORCE\020\004\022\022\n\016WIND_DIRECTION\020\005\022\005\n\001X\020\006\022\005" +
+      "\n\001Y\020\007\022\r\n\tBLOCKADES\020\010\022\017\n\013REPAIR_COST\020\t\022\n\n" +
+      "\006FLOORS\020\n\022\027\n\023BUILDING_ATTRIBUTES\020\013\022\014\n\010IG" +
+      "NITION\020\014\022\r\n\tFIERYNESS\020\r\022\016\n\nBROKENNESS\020\016\022" +
+      "\021\n\rBUILDING_CODE\020\017\022\030\n\024BUILDING_AREA_GROU" +
+      "ND\020\020\022\027\n\023BUILDING_AREA_TOTAL\020\021\022\n\n\006APEXES\020" +
+      "\022\022\t\n\005EDGES\020\023\022\014\n\010POSITION\020\024\022\r\n\tDIRECTION\020" +
+      "\025\022\024\n\020POSITION_HISTORY\020\026\022\013\n\007STAMINA\020\027\022\006\n\002" +
+      "HP\020\030\022\n\n\006DAMAGE\020\031\022\016\n\nBURIEDNESS\020\032\022\023\n\017TRAV" +
+      "EL_DISTANCE\020\033\022\022\n\016WATER_QUANTITY\020\034\022\017\n\013TEM" +
+      "PERATURE\020\035\022\016\n\nIMPORTANCE\020\036\022\014\n\010CAPACITY\020\037" +
+      "\022\017\n\013BEDCAPACITY\020 \022\020\n\014OCCUPIEDBEDS\020!\022\022\n\016R" +
+      "EFILLCAPACITY\020\"\022\023\n\017WAITINGLISTSIZE\020#B4\n\035" +
+      "rescuecore2.messages.protobufB\023ControlMe" +
+      "ssageProtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

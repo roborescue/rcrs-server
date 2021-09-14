@@ -6,6 +6,7 @@ import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN;
 import rescuecore2.registry.Registry;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -14,7 +15,8 @@ import rescuecore2.worldmodel.Property;
 public class MsgProtoBuf {
 
 	public static Property propertyProto2Property(PropertyProto propertyProto) {
-		Property property = Registry.getCurrentRegistry().createProperty(propertyProto.getUrn());
+		PropertyURN urn = propertyProto.getUrn();
+		Property property = Registry.getCurrentRegistry().createProperty(urn.toString());
 		if(property!=null)
 			property.fromPropertyProto(propertyProto);
 		return property;

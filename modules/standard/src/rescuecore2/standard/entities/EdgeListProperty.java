@@ -12,7 +12,6 @@ import java.util.List;
 
 import rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.EdgeProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
@@ -169,35 +168,28 @@ public class EdgeListProperty extends AbstractProperty {
 		return new EdgeListProperty(this);
 	}
 
+	
 	@Override
-	public PropertyProto toPropertyProto() {
-		PropertyProto.Builder builder = PropertyProto.newBuilder()
-				.setUrn(getURN()).setDefined(isDefined());
-		if (isDefined()) {
-			EdgeListProto.Builder edgeListbuilder = EdgeListProto.newBuilder();
-			for (Edge next : edges) {
-				int neighbour = 0;
-				if (next.isPassable()) {
-					neighbour = next.getNeighbour().getValue();
-				}
-				edgeListbuilder.addEdges(EdgeProto.newBuilder()
-						.setStartX(next.getStartX()).setStartY(next.getStartY())
-						.setEndX(next.getEndX()).setEndY(next.getEndY())
-						.setNeighbour(neighbour));
+	protected ValueProto toValueProto() {
+		EdgeListProto.Builder edgeListbuilder = EdgeListProto.newBuilder();
+		for (Edge next : edges) {
+			int neighbour = 0;
+			if (next.isPassable()) {
+				neighbour = next.getNeighbour().getValue();
 			}
-
-			builder.setValue(
-					ValueProto.newBuilder().setEdgeList(edgeListbuilder));
+			edgeListbuilder.addEdges(EdgeProto.newBuilder()
+					.setStartX(next.getStartX()).setStartY(next.getStartY())
+					.setEndX(next.getEndX()).setEndY(next.getEndY())
+					.setNeighbour(neighbour));
 		}
-		return builder.build();
+
+		return ValueProto.newBuilder().setEdgeList(edgeListbuilder).build();
 	}
 
 	@Override
-	public void fromPropertyProto(PropertyProto proto) {
-		if (!proto.getDefined())
-			return;
+	protected void fromValueProto(ValueProto valueProto) {
 		edges.clear();
-		List<EdgeProto> edgesProto = proto.getValue().getEdgeList()
+		List<EdgeProto> edgesProto = valueProto.getEdgeList()
 				.getEdgesList();
 		for (EdgeProto edgeProto : edgesProto) {
 			int startX = edgeProto.getStartX();
