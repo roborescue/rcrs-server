@@ -158,7 +158,7 @@ message EdgeProto {
 message ChangeSetProto {
 	message EntityChangeProto {
 		int32 entityID=1;
-		string urn=2;
+		EntityURN urn=2;
 		repeated PropertyProto properties = 3;
 	}
   repeated EntityChangeProto changes = 1;

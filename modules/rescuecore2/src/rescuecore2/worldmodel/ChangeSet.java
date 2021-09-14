@@ -19,6 +19,7 @@ import java.util.Set;
 import rescuecore2.log.Logger;
 import rescuecore2.messages.protobuf.ControlMessageProto.ChangeSetProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.ChangeSetProto.EntityChangeProto;
+import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
 import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
@@ -330,7 +331,7 @@ public class ChangeSet {
 		List<EntityChangeProto> changesList = changeSetProto.getChangesList();
 		for (EntityChangeProto entityChange : changesList) {
 			EntityID entityID = new EntityID(entityChange.getEntityID());
-			String urn = entityChange.getUrn();
+			EntityURN urn = entityChange.getUrn();
 
 			List<PropertyProto> propertyProtoList = entityChange
 					.getPropertiesList();
@@ -338,7 +339,7 @@ public class ChangeSet {
 				Property prop = MsgProtoBuf
 						.propertyProto2Property(propertyProto);
 				if (prop != null) {
-					this.addChange(entityID, urn, prop);
+					this.addChange(entityID, urn.toString(), prop);
 				}
 			}
 		}
@@ -358,7 +359,7 @@ public class ChangeSet {
 			// EntityID, URN, number of properties
 			EntityChangeProto.Builder entityChangeBuilder=EntityChangeProto.newBuilder()
 				.setEntityID(id.getValue())
-				.setUrn(getEntityURN(id));
+				.setUrn(EntityURN.valueOf(getEntityURN(id)));
 			for (Property prop : props) {
 				entityChangeBuilder.addProperties(prop.toPropertyProto());
 			}

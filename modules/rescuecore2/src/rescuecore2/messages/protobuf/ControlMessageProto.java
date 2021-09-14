@@ -15451,16 +15451,15 @@ public final class ControlMessageProto {
       int getEntityID();
 
       /**
-       * <code>string urn = 2;</code>
+       * <code>.EntityURN urn = 2;</code>
+       * @return The enum numeric value on the wire for urn.
+       */
+      int getUrnValue();
+      /**
+       * <code>.EntityURN urn = 2;</code>
        * @return The urn.
        */
-      java.lang.String getUrn();
-      /**
-       * <code>string urn = 2;</code>
-       * @return The bytes for urn.
-       */
-      com.google.protobuf.ByteString
-          getUrnBytes();
+      rescuecore2.messages.protobuf.ControlMessageProto.EntityURN getUrn();
 
       /**
        * <code>repeated .PropertyProto properties = 3;</code>
@@ -15499,7 +15498,7 @@ public final class ControlMessageProto {
         super(builder);
       }
       private EntityChangeProto() {
-        urn_ = "";
+        urn_ = 0;
         properties_ = java.util.Collections.emptyList();
       }
 
@@ -15539,10 +15538,10 @@ public final class ControlMessageProto {
                 entityID_ = input.readInt32();
                 break;
               }
-              case 18: {
-                java.lang.String s = input.readStringRequireUtf8();
+              case 16: {
+                int rawValue = input.readEnum();
 
-                urn_ = s;
+                urn_ = rawValue;
                 break;
               }
               case 26: {
@@ -15601,41 +15600,22 @@ public final class ControlMessageProto {
       }
 
       public static final int URN_FIELD_NUMBER = 2;
-      private volatile java.lang.Object urn_;
+      private int urn_;
       /**
-       * <code>string urn = 2;</code>
-       * @return The urn.
+       * <code>.EntityURN urn = 2;</code>
+       * @return The enum numeric value on the wire for urn.
        */
-      @java.lang.Override
-      public java.lang.String getUrn() {
-        java.lang.Object ref = urn_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          urn_ = s;
-          return s;
-        }
+      @java.lang.Override public int getUrnValue() {
+        return urn_;
       }
       /**
-       * <code>string urn = 2;</code>
-       * @return The bytes for urn.
+       * <code>.EntityURN urn = 2;</code>
+       * @return The urn.
        */
-      @java.lang.Override
-      public com.google.protobuf.ByteString
-          getUrnBytes() {
-        java.lang.Object ref = urn_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          urn_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      @java.lang.Override public rescuecore2.messages.protobuf.ControlMessageProto.EntityURN getUrn() {
+        @SuppressWarnings("deprecation")
+        rescuecore2.messages.protobuf.ControlMessageProto.EntityURN result = rescuecore2.messages.protobuf.ControlMessageProto.EntityURN.valueOf(urn_);
+        return result == null ? rescuecore2.messages.protobuf.ControlMessageProto.EntityURN.UNRECOGNIZED : result;
       }
 
       public static final int PROPERTIES_FIELD_NUMBER = 3;
@@ -15695,8 +15675,8 @@ public final class ControlMessageProto {
         if (entityID_ != 0) {
           output.writeInt32(1, entityID_);
         }
-        if (!getUrnBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, urn_);
+        if (urn_ != rescuecore2.messages.protobuf.ControlMessageProto.EntityURN.NoneEntity.getNumber()) {
+          output.writeEnum(2, urn_);
         }
         for (int i = 0; i < properties_.size(); i++) {
           output.writeMessage(3, properties_.get(i));
@@ -15714,8 +15694,9 @@ public final class ControlMessageProto {
           size += com.google.protobuf.CodedOutputStream
             .computeInt32Size(1, entityID_);
         }
-        if (!getUrnBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, urn_);
+        if (urn_ != rescuecore2.messages.protobuf.ControlMessageProto.EntityURN.NoneEntity.getNumber()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(2, urn_);
         }
         for (int i = 0; i < properties_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
@@ -15738,8 +15719,7 @@ public final class ControlMessageProto {
 
         if (getEntityID()
             != other.getEntityID()) return false;
-        if (!getUrn()
-            .equals(other.getUrn())) return false;
+        if (urn_ != other.urn_) return false;
         if (!getPropertiesList()
             .equals(other.getPropertiesList())) return false;
         if (!unknownFields.equals(other.unknownFields)) return false;
@@ -15756,7 +15736,7 @@ public final class ControlMessageProto {
         hash = (37 * hash) + ENTITYID_FIELD_NUMBER;
         hash = (53 * hash) + getEntityID();
         hash = (37 * hash) + URN_FIELD_NUMBER;
-        hash = (53 * hash) + getUrn().hashCode();
+        hash = (53 * hash) + urn_;
         if (getPropertiesCount() > 0) {
           hash = (37 * hash) + PROPERTIES_FIELD_NUMBER;
           hash = (53 * hash) + getPropertiesList().hashCode();
@@ -15897,7 +15877,7 @@ public final class ControlMessageProto {
           super.clear();
           entityID_ = 0;
 
-          urn_ = "";
+          urn_ = 0;
 
           if (propertiesBuilder_ == null) {
             properties_ = java.util.Collections.emptyList();
@@ -15994,9 +15974,8 @@ public final class ControlMessageProto {
           if (other.getEntityID() != 0) {
             setEntityID(other.getEntityID());
           }
-          if (!other.getUrn().isEmpty()) {
-            urn_ = other.urn_;
-            onChanged();
+          if (other.urn_ != 0) {
+            setUrnValue(other.getUrnValue());
           }
           if (propertiesBuilder_ == null) {
             if (!other.properties_.isEmpty()) {
@@ -16085,78 +16064,56 @@ public final class ControlMessageProto {
           return this;
         }
 
-        private java.lang.Object urn_ = "";
+        private int urn_ = 0;
         /**
-         * <code>string urn = 2;</code>
-         * @return The urn.
+         * <code>.EntityURN urn = 2;</code>
+         * @return The enum numeric value on the wire for urn.
          */
-        public java.lang.String getUrn() {
-          java.lang.Object ref = urn_;
-          if (!(ref instanceof java.lang.String)) {
-            com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            urn_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
+        @java.lang.Override public int getUrnValue() {
+          return urn_;
         }
         /**
-         * <code>string urn = 2;</code>
-         * @return The bytes for urn.
-         */
-        public com.google.protobuf.ByteString
-            getUrnBytes() {
-          java.lang.Object ref = urn_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            urn_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>string urn = 2;</code>
-         * @param value The urn to set.
+         * <code>.EntityURN urn = 2;</code>
+         * @param value The enum numeric value on the wire for urn to set.
          * @return This builder for chaining.
          */
-        public Builder setUrn(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        public Builder setUrnValue(int value) {
+          
           urn_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>string urn = 2;</code>
+         * <code>.EntityURN urn = 2;</code>
+         * @return The urn.
+         */
+        @java.lang.Override
+        public rescuecore2.messages.protobuf.ControlMessageProto.EntityURN getUrn() {
+          @SuppressWarnings("deprecation")
+          rescuecore2.messages.protobuf.ControlMessageProto.EntityURN result = rescuecore2.messages.protobuf.ControlMessageProto.EntityURN.valueOf(urn_);
+          return result == null ? rescuecore2.messages.protobuf.ControlMessageProto.EntityURN.UNRECOGNIZED : result;
+        }
+        /**
+         * <code>.EntityURN urn = 2;</code>
+         * @param value The urn to set.
+         * @return This builder for chaining.
+         */
+        public Builder setUrn(rescuecore2.messages.protobuf.ControlMessageProto.EntityURN value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          
+          urn_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>.EntityURN urn = 2;</code>
          * @return This builder for chaining.
          */
         public Builder clearUrn() {
           
-          urn_ = getDefaultInstance().getUrn();
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>string urn = 2;</code>
-         * @param value The bytes for urn to set.
-         * @return This builder for chaining.
-         */
-        public Builder setUrnBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-          
-          urn_ = value;
+          urn_ = 0;
           onChanged();
           return this;
         }
@@ -22444,46 +22401,47 @@ public final class ControlMessageProto {
       "lue\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n\005edges\030" +
       "\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n\006startX" +
       "\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014\n\004" +
-      "endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\255\001\n\016Change" +
+      "endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\271\001\n\016Change" +
       "SetProto\0222\n\007changes\030\001 \003(\0132!.ChangeSetPro" +
-      "to.EntityChangeProto\022\017\n\007deletes\030\002 \003(\005\032V\n" +
-      "\021EntityChangeProto\022\020\n\010entityID\030\001 \001(\005\022\013\n\003" +
-      "urn\030\002 \001(\t\022\"\n\nproperties\030\003 \003(\0132\016.Property" +
-      "Proto\"@\n\017CommandLogProto\022\014\n\004time\030\001 \001(\005\022\037" +
-      "\n\010commands\030\002 \003(\0132\r.MessageProto\";\n\031Initi" +
-      "alConditionsLogProto\022\036\n\010entities\030\001 \003(\0132\014" +
-      ".EntityProto\"}\n\022PerceptionLogProto\022\014\n\004ti" +
-      "me\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 \n\007visible\030\003 " +
-      "\001(\0132\017.ChangeSetProto\022%\n\016communications\030\004" +
-      " \003(\0132\r.MessageProto\"\017\n\rStartLogProto\"\r\n\013" +
-      "EndLogProto\".\n\016ConfigLogProto\022\034\n\006config\030" +
-      "\001 \001(\0132\014.ConfigProto\"A\n\017UpdatesLogProto\022\014" +
-      "\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(\0132\017.ChangeSe" +
-      "tProto*\237\005\n\006MsgURN\022\013\n\007NoneMsg\020\000\022\016\n\nKG_CON" +
-      "NECT\020\001\022\022\n\016KG_ACKNOWLEDGE\020\002\022\021\n\rGK_CONNECT" +
-      "_OK\020\003\022\024\n\020GK_CONNECT_ERROR\020\004\022\016\n\nSK_CONNEC" +
-      "T\020\005\022\022\n\016SK_ACKNOWLEDGE\020\006\022\r\n\tSK_UPDATE\020\007\022\021" +
-      "\n\rKS_CONNECT_OK\020\010\022\024\n\020KS_CONNECT_ERROR\020\t\022" +
-      "\r\n\tKS_UPDATE\020\n\022\017\n\013KS_COMMANDS\020\013\022\027\n\023KS_AF" +
-      "TERSHOCKS_INFO\020\014\022\016\n\nVK_CONNECT\020\r\022\022\n\016VK_A" +
-      "CKNOWLEDGE\020\016\022\021\n\rKV_CONNECT_OK\020\017\022\024\n\020KV_CO" +
-      "NNECT_ERROR\020\020\022\017\n\013KV_TIMESTEP\020\021\022\016\n\nAK_CON" +
-      "NECT\020\022\022\022\n\016AK_ACKNOWLEDGE\020\023\022\021\n\rKA_CONNECT" +
-      "_OK\020\024\022\024\n\020KA_CONNECT_ERROR\020\025\022\014\n\010KA_SENSE\020" +
-      "\026\022\014\n\010SHUTDOWN\020\027\022\025\n\021ENTITY_ID_REQUEST\020\030\022\026" +
-      "\n\022ENTITY_ID_RESPONSE\020\031\022\013\n\007AK_REST\020\032\022\013\n\007A" +
-      "K_MOVE\020\033\022\013\n\007AK_LOAD\020\034\022\r\n\tAK_UNLOAD\020\035\022\n\n\006" +
-      "AK_SAY\020\036\022\013\n\007AK_TELL\020\037\022\021\n\rAK_EXTINGUISH\020 " +
-      "\022\r\n\tAK_RESCUE\020!\022\014\n\010AK_CLEAR\020\"\022\021\n\rAK_CLEA" +
-      "R_AREA\020#\022\020\n\014AK_SUBSCRIBE\020$\022\014\n\010AK_SPEAK\020%" +
-      "*\367\001\n\tEntityURN\022\016\n\nNoneEntity\020\000\022\t\n\005WORLD\020" +
-      "\001\022\010\n\004ROAD\020\002\022\014\n\010BLOCKADE\020\003\022\014\n\010BUILDING\020\004\022" +
-      "\n\n\006REFUGE\020\005\022\013\n\007HYDRANT\020\006\022\017\n\013GAS_STATION\020" +
-      "\007\022\020\n\014FIRE_STATION\020\010\022\024\n\020AMBULANCE_CENTRE\020" +
-      "\t\022\021\n\rPOLICE_OFFICE\020\n\022\014\n\010CIVILIAN\020\013\022\020\n\014FI" +
-      "RE_BRIGADE\020\014\022\022\n\016AMBULANCE_TEAM\020\r\022\020\n\014POLI" +
-      "CE_FORCE\020\016B4\n\035rescuecore2.messages.proto" +
-      "bufB\023ControlMessageProtob\006proto3"
+      "to.EntityChangeProto\022\017\n\007deletes\030\002 \003(\005\032b\n" +
+      "\021EntityChangeProto\022\020\n\010entityID\030\001 \001(\005\022\027\n\003" +
+      "urn\030\002 \001(\0162\n.EntityURN\022\"\n\nproperties\030\003 \003(" +
+      "\0132\016.PropertyProto\"@\n\017CommandLogProto\022\014\n\004" +
+      "time\030\001 \001(\005\022\037\n\010commands\030\002 \003(\0132\r.MessagePr" +
+      "oto\";\n\031InitialConditionsLogProto\022\036\n\010enti" +
+      "ties\030\001 \003(\0132\014.EntityProto\"}\n\022PerceptionLo" +
+      "gProto\022\014\n\004time\030\001 \001(\005\022\020\n\010entityID\030\002 \001(\005\022 " +
+      "\n\007visible\030\003 \001(\0132\017.ChangeSetProto\022%\n\016comm" +
+      "unications\030\004 \003(\0132\r.MessageProto\"\017\n\rStart" +
+      "LogProto\"\r\n\013EndLogProto\".\n\016ConfigLogProt" +
+      "o\022\034\n\006config\030\001 \001(\0132\014.ConfigProto\"A\n\017Updat" +
+      "esLogProto\022\014\n\004time\030\001 \001(\005\022 \n\007changes\030\002 \001(" +
+      "\0132\017.ChangeSetProto*\237\005\n\006MsgURN\022\013\n\007NoneMsg" +
+      "\020\000\022\016\n\nKG_CONNECT\020\001\022\022\n\016KG_ACKNOWLEDGE\020\002\022\021" +
+      "\n\rGK_CONNECT_OK\020\003\022\024\n\020GK_CONNECT_ERROR\020\004\022" +
+      "\016\n\nSK_CONNECT\020\005\022\022\n\016SK_ACKNOWLEDGE\020\006\022\r\n\tS" +
+      "K_UPDATE\020\007\022\021\n\rKS_CONNECT_OK\020\010\022\024\n\020KS_CONN" +
+      "ECT_ERROR\020\t\022\r\n\tKS_UPDATE\020\n\022\017\n\013KS_COMMAND" +
+      "S\020\013\022\027\n\023KS_AFTERSHOCKS_INFO\020\014\022\016\n\nVK_CONNE" +
+      "CT\020\r\022\022\n\016VK_ACKNOWLEDGE\020\016\022\021\n\rKV_CONNECT_O" +
+      "K\020\017\022\024\n\020KV_CONNECT_ERROR\020\020\022\017\n\013KV_TIMESTEP" +
+      "\020\021\022\016\n\nAK_CONNECT\020\022\022\022\n\016AK_ACKNOWLEDGE\020\023\022\021" +
+      "\n\rKA_CONNECT_OK\020\024\022\024\n\020KA_CONNECT_ERROR\020\025\022" +
+      "\014\n\010KA_SENSE\020\026\022\014\n\010SHUTDOWN\020\027\022\025\n\021ENTITY_ID" +
+      "_REQUEST\020\030\022\026\n\022ENTITY_ID_RESPONSE\020\031\022\013\n\007AK" +
+      "_REST\020\032\022\013\n\007AK_MOVE\020\033\022\013\n\007AK_LOAD\020\034\022\r\n\tAK_" +
+      "UNLOAD\020\035\022\n\n\006AK_SAY\020\036\022\013\n\007AK_TELL\020\037\022\021\n\rAK_" +
+      "EXTINGUISH\020 \022\r\n\tAK_RESCUE\020!\022\014\n\010AK_CLEAR\020" +
+      "\"\022\021\n\rAK_CLEAR_AREA\020#\022\020\n\014AK_SUBSCRIBE\020$\022\014" +
+      "\n\010AK_SPEAK\020%*\367\001\n\tEntityURN\022\016\n\nNoneEntity" +
+      "\020\000\022\t\n\005WORLD\020\001\022\010\n\004ROAD\020\002\022\014\n\010BLOCKADE\020\003\022\014\n" +
+      "\010BUILDING\020\004\022\n\n\006REFUGE\020\005\022\013\n\007HYDRANT\020\006\022\017\n\013" +
+      "GAS_STATION\020\007\022\020\n\014FIRE_STATION\020\010\022\024\n\020AMBUL" +
+      "ANCE_CENTRE\020\t\022\021\n\rPOLICE_OFFICE\020\n\022\014\n\010CIVI" +
+      "LIAN\020\013\022\020\n\014FIRE_BRIGADE\020\014\022\022\n\016AMBULANCE_TE" +
+      "AM\020\r\022\020\n\014POLICE_FORCE\020\016B4\n\035rescuecore2.me" +
+      "ssages.protobufB\023ControlMessageProtob\006pr" +
+      "oto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
