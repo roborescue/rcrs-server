@@ -252,7 +252,7 @@ public abstract class AbstractEntity implements Entity {
 			  .setUrn(EntityURN.valueOf(getURN()));
     for ( Property next : getProperties() ) {
       if ( next.isDefined() ) {
-        builder.putProperties(next.getURN(),next.toPropertyProto());
+        builder.addProperties(next.toPropertyProto());
       }
     }
     return builder.build();
@@ -261,8 +261,8 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void fromEntityProto(EntityProto proto) {
-	  for (Entry<String, PropertyProto> propertyProto : proto.getPropertiesMap().entrySet()) {
-		Property prop = MsgProtoBuf.propertyProto2Property(propertyProto.getValue());
+	  for (PropertyProto propertyProto : proto.getPropertiesList()) {
+		Property prop = MsgProtoBuf.propertyProto2Property(propertyProto);
 		if ( prop == null ) {
 	        continue;
 	      }

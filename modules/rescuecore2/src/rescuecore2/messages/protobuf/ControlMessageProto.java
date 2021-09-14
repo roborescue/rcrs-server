@@ -11653,38 +11653,28 @@ public final class ControlMessageProto {
     int getEntityID();
 
     /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
+     * <code>repeated .PropertyProto properties = 3;</code>
+     */
+    java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> 
+        getPropertiesList();
+    /**
+     * <code>repeated .PropertyProto properties = 3;</code>
+     */
+    rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperties(int index);
+    /**
+     * <code>repeated .PropertyProto properties = 3;</code>
      */
     int getPropertiesCount();
     /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
+     * <code>repeated .PropertyProto properties = 3;</code>
      */
-    boolean containsProperties(
-        java.lang.String key);
+    java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
+        getPropertiesOrBuilderList();
     /**
-     * Use {@link #getPropertiesMap()} instead.
+     * <code>repeated .PropertyProto properties = 3;</code>
      */
-    @java.lang.Deprecated
-    java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-    getProperties();
-    /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-     */
-    java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-    getPropertiesMap();
-    /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-     */
-
-    rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getPropertiesOrDefault(
-        java.lang.String key,
-        rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto defaultValue);
-    /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-     */
-
-    rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getPropertiesOrThrow(
-        java.lang.String key);
+    rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertiesOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code EntityProto}
@@ -11700,6 +11690,7 @@ public final class ControlMessageProto {
     }
     private EntityProto() {
       urn_ = 0;
+      properties_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -11746,15 +11737,11 @@ public final class ControlMessageProto {
             }
             case 26: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                properties_ = com.google.protobuf.MapField.newMapField(
-                    PropertiesDefaultEntryHolder.defaultEntry);
+                properties_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              com.google.protobuf.MapEntry<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-              properties__ = input.readMessage(
-                  PropertiesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              properties_.getMutableMap().put(
-                  properties__.getKey(), properties__.getValue());
+              properties_.add(
+                  input.readMessage(rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -11772,6 +11759,9 @@ public final class ControlMessageProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          properties_ = java.util.Collections.unmodifiableList(properties_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -11781,18 +11771,6 @@ public final class ControlMessageProto {
       return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_EntityProto_descriptor;
     }
 
-    @SuppressWarnings({"rawtypes"})
-    @java.lang.Override
-    protected com.google.protobuf.MapField internalGetMapField(
-        int number) {
-      switch (number) {
-        case 3:
-          return internalGetProperties();
-        default:
-          throw new RuntimeException(
-              "Invalid map field number: " + number);
-      }
-    }
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
@@ -11832,84 +11810,43 @@ public final class ControlMessageProto {
     }
 
     public static final int PROPERTIES_FIELD_NUMBER = 3;
-    private static final class PropertiesDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<
-          java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> defaultEntry =
-              com.google.protobuf.MapEntry
-              .<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>newDefaultInstance(
-                  rescuecore2.messages.protobuf.ControlMessageProto.internal_static_EntityProto_PropertiesEntry_descriptor, 
-                  com.google.protobuf.WireFormat.FieldType.STRING,
-                  "",
-                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
-                  rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.getDefaultInstance());
-    }
-    private com.google.protobuf.MapField<
-        java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> properties_;
-    private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-    internalGetProperties() {
-      if (properties_ == null) {
-        return com.google.protobuf.MapField.emptyMapField(
-            PropertiesDefaultEntryHolder.defaultEntry);
-      }
+    private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> properties_;
+    /**
+     * <code>repeated .PropertyProto properties = 3;</code>
+     */
+    @java.lang.Override
+    public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertiesList() {
       return properties_;
     }
-
+    /**
+     * <code>repeated .PropertyProto properties = 3;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
+        getPropertiesOrBuilderList() {
+      return properties_;
+    }
+    /**
+     * <code>repeated .PropertyProto properties = 3;</code>
+     */
+    @java.lang.Override
     public int getPropertiesCount() {
-      return internalGetProperties().getMap().size();
+      return properties_.size();
     }
     /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
+     * <code>repeated .PropertyProto properties = 3;</code>
      */
-
     @java.lang.Override
-    public boolean containsProperties(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      return internalGetProperties().getMap().containsKey(key);
+    public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperties(int index) {
+      return properties_.get(index);
     }
     /**
-     * Use {@link #getPropertiesMap()} instead.
+     * <code>repeated .PropertyProto properties = 3;</code>
      */
     @java.lang.Override
-    @java.lang.Deprecated
-    public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getProperties() {
-      return getPropertiesMap();
-    }
-    /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-     */
-    @java.lang.Override
-
-    public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertiesMap() {
-      return internalGetProperties().getMap();
-    }
-    /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-     */
-    @java.lang.Override
-
-    public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getPropertiesOrDefault(
-        java.lang.String key,
-        rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> map =
-          internalGetProperties().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
-    }
-    /**
-     * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-     */
-    @java.lang.Override
-
-    public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getPropertiesOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> map =
-          internalGetProperties().getMap();
-      if (!map.containsKey(key)) {
-        throw new java.lang.IllegalArgumentException();
-      }
-      return map.get(key);
+    public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertiesOrBuilder(
+        int index) {
+      return properties_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -11932,12 +11869,9 @@ public final class ControlMessageProto {
       if (entityID_ != 0) {
         output.writeInt32(2, entityID_);
       }
-      com.google.protobuf.GeneratedMessageV3
-        .serializeStringMapTo(
-          output,
-          internalGetProperties(),
-          PropertiesDefaultEntryHolder.defaultEntry,
-          3);
+      for (int i = 0; i < properties_.size(); i++) {
+        output.writeMessage(3, properties_.get(i));
+      }
       unknownFields.writeTo(output);
     }
 
@@ -11955,15 +11889,9 @@ public final class ControlMessageProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, entityID_);
       }
-      for (java.util.Map.Entry<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> entry
-           : internalGetProperties().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-        properties__ = PropertiesDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
+      for (int i = 0; i < properties_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(3, properties__);
+          .computeMessageSize(3, properties_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -11983,8 +11911,8 @@ public final class ControlMessageProto {
       if (urn_ != other.urn_) return false;
       if (getEntityID()
           != other.getEntityID()) return false;
-      if (!internalGetProperties().equals(
-          other.internalGetProperties())) return false;
+      if (!getPropertiesList()
+          .equals(other.getPropertiesList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -12000,9 +11928,9 @@ public final class ControlMessageProto {
       hash = (53 * hash) + urn_;
       hash = (37 * hash) + ENTITYID_FIELD_NUMBER;
       hash = (53 * hash) + getEntityID();
-      if (!internalGetProperties().getMap().isEmpty()) {
+      if (getPropertiesCount() > 0) {
         hash = (37 * hash) + PROPERTIES_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetProperties().hashCode();
+        hash = (53 * hash) + getPropertiesList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -12111,28 +12039,6 @@ public final class ControlMessageProto {
         return rescuecore2.messages.protobuf.ControlMessageProto.internal_static_EntityProto_descriptor;
       }
 
-      @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMapField(
-          int number) {
-        switch (number) {
-          case 3:
-            return internalGetProperties();
-          default:
-            throw new RuntimeException(
-                "Invalid map field number: " + number);
-        }
-      }
-      @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMutableMapField(
-          int number) {
-        switch (number) {
-          case 3:
-            return internalGetMutableProperties();
-          default:
-            throw new RuntimeException(
-                "Invalid map field number: " + number);
-        }
-      }
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
@@ -12154,6 +12060,7 @@ public final class ControlMessageProto {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getPropertiesFieldBuilder();
         }
       }
       @java.lang.Override
@@ -12163,7 +12070,12 @@ public final class ControlMessageProto {
 
         entityID_ = 0;
 
-        internalGetMutableProperties().clear();
+        if (propertiesBuilder_ == null) {
+          properties_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          propertiesBuilder_.clear();
+        }
         return this;
       }
 
@@ -12193,8 +12105,15 @@ public final class ControlMessageProto {
         int from_bitField0_ = bitField0_;
         result.urn_ = urn_;
         result.entityID_ = entityID_;
-        result.properties_ = internalGetProperties();
-        result.properties_.makeImmutable();
+        if (propertiesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            properties_ = java.util.Collections.unmodifiableList(properties_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.properties_ = properties_;
+        } else {
+          result.properties_ = propertiesBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -12249,8 +12168,32 @@ public final class ControlMessageProto {
         if (other.getEntityID() != 0) {
           setEntityID(other.getEntityID());
         }
-        internalGetMutableProperties().mergeFrom(
-            other.internalGetProperties());
+        if (propertiesBuilder_ == null) {
+          if (!other.properties_.isEmpty()) {
+            if (properties_.isEmpty()) {
+              properties_ = other.properties_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensurePropertiesIsMutable();
+              properties_.addAll(other.properties_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.properties_.isEmpty()) {
+            if (propertiesBuilder_.isEmpty()) {
+              propertiesBuilder_.dispose();
+              propertiesBuilder_ = null;
+              properties_ = other.properties_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              propertiesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getPropertiesFieldBuilder() : null;
+            } else {
+              propertiesBuilder_.addAllMessages(other.properties_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -12366,132 +12309,244 @@ public final class ControlMessageProto {
         return this;
       }
 
-      private com.google.protobuf.MapField<
-          java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> properties_;
-      private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-      internalGetProperties() {
-        if (properties_ == null) {
-          return com.google.protobuf.MapField.emptyMapField(
-              PropertiesDefaultEntryHolder.defaultEntry);
-        }
-        return properties_;
-      }
-      private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-      internalGetMutableProperties() {
-        onChanged();;
-        if (properties_ == null) {
-          properties_ = com.google.protobuf.MapField.newMapField(
-              PropertiesDefaultEntryHolder.defaultEntry);
-        }
-        if (!properties_.isMutable()) {
-          properties_ = properties_.copy();
-        }
-        return properties_;
+      private java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> properties_ =
+        java.util.Collections.emptyList();
+      private void ensurePropertiesIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          properties_ = new java.util.ArrayList<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>(properties_);
+          bitField0_ |= 0x00000001;
+         }
       }
 
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> propertiesBuilder_;
+
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertiesList() {
+        if (propertiesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(properties_);
+        } else {
+          return propertiesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
       public int getPropertiesCount() {
-        return internalGetProperties().getMap().size();
-      }
-      /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-       */
-
-      @java.lang.Override
-      public boolean containsProperties(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        return internalGetProperties().getMap().containsKey(key);
-      }
-      /**
-       * Use {@link #getPropertiesMap()} instead.
-       */
-      @java.lang.Override
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getProperties() {
-        return getPropertiesMap();
-      }
-      /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-       */
-      @java.lang.Override
-
-      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> getPropertiesMap() {
-        return internalGetProperties().getMap();
-      }
-      /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-       */
-      @java.lang.Override
-
-      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getPropertiesOrDefault(
-          java.lang.String key,
-          rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> map =
-            internalGetProperties().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
-      }
-      /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
-       */
-      @java.lang.Override
-
-      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getPropertiesOrThrow(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> map =
-            internalGetProperties().getMap();
-        if (!map.containsKey(key)) {
-          throw new java.lang.IllegalArgumentException();
+        if (propertiesBuilder_ == null) {
+          return properties_.size();
+        } else {
+          return propertiesBuilder_.getCount();
         }
-        return map.get(key);
       }
-
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto getProperties(int index) {
+        if (propertiesBuilder_ == null) {
+          return properties_.get(index);
+        } else {
+          return propertiesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder setProperties(
+          int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
+        if (propertiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertiesIsMutable();
+          properties_.set(index, value);
+          onChanged();
+        } else {
+          propertiesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder setProperties(
+          int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder builderForValue) {
+        if (propertiesBuilder_ == null) {
+          ensurePropertiesIsMutable();
+          properties_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          propertiesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder addProperties(rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
+        if (propertiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertiesIsMutable();
+          properties_.add(value);
+          onChanged();
+        } else {
+          propertiesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder addProperties(
+          int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
+        if (propertiesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePropertiesIsMutable();
+          properties_.add(index, value);
+          onChanged();
+        } else {
+          propertiesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder addProperties(
+          rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder builderForValue) {
+        if (propertiesBuilder_ == null) {
+          ensurePropertiesIsMutable();
+          properties_.add(builderForValue.build());
+          onChanged();
+        } else {
+          propertiesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder addProperties(
+          int index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder builderForValue) {
+        if (propertiesBuilder_ == null) {
+          ensurePropertiesIsMutable();
+          properties_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          propertiesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public Builder addAllProperties(
+          java.lang.Iterable<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> values) {
+        if (propertiesBuilder_ == null) {
+          ensurePropertiesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, properties_);
+          onChanged();
+        } else {
+          propertiesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
       public Builder clearProperties() {
-        internalGetMutableProperties().getMutableMap()
-            .clear();
+        if (propertiesBuilder_ == null) {
+          properties_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          propertiesBuilder_.clear();
+        }
         return this;
       }
       /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-
-      public Builder removeProperties(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableProperties().getMutableMap()
-            .remove(key);
+      public Builder removeProperties(int index) {
+        if (propertiesBuilder_ == null) {
+          ensurePropertiesIsMutable();
+          properties_.remove(index);
+          onChanged();
+        } else {
+          propertiesBuilder_.remove(index);
+        }
         return this;
       }
       /**
-       * Use alternate mutation accessors instead.
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-      @java.lang.Deprecated
-      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto>
-      getMutableProperties() {
-        return internalGetMutableProperties().getMutableMap();
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder getPropertiesBuilder(
+          int index) {
+        return getPropertiesFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-      public Builder putProperties(
-          java.lang.String key,
-          rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableProperties().getMutableMap()
-            .put(key, value);
-        return this;
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder getPropertiesOrBuilder(
+          int index) {
+        if (propertiesBuilder_ == null) {
+          return properties_.get(index);  } else {
+          return propertiesBuilder_.getMessageOrBuilder(index);
+        }
       }
       /**
-       * <code>map&lt;string, .PropertyProto&gt; properties = 3;</code>
+       * <code>repeated .PropertyProto properties = 3;</code>
        */
-
-      public Builder putAllProperties(
-          java.util.Map<java.lang.String, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto> values) {
-        internalGetMutableProperties().getMutableMap()
-            .putAll(values);
-        return this;
+      public java.util.List<? extends rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
+           getPropertiesOrBuilderList() {
+        if (propertiesBuilder_ != null) {
+          return propertiesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(properties_);
+        }
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder addPropertiesBuilder() {
+        return getPropertiesFieldBuilder().addBuilder(
+            rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder addPropertiesBuilder(
+          int index) {
+        return getPropertiesFieldBuilder().addBuilder(
+            index, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .PropertyProto properties = 3;</code>
+       */
+      public java.util.List<rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder> 
+           getPropertiesBuilderList() {
+        return getPropertiesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder> 
+          getPropertiesFieldBuilder() {
+        if (propertiesBuilder_ == null) {
+          propertiesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto.Builder, rescuecore2.messages.protobuf.ControlMessageProto.PropertyProtoOrBuilder>(
+                  properties_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          properties_ = null;
+        }
+        return propertiesBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -22648,11 +22703,6 @@ public final class ControlMessageProto {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_EntityProto_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_EntityProto_PropertiesEntry_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_EntityProto_PropertiesEntry_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_EntityListProto_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -22761,73 +22811,71 @@ public final class ControlMessageProto {
       "rotoH\000B\007\n\005value\"W\n\rPropertyProto\022\031\n\003urn\030" +
       "\001 \001(\0162\014.PropertyURN\022\017\n\007defined\030\002 \001(\010\022\032\n\005" +
       "value\030\003 \001(\0132\013.ValueProto\"$\n\014Point2DProto" +
-      "\022\t\n\001X\030\001 \001(\001\022\t\n\001Y\030\002 \001(\001\"\255\001\n\013EntityProto\022\027" +
-      "\n\003urn\030\001 \001(\0162\n.EntityURN\022\020\n\010entityID\030\002 \001(" +
-      "\005\0220\n\nproperties\030\003 \003(\0132\034.EntityProto.Prop" +
-      "ertiesEntry\032A\n\017PropertiesEntry\022\013\n\003key\030\001 " +
-      "\001(\t\022\035\n\005value\030\002 \001(\0132\016.PropertyProto:\0028\001\"1" +
-      "\n\017EntityListProto\022\036\n\010entities\030\001 \003(\0132\014.En" +
-      "tityProto\"`\n\013ConfigProto\022$\n\004data\030\001 \003(\0132\026" +
-      ".ConfigProto.DataEntry\032+\n\tDataEntry\022\013\n\003k" +
-      "ey\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdgeListP" +
-      "roto\022\031\n\005edges\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeP" +
-      "roto\022\016\n\006startX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004" +
-      "endX\030\003 \001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 " +
-      "\001(\005\"\271\001\n\016ChangeSetProto\0222\n\007changes\030\001 \003(\0132" +
-      "!.ChangeSetProto.EntityChangeProto\022\017\n\007de" +
-      "letes\030\002 \003(\005\032b\n\021EntityChangeProto\022\020\n\010enti" +
-      "tyID\030\001 \001(\005\022\027\n\003urn\030\002 \001(\0162\n.EntityURN\022\"\n\np" +
-      "roperties\030\003 \003(\0132\016.PropertyProto\"@\n\017Comma" +
-      "ndLogProto\022\014\n\004time\030\001 \001(\005\022\037\n\010commands\030\002 \003" +
-      "(\0132\r.MessageProto\";\n\031InitialConditionsLo" +
-      "gProto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto\"}" +
-      "\n\022PerceptionLogProto\022\014\n\004time\030\001 \001(\005\022\020\n\010en" +
-      "tityID\030\002 \001(\005\022 \n\007visible\030\003 \001(\0132\017.ChangeSe" +
-      "tProto\022%\n\016communications\030\004 \003(\0132\r.Message" +
-      "Proto\"\017\n\rStartLogProto\"\r\n\013EndLogProto\".\n" +
-      "\016ConfigLogProto\022\034\n\006config\030\001 \001(\0132\014.Config" +
-      "Proto\"A\n\017UpdatesLogProto\022\014\n\004time\030\001 \001(\005\022 " +
-      "\n\007changes\030\002 \001(\0132\017.ChangeSetProto*\237\005\n\006Msg" +
-      "URN\022\013\n\007NoneMsg\020\000\022\016\n\nKG_CONNECT\020\001\022\022\n\016KG_A" +
-      "CKNOWLEDGE\020\002\022\021\n\rGK_CONNECT_OK\020\003\022\024\n\020GK_CO" +
-      "NNECT_ERROR\020\004\022\016\n\nSK_CONNECT\020\005\022\022\n\016SK_ACKN" +
-      "OWLEDGE\020\006\022\r\n\tSK_UPDATE\020\007\022\021\n\rKS_CONNECT_O" +
-      "K\020\010\022\024\n\020KS_CONNECT_ERROR\020\t\022\r\n\tKS_UPDATE\020\n" +
-      "\022\017\n\013KS_COMMANDS\020\013\022\027\n\023KS_AFTERSHOCKS_INFO" +
-      "\020\014\022\016\n\nVK_CONNECT\020\r\022\022\n\016VK_ACKNOWLEDGE\020\016\022\021" +
-      "\n\rKV_CONNECT_OK\020\017\022\024\n\020KV_CONNECT_ERROR\020\020\022" +
-      "\017\n\013KV_TIMESTEP\020\021\022\016\n\nAK_CONNECT\020\022\022\022\n\016AK_A" +
-      "CKNOWLEDGE\020\023\022\021\n\rKA_CONNECT_OK\020\024\022\024\n\020KA_CO" +
-      "NNECT_ERROR\020\025\022\014\n\010KA_SENSE\020\026\022\014\n\010SHUTDOWN\020" +
-      "\027\022\025\n\021ENTITY_ID_REQUEST\020\030\022\026\n\022ENTITY_ID_RE" +
-      "SPONSE\020\031\022\013\n\007AK_REST\020\032\022\013\n\007AK_MOVE\020\033\022\013\n\007AK" +
-      "_LOAD\020\034\022\r\n\tAK_UNLOAD\020\035\022\n\n\006AK_SAY\020\036\022\013\n\007AK" +
-      "_TELL\020\037\022\021\n\rAK_EXTINGUISH\020 \022\r\n\tAK_RESCUE\020" +
-      "!\022\014\n\010AK_CLEAR\020\"\022\021\n\rAK_CLEAR_AREA\020#\022\020\n\014AK" +
-      "_SUBSCRIBE\020$\022\014\n\010AK_SPEAK\020%*\367\001\n\tEntityURN" +
-      "\022\016\n\nNoneEntity\020\000\022\t\n\005WORLD\020\001\022\010\n\004ROAD\020\002\022\014\n" +
-      "\010BLOCKADE\020\003\022\014\n\010BUILDING\020\004\022\n\n\006REFUGE\020\005\022\013\n" +
-      "\007HYDRANT\020\006\022\017\n\013GAS_STATION\020\007\022\020\n\014FIRE_STAT" +
-      "ION\020\010\022\024\n\020AMBULANCE_CENTRE\020\t\022\021\n\rPOLICE_OF" +
-      "FICE\020\n\022\014\n\010CIVILIAN\020\013\022\020\n\014FIRE_BRIGADE\020\014\022\022" +
-      "\n\016AMBULANCE_TEAM\020\r\022\020\n\014POLICE_FORCE\020\016*\325\004\n" +
-      "\013PropertyURN\022\020\n\014NoneProperty\020\000\022\016\n\nSTART_" +
-      "TIME\020\001\022\r\n\tLONGITUDE\020\002\022\014\n\010LATITUDE\020\003\022\016\n\nW" +
-      "IND_FORCE\020\004\022\022\n\016WIND_DIRECTION\020\005\022\005\n\001X\020\006\022\005" +
-      "\n\001Y\020\007\022\r\n\tBLOCKADES\020\010\022\017\n\013REPAIR_COST\020\t\022\n\n" +
-      "\006FLOORS\020\n\022\027\n\023BUILDING_ATTRIBUTES\020\013\022\014\n\010IG" +
-      "NITION\020\014\022\r\n\tFIERYNESS\020\r\022\016\n\nBROKENNESS\020\016\022" +
-      "\021\n\rBUILDING_CODE\020\017\022\030\n\024BUILDING_AREA_GROU" +
-      "ND\020\020\022\027\n\023BUILDING_AREA_TOTAL\020\021\022\n\n\006APEXES\020" +
-      "\022\022\t\n\005EDGES\020\023\022\014\n\010POSITION\020\024\022\r\n\tDIRECTION\020" +
-      "\025\022\024\n\020POSITION_HISTORY\020\026\022\013\n\007STAMINA\020\027\022\006\n\002" +
-      "HP\020\030\022\n\n\006DAMAGE\020\031\022\016\n\nBURIEDNESS\020\032\022\023\n\017TRAV" +
-      "EL_DISTANCE\020\033\022\022\n\016WATER_QUANTITY\020\034\022\017\n\013TEM" +
-      "PERATURE\020\035\022\016\n\nIMPORTANCE\020\036\022\014\n\010CAPACITY\020\037" +
-      "\022\017\n\013BEDCAPACITY\020 \022\020\n\014OCCUPIEDBEDS\020!\022\022\n\016R" +
-      "EFILLCAPACITY\020\"\022\023\n\017WAITINGLISTSIZE\020#B4\n\035" +
-      "rescuecore2.messages.protobufB\023ControlMe" +
-      "ssageProtob\006proto3"
+      "\022\t\n\001X\030\001 \001(\001\022\t\n\001Y\030\002 \001(\001\"\\\n\013EntityProto\022\027\n" +
+      "\003urn\030\001 \001(\0162\n.EntityURN\022\020\n\010entityID\030\002 \001(\005" +
+      "\022\"\n\nproperties\030\003 \003(\0132\016.PropertyProto\"1\n\017" +
+      "EntityListProto\022\036\n\010entities\030\001 \003(\0132\014.Enti" +
+      "tyProto\"`\n\013ConfigProto\022$\n\004data\030\001 \003(\0132\026.C" +
+      "onfigProto.DataEntry\032+\n\tDataEntry\022\013\n\003key" +
+      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"*\n\rEdgeListPro" +
+      "to\022\031\n\005edges\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgePro" +
+      "to\022\016\n\006startX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004en" +
+      "dX\030\003 \001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(" +
+      "\005\"\271\001\n\016ChangeSetProto\0222\n\007changes\030\001 \003(\0132!." +
+      "ChangeSetProto.EntityChangeProto\022\017\n\007dele" +
+      "tes\030\002 \003(\005\032b\n\021EntityChangeProto\022\020\n\010entity" +
+      "ID\030\001 \001(\005\022\027\n\003urn\030\002 \001(\0162\n.EntityURN\022\"\n\npro" +
+      "perties\030\003 \003(\0132\016.PropertyProto\"@\n\017Command" +
+      "LogProto\022\014\n\004time\030\001 \001(\005\022\037\n\010commands\030\002 \003(\013" +
+      "2\r.MessageProto\";\n\031InitialConditionsLogP" +
+      "roto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto\"}\n\022" +
+      "PerceptionLogProto\022\014\n\004time\030\001 \001(\005\022\020\n\010enti" +
+      "tyID\030\002 \001(\005\022 \n\007visible\030\003 \001(\0132\017.ChangeSetP" +
+      "roto\022%\n\016communications\030\004 \003(\0132\r.MessagePr" +
+      "oto\"\017\n\rStartLogProto\"\r\n\013EndLogProto\".\n\016C" +
+      "onfigLogProto\022\034\n\006config\030\001 \001(\0132\014.ConfigPr" +
+      "oto\"A\n\017UpdatesLogProto\022\014\n\004time\030\001 \001(\005\022 \n\007" +
+      "changes\030\002 \001(\0132\017.ChangeSetProto*\237\005\n\006MsgUR" +
+      "N\022\013\n\007NoneMsg\020\000\022\016\n\nKG_CONNECT\020\001\022\022\n\016KG_ACK" +
+      "NOWLEDGE\020\002\022\021\n\rGK_CONNECT_OK\020\003\022\024\n\020GK_CONN" +
+      "ECT_ERROR\020\004\022\016\n\nSK_CONNECT\020\005\022\022\n\016SK_ACKNOW" +
+      "LEDGE\020\006\022\r\n\tSK_UPDATE\020\007\022\021\n\rKS_CONNECT_OK\020" +
+      "\010\022\024\n\020KS_CONNECT_ERROR\020\t\022\r\n\tKS_UPDATE\020\n\022\017" +
+      "\n\013KS_COMMANDS\020\013\022\027\n\023KS_AFTERSHOCKS_INFO\020\014" +
+      "\022\016\n\nVK_CONNECT\020\r\022\022\n\016VK_ACKNOWLEDGE\020\016\022\021\n\r" +
+      "KV_CONNECT_OK\020\017\022\024\n\020KV_CONNECT_ERROR\020\020\022\017\n" +
+      "\013KV_TIMESTEP\020\021\022\016\n\nAK_CONNECT\020\022\022\022\n\016AK_ACK" +
+      "NOWLEDGE\020\023\022\021\n\rKA_CONNECT_OK\020\024\022\024\n\020KA_CONN" +
+      "ECT_ERROR\020\025\022\014\n\010KA_SENSE\020\026\022\014\n\010SHUTDOWN\020\027\022" +
+      "\025\n\021ENTITY_ID_REQUEST\020\030\022\026\n\022ENTITY_ID_RESP" +
+      "ONSE\020\031\022\013\n\007AK_REST\020\032\022\013\n\007AK_MOVE\020\033\022\013\n\007AK_L" +
+      "OAD\020\034\022\r\n\tAK_UNLOAD\020\035\022\n\n\006AK_SAY\020\036\022\013\n\007AK_T" +
+      "ELL\020\037\022\021\n\rAK_EXTINGUISH\020 \022\r\n\tAK_RESCUE\020!\022" +
+      "\014\n\010AK_CLEAR\020\"\022\021\n\rAK_CLEAR_AREA\020#\022\020\n\014AK_S" +
+      "UBSCRIBE\020$\022\014\n\010AK_SPEAK\020%*\367\001\n\tEntityURN\022\016" +
+      "\n\nNoneEntity\020\000\022\t\n\005WORLD\020\001\022\010\n\004ROAD\020\002\022\014\n\010B" +
+      "LOCKADE\020\003\022\014\n\010BUILDING\020\004\022\n\n\006REFUGE\020\005\022\013\n\007H" +
+      "YDRANT\020\006\022\017\n\013GAS_STATION\020\007\022\020\n\014FIRE_STATIO" +
+      "N\020\010\022\024\n\020AMBULANCE_CENTRE\020\t\022\021\n\rPOLICE_OFFI" +
+      "CE\020\n\022\014\n\010CIVILIAN\020\013\022\020\n\014FIRE_BRIGADE\020\014\022\022\n\016" +
+      "AMBULANCE_TEAM\020\r\022\020\n\014POLICE_FORCE\020\016*\325\004\n\013P" +
+      "ropertyURN\022\020\n\014NoneProperty\020\000\022\016\n\nSTART_TI" +
+      "ME\020\001\022\r\n\tLONGITUDE\020\002\022\014\n\010LATITUDE\020\003\022\016\n\nWIN" +
+      "D_FORCE\020\004\022\022\n\016WIND_DIRECTION\020\005\022\005\n\001X\020\006\022\005\n\001" +
+      "Y\020\007\022\r\n\tBLOCKADES\020\010\022\017\n\013REPAIR_COST\020\t\022\n\n\006F" +
+      "LOORS\020\n\022\027\n\023BUILDING_ATTRIBUTES\020\013\022\014\n\010IGNI" +
+      "TION\020\014\022\r\n\tFIERYNESS\020\r\022\016\n\nBROKENNESS\020\016\022\021\n" +
+      "\rBUILDING_CODE\020\017\022\030\n\024BUILDING_AREA_GROUND" +
+      "\020\020\022\027\n\023BUILDING_AREA_TOTAL\020\021\022\n\n\006APEXES\020\022\022" +
+      "\t\n\005EDGES\020\023\022\014\n\010POSITION\020\024\022\r\n\tDIRECTION\020\025\022" +
+      "\024\n\020POSITION_HISTORY\020\026\022\013\n\007STAMINA\020\027\022\006\n\002HP" +
+      "\020\030\022\n\n\006DAMAGE\020\031\022\016\n\nBURIEDNESS\020\032\022\023\n\017TRAVEL" +
+      "_DISTANCE\020\033\022\022\n\016WATER_QUANTITY\020\034\022\017\n\013TEMPE" +
+      "RATURE\020\035\022\016\n\nIMPORTANCE\020\036\022\014\n\010CAPACITY\020\037\022\017" +
+      "\n\013BEDCAPACITY\020 \022\020\n\014OCCUPIEDBEDS\020!\022\022\n\016REF" +
+      "ILLCAPACITY\020\"\022\023\n\017WAITINGLISTSIZE\020#B4\n\035re" +
+      "scuecore2.messages.protobufB\023ControlMess" +
+      "ageProtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -22905,12 +22953,6 @@ public final class ControlMessageProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EntityProto_descriptor,
         new java.lang.String[] { "Urn", "EntityID", "Properties", });
-    internal_static_EntityProto_PropertiesEntry_descriptor =
-      internal_static_EntityProto_descriptor.getNestedTypes().get(0);
-    internal_static_EntityProto_PropertiesEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_EntityProto_PropertiesEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
     internal_static_EntityListProto_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_EntityListProto_fieldAccessorTable = new
