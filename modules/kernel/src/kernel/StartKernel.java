@@ -96,8 +96,7 @@ public final class StartKernel {
 	/**
 	 * Start a kernel.
 	 *
-	 * @param args
-	 *            Command line arguments.
+	 * @param args Command line arguments.
 	 * @throws DocumentException
 	 */
 	public static void main(String[] args) throws DocumentException {
@@ -123,8 +122,8 @@ public final class StartKernel {
 			processJarFiles(config);
 			Registry localRegistry = new Registry("Kernel local registry");
 			// Register preferred message, entity and property factories
-			for (String next : config.getArrayValue(
-					Constants.MESSAGE_FACTORY_KEY, "")) {
+			for (String next : config
+					.getArrayValue(Constants.MESSAGE_FACTORY_KEY, "")) {
 				MessageFactory factory = instantiateFactory(next,
 						MessageFactory.class);
 				if (factory != null) {
@@ -132,8 +131,8 @@ public final class StartKernel {
 					Logger.info("Registered local message factory: " + next);
 				}
 			}
-			for (String next : config.getArrayValue(
-					Constants.ENTITY_FACTORY_KEY, "")) {
+			for (String next : config
+					.getArrayValue(Constants.ENTITY_FACTORY_KEY, "")) {
 				EntityFactory factory = instantiateFactory(next,
 						EntityFactory.class);
 				if (factory != null) {
@@ -141,8 +140,8 @@ public final class StartKernel {
 					Logger.info("Registered local entity factory: " + next);
 				}
 			}
-			for (String next : config.getArrayValue(
-					Constants.PROPERTY_FACTORY_KEY, "")) {
+			for (String next : config
+					.getArrayValue(Constants.PROPERTY_FACTORY_KEY, "")) {
 				PropertyFactory factory = instantiateFactory(next,
 						PropertyFactory.class);
 				if (factory != null) {
@@ -231,12 +230,34 @@ public final class StartKernel {
 	}
 
 	private static KernelInfo createKernel(Config config, boolean showMenu)
-			throws KernelException, DocumentException{
+			throws KernelException, DocumentException {
 		KernelStartupOptions options = new KernelStartupOptions(config);
 		// Show the chooser GUI
 		if (showMenu) {
-			final JDialog dialog = new JDialog((Frame) null,
-					"Setup kernel options", true);
+			JFrame frame = new JFrame() {
+				private static final long serialVersionUID = 1L;
+				{
+					setUndecorated(true);
+					setVisible(true);
+					setLocationRelativeTo(null);
+					setTitle("RCRS Start options");
+					setVisible(true);
+					java.awt.Toolkit.getDefaultToolkit().beep();
+					setAlwaysOnTop(true);
+					setAlwaysOnTop(false);
+				}
+			};
+			final JDialog dialog = new JDialog(frame, "Setup kernel options",
+					true) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void setVisible(boolean b) {
+					super.setVisible(b);
+					if (!isVisible())
+						frame.dispose();
+				}
+			};
 			KernelStartupPanel panel = new KernelStartupPanel(config, options);
 			JButton okButton = new JButton("OK");
 			JButton cancelButton = new JButton("Cancel");
@@ -263,6 +284,8 @@ public final class StartKernel {
 				}
 			});
 			dialog.pack();
+			dialog.setAlwaysOnTop(true);
+			dialog.setAlwaysOnTop(false);
 			dialog.setVisible(true);
 			if (!ok.get()) {
 				return null;
@@ -352,7 +375,8 @@ public final class StartKernel {
 		}
 		// Wait at the latch until either everything is connected or the
 		// connection timeout expires
-		Logger.info("Waiting for all agents, simulators and viewers to connect.");
+		Logger.info(
+				"Waiting for all agents, simulators and viewers to connect.");
 		if (timeout > -1) {
 			Logger.info("Connection timeout is " + timeout + "ms");
 		}
@@ -381,14 +405,13 @@ public final class StartKernel {
 						launchConfig));
 			}
 		}
-		ExecutorService service = Executors.newFixedThreadPool(Runtime
-				.getRuntime().availableProcessors());
+		ExecutorService service = Executors
+				.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		service.invokeAll(all);
 	}
 
-	private static void registerInitialAgents(Config config,
-			ComponentManager c, WorldModel<? extends Entity> model)
-			throws KernelException {
+	private static void registerInitialAgents(Config config, ComponentManager c,
+			WorldModel<? extends Entity> model) throws KernelException {
 		AgentRegistrar ar = instantiate(config.getValue(AGENT_REGISTRAR_KEY),
 				AgentRegistrar.class);
 		if (ar == null) {
@@ -411,7 +434,8 @@ public final class StartKernel {
 		return result;
 	}
 
-	private static TerminationCondition makeTerminationCondition(Config config) {
+	private static TerminationCondition makeTerminationCondition(
+			Config config) {
 		List<TerminationCondition> result = new ArrayList<TerminationCondition>();
 		for (String next : config.getArrayValue(TERMINATION_KEY, null)) {
 			TerminationCondition t = instantiate(next,
@@ -444,8 +468,8 @@ public final class StartKernel {
 	private static List<GUIComponent> makeGUIComponents(Config config,
 			Object... objectsToTest) {
 		List<GUIComponent> result = new ArrayList<GUIComponent>();
-		List<String> classNames = config
-				.getArrayValue(GUI_COMPONENTS_KEY, null);
+		List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY,
+				null);
 		for (String next : classNames) {
 			Logger.debug("GUI component found: '" + next + "'");
 			GUIComponent c = instantiate(next, GUIComponent.class);
@@ -478,7 +502,8 @@ public final class StartKernel {
 				KernelConstants.PERCEPTION_KEY);
 		processor.addConfigUpdater(COMMUNICATION_LOADABLE_TYPE, config,
 				KernelConstants.COMMUNICATION_MODEL_KEY);
-		Logger.info("Looking for gis, perception, communication, agent, simulator and viewer implementations");
+		Logger.info(
+				"Looking for gis, perception, communication, agent, simulator and viewer implementations");
 		processor.process();
 	}
 
@@ -491,8 +516,8 @@ public final class StartKernel {
 		private Config config;
 
 		public ComponentStarter(String className,
-				ComponentManager componentManager, int count,
-				Registry registry, KernelGUI gui, Config config) {
+				ComponentManager componentManager, int count, Registry registry,
+				KernelGUI gui, Config config) {
 			this.className = className;
 			this.componentManager = componentManager;
 			this.count = count;
@@ -503,8 +528,8 @@ public final class StartKernel {
 		}
 
 		public Void call() throws InterruptedException {
-			Logger.debug("ComponentStarter running: " + className + " * "
-					+ count);
+			Logger.debug(
+					"ComponentStarter running: " + className + " * " + count);
 			ComponentLauncher launcher = new InlineComponentLauncher(
 					componentManager, config);
 			launcher.setDefaultRegistry(registry);
@@ -554,6 +579,15 @@ public final class StartKernel {
 			this.options = options;
 			this.componentManager = componentManager;
 			guiComponents = new ArrayList<GUIComponent>(otherComponents);
+		}
+	}
+
+	public class DummyFrame extends JFrame {
+		public DummyFrame(String title) {
+			super(title);
+			setUndecorated(true);
+			setVisible(true);
+			setLocationRelativeTo(null);
 		}
 	}
 }
