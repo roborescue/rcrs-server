@@ -186,7 +186,7 @@ function startKernel {
         GUI_OPTION="--nogui"
     fi
 
-    KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log $GUI_OPTION $*"
+    KERNEL_OPTIONS="-c $CONFIGDIR/kernel.cfg --gis.map.dir=$MAP --kernel.logname=$LOGDIR/rescue.log.xz $GUI_OPTION $*"
     makeClasspath $BASEDIR/jars $BASEDIR/lib
 
     execute kernel "java -Xmx2048m -cp $CP -Dlog4j.log.dir=$LOGDIR kernel.StartKernel $KERNEL_OPTIONS"

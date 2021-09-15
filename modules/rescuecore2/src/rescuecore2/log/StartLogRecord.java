@@ -3,6 +3,7 @@ package rescuecore2.log;
 import java.io.OutputStream;
 
 import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
+import rescuecore2.messages.protobuf.RCRSLogProto.StartLogProto;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -46,6 +47,6 @@ public class StartLogRecord implements LogRecord {
 
 	@Override
 	public LogProto toLogProto() {
-		return LogProto.newBuilder().build();
+		return LogProto.newBuilder().setStart(StartLogProto.newBuilder()).build();
 	}
 }

@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.XZInputStream;
 
 import java.util.HashSet;
@@ -122,10 +123,11 @@ public class StreamLogReader extends AbstractLogReader {
 
     private void readLog(InputStream in) throws IOException, LogException {
         Registry.setCurrentRegistry(registry);
-		InputStream gin = new XZInputStream(in);
+		InputStream gin = new LZMAInputStream(in);
         readLogProto(gin);
 //        readLogV1(in);
     }
+    
     private void readLogProto(InputStream in) throws IOException, LogException {
         LogCase type;
         boolean startFound = false;
@@ -170,7 +172,6 @@ public class StreamLogReader extends AbstractLogReader {
         }
 		
 	}
-
 
 	private void readLogV1(InputStream in) throws IOException, LogException {
         Registry.setCurrentRegistry(registry);

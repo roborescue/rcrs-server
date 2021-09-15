@@ -3,7 +3,7 @@ package rescuecore2.log;
 import java.io.OutputStream;
 
 import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.XZOutputStream;
+import org.tukaani.xz.LZMAOutputStream;
 
 import java.io.IOException;
 
@@ -20,10 +20,7 @@ public class StreamLogWriter extends AbstractLogWriter {
 	 * @throws IOException
 	 */
 	public StreamLogWriter(OutputStream stream) throws IOException {
-		LZMA2Options options = new LZMA2Options();
-		options.setPreset(7); // play with this number: 6 is default but 7 works better for mid sized archives ( > 8mb)
-		this.out = new XZOutputStream(stream,options);
-		
+		this.out = new LZMAOutputStream(stream, new LZMA2Options(7), -1);
 	}
 
 	@Override
@@ -37,21 +34,17 @@ public class StreamLogWriter extends AbstractLogWriter {
 
 	@Override
 	public void close() {
-		try {
-			if(out instanceof XZOutputStream)
-				((XZOutputStream)out).finish();
-		} catch (IOException e) {
-			Logger.error("Error finishing XZ stream", e);
-		}
+		/* not supported for LZMA
 		try {
 			out.flush();
 		} catch (IOException e) {
 			Logger.error("Error flushing log stream", e);
-		}
+		}*/
 		try {
 			out.close();
 		} catch (IOException e) {
 			Logger.error("Error closing log stream", e);
 		}
 	}
+	
 }
