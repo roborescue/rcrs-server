@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
    A message component that is a list of integers.

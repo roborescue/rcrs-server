@@ -1,6 +1,6 @@
 package rescuecore2.standard.entities;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyURN;
 
 /**
  * URNs for standard property types.

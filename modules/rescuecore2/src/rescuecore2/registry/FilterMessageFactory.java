@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 /**
    A message factory that filters urns that do not match a given set.

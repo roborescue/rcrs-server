@@ -3,7 +3,7 @@ package rescuecore2.messages;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 import java.io.IOException;
 

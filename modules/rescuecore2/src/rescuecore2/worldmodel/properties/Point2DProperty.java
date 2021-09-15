@@ -9,8 +9,8 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.AbstractProperty;
-import rescuecore2.messages.protobuf.ControlMessageProto.Point2DProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.RCRSProto.Point2DProto;
+import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.misc.geometry.Point2D;
 
 /**

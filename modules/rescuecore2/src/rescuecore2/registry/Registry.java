@@ -9,7 +9,7 @@ import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.log.Logger;
 
 /**

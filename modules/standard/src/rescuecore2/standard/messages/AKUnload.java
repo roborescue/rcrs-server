@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.AbstractCommand;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.worldmodel.EntityID;
 
 /**

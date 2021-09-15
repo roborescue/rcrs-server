@@ -3,7 +3,7 @@ package rescuecore2.worldmodel;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 
 import java.io.IOException;
 

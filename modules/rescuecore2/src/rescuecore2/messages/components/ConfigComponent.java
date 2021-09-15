@@ -6,8 +6,8 @@ import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeString;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.ConfigProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.ConfigProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.config.Config;
 
 import java.io.InputStream;

@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 /**
    An abstract message factory with helper methods for defining URNs with enums.

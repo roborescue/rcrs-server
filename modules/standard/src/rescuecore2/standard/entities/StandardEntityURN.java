@@ -1,7 +1,7 @@
 package rescuecore2.standard.entities;
 
 
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
+import rescuecore2.messages.protobuf.RCRSProto.EntityURN;
 
 /**
  * URNs for standard entities.

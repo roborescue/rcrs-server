@@ -9,7 +9,7 @@ import java.net.Socket;
 
 import com.google.protobuf.util.JsonFormat;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 public class JsonTCPConnection extends TCPConnection{
 

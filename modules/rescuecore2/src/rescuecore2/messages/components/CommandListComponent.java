@@ -15,9 +15,9 @@ import java.util.List;
 import rescuecore2.messages.AbstractMessageComponent;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 
 /**

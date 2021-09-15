@@ -5,7 +5,7 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
 import java.io.InputStream;

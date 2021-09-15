@@ -13,9 +13,9 @@ import java.util.Collection;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityListProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.worldmodel.Entity;
 

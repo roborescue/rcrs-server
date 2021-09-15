@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.EdgeListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.EdgeProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.RCRSProto.EdgeListProto;
+import rescuecore2.messages.protobuf.RCRSProto.EdgeProto;
+import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;

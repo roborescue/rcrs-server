@@ -3,9 +3,9 @@ package rescuecore2.messages;
 import java.util.List;
 import java.util.Map;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MsgURN;
 
 import java.util.ArrayList;
 import java.util.Iterator;

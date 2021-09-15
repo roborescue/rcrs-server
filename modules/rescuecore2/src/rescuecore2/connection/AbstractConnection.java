@@ -5,7 +5,7 @@ import static rescuecore2.misc.EncodingTools.readMessage;
 import static rescuecore2.misc.EncodingTools.writeMessage;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.misc.WorkerThread;
 import rescuecore2.registry.Registry;

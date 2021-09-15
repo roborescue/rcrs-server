@@ -16,7 +16,7 @@ import rescuecore2.misc.EncodingTools;
 import rescuecore2.misc.Pair;
 import rescuecore2.registry.Registry;
 import rescuecore2.log.Logger;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 /**
    Connection implementation that uses InputStreams and OutputStreams.

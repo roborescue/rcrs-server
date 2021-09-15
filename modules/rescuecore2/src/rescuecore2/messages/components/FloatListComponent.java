@@ -14,8 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.FloatListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.FloatListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
  * A message component that is a list of floats.

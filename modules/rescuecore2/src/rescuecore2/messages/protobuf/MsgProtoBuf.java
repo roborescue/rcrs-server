@@ -1,12 +1,12 @@
 package rescuecore2.messages.protobuf;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN;
+import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityURN;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MsgURN;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyURN;
 import rescuecore2.registry.Registry;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;

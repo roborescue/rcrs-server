@@ -5,7 +5,7 @@ import java.util.Collection;
 import rescuecore2.messages.Control;
 import rescuecore2.messages.AbstractMessage;
 import rescuecore2.messages.components.IntComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.messages.components.EntityListComponent;
 import rescuecore2.messages.components.ConfigComponent;
 import rescuecore2.worldmodel.Entity;

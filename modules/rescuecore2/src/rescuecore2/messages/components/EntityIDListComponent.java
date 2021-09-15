@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.worldmodel.EntityID;
 
 /**

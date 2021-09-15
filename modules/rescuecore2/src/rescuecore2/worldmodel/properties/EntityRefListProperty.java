@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.IntListProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;

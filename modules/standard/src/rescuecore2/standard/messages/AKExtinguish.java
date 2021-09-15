@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import rescuecore2.messages.AbstractCommand;
 import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.components.IntComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.worldmodel.EntityID;
 
 /**

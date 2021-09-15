@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 public class TestMessage implements Message {
     private String urn;

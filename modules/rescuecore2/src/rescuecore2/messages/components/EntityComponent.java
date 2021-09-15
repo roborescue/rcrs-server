@@ -4,7 +4,7 @@ import static rescuecore2.misc.EncodingTools.readEntity;
 import static rescuecore2.misc.EncodingTools.writeEntity;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.worldmodel.Entity;
 

@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
    An ChangeSet component to a message.

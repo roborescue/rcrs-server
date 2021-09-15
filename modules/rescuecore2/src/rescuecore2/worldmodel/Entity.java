@@ -2,7 +2,7 @@ package rescuecore2.worldmodel;
 
 import org.json.JSONObject;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
 
 import java.util.Set;
 

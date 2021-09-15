@@ -1,8 +1,8 @@
 package rescuecore2.worldmodel;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyURN;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyURN;
+import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 
 /**
    Abstract base class for Property implementations.

@@ -1,7 +1,7 @@
 package rescuecore2.registry;
 
 import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 import java.io.InputStream;
 import java.io.IOException;

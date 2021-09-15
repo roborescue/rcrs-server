@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
-import rescuecore2.messages.protobuf.ControlMessageProto.ValueProto;
+import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**

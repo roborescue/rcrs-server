@@ -5,7 +5,7 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
 import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.protobuf.ControlMessageProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 import java.io.InputStream;
 import java.io.OutputStream;

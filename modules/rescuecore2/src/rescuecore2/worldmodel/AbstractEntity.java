@@ -1,9 +1,9 @@
 package rescuecore2.worldmodel;
 
 
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityProto;
-import rescuecore2.messages.protobuf.ControlMessageProto.EntityURN;
-import rescuecore2.messages.protobuf.ControlMessageProto.PropertyProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityURN;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 
 import static rescuecore2.misc.EncodingTools.writeInt32;

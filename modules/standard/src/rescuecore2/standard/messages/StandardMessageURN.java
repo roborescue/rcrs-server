@@ -1,6 +1,6 @@
 package rescuecore2.standard.messages;
 
-import rescuecore2.messages.protobuf.ControlMessageProto.MsgURN;
+import rescuecore2.messages.protobuf.RCRSProto.MsgURN;
 
 /**
  * URNs for standard messages.
