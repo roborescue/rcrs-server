@@ -1,6 +1,9 @@
 package rescuecore2.log;
 
 import java.io.OutputStream;
+
+import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
+
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -28,4 +31,7 @@ public interface LogRecord {
        @throws LogException If there is a problem reading the log record.
     */
     void read(InputStream in) throws IOException, LogException;
+    
+    void fromLogProto(LogProto log) throws LogException;
+    LogProto toLogProto();
 }

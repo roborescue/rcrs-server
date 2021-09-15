@@ -8,6 +8,8 @@ import rescuecore2.worldmodel.DefaultWorldModel;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.config.Config;
+import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
+import rescuecore2.messages.protobuf.RCRSLogProto.LogProto.LogCase;
 import rescuecore2.registry.Registry;
 
 import java.util.Map;
@@ -115,6 +117,58 @@ public class StreamLogReader extends AbstractLogReader {
 
     private void readLog(InputStream in) throws IOException, LogException {
         Registry.setCurrentRegistry(registry);
+        readLogProto(in);
+//        readLogV1(in);
+    }
+    private void readLogProto(InputStream in) throws IOException, LogException {
+        LogCase type;
+        boolean startFound = false;
+        do {
+            int size = readInt32(in);
+            byte[] bytes = in.readNBytes(size);
+            LogProto log = LogProto.parseFrom(bytes);
+            type = log.getLogCase();
+            if (!startFound) {
+                if (type != LogCase.START) {
+                    throw new LogException("Log does not start with correct magic number");
+                }
+                startFound = true;
+            }
+            readRecord(type, log);
+        }
+        while (type != LogCase.END);
+
+	}
+
+	private void readRecord(LogCase type, LogProto log) throws LogException {
+        switch (type) {
+        case INITIALCONDITION:
+            readInitialConditions(log);
+            break;
+        case PERCEPTION:
+            readPerception(log);
+            break;
+        case COMMAND:
+            readCommands(log);
+            break;
+        case UPDATE:
+            readUpdates(log);
+            break;
+        case CONFIG:
+            readConfig(log);
+            break;
+        case END:
+            return;
+        default:
+            throw new LogException("Unexpected record type: " + type);
+        }
+		
+	}
+
+
+	private void readLogV1(InputStream in) throws IOException, LogException {
+        Registry.setCurrentRegistry(registry);
+        
         int id;
         RecordType type;
         boolean startFound = false;
@@ -163,9 +217,24 @@ public class StreamLogReader extends AbstractLogReader {
         InitialConditionsRecord record = new InitialConditionsRecord(in);
         worldModels.put(0, record.getWorldModel());
     }
+	private void readInitialConditions(LogProto log) throws LogException {
+		InitialConditionsRecord record =new InitialConditionsRecord(log);
+		worldModels.put(0, record.getWorldModel());
+	}
 
     private void readPerception(InputStream in) throws IOException, LogException {
         PerceptionRecord record = new PerceptionRecord(in);
+        int time = record.getTime();
+        Map<EntityID, PerceptionRecord> agentData = perception.get(time);
+        if (agentData == null) {
+            agentData = new HashMap<EntityID, PerceptionRecord>();
+            perception.put(time, agentData);
+        }
+        agentData.put(record.getEntityID(), record);
+        maxTime = Math.max(time, maxTime);
+    }
+    private void readPerception(LogProto log) {
+        PerceptionRecord record = new PerceptionRecord(log);
         int time = record.getTime();
         Map<EntityID, PerceptionRecord> agentData = perception.get(time);
         if (agentData == null) {
@@ -182,8 +251,31 @@ public class StreamLogReader extends AbstractLogReader {
         maxTime = Math.max(record.getTime(), maxTime);
     }
 
+    private void readCommands(LogProto log) {
+        CommandsRecord record = new CommandsRecord(log);
+        commands.put(record.getTime(), record);
+        maxTime = Math.max(record.getTime(), maxTime);
+    }
     private void readUpdates(InputStream in) throws IOException, LogException {
         UpdatesRecord record = new UpdatesRecord(in);
+        int time = record.getTime();
+        updates.put(time, record);
+        // Make the world model for this timestep
+        WorldModel<? extends Entity> newWorld = new DefaultWorldModel<Entity>(Entity.class);
+        WorldModel<? extends Entity> oldWorld = getWorldModel(time - 1);
+        if (oldWorld != null) {
+            Set<Entity> copy = new HashSet<Entity>();
+            for (Entity next : oldWorld) {
+                copy.add(next.copy());
+            }
+            newWorld.merge(copy);
+        }
+        newWorld.merge(record.getChangeSet());
+        worldModels.put(time, newWorld);
+        maxTime = Math.max(time, maxTime);
+    }
+    private void readUpdates(LogProto log) throws LogException {
+        UpdatesRecord record = new UpdatesRecord(log);
         int time = record.getTime();
         updates.put(time, record);
         // Make the world model for this timestep
@@ -205,4 +297,9 @@ public class StreamLogReader extends AbstractLogReader {
         ConfigRecord record = new ConfigRecord(in);
         config = record.getConfig();
     }
+    private void readConfig(LogProto log)  {
+        ConfigRecord record = new ConfigRecord(log);
+        config = record.getConfig();
+    }
+
 }
