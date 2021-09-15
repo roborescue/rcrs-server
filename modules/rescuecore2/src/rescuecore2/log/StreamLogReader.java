@@ -15,6 +15,11 @@ import rescuecore2.registry.Registry;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import org.tukaani.xz.XZInputStream;
+
 import java.util.HashSet;
 
 import java.io.InputStream;
@@ -117,7 +122,8 @@ public class StreamLogReader extends AbstractLogReader {
 
     private void readLog(InputStream in) throws IOException, LogException {
         Registry.setCurrentRegistry(registry);
-        readLogProto(in);
+		InputStream gin = new XZInputStream(in);
+        readLogProto(gin);
 //        readLogV1(in);
     }
     private void readLogProto(InputStream in) throws IOException, LogException {
