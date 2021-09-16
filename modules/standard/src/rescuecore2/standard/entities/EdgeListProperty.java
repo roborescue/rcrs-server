@@ -12,6 +12,7 @@ import java.util.List;
 
 import rescuecore2.messages.protobuf.RCRSProto.EdgeListProto;
 import rescuecore2.messages.protobuf.RCRSProto.EdgeProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
@@ -168,28 +169,32 @@ public class EdgeListProperty extends AbstractProperty {
 		return new EdgeListProperty(this);
 	}
 
-	
 	@Override
-	protected ValueProto toValueProto() {
-		EdgeListProto.Builder edgeListbuilder = EdgeListProto.newBuilder();
-		for (Edge next : edges) {
-			int neighbour = 0;
-			if (next.isPassable()) {
-				neighbour = next.getNeighbour().getValue();
+    public PropertyProto toPropertyProto() {
+    	PropertyProto.Builder builder = basePropertyProto();
+		if (isDefined()) {
+			EdgeListProto.Builder edgeListbuilder = EdgeListProto.newBuilder();
+			for (Edge next : edges) {
+				int neighbour = 0;
+				if (next.isPassable()) {
+					neighbour = next.getNeighbour().getValue();
+				}
+				edgeListbuilder.addEdges(EdgeProto.newBuilder()
+						.setStartX(next.getStartX()).setStartY(next.getStartY())
+						.setEndX(next.getEndX()).setEndY(next.getEndY())
+						.setNeighbour(neighbour));
 			}
-			edgeListbuilder.addEdges(EdgeProto.newBuilder()
-					.setStartX(next.getStartX()).setStartY(next.getStartY())
-					.setEndX(next.getEndX()).setEndY(next.getEndY())
-					.setNeighbour(neighbour));
+			builder.setEdgeList(edgeListbuilder);
 		}
+    	return builder.build();
+    }
 
-		return ValueProto.newBuilder().setEdgeList(edgeListbuilder).build();
-	}
-
-	@Override
-	protected void fromValueProto(ValueProto valueProto) {
+    @Override
+    public void fromPropertyProto(PropertyProto proto) {
+    	if (!proto.getDefined())
+			return;
 		edges.clear();
-		List<EdgeProto> edgesProto = valueProto.getEdgeList()
+		List<EdgeProto> edgesProto = proto.getEdgeList()
 				.getEdgesList();
 		for (EdgeProto edgeProto : edgesProto) {
 			int startX = edgeProto.getStartX();

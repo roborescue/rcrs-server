@@ -130,7 +130,6 @@ message MessageComponentProto {
   }
 }
 
-
 message StrListProto {
   repeated string values = 1;
 }
@@ -148,6 +147,7 @@ message IntMatrixProto {
 }
 
 message ValueProto {
+	bool defined =1;
   oneof value {
     int32 intValue = 2;
     bool boolValue = 3;
@@ -163,7 +163,16 @@ message ValueProto {
 message PropertyProto {
   PropertyURN urn = 1;
   bool defined = 2;
-  ValueProto value = 3;
+  oneof value {
+	    int32 intValue = 3;
+	    bool boolValue = 4;
+	    double doubleValue = 5;
+	    bytes byteList = 6;
+	    IntListProto intList = 7;
+	    IntMatrixProto intMatrix = 8;
+	    EdgeListProto edgeList = 9;
+	    Point2DProto point2D= 10;
+	  }
 }
 
 message Point2DProto {
@@ -200,7 +209,7 @@ message ChangeSetProto {
 		EntityURN urn=2;
 		repeated PropertyProto properties = 3;
 	}
-  repeated EntityChangeProto changes = 1;
-  repeated int32 deletes = 2; /*entity ids*/
+    repeated EntityChangeProto changes = 1;
+	repeated int32 deletes = 2; /*entity ids*/
 }
 

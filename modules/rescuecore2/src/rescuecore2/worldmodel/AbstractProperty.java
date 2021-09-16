@@ -117,23 +117,10 @@ public abstract class AbstractProperty implements Property {
         return result.toString();
     }
     
-    @Override
-    public final PropertyProto toPropertyProto() {
+    protected PropertyProto.Builder basePropertyProto() {
     	PropertyProto.Builder builder = PropertyProto.newBuilder()
 				.setUrn(PropertyURN.valueOf(getURN())).setDefined(isDefined());
-		if (isDefined()) {
-			builder.setValue(toValueProto());
-		}
-    	return builder.build();
+    	return builder;
     }
     
-    @Override
-    public final void fromPropertyProto(PropertyProto proto) {
-    	if (!proto.getDefined())
-			return;
-    	fromValueProto(proto.getValue());
-    }
-    
-    protected abstract ValueProto toValueProto() ;
-    protected abstract void fromValueProto(ValueProto valueProto);
 }

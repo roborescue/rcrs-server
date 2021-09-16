@@ -10,6 +10,7 @@ import java.io.IOException;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.messages.protobuf.RCRSProto.Point2DProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.misc.geometry.Point2D;
 
@@ -122,14 +123,21 @@ public class Point2DProperty extends AbstractProperty {
 	}
 
 	@Override
-	protected ValueProto toValueProto() {
-		return ValueProto.newBuilder().setPoint2D(Point2DProto
-				.newBuilder().setX(value.getX()).setY(value.getY())).build();
+	public PropertyProto toPropertyProto() {
+		PropertyProto.Builder builder = basePropertyProto();
+		if (isDefined()) {
+			builder.setPoint2D(Point2DProto.newBuilder().setX(value.getX())
+					.setY(value.getY()));
+		}
+		return builder.build();
 	}
 
 	@Override
-	protected void fromValueProto(ValueProto valueProto) {
-		Point2DProto point = valueProto.getPoint2D();
-		setValue(new Point2D(point.getX(), point.getY()));		
+	public void fromPropertyProto(PropertyProto proto) {
+		if (!proto.getDefined())
+			return;
+
+		Point2DProto point = proto.getPoint2D();
+		setValue(new Point2D(point.getX(), point.getY()));
 	}
 }

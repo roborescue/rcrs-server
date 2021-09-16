@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
 import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
@@ -179,16 +180,22 @@ public class IntArrayProperty extends AbstractProperty {
 		return new IntArrayProperty(this);
 	}
 
+	
 	@Override
-	protected ValueProto toValueProto() {
-		return ValueProto.newBuilder()
-				.setIntList(IntListProto.newBuilder().addAllValues(data))
-				.build();
+	public PropertyProto toPropertyProto() {
+		PropertyProto.Builder builder = basePropertyProto();
+		if (isDefined()) {
+			builder
+			.setIntList(IntListProto.newBuilder().addAllValues(data));
+		}
+    	return builder.build();
 	}
 
 	@Override
-	protected void fromValueProto(ValueProto valueProto) {
-		List<Integer> list = valueProto.getIntList().getValuesList();
+	public void fromPropertyProto(PropertyProto proto) {
+		if (!proto.getDefined())
+			return;
+		List<Integer> list = proto.getIntList().getValuesList();
 		int[] result = new int[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			result[i] = list.get(i);

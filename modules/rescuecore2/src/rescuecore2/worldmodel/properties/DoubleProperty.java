@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
@@ -115,15 +116,19 @@ public class DoubleProperty extends AbstractProperty {
         return new DoubleProperty(this);
     }
 
-	@Override
-	protected ValueProto toValueProto() {
-		return ValueProto.newBuilder()
-				.setDoubleValue(value).build();
-	}
-
-	@Override
-	protected void fromValueProto(ValueProto valueProto) {
-		setValue(valueProto.getDoubleValue());
+    @Override
+    public PropertyProto toPropertyProto() {
+    	PropertyProto.Builder builder = basePropertyProto();
+		if (isDefined()) {
+			builder.setDoubleValue(value);
+		}
+    	return builder.build();
+    }
+    @Override
+    public void fromPropertyProto(PropertyProto proto) {
+    	if (!proto.getDefined())
+			return;
+		setValue(proto.getDoubleValue());
 	}
 	
 }

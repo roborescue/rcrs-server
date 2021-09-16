@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
@@ -181,17 +182,22 @@ public class EntityRefListProperty extends AbstractProperty {
 
 
 	@Override
-	protected ValueProto toValueProto() {
-		IntListProto.Builder intListBuilder = IntListProto.newBuilder();
-		for (EntityID next : ids) {
-			intListBuilder.addValues(next.getValue());
+	public PropertyProto toPropertyProto() {
+		PropertyProto.Builder builder = basePropertyProto();
+		if (isDefined()) {
+			IntListProto.Builder intListBuilder = IntListProto.newBuilder();
+			for (EntityID next : ids) {
+				intListBuilder.addValues(next.getValue());
+			}
+			builder.setIntList(intListBuilder);
 		}
-		return ValueProto.newBuilder().setIntList(intListBuilder).build();
+    	return builder.build();
 	}
-
 	@Override
-	protected void fromValueProto(ValueProto valueProto) {
-		List<Integer> values = valueProto.getIntList().getValuesList();
+	public void fromPropertyProto(PropertyProto proto) {
+		if (!proto.getDefined())
+			return;
+		List<Integer> values = proto.getIntList().getValuesList();
 		List<EntityID> newIDs = new ArrayList<EntityID>(values.size());
 		for (Integer val : values) {
 			newIDs.add(new EntityID(val));

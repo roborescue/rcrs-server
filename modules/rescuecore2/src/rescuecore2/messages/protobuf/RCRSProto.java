@@ -8448,6 +8448,12 @@ public final class RCRSProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
+     * <code>bool defined = 1;</code>
+     * @return The defined.
+     */
+    boolean getDefined();
+
+    /**
      * <code>int32 intValue = 2;</code>
      * @return Whether the intValue field is set.
      */
@@ -8598,6 +8604,11 @@ public final class RCRSProto {
             case 0:
               done = true;
               break;
+            case 8: {
+
+              defined_ = input.readBool();
+              break;
+            }
             case 16: {
               valueCase_ = 2;
               value_ = input.readInt32();
@@ -8757,6 +8768,17 @@ public final class RCRSProto {
     getValueCase() {
       return ValueCase.forNumber(
           valueCase_);
+    }
+
+    public static final int DEFINED_FIELD_NUMBER = 1;
+    private boolean defined_;
+    /**
+     * <code>bool defined = 1;</code>
+     * @return The defined.
+     */
+    @java.lang.Override
+    public boolean getDefined() {
+      return defined_;
     }
 
     public static final int INTVALUE_FIELD_NUMBER = 2;
@@ -8981,6 +9003,9 @@ public final class RCRSProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (defined_ != false) {
+        output.writeBool(1, defined_);
+      }
       if (valueCase_ == 2) {
         output.writeInt32(
             2, (int)((java.lang.Integer) value_));
@@ -9018,6 +9043,10 @@ public final class RCRSProto {
       if (size != -1) return size;
 
       size = 0;
+      if (defined_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, defined_);
+      }
       if (valueCase_ == 2) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(
@@ -9069,6 +9098,8 @@ public final class RCRSProto {
       }
       rescuecore2.messages.protobuf.RCRSProto.ValueProto other = (rescuecore2.messages.protobuf.RCRSProto.ValueProto) obj;
 
+      if (getDefined()
+          != other.getDefined()) return false;
       if (!getValueCase().equals(other.getValueCase())) return false;
       switch (valueCase_) {
         case 2:
@@ -9118,6 +9149,9 @@ public final class RCRSProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + DEFINED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getDefined());
       switch (valueCase_) {
         case 2:
           hash = (37 * hash) + INTVALUE_FIELD_NUMBER;
@@ -9289,6 +9323,8 @@ public final class RCRSProto {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        defined_ = false;
+
         valueCase_ = 0;
         value_ = null;
         return this;
@@ -9317,6 +9353,7 @@ public final class RCRSProto {
       @java.lang.Override
       public rescuecore2.messages.protobuf.RCRSProto.ValueProto buildPartial() {
         rescuecore2.messages.protobuf.RCRSProto.ValueProto result = new rescuecore2.messages.protobuf.RCRSProto.ValueProto(this);
+        result.defined_ = defined_;
         if (valueCase_ == 2) {
           result.value_ = value_;
         }
@@ -9406,6 +9443,9 @@ public final class RCRSProto {
 
       public Builder mergeFrom(rescuecore2.messages.protobuf.RCRSProto.ValueProto other) {
         if (other == rescuecore2.messages.protobuf.RCRSProto.ValueProto.getDefaultInstance()) return this;
+        if (other.getDefined() != false) {
+          setDefined(other.getDefined());
+        }
         switch (other.getValueCase()) {
           case INTVALUE: {
             setIntValue(other.getIntValue());
@@ -9486,6 +9526,37 @@ public final class RCRSProto {
         return this;
       }
 
+
+      private boolean defined_ ;
+      /**
+       * <code>bool defined = 1;</code>
+       * @return The defined.
+       */
+      @java.lang.Override
+      public boolean getDefined() {
+        return defined_;
+      }
+      /**
+       * <code>bool defined = 1;</code>
+       * @param value The defined to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDefined(boolean value) {
+        
+        defined_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool defined = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearDefined() {
+        
+        defined_ = false;
+        onChanged();
+        return this;
+      }
 
       /**
        * <code>int32 intValue = 2;</code>
@@ -10292,19 +10363,110 @@ public final class RCRSProto {
     boolean getDefined();
 
     /**
-     * <code>.ValueProto value = 3;</code>
-     * @return Whether the value field is set.
+     * <code>int32 intValue = 3;</code>
+     * @return Whether the intValue field is set.
      */
-    boolean hasValue();
+    boolean hasIntValue();
     /**
-     * <code>.ValueProto value = 3;</code>
-     * @return The value.
+     * <code>int32 intValue = 3;</code>
+     * @return The intValue.
      */
-    rescuecore2.messages.protobuf.RCRSProto.ValueProto getValue();
+    int getIntValue();
+
     /**
-     * <code>.ValueProto value = 3;</code>
+     * <code>bool boolValue = 4;</code>
+     * @return Whether the boolValue field is set.
      */
-    rescuecore2.messages.protobuf.RCRSProto.ValueProtoOrBuilder getValueOrBuilder();
+    boolean hasBoolValue();
+    /**
+     * <code>bool boolValue = 4;</code>
+     * @return The boolValue.
+     */
+    boolean getBoolValue();
+
+    /**
+     * <code>double doubleValue = 5;</code>
+     * @return Whether the doubleValue field is set.
+     */
+    boolean hasDoubleValue();
+    /**
+     * <code>double doubleValue = 5;</code>
+     * @return The doubleValue.
+     */
+    double getDoubleValue();
+
+    /**
+     * <code>bytes byteList = 6;</code>
+     * @return Whether the byteList field is set.
+     */
+    boolean hasByteList();
+    /**
+     * <code>bytes byteList = 6;</code>
+     * @return The byteList.
+     */
+    com.google.protobuf.ByteString getByteList();
+
+    /**
+     * <code>.IntListProto intList = 7;</code>
+     * @return Whether the intList field is set.
+     */
+    boolean hasIntList();
+    /**
+     * <code>.IntListProto intList = 7;</code>
+     * @return The intList.
+     */
+    rescuecore2.messages.protobuf.RCRSProto.IntListProto getIntList();
+    /**
+     * <code>.IntListProto intList = 7;</code>
+     */
+    rescuecore2.messages.protobuf.RCRSProto.IntListProtoOrBuilder getIntListOrBuilder();
+
+    /**
+     * <code>.IntMatrixProto intMatrix = 8;</code>
+     * @return Whether the intMatrix field is set.
+     */
+    boolean hasIntMatrix();
+    /**
+     * <code>.IntMatrixProto intMatrix = 8;</code>
+     * @return The intMatrix.
+     */
+    rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto getIntMatrix();
+    /**
+     * <code>.IntMatrixProto intMatrix = 8;</code>
+     */
+    rescuecore2.messages.protobuf.RCRSProto.IntMatrixProtoOrBuilder getIntMatrixOrBuilder();
+
+    /**
+     * <code>.EdgeListProto edgeList = 9;</code>
+     * @return Whether the edgeList field is set.
+     */
+    boolean hasEdgeList();
+    /**
+     * <code>.EdgeListProto edgeList = 9;</code>
+     * @return The edgeList.
+     */
+    rescuecore2.messages.protobuf.RCRSProto.EdgeListProto getEdgeList();
+    /**
+     * <code>.EdgeListProto edgeList = 9;</code>
+     */
+    rescuecore2.messages.protobuf.RCRSProto.EdgeListProtoOrBuilder getEdgeListOrBuilder();
+
+    /**
+     * <code>.Point2DProto point2D = 10;</code>
+     * @return Whether the point2D field is set.
+     */
+    boolean hasPoint2D();
+    /**
+     * <code>.Point2DProto point2D = 10;</code>
+     * @return The point2D.
+     */
+    rescuecore2.messages.protobuf.RCRSProto.Point2DProto getPoint2D();
+    /**
+     * <code>.Point2DProto point2D = 10;</code>
+     */
+    rescuecore2.messages.protobuf.RCRSProto.Point2DProtoOrBuilder getPoint2DOrBuilder();
+
+    public rescuecore2.messages.protobuf.RCRSProto.PropertyProto.ValueCase getValueCase();
   }
   /**
    * Protobuf type {@code PropertyProto}
@@ -10363,17 +10525,80 @@ public final class RCRSProto {
               defined_ = input.readBool();
               break;
             }
-            case 26: {
-              rescuecore2.messages.protobuf.RCRSProto.ValueProto.Builder subBuilder = null;
-              if (value_ != null) {
-                subBuilder = value_.toBuilder();
+            case 24: {
+              valueCase_ = 3;
+              value_ = input.readInt32();
+              break;
+            }
+            case 32: {
+              valueCase_ = 4;
+              value_ = input.readBool();
+              break;
+            }
+            case 41: {
+              valueCase_ = 5;
+              value_ = input.readDouble();
+              break;
+            }
+            case 50: {
+              valueCase_ = 6;
+              value_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              rescuecore2.messages.protobuf.RCRSProto.IntListProto.Builder subBuilder = null;
+              if (valueCase_ == 7) {
+                subBuilder = ((rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_).toBuilder();
               }
-              value_ = input.readMessage(rescuecore2.messages.protobuf.RCRSProto.ValueProto.parser(), extensionRegistry);
+              value_ =
+                  input.readMessage(rescuecore2.messages.protobuf.RCRSProto.IntListProto.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(value_);
+                subBuilder.mergeFrom((rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_);
                 value_ = subBuilder.buildPartial();
               }
-
+              valueCase_ = 7;
+              break;
+            }
+            case 66: {
+              rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.Builder subBuilder = null;
+              if (valueCase_ == 8) {
+                subBuilder = ((rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_).toBuilder();
+              }
+              value_ =
+                  input.readMessage(rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_);
+                value_ = subBuilder.buildPartial();
+              }
+              valueCase_ = 8;
+              break;
+            }
+            case 74: {
+              rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.Builder subBuilder = null;
+              if (valueCase_ == 9) {
+                subBuilder = ((rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_).toBuilder();
+              }
+              value_ =
+                  input.readMessage(rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_);
+                value_ = subBuilder.buildPartial();
+              }
+              valueCase_ = 9;
+              break;
+            }
+            case 82: {
+              rescuecore2.messages.protobuf.RCRSProto.Point2DProto.Builder subBuilder = null;
+              if (valueCase_ == 10) {
+                subBuilder = ((rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_).toBuilder();
+              }
+              value_ =
+                  input.readMessage(rescuecore2.messages.protobuf.RCRSProto.Point2DProto.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_);
+                value_ = subBuilder.buildPartial();
+              }
+              valueCase_ = 10;
               break;
             }
             default: {
@@ -10408,6 +10633,59 @@ public final class RCRSProto {
               rescuecore2.messages.protobuf.RCRSProto.PropertyProto.class, rescuecore2.messages.protobuf.RCRSProto.PropertyProto.Builder.class);
     }
 
+    private int valueCase_ = 0;
+    private java.lang.Object value_;
+    public enum ValueCase
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+      INTVALUE(3),
+      BOOLVALUE(4),
+      DOUBLEVALUE(5),
+      BYTELIST(6),
+      INTLIST(7),
+      INTMATRIX(8),
+      EDGELIST(9),
+      POINT2D(10),
+      VALUE_NOT_SET(0);
+      private final int value;
+      private ValueCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ValueCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static ValueCase forNumber(int value) {
+        switch (value) {
+          case 3: return INTVALUE;
+          case 4: return BOOLVALUE;
+          case 5: return DOUBLEVALUE;
+          case 6: return BYTELIST;
+          case 7: return INTLIST;
+          case 8: return INTMATRIX;
+          case 9: return EDGELIST;
+          case 10: return POINT2D;
+          case 0: return VALUE_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public ValueCase
+    getValueCase() {
+      return ValueCase.forNumber(
+          valueCase_);
+    }
+
     public static final int URN_FIELD_NUMBER = 1;
     private int urn_;
     /**
@@ -10438,30 +10716,212 @@ public final class RCRSProto {
       return defined_;
     }
 
-    public static final int VALUE_FIELD_NUMBER = 3;
-    private rescuecore2.messages.protobuf.RCRSProto.ValueProto value_;
+    public static final int INTVALUE_FIELD_NUMBER = 3;
     /**
-     * <code>.ValueProto value = 3;</code>
-     * @return Whether the value field is set.
+     * <code>int32 intValue = 3;</code>
+     * @return Whether the intValue field is set.
      */
     @java.lang.Override
-    public boolean hasValue() {
-      return value_ != null;
+    public boolean hasIntValue() {
+      return valueCase_ == 3;
     }
     /**
-     * <code>.ValueProto value = 3;</code>
-     * @return The value.
+     * <code>int32 intValue = 3;</code>
+     * @return The intValue.
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.RCRSProto.ValueProto getValue() {
-      return value_ == null ? rescuecore2.messages.protobuf.RCRSProto.ValueProto.getDefaultInstance() : value_;
+    public int getIntValue() {
+      if (valueCase_ == 3) {
+        return (java.lang.Integer) value_;
+      }
+      return 0;
+    }
+
+    public static final int BOOLVALUE_FIELD_NUMBER = 4;
+    /**
+     * <code>bool boolValue = 4;</code>
+     * @return Whether the boolValue field is set.
+     */
+    @java.lang.Override
+    public boolean hasBoolValue() {
+      return valueCase_ == 4;
     }
     /**
-     * <code>.ValueProto value = 3;</code>
+     * <code>bool boolValue = 4;</code>
+     * @return The boolValue.
      */
     @java.lang.Override
-    public rescuecore2.messages.protobuf.RCRSProto.ValueProtoOrBuilder getValueOrBuilder() {
-      return getValue();
+    public boolean getBoolValue() {
+      if (valueCase_ == 4) {
+        return (java.lang.Boolean) value_;
+      }
+      return false;
+    }
+
+    public static final int DOUBLEVALUE_FIELD_NUMBER = 5;
+    /**
+     * <code>double doubleValue = 5;</code>
+     * @return Whether the doubleValue field is set.
+     */
+    @java.lang.Override
+    public boolean hasDoubleValue() {
+      return valueCase_ == 5;
+    }
+    /**
+     * <code>double doubleValue = 5;</code>
+     * @return The doubleValue.
+     */
+    @java.lang.Override
+    public double getDoubleValue() {
+      if (valueCase_ == 5) {
+        return (java.lang.Double) value_;
+      }
+      return 0D;
+    }
+
+    public static final int BYTELIST_FIELD_NUMBER = 6;
+    /**
+     * <code>bytes byteList = 6;</code>
+     * @return Whether the byteList field is set.
+     */
+    @java.lang.Override
+    public boolean hasByteList() {
+      return valueCase_ == 6;
+    }
+    /**
+     * <code>bytes byteList = 6;</code>
+     * @return The byteList.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getByteList() {
+      if (valueCase_ == 6) {
+        return (com.google.protobuf.ByteString) value_;
+      }
+      return com.google.protobuf.ByteString.EMPTY;
+    }
+
+    public static final int INTLIST_FIELD_NUMBER = 7;
+    /**
+     * <code>.IntListProto intList = 7;</code>
+     * @return Whether the intList field is set.
+     */
+    @java.lang.Override
+    public boolean hasIntList() {
+      return valueCase_ == 7;
+    }
+    /**
+     * <code>.IntListProto intList = 7;</code>
+     * @return The intList.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.IntListProto getIntList() {
+      if (valueCase_ == 7) {
+         return (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance();
+    }
+    /**
+     * <code>.IntListProto intList = 7;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.IntListProtoOrBuilder getIntListOrBuilder() {
+      if (valueCase_ == 7) {
+         return (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance();
+    }
+
+    public static final int INTMATRIX_FIELD_NUMBER = 8;
+    /**
+     * <code>.IntMatrixProto intMatrix = 8;</code>
+     * @return Whether the intMatrix field is set.
+     */
+    @java.lang.Override
+    public boolean hasIntMatrix() {
+      return valueCase_ == 8;
+    }
+    /**
+     * <code>.IntMatrixProto intMatrix = 8;</code>
+     * @return The intMatrix.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto getIntMatrix() {
+      if (valueCase_ == 8) {
+         return (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance();
+    }
+    /**
+     * <code>.IntMatrixProto intMatrix = 8;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.IntMatrixProtoOrBuilder getIntMatrixOrBuilder() {
+      if (valueCase_ == 8) {
+         return (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance();
+    }
+
+    public static final int EDGELIST_FIELD_NUMBER = 9;
+    /**
+     * <code>.EdgeListProto edgeList = 9;</code>
+     * @return Whether the edgeList field is set.
+     */
+    @java.lang.Override
+    public boolean hasEdgeList() {
+      return valueCase_ == 9;
+    }
+    /**
+     * <code>.EdgeListProto edgeList = 9;</code>
+     * @return The edgeList.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.EdgeListProto getEdgeList() {
+      if (valueCase_ == 9) {
+         return (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance();
+    }
+    /**
+     * <code>.EdgeListProto edgeList = 9;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.EdgeListProtoOrBuilder getEdgeListOrBuilder() {
+      if (valueCase_ == 9) {
+         return (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance();
+    }
+
+    public static final int POINT2D_FIELD_NUMBER = 10;
+    /**
+     * <code>.Point2DProto point2D = 10;</code>
+     * @return Whether the point2D field is set.
+     */
+    @java.lang.Override
+    public boolean hasPoint2D() {
+      return valueCase_ == 10;
+    }
+    /**
+     * <code>.Point2DProto point2D = 10;</code>
+     * @return The point2D.
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.Point2DProto getPoint2D() {
+      if (valueCase_ == 10) {
+         return (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance();
+    }
+    /**
+     * <code>.Point2DProto point2D = 10;</code>
+     */
+    @java.lang.Override
+    public rescuecore2.messages.protobuf.RCRSProto.Point2DProtoOrBuilder getPoint2DOrBuilder() {
+      if (valueCase_ == 10) {
+         return (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_;
+      }
+      return rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -10484,8 +10944,33 @@ public final class RCRSProto {
       if (defined_ != false) {
         output.writeBool(2, defined_);
       }
-      if (value_ != null) {
-        output.writeMessage(3, getValue());
+      if (valueCase_ == 3) {
+        output.writeInt32(
+            3, (int)((java.lang.Integer) value_));
+      }
+      if (valueCase_ == 4) {
+        output.writeBool(
+            4, (boolean)((java.lang.Boolean) value_));
+      }
+      if (valueCase_ == 5) {
+        output.writeDouble(
+            5, (double)((java.lang.Double) value_));
+      }
+      if (valueCase_ == 6) {
+        output.writeBytes(
+            6, (com.google.protobuf.ByteString) value_);
+      }
+      if (valueCase_ == 7) {
+        output.writeMessage(7, (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_);
+      }
+      if (valueCase_ == 8) {
+        output.writeMessage(8, (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_);
+      }
+      if (valueCase_ == 9) {
+        output.writeMessage(9, (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_);
+      }
+      if (valueCase_ == 10) {
+        output.writeMessage(10, (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_);
       }
       unknownFields.writeTo(output);
     }
@@ -10504,9 +10989,41 @@ public final class RCRSProto {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(2, defined_);
       }
-      if (value_ != null) {
+      if (valueCase_ == 3) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getValue());
+          .computeInt32Size(
+              3, (int)((java.lang.Integer) value_));
+      }
+      if (valueCase_ == 4) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(
+              4, (boolean)((java.lang.Boolean) value_));
+      }
+      if (valueCase_ == 5) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(
+              5, (double)((java.lang.Double) value_));
+      }
+      if (valueCase_ == 6) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(
+              6, (com.google.protobuf.ByteString) value_);
+      }
+      if (valueCase_ == 7) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_);
+      }
+      if (valueCase_ == 8) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_);
+      }
+      if (valueCase_ == 9) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_);
+      }
+      if (valueCase_ == 10) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -10526,10 +11043,43 @@ public final class RCRSProto {
       if (urn_ != other.urn_) return false;
       if (getDefined()
           != other.getDefined()) return false;
-      if (hasValue() != other.hasValue()) return false;
-      if (hasValue()) {
-        if (!getValue()
-            .equals(other.getValue())) return false;
+      if (!getValueCase().equals(other.getValueCase())) return false;
+      switch (valueCase_) {
+        case 3:
+          if (getIntValue()
+              != other.getIntValue()) return false;
+          break;
+        case 4:
+          if (getBoolValue()
+              != other.getBoolValue()) return false;
+          break;
+        case 5:
+          if (java.lang.Double.doubleToLongBits(getDoubleValue())
+              != java.lang.Double.doubleToLongBits(
+                  other.getDoubleValue())) return false;
+          break;
+        case 6:
+          if (!getByteList()
+              .equals(other.getByteList())) return false;
+          break;
+        case 7:
+          if (!getIntList()
+              .equals(other.getIntList())) return false;
+          break;
+        case 8:
+          if (!getIntMatrix()
+              .equals(other.getIntMatrix())) return false;
+          break;
+        case 9:
+          if (!getEdgeList()
+              .equals(other.getEdgeList())) return false;
+          break;
+        case 10:
+          if (!getPoint2D()
+              .equals(other.getPoint2D())) return false;
+          break;
+        case 0:
+        default:
       }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
@@ -10547,9 +11097,43 @@ public final class RCRSProto {
       hash = (37 * hash) + DEFINED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getDefined());
-      if (hasValue()) {
-        hash = (37 * hash) + VALUE_FIELD_NUMBER;
-        hash = (53 * hash) + getValue().hashCode();
+      switch (valueCase_) {
+        case 3:
+          hash = (37 * hash) + INTVALUE_FIELD_NUMBER;
+          hash = (53 * hash) + getIntValue();
+          break;
+        case 4:
+          hash = (37 * hash) + BOOLVALUE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+              getBoolValue());
+          break;
+        case 5:
+          hash = (37 * hash) + DOUBLEVALUE_FIELD_NUMBER;
+          hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+              java.lang.Double.doubleToLongBits(getDoubleValue()));
+          break;
+        case 6:
+          hash = (37 * hash) + BYTELIST_FIELD_NUMBER;
+          hash = (53 * hash) + getByteList().hashCode();
+          break;
+        case 7:
+          hash = (37 * hash) + INTLIST_FIELD_NUMBER;
+          hash = (53 * hash) + getIntList().hashCode();
+          break;
+        case 8:
+          hash = (37 * hash) + INTMATRIX_FIELD_NUMBER;
+          hash = (53 * hash) + getIntMatrix().hashCode();
+          break;
+        case 9:
+          hash = (37 * hash) + EDGELIST_FIELD_NUMBER;
+          hash = (53 * hash) + getEdgeList().hashCode();
+          break;
+        case 10:
+          hash = (37 * hash) + POINT2D_FIELD_NUMBER;
+          hash = (53 * hash) + getPoint2D().hashCode();
+          break;
+        case 0:
+        default:
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -10688,12 +11272,8 @@ public final class RCRSProto {
 
         defined_ = false;
 
-        if (valueBuilder_ == null) {
-          value_ = null;
-        } else {
-          value_ = null;
-          valueBuilder_ = null;
-        }
+        valueCase_ = 0;
+        value_ = null;
         return this;
       }
 
@@ -10722,11 +11302,47 @@ public final class RCRSProto {
         rescuecore2.messages.protobuf.RCRSProto.PropertyProto result = new rescuecore2.messages.protobuf.RCRSProto.PropertyProto(this);
         result.urn_ = urn_;
         result.defined_ = defined_;
-        if (valueBuilder_ == null) {
+        if (valueCase_ == 3) {
           result.value_ = value_;
-        } else {
-          result.value_ = valueBuilder_.build();
         }
+        if (valueCase_ == 4) {
+          result.value_ = value_;
+        }
+        if (valueCase_ == 5) {
+          result.value_ = value_;
+        }
+        if (valueCase_ == 6) {
+          result.value_ = value_;
+        }
+        if (valueCase_ == 7) {
+          if (intListBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = intListBuilder_.build();
+          }
+        }
+        if (valueCase_ == 8) {
+          if (intMatrixBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = intMatrixBuilder_.build();
+          }
+        }
+        if (valueCase_ == 9) {
+          if (edgeListBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = edgeListBuilder_.build();
+          }
+        }
+        if (valueCase_ == 10) {
+          if (point2DBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = point2DBuilder_.build();
+          }
+        }
+        result.valueCase_ = valueCase_;
         onBuilt();
         return result;
       }
@@ -10781,8 +11397,42 @@ public final class RCRSProto {
         if (other.getDefined() != false) {
           setDefined(other.getDefined());
         }
-        if (other.hasValue()) {
-          mergeValue(other.getValue());
+        switch (other.getValueCase()) {
+          case INTVALUE: {
+            setIntValue(other.getIntValue());
+            break;
+          }
+          case BOOLVALUE: {
+            setBoolValue(other.getBoolValue());
+            break;
+          }
+          case DOUBLEVALUE: {
+            setDoubleValue(other.getDoubleValue());
+            break;
+          }
+          case BYTELIST: {
+            setByteList(other.getByteList());
+            break;
+          }
+          case INTLIST: {
+            mergeIntList(other.getIntList());
+            break;
+          }
+          case INTMATRIX: {
+            mergeIntMatrix(other.getIntMatrix());
+            break;
+          }
+          case EDGELIST: {
+            mergeEdgeList(other.getEdgeList());
+            break;
+          }
+          case POINT2D: {
+            mergePoint2D(other.getPoint2D());
+            break;
+          }
+          case VALUE_NOT_SET: {
+            break;
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -10812,6 +11462,21 @@ public final class RCRSProto {
         }
         return this;
       }
+      private int valueCase_ = 0;
+      private java.lang.Object value_;
+      public ValueCase
+          getValueCase() {
+        return ValueCase.forNumber(
+            valueCase_);
+      }
+
+      public Builder clearValue() {
+        valueCase_ = 0;
+        value_ = null;
+        onChanged();
+        return this;
+      }
+
 
       private int urn_ = 0;
       /**
@@ -10898,123 +11563,735 @@ public final class RCRSProto {
         return this;
       }
 
-      private rescuecore2.messages.protobuf.RCRSProto.ValueProto value_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          rescuecore2.messages.protobuf.RCRSProto.ValueProto, rescuecore2.messages.protobuf.RCRSProto.ValueProto.Builder, rescuecore2.messages.protobuf.RCRSProto.ValueProtoOrBuilder> valueBuilder_;
       /**
-       * <code>.ValueProto value = 3;</code>
-       * @return Whether the value field is set.
+       * <code>int32 intValue = 3;</code>
+       * @return Whether the intValue field is set.
        */
-      public boolean hasValue() {
-        return valueBuilder_ != null || value_ != null;
+      public boolean hasIntValue() {
+        return valueCase_ == 3;
       }
       /**
-       * <code>.ValueProto value = 3;</code>
-       * @return The value.
+       * <code>int32 intValue = 3;</code>
+       * @return The intValue.
        */
-      public rescuecore2.messages.protobuf.RCRSProto.ValueProto getValue() {
-        if (valueBuilder_ == null) {
-          return value_ == null ? rescuecore2.messages.protobuf.RCRSProto.ValueProto.getDefaultInstance() : value_;
+      public int getIntValue() {
+        if (valueCase_ == 3) {
+          return (java.lang.Integer) value_;
+        }
+        return 0;
+      }
+      /**
+       * <code>int32 intValue = 3;</code>
+       * @param value The intValue to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIntValue(int value) {
+        valueCase_ = 3;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 intValue = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIntValue() {
+        if (valueCase_ == 3) {
+          valueCase_ = 0;
+          value_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      /**
+       * <code>bool boolValue = 4;</code>
+       * @return Whether the boolValue field is set.
+       */
+      public boolean hasBoolValue() {
+        return valueCase_ == 4;
+      }
+      /**
+       * <code>bool boolValue = 4;</code>
+       * @return The boolValue.
+       */
+      public boolean getBoolValue() {
+        if (valueCase_ == 4) {
+          return (java.lang.Boolean) value_;
+        }
+        return false;
+      }
+      /**
+       * <code>bool boolValue = 4;</code>
+       * @param value The boolValue to set.
+       * @return This builder for chaining.
+       */
+      public Builder setBoolValue(boolean value) {
+        valueCase_ = 4;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool boolValue = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearBoolValue() {
+        if (valueCase_ == 4) {
+          valueCase_ = 0;
+          value_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      /**
+       * <code>double doubleValue = 5;</code>
+       * @return Whether the doubleValue field is set.
+       */
+      public boolean hasDoubleValue() {
+        return valueCase_ == 5;
+      }
+      /**
+       * <code>double doubleValue = 5;</code>
+       * @return The doubleValue.
+       */
+      public double getDoubleValue() {
+        if (valueCase_ == 5) {
+          return (java.lang.Double) value_;
+        }
+        return 0D;
+      }
+      /**
+       * <code>double doubleValue = 5;</code>
+       * @param value The doubleValue to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDoubleValue(double value) {
+        valueCase_ = 5;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>double doubleValue = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearDoubleValue() {
+        if (valueCase_ == 5) {
+          valueCase_ = 0;
+          value_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      /**
+       * <code>bytes byteList = 6;</code>
+       * @return Whether the byteList field is set.
+       */
+      public boolean hasByteList() {
+        return valueCase_ == 6;
+      }
+      /**
+       * <code>bytes byteList = 6;</code>
+       * @return The byteList.
+       */
+      public com.google.protobuf.ByteString getByteList() {
+        if (valueCase_ == 6) {
+          return (com.google.protobuf.ByteString) value_;
+        }
+        return com.google.protobuf.ByteString.EMPTY;
+      }
+      /**
+       * <code>bytes byteList = 6;</code>
+       * @param value The byteList to set.
+       * @return This builder for chaining.
+       */
+      public Builder setByteList(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  valueCase_ = 6;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes byteList = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearByteList() {
+        if (valueCase_ == 6) {
+          valueCase_ = 0;
+          value_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.IntListProto, rescuecore2.messages.protobuf.RCRSProto.IntListProto.Builder, rescuecore2.messages.protobuf.RCRSProto.IntListProtoOrBuilder> intListBuilder_;
+      /**
+       * <code>.IntListProto intList = 7;</code>
+       * @return Whether the intList field is set.
+       */
+      @java.lang.Override
+      public boolean hasIntList() {
+        return valueCase_ == 7;
+      }
+      /**
+       * <code>.IntListProto intList = 7;</code>
+       * @return The intList.
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.IntListProto getIntList() {
+        if (intListBuilder_ == null) {
+          if (valueCase_ == 7) {
+            return (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance();
         } else {
-          return valueBuilder_.getMessage();
+          if (valueCase_ == 7) {
+            return intListBuilder_.getMessage();
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance();
         }
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
-      public Builder setValue(rescuecore2.messages.protobuf.RCRSProto.ValueProto value) {
-        if (valueBuilder_ == null) {
+      public Builder setIntList(rescuecore2.messages.protobuf.RCRSProto.IntListProto value) {
+        if (intListBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
           value_ = value;
           onChanged();
         } else {
-          valueBuilder_.setMessage(value);
+          intListBuilder_.setMessage(value);
         }
-
+        valueCase_ = 7;
         return this;
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
-      public Builder setValue(
-          rescuecore2.messages.protobuf.RCRSProto.ValueProto.Builder builderForValue) {
-        if (valueBuilder_ == null) {
+      public Builder setIntList(
+          rescuecore2.messages.protobuf.RCRSProto.IntListProto.Builder builderForValue) {
+        if (intListBuilder_ == null) {
           value_ = builderForValue.build();
           onChanged();
         } else {
-          valueBuilder_.setMessage(builderForValue.build());
+          intListBuilder_.setMessage(builderForValue.build());
         }
-
+        valueCase_ = 7;
         return this;
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
-      public Builder mergeValue(rescuecore2.messages.protobuf.RCRSProto.ValueProto value) {
-        if (valueBuilder_ == null) {
-          if (value_ != null) {
-            value_ =
-              rescuecore2.messages.protobuf.RCRSProto.ValueProto.newBuilder(value_).mergeFrom(value).buildPartial();
+      public Builder mergeIntList(rescuecore2.messages.protobuf.RCRSProto.IntListProto value) {
+        if (intListBuilder_ == null) {
+          if (valueCase_ == 7 &&
+              value_ != rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance()) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.IntListProto.newBuilder((rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_)
+                .mergeFrom(value).buildPartial();
           } else {
             value_ = value;
           }
           onChanged();
         } else {
-          valueBuilder_.mergeFrom(value);
+          if (valueCase_ == 7) {
+            intListBuilder_.mergeFrom(value);
+          }
+          intListBuilder_.setMessage(value);
         }
-
+        valueCase_ = 7;
         return this;
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
-      public Builder clearValue() {
-        if (valueBuilder_ == null) {
-          value_ = null;
-          onChanged();
+      public Builder clearIntList() {
+        if (intListBuilder_ == null) {
+          if (valueCase_ == 7) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
         } else {
-          value_ = null;
-          valueBuilder_ = null;
+          if (valueCase_ == 7) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          intListBuilder_.clear();
         }
-
         return this;
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
-      public rescuecore2.messages.protobuf.RCRSProto.ValueProto.Builder getValueBuilder() {
-        
-        onChanged();
-        return getValueFieldBuilder().getBuilder();
+      public rescuecore2.messages.protobuf.RCRSProto.IntListProto.Builder getIntListBuilder() {
+        return getIntListFieldBuilder().getBuilder();
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
-      public rescuecore2.messages.protobuf.RCRSProto.ValueProtoOrBuilder getValueOrBuilder() {
-        if (valueBuilder_ != null) {
-          return valueBuilder_.getMessageOrBuilder();
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.IntListProtoOrBuilder getIntListOrBuilder() {
+        if ((valueCase_ == 7) && (intListBuilder_ != null)) {
+          return intListBuilder_.getMessageOrBuilder();
         } else {
-          return value_ == null ?
-              rescuecore2.messages.protobuf.RCRSProto.ValueProto.getDefaultInstance() : value_;
+          if (valueCase_ == 7) {
+            return (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance();
         }
       }
       /**
-       * <code>.ValueProto value = 3;</code>
+       * <code>.IntListProto intList = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          rescuecore2.messages.protobuf.RCRSProto.ValueProto, rescuecore2.messages.protobuf.RCRSProto.ValueProto.Builder, rescuecore2.messages.protobuf.RCRSProto.ValueProtoOrBuilder> 
-          getValueFieldBuilder() {
-        if (valueBuilder_ == null) {
-          valueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              rescuecore2.messages.protobuf.RCRSProto.ValueProto, rescuecore2.messages.protobuf.RCRSProto.ValueProto.Builder, rescuecore2.messages.protobuf.RCRSProto.ValueProtoOrBuilder>(
-                  getValue(),
+          rescuecore2.messages.protobuf.RCRSProto.IntListProto, rescuecore2.messages.protobuf.RCRSProto.IntListProto.Builder, rescuecore2.messages.protobuf.RCRSProto.IntListProtoOrBuilder> 
+          getIntListFieldBuilder() {
+        if (intListBuilder_ == null) {
+          if (!(valueCase_ == 7)) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.IntListProto.getDefaultInstance();
+          }
+          intListBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.protobuf.RCRSProto.IntListProto, rescuecore2.messages.protobuf.RCRSProto.IntListProto.Builder, rescuecore2.messages.protobuf.RCRSProto.IntListProtoOrBuilder>(
+                  (rescuecore2.messages.protobuf.RCRSProto.IntListProto) value_,
                   getParentForChildren(),
                   isClean());
           value_ = null;
         }
-        return valueBuilder_;
+        valueCase_ = 7;
+        onChanged();;
+        return intListBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto, rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.RCRSProto.IntMatrixProtoOrBuilder> intMatrixBuilder_;
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       * @return Whether the intMatrix field is set.
+       */
+      @java.lang.Override
+      public boolean hasIntMatrix() {
+        return valueCase_ == 8;
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       * @return The intMatrix.
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto getIntMatrix() {
+        if (intMatrixBuilder_ == null) {
+          if (valueCase_ == 8) {
+            return (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance();
+        } else {
+          if (valueCase_ == 8) {
+            return intMatrixBuilder_.getMessage();
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      public Builder setIntMatrix(rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto value) {
+        if (intMatrixBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          intMatrixBuilder_.setMessage(value);
+        }
+        valueCase_ = 8;
+        return this;
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      public Builder setIntMatrix(
+          rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.Builder builderForValue) {
+        if (intMatrixBuilder_ == null) {
+          value_ = builderForValue.build();
+          onChanged();
+        } else {
+          intMatrixBuilder_.setMessage(builderForValue.build());
+        }
+        valueCase_ = 8;
+        return this;
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      public Builder mergeIntMatrix(rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto value) {
+        if (intMatrixBuilder_ == null) {
+          if (valueCase_ == 8 &&
+              value_ != rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance()) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.newBuilder((rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
+          onChanged();
+        } else {
+          if (valueCase_ == 8) {
+            intMatrixBuilder_.mergeFrom(value);
+          }
+          intMatrixBuilder_.setMessage(value);
+        }
+        valueCase_ = 8;
+        return this;
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      public Builder clearIntMatrix() {
+        if (intMatrixBuilder_ == null) {
+          if (valueCase_ == 8) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+        } else {
+          if (valueCase_ == 8) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          intMatrixBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      public rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.Builder getIntMatrixBuilder() {
+        return getIntMatrixFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.IntMatrixProtoOrBuilder getIntMatrixOrBuilder() {
+        if ((valueCase_ == 8) && (intMatrixBuilder_ != null)) {
+          return intMatrixBuilder_.getMessageOrBuilder();
+        } else {
+          if (valueCase_ == 8) {
+            return (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.IntMatrixProto intMatrix = 8;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto, rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.RCRSProto.IntMatrixProtoOrBuilder> 
+          getIntMatrixFieldBuilder() {
+        if (intMatrixBuilder_ == null) {
+          if (!(valueCase_ == 8)) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.getDefaultInstance();
+          }
+          intMatrixBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto, rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto.Builder, rescuecore2.messages.protobuf.RCRSProto.IntMatrixProtoOrBuilder>(
+                  (rescuecore2.messages.protobuf.RCRSProto.IntMatrixProto) value_,
+                  getParentForChildren(),
+                  isClean());
+          value_ = null;
+        }
+        valueCase_ = 8;
+        onChanged();;
+        return intMatrixBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.EdgeListProto, rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.RCRSProto.EdgeListProtoOrBuilder> edgeListBuilder_;
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       * @return Whether the edgeList field is set.
+       */
+      @java.lang.Override
+      public boolean hasEdgeList() {
+        return valueCase_ == 9;
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       * @return The edgeList.
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.EdgeListProto getEdgeList() {
+        if (edgeListBuilder_ == null) {
+          if (valueCase_ == 9) {
+            return (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance();
+        } else {
+          if (valueCase_ == 9) {
+            return edgeListBuilder_.getMessage();
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      public Builder setEdgeList(rescuecore2.messages.protobuf.RCRSProto.EdgeListProto value) {
+        if (edgeListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          edgeListBuilder_.setMessage(value);
+        }
+        valueCase_ = 9;
+        return this;
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      public Builder setEdgeList(
+          rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.Builder builderForValue) {
+        if (edgeListBuilder_ == null) {
+          value_ = builderForValue.build();
+          onChanged();
+        } else {
+          edgeListBuilder_.setMessage(builderForValue.build());
+        }
+        valueCase_ = 9;
+        return this;
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      public Builder mergeEdgeList(rescuecore2.messages.protobuf.RCRSProto.EdgeListProto value) {
+        if (edgeListBuilder_ == null) {
+          if (valueCase_ == 9 &&
+              value_ != rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance()) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.newBuilder((rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
+          onChanged();
+        } else {
+          if (valueCase_ == 9) {
+            edgeListBuilder_.mergeFrom(value);
+          }
+          edgeListBuilder_.setMessage(value);
+        }
+        valueCase_ = 9;
+        return this;
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      public Builder clearEdgeList() {
+        if (edgeListBuilder_ == null) {
+          if (valueCase_ == 9) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+        } else {
+          if (valueCase_ == 9) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          edgeListBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      public rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.Builder getEdgeListBuilder() {
+        return getEdgeListFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.EdgeListProtoOrBuilder getEdgeListOrBuilder() {
+        if ((valueCase_ == 9) && (edgeListBuilder_ != null)) {
+          return edgeListBuilder_.getMessageOrBuilder();
+        } else {
+          if (valueCase_ == 9) {
+            return (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.EdgeListProto edgeList = 9;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.EdgeListProto, rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.RCRSProto.EdgeListProtoOrBuilder> 
+          getEdgeListFieldBuilder() {
+        if (edgeListBuilder_ == null) {
+          if (!(valueCase_ == 9)) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.getDefaultInstance();
+          }
+          edgeListBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.protobuf.RCRSProto.EdgeListProto, rescuecore2.messages.protobuf.RCRSProto.EdgeListProto.Builder, rescuecore2.messages.protobuf.RCRSProto.EdgeListProtoOrBuilder>(
+                  (rescuecore2.messages.protobuf.RCRSProto.EdgeListProto) value_,
+                  getParentForChildren(),
+                  isClean());
+          value_ = null;
+        }
+        valueCase_ = 9;
+        onChanged();;
+        return edgeListBuilder_;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.Point2DProto, rescuecore2.messages.protobuf.RCRSProto.Point2DProto.Builder, rescuecore2.messages.protobuf.RCRSProto.Point2DProtoOrBuilder> point2DBuilder_;
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       * @return Whether the point2D field is set.
+       */
+      @java.lang.Override
+      public boolean hasPoint2D() {
+        return valueCase_ == 10;
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       * @return The point2D.
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.Point2DProto getPoint2D() {
+        if (point2DBuilder_ == null) {
+          if (valueCase_ == 10) {
+            return (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance();
+        } else {
+          if (valueCase_ == 10) {
+            return point2DBuilder_.getMessage();
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      public Builder setPoint2D(rescuecore2.messages.protobuf.RCRSProto.Point2DProto value) {
+        if (point2DBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          point2DBuilder_.setMessage(value);
+        }
+        valueCase_ = 10;
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      public Builder setPoint2D(
+          rescuecore2.messages.protobuf.RCRSProto.Point2DProto.Builder builderForValue) {
+        if (point2DBuilder_ == null) {
+          value_ = builderForValue.build();
+          onChanged();
+        } else {
+          point2DBuilder_.setMessage(builderForValue.build());
+        }
+        valueCase_ = 10;
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      public Builder mergePoint2D(rescuecore2.messages.protobuf.RCRSProto.Point2DProto value) {
+        if (point2DBuilder_ == null) {
+          if (valueCase_ == 10 &&
+              value_ != rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance()) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.Point2DProto.newBuilder((rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
+          onChanged();
+        } else {
+          if (valueCase_ == 10) {
+            point2DBuilder_.mergeFrom(value);
+          }
+          point2DBuilder_.setMessage(value);
+        }
+        valueCase_ = 10;
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      public Builder clearPoint2D() {
+        if (point2DBuilder_ == null) {
+          if (valueCase_ == 10) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+        } else {
+          if (valueCase_ == 10) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          point2DBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      public rescuecore2.messages.protobuf.RCRSProto.Point2DProto.Builder getPoint2DBuilder() {
+        return getPoint2DFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      @java.lang.Override
+      public rescuecore2.messages.protobuf.RCRSProto.Point2DProtoOrBuilder getPoint2DOrBuilder() {
+        if ((valueCase_ == 10) && (point2DBuilder_ != null)) {
+          return point2DBuilder_.getMessageOrBuilder();
+        } else {
+          if (valueCase_ == 10) {
+            return (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_;
+          }
+          return rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.Point2DProto point2D = 10;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          rescuecore2.messages.protobuf.RCRSProto.Point2DProto, rescuecore2.messages.protobuf.RCRSProto.Point2DProto.Builder, rescuecore2.messages.protobuf.RCRSProto.Point2DProtoOrBuilder> 
+          getPoint2DFieldBuilder() {
+        if (point2DBuilder_ == null) {
+          if (!(valueCase_ == 10)) {
+            value_ = rescuecore2.messages.protobuf.RCRSProto.Point2DProto.getDefaultInstance();
+          }
+          point2DBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              rescuecore2.messages.protobuf.RCRSProto.Point2DProto, rescuecore2.messages.protobuf.RCRSProto.Point2DProto.Builder, rescuecore2.messages.protobuf.RCRSProto.Point2DProtoOrBuilder>(
+                  (rescuecore2.messages.protobuf.RCRSProto.Point2DProto) value_,
+                  getParentForChildren(),
+                  isClean());
+          value_ = null;
+        }
+        valueCase_ = 10;
+        onChanged();;
+        return point2DBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -17826,70 +19103,76 @@ public final class RCRSProto {
       "omponent\"\036\n\014StrListProto\022\016\n\006values\030\001 \003(\t" +
       "\"\036\n\014IntListProto\022\016\n\006values\030\001 \003(\005\" \n\016Floa" +
       "tListProto\022\016\n\006values\030\001 \003(\002\"/\n\016IntMatrixP" +
-      "roto\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\367\001\n\n" +
-      "ValueProto\022\022\n\010intValue\030\002 \001(\005H\000\022\023\n\tboolVa" +
-      "lue\030\003 \001(\010H\000\022\025\n\013doubleValue\030\004 \001(\001H\000\022\022\n\010by" +
-      "teList\030\005 \001(\014H\000\022 \n\007intList\030\006 \001(\0132\r.IntLis" +
-      "tProtoH\000\022$\n\tintMatrix\030\007 \001(\0132\017.IntMatrixP" +
-      "rotoH\000\022\"\n\010edgeList\030\010 \001(\0132\016.EdgeListProto" +
-      "H\000\022 \n\007point2D\030\t \001(\0132\r.Point2DProtoH\000B\007\n\005" +
-      "value\"W\n\rPropertyProto\022\031\n\003urn\030\001 \001(\0162\014.Pr" +
-      "opertyURN\022\017\n\007defined\030\002 \001(\010\022\032\n\005value\030\003 \001(" +
-      "\0132\013.ValueProto\"$\n\014Point2DProto\022\t\n\001X\030\001 \001(" +
-      "\001\022\t\n\001Y\030\002 \001(\001\"\\\n\013EntityProto\022\027\n\003urn\030\001 \001(\016" +
-      "2\n.EntityURN\022\020\n\010entityID\030\002 \001(\005\022\"\n\nproper" +
-      "ties\030\003 \003(\0132\016.PropertyProto\"1\n\017EntityList" +
-      "Proto\022\036\n\010entities\030\001 \003(\0132\014.EntityProto\"`\n" +
-      "\013ConfigProto\022$\n\004data\030\001 \003(\0132\026.ConfigProto" +
-      ".DataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005" +
-      "value\030\002 \001(\t:\0028\001\"*\n\rEdgeListProto\022\031\n\005edge" +
-      "s\030\001 \003(\0132\n.EdgeProto\"Z\n\tEdgeProto\022\016\n\006star" +
-      "tX\030\001 \001(\005\022\016\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014" +
-      "\n\004endY\030\004 \001(\005\022\021\n\tneighbour\030\005 \001(\005\"\271\001\n\016Chan" +
-      "geSetProto\0222\n\007changes\030\001 \003(\0132!.ChangeSetP" +
-      "roto.EntityChangeProto\022\017\n\007deletes\030\002 \003(\005\032" +
-      "b\n\021EntityChangeProto\022\020\n\010entityID\030\001 \001(\005\022\027" +
-      "\n\003urn\030\002 \001(\0162\n.EntityURN\022\"\n\nproperties\030\003 " +
-      "\003(\0132\016.PropertyProto*\237\005\n\006MsgURN\022\013\n\007NoneMs" +
-      "g\020\000\022\016\n\nKG_CONNECT\020\001\022\022\n\016KG_ACKNOWLEDGE\020\002\022" +
-      "\021\n\rGK_CONNECT_OK\020\003\022\024\n\020GK_CONNECT_ERROR\020\004" +
-      "\022\016\n\nSK_CONNECT\020\005\022\022\n\016SK_ACKNOWLEDGE\020\006\022\r\n\t" +
-      "SK_UPDATE\020\007\022\021\n\rKS_CONNECT_OK\020\010\022\024\n\020KS_CON" +
-      "NECT_ERROR\020\t\022\r\n\tKS_UPDATE\020\n\022\017\n\013KS_COMMAN" +
-      "DS\020\013\022\027\n\023KS_AFTERSHOCKS_INFO\020\014\022\016\n\nVK_CONN" +
-      "ECT\020\r\022\022\n\016VK_ACKNOWLEDGE\020\016\022\021\n\rKV_CONNECT_" +
-      "OK\020\017\022\024\n\020KV_CONNECT_ERROR\020\020\022\017\n\013KV_TIMESTE" +
-      "P\020\021\022\016\n\nAK_CONNECT\020\022\022\022\n\016AK_ACKNOWLEDGE\020\023\022" +
-      "\021\n\rKA_CONNECT_OK\020\024\022\024\n\020KA_CONNECT_ERROR\020\025" +
-      "\022\014\n\010KA_SENSE\020\026\022\014\n\010SHUTDOWN\020\027\022\025\n\021ENTITY_I" +
-      "D_REQUEST\020\030\022\026\n\022ENTITY_ID_RESPONSE\020\031\022\013\n\007A" +
-      "K_REST\020\032\022\013\n\007AK_MOVE\020\033\022\013\n\007AK_LOAD\020\034\022\r\n\tAK" +
-      "_UNLOAD\020\035\022\n\n\006AK_SAY\020\036\022\013\n\007AK_TELL\020\037\022\021\n\rAK" +
-      "_EXTINGUISH\020 \022\r\n\tAK_RESCUE\020!\022\014\n\010AK_CLEAR" +
-      "\020\"\022\021\n\rAK_CLEAR_AREA\020#\022\020\n\014AK_SUBSCRIBE\020$\022" +
-      "\014\n\010AK_SPEAK\020%*\367\001\n\tEntityURN\022\016\n\nNoneEntit" +
-      "y\020\000\022\t\n\005WORLD\020\001\022\010\n\004ROAD\020\002\022\014\n\010BLOCKADE\020\003\022\014" +
-      "\n\010BUILDING\020\004\022\n\n\006REFUGE\020\005\022\013\n\007HYDRANT\020\006\022\017\n" +
-      "\013GAS_STATION\020\007\022\020\n\014FIRE_STATION\020\010\022\024\n\020AMBU" +
-      "LANCE_CENTRE\020\t\022\021\n\rPOLICE_OFFICE\020\n\022\014\n\010CIV" +
-      "ILIAN\020\013\022\020\n\014FIRE_BRIGADE\020\014\022\022\n\016AMBULANCE_T" +
-      "EAM\020\r\022\020\n\014POLICE_FORCE\020\016*\325\004\n\013PropertyURN\022" +
-      "\020\n\014NoneProperty\020\000\022\016\n\nSTART_TIME\020\001\022\r\n\tLON" +
-      "GITUDE\020\002\022\014\n\010LATITUDE\020\003\022\016\n\nWIND_FORCE\020\004\022\022" +
-      "\n\016WIND_DIRECTION\020\005\022\005\n\001X\020\006\022\005\n\001Y\020\007\022\r\n\tBLOC" +
-      "KADES\020\010\022\017\n\013REPAIR_COST\020\t\022\n\n\006FLOORS\020\n\022\027\n\023" +
-      "BUILDING_ATTRIBUTES\020\013\022\014\n\010IGNITION\020\014\022\r\n\tF" +
-      "IERYNESS\020\r\022\016\n\nBROKENNESS\020\016\022\021\n\rBUILDING_C" +
-      "ODE\020\017\022\030\n\024BUILDING_AREA_GROUND\020\020\022\027\n\023BUILD" +
-      "ING_AREA_TOTAL\020\021\022\n\n\006APEXES\020\022\022\t\n\005EDGES\020\023\022" +
-      "\014\n\010POSITION\020\024\022\r\n\tDIRECTION\020\025\022\024\n\020POSITION" +
-      "_HISTORY\020\026\022\013\n\007STAMINA\020\027\022\006\n\002HP\020\030\022\n\n\006DAMAG" +
-      "E\020\031\022\016\n\nBURIEDNESS\020\032\022\023\n\017TRAVEL_DISTANCE\020\033" +
-      "\022\022\n\016WATER_QUANTITY\020\034\022\017\n\013TEMPERATURE\020\035\022\016\n" +
-      "\nIMPORTANCE\020\036\022\014\n\010CAPACITY\020\037\022\017\n\013BEDCAPACI" +
-      "TY\020 \022\020\n\014OCCUPIEDBEDS\020!\022\022\n\016REFILLCAPACITY" +
-      "\020\"\022\023\n\017WAITINGLISTSIZE\020#B*\n\035rescuecore2.m" +
-      "essages.protobufB\tRCRSProtob\006proto3"
+      "roto\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\210\002\n\n" +
+      "ValueProto\022\017\n\007defined\030\001 \001(\010\022\022\n\010intValue\030" +
+      "\002 \001(\005H\000\022\023\n\tboolValue\030\003 \001(\010H\000\022\025\n\013doubleVa" +
+      "lue\030\004 \001(\001H\000\022\022\n\010byteList\030\005 \001(\014H\000\022 \n\007intLi" +
+      "st\030\006 \001(\0132\r.IntListProtoH\000\022$\n\tintMatrix\030\007" +
+      " \001(\0132\017.IntMatrixProtoH\000\022\"\n\010edgeList\030\010 \001(" +
+      "\0132\016.EdgeListProtoH\000\022 \n\007point2D\030\t \001(\0132\r.P" +
+      "oint2DProtoH\000B\007\n\005value\"\246\002\n\rPropertyProto" +
+      "\022\031\n\003urn\030\001 \001(\0162\014.PropertyURN\022\017\n\007defined\030\002" +
+      " \001(\010\022\022\n\010intValue\030\003 \001(\005H\000\022\023\n\tboolValue\030\004 " +
+      "\001(\010H\000\022\025\n\013doubleValue\030\005 \001(\001H\000\022\022\n\010byteList" +
+      "\030\006 \001(\014H\000\022 \n\007intList\030\007 \001(\0132\r.IntListProto" +
+      "H\000\022$\n\tintMatrix\030\010 \001(\0132\017.IntMatrixProtoH\000" +
+      "\022\"\n\010edgeList\030\t \001(\0132\016.EdgeListProtoH\000\022 \n\007" +
+      "point2D\030\n \001(\0132\r.Point2DProtoH\000B\007\n\005value\"" +
+      "$\n\014Point2DProto\022\t\n\001X\030\001 \001(\001\022\t\n\001Y\030\002 \001(\001\"\\\n" +
+      "\013EntityProto\022\027\n\003urn\030\001 \001(\0162\n.EntityURN\022\020\n" +
+      "\010entityID\030\002 \001(\005\022\"\n\nproperties\030\003 \003(\0132\016.Pr" +
+      "opertyProto\"1\n\017EntityListProto\022\036\n\010entiti" +
+      "es\030\001 \003(\0132\014.EntityProto\"`\n\013ConfigProto\022$\n" +
+      "\004data\030\001 \003(\0132\026.ConfigProto.DataEntry\032+\n\tD" +
+      "ataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
+      "\"*\n\rEdgeListProto\022\031\n\005edges\030\001 \003(\0132\n.EdgeP" +
+      "roto\"Z\n\tEdgeProto\022\016\n\006startX\030\001 \001(\005\022\016\n\006sta" +
+      "rtY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n" +
+      "\tneighbour\030\005 \001(\005\"\271\001\n\016ChangeSetProto\0222\n\007c" +
+      "hanges\030\001 \003(\0132!.ChangeSetProto.EntityChan" +
+      "geProto\022\017\n\007deletes\030\002 \003(\005\032b\n\021EntityChange" +
+      "Proto\022\020\n\010entityID\030\001 \001(\005\022\027\n\003urn\030\002 \001(\0162\n.E" +
+      "ntityURN\022\"\n\nproperties\030\003 \003(\0132\016.PropertyP" +
+      "roto*\237\005\n\006MsgURN\022\013\n\007NoneMsg\020\000\022\016\n\nKG_CONNE" +
+      "CT\020\001\022\022\n\016KG_ACKNOWLEDGE\020\002\022\021\n\rGK_CONNECT_O" +
+      "K\020\003\022\024\n\020GK_CONNECT_ERROR\020\004\022\016\n\nSK_CONNECT\020" +
+      "\005\022\022\n\016SK_ACKNOWLEDGE\020\006\022\r\n\tSK_UPDATE\020\007\022\021\n\r" +
+      "KS_CONNECT_OK\020\010\022\024\n\020KS_CONNECT_ERROR\020\t\022\r\n" +
+      "\tKS_UPDATE\020\n\022\017\n\013KS_COMMANDS\020\013\022\027\n\023KS_AFTE" +
+      "RSHOCKS_INFO\020\014\022\016\n\nVK_CONNECT\020\r\022\022\n\016VK_ACK" +
+      "NOWLEDGE\020\016\022\021\n\rKV_CONNECT_OK\020\017\022\024\n\020KV_CONN" +
+      "ECT_ERROR\020\020\022\017\n\013KV_TIMESTEP\020\021\022\016\n\nAK_CONNE" +
+      "CT\020\022\022\022\n\016AK_ACKNOWLEDGE\020\023\022\021\n\rKA_CONNECT_O" +
+      "K\020\024\022\024\n\020KA_CONNECT_ERROR\020\025\022\014\n\010KA_SENSE\020\026\022" +
+      "\014\n\010SHUTDOWN\020\027\022\025\n\021ENTITY_ID_REQUEST\020\030\022\026\n\022" +
+      "ENTITY_ID_RESPONSE\020\031\022\013\n\007AK_REST\020\032\022\013\n\007AK_" +
+      "MOVE\020\033\022\013\n\007AK_LOAD\020\034\022\r\n\tAK_UNLOAD\020\035\022\n\n\006AK" +
+      "_SAY\020\036\022\013\n\007AK_TELL\020\037\022\021\n\rAK_EXTINGUISH\020 \022\r" +
+      "\n\tAK_RESCUE\020!\022\014\n\010AK_CLEAR\020\"\022\021\n\rAK_CLEAR_" +
+      "AREA\020#\022\020\n\014AK_SUBSCRIBE\020$\022\014\n\010AK_SPEAK\020%*\367" +
+      "\001\n\tEntityURN\022\016\n\nNoneEntity\020\000\022\t\n\005WORLD\020\001\022" +
+      "\010\n\004ROAD\020\002\022\014\n\010BLOCKADE\020\003\022\014\n\010BUILDING\020\004\022\n\n" +
+      "\006REFUGE\020\005\022\013\n\007HYDRANT\020\006\022\017\n\013GAS_STATION\020\007\022" +
+      "\020\n\014FIRE_STATION\020\010\022\024\n\020AMBULANCE_CENTRE\020\t\022" +
+      "\021\n\rPOLICE_OFFICE\020\n\022\014\n\010CIVILIAN\020\013\022\020\n\014FIRE" +
+      "_BRIGADE\020\014\022\022\n\016AMBULANCE_TEAM\020\r\022\020\n\014POLICE" +
+      "_FORCE\020\016*\325\004\n\013PropertyURN\022\020\n\014NoneProperty" +
+      "\020\000\022\016\n\nSTART_TIME\020\001\022\r\n\tLONGITUDE\020\002\022\014\n\010LAT" +
+      "ITUDE\020\003\022\016\n\nWIND_FORCE\020\004\022\022\n\016WIND_DIRECTIO" +
+      "N\020\005\022\005\n\001X\020\006\022\005\n\001Y\020\007\022\r\n\tBLOCKADES\020\010\022\017\n\013REPA" +
+      "IR_COST\020\t\022\n\n\006FLOORS\020\n\022\027\n\023BUILDING_ATTRIB" +
+      "UTES\020\013\022\014\n\010IGNITION\020\014\022\r\n\tFIERYNESS\020\r\022\016\n\nB" +
+      "ROKENNESS\020\016\022\021\n\rBUILDING_CODE\020\017\022\030\n\024BUILDI" +
+      "NG_AREA_GROUND\020\020\022\027\n\023BUILDING_AREA_TOTAL\020" +
+      "\021\022\n\n\006APEXES\020\022\022\t\n\005EDGES\020\023\022\014\n\010POSITION\020\024\022\r" +
+      "\n\tDIRECTION\020\025\022\024\n\020POSITION_HISTORY\020\026\022\013\n\007S" +
+      "TAMINA\020\027\022\006\n\002HP\020\030\022\n\n\006DAMAGE\020\031\022\016\n\nBURIEDNE" +
+      "SS\020\032\022\023\n\017TRAVEL_DISTANCE\020\033\022\022\n\016WATER_QUANT" +
+      "ITY\020\034\022\017\n\013TEMPERATURE\020\035\022\016\n\nIMPORTANCE\020\036\022\014" +
+      "\n\010CAPACITY\020\037\022\017\n\013BEDCAPACITY\020 \022\020\n\014OCCUPIE" +
+      "DBEDS\020!\022\022\n\016REFILLCAPACITY\020\"\022\023\n\017WAITINGLI" +
+      "STSIZE\020#B*\n\035rescuecore2.messages.protobu" +
+      "fB\tRCRSProtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -17948,13 +19231,13 @@ public final class RCRSProto {
     internal_static_ValueProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ValueProto_descriptor,
-        new java.lang.String[] { "IntValue", "BoolValue", "DoubleValue", "ByteList", "IntList", "IntMatrix", "EdgeList", "Point2D", "Value", });
+        new java.lang.String[] { "Defined", "IntValue", "BoolValue", "DoubleValue", "ByteList", "IntList", "IntMatrix", "EdgeList", "Point2D", "Value", });
     internal_static_PropertyProto_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_PropertyProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_PropertyProto_descriptor,
-        new java.lang.String[] { "Urn", "Defined", "Value", });
+        new java.lang.String[] { "Urn", "Defined", "IntValue", "BoolValue", "DoubleValue", "ByteList", "IntList", "IntMatrix", "EdgeList", "Point2D", "Value", });
     internal_static_Point2DProto_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_Point2DProto_fieldAccessorTable = new
