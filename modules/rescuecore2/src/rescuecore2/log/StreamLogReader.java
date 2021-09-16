@@ -149,6 +149,7 @@ public class StreamLogReader extends AbstractLogReader {
 	}
 
 	private void readRecord(LogCase type, LogProto log) throws LogException {
+		Registry.setCurrentRegistry(registry);
         switch (type) {
         case INITIALCONDITION:
             readInitialConditions(log);
@@ -166,6 +167,8 @@ public class StreamLogReader extends AbstractLogReader {
             readConfig(log);
             break;
         case END:
+            return;
+        case START:
             return;
         default:
             throw new LogException("Unexpected record type: " + type);

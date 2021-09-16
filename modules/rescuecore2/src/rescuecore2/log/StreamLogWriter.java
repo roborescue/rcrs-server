@@ -1,10 +1,15 @@
 package rescuecore2.log;
 
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAOutputStream;
+import org.tukaani.xz.UnsupportedOptionsException;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -46,5 +51,6 @@ public class StreamLogWriter extends AbstractLogWriter {
 			Logger.error("Error closing log stream", e);
 		}
 	}
+
 	
 }

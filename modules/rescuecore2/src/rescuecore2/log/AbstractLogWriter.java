@@ -5,6 +5,8 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import com.google.protobuf.util.JsonFormat;
+
 import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
 
 /**
@@ -20,7 +22,7 @@ public abstract class AbstractLogWriter implements LogWriter {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
         	LogProto proto = entry.toLogProto();
-            byte[] data = proto.toByteArray();
+            byte[] data = JsonFormat.printer().print(proto).getBytes();
             writeInt32(data.length, out);
             out.write(data);
             write(out.toByteArray());
