@@ -31,6 +31,8 @@ public class RoadBlockageLayer extends StandardEntityViewLayer<Blockade> {
 
     @Override
     public Shape render(Blockade b, Graphics2D g, ScreenTransform t) {
+    	if(!b.isApexesDefined())
+    		return null;
         int[] apexes = b.getApexes();
         int count = apexes.length / 2;
         int[] xs = new int[count];
