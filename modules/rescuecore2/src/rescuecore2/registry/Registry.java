@@ -2,7 +2,14 @@ package rescuecore2.registry;
 
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -358,4 +365,79 @@ public final class Registry {
 	public String toPrettyName(int urn) {
 		return urn_prettyName.get(urn);
 	}
+	
+	public JSONObject toJSON() {
+		JSONObject json=new JSONObject();
+		JSONObject messages=new JSONObject();
+		JSONObject entities=new JSONObject();
+		JSONObject properties=new JSONObject();
+		JSONObject inverse=new JSONObject();
+		for (Entry<Integer, MessageFactory> entry : messageFactories.entrySet()) {
+			messages.put(entry.getValue().getPrettyName(entry.getKey()), entry.getKey());
+			inverse.put(entry.getKey()+"",entry.getValue().getPrettyName(entry.getKey()));
+		}
+		for (Entry<Integer, EntityFactory> entry : entityFactories.entrySet()) {
+			entities.put(entry.getValue().getPrettyName(entry.getKey()), entry.getKey());
+			inverse.put(entry.getKey()+"",entry.getValue().getPrettyName(entry.getKey()));
+		}
+		
+		for (Entry<Integer, PropertyFactory> entry : propertyFactories.entrySet()) { 
+			properties.put(entry.getValue().getPrettyName(entry.getKey()), entry.getKey());
+			inverse.put(entry.getKey()+"",entry.getValue().getPrettyName(entry.getKey()));
+		}
+		
+		json.put("Messages", messages);
+		json.put("Entities", entities);
+		json.put("Properties", properties);
+		return json;
+	}
+	
+	public String toPython() {
+		String out="";
+		out+="\n#### Messages ####\n";
+		ArrayList<Integer> msgkeys = new ArrayList<Integer>(messageFactories.keySet());
+		Collections.sort(msgkeys);
+		ArrayList<Integer> entitykeys = new ArrayList<Integer>(entityFactories.keySet());
+		Collections.sort(entitykeys);
+		ArrayList<Integer> propkeys = new ArrayList<Integer>(propertyFactories.keySet());
+		Collections.sort(propkeys );
+		
+		for (Integer urn : msgkeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+=prettyName+"="+urn+"\n";
+		}
+		out+="\n#### Entities ####\n";
+		
+		for (Integer urn : entitykeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+=prettyName+"="+urn+"\n";
+		}
+		out+="\n#### Properties ####\n";
+		
+		for (Integer urn : propkeys ) {
+			String prettyName = urn_prettyName.get(urn);
+			out+=prettyName+"="+urn+"\n";
+		}
+		
+		out+="\n#### PrettyName ####\n";
+		out+="MAP={\n";
+		out+="\n#### Messages ####\n";
+		for (Integer urn : msgkeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="\t"+urn+":'"+prettyName+"',\n";
+		}
+		out+="\n#### Entities ####\n";
+		for (Integer urn : entitykeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="\t"+urn+":'"+prettyName+"',\n";
+		}
+		out+="\n#### Properties ####\n";
+		for (Integer urn : propkeys ) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="\t"+urn+":'"+prettyName+"',\n";
+		}
+		out+="}";
+		return out;
+	}
+	
 }
