@@ -41,7 +41,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     private static final byte[] SHORT_CONTENT = {0x00, 0x00, 0x00, 0x04,
                                                  0x01, 0x02, 0x03};
     private static final byte[] SHORT_SIZE_FIELD = {0x00, 0x00, 0x01};
-    private static final String MESSAGE_URN = "Test";
+    private static final int MESSAGE_URN = 1;
 
     @Override
     protected Pair<Connection, Connection> makeConnectionPair() throws IOException {

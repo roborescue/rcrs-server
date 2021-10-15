@@ -12,21 +12,22 @@ import java.io.IOException;
 
 import rescuecore2.messages.Message;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+import rescuecore2.registry.Registry;
 
 public class TestMessage implements Message {
-    private String urn;
+    private int urn;
     private int[] data;
     private String description;
 
-    public TestMessage(String urn) {
+    public TestMessage(int urn) {
         this(urn, "", new int[0]);
     }
 
-    public TestMessage(String urn, String description) {
+    public TestMessage(int urn, String description) {
 	this(urn, description, new int[0]);
     }
 
-    public TestMessage(String urn, String description, int... data) {
+    public TestMessage(int urn, String description, int... data) {
 	this.urn = urn;
         this.description = description;
 	this.data = data;
@@ -34,7 +35,7 @@ public class TestMessage implements Message {
 
     @Override
     public int hashCode() {
-	int result = urn.hashCode() ^ data.length;
+	int result = urn ^ data.length;
 	for (int i = 0; i < data.length; ++i) {
 	    result = result ^ data[i];
 	}
@@ -45,7 +46,7 @@ public class TestMessage implements Message {
     public boolean equals(Object other) {
 	if (other instanceof TestMessage) {
 	    TestMessage m = (TestMessage)other;
-	    if (!this.urn.equals(m.urn)) return false;
+	    if (!(this.urn==m.urn)) return false;
 	    if (this.data.length != m.data.length) return false;
 	    for (int i = 0; i < data.length; ++i) {
 		if (this.data[i] != m.data[i]) {
@@ -58,8 +59,8 @@ public class TestMessage implements Message {
     }
 
     @Override
-    public String getURN() {
-	return urn;
+    public int getURN() {
+	return (urn);
     }
 
     public String getDescription() {

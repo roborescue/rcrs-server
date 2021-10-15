@@ -29,9 +29,9 @@ public abstract class ConnectionTestCommon {
     protected static final int DELAY = 1000;
     protected static final int TIMEOUT = 3000;
 
-    private static final String MESSAGE_ID_1 = "Test message 1";
-    private static final String MESSAGE_ID_2 = "Test message 2";
-    private static final String MESSAGE_ID_3 = "Test message 3";
+    private static final int MESSAGE_ID_1 = 1001;
+    private static final int MESSAGE_ID_2 = 1002;
+    private static final int MESSAGE_ID_3 = 1003;
 
     private final static String FACTORY_1_NAME = "Factory 1";
     private final static String FACTORY_2_NAME = "Factory 2";
