@@ -1,122 +1,142 @@
 package rescuecore2.standard.entities;
 
-import rescuecore2.messages.protobuf.RCRSProto.PropertyURN;
+import static rescuecore2.standard.Constants.PROPERTY_URN_PREFIX;
+import static rescuecore2.standard.Constants.PROPERTY_URN_PREFIX_V1;
+
+import java.util.Map;
+
+import rescuecore2.URN;
+import rescuecore2.messages.control.ControlMessageURN;;
 
 /**
  * URNs for standard property types.
  */
-public enum StandardPropertyURN {
+public enum StandardPropertyURN implements URN {
 
-//  START_TIME( PROPERTY_URN_PREFIX + "starttime" ),
-//  LONGITUDE( PROPERTY_URN_PREFIX + "longitude" ),
-//  LATITUDE( PROPERTY_URN_PREFIX + "latitude" ),
-//  WIND_FORCE( PROPERTY_URN_PREFIX + "windforce" ),
-//  WIND_DIRECTION( PROPERTY_URN_PREFIX + "winddirection" ),
-//
-//  X( PROPERTY_URN_PREFIX + "x" ),
-//  Y( PROPERTY_URN_PREFIX + "y" ),
-//
-//  BLOCKADES( PROPERTY_URN_PREFIX + "blockades" ),
-//  REPAIR_COST( PROPERTY_URN_PREFIX + "repaircost" ),
-//
-//  FLOORS( PROPERTY_URN_PREFIX + "floors" ),
-//  BUILDING_ATTRIBUTES( PROPERTY_URN_PREFIX + "buildingattributes" ),
-//  IGNITION( PROPERTY_URN_PREFIX + "ignition" ),
-//  FIERYNESS( PROPERTY_URN_PREFIX + "fieryness" ),
-//  BROKENNESS( PROPERTY_URN_PREFIX + "brokenness" ),
-//  BUILDING_CODE( PROPERTY_URN_PREFIX + "buildingcode" ),
-//  BUILDING_AREA_GROUND( PROPERTY_URN_PREFIX + "buildingareaground" ),
-//  BUILDING_AREA_TOTAL( PROPERTY_URN_PREFIX + "buildingareatotal" ),
-//  APEXES( PROPERTY_URN_PREFIX + "apexes" ),
-//  EDGES( PROPERTY_URN_PREFIX + "edges" ),
-//
-//  POSITION( PROPERTY_URN_PREFIX + "position" ),
-//  DIRECTION( PROPERTY_URN_PREFIX + "direction" ),
-//  POSITION_HISTORY( PROPERTY_URN_PREFIX + "positionhistory" ),
-//  STAMINA( PROPERTY_URN_PREFIX + "stamina" ),
-//  HP( PROPERTY_URN_PREFIX + "hp" ),
-//  DAMAGE( PROPERTY_URN_PREFIX + "damage" ),
-//  BURIEDNESS( PROPERTY_URN_PREFIX + "buriedness" ),
-//  TRAVEL_DISTANCE( PROPERTY_URN_PREFIX + "traveldistance" ),
-//  WATER_QUANTITY( PROPERTY_URN_PREFIX + "waterquantity" ),
-//
-//  TEMPERATURE( PROPERTY_URN_PREFIX + "temperature" ),
-//  IMPORTANCE( PROPERTY_URN_PREFIX + "importance" ),
-//  CAPACITY( PROPERTY_URN_PREFIX + "capacity" ),
-//  BEDCAPACITY( PROPERTY_URN_PREFIX + "bedCapacity" ),
-//  OCCUPIEDBEDS( PROPERTY_URN_PREFIX + "occupiedBeds" ),
-//  REFILLCAPACITY( PROPERTY_URN_PREFIX + "refillCapacity" ),
-//  WAITINGLISTSIZE( PROPERTY_URN_PREFIX + "waitingListSize" );
+	START_TIME(PROPERTY_URN_PREFIX | 1), LONGITUDE(PROPERTY_URN_PREFIX | 2),
+	LATITUDE(PROPERTY_URN_PREFIX | 3), WIND_FORCE(PROPERTY_URN_PREFIX | 4),
+	WIND_DIRECTION(PROPERTY_URN_PREFIX | 5),
 
-	START_TIME(PropertyURN.START_TIME),
-	LONGITUDE(PropertyURN.LONGITUDE),
-	LATITUDE(PropertyURN.LATITUDE),
-	WIND_FORCE(PropertyURN.WIND_FORCE),
-	WIND_DIRECTION(PropertyURN.WIND_DIRECTION),
-	X(PropertyURN.X),
-	Y(PropertyURN.Y),
-	BLOCKADES(PropertyURN.BLOCKADES),
-	REPAIR_COST(PropertyURN.REPAIR_COST),
-	FLOORS(PropertyURN.FLOORS),
-	BUILDING_ATTRIBUTES(PropertyURN.BUILDING_ATTRIBUTES),
-	IGNITION(PropertyURN.IGNITION),
-	FIERYNESS(PropertyURN.FIERYNESS),
-	BROKENNESS(PropertyURN.BROKENNESS),
-	BUILDING_CODE(PropertyURN.BUILDING_CODE),
-	BUILDING_AREA_GROUND(PropertyURN.BUILDING_AREA_GROUND),
-	BUILDING_AREA_TOTAL(PropertyURN.BUILDING_AREA_TOTAL),
-	APEXES(PropertyURN.APEXES),
-	EDGES(PropertyURN.EDGES),
-	POSITION(PropertyURN.POSITION),
-	DIRECTION(PropertyURN.DIRECTION),
-	POSITION_HISTORY(PropertyURN.POSITION_HISTORY),
-	STAMINA(PropertyURN.STAMINA),
-	HP(PropertyURN.HP),
-	DAMAGE(PropertyURN.DAMAGE),
-	BURIEDNESS(PropertyURN.BURIEDNESS),
-	TRAVEL_DISTANCE(PropertyURN.TRAVEL_DISTANCE),
-	WATER_QUANTITY(PropertyURN.WATER_QUANTITY),
-	TEMPERATURE(PropertyURN.TEMPERATURE),
-	IMPORTANCE(PropertyURN.IMPORTANCE),
-	CAPACITY(PropertyURN.CAPACITY),
-	BEDCAPACITY(PropertyURN.BEDCAPACITY),
-	OCCUPIEDBEDS(PropertyURN.OCCUPIEDBEDS),
-	REFILLCAPACITY(PropertyURN.REFILLCAPACITY),
-	WAITINGLISTSIZE(PropertyURN.WAITINGLISTSIZE);
+	X(PROPERTY_URN_PREFIX | 6), Y(PROPERTY_URN_PREFIX | 7),
 
+	BLOCKADES(PROPERTY_URN_PREFIX | 8), REPAIR_COST(PROPERTY_URN_PREFIX | 9),
 
-  private String urn;
+	FLOORS(PROPERTY_URN_PREFIX | 10),
+	BUILDING_ATTRIBUTES(PROPERTY_URN_PREFIX | 11),
+	IGNITION(PROPERTY_URN_PREFIX | 12), FIERYNESS(PROPERTY_URN_PREFIX | 13),
+	BROKENNESS(PROPERTY_URN_PREFIX | 14),
+	BUILDING_CODE(PROPERTY_URN_PREFIX | 15),
+	BUILDING_AREA_GROUND(PROPERTY_URN_PREFIX | 16),
+	BUILDING_AREA_TOTAL(PROPERTY_URN_PREFIX | 17),
+	APEXES(PROPERTY_URN_PREFIX | 18), EDGES(PROPERTY_URN_PREFIX | 19),
 
+	POSITION(PROPERTY_URN_PREFIX | 20), DIRECTION(PROPERTY_URN_PREFIX | 21),
+	POSITION_HISTORY(PROPERTY_URN_PREFIX | 22),
+	STAMINA(PROPERTY_URN_PREFIX | 23), HP(PROPERTY_URN_PREFIX | 24),
+	DAMAGE(PROPERTY_URN_PREFIX | 25), BURIEDNESS(PROPERTY_URN_PREFIX | 26),
+	TRAVEL_DISTANCE(PROPERTY_URN_PREFIX | 27),
+	WATER_QUANTITY(PROPERTY_URN_PREFIX | 28),
 
-  private StandardPropertyURN( String urn ) {
-    this.urn = urn;
-  }
+	TEMPERATURE(PROPERTY_URN_PREFIX | 29), IMPORTANCE(PROPERTY_URN_PREFIX | 30),
+	CAPACITY(PROPERTY_URN_PREFIX | 31), BEDCAPACITY(PROPERTY_URN_PREFIX | 32),
+	OCCUPIEDBEDS(PROPERTY_URN_PREFIX | 33),
+	REFILLCAPACITY(PROPERTY_URN_PREFIX | 34),
+	WAITINGLISTSIZE(PROPERTY_URN_PREFIX | 35);
 
+	private int urn;
+	public static final Map<Integer, StandardPropertyURN> MAP = URN
+			.generateMap(StandardPropertyURN.class);
 
-  StandardPropertyURN(PropertyURN urn) {
-	  this.urn=urn.toString();
-  }
+	private StandardPropertyURN(int urn) {
+		this.urn = urn;
+	}
 
+	/**
+	 * Convert a String to a StandardPropertyURN.
+	 *
+	 * @param s The String to convert.
+	 * @return A StandardPropertyURN.
+	 */
+	public static StandardPropertyURN fromInt(int s) {
+		return MAP.get(s);
+	}
 
-@Override
-  public String toString() {
-    return urn;
-  }
+	@Override
+	public int getUrn() {
+		return urn;
+	}
 
+	/**
+	 * URNs for standard property types.
+	 */
+	public enum StandardPropertyURN_V1 {
 
-  /**
-   * Convert a String to a StandardPropertyURN.
-   *
-   * @param s
-   *          The String to convert.
-   * @return A StandardPropertyURN.
-   */
-  public static StandardPropertyURN fromString( String s ) {
-    for ( StandardPropertyURN next : StandardPropertyURN.values() ) {
-      if ( next.urn.equals( s ) ) {
-        return next;
-      }
-    }
-    throw new IllegalArgumentException( s );
-  }
+		START_TIME(PROPERTY_URN_PREFIX_V1 + "starttime"),
+		LONGITUDE(PROPERTY_URN_PREFIX_V1 + "longitude"),
+		LATITUDE(PROPERTY_URN_PREFIX_V1 + "latitude"),
+		WIND_FORCE(PROPERTY_URN_PREFIX_V1 + "windforce"),
+		WIND_DIRECTION(PROPERTY_URN_PREFIX_V1 + "winddirection"),
+
+		X(PROPERTY_URN_PREFIX_V1 + "x"), Y(PROPERTY_URN_PREFIX_V1 + "y"),
+
+		BLOCKADES(PROPERTY_URN_PREFIX_V1 + "blockades"),
+		REPAIR_COST(PROPERTY_URN_PREFIX_V1 + "repaircost"),
+
+		FLOORS(PROPERTY_URN_PREFIX_V1 + "floors"),
+		BUILDING_ATTRIBUTES(PROPERTY_URN_PREFIX_V1 + "buildingattributes"),
+		IGNITION(PROPERTY_URN_PREFIX_V1 + "ignition"),
+		FIERYNESS(PROPERTY_URN_PREFIX_V1 + "fieryness"),
+		BROKENNESS(PROPERTY_URN_PREFIX_V1 + "brokenness"),
+		BUILDING_CODE(PROPERTY_URN_PREFIX_V1 + "buildingcode"),
+		BUILDING_AREA_GROUND(PROPERTY_URN_PREFIX_V1 + "buildingareaground"),
+		BUILDING_AREA_TOTAL(PROPERTY_URN_PREFIX_V1 + "buildingareatotal"),
+		APEXES(PROPERTY_URN_PREFIX_V1 + "apexes"),
+		EDGES(PROPERTY_URN_PREFIX_V1 + "edges"),
+
+		POSITION(PROPERTY_URN_PREFIX_V1 + "position"),
+		DIRECTION(PROPERTY_URN_PREFIX_V1 + "direction"),
+		POSITION_HISTORY(PROPERTY_URN_PREFIX_V1 + "positionhistory"),
+		STAMINA(PROPERTY_URN_PREFIX_V1 + "stamina"),
+		HP(PROPERTY_URN_PREFIX_V1 + "hp"),
+		DAMAGE(PROPERTY_URN_PREFIX_V1 + "damage"),
+		BURIEDNESS(PROPERTY_URN_PREFIX_V1 + "buriedness"),
+		TRAVEL_DISTANCE(PROPERTY_URN_PREFIX_V1 + "traveldistance"),
+		WATER_QUANTITY(PROPERTY_URN_PREFIX_V1 + "waterquantity"),
+
+		TEMPERATURE(PROPERTY_URN_PREFIX_V1 + "temperature"),
+		IMPORTANCE(PROPERTY_URN_PREFIX_V1 + "importance"),
+		CAPACITY(PROPERTY_URN_PREFIX_V1 + "capacity"),
+		BEDCAPACITY(PROPERTY_URN_PREFIX_V1 + "bedCapacity"),
+		OCCUPIEDBEDS(PROPERTY_URN_PREFIX_V1 + "occupiedBeds"),
+		REFILLCAPACITY(PROPERTY_URN_PREFIX_V1 + "refillCapacity"),
+		WAITINGLISTSIZE(PROPERTY_URN_PREFIX_V1 + "waitingListSize");
+
+		private String urn;
+
+		private StandardPropertyURN_V1(String urn) {
+			this.urn = urn;
+		}
+
+		@Override
+		public String toString() {
+			return urn;
+		}
+
+		/**
+		 * Convert a String to a StandardPropertyURN.
+		 *
+		 * @param s The String to convert.
+		 * @return A StandardPropertyURN.
+		 */
+		public static StandardPropertyURN_V1 fromString(String s) {
+			for (StandardPropertyURN_V1 next : StandardPropertyURN_V1
+					.values()) {
+				if (next.urn.equals(s)) {
+					return next;
+				}
+			}
+			throw new IllegalArgumentException(s);
+		}
+	}
+
 }

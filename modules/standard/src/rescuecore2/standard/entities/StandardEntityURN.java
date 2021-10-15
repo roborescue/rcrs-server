@@ -1,72 +1,89 @@
 package rescuecore2.standard.entities;
 
+import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX_V1;
 
-import rescuecore2.messages.protobuf.RCRSProto.EntityURN;
+import java.util.Map;
+
+import rescuecore2.URN;
+
+import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX;
 
 /**
  * URNs for standard entities.
  */
-public enum StandardEntityURN {
+public enum StandardEntityURN implements URN {
 
-//  WORLD( ENTITY_URN_PREFIX + "world" ),
-//  ROAD( ENTITY_URN_PREFIX + "road" ),
-//  BLOCKADE( ENTITY_URN_PREFIX + "blockade" ),
-//  BUILDING( ENTITY_URN_PREFIX + "building" ),
-//  REFUGE( ENTITY_URN_PREFIX + "refuge" ),
-//  HYDRANT( ENTITY_URN_PREFIX + "hydrant" ),
-//  GAS_STATION( ENTITY_URN_PREFIX + "gasstation" ),
-//  FIRE_STATION( ENTITY_URN_PREFIX + "firestation" ),
-//  AMBULANCE_CENTRE( ENTITY_URN_PREFIX + "ambulancecentre" ),
-//  POLICE_OFFICE( ENTITY_URN_PREFIX + "policeoffice" ),
-//  CIVILIAN( ENTITY_URN_PREFIX + "civilian" ),
-//  FIRE_BRIGADE( ENTITY_URN_PREFIX + "firebrigade" ),
-//  AMBULANCE_TEAM( ENTITY_URN_PREFIX + "ambulanceteam" ),
-//  POLICE_FORCE( ENTITY_URN_PREFIX + "policeforce" );
+	WORLD(ENTITY_URN_PREFIX | 1), ROAD(ENTITY_URN_PREFIX | 2),
+	BLOCKADE(ENTITY_URN_PREFIX | 3), BUILDING(ENTITY_URN_PREFIX | 4),
+	REFUGE(ENTITY_URN_PREFIX | 5), HYDRANT(ENTITY_URN_PREFIX | 6),
+	GAS_STATION(ENTITY_URN_PREFIX | 7), FIRE_STATION(ENTITY_URN_PREFIX | 8),
+	AMBULANCE_CENTRE(ENTITY_URN_PREFIX | 9),
+	POLICE_OFFICE(ENTITY_URN_PREFIX | 10), CIVILIAN(ENTITY_URN_PREFIX | 11),
+	FIRE_BRIGADE(ENTITY_URN_PREFIX | 12),
+	AMBULANCE_TEAM(ENTITY_URN_PREFIX | 13),
+	POLICE_FORCE(ENTITY_URN_PREFIX | 14);
 
-	WORLD(EntityURN.WORLD),
-	ROAD(EntityURN.ROAD),
-	BLOCKADE(EntityURN.BLOCKADE),
-	BUILDING(EntityURN.BUILDING),
-	REFUGE(EntityURN.REFUGE),
-	HYDRANT(EntityURN.HYDRANT),
-	GAS_STATION(EntityURN.GAS_STATION),
-	FIRE_STATION(EntityURN.FIRE_STATION),
-	AMBULANCE_CENTRE(EntityURN.AMBULANCE_CENTRE),
-	POLICE_OFFICE(EntityURN.POLICE_OFFICE),
-	CIVILIAN(EntityURN.CIVILIAN),
-	FIRE_BRIGADE(EntityURN.FIRE_BRIGADE),
-	AMBULANCE_TEAM(EntityURN.AMBULANCE_TEAM),
-	POLICE_FORCE(EntityURN.POLICE_FORCE);
+	private int urn;
+	public static final Map<Integer, StandardEntityURN> MAP = URN
+			.generateMap(StandardEntityURN.class);
 
-  private String urn;
+	private StandardEntityURN(int urn) {
+		this.urn = urn;
+	}
 
+	@Override
+	public int getUrn() {
+		return urn;
+	}
 
-  private StandardEntityURN( String urn ) {
-    this.urn = urn;
-  }
-  private StandardEntityURN( EntityURN urn ) {
-	    this.urn = urn.toString();
-  }
+	public static StandardEntityURN fromInt(int urn) {
+		return MAP.get(urn);
+	}
 
-  @Override
-  public String toString() {
-    return urn;
-  }
+	/**
+	 * URNs for standard entities.
+	 */
+	public enum StandardEntityURN_V1 {
 
+		WORLD(ENTITY_URN_PREFIX_V1 + "world"),
+		ROAD(ENTITY_URN_PREFIX_V1 + "road"),
+		BLOCKADE(ENTITY_URN_PREFIX_V1 + "blockade"),
+		BUILDING(ENTITY_URN_PREFIX_V1 + "building"),
+		REFUGE(ENTITY_URN_PREFIX_V1 + "refuge"),
+		HYDRANT(ENTITY_URN_PREFIX_V1 + "hydrant"),
+		GAS_STATION(ENTITY_URN_PREFIX_V1 + "gasstation"),
+		FIRE_STATION(ENTITY_URN_PREFIX_V1 + "firestation"),
+		AMBULANCE_CENTRE(ENTITY_URN_PREFIX_V1 + "ambulancecentre"),
+		POLICE_OFFICE(ENTITY_URN_PREFIX_V1 + "policeoffice"),
+		CIVILIAN(ENTITY_URN_PREFIX_V1 + "civilian"),
+		FIRE_BRIGADE(ENTITY_URN_PREFIX_V1 + "firebrigade"),
+		AMBULANCE_TEAM(ENTITY_URN_PREFIX_V1 + "ambulanceteam"),
+		POLICE_FORCE(ENTITY_URN_PREFIX_V1 + "policeforce");
 
-  /**
-   * Convert a String to a StandardEntityURN.
-   *
-   * @param s
-   *          The String to convert.
-   * @return A StandardEntityURN.
-   */
-  public static StandardEntityURN fromString( String s ) {
-    for ( StandardEntityURN next : StandardEntityURN.values() ) {
-      if ( next.urn.equals( s ) ) {
-        return next;
-      }
-    }
-    throw new IllegalArgumentException( s );
-  }
+		private String urn;
+
+		private StandardEntityURN_V1(String urn) {
+			this.urn = urn;
+		}
+
+		@Override
+		public String toString() {
+			return urn;
+		}
+
+		/**
+		 * Convert a String to a StandardEntityURN.
+		 *
+		 * @param s The String to convert.
+		 * @return A StandardEntityURN.
+		 */
+		public static StandardEntityURN_V1 fromString(String s) {
+			for (StandardEntityURN_V1 next : StandardEntityURN_V1.values()) {
+				if (next.urn.equals(s)) {
+					return next;
+				}
+			}
+			throw new IllegalArgumentException(s);
+		}
+	}
 }
