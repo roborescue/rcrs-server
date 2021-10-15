@@ -4,6 +4,8 @@ package rescuecore2;
    Some useful constants that are shared across all parts of the Robocup Rescue software. Note that this does NOT include constants for entity/message types.
  */
 public final class Constants {
+	/** prefix for control message URN*/
+	public static final int CONTROL_MSG_URN_PREFIX = 0x0100;
     /** Config key for message factories. */
     public static final String MESSAGE_FACTORY_KEY = "factory.messages";
     /** Config key for entity factories. */
