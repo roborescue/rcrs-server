@@ -653,7 +653,7 @@ public final class EncodingTools {
 		byte[] bytes = gather.toByteArray();
 
 		// Type URN
-		writeString(e.getURN(), out);
+		writeString(Registry.toURN_V1(e.getURN()), out);
 		// EntityID
 		writeInt32(e.getID().getValue(), out);
 		// Size
@@ -680,7 +680,7 @@ public final class EncodingTools {
 		byte[] bytes = gather.toByteArray();
 
 		// Type URN
-		writeString(e.getURN(), out);
+		writeString(Registry.toURN_V1(e.getURN()), out);
 		// EntityID
 		writeInt32(e.getID().getValue(), out);
 		// Size
@@ -706,7 +706,7 @@ public final class EncodingTools {
 		int entityID = readInt32(in);
 		int size = readInt32(in);
 		byte[] content = readBytes(size, in);
-		Entity result = Registry.getCurrentRegistry().createEntity(urn,
+		Entity result = Registry.getCurrentRegistry().createEntity(Registry.toURN_V2(urn),
 				new EntityID(entityID));
 		if (result != null) {
 			result.read(new ByteArrayInputStream(content));
@@ -731,7 +731,7 @@ public final class EncodingTools {
 		int entityID = readInt32(in);
 		int size = readInt32(in);
 		byte[] content = readBytes(size, in);
-		Entity result = Registry.getCurrentRegistry().createEntity(urn,
+		Entity result = Registry.getCurrentRegistry().createEntity(Registry.toURN_V2(urn),
 				new EntityID(entityID));
 		if (result != null) {
 			result.read(new ByteArrayInputStream(content));
@@ -752,7 +752,7 @@ public final class EncodingTools {
 	public static void writeProperty(Property p, OutputStream out)
 			throws IOException {
 		// Type
-		writeString(p.getURN(), out);
+		writeString(Registry.toURN_V1(p.getURN()), out);
 		writeBoolean(p.isDefined(), out);
 		if (p.isDefined()) {
 			ByteArrayOutputStream gather = new ByteArrayOutputStream();
@@ -778,7 +778,7 @@ public final class EncodingTools {
 	public static void writeProperty(Property p, DataOutput out)
 			throws IOException {
 		// Type
-		writeString(p.getURN(), out);
+		writeString(Registry.toURN_V1(p.getURN()), out);
 		writeBoolean(p.isDefined(), out);
 		if (p.isDefined()) {
 			ByteArrayOutputStream gather = new ByteArrayOutputStream();
@@ -806,7 +806,7 @@ public final class EncodingTools {
 			return null;
 		}
 		boolean defined = readBoolean(in);
-		Property result = Registry.getCurrentRegistry().createProperty(urn);
+		Property result = Registry.getCurrentRegistry().createProperty(Registry.toURN_V2(urn));
 		if (defined) {
 			int size = readInt32(in);
 			byte[] content = readBytes(size, in);
@@ -832,7 +832,7 @@ public final class EncodingTools {
 			return null;
 		}
 		boolean defined = readBoolean(in);
-		Property result = Registry.getCurrentRegistry().createProperty(urn);
+		Property result = Registry.getCurrentRegistry().createProperty(Registry.toURN_V2(urn));
 		if (defined) {
 			int size = readInt32(in);
 			byte[] content = readBytes(size, in);
@@ -862,7 +862,7 @@ public final class EncodingTools {
 		byte[] content = bytes.toByteArray();
 
 		// Type URN
-		writeString(m.getURN(), out);
+		writeString(Registry.toURN_V1(m.getURN()), out);
 		// Size
 		writeInt32(content.length, out);
 		// Content
@@ -888,7 +888,7 @@ public final class EncodingTools {
 		byte[] content = bytes.toByteArray();
 
 		// Type URN
-		writeString(m.getURN(), out);
+		writeString(Registry.toURN_V1(m.getURN()), out);
 		// Size
 		writeInt32(content.length, out);
 		// Content
@@ -911,7 +911,7 @@ public final class EncodingTools {
 		}
 		int size = readInt32(in);
 		byte[] content = readBytes(size, in);
-		Message result = Registry.getCurrentRegistry().createMessage(urn,
+		Message result = Registry.getCurrentRegistry().createMessage(Registry.toURN_V2(urn),
 				new ByteArrayInputStream(content));
 		return result;
 	}
@@ -932,7 +932,7 @@ public final class EncodingTools {
 		}
 		int size = readInt32(in);
 		byte[] content = readBytes(size, in);
-		Message result = Registry.getCurrentRegistry().createMessage(urn,
+		Message result = Registry.getCurrentRegistry().createMessage(Registry.toURN_V2(urn),
 				new ByteArrayInputStream(content));
 		return result;
 	}
