@@ -22,6 +22,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import org.dom4j.DocumentException;
+
+import kernel.ui.ComponentManagerGUI;
 import kernel.ui.KernelGUI;
 import kernel.ui.KernelStartupPanel;
 import kernel.ui.ScoreGraph;
@@ -465,9 +467,10 @@ public final class StartKernel {
 		return result;
 	}
 
-	private static List<GUIComponent> makeGUIComponents(Config config,
+	private static List<GUIComponent> makeGUIComponents(Config config, ComponentManager componentManager,
 			Object... objectsToTest) {
 		List<GUIComponent> result = new ArrayList<GUIComponent>();
+		result.add(componentManager);
 		List<String> classNames = config.getArrayValue(GUI_COMPONENTS_KEY,
 				null);
 		for (String next : classNames) {

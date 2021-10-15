@@ -48,6 +48,7 @@ public class KernelGUI extends JPanel {
             control.activate();
         }
         addGUIComponent(componentManager);
+        
     }
 
     /**
