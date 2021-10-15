@@ -14,1091 +14,15 @@ public final class RCRSProto {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
-  /**
-   * Protobuf enum {@code MsgURN}
-   */
-  public enum MsgURN
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>NoneMsg = 0;</code>
-     */
-    NoneMsg(0),
-    /**
-     * <code>KG_CONNECT = 1;</code>
-     */
-    KG_CONNECT(1),
-    /**
-     * <code>KG_ACKNOWLEDGE = 2;</code>
-     */
-    KG_ACKNOWLEDGE(2),
-    /**
-     * <code>GK_CONNECT_OK = 3;</code>
-     */
-    GK_CONNECT_OK(3),
-    /**
-     * <code>GK_CONNECT_ERROR = 4;</code>
-     */
-    GK_CONNECT_ERROR(4),
-    /**
-     * <code>SK_CONNECT = 5;</code>
-     */
-    SK_CONNECT(5),
-    /**
-     * <code>SK_ACKNOWLEDGE = 6;</code>
-     */
-    SK_ACKNOWLEDGE(6),
-    /**
-     * <code>SK_UPDATE = 7;</code>
-     */
-    SK_UPDATE(7),
-    /**
-     * <code>KS_CONNECT_OK = 8;</code>
-     */
-    KS_CONNECT_OK(8),
-    /**
-     * <code>KS_CONNECT_ERROR = 9;</code>
-     */
-    KS_CONNECT_ERROR(9),
-    /**
-     * <code>KS_UPDATE = 10;</code>
-     */
-    KS_UPDATE(10),
-    /**
-     * <code>KS_COMMANDS = 11;</code>
-     */
-    KS_COMMANDS(11),
-    /**
-     * <code>KS_AFTERSHOCKS_INFO = 12;</code>
-     */
-    KS_AFTERSHOCKS_INFO(12),
-    /**
-     * <code>VK_CONNECT = 13;</code>
-     */
-    VK_CONNECT(13),
-    /**
-     * <code>VK_ACKNOWLEDGE = 14;</code>
-     */
-    VK_ACKNOWLEDGE(14),
-    /**
-     * <code>KV_CONNECT_OK = 15;</code>
-     */
-    KV_CONNECT_OK(15),
-    /**
-     * <code>KV_CONNECT_ERROR = 16;</code>
-     */
-    KV_CONNECT_ERROR(16),
-    /**
-     * <code>KV_TIMESTEP = 17;</code>
-     */
-    KV_TIMESTEP(17),
-    /**
-     * <code>AK_CONNECT = 18;</code>
-     */
-    AK_CONNECT(18),
-    /**
-     * <code>AK_ACKNOWLEDGE = 19;</code>
-     */
-    AK_ACKNOWLEDGE(19),
-    /**
-     * <code>KA_CONNECT_OK = 20;</code>
-     */
-    KA_CONNECT_OK(20),
-    /**
-     * <code>KA_CONNECT_ERROR = 21;</code>
-     */
-    KA_CONNECT_ERROR(21),
-    /**
-     * <code>KA_SENSE = 22;</code>
-     */
-    KA_SENSE(22),
-    /**
-     * <code>SHUTDOWN = 23;</code>
-     */
-    SHUTDOWN(23),
-    /**
-     * <code>ENTITY_ID_REQUEST = 24;</code>
-     */
-    ENTITY_ID_REQUEST(24),
-    /**
-     * <code>ENTITY_ID_RESPONSE = 25;</code>
-     */
-    ENTITY_ID_RESPONSE(25),
-    /**
-     * <code>AK_REST = 26;</code>
-     */
-    AK_REST(26),
-    /**
-     * <code>AK_MOVE = 27;</code>
-     */
-    AK_MOVE(27),
-    /**
-     * <code>AK_LOAD = 28;</code>
-     */
-    AK_LOAD(28),
-    /**
-     * <code>AK_UNLOAD = 29;</code>
-     */
-    AK_UNLOAD(29),
-    /**
-     * <code>AK_SAY = 30;</code>
-     */
-    AK_SAY(30),
-    /**
-     * <code>AK_TELL = 31;</code>
-     */
-    AK_TELL(31),
-    /**
-     * <code>AK_EXTINGUISH = 32;</code>
-     */
-    AK_EXTINGUISH(32),
-    /**
-     * <code>AK_RESCUE = 33;</code>
-     */
-    AK_RESCUE(33),
-    /**
-     * <code>AK_CLEAR = 34;</code>
-     */
-    AK_CLEAR(34),
-    /**
-     * <code>AK_CLEAR_AREA = 35;</code>
-     */
-    AK_CLEAR_AREA(35),
-    /**
-     * <code>AK_SUBSCRIBE = 36;</code>
-     */
-    AK_SUBSCRIBE(36),
-    /**
-     * <code>AK_SPEAK = 37;</code>
-     */
-    AK_SPEAK(37),
-    UNRECOGNIZED(-1),
-    ;
-
-    /**
-     * <code>NoneMsg = 0;</code>
-     */
-    public static final int NoneMsg_VALUE = 0;
-    /**
-     * <code>KG_CONNECT = 1;</code>
-     */
-    public static final int KG_CONNECT_VALUE = 1;
-    /**
-     * <code>KG_ACKNOWLEDGE = 2;</code>
-     */
-    public static final int KG_ACKNOWLEDGE_VALUE = 2;
-    /**
-     * <code>GK_CONNECT_OK = 3;</code>
-     */
-    public static final int GK_CONNECT_OK_VALUE = 3;
-    /**
-     * <code>GK_CONNECT_ERROR = 4;</code>
-     */
-    public static final int GK_CONNECT_ERROR_VALUE = 4;
-    /**
-     * <code>SK_CONNECT = 5;</code>
-     */
-    public static final int SK_CONNECT_VALUE = 5;
-    /**
-     * <code>SK_ACKNOWLEDGE = 6;</code>
-     */
-    public static final int SK_ACKNOWLEDGE_VALUE = 6;
-    /**
-     * <code>SK_UPDATE = 7;</code>
-     */
-    public static final int SK_UPDATE_VALUE = 7;
-    /**
-     * <code>KS_CONNECT_OK = 8;</code>
-     */
-    public static final int KS_CONNECT_OK_VALUE = 8;
-    /**
-     * <code>KS_CONNECT_ERROR = 9;</code>
-     */
-    public static final int KS_CONNECT_ERROR_VALUE = 9;
-    /**
-     * <code>KS_UPDATE = 10;</code>
-     */
-    public static final int KS_UPDATE_VALUE = 10;
-    /**
-     * <code>KS_COMMANDS = 11;</code>
-     */
-    public static final int KS_COMMANDS_VALUE = 11;
-    /**
-     * <code>KS_AFTERSHOCKS_INFO = 12;</code>
-     */
-    public static final int KS_AFTERSHOCKS_INFO_VALUE = 12;
-    /**
-     * <code>VK_CONNECT = 13;</code>
-     */
-    public static final int VK_CONNECT_VALUE = 13;
-    /**
-     * <code>VK_ACKNOWLEDGE = 14;</code>
-     */
-    public static final int VK_ACKNOWLEDGE_VALUE = 14;
-    /**
-     * <code>KV_CONNECT_OK = 15;</code>
-     */
-    public static final int KV_CONNECT_OK_VALUE = 15;
-    /**
-     * <code>KV_CONNECT_ERROR = 16;</code>
-     */
-    public static final int KV_CONNECT_ERROR_VALUE = 16;
-    /**
-     * <code>KV_TIMESTEP = 17;</code>
-     */
-    public static final int KV_TIMESTEP_VALUE = 17;
-    /**
-     * <code>AK_CONNECT = 18;</code>
-     */
-    public static final int AK_CONNECT_VALUE = 18;
-    /**
-     * <code>AK_ACKNOWLEDGE = 19;</code>
-     */
-    public static final int AK_ACKNOWLEDGE_VALUE = 19;
-    /**
-     * <code>KA_CONNECT_OK = 20;</code>
-     */
-    public static final int KA_CONNECT_OK_VALUE = 20;
-    /**
-     * <code>KA_CONNECT_ERROR = 21;</code>
-     */
-    public static final int KA_CONNECT_ERROR_VALUE = 21;
-    /**
-     * <code>KA_SENSE = 22;</code>
-     */
-    public static final int KA_SENSE_VALUE = 22;
-    /**
-     * <code>SHUTDOWN = 23;</code>
-     */
-    public static final int SHUTDOWN_VALUE = 23;
-    /**
-     * <code>ENTITY_ID_REQUEST = 24;</code>
-     */
-    public static final int ENTITY_ID_REQUEST_VALUE = 24;
-    /**
-     * <code>ENTITY_ID_RESPONSE = 25;</code>
-     */
-    public static final int ENTITY_ID_RESPONSE_VALUE = 25;
-    /**
-     * <code>AK_REST = 26;</code>
-     */
-    public static final int AK_REST_VALUE = 26;
-    /**
-     * <code>AK_MOVE = 27;</code>
-     */
-    public static final int AK_MOVE_VALUE = 27;
-    /**
-     * <code>AK_LOAD = 28;</code>
-     */
-    public static final int AK_LOAD_VALUE = 28;
-    /**
-     * <code>AK_UNLOAD = 29;</code>
-     */
-    public static final int AK_UNLOAD_VALUE = 29;
-    /**
-     * <code>AK_SAY = 30;</code>
-     */
-    public static final int AK_SAY_VALUE = 30;
-    /**
-     * <code>AK_TELL = 31;</code>
-     */
-    public static final int AK_TELL_VALUE = 31;
-    /**
-     * <code>AK_EXTINGUISH = 32;</code>
-     */
-    public static final int AK_EXTINGUISH_VALUE = 32;
-    /**
-     * <code>AK_RESCUE = 33;</code>
-     */
-    public static final int AK_RESCUE_VALUE = 33;
-    /**
-     * <code>AK_CLEAR = 34;</code>
-     */
-    public static final int AK_CLEAR_VALUE = 34;
-    /**
-     * <code>AK_CLEAR_AREA = 35;</code>
-     */
-    public static final int AK_CLEAR_AREA_VALUE = 35;
-    /**
-     * <code>AK_SUBSCRIBE = 36;</code>
-     */
-    public static final int AK_SUBSCRIBE_VALUE = 36;
-    /**
-     * <code>AK_SPEAK = 37;</code>
-     */
-    public static final int AK_SPEAK_VALUE = 37;
-
-
-    public final int getNumber() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalArgumentException(
-            "Can't get the number of an unknown enum value.");
-      }
-      return value;
-    }
-
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     * @deprecated Use {@link #forNumber(int)} instead.
-     */
-    @java.lang.Deprecated
-    public static MsgURN valueOf(int value) {
-      return forNumber(value);
-    }
-
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     */
-    public static MsgURN forNumber(int value) {
-      switch (value) {
-        case 0: return NoneMsg;
-        case 1: return KG_CONNECT;
-        case 2: return KG_ACKNOWLEDGE;
-        case 3: return GK_CONNECT_OK;
-        case 4: return GK_CONNECT_ERROR;
-        case 5: return SK_CONNECT;
-        case 6: return SK_ACKNOWLEDGE;
-        case 7: return SK_UPDATE;
-        case 8: return KS_CONNECT_OK;
-        case 9: return KS_CONNECT_ERROR;
-        case 10: return KS_UPDATE;
-        case 11: return KS_COMMANDS;
-        case 12: return KS_AFTERSHOCKS_INFO;
-        case 13: return VK_CONNECT;
-        case 14: return VK_ACKNOWLEDGE;
-        case 15: return KV_CONNECT_OK;
-        case 16: return KV_CONNECT_ERROR;
-        case 17: return KV_TIMESTEP;
-        case 18: return AK_CONNECT;
-        case 19: return AK_ACKNOWLEDGE;
-        case 20: return KA_CONNECT_OK;
-        case 21: return KA_CONNECT_ERROR;
-        case 22: return KA_SENSE;
-        case 23: return SHUTDOWN;
-        case 24: return ENTITY_ID_REQUEST;
-        case 25: return ENTITY_ID_RESPONSE;
-        case 26: return AK_REST;
-        case 27: return AK_MOVE;
-        case 28: return AK_LOAD;
-        case 29: return AK_UNLOAD;
-        case 30: return AK_SAY;
-        case 31: return AK_TELL;
-        case 32: return AK_EXTINGUISH;
-        case 33: return AK_RESCUE;
-        case 34: return AK_CLEAR;
-        case 35: return AK_CLEAR_AREA;
-        case 36: return AK_SUBSCRIBE;
-        case 37: return AK_SPEAK;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<MsgURN>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static final com.google.protobuf.Internal.EnumLiteMap<
-        MsgURN> internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<MsgURN>() {
-            public MsgURN findValueByNumber(int number) {
-              return MsgURN.forNumber(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalStateException(
-            "Can't get the descriptor of an unrecognized enum value.");
-      }
-      return getDescriptor().getValues().get(ordinal());
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return rescuecore2.messages.protobuf.RCRSProto.getDescriptor().getEnumTypes().get(0);
-    }
-
-    private static final MsgURN[] VALUES = values();
-
-    public static MsgURN valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      if (desc.getIndex() == -1) {
-        return UNRECOGNIZED;
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int value;
-
-    private MsgURN(int value) {
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:MsgURN)
-  }
-
-  /**
-   * Protobuf enum {@code EntityURN}
-   */
-  public enum EntityURN
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>NoneEntity = 0;</code>
-     */
-    NoneEntity(0),
-    /**
-     * <code>WORLD = 1;</code>
-     */
-    WORLD(1),
-    /**
-     * <code>ROAD = 2;</code>
-     */
-    ROAD(2),
-    /**
-     * <code>BLOCKADE = 3;</code>
-     */
-    BLOCKADE(3),
-    /**
-     * <code>BUILDING = 4;</code>
-     */
-    BUILDING(4),
-    /**
-     * <code>REFUGE = 5;</code>
-     */
-    REFUGE(5),
-    /**
-     * <code>HYDRANT = 6;</code>
-     */
-    HYDRANT(6),
-    /**
-     * <code>GAS_STATION = 7;</code>
-     */
-    GAS_STATION(7),
-    /**
-     * <code>FIRE_STATION = 8;</code>
-     */
-    FIRE_STATION(8),
-    /**
-     * <code>AMBULANCE_CENTRE = 9;</code>
-     */
-    AMBULANCE_CENTRE(9),
-    /**
-     * <code>POLICE_OFFICE = 10;</code>
-     */
-    POLICE_OFFICE(10),
-    /**
-     * <code>CIVILIAN = 11;</code>
-     */
-    CIVILIAN(11),
-    /**
-     * <code>FIRE_BRIGADE = 12;</code>
-     */
-    FIRE_BRIGADE(12),
-    /**
-     * <code>AMBULANCE_TEAM = 13;</code>
-     */
-    AMBULANCE_TEAM(13),
-    /**
-     * <code>POLICE_FORCE = 14;</code>
-     */
-    POLICE_FORCE(14),
-    UNRECOGNIZED(-1),
-    ;
-
-    /**
-     * <code>NoneEntity = 0;</code>
-     */
-    public static final int NoneEntity_VALUE = 0;
-    /**
-     * <code>WORLD = 1;</code>
-     */
-    public static final int WORLD_VALUE = 1;
-    /**
-     * <code>ROAD = 2;</code>
-     */
-    public static final int ROAD_VALUE = 2;
-    /**
-     * <code>BLOCKADE = 3;</code>
-     */
-    public static final int BLOCKADE_VALUE = 3;
-    /**
-     * <code>BUILDING = 4;</code>
-     */
-    public static final int BUILDING_VALUE = 4;
-    /**
-     * <code>REFUGE = 5;</code>
-     */
-    public static final int REFUGE_VALUE = 5;
-    /**
-     * <code>HYDRANT = 6;</code>
-     */
-    public static final int HYDRANT_VALUE = 6;
-    /**
-     * <code>GAS_STATION = 7;</code>
-     */
-    public static final int GAS_STATION_VALUE = 7;
-    /**
-     * <code>FIRE_STATION = 8;</code>
-     */
-    public static final int FIRE_STATION_VALUE = 8;
-    /**
-     * <code>AMBULANCE_CENTRE = 9;</code>
-     */
-    public static final int AMBULANCE_CENTRE_VALUE = 9;
-    /**
-     * <code>POLICE_OFFICE = 10;</code>
-     */
-    public static final int POLICE_OFFICE_VALUE = 10;
-    /**
-     * <code>CIVILIAN = 11;</code>
-     */
-    public static final int CIVILIAN_VALUE = 11;
-    /**
-     * <code>FIRE_BRIGADE = 12;</code>
-     */
-    public static final int FIRE_BRIGADE_VALUE = 12;
-    /**
-     * <code>AMBULANCE_TEAM = 13;</code>
-     */
-    public static final int AMBULANCE_TEAM_VALUE = 13;
-    /**
-     * <code>POLICE_FORCE = 14;</code>
-     */
-    public static final int POLICE_FORCE_VALUE = 14;
-
-
-    public final int getNumber() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalArgumentException(
-            "Can't get the number of an unknown enum value.");
-      }
-      return value;
-    }
-
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     * @deprecated Use {@link #forNumber(int)} instead.
-     */
-    @java.lang.Deprecated
-    public static EntityURN valueOf(int value) {
-      return forNumber(value);
-    }
-
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     */
-    public static EntityURN forNumber(int value) {
-      switch (value) {
-        case 0: return NoneEntity;
-        case 1: return WORLD;
-        case 2: return ROAD;
-        case 3: return BLOCKADE;
-        case 4: return BUILDING;
-        case 5: return REFUGE;
-        case 6: return HYDRANT;
-        case 7: return GAS_STATION;
-        case 8: return FIRE_STATION;
-        case 9: return AMBULANCE_CENTRE;
-        case 10: return POLICE_OFFICE;
-        case 11: return CIVILIAN;
-        case 12: return FIRE_BRIGADE;
-        case 13: return AMBULANCE_TEAM;
-        case 14: return POLICE_FORCE;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<EntityURN>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static final com.google.protobuf.Internal.EnumLiteMap<
-        EntityURN> internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<EntityURN>() {
-            public EntityURN findValueByNumber(int number) {
-              return EntityURN.forNumber(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalStateException(
-            "Can't get the descriptor of an unrecognized enum value.");
-      }
-      return getDescriptor().getValues().get(ordinal());
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return rescuecore2.messages.protobuf.RCRSProto.getDescriptor().getEnumTypes().get(1);
-    }
-
-    private static final EntityURN[] VALUES = values();
-
-    public static EntityURN valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      if (desc.getIndex() == -1) {
-        return UNRECOGNIZED;
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int value;
-
-    private EntityURN(int value) {
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:EntityURN)
-  }
-
-  /**
-   * Protobuf enum {@code PropertyURN}
-   */
-  public enum PropertyURN
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>NoneProperty = 0;</code>
-     */
-    NoneProperty(0),
-    /**
-     * <code>START_TIME = 1;</code>
-     */
-    START_TIME(1),
-    /**
-     * <code>LONGITUDE = 2;</code>
-     */
-    LONGITUDE(2),
-    /**
-     * <code>LATITUDE = 3;</code>
-     */
-    LATITUDE(3),
-    /**
-     * <code>WIND_FORCE = 4;</code>
-     */
-    WIND_FORCE(4),
-    /**
-     * <code>WIND_DIRECTION = 5;</code>
-     */
-    WIND_DIRECTION(5),
-    /**
-     * <code>X = 6;</code>
-     */
-    X(6),
-    /**
-     * <code>Y = 7;</code>
-     */
-    Y(7),
-    /**
-     * <code>BLOCKADES = 8;</code>
-     */
-    BLOCKADES(8),
-    /**
-     * <code>REPAIR_COST = 9;</code>
-     */
-    REPAIR_COST(9),
-    /**
-     * <code>FLOORS = 10;</code>
-     */
-    FLOORS(10),
-    /**
-     * <code>BUILDING_ATTRIBUTES = 11;</code>
-     */
-    BUILDING_ATTRIBUTES(11),
-    /**
-     * <code>IGNITION = 12;</code>
-     */
-    IGNITION(12),
-    /**
-     * <code>FIERYNESS = 13;</code>
-     */
-    FIERYNESS(13),
-    /**
-     * <code>BROKENNESS = 14;</code>
-     */
-    BROKENNESS(14),
-    /**
-     * <code>BUILDING_CODE = 15;</code>
-     */
-    BUILDING_CODE(15),
-    /**
-     * <code>BUILDING_AREA_GROUND = 16;</code>
-     */
-    BUILDING_AREA_GROUND(16),
-    /**
-     * <code>BUILDING_AREA_TOTAL = 17;</code>
-     */
-    BUILDING_AREA_TOTAL(17),
-    /**
-     * <code>APEXES = 18;</code>
-     */
-    APEXES(18),
-    /**
-     * <code>EDGES = 19;</code>
-     */
-    EDGES(19),
-    /**
-     * <code>POSITION = 20;</code>
-     */
-    POSITION(20),
-    /**
-     * <code>DIRECTION = 21;</code>
-     */
-    DIRECTION(21),
-    /**
-     * <code>POSITION_HISTORY = 22;</code>
-     */
-    POSITION_HISTORY(22),
-    /**
-     * <code>STAMINA = 23;</code>
-     */
-    STAMINA(23),
-    /**
-     * <code>HP = 24;</code>
-     */
-    HP(24),
-    /**
-     * <code>DAMAGE = 25;</code>
-     */
-    DAMAGE(25),
-    /**
-     * <code>BURIEDNESS = 26;</code>
-     */
-    BURIEDNESS(26),
-    /**
-     * <code>TRAVEL_DISTANCE = 27;</code>
-     */
-    TRAVEL_DISTANCE(27),
-    /**
-     * <code>WATER_QUANTITY = 28;</code>
-     */
-    WATER_QUANTITY(28),
-    /**
-     * <code>TEMPERATURE = 29;</code>
-     */
-    TEMPERATURE(29),
-    /**
-     * <code>IMPORTANCE = 30;</code>
-     */
-    IMPORTANCE(30),
-    /**
-     * <code>CAPACITY = 31;</code>
-     */
-    CAPACITY(31),
-    /**
-     * <code>BEDCAPACITY = 32;</code>
-     */
-    BEDCAPACITY(32),
-    /**
-     * <code>OCCUPIEDBEDS = 33;</code>
-     */
-    OCCUPIEDBEDS(33),
-    /**
-     * <code>REFILLCAPACITY = 34;</code>
-     */
-    REFILLCAPACITY(34),
-    /**
-     * <code>WAITINGLISTSIZE = 35;</code>
-     */
-    WAITINGLISTSIZE(35),
-    UNRECOGNIZED(-1),
-    ;
-
-    /**
-     * <code>NoneProperty = 0;</code>
-     */
-    public static final int NoneProperty_VALUE = 0;
-    /**
-     * <code>START_TIME = 1;</code>
-     */
-    public static final int START_TIME_VALUE = 1;
-    /**
-     * <code>LONGITUDE = 2;</code>
-     */
-    public static final int LONGITUDE_VALUE = 2;
-    /**
-     * <code>LATITUDE = 3;</code>
-     */
-    public static final int LATITUDE_VALUE = 3;
-    /**
-     * <code>WIND_FORCE = 4;</code>
-     */
-    public static final int WIND_FORCE_VALUE = 4;
-    /**
-     * <code>WIND_DIRECTION = 5;</code>
-     */
-    public static final int WIND_DIRECTION_VALUE = 5;
-    /**
-     * <code>X = 6;</code>
-     */
-    public static final int X_VALUE = 6;
-    /**
-     * <code>Y = 7;</code>
-     */
-    public static final int Y_VALUE = 7;
-    /**
-     * <code>BLOCKADES = 8;</code>
-     */
-    public static final int BLOCKADES_VALUE = 8;
-    /**
-     * <code>REPAIR_COST = 9;</code>
-     */
-    public static final int REPAIR_COST_VALUE = 9;
-    /**
-     * <code>FLOORS = 10;</code>
-     */
-    public static final int FLOORS_VALUE = 10;
-    /**
-     * <code>BUILDING_ATTRIBUTES = 11;</code>
-     */
-    public static final int BUILDING_ATTRIBUTES_VALUE = 11;
-    /**
-     * <code>IGNITION = 12;</code>
-     */
-    public static final int IGNITION_VALUE = 12;
-    /**
-     * <code>FIERYNESS = 13;</code>
-     */
-    public static final int FIERYNESS_VALUE = 13;
-    /**
-     * <code>BROKENNESS = 14;</code>
-     */
-    public static final int BROKENNESS_VALUE = 14;
-    /**
-     * <code>BUILDING_CODE = 15;</code>
-     */
-    public static final int BUILDING_CODE_VALUE = 15;
-    /**
-     * <code>BUILDING_AREA_GROUND = 16;</code>
-     */
-    public static final int BUILDING_AREA_GROUND_VALUE = 16;
-    /**
-     * <code>BUILDING_AREA_TOTAL = 17;</code>
-     */
-    public static final int BUILDING_AREA_TOTAL_VALUE = 17;
-    /**
-     * <code>APEXES = 18;</code>
-     */
-    public static final int APEXES_VALUE = 18;
-    /**
-     * <code>EDGES = 19;</code>
-     */
-    public static final int EDGES_VALUE = 19;
-    /**
-     * <code>POSITION = 20;</code>
-     */
-    public static final int POSITION_VALUE = 20;
-    /**
-     * <code>DIRECTION = 21;</code>
-     */
-    public static final int DIRECTION_VALUE = 21;
-    /**
-     * <code>POSITION_HISTORY = 22;</code>
-     */
-    public static final int POSITION_HISTORY_VALUE = 22;
-    /**
-     * <code>STAMINA = 23;</code>
-     */
-    public static final int STAMINA_VALUE = 23;
-    /**
-     * <code>HP = 24;</code>
-     */
-    public static final int HP_VALUE = 24;
-    /**
-     * <code>DAMAGE = 25;</code>
-     */
-    public static final int DAMAGE_VALUE = 25;
-    /**
-     * <code>BURIEDNESS = 26;</code>
-     */
-    public static final int BURIEDNESS_VALUE = 26;
-    /**
-     * <code>TRAVEL_DISTANCE = 27;</code>
-     */
-    public static final int TRAVEL_DISTANCE_VALUE = 27;
-    /**
-     * <code>WATER_QUANTITY = 28;</code>
-     */
-    public static final int WATER_QUANTITY_VALUE = 28;
-    /**
-     * <code>TEMPERATURE = 29;</code>
-     */
-    public static final int TEMPERATURE_VALUE = 29;
-    /**
-     * <code>IMPORTANCE = 30;</code>
-     */
-    public static final int IMPORTANCE_VALUE = 30;
-    /**
-     * <code>CAPACITY = 31;</code>
-     */
-    public static final int CAPACITY_VALUE = 31;
-    /**
-     * <code>BEDCAPACITY = 32;</code>
-     */
-    public static final int BEDCAPACITY_VALUE = 32;
-    /**
-     * <code>OCCUPIEDBEDS = 33;</code>
-     */
-    public static final int OCCUPIEDBEDS_VALUE = 33;
-    /**
-     * <code>REFILLCAPACITY = 34;</code>
-     */
-    public static final int REFILLCAPACITY_VALUE = 34;
-    /**
-     * <code>WAITINGLISTSIZE = 35;</code>
-     */
-    public static final int WAITINGLISTSIZE_VALUE = 35;
-
-
-    public final int getNumber() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalArgumentException(
-            "Can't get the number of an unknown enum value.");
-      }
-      return value;
-    }
-
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     * @deprecated Use {@link #forNumber(int)} instead.
-     */
-    @java.lang.Deprecated
-    public static PropertyURN valueOf(int value) {
-      return forNumber(value);
-    }
-
-    /**
-     * @param value The numeric wire value of the corresponding enum entry.
-     * @return The enum associated with the given numeric wire value.
-     */
-    public static PropertyURN forNumber(int value) {
-      switch (value) {
-        case 0: return NoneProperty;
-        case 1: return START_TIME;
-        case 2: return LONGITUDE;
-        case 3: return LATITUDE;
-        case 4: return WIND_FORCE;
-        case 5: return WIND_DIRECTION;
-        case 6: return X;
-        case 7: return Y;
-        case 8: return BLOCKADES;
-        case 9: return REPAIR_COST;
-        case 10: return FLOORS;
-        case 11: return BUILDING_ATTRIBUTES;
-        case 12: return IGNITION;
-        case 13: return FIERYNESS;
-        case 14: return BROKENNESS;
-        case 15: return BUILDING_CODE;
-        case 16: return BUILDING_AREA_GROUND;
-        case 17: return BUILDING_AREA_TOTAL;
-        case 18: return APEXES;
-        case 19: return EDGES;
-        case 20: return POSITION;
-        case 21: return DIRECTION;
-        case 22: return POSITION_HISTORY;
-        case 23: return STAMINA;
-        case 24: return HP;
-        case 25: return DAMAGE;
-        case 26: return BURIEDNESS;
-        case 27: return TRAVEL_DISTANCE;
-        case 28: return WATER_QUANTITY;
-        case 29: return TEMPERATURE;
-        case 30: return IMPORTANCE;
-        case 31: return CAPACITY;
-        case 32: return BEDCAPACITY;
-        case 33: return OCCUPIEDBEDS;
-        case 34: return REFILLCAPACITY;
-        case 35: return WAITINGLISTSIZE;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<PropertyURN>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static final com.google.protobuf.Internal.EnumLiteMap<
-        PropertyURN> internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<PropertyURN>() {
-            public PropertyURN findValueByNumber(int number) {
-              return PropertyURN.forNumber(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalStateException(
-            "Can't get the descriptor of an unrecognized enum value.");
-      }
-      return getDescriptor().getValues().get(ordinal());
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return rescuecore2.messages.protobuf.RCRSProto.getDescriptor().getEnumTypes().get(2);
-    }
-
-    private static final PropertyURN[] VALUES = values();
-
-    public static PropertyURN valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      if (desc.getIndex() == -1) {
-        return UNRECOGNIZED;
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int value;
-
-    private PropertyURN(int value) {
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:PropertyURN)
-  }
-
   public interface MessageProtoOrBuilder extends
       // @@protoc_insertion_point(interface_extends:MessageProto)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.MsgURN urn = 1;</code>
-     * @return The enum numeric value on the wire for urn.
-     */
-    int getUrnValue();
-    /**
-     * <code>.MsgURN urn = 1;</code>
+     * <code>int32 urn = 1;</code>
      * @return The urn.
      */
-    rescuecore2.messages.protobuf.RCRSProto.MsgURN getUrn();
+    int getUrn();
 
     /**
      * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
@@ -1135,6 +59,47 @@ public final class RCRSProto {
         java.lang.String key);
   }
   /**
+   * <pre>
+   *enum PropertyURN{
+   *	NoneProperty=0;
+   *	START_TIME=1;
+   *	LONGITUDE=2;
+   *	LATITUDE=3;
+   *	WIND_FORCE=4;
+   *	WIND_DIRECTION=5;
+   *	X=6;
+   *	Y=7;
+   *	BLOCKADES=8;
+   *	REPAIR_COST=9;
+   *	FLOORS=10;
+   *	BUILDING_ATTRIBUTES=11;
+   *	IGNITION=12;
+   *	FIERYNESS=13;
+   *	BROKENNESS=14;
+   *	BUILDING_CODE=15;
+   *	BUILDING_AREA_GROUND=16;
+   *	BUILDING_AREA_TOTAL=17;
+   *	APEXES=18;
+   *	EDGES=19;
+   *	POSITION=20;
+   *	DIRECTION=21;
+   *	POSITION_HISTORY=22;
+   *	STAMINA=23;
+   *	HP=24;
+   *	DAMAGE=25;
+   *	BURIEDNESS=26;
+   *	TRAVEL_DISTANCE=27;
+   *	WATER_QUANTITY=28;
+   *	TEMPERATURE=29;
+   *	IMPORTANCE=30;
+   *	CAPACITY=31;
+   *	BEDCAPACITY=32;
+   *	OCCUPIEDBEDS=33;
+   *	REFILLCAPACITY=34;
+   *	WAITINGLISTSIZE=35;
+   *}
+   * </pre>
+   *
    * Protobuf type {@code MessageProto}
    */
   public static final class MessageProto extends
@@ -1147,7 +112,6 @@ public final class RCRSProto {
       super(builder);
     }
     private MessageProto() {
-      urn_ = 0;
     }
 
     @java.lang.Override
@@ -1182,9 +146,8 @@ public final class RCRSProto {
               done = true;
               break;
             case 8: {
-              int rawValue = input.readEnum();
 
-              urn_ = rawValue;
+              urn_ = input.readInt32();
               break;
             }
             case 18: {
@@ -1247,20 +210,12 @@ public final class RCRSProto {
     public static final int URN_FIELD_NUMBER = 1;
     private int urn_;
     /**
-     * <code>.MsgURN urn = 1;</code>
-     * @return The enum numeric value on the wire for urn.
-     */
-    @java.lang.Override public int getUrnValue() {
-      return urn_;
-    }
-    /**
-     * <code>.MsgURN urn = 1;</code>
+     * <code>int32 urn = 1;</code>
      * @return The urn.
      */
-    @java.lang.Override public rescuecore2.messages.protobuf.RCRSProto.MsgURN getUrn() {
-      @SuppressWarnings("deprecation")
-      rescuecore2.messages.protobuf.RCRSProto.MsgURN result = rescuecore2.messages.protobuf.RCRSProto.MsgURN.valueOf(urn_);
-      return result == null ? rescuecore2.messages.protobuf.RCRSProto.MsgURN.UNRECOGNIZED : result;
+    @java.lang.Override
+    public int getUrn() {
+      return urn_;
     }
 
     public static final int COMPONENTS_FIELD_NUMBER = 2;
@@ -1358,8 +313,8 @@ public final class RCRSProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (urn_ != rescuecore2.messages.protobuf.RCRSProto.MsgURN.NoneMsg.getNumber()) {
-        output.writeEnum(1, urn_);
+      if (urn_ != 0) {
+        output.writeInt32(1, urn_);
       }
       com.google.protobuf.GeneratedMessageV3
         .serializeStringMapTo(
@@ -1376,9 +331,9 @@ public final class RCRSProto {
       if (size != -1) return size;
 
       size = 0;
-      if (urn_ != rescuecore2.messages.protobuf.RCRSProto.MsgURN.NoneMsg.getNumber()) {
+      if (urn_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(1, urn_);
+          .computeInt32Size(1, urn_);
       }
       for (java.util.Map.Entry<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> entry
            : internalGetComponents().getMap().entrySet()) {
@@ -1405,7 +360,8 @@ public final class RCRSProto {
       }
       rescuecore2.messages.protobuf.RCRSProto.MessageProto other = (rescuecore2.messages.protobuf.RCRSProto.MessageProto) obj;
 
-      if (urn_ != other.urn_) return false;
+      if (getUrn()
+          != other.getUrn()) return false;
       if (!internalGetComponents().equals(
           other.internalGetComponents())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -1420,7 +376,7 @@ public final class RCRSProto {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + URN_FIELD_NUMBER;
-      hash = (53 * hash) + urn_;
+      hash = (53 * hash) + getUrn();
       if (!internalGetComponents().getMap().isEmpty()) {
         hash = (37 * hash) + COMPONENTS_FIELD_NUMBER;
         hash = (53 * hash) + internalGetComponents().hashCode();
@@ -1521,6 +477,47 @@ public final class RCRSProto {
       return builder;
     }
     /**
+     * <pre>
+     *enum PropertyURN{
+     *	NoneProperty=0;
+     *	START_TIME=1;
+     *	LONGITUDE=2;
+     *	LATITUDE=3;
+     *	WIND_FORCE=4;
+     *	WIND_DIRECTION=5;
+     *	X=6;
+     *	Y=7;
+     *	BLOCKADES=8;
+     *	REPAIR_COST=9;
+     *	FLOORS=10;
+     *	BUILDING_ATTRIBUTES=11;
+     *	IGNITION=12;
+     *	FIERYNESS=13;
+     *	BROKENNESS=14;
+     *	BUILDING_CODE=15;
+     *	BUILDING_AREA_GROUND=16;
+     *	BUILDING_AREA_TOTAL=17;
+     *	APEXES=18;
+     *	EDGES=19;
+     *	POSITION=20;
+     *	DIRECTION=21;
+     *	POSITION_HISTORY=22;
+     *	STAMINA=23;
+     *	HP=24;
+     *	DAMAGE=25;
+     *	BURIEDNESS=26;
+     *	TRAVEL_DISTANCE=27;
+     *	WATER_QUANTITY=28;
+     *	TEMPERATURE=29;
+     *	IMPORTANCE=30;
+     *	CAPACITY=31;
+     *	BEDCAPACITY=32;
+     *	OCCUPIEDBEDS=33;
+     *	REFILLCAPACITY=34;
+     *	WAITINGLISTSIZE=35;
+     *}
+     * </pre>
+     *
      * Protobuf type {@code MessageProto}
      */
     public static final class Builder extends
@@ -1661,8 +658,8 @@ public final class RCRSProto {
 
       public Builder mergeFrom(rescuecore2.messages.protobuf.RCRSProto.MessageProto other) {
         if (other == rescuecore2.messages.protobuf.RCRSProto.MessageProto.getDefaultInstance()) return this;
-        if (other.urn_ != 0) {
-          setUrnValue(other.getUrnValue());
+        if (other.getUrn() != 0) {
+          setUrn(other.getUrn());
         }
         internalGetMutableComponents().mergeFrom(
             other.internalGetComponents());
@@ -1696,51 +693,28 @@ public final class RCRSProto {
       }
       private int bitField0_;
 
-      private int urn_ = 0;
+      private int urn_ ;
       /**
-       * <code>.MsgURN urn = 1;</code>
-       * @return The enum numeric value on the wire for urn.
+       * <code>int32 urn = 1;</code>
+       * @return The urn.
        */
-      @java.lang.Override public int getUrnValue() {
+      @java.lang.Override
+      public int getUrn() {
         return urn_;
       }
       /**
-       * <code>.MsgURN urn = 1;</code>
-       * @param value The enum numeric value on the wire for urn to set.
+       * <code>int32 urn = 1;</code>
+       * @param value The urn to set.
        * @return This builder for chaining.
        */
-      public Builder setUrnValue(int value) {
+      public Builder setUrn(int value) {
         
         urn_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>.MsgURN urn = 1;</code>
-       * @return The urn.
-       */
-      @java.lang.Override
-      public rescuecore2.messages.protobuf.RCRSProto.MsgURN getUrn() {
-        @SuppressWarnings("deprecation")
-        rescuecore2.messages.protobuf.RCRSProto.MsgURN result = rescuecore2.messages.protobuf.RCRSProto.MsgURN.valueOf(urn_);
-        return result == null ? rescuecore2.messages.protobuf.RCRSProto.MsgURN.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>.MsgURN urn = 1;</code>
-       * @param value The urn to set.
-       * @return This builder for chaining.
-       */
-      public Builder setUrn(rescuecore2.messages.protobuf.RCRSProto.MsgURN value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        urn_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.MsgURN urn = 1;</code>
+       * <code>int32 urn = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearUrn() {
@@ -10346,15 +9320,10 @@ public final class RCRSProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.PropertyURN urn = 1;</code>
-     * @return The enum numeric value on the wire for urn.
-     */
-    int getUrnValue();
-    /**
-     * <code>.PropertyURN urn = 1;</code>
+     * <code>int32 urn = 1;</code>
      * @return The urn.
      */
-    rescuecore2.messages.protobuf.RCRSProto.PropertyURN getUrn();
+    int getUrn();
 
     /**
      * <code>bool defined = 2;</code>
@@ -10481,7 +9450,6 @@ public final class RCRSProto {
       super(builder);
     }
     private PropertyProto() {
-      urn_ = 0;
     }
 
     @java.lang.Override
@@ -10515,9 +9483,8 @@ public final class RCRSProto {
               done = true;
               break;
             case 8: {
-              int rawValue = input.readEnum();
 
-              urn_ = rawValue;
+              urn_ = input.readInt32();
               break;
             }
             case 16: {
@@ -10689,20 +9656,12 @@ public final class RCRSProto {
     public static final int URN_FIELD_NUMBER = 1;
     private int urn_;
     /**
-     * <code>.PropertyURN urn = 1;</code>
-     * @return The enum numeric value on the wire for urn.
-     */
-    @java.lang.Override public int getUrnValue() {
-      return urn_;
-    }
-    /**
-     * <code>.PropertyURN urn = 1;</code>
+     * <code>int32 urn = 1;</code>
      * @return The urn.
      */
-    @java.lang.Override public rescuecore2.messages.protobuf.RCRSProto.PropertyURN getUrn() {
-      @SuppressWarnings("deprecation")
-      rescuecore2.messages.protobuf.RCRSProto.PropertyURN result = rescuecore2.messages.protobuf.RCRSProto.PropertyURN.valueOf(urn_);
-      return result == null ? rescuecore2.messages.protobuf.RCRSProto.PropertyURN.UNRECOGNIZED : result;
+    @java.lang.Override
+    public int getUrn() {
+      return urn_;
     }
 
     public static final int DEFINED_FIELD_NUMBER = 2;
@@ -10938,8 +9897,8 @@ public final class RCRSProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (urn_ != rescuecore2.messages.protobuf.RCRSProto.PropertyURN.NoneProperty.getNumber()) {
-        output.writeEnum(1, urn_);
+      if (urn_ != 0) {
+        output.writeInt32(1, urn_);
       }
       if (defined_ != false) {
         output.writeBool(2, defined_);
@@ -10981,9 +9940,9 @@ public final class RCRSProto {
       if (size != -1) return size;
 
       size = 0;
-      if (urn_ != rescuecore2.messages.protobuf.RCRSProto.PropertyURN.NoneProperty.getNumber()) {
+      if (urn_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(1, urn_);
+          .computeInt32Size(1, urn_);
       }
       if (defined_ != false) {
         size += com.google.protobuf.CodedOutputStream
@@ -11040,7 +9999,8 @@ public final class RCRSProto {
       }
       rescuecore2.messages.protobuf.RCRSProto.PropertyProto other = (rescuecore2.messages.protobuf.RCRSProto.PropertyProto) obj;
 
-      if (urn_ != other.urn_) return false;
+      if (getUrn()
+          != other.getUrn()) return false;
       if (getDefined()
           != other.getDefined()) return false;
       if (!getValueCase().equals(other.getValueCase())) return false;
@@ -11093,7 +10053,7 @@ public final class RCRSProto {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + URN_FIELD_NUMBER;
-      hash = (53 * hash) + urn_;
+      hash = (53 * hash) + getUrn();
       hash = (37 * hash) + DEFINED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getDefined());
@@ -11391,8 +10351,8 @@ public final class RCRSProto {
 
       public Builder mergeFrom(rescuecore2.messages.protobuf.RCRSProto.PropertyProto other) {
         if (other == rescuecore2.messages.protobuf.RCRSProto.PropertyProto.getDefaultInstance()) return this;
-        if (other.urn_ != 0) {
-          setUrnValue(other.getUrnValue());
+        if (other.getUrn() != 0) {
+          setUrn(other.getUrn());
         }
         if (other.getDefined() != false) {
           setDefined(other.getDefined());
@@ -11478,51 +10438,28 @@ public final class RCRSProto {
       }
 
 
-      private int urn_ = 0;
+      private int urn_ ;
       /**
-       * <code>.PropertyURN urn = 1;</code>
-       * @return The enum numeric value on the wire for urn.
+       * <code>int32 urn = 1;</code>
+       * @return The urn.
        */
-      @java.lang.Override public int getUrnValue() {
+      @java.lang.Override
+      public int getUrn() {
         return urn_;
       }
       /**
-       * <code>.PropertyURN urn = 1;</code>
-       * @param value The enum numeric value on the wire for urn to set.
+       * <code>int32 urn = 1;</code>
+       * @param value The urn to set.
        * @return This builder for chaining.
        */
-      public Builder setUrnValue(int value) {
+      public Builder setUrn(int value) {
         
         urn_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>.PropertyURN urn = 1;</code>
-       * @return The urn.
-       */
-      @java.lang.Override
-      public rescuecore2.messages.protobuf.RCRSProto.PropertyURN getUrn() {
-        @SuppressWarnings("deprecation")
-        rescuecore2.messages.protobuf.RCRSProto.PropertyURN result = rescuecore2.messages.protobuf.RCRSProto.PropertyURN.valueOf(urn_);
-        return result == null ? rescuecore2.messages.protobuf.RCRSProto.PropertyURN.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>.PropertyURN urn = 1;</code>
-       * @param value The urn to set.
-       * @return This builder for chaining.
-       */
-      public Builder setUrn(rescuecore2.messages.protobuf.RCRSProto.PropertyURN value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        urn_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.PropertyURN urn = 1;</code>
+       * <code>int32 urn = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearUrn() {
@@ -12913,15 +11850,10 @@ public final class RCRSProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.EntityURN urn = 1;</code>
-     * @return The enum numeric value on the wire for urn.
-     */
-    int getUrnValue();
-    /**
-     * <code>.EntityURN urn = 1;</code>
+     * <code>int32 urn = 1;</code>
      * @return The urn.
      */
-    rescuecore2.messages.protobuf.RCRSProto.EntityURN getUrn();
+    int getUrn();
 
     /**
      * <code>int32 entityID = 2;</code>
@@ -12966,7 +11898,6 @@ public final class RCRSProto {
       super(builder);
     }
     private EntityProto() {
-      urn_ = 0;
       properties_ = java.util.Collections.emptyList();
     }
 
@@ -13002,9 +11933,8 @@ public final class RCRSProto {
               done = true;
               break;
             case 8: {
-              int rawValue = input.readEnum();
 
-              urn_ = rawValue;
+              urn_ = input.readInt32();
               break;
             }
             case 16: {
@@ -13059,20 +11989,12 @@ public final class RCRSProto {
     public static final int URN_FIELD_NUMBER = 1;
     private int urn_;
     /**
-     * <code>.EntityURN urn = 1;</code>
-     * @return The enum numeric value on the wire for urn.
-     */
-    @java.lang.Override public int getUrnValue() {
-      return urn_;
-    }
-    /**
-     * <code>.EntityURN urn = 1;</code>
+     * <code>int32 urn = 1;</code>
      * @return The urn.
      */
-    @java.lang.Override public rescuecore2.messages.protobuf.RCRSProto.EntityURN getUrn() {
-      @SuppressWarnings("deprecation")
-      rescuecore2.messages.protobuf.RCRSProto.EntityURN result = rescuecore2.messages.protobuf.RCRSProto.EntityURN.valueOf(urn_);
-      return result == null ? rescuecore2.messages.protobuf.RCRSProto.EntityURN.UNRECOGNIZED : result;
+    @java.lang.Override
+    public int getUrn() {
+      return urn_;
     }
 
     public static final int ENTITYID_FIELD_NUMBER = 2;
@@ -13140,8 +12062,8 @@ public final class RCRSProto {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (urn_ != rescuecore2.messages.protobuf.RCRSProto.EntityURN.NoneEntity.getNumber()) {
-        output.writeEnum(1, urn_);
+      if (urn_ != 0) {
+        output.writeInt32(1, urn_);
       }
       if (entityID_ != 0) {
         output.writeInt32(2, entityID_);
@@ -13158,9 +12080,9 @@ public final class RCRSProto {
       if (size != -1) return size;
 
       size = 0;
-      if (urn_ != rescuecore2.messages.protobuf.RCRSProto.EntityURN.NoneEntity.getNumber()) {
+      if (urn_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(1, urn_);
+          .computeInt32Size(1, urn_);
       }
       if (entityID_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -13185,7 +12107,8 @@ public final class RCRSProto {
       }
       rescuecore2.messages.protobuf.RCRSProto.EntityProto other = (rescuecore2.messages.protobuf.RCRSProto.EntityProto) obj;
 
-      if (urn_ != other.urn_) return false;
+      if (getUrn()
+          != other.getUrn()) return false;
       if (getEntityID()
           != other.getEntityID()) return false;
       if (!getPropertiesList()
@@ -13202,7 +12125,7 @@ public final class RCRSProto {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + URN_FIELD_NUMBER;
-      hash = (53 * hash) + urn_;
+      hash = (53 * hash) + getUrn();
       hash = (37 * hash) + ENTITYID_FIELD_NUMBER;
       hash = (53 * hash) + getEntityID();
       if (getPropertiesCount() > 0) {
@@ -13439,8 +12362,8 @@ public final class RCRSProto {
 
       public Builder mergeFrom(rescuecore2.messages.protobuf.RCRSProto.EntityProto other) {
         if (other == rescuecore2.messages.protobuf.RCRSProto.EntityProto.getDefaultInstance()) return this;
-        if (other.urn_ != 0) {
-          setUrnValue(other.getUrnValue());
+        if (other.getUrn() != 0) {
+          setUrn(other.getUrn());
         }
         if (other.getEntityID() != 0) {
           setEntityID(other.getEntityID());
@@ -13501,51 +12424,28 @@ public final class RCRSProto {
       }
       private int bitField0_;
 
-      private int urn_ = 0;
+      private int urn_ ;
       /**
-       * <code>.EntityURN urn = 1;</code>
-       * @return The enum numeric value on the wire for urn.
+       * <code>int32 urn = 1;</code>
+       * @return The urn.
        */
-      @java.lang.Override public int getUrnValue() {
+      @java.lang.Override
+      public int getUrn() {
         return urn_;
       }
       /**
-       * <code>.EntityURN urn = 1;</code>
-       * @param value The enum numeric value on the wire for urn to set.
+       * <code>int32 urn = 1;</code>
+       * @param value The urn to set.
        * @return This builder for chaining.
        */
-      public Builder setUrnValue(int value) {
+      public Builder setUrn(int value) {
         
         urn_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>.EntityURN urn = 1;</code>
-       * @return The urn.
-       */
-      @java.lang.Override
-      public rescuecore2.messages.protobuf.RCRSProto.EntityURN getUrn() {
-        @SuppressWarnings("deprecation")
-        rescuecore2.messages.protobuf.RCRSProto.EntityURN result = rescuecore2.messages.protobuf.RCRSProto.EntityURN.valueOf(urn_);
-        return result == null ? rescuecore2.messages.protobuf.RCRSProto.EntityURN.UNRECOGNIZED : result;
-      }
-      /**
-       * <code>.EntityURN urn = 1;</code>
-       * @param value The urn to set.
-       * @return This builder for chaining.
-       */
-      public Builder setUrn(rescuecore2.messages.protobuf.RCRSProto.EntityURN value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        urn_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.EntityURN urn = 1;</code>
+       * <code>int32 urn = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearUrn() {
@@ -17154,15 +16054,10 @@ public final class RCRSProto {
       int getEntityID();
 
       /**
-       * <code>.EntityURN urn = 2;</code>
-       * @return The enum numeric value on the wire for urn.
-       */
-      int getUrnValue();
-      /**
-       * <code>.EntityURN urn = 2;</code>
+       * <code>int32 urn = 2;</code>
        * @return The urn.
        */
-      rescuecore2.messages.protobuf.RCRSProto.EntityURN getUrn();
+      int getUrn();
 
       /**
        * <code>repeated .PropertyProto properties = 3;</code>
@@ -17201,7 +16096,6 @@ public final class RCRSProto {
         super(builder);
       }
       private EntityChangeProto() {
-        urn_ = 0;
         properties_ = java.util.Collections.emptyList();
       }
 
@@ -17242,9 +16136,8 @@ public final class RCRSProto {
                 break;
               }
               case 16: {
-                int rawValue = input.readEnum();
 
-                urn_ = rawValue;
+                urn_ = input.readInt32();
                 break;
               }
               case 26: {
@@ -17305,20 +16198,12 @@ public final class RCRSProto {
       public static final int URN_FIELD_NUMBER = 2;
       private int urn_;
       /**
-       * <code>.EntityURN urn = 2;</code>
-       * @return The enum numeric value on the wire for urn.
-       */
-      @java.lang.Override public int getUrnValue() {
-        return urn_;
-      }
-      /**
-       * <code>.EntityURN urn = 2;</code>
+       * <code>int32 urn = 2;</code>
        * @return The urn.
        */
-      @java.lang.Override public rescuecore2.messages.protobuf.RCRSProto.EntityURN getUrn() {
-        @SuppressWarnings("deprecation")
-        rescuecore2.messages.protobuf.RCRSProto.EntityURN result = rescuecore2.messages.protobuf.RCRSProto.EntityURN.valueOf(urn_);
-        return result == null ? rescuecore2.messages.protobuf.RCRSProto.EntityURN.UNRECOGNIZED : result;
+      @java.lang.Override
+      public int getUrn() {
+        return urn_;
       }
 
       public static final int PROPERTIES_FIELD_NUMBER = 3;
@@ -17378,8 +16263,8 @@ public final class RCRSProto {
         if (entityID_ != 0) {
           output.writeInt32(1, entityID_);
         }
-        if (urn_ != rescuecore2.messages.protobuf.RCRSProto.EntityURN.NoneEntity.getNumber()) {
-          output.writeEnum(2, urn_);
+        if (urn_ != 0) {
+          output.writeInt32(2, urn_);
         }
         for (int i = 0; i < properties_.size(); i++) {
           output.writeMessage(3, properties_.get(i));
@@ -17397,9 +16282,9 @@ public final class RCRSProto {
           size += com.google.protobuf.CodedOutputStream
             .computeInt32Size(1, entityID_);
         }
-        if (urn_ != rescuecore2.messages.protobuf.RCRSProto.EntityURN.NoneEntity.getNumber()) {
+        if (urn_ != 0) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(2, urn_);
+            .computeInt32Size(2, urn_);
         }
         for (int i = 0; i < properties_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
@@ -17422,7 +16307,8 @@ public final class RCRSProto {
 
         if (getEntityID()
             != other.getEntityID()) return false;
-        if (urn_ != other.urn_) return false;
+        if (getUrn()
+            != other.getUrn()) return false;
         if (!getPropertiesList()
             .equals(other.getPropertiesList())) return false;
         if (!unknownFields.equals(other.unknownFields)) return false;
@@ -17439,7 +16325,7 @@ public final class RCRSProto {
         hash = (37 * hash) + ENTITYID_FIELD_NUMBER;
         hash = (53 * hash) + getEntityID();
         hash = (37 * hash) + URN_FIELD_NUMBER;
-        hash = (53 * hash) + urn_;
+        hash = (53 * hash) + getUrn();
         if (getPropertiesCount() > 0) {
           hash = (37 * hash) + PROPERTIES_FIELD_NUMBER;
           hash = (53 * hash) + getPropertiesList().hashCode();
@@ -17677,8 +16563,8 @@ public final class RCRSProto {
           if (other.getEntityID() != 0) {
             setEntityID(other.getEntityID());
           }
-          if (other.urn_ != 0) {
-            setUrnValue(other.getUrnValue());
+          if (other.getUrn() != 0) {
+            setUrn(other.getUrn());
           }
           if (propertiesBuilder_ == null) {
             if (!other.properties_.isEmpty()) {
@@ -17767,51 +16653,28 @@ public final class RCRSProto {
           return this;
         }
 
-        private int urn_ = 0;
+        private int urn_ ;
         /**
-         * <code>.EntityURN urn = 2;</code>
-         * @return The enum numeric value on the wire for urn.
+         * <code>int32 urn = 2;</code>
+         * @return The urn.
          */
-        @java.lang.Override public int getUrnValue() {
+        @java.lang.Override
+        public int getUrn() {
           return urn_;
         }
         /**
-         * <code>.EntityURN urn = 2;</code>
-         * @param value The enum numeric value on the wire for urn to set.
+         * <code>int32 urn = 2;</code>
+         * @param value The urn to set.
          * @return This builder for chaining.
          */
-        public Builder setUrnValue(int value) {
+        public Builder setUrn(int value) {
           
           urn_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>.EntityURN urn = 2;</code>
-         * @return The urn.
-         */
-        @java.lang.Override
-        public rescuecore2.messages.protobuf.RCRSProto.EntityURN getUrn() {
-          @SuppressWarnings("deprecation")
-          rescuecore2.messages.protobuf.RCRSProto.EntityURN result = rescuecore2.messages.protobuf.RCRSProto.EntityURN.valueOf(urn_);
-          return result == null ? rescuecore2.messages.protobuf.RCRSProto.EntityURN.UNRECOGNIZED : result;
-        }
-        /**
-         * <code>.EntityURN urn = 2;</code>
-         * @param value The urn to set.
-         * @return This builder for chaining.
-         */
-        public Builder setUrn(rescuecore2.messages.protobuf.RCRSProto.EntityURN value) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          
-          urn_ = value.getNumber();
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>.EntityURN urn = 2;</code>
+         * <code>int32 urn = 2;</code>
          * @return This builder for chaining.
          */
         public Builder clearUrn() {
@@ -19083,96 +17946,57 @@ public final class RCRSProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\017RCRSProto.proto\"\242\001\n\014MessageProto\022\024\n\003ur" +
-      "n\030\001 \001(\0162\007.MsgURN\0221\n\ncomponents\030\002 \003(\0132\035.M" +
-      "essageProto.ComponentsEntry\032I\n\017Component" +
-      "sEntry\022\013\n\003key\030\001 \001(\t\022%\n\005value\030\002 \001(\0132\026.Mes" +
-      "sageComponentProto:\0028\001\"3\n\020MessageListPro" +
-      "to\022\037\n\010commands\030\001 \003(\0132\r.MessageProto\"\302\003\n\025" +
-      "MessageComponentProto\022$\n\tchangeSet\030\001 \001(\013" +
-      "2\017.ChangeSetProtoH\000\022(\n\013commandList\030\002 \001(\013" +
-      "2\021.MessageListProtoH\000\022\036\n\006config\030\003 \001(\0132\014." +
-      "ConfigProtoH\000\022\036\n\006entity\030\004 \001(\0132\014.EntityPr" +
-      "otoH\000\022\022\n\010entityID\030\005 \001(\005H\000\022%\n\014entityIDLis" +
-      "t\030\006 \001(\0132\r.IntListProtoH\000\022&\n\nentityList\030\007" +
-      " \001(\0132\020.EntityListProtoH\000\022$\n\tfloatList\030\010 " +
-      "\001(\0132\017.FloatListProtoH\000\022\022\n\010intValue\030\t \001(\005" +
-      "H\000\022 \n\007intList\030\n \001(\0132\r.IntListProtoH\000\022\021\n\007" +
-      "rawData\030\013 \001(\014H\000\022\025\n\013stringValue\030\014 \001(\tH\000\022#" +
-      "\n\nstringList\030\r \001(\0132\r.StrListProtoH\000B\013\n\tc" +
-      "omponent\"\036\n\014StrListProto\022\016\n\006values\030\001 \003(\t" +
-      "\"\036\n\014IntListProto\022\016\n\006values\030\001 \003(\005\" \n\016Floa" +
-      "tListProto\022\016\n\006values\030\001 \003(\002\"/\n\016IntMatrixP" +
-      "roto\022\035\n\006values\030\001 \003(\0132\r.IntListProto\"\210\002\n\n" +
-      "ValueProto\022\017\n\007defined\030\001 \001(\010\022\022\n\010intValue\030" +
-      "\002 \001(\005H\000\022\023\n\tboolValue\030\003 \001(\010H\000\022\025\n\013doubleVa" +
-      "lue\030\004 \001(\001H\000\022\022\n\010byteList\030\005 \001(\014H\000\022 \n\007intLi" +
-      "st\030\006 \001(\0132\r.IntListProtoH\000\022$\n\tintMatrix\030\007" +
-      " \001(\0132\017.IntMatrixProtoH\000\022\"\n\010edgeList\030\010 \001(" +
-      "\0132\016.EdgeListProtoH\000\022 \n\007point2D\030\t \001(\0132\r.P" +
-      "oint2DProtoH\000B\007\n\005value\"\246\002\n\rPropertyProto" +
-      "\022\031\n\003urn\030\001 \001(\0162\014.PropertyURN\022\017\n\007defined\030\002" +
-      " \001(\010\022\022\n\010intValue\030\003 \001(\005H\000\022\023\n\tboolValue\030\004 " +
-      "\001(\010H\000\022\025\n\013doubleValue\030\005 \001(\001H\000\022\022\n\010byteList" +
-      "\030\006 \001(\014H\000\022 \n\007intList\030\007 \001(\0132\r.IntListProto" +
-      "H\000\022$\n\tintMatrix\030\010 \001(\0132\017.IntMatrixProtoH\000" +
-      "\022\"\n\010edgeList\030\t \001(\0132\016.EdgeListProtoH\000\022 \n\007" +
-      "point2D\030\n \001(\0132\r.Point2DProtoH\000B\007\n\005value\"" +
-      "$\n\014Point2DProto\022\t\n\001X\030\001 \001(\001\022\t\n\001Y\030\002 \001(\001\"\\\n" +
-      "\013EntityProto\022\027\n\003urn\030\001 \001(\0162\n.EntityURN\022\020\n" +
-      "\010entityID\030\002 \001(\005\022\"\n\nproperties\030\003 \003(\0132\016.Pr" +
-      "opertyProto\"1\n\017EntityListProto\022\036\n\010entiti" +
-      "es\030\001 \003(\0132\014.EntityProto\"`\n\013ConfigProto\022$\n" +
-      "\004data\030\001 \003(\0132\026.ConfigProto.DataEntry\032+\n\tD" +
-      "ataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
-      "\"*\n\rEdgeListProto\022\031\n\005edges\030\001 \003(\0132\n.EdgeP" +
-      "roto\"Z\n\tEdgeProto\022\016\n\006startX\030\001 \001(\005\022\016\n\006sta" +
-      "rtY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014\n\004endY\030\004 \001(\005\022\021\n" +
-      "\tneighbour\030\005 \001(\005\"\271\001\n\016ChangeSetProto\0222\n\007c" +
-      "hanges\030\001 \003(\0132!.ChangeSetProto.EntityChan" +
-      "geProto\022\017\n\007deletes\030\002 \003(\005\032b\n\021EntityChange" +
-      "Proto\022\020\n\010entityID\030\001 \001(\005\022\027\n\003urn\030\002 \001(\0162\n.E" +
-      "ntityURN\022\"\n\nproperties\030\003 \003(\0132\016.PropertyP" +
-      "roto*\237\005\n\006MsgURN\022\013\n\007NoneMsg\020\000\022\016\n\nKG_CONNE" +
-      "CT\020\001\022\022\n\016KG_ACKNOWLEDGE\020\002\022\021\n\rGK_CONNECT_O" +
-      "K\020\003\022\024\n\020GK_CONNECT_ERROR\020\004\022\016\n\nSK_CONNECT\020" +
-      "\005\022\022\n\016SK_ACKNOWLEDGE\020\006\022\r\n\tSK_UPDATE\020\007\022\021\n\r" +
-      "KS_CONNECT_OK\020\010\022\024\n\020KS_CONNECT_ERROR\020\t\022\r\n" +
-      "\tKS_UPDATE\020\n\022\017\n\013KS_COMMANDS\020\013\022\027\n\023KS_AFTE" +
-      "RSHOCKS_INFO\020\014\022\016\n\nVK_CONNECT\020\r\022\022\n\016VK_ACK" +
-      "NOWLEDGE\020\016\022\021\n\rKV_CONNECT_OK\020\017\022\024\n\020KV_CONN" +
-      "ECT_ERROR\020\020\022\017\n\013KV_TIMESTEP\020\021\022\016\n\nAK_CONNE" +
-      "CT\020\022\022\022\n\016AK_ACKNOWLEDGE\020\023\022\021\n\rKA_CONNECT_O" +
-      "K\020\024\022\024\n\020KA_CONNECT_ERROR\020\025\022\014\n\010KA_SENSE\020\026\022" +
-      "\014\n\010SHUTDOWN\020\027\022\025\n\021ENTITY_ID_REQUEST\020\030\022\026\n\022" +
-      "ENTITY_ID_RESPONSE\020\031\022\013\n\007AK_REST\020\032\022\013\n\007AK_" +
-      "MOVE\020\033\022\013\n\007AK_LOAD\020\034\022\r\n\tAK_UNLOAD\020\035\022\n\n\006AK" +
-      "_SAY\020\036\022\013\n\007AK_TELL\020\037\022\021\n\rAK_EXTINGUISH\020 \022\r" +
-      "\n\tAK_RESCUE\020!\022\014\n\010AK_CLEAR\020\"\022\021\n\rAK_CLEAR_" +
-      "AREA\020#\022\020\n\014AK_SUBSCRIBE\020$\022\014\n\010AK_SPEAK\020%*\367" +
-      "\001\n\tEntityURN\022\016\n\nNoneEntity\020\000\022\t\n\005WORLD\020\001\022" +
-      "\010\n\004ROAD\020\002\022\014\n\010BLOCKADE\020\003\022\014\n\010BUILDING\020\004\022\n\n" +
-      "\006REFUGE\020\005\022\013\n\007HYDRANT\020\006\022\017\n\013GAS_STATION\020\007\022" +
-      "\020\n\014FIRE_STATION\020\010\022\024\n\020AMBULANCE_CENTRE\020\t\022" +
-      "\021\n\rPOLICE_OFFICE\020\n\022\014\n\010CIVILIAN\020\013\022\020\n\014FIRE" +
-      "_BRIGADE\020\014\022\022\n\016AMBULANCE_TEAM\020\r\022\020\n\014POLICE" +
-      "_FORCE\020\016*\325\004\n\013PropertyURN\022\020\n\014NoneProperty" +
-      "\020\000\022\016\n\nSTART_TIME\020\001\022\r\n\tLONGITUDE\020\002\022\014\n\010LAT" +
-      "ITUDE\020\003\022\016\n\nWIND_FORCE\020\004\022\022\n\016WIND_DIRECTIO" +
-      "N\020\005\022\005\n\001X\020\006\022\005\n\001Y\020\007\022\r\n\tBLOCKADES\020\010\022\017\n\013REPA" +
-      "IR_COST\020\t\022\n\n\006FLOORS\020\n\022\027\n\023BUILDING_ATTRIB" +
-      "UTES\020\013\022\014\n\010IGNITION\020\014\022\r\n\tFIERYNESS\020\r\022\016\n\nB" +
-      "ROKENNESS\020\016\022\021\n\rBUILDING_CODE\020\017\022\030\n\024BUILDI" +
-      "NG_AREA_GROUND\020\020\022\027\n\023BUILDING_AREA_TOTAL\020" +
-      "\021\022\n\n\006APEXES\020\022\022\t\n\005EDGES\020\023\022\014\n\010POSITION\020\024\022\r" +
-      "\n\tDIRECTION\020\025\022\024\n\020POSITION_HISTORY\020\026\022\013\n\007S" +
-      "TAMINA\020\027\022\006\n\002HP\020\030\022\n\n\006DAMAGE\020\031\022\016\n\nBURIEDNE" +
-      "SS\020\032\022\023\n\017TRAVEL_DISTANCE\020\033\022\022\n\016WATER_QUANT" +
-      "ITY\020\034\022\017\n\013TEMPERATURE\020\035\022\016\n\nIMPORTANCE\020\036\022\014" +
-      "\n\010CAPACITY\020\037\022\017\n\013BEDCAPACITY\020 \022\020\n\014OCCUPIE" +
-      "DBEDS\020!\022\022\n\016REFILLCAPACITY\020\"\022\023\n\017WAITINGLI" +
-      "STSIZE\020#B*\n\035rescuecore2.messages.protobu" +
-      "fB\tRCRSProtob\006proto3"
+      "\n\017RCRSProto.proto\"\231\001\n\014MessageProto\022\013\n\003ur" +
+      "n\030\001 \001(\005\0221\n\ncomponents\030\002 \003(\0132\035.MessagePro" +
+      "to.ComponentsEntry\032I\n\017ComponentsEntry\022\013\n" +
+      "\003key\030\001 \001(\t\022%\n\005value\030\002 \001(\0132\026.MessageCompo" +
+      "nentProto:\0028\001\"3\n\020MessageListProto\022\037\n\010com" +
+      "mands\030\001 \003(\0132\r.MessageProto\"\302\003\n\025MessageCo" +
+      "mponentProto\022$\n\tchangeSet\030\001 \001(\0132\017.Change" +
+      "SetProtoH\000\022(\n\013commandList\030\002 \001(\0132\021.Messag" +
+      "eListProtoH\000\022\036\n\006config\030\003 \001(\0132\014.ConfigPro" +
+      "toH\000\022\036\n\006entity\030\004 \001(\0132\014.EntityProtoH\000\022\022\n\010" +
+      "entityID\030\005 \001(\005H\000\022%\n\014entityIDList\030\006 \001(\0132\r" +
+      ".IntListProtoH\000\022&\n\nentityList\030\007 \001(\0132\020.En" +
+      "tityListProtoH\000\022$\n\tfloatList\030\010 \001(\0132\017.Flo" +
+      "atListProtoH\000\022\022\n\010intValue\030\t \001(\005H\000\022 \n\007int" +
+      "List\030\n \001(\0132\r.IntListProtoH\000\022\021\n\007rawData\030\013" +
+      " \001(\014H\000\022\025\n\013stringValue\030\014 \001(\tH\000\022#\n\nstringL" +
+      "ist\030\r \001(\0132\r.StrListProtoH\000B\013\n\tcomponent\"" +
+      "\036\n\014StrListProto\022\016\n\006values\030\001 \003(\t\"\036\n\014IntLi" +
+      "stProto\022\016\n\006values\030\001 \003(\005\" \n\016FloatListProt" +
+      "o\022\016\n\006values\030\001 \003(\002\"/\n\016IntMatrixProto\022\035\n\006v" +
+      "alues\030\001 \003(\0132\r.IntListProto\"\210\002\n\nValueProt" +
+      "o\022\017\n\007defined\030\001 \001(\010\022\022\n\010intValue\030\002 \001(\005H\000\022\023" +
+      "\n\tboolValue\030\003 \001(\010H\000\022\025\n\013doubleValue\030\004 \001(\001" +
+      "H\000\022\022\n\010byteList\030\005 \001(\014H\000\022 \n\007intList\030\006 \001(\0132" +
+      "\r.IntListProtoH\000\022$\n\tintMatrix\030\007 \001(\0132\017.In" +
+      "tMatrixProtoH\000\022\"\n\010edgeList\030\010 \001(\0132\016.EdgeL" +
+      "istProtoH\000\022 \n\007point2D\030\t \001(\0132\r.Point2DPro" +
+      "toH\000B\007\n\005value\"\230\002\n\rPropertyProto\022\013\n\003urn\030\001" +
+      " \001(\005\022\017\n\007defined\030\002 \001(\010\022\022\n\010intValue\030\003 \001(\005H" +
+      "\000\022\023\n\tboolValue\030\004 \001(\010H\000\022\025\n\013doubleValue\030\005 " +
+      "\001(\001H\000\022\022\n\010byteList\030\006 \001(\014H\000\022 \n\007intList\030\007 \001" +
+      "(\0132\r.IntListProtoH\000\022$\n\tintMatrix\030\010 \001(\0132\017" +
+      ".IntMatrixProtoH\000\022\"\n\010edgeList\030\t \001(\0132\016.Ed" +
+      "geListProtoH\000\022 \n\007point2D\030\n \001(\0132\r.Point2D" +
+      "ProtoH\000B\007\n\005value\"$\n\014Point2DProto\022\t\n\001X\030\001 " +
+      "\001(\001\022\t\n\001Y\030\002 \001(\001\"P\n\013EntityProto\022\013\n\003urn\030\001 \001" +
+      "(\005\022\020\n\010entityID\030\002 \001(\005\022\"\n\nproperties\030\003 \003(\013" +
+      "2\016.PropertyProto\"1\n\017EntityListProto\022\036\n\010e" +
+      "ntities\030\001 \003(\0132\014.EntityProto\"`\n\013ConfigPro" +
+      "to\022$\n\004data\030\001 \003(\0132\026.ConfigProto.DataEntry" +
+      "\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(" +
+      "\t:\0028\001\"*\n\rEdgeListProto\022\031\n\005edges\030\001 \003(\0132\n." +
+      "EdgeProto\"Z\n\tEdgeProto\022\016\n\006startX\030\001 \001(\005\022\016" +
+      "\n\006startY\030\002 \001(\005\022\014\n\004endX\030\003 \001(\005\022\014\n\004endY\030\004 \001" +
+      "(\005\022\021\n\tneighbour\030\005 \001(\005\"\255\001\n\016ChangeSetProto" +
+      "\0222\n\007changes\030\001 \003(\0132!.ChangeSetProto.Entit" +
+      "yChangeProto\022\017\n\007deletes\030\002 \003(\005\032V\n\021EntityC" +
+      "hangeProto\022\020\n\010entityID\030\001 \001(\005\022\013\n\003urn\030\002 \001(" +
+      "\005\022\"\n\nproperties\030\003 \003(\0132\016.PropertyProtoB*\n" +
+      "\035rescuecore2.messages.protobufB\tRCRSProt" +
+      "ob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

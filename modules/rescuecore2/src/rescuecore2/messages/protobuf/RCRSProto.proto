@@ -3,109 +3,109 @@ syntax = "proto3";
 option java_package = "rescuecore2.messages.protobuf";
 option java_outer_classname = "RCRSProto";
 
-enum MsgURN{
-	NoneMsg=0;
+//enum MsgURN{
+//	NoneMsg=0;
+//
+//	KG_CONNECT = 1;
+//	KG_ACKNOWLEDGE = 2;
+//	GK_CONNECT_OK = 3;
+//	GK_CONNECT_ERROR = 4;
+//	SK_CONNECT = 5;
+//	SK_ACKNOWLEDGE = 6;
+//	SK_UPDATE = 7;
+//	KS_CONNECT_OK = 8;
+//	KS_CONNECT_ERROR = 9;
+//	KS_UPDATE = 10;
+//	KS_COMMANDS = 11;
+//	KS_AFTERSHOCKS_INFO = 12;
+//	VK_CONNECT = 13;
+//	VK_ACKNOWLEDGE = 14;
+//	KV_CONNECT_OK = 15;
+//	KV_CONNECT_ERROR = 16;
+//	KV_TIMESTEP = 17;
+//	AK_CONNECT = 18;
+//	AK_ACKNOWLEDGE = 19;
+//	KA_CONNECT_OK = 20;
+//	KA_CONNECT_ERROR = 21;
+//	KA_SENSE = 22;
+//	SHUTDOWN = 23;
+//	ENTITY_ID_REQUEST = 24;
+//	ENTITY_ID_RESPONSE = 25;
+//
+//	
+//	AK_REST=26;
+//	AK_MOVE= 27;
+//	AK_LOAD= 28;
+//	AK_UNLOAD= 29;
+//	AK_SAY= 30;
+//	AK_TELL= 31;
+//	AK_EXTINGUISH= 32;
+//	AK_RESCUE= 33;
+//	AK_CLEAR= 34;
+//	AK_CLEAR_AREA= 35;
+//	AK_SUBSCRIBE= 36;
+//	AK_SPEAK= 37;
+//
+//}
+//enum EntityURN{
+//	NoneEntity=0;
+//	WORLD = 1;
+//	ROAD = 2;
+//	BLOCKADE = 3;
+//	BUILDING = 4;
+//	REFUGE = 5;
+//	HYDRANT = 6;
+//	GAS_STATION = 7;
+//	FIRE_STATION = 8;
+//	AMBULANCE_CENTRE = 9;
+//	POLICE_OFFICE = 10;
+//	CIVILIAN = 11;
+//	FIRE_BRIGADE = 12;
+//	AMBULANCE_TEAM = 13;
+//	POLICE_FORCE = 14;
+//}
 
-	KG_CONNECT = 1;
-	KG_ACKNOWLEDGE = 2;
-	GK_CONNECT_OK = 3;
-	GK_CONNECT_ERROR = 4;
-	SK_CONNECT = 5;
-	SK_ACKNOWLEDGE = 6;
-	SK_UPDATE = 7;
-	KS_CONNECT_OK = 8;
-	KS_CONNECT_ERROR = 9;
-	KS_UPDATE = 10;
-	KS_COMMANDS = 11;
-	KS_AFTERSHOCKS_INFO = 12;
-	VK_CONNECT = 13;
-	VK_ACKNOWLEDGE = 14;
-	KV_CONNECT_OK = 15;
-	KV_CONNECT_ERROR = 16;
-	KV_TIMESTEP = 17;
-	AK_CONNECT = 18;
-	AK_ACKNOWLEDGE = 19;
-	KA_CONNECT_OK = 20;
-	KA_CONNECT_ERROR = 21;
-	KA_SENSE = 22;
-	SHUTDOWN = 23;
-	ENTITY_ID_REQUEST = 24;
-	ENTITY_ID_RESPONSE = 25;
-
-	
-	AK_REST=26;
-	AK_MOVE= 27;
-	AK_LOAD= 28;
-	AK_UNLOAD= 29;
-	AK_SAY= 30;
-	AK_TELL= 31;
-	AK_EXTINGUISH= 32;
-	AK_RESCUE= 33;
-	AK_CLEAR= 34;
-	AK_CLEAR_AREA= 35;
-	AK_SUBSCRIBE= 36;
-	AK_SPEAK= 37;
-
-}
-enum EntityURN{
-	NoneEntity=0;
-	WORLD = 1;
-	ROAD = 2;
-	BLOCKADE = 3;
-	BUILDING = 4;
-	REFUGE = 5;
-	HYDRANT = 6;
-	GAS_STATION = 7;
-	FIRE_STATION = 8;
-	AMBULANCE_CENTRE = 9;
-	POLICE_OFFICE = 10;
-	CIVILIAN = 11;
-	FIRE_BRIGADE = 12;
-	AMBULANCE_TEAM = 13;
-	POLICE_FORCE = 14;
-}
-
-enum PropertyURN{
-	NoneProperty=0;
-	START_TIME=1;
-	LONGITUDE=2;
-	LATITUDE=3;
-	WIND_FORCE=4;
-	WIND_DIRECTION=5;
-	X=6;
-	Y=7;
-	BLOCKADES=8;
-	REPAIR_COST=9;
-	FLOORS=10;
-	BUILDING_ATTRIBUTES=11;
-	IGNITION=12;
-	FIERYNESS=13;
-	BROKENNESS=14;
-	BUILDING_CODE=15;
-	BUILDING_AREA_GROUND=16;
-	BUILDING_AREA_TOTAL=17;
-	APEXES=18;
-	EDGES=19;
-	POSITION=20;
-	DIRECTION=21;
-	POSITION_HISTORY=22;
-	STAMINA=23;
-	HP=24;
-	DAMAGE=25;
-	BURIEDNESS=26;
-	TRAVEL_DISTANCE=27;
-	WATER_QUANTITY=28;
-	TEMPERATURE=29;
-	IMPORTANCE=30;
-	CAPACITY=31;
-	BEDCAPACITY=32;
-	OCCUPIEDBEDS=33;
-	REFILLCAPACITY=34;
-	WAITINGLISTSIZE=35;
-
-}
+//enum PropertyURN{
+//	NoneProperty=0;
+//	START_TIME=1;
+//	LONGITUDE=2;
+//	LATITUDE=3;
+//	WIND_FORCE=4;
+//	WIND_DIRECTION=5;
+//	X=6;
+//	Y=7;
+//	BLOCKADES=8;
+//	REPAIR_COST=9;
+//	FLOORS=10;
+//	BUILDING_ATTRIBUTES=11;
+//	IGNITION=12;
+//	FIERYNESS=13;
+//	BROKENNESS=14;
+//	BUILDING_CODE=15;
+//	BUILDING_AREA_GROUND=16;
+//	BUILDING_AREA_TOTAL=17;
+//	APEXES=18;
+//	EDGES=19;
+//	POSITION=20;
+//	DIRECTION=21;
+//	POSITION_HISTORY=22;
+//	STAMINA=23;
+//	HP=24;
+//	DAMAGE=25;
+//	BURIEDNESS=26;
+//	TRAVEL_DISTANCE=27;
+//	WATER_QUANTITY=28;
+//	TEMPERATURE=29;
+//	IMPORTANCE=30;
+//	CAPACITY=31;
+//	BEDCAPACITY=32;
+//	OCCUPIEDBEDS=33;
+//	REFILLCAPACITY=34;
+//	WAITINGLISTSIZE=35;
+//
+//}
 message MessageProto {
-	MsgURN urn = 1;
+	int32 urn = 1;
 	map<string,MessageComponentProto> components=2;
 }
 message MessageListProto{
@@ -161,7 +161,7 @@ message ValueProto {
 }
 
 message PropertyProto {
-  PropertyURN urn = 1;
+  int32 urn = 1;
   bool defined = 2;
   oneof value {
 	    int32 intValue = 3;
@@ -180,7 +180,7 @@ message Point2DProto {
 	double Y = 2;
 }
 message EntityProto {
-  EntityURN urn=1;
+  int32 urn=1;
   int32 entityID = 2;
   repeated PropertyProto properties = 3;
 }
@@ -206,7 +206,7 @@ message EdgeProto {
 message ChangeSetProto {
 	message EntityChangeProto {
 		int32 entityID=1;
-		EntityURN urn=2;
+		int32 urn=2;
 		repeated PropertyProto properties = 3;
 	}
     repeated EntityChangeProto changes = 1;
