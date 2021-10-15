@@ -9,23 +9,23 @@ import rescuecore2.registry.MessageFactory;
 
 public class TestMessageFactory implements MessageFactory {
     private String description;
-    private String[] urns;
+    private int[] urns;
 
-    public TestMessageFactory(String description, String... urns) {
+    public TestMessageFactory(String description, int... urns) {
         this.description = description;
         this.urns = urns;
     }
 
     @Override
-    public String[] getKnownMessageURNs() {
+    public int[] getKnownMessageURNs() {
         return urns;
     }
 
     @Override
-    public Message makeMessage(String urn, InputStream in) throws IOException {
+    public Message makeMessage(int urn, InputStream in) throws IOException {
         boolean found = false;
         for (int i = 0; i < urns.length && !found; ++i) {
-            if (urns[i].equals(urn)) {
+            if (urns[i]==(urn)) {
                 found = true;
             }
         }
@@ -38,7 +38,7 @@ public class TestMessageFactory implements MessageFactory {
     }
 
 	@Override
-	public Message makeMessage(String urn, MessageProto proto) {
+	public Message makeMessage(int urn, MessageProto proto) {
 		// TODO Auto-generated method stub
 		return null;
 	}

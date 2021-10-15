@@ -14,11 +14,11 @@ public interface EntityFactory {
        @return A new Entity of the correct type.
        @throws IllegalArgumentException If the urn is not recognised.
      */
-    Entity makeEntity(String urn, EntityID id);
+    Entity makeEntity(int urn, EntityID id);
 
     /**
        Get all entity urns understood by this factory.
        @return All entity urns.
     */
-    String[] getKnownEntityURNs();
+    int[] getKnownEntityURNs();
 }

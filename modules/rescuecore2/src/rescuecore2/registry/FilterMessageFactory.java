@@ -12,7 +12,7 @@ import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
  */
 public class FilterMessageFactory implements MessageFactory {
     private MessageFactory downstream;
-    private Set<String> urns;
+    private Set<Integer> urns;
     private boolean inclusive;
 
     /**
@@ -21,19 +21,19 @@ public class FilterMessageFactory implements MessageFactory {
        @param urns The set of URNs.
        @param inclusive True if the set of URNs are allowed, false if they are forbidden.
     */
-    public FilterMessageFactory(MessageFactory downstream, Set<String> urns, boolean inclusive) {
+    public FilterMessageFactory(MessageFactory downstream, Set<Integer> urns, boolean inclusive) {
         this.downstream = downstream;
         this.urns = urns;
         this.inclusive = inclusive;
     }
 
     @Override
-    public String[] getKnownMessageURNs() {
+    public int[] getKnownMessageURNs() {
         return downstream.getKnownMessageURNs();
     }
 
     @Override
-    public Message makeMessage(String urn, InputStream data) throws IOException {
+    public Message makeMessage(int urn, InputStream data) throws IOException {
         if (inclusive && !urns.contains(urn)) {
             return null;
         }
@@ -44,7 +44,7 @@ public class FilterMessageFactory implements MessageFactory {
     }
     
     @Override
-    public Message makeMessage(String urn, MessageProto data) {
+    public Message makeMessage(int urn, MessageProto data) {
         if (inclusive && !urns.contains(urn)) {
             return null;
         }

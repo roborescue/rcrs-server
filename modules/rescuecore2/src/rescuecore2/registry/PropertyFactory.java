@@ -12,11 +12,11 @@ public interface PropertyFactory {
        @return A new Property of the correct type.
        @throws IllegalArgumentException If the urn is not recognised.
      */
-    Property makeProperty(String urn);
+    Property makeProperty(int urn);
 
     /**
        Get all property urns understood by this factory.
        @return All property urns.
     */
-    String[] getKnownPropertyURNs();
+    int[] getKnownPropertyURNs();
 }

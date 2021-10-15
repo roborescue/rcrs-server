@@ -9,7 +9,7 @@ import rescuecore2.worldmodel.Property;
  */
 public class FilterPropertyFactory implements PropertyFactory {
     private PropertyFactory downstream;
-    private Set<String> urns;
+    private Set<Integer> urns;
     private boolean inclusive;
 
     /**
@@ -18,19 +18,19 @@ public class FilterPropertyFactory implements PropertyFactory {
        @param urns The set of URNs.
        @param inclusive True if the set of URNs are allowed, false if they are forbidden.
     */
-    public FilterPropertyFactory(PropertyFactory downstream, Set<String> urns, boolean inclusive) {
+    public FilterPropertyFactory(PropertyFactory downstream, Set<Integer> urns, boolean inclusive) {
         this.downstream = downstream;
         this.urns = urns;
         this.inclusive = inclusive;
     }
 
     @Override
-    public String[] getKnownPropertyURNs() {
+    public int[] getKnownPropertyURNs() {
         return downstream.getKnownPropertyURNs();
     }
 
     @Override
-    public Property makeProperty(String urn) {
+    public Property makeProperty(int urn) {
         if (inclusive && !urns.contains(urn)) {
             return null;
         }

@@ -17,12 +17,12 @@ public interface MessageFactory {
        @return A new Message object, or null if the urn is not recognised.
        @throws IOException If there is a problem reading the stream.
      */
-    Message makeMessage(String urn, InputStream data) throws IOException;
-    Message makeMessage(String urn, MessageProto proto) ;
+    Message makeMessage(int urn, InputStream data) throws IOException;
+    Message makeMessage(int urn, MessageProto proto) ;
 
     /**
        Get all message urns understood by this factory.
        @return All message urns.
     */
-    String[] getKnownMessageURNs();
+    int[] getKnownMessageURNs();
 }

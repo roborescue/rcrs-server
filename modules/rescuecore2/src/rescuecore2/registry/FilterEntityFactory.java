@@ -10,7 +10,7 @@ import rescuecore2.worldmodel.EntityID;
  */
 public class FilterEntityFactory implements EntityFactory {
     private EntityFactory downstream;
-    private Set<String> urns;
+    private Set<Integer> urns;
     private boolean inclusive;
 
     /**
@@ -19,19 +19,19 @@ public class FilterEntityFactory implements EntityFactory {
        @param urns The set of URNs.
        @param inclusive True if the set of URNs are allowed, false if they are forbidden.
     */
-    public FilterEntityFactory(EntityFactory downstream, Set<String> urns, boolean inclusive) {
+    public FilterEntityFactory(EntityFactory downstream, Set<Integer> urns, boolean inclusive) {
         this.downstream = downstream;
         this.urns = urns;
         this.inclusive = inclusive;
     }
 
     @Override
-    public String[] getKnownEntityURNs() {
+    public int[] getKnownEntityURNs() {
         return downstream.getKnownEntityURNs();
     }
 
     @Override
-    public Entity makeEntity(String urn, EntityID id) {
+    public Entity makeEntity(int urn, EntityID id) {
         if (inclusive && !urns.contains(urn)) {
             return null;
         }
