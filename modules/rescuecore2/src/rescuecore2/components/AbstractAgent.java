@@ -52,7 +52,7 @@ public abstract class AbstractAgent<T extends WorldModel<? extends Entity>, E ex
     public void connect(Connection connection, RequestIDGenerator generator, Config config) throws ConnectionException, ComponentConnectionException, InterruptedException {
         this.config = config;
         int requestID = generator.generateRequestID();
-        AKConnect connect = new AKConnect(requestID, 1, getName(), getRequestedEntityURNs());
+        AKConnect connect = new AKConnect(requestID, 2, getName(), getRequestedEntityURNs());
         CountDownLatch latch = new CountDownLatch(1);
         AgentConnectionListener l = new AgentConnectionListener(requestID, latch);
         connection.addConnectionListener(l);

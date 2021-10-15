@@ -30,12 +30,12 @@ import rescuecore2.worldmodel.EntityID;
 */
 public abstract class StandardAgent<E extends StandardEntity> extends AbstractAgent<StandardWorldModel, E> {
     @Override
-    public final String[] getRequestedEntityURNs() {
+    public final int[] getRequestedEntityURNs() {
         EnumSet<StandardEntityURN> set = getRequestedEntityURNsEnum();
-        String[] result = new String[set.size()];
+        int[] result = new int[set.size()];
         int i = 0;
         for (StandardEntityURN next : set) {
-            result[i++] = next.toString();
+            result[i++] = next.getUrn();
         }
         return result;
     }
