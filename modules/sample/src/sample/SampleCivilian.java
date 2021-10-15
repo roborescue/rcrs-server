@@ -77,21 +77,21 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     // Return a registry that filters out buildings and civilians
     Registry result = new Registry( "SampleCivilian filter registry",
         super.getPreferredRegistry( parent ) );
-    Set<String> entityURNs = new HashSet<String>();
-    entityURNs.add( StandardEntityURN.BUILDING.toString() );
-    entityURNs.add( StandardEntityURN.REFUGE.toString() );
-    entityURNs.add( StandardEntityURN.HYDRANT.toString() );
-    entityURNs.add( StandardEntityURN.GAS_STATION.toString() );
-    entityURNs.add( StandardEntityURN.ROAD.toString() );
-    entityURNs.add( StandardEntityURN.CIVILIAN.toString() );
-    Set<String> propertyURNs = new HashSet<String>();
-    propertyURNs.add( StandardPropertyURN.X.toString() );
-    propertyURNs.add( StandardPropertyURN.Y.toString() );
-    propertyURNs.add( StandardPropertyURN.EDGES.toString() );
-    propertyURNs.add( StandardPropertyURN.DAMAGE.toString() );
-    propertyURNs.add( StandardPropertyURN.BURIEDNESS.toString() );
-    propertyURNs.add( StandardPropertyURN.HP.toString() );
-    propertyURNs.add( StandardPropertyURN.POSITION.toString() );
+    Set<Integer> entityURNs = new HashSet<>();
+    entityURNs.add( StandardEntityURN.BUILDING.getUrn() );
+    entityURNs.add( StandardEntityURN.REFUGE.getUrn() );
+    entityURNs.add( StandardEntityURN.HYDRANT.getUrn() );
+    entityURNs.add( StandardEntityURN.GAS_STATION.getUrn() );
+    entityURNs.add( StandardEntityURN.ROAD.getUrn() );
+    entityURNs.add( StandardEntityURN.CIVILIAN.getUrn() );
+    Set<Integer> propertyURNs = new HashSet<>();
+    propertyURNs.add( StandardPropertyURN.X.getUrn() );
+    propertyURNs.add( StandardPropertyURN.Y.getUrn() );
+    propertyURNs.add( StandardPropertyURN.EDGES.getUrn() );
+    propertyURNs.add( StandardPropertyURN.DAMAGE.getUrn() );
+    propertyURNs.add( StandardPropertyURN.BURIEDNESS.getUrn() );
+    propertyURNs.add( StandardPropertyURN.HP.getUrn() );
+    propertyURNs.add( StandardPropertyURN.POSITION.getUrn() );
     result.registerEntityFactory( new FilterEntityFactory(
         StandardEntityFactory.INSTANCE, entityURNs, true ) );
     result.registerPropertyFactory( new FilterPropertyFactory(
@@ -162,7 +162,7 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
       Area area = (Area) model.getEntity( current );
       if ( area instanceof Road ) break;
       if ( area == null ) {
-        System.err.println( current + " is null??? " + me() );
+        System.err.println( "My position="+current + " is null??? " + me() );
         break;
       }
       List<EntityID> possible = new ArrayList<EntityID>( area.getNeighbours() );

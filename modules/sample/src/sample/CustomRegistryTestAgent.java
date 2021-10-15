@@ -66,7 +66,7 @@ public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
 
 
     @Override
-    public Entity makeEntity( String urn, EntityID id ) {
+    public Entity makeEntity( int urn, EntityID id ) {
       // Logger.debug("CustomEntityFactory.makeEntity(" + urn + ", " + id +
       // ")");
       return downstream.makeEntity( urn, id );
@@ -74,7 +74,7 @@ public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
 
 
     @Override
-    public String[] getKnownEntityURNs() {
+    public int[] getKnownEntityURNs() {
       return downstream.getKnownEntityURNs();
     }
 
