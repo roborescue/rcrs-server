@@ -15,9 +15,24 @@ public class URNMapPrinter {
 		Registry.SYSTEM_REGISTRY
 				.registerPropertyFactory(StandardPropertyFactory.INSTANCE);
 		
+		System.out.println("JSON");
 		System.out.println(Registry.SYSTEM_REGISTRY.toJSON());
 		
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println("Python");
 		System.out.println(Registry.SYSTEM_REGISTRY.toPython());
+		
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println("Javascript");
+		System.out.println(Registry.SYSTEM_REGISTRY.toJS());
 	}
 
 }

@@ -440,4 +440,51 @@ public final class Registry {
 		return out;
 	}
 	
+	public String toJS() {
+		String out="";
+		out+="\n//#### Messages ####\n";
+		ArrayList<Integer> msgkeys = new ArrayList<Integer>(messageFactories.keySet());
+		Collections.sort(msgkeys);
+		ArrayList<Integer> entitykeys = new ArrayList<Integer>(entityFactories.keySet());
+		Collections.sort(entitykeys);
+		ArrayList<Integer> propkeys = new ArrayList<Integer>(propertyFactories.keySet());
+		Collections.sort(propkeys );
+		
+		for (Integer urn : msgkeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="const "+prettyName+"="+urn+";\n";
+		}
+		out+="\n//#### Entities ####\n";
+		
+		for (Integer urn : entitykeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="const "+prettyName+"="+urn+";\n";
+		}
+		out+="\n//#### Properties ####\n";
+		
+		for (Integer urn : propkeys ) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="const "+prettyName+"="+urn+";\n";
+		}
+		
+		out+="\n//#### PrettyName ####\n";
+		out+="const MAP={\n";
+		out+="\n//#### Messages ####\n";
+		for (Integer urn : msgkeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="\t"+urn+":'"+prettyName+"',\n";
+		}
+		out+="\n//#### Entities ####\n";
+		for (Integer urn : entitykeys) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="\t"+urn+":'"+prettyName+"',\n";
+		}
+		out+="\n//#### Properties ####\n";
+		for (Integer urn : propkeys ) {
+			String prettyName = urn_prettyName.get(urn);
+			out+="\t"+urn+":'"+prettyName+"',\n";
+		}
+		out+="}";
+		return out;
+	}
 }
