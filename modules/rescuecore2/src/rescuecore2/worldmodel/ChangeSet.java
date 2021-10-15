@@ -15,14 +15,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import rescuecore2.log.Logger;
 import rescuecore2.messages.protobuf.RCRSProto.ChangeSetProto;
 import rescuecore2.messages.protobuf.RCRSProto.ChangeSetProto.EntityChangeProto;
-import rescuecore2.messages.protobuf.RCRSProto.EntityURN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.registry.Registry;
 //import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 
@@ -31,22 +32,22 @@ import rescuecore2.worldmodel.properties.EntityRefListProperty;
  */
 public class ChangeSet {
 
-	private Map<EntityID, Map<String, Property>> changes;
+	private Map<EntityID, Map<Integer, Property>> changes;
 	private Set<EntityID> deleted;
-	private Map<EntityID, String> entityURNs;
+	private Map<EntityID, Integer> entityURNs;
 
 	/**
 	 * Create an empty ChangeSet.
 	 */
 	public ChangeSet() {
-		changes = new LazyMap<EntityID, Map<String, Property>>() {
+		changes = new LazyMap<EntityID, Map<Integer, Property>>() {
 
 			@Override
-			public Map<String, Property> createValue() {
-				return new HashMap<String, Property>();
+			public Map<Integer, Property> createValue() {
+				return new HashMap<Integer, Property>();
 			}
 		};
-		entityURNs = new HashMap<EntityID, String>();
+		entityURNs = new HashMap<EntityID, Integer>();
 		deleted = new HashSet<EntityID>();
 	}
 
@@ -77,7 +78,7 @@ public class ChangeSet {
 	 * @param urn The URN of the entity that has changed.
 	 * @param p   The property that has changed.
 	 */
-	public void addChange(EntityID e, String urn, Property p) {
+	public void addChange(EntityID e, int urn, Property p) {
 		if (deleted.contains(e)) {
 			return;
 		}
@@ -115,8 +116,8 @@ public class ChangeSet {
 	 * @return The changed property with the right URN, or null if the property
 	 *         is not found or has not changed.
 	 */
-	public Property getChangedProperty(EntityID e, String urn) {
-		Map<String, Property> props = changes.get(e);
+	public Property getChangedProperty(EntityID e, int urn) {
+		Map<Integer, Property> props = changes.get(e);
 		if (props != null) {
 			return props.get(urn);
 		}
@@ -147,7 +148,7 @@ public class ChangeSet {
 	 * @param id The ID of the entity.
 	 * @return The URN of the changed entity.
 	 */
-	public String getEntityURN(EntityID id) {
+	public int getEntityURN(EntityID id) {
 		return entityURNs.get(id);
 	}
 
@@ -160,10 +161,10 @@ public class ChangeSet {
 	// .toString();
 
 	public void merge(ChangeSet other) {
-		for (Map.Entry<EntityID, Map<String, Property>> next : other.changes
+		for (Map.Entry<EntityID, Map<Integer, Property>> next : other.changes
 				.entrySet()) {
 			EntityID e = next.getKey();
-			String urn = other.getEntityURN(e);
+			int urn = other.getEntityURN(e);
 			for (Property p : next.getValue().values()) {
 
 				// if ( p.getURN().equals( BLOCKADES_URN )
@@ -227,13 +228,13 @@ public class ChangeSet {
 	public void write(OutputStream out) throws IOException {
 		// Number of entity IDs
 		writeInt32(changes.size(), out);
-		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+		for (Map.Entry<EntityID, Map<Integer, Property>> next : changes
 				.entrySet()) {
 			EntityID id = next.getKey();
 			Collection<Property> props = next.getValue().values();
 			// EntityID, URN, number of properties
 			writeInt32(id.getValue(), out);
-			writeString(getEntityURN(id), out);
+			writeString(Registry.toURN_V1(getEntityURN(id)), out);
 			writeInt32(props.size(), out);
 			for (Property prop : props) {
 				writeProperty(prop, out);
@@ -257,7 +258,7 @@ public class ChangeSet {
 		int entityCount = readInt32(in);
 		for (int i = 0; i < entityCount; ++i) {
 			EntityID id = new EntityID(readInt32(in));
-			String urn = readString(in);
+			int urn = Registry.toURN_V2(readString(in));
 			int propCount = readInt32(in);
 			for (int j = 0; j < propCount; ++j) {
 				Property p = readProperty(in);
@@ -277,7 +278,7 @@ public class ChangeSet {
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append("ChangeSet:");
-		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+		for (Entry<EntityID, Map<Integer, Property>> next : changes
 				.entrySet()) {
 			result.append(" Entity ");
 			result.append(next.getKey());
@@ -309,7 +310,7 @@ public class ChangeSet {
 	 */
 	public void debug() {
 		Logger.debug("ChangeSet");
-		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+		for (Map.Entry<EntityID, Map<Integer, Property>> next : changes
 				.entrySet()) {
 			Logger.debug("  Entity " + next.getKey() + "("
 					+ getEntityURN(next.getKey()) + ")");
@@ -329,7 +330,7 @@ public class ChangeSet {
 		List<EntityChangeProto> changesList = changeSetProto.getChangesList();
 		for (EntityChangeProto entityChange : changesList) {
 			EntityID entityID = new EntityID(entityChange.getEntityID());
-			EntityURN urn = entityChange.getUrn();
+			int urn = entityChange.getUrn();
 
 			List<PropertyProto> propertyProtoList = entityChange
 					.getPropertiesList();
@@ -337,7 +338,7 @@ public class ChangeSet {
 				Property prop = MsgProtoBuf
 						.propertyProto2Property(propertyProto);
 				if (prop != null) {
-					this.addChange(entityID, urn.toString(), prop);
+					this.addChange(entityID, urn, prop);
 				}
 			}
 		}
@@ -349,15 +350,15 @@ public class ChangeSet {
 	}
 
 	public ChangeSetProto toChangeSetProto() {
-		ChangeSetProto.Builder builder =ChangeSetProto.newBuilder();
-		for (Map.Entry<EntityID, Map<String, Property>> next : changes
+		ChangeSetProto.Builder builder = ChangeSetProto.newBuilder();
+		for (Entry<EntityID, Map<Integer, Property>> next : changes
 				.entrySet()) {
 			EntityID id = next.getKey();
 			Collection<Property> props = next.getValue().values();
 			// EntityID, URN, number of properties
-			EntityChangeProto.Builder entityChangeBuilder=EntityChangeProto.newBuilder()
-				.setEntityID(id.getValue())
-				.setUrn(EntityURN.valueOf(getEntityURN(id)));
+			EntityChangeProto.Builder entityChangeBuilder = EntityChangeProto
+					.newBuilder().setEntityID(id.getValue())
+					.setUrn(getEntityURN(id));
 			for (Property prop : props) {
 				entityChangeBuilder.addProperties(prop.toPropertyProto());
 			}
