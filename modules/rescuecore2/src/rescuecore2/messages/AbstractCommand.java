@@ -1,6 +1,8 @@
 package rescuecore2.messages;
 
 import org.json.JSONObject;
+
+import rescuecore2.URN;
 import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.worldmodel.EntityID;
@@ -16,7 +18,7 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
        Construct a new abstract command.
        @param urn The urn of the command.
      */
-    protected AbstractCommand(String urn) {
+    protected AbstractCommand(int urn) {
         super(urn);
         init();
     }
@@ -27,7 +29,7 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
        @param agentID The ID of the agent issuing the command.
        @param time The time this command was issued.
      */
-    protected AbstractCommand(String urn, EntityID agentID, int time) {
+    protected AbstractCommand(int urn, EntityID agentID, int time) {
         super(urn);
         init(agentID, time);
     }
@@ -36,7 +38,7 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
        Construct a new abstract command.
        @param urn The urn of the command.
      */
-    protected AbstractCommand(Enum<?> urn) {
+    protected AbstractCommand(URN urn) {
         super(urn);
         init();
     }
@@ -47,7 +49,7 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
        @param agentID The ID of the agent issuing the command.
        @param time The time this command was issued.
      */
-    protected AbstractCommand(Enum<?> urn, EntityID agentID, int time) {
+    protected AbstractCommand(URN urn, EntityID agentID, int time) {
         super(urn);
         init(agentID, time);
     }

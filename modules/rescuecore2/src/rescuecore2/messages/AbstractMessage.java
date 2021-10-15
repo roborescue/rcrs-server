@@ -3,9 +3,9 @@ package rescuecore2.messages;
 import java.util.List;
 import java.util.Map;
 
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
-import rescuecore2.messages.protobuf.RCRSProto.MsgURN;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,14 +17,14 @@ import java.io.IOException;
    An abstract base class for Message objects. This class is implemented in terms of MessageComponent objects so subclasses need only provide a urn and a list of MessageComponent objects.
  */
 public abstract class AbstractMessage implements Message {
-    private String urn;
+    private int urn;
     private List<MessageComponent> components;
 
     /**
        Construct a message with a given urn.
        @param urn The urn of the message.
      */
-    protected AbstractMessage(String urn) {
+    protected AbstractMessage(int urn) {
         this.urn = urn;
         this.components = new ArrayList<MessageComponent>();
     }
@@ -33,12 +33,12 @@ public abstract class AbstractMessage implements Message {
        Construct a message with a urn defined as an enum.
        @param urn The urn of the message.
      */
-    protected AbstractMessage(Enum<?> urn) {
-        this(urn.toString());
+    protected AbstractMessage(URN urn) {
+        this(urn.getUrn());
     }
 
     @Override
-    public final String getURN() {
+    public final int getURN() {
         return urn;
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractMessage implements Message {
     @Override
     public MessageProto toMessageProto() {
     	MessageProto.Builder builder=MessageProto.newBuilder()
-    			.setUrn(MsgURN.valueOf(getURN()));
+    			.setUrn(getURN());
     	for (MessageComponent next : components) {
             builder.putComponents(next.getName(),next.toMessageComponentProto());
         }

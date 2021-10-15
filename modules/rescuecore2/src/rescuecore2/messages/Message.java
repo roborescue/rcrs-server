@@ -15,7 +15,7 @@ public interface Message {
        Get the urn of this message type.
        @return The message urn.
      */
-    String getURN();
+    int getURN();
 
     /**
        Write the content of this message to a stream. The content should not include the message type ID.
