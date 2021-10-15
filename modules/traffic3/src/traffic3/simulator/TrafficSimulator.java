@@ -268,10 +268,10 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 	private void clearCache(KSUpdate u) {
 		for (EntityID id : u.getChangeSet().getChangedEntities()) {
 			StandardEntity entity = model.getEntity(id);
-			switch (StandardEntityURN.fromString(u.getChangeSet().getEntityURN(id))) {
+			switch (StandardEntityURN.fromInt(u.getChangeSet().getEntityURN(id))) {
 			case BLOCKADE:
-				IntProperty blockadeCost = (IntProperty) u.getChangeSet().getChangedProperty(id, StandardPropertyURN.REPAIR_COST.toString());
-				EntityRefProperty position = ((EntityRefProperty) u.getChangeSet().getChangedProperty(id, StandardPropertyURN.POSITION.toString()));
+				IntProperty blockadeCost = (IntProperty) u.getChangeSet().getChangedProperty(id, StandardPropertyURN.REPAIR_COST.getUrn());
+				EntityRefProperty position = ((EntityRefProperty) u.getChangeSet().getChangedProperty(id, StandardPropertyURN.POSITION.getUrn()));
 				if (entity == null || blockadeCost == null || ((Blockade) entity).getRepairCost() != blockadeCost.getValue()) {
 					if (position != null)
 						clearAreaCache(position.getValue());
@@ -285,7 +285,7 @@ public class TrafficSimulator extends StandardSimulator implements GUIComponent 
 			case HYDRANT:
 				if (entity == null)
 					continue;
-				EntityRefListProperty blockades = (EntityRefListProperty) u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BLOCKADES.toString());
+				EntityRefListProperty blockades = (EntityRefListProperty) u.getChangeSet().getChangedProperty(id, StandardPropertyURN.BLOCKADES.getUrn());
 				if ((!((Road) entity).isBlockadesDefined()) || !blockades.getValue().containsAll(((Road) entity).getBlockades())
 						|| !((Road) entity).getBlockades().containsAll(blockades.getValue()))
 					clearAreaCache(id);
