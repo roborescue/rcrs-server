@@ -74,10 +74,10 @@ public abstract class Human extends StandardEntity {
 
 
   @Override
-  public Property getProperty( String urn ) {
+  public Property getProperty( int urn ) {
     StandardPropertyURN type;
     try {
-      type = StandardPropertyURN.fromString( urn );
+      type = StandardPropertyURN.fromInt( urn );
     } catch ( IllegalArgumentException e ) {
       return super.getProperty( urn );
     }

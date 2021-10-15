@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.EdgeListProto;
 import rescuecore2.messages.protobuf.RCRSProto.EdgeProto;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
@@ -30,7 +31,7 @@ public class EdgeListProperty extends AbstractProperty {
 	 *
 	 * @param urn The urn of this property.
 	 */
-	public EdgeListProperty(String urn) {
+	public EdgeListProperty(int urn) {
 		super(urn);
 		edges = new ArrayList<Edge>();
 	}
@@ -40,7 +41,7 @@ public class EdgeListProperty extends AbstractProperty {
 	 *
 	 * @param urn The urn of this property.
 	 */
-	public EdgeListProperty(Enum<?> urn) {
+	public EdgeListProperty(URN urn) {
 		super(urn);
 		edges = new ArrayList<Edge>();
 	}
@@ -51,7 +52,7 @@ public class EdgeListProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param edges The edge list.
 	 */
-	public EdgeListProperty(String urn, List<Edge> edges) {
+	public EdgeListProperty(int urn, List<Edge> edges) {
 		super(urn, true);
 		this.edges = new ArrayList<Edge>(edges);
 	}
@@ -62,7 +63,7 @@ public class EdgeListProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param edges The edge list.
 	 */
-	public EdgeListProperty(Enum<?> urn, List<Edge> edges) {
+	public EdgeListProperty(URN urn, List<Edge> edges) {
 		super(urn, true);
 		this.edges = new ArrayList<Edge>(edges);
 	}

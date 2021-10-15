@@ -56,8 +56,8 @@ public abstract class StandardEntity extends AbstractEntity {
 
 
   @Override
-  public final String getURN() {
-    return getStandardURN().toString();
+  public final int getURN() {
+    return getStandardURN().getUrn();
   }
 
 
