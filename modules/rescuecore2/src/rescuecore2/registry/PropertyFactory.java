@@ -1,5 +1,6 @@
 package rescuecore2.registry;
 
+
 import rescuecore2.worldmodel.Property;
 
 /**
@@ -19,4 +20,7 @@ public interface PropertyFactory {
        @return All property urns.
     */
     int[] getKnownPropertyURNs();
+    String getV1Equiv(int urnId);
+	String getPrettyName(int urn);
+
 }

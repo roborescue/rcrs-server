@@ -65,7 +65,6 @@ public enum StandardMessageURN implements URN{
 	 * URNs for standard messages.
 	 */
 	public enum StandardMessageURN_V1 {
-
 		/** Rest command. */
 		AK_REST(MESSAGE_URN_PREFIX_V1 + "rest"),
 		/** Move command. */

@@ -234,7 +234,7 @@ public class ChangeSet {
 			Collection<Property> props = next.getValue().values();
 			// EntityID, URN, number of properties
 			writeInt32(id.getValue(), out);
-			writeString(Registry.toURN_V1(getEntityURN(id)), out);
+			writeString(Registry.getCurrentRegistry().toURN_V1(getEntityURN(id)), out);
 			writeInt32(props.size(), out);
 			for (Property prop : props) {
 				writeProperty(prop, out);
@@ -258,7 +258,7 @@ public class ChangeSet {
 		int entityCount = readInt32(in);
 		for (int i = 0; i < entityCount; ++i) {
 			EntityID id = new EntityID(readInt32(in));
-			int urn = Registry.toURN_V2(readString(in));
+			int urn = Registry.getCurrentRegistry().toURN_V2(readString(in));
 			int propCount = readInt32(in);
 			for (int j = 0; j < propCount; ++j) {
 				Property p = readProperty(in);

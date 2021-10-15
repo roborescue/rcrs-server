@@ -84,7 +84,7 @@ public class EntityInspector extends JTable {
                     return "Type";
                 }
                 else {
-                    return Registry.ToPrettyName(props.get(row - 2).getURN());
+                    return Registry.getCurrentRegistry().toPrettyName(props.get(row - 2).getURN());
                 }
             case 1:
                 if (row == 0) {

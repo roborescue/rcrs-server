@@ -1,7 +1,7 @@
 package rescuecore2.registry;
 
 import java.util.EnumSet;
-
+import java.util.Map;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
@@ -86,4 +86,19 @@ public abstract class AbstractEntityFactory<T extends Enum<T> & URN>
 	 * @throws IllegalArgumentException If the urn is not recognised.
 	 */
 	protected abstract Entity makeEntity(T urn, EntityID id);
+
+	@Override
+	public String getPrettyName(int urn) {
+		if (fromString != null) {
+			try {
+				@SuppressWarnings("unchecked")
+				T t = (T) fromString.invoke(null, urn);
+				if(t!=null)
+					return t.name();
+			} catch (IllegalAccessException e) {
+			} catch (InvocationTargetException e) {
+			}
+		}
+		return null;
+	}
 }

@@ -1,5 +1,6 @@
 package rescuecore2.registry;
 
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
@@ -21,4 +22,6 @@ public interface EntityFactory {
        @return All entity urns.
     */
     int[] getKnownEntityURNs();
+    String getV1Equiv(int urnId);
+	String getPrettyName(int urn);
 }

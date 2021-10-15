@@ -1,6 +1,7 @@
 package rescuecore2.registry;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.HashMap;
 import java.io.InputStream;
 import java.io.IOException;
@@ -22,12 +23,7 @@ public final class Registry {
 	 */
 	public static final Registry SYSTEM_REGISTRY = new Registry("System", null);
 
-	private static final ThreadLocal<Registry> CURRENT_REGISTRY = new InheritableThreadLocal<Registry>() {
-		@Override
-		public Registry initialValue() {
-			return SYSTEM_REGISTRY;
-		}
-	};
+	private static final ThreadLocal<Registry> CURRENT_REGISTRY=new InheritableThreadLocal<Registry>(){@Override public Registry initialValue(){return SYSTEM_REGISTRY;}};
 
 	static {
 		// Register the ControlMessageFactory
@@ -38,6 +34,9 @@ public final class Registry {
 	private final Map<Integer, EntityFactory> entityFactories;
 	private final Map<Integer, PropertyFactory> propertyFactories;
 	private final Map<Integer, MessageFactory> messageFactories;
+	private final Map<String, Integer> v1_v2_map;
+	private final Map<Integer, String> v2_v1_map;
+	private final Map<Integer, String> urn_prettyName;
 
 	private final Registry parent;
 	private final String name;
@@ -80,6 +79,9 @@ public final class Registry {
 		entityFactories = new HashMap<Integer, EntityFactory>();
 		propertyFactories = new HashMap<Integer, PropertyFactory>();
 		messageFactories = new HashMap<Integer, MessageFactory>();
+		v1_v2_map = new HashMap<String,Integer>();
+		v2_v1_map = new HashMap<Integer,String>();
+		urn_prettyName=new HashMap<Integer, String>();
 	}
 
 	/**
@@ -146,6 +148,10 @@ public final class Registry {
 						+ ". Old factory: " + old);
 			}
 			entityFactories.put(urn, factory);
+			urn_prettyName.put(urn, factory.getPrettyName(urn));
+			String v1urn = factory.getV1Equiv(urn);
+			v1_v2_map.put(v1urn, urn);
+			v2_v1_map.put(urn, v1urn);
 		}
 	}
 
@@ -178,6 +184,11 @@ public final class Registry {
 						+ ". Old factory: " + old);
 			}
 			propertyFactories.put(urn, factory);
+			urn_prettyName.put(urn, factory.getPrettyName(urn));
+			
+			String v1urn = factory.getV1Equiv(urn);
+			v1_v2_map.put(v1urn, urn);
+			v2_v1_map.put(urn, v1urn);
 		}
 	}
 
@@ -210,6 +221,10 @@ public final class Registry {
 						+ ". Old factory: " + old);
 			}
 			messageFactories.put(urn, factory);
+			urn_prettyName.put(urn, factory.getPrettyName(urn));
+			String v1urn = factory.getV1Equiv(urn);
+			v1_v2_map.put(v1urn, urn);
+			v2_v1_map.put(urn, v1urn);
 		}
 	}
 
@@ -331,16 +346,16 @@ public final class Registry {
 		return result;
 	}
 
-	public static String toURN_V1(int urn) {
-		return urn + "";
+
+	public String toURN_V1(int urn) {
+		return v2_v1_map.get(urn);
 	}
 
-	public static int toURN_V2(String urn) {
-		return 0;
+	public int toURN_V2(String urn) {
+		return v1_v2_map.get(urn);
 	}
 
-	public static String ToPrettyName(int urn) {
-		// TODO Auto-generated method stub
-		return urn + "";
+	public String toPrettyName(int urn) {
+		return urn_prettyName.get(urn);
 	}
 }

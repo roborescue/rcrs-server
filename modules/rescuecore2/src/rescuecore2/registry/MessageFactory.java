@@ -4,6 +4,7 @@ import rescuecore2.messages.Message;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.io.IOException;
 
 /**
@@ -25,4 +26,7 @@ public interface MessageFactory {
        @return All message urns.
     */
     int[] getKnownMessageURNs();
+    String getV1Equiv(int urnId);
+	String getPrettyName(int urn);
+
 }

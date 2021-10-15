@@ -294,7 +294,7 @@ public class ComponentManager implements ConnectionManagerListener,
 		synchronized (agentLock) {
 			for (Queue<ControlledEntityInfo> q : uncontrolledEntities.values()) {
 				for (ControlledEntityInfo info : q) {
-					data.add(Registry.ToPrettyName(info.entity.getURN()) + " " + info.entity.getID());
+					data.add(Registry.SYSTEM_REGISTRY.toPrettyName(info.entity.getURN()) + " " + info.entity.getID());
 				}
 			}
 		}
@@ -507,7 +507,7 @@ public class ComponentManager implements ConnectionManagerListener,
 		@Override
 		public String toString() {
 			return agent.getName() + ": "
-					+ Registry.ToPrettyName(agent.getControlledEntity().getURN()) + " "
+					+ Registry.SYSTEM_REGISTRY.toPrettyName(agent.getControlledEntity().getURN()) + " "
 					+ agent.getControlledEntity().getID() + "(" + connection
 					+ " request ID " + requestID + ")";
 		}

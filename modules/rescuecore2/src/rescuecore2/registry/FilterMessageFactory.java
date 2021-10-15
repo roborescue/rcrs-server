@@ -1,5 +1,6 @@
 package rescuecore2.registry;
 
+import java.util.Map;
 import java.util.Set;
 import java.io.InputStream;
 import java.io.IOException;
@@ -52,5 +53,14 @@ public class FilterMessageFactory implements MessageFactory {
             return null;
         }
         return downstream.makeMessage(urn, data);
+    }
+
+    @Override
+    public String getV1Equiv(int urnId) {
+    	return downstream.getV1Equiv(urnId);
+    }
+    @Override
+    public String getPrettyName(int urn) {
+    	return downstream.getPrettyName(urn);
     }
 }

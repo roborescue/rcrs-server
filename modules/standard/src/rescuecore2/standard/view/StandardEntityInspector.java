@@ -84,14 +84,14 @@ public class StandardEntityInspector extends JTable {
                     return "Type";
                 }
                 else {
-                    return Registry.ToPrettyName(props.get(row - 2).getURN());
+                    return Registry.getCurrentRegistry().toPrettyName(props.get(row - 2).getURN());
                 }
             case 1:
                 if (row == 0) {
                     return e == null ? "-" : e.getID();
                 }
                 else if (row == 1) {
-                    return e == null?"-": Registry.ToPrettyName(e.getURN());
+                    return e == null?"-": Registry.getCurrentRegistry().toPrettyName(e.getURN());
                 }
                 else {
                     Property prop = props.get(row - 2);

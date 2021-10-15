@@ -89,7 +89,7 @@ public enum ControlMessageURN implements URN {
 		return urn;
 	}
 
-	private enum ControlMessageURN_V1 {
+	public enum ControlMessageURN_V1 {
 
 		/** Kernel-GIS connect. */
 		KG_CONNECT("urn:rescuecore2:messages.control:kg_connect"),

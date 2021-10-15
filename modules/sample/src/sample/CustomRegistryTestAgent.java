@@ -2,6 +2,7 @@ package sample;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -20,68 +21,72 @@ import rescuecore2.worldmodel.EntityID;
  */
 public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
 
-  private static final Logger LOG = Logger
-      .getLogger( CustomRegistryTestAgent.class );
+	private static final Logger LOG = Logger
+			.getLogger(CustomRegistryTestAgent.class);
 
+	@Override
+	public String toString() {
+		return "Custom registry test agent";
+	}
 
-  @Override
-  public String toString() {
-    return "Custom registry test agent";
-  }
+	@Override
+	public Registry getPreferredRegistry(Registry parent) {
+		Registry result = new Registry("Custom registry", parent);
+		result.registerEntityFactory(new CustomEntityFactory());
+		return result;
+	}
 
+	@Override
+	protected void postConnect() {
+		super.postConnect();
+		LOG.info("Custom registry test agent " + getID() + " connected");
+		LOG.info("Current registry: " + Registry.getCurrentRegistry());
+	}
 
-  @Override
-  public Registry getPreferredRegistry( Registry parent ) {
-    Registry result = new Registry( "Custom registry", parent );
-    result.registerEntityFactory( new CustomEntityFactory() );
-    return result;
-  }
+	@Override
+	protected void think(int time, ChangeSet changed,
+			Collection<Command> heard) {
+		sendRest(time);
+	}
 
+	@Override
+	protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
+		return EnumSet.of(StandardEntityURN.FIRE_BRIGADE,
+				StandardEntityURN.POLICE_FORCE,
+				StandardEntityURN.AMBULANCE_TEAM);
+	}
 
-  @Override
-  protected void postConnect() {
-    super.postConnect();
-    LOG.info( "Custom registry test agent " + getID() + " connected" );
-    LOG.info( "Current registry: " + Registry.getCurrentRegistry() );
-  }
+	private static class CustomEntityFactory implements EntityFactory {
 
+		private StandardEntityFactory downstream = StandardEntityFactory.INSTANCE;
 
-  @Override
-  protected void think( int time, ChangeSet changed,
-      Collection<Command> heard ) {
-    sendRest( time );
-  }
+		@Override
+		public Entity makeEntity(int urn, EntityID id) {
+			// Logger.debug("CustomEntityFactory.makeEntity(" + urn + ", " + id
+			// +
+			// ")");
+			return downstream.makeEntity(urn, id);
+		}
 
+		@Override
+		public int[] getKnownEntityURNs() {
+			return downstream.getKnownEntityURNs();
+		}
 
-  @Override
-  protected EnumSet<StandardEntityURN> getRequestedEntityURNsEnum() {
-    return EnumSet.of( StandardEntityURN.FIRE_BRIGADE,
-        StandardEntityURN.POLICE_FORCE, StandardEntityURN.AMBULANCE_TEAM );
-  }
+		@Override
+		public String toString() {
+			return "Custom entity factory";
+		}
 
+		@Override
+		public String getV1Equiv(int urnId) {
+			return null;
+		}
 
-  private static class CustomEntityFactory implements EntityFactory {
-
-    private StandardEntityFactory downstream = StandardEntityFactory.INSTANCE;
-
-
-    @Override
-    public Entity makeEntity( int urn, EntityID id ) {
-      // Logger.debug("CustomEntityFactory.makeEntity(" + urn + ", " + id +
-      // ")");
-      return downstream.makeEntity( urn, id );
-    }
-
-
-    @Override
-    public int[] getKnownEntityURNs() {
-      return downstream.getKnownEntityURNs();
-    }
-
-
-    @Override
-    public String toString() {
-      return "Custom entity factory";
-    }
-  }
+		@Override
+		public String getPrettyName(int urn) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
 }

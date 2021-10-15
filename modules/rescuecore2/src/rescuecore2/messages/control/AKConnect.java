@@ -55,7 +55,7 @@ public class AKConnect extends AbstractMessage implements Control {
 		if (version == 1) {
 			ArrayList<String> newdata = new ArrayList<>();
 			for (int re : requestedEntityTypes)
-				newdata.add(Registry.toURN_V1(re));
+				newdata.add(Registry.getCurrentRegistry().toURN_V1(re));
 			this.requestedEntityTypes_v1.setValues(newdata);
 		}
 	}
@@ -117,10 +117,9 @@ public class AKConnect extends AbstractMessage implements Control {
 	 */
 	public List<Integer> getRequestedEntityTypes() {
 		if (version.getValue() == 1) {
-
 			List<Integer> list = new ArrayList<>();
 			for (String str : requestedEntityTypes_v1.getValues()) {
-				list.add(Registry.toURN_V2(str));
+				list.add(Registry.getCurrentRegistry().toURN_V2(str));
 			}
 			return list;
 		}

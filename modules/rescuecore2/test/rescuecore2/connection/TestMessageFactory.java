@@ -1,6 +1,7 @@
 package rescuecore2.connection;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
@@ -40,6 +41,15 @@ public class TestMessageFactory implements MessageFactory {
 	@Override
 	public Message makeMessage(int urn, MessageProto proto) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getV1Equiv(int urnId) {
+		return null;
+	}
+	@Override
+	public String getPrettyName(int urn) {
 		return null;
 	}
 }

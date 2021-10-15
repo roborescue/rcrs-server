@@ -1,5 +1,6 @@
 package rescuecore2.registry;
 
+import java.util.Map;
 import java.util.Set;
 
 import rescuecore2.worldmodel.Property;
@@ -38,5 +39,15 @@ public class FilterPropertyFactory implements PropertyFactory {
             return null;
         }
         return downstream.makeProperty(urn);
+    }
+
+    @Override
+    public String getV1Equiv(int urnId) {
+    	return downstream.getV1Equiv(urnId);
+    }
+    
+    @Override
+    public String getPrettyName(int urn) {
+    	return downstream.getPrettyName(urn);
     }
 }

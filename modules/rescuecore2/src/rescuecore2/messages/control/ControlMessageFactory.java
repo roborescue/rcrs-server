@@ -1,18 +1,28 @@
 package rescuecore2.messages.control;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.common.base.Enums;
+
 import java.io.IOException;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.control.ControlMessageURN.ControlMessageURN_V1;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.registry.AbstractMessageFactory;
+import rescuecore2.standard.entities.StandardEntityURN;
+import rescuecore2.standard.entities.StandardEntityURN.StandardEntityURN_V1;
+import rescuecore2.standard.messages.StandardMessageURN;
+import rescuecore2.standard.messages.StandardMessageURN.StandardMessageURN_V1;
 import rescuecore2.log.Logger;
 
 /**
  * A factory for control messages.
  */
-public final class ControlMessageFactory extends
-		AbstractMessageFactory<ControlMessageURN> {
+public final class ControlMessageFactory
+		extends AbstractMessageFactory<ControlMessageURN> {
 	/** Singleton instance. */
 	public static final ControlMessageFactory INSTANCE = new ControlMessageFactory();
 
@@ -79,61 +89,71 @@ public final class ControlMessageFactory extends
 			return null;
 		}
 	}
-	
+
 	@Override
-	  public Message makeMessage(ControlMessageURN urn, MessageProto proto){
-	    switch (urn) {
-	      case KG_CONNECT:
-	        return new KGConnect(proto);
-	      case KG_ACKNOWLEDGE:
-	        return new KGAcknowledge(proto);
-	      case GK_CONNECT_OK:
-	        return new GKConnectOK(proto);
-	      case GK_CONNECT_ERROR:
-	        return new GKConnectError(proto);
-	      case SK_CONNECT:
-	        return new SKConnect(proto);
-	      case SK_ACKNOWLEDGE:
-	        return new SKAcknowledge(proto);
-	      case SK_UPDATE:
-	        return new SKUpdate(proto);
-	      case KS_CONNECT_OK:
-	        return new KSConnectOK(proto);
-	      case KS_CONNECT_ERROR:
-	        return new KSConnectError(proto);
-	      case KS_UPDATE:
-	        return new KSUpdate(proto);
-	      case KS_COMMANDS:
-	        return new KSCommands(proto);
-	      case VK_CONNECT:
-	        return new VKConnect(proto);
-	      case VK_ACKNOWLEDGE:
-	        return new VKAcknowledge(proto);
-	      case KV_CONNECT_OK:
-	        return new KVConnectOK(proto);
-	      case KV_CONNECT_ERROR:
-	        return new KVConnectError(proto);
-	      case KV_TIMESTEP:
-	        return new KVTimestep(proto);
-	      case AK_CONNECT:
-	        return new AKConnect(proto);
-	      case AK_ACKNOWLEDGE:
-	        return new AKAcknowledge(proto);
-	      case KA_CONNECT_OK:
-	        return new KAConnectOK(proto);
-	      case KA_CONNECT_ERROR:
-	        return new KAConnectError(proto);
-	      case KA_SENSE:
-	        return new KASense(proto);
-	      case SHUTDOWN:
-	        return new Shutdown(proto);
-	      case ENTITY_ID_REQUEST:
-	        return new EntityIDRequest(proto);
-	      case ENTITY_ID_RESPONSE:
-	        return new EntityIDResponse(proto);
-	      default:
-	        Logger.warn("Unrecognised message urn: " + urn);
-	        return null;
-	    }
+	public Message makeMessage(ControlMessageURN urn, MessageProto proto) {
+		switch (urn) {
+		case KG_CONNECT:
+			return new KGConnect(proto);
+		case KG_ACKNOWLEDGE:
+			return new KGAcknowledge(proto);
+		case GK_CONNECT_OK:
+			return new GKConnectOK(proto);
+		case GK_CONNECT_ERROR:
+			return new GKConnectError(proto);
+		case SK_CONNECT:
+			return new SKConnect(proto);
+		case SK_ACKNOWLEDGE:
+			return new SKAcknowledge(proto);
+		case SK_UPDATE:
+			return new SKUpdate(proto);
+		case KS_CONNECT_OK:
+			return new KSConnectOK(proto);
+		case KS_CONNECT_ERROR:
+			return new KSConnectError(proto);
+		case KS_UPDATE:
+			return new KSUpdate(proto);
+		case KS_COMMANDS:
+			return new KSCommands(proto);
+		case VK_CONNECT:
+			return new VKConnect(proto);
+		case VK_ACKNOWLEDGE:
+			return new VKAcknowledge(proto);
+		case KV_CONNECT_OK:
+			return new KVConnectOK(proto);
+		case KV_CONNECT_ERROR:
+			return new KVConnectError(proto);
+		case KV_TIMESTEP:
+			return new KVTimestep(proto);
+		case AK_CONNECT:
+			return new AKConnect(proto);
+		case AK_ACKNOWLEDGE:
+			return new AKAcknowledge(proto);
+		case KA_CONNECT_OK:
+			return new KAConnectOK(proto);
+		case KA_CONNECT_ERROR:
+			return new KAConnectError(proto);
+		case KA_SENSE:
+			return new KASense(proto);
+		case SHUTDOWN:
+			return new Shutdown(proto);
+		case ENTITY_ID_REQUEST:
+			return new EntityIDRequest(proto);
+		case ENTITY_ID_RESPONSE:
+			return new EntityIDResponse(proto);
+		default:
+			Logger.warn("Unrecognised message urn: " + urn);
+			return null;
+		}
 	}
+
+	@Override
+	public String getV1Equiv(int urnId) {
+		ControlMessageURN_V1 item = Enums
+				.getIfPresent(ControlMessageURN_V1.class,
+						ControlMessageURN.fromInt(urnId).name())
+				.orNull();
+		return item == null ? null : item.toString();
+	}
+	
 }
