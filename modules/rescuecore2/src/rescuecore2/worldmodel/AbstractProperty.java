@@ -1,15 +1,14 @@
 package rescuecore2.worldmodel;
 
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.PropertyURN;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 
 /**
    Abstract base class for Property implementations.
 */
 public abstract class AbstractProperty implements Property {
     private boolean defined;
-    private final String urn;
+    private final int urn;
     // CHECKSTYLE:OFF:IllegalType
     private AbstractEntity entity;
     // CHECKSTYLE:ON:IllegalType
@@ -18,7 +17,7 @@ public abstract class AbstractProperty implements Property {
        Construct a property with a given type and assume that the value of this property is initially undefined.
        @param urn The urn of the property.
      */
-    protected AbstractProperty(String urn) {
+    protected AbstractProperty(int urn) {
         this(urn, false);
     }
 
@@ -26,8 +25,8 @@ public abstract class AbstractProperty implements Property {
        Construct a property with a given type and assume that the value of this property is initially undefined.
        @param urn The urn of the property.
      */
-    protected AbstractProperty(Enum<?> urn) {
-        this(urn.toString(), false);
+    protected AbstractProperty(URN urn) {
+        this(urn.getUrn(), false);
     }
 
     /**
@@ -35,7 +34,7 @@ public abstract class AbstractProperty implements Property {
        @param urn The urn of the property.
        @param defined Whether the value is initially defined or not.
      */
-    protected AbstractProperty(String urn, boolean defined) {
+    protected AbstractProperty(int urn, boolean defined) {
         this.urn = urn;
         this.defined = defined;
         entity = null;
@@ -46,8 +45,8 @@ public abstract class AbstractProperty implements Property {
        @param urn The urn of the property.
        @param defined Whether the value is initially defined or not.
      */
-    protected AbstractProperty(Enum<?> urn, boolean defined) {
-        this(urn.toString(), defined);
+    protected AbstractProperty(URN urn, boolean defined) {
+        this(urn.getUrn(), defined);
     }
 
     /**
@@ -88,7 +87,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public String getURN() {
+    public int getURN() {
         return urn;
     }
 
@@ -119,7 +118,7 @@ public abstract class AbstractProperty implements Property {
     
     protected PropertyProto.Builder basePropertyProto() {
     	PropertyProto.Builder builder = PropertyProto.newBuilder()
-				.setUrn(PropertyURN.valueOf(getURN())).setDefined(isDefined());
+				.setUrn(getURN()).setDefined(isDefined());
     	return builder;
     }
     

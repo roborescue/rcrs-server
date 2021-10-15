@@ -8,8 +8,8 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.PropertyURN;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -23,7 +23,7 @@ public class BooleanProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public BooleanProperty(String urn) {
+	public BooleanProperty(int urn) {
 		super(urn);
 	}
 
@@ -32,7 +32,7 @@ public class BooleanProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public BooleanProperty(Enum<?> urn) {
+	public BooleanProperty(URN urn) {
 		super(urn);
 	}
 
@@ -42,7 +42,7 @@ public class BooleanProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public BooleanProperty(String urn, boolean value) {
+	public BooleanProperty(int urn, boolean value) {
 		super(urn, true);
 		this.value = value;
 	}
@@ -53,7 +53,7 @@ public class BooleanProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public BooleanProperty(Enum<?> urn, boolean value) {
+	public BooleanProperty(URN urn, boolean value) {
 		super(urn, true);
 		this.value = value;
 	}

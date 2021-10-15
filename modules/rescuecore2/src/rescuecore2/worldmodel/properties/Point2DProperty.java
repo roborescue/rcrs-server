@@ -9,9 +9,9 @@ import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.AbstractProperty;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.Point2DProto;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.misc.geometry.Point2D;
 
 /**
@@ -25,7 +25,7 @@ public class Point2DProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public Point2DProperty(String urn) {
+	public Point2DProperty(int urn) {
 		super(urn);
 	}
 
@@ -34,7 +34,7 @@ public class Point2DProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public Point2DProperty(Enum<?> urn) {
+	public Point2DProperty(URN urn) {
 		super(urn);
 	}
 
@@ -44,7 +44,7 @@ public class Point2DProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public Point2DProperty(String urn, Point2D value) {
+	public Point2DProperty(int urn, Point2D value) {
 		super(urn, true);
 		this.value = value;
 	}
@@ -55,7 +55,7 @@ public class Point2DProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public Point2DProperty(Enum<?> urn, Point2D value) {
+	public Point2DProperty(URN urn, Point2D value) {
 		super(urn, true);
 		this.value = value;
 	}

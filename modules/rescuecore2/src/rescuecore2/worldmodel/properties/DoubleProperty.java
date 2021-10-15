@@ -8,8 +8,8 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -22,7 +22,7 @@ public class DoubleProperty extends AbstractProperty {
        Construct a DoubleProperty with no defined value.
        @param urn The urn of this property.
     */
-    public DoubleProperty(String urn) {
+    public DoubleProperty(int urn) {
         super(urn);
     }
 
@@ -30,7 +30,7 @@ public class DoubleProperty extends AbstractProperty {
        Construct a DoubleProperty with no defined value.
        @param urn The urn of this property.
     */
-    public DoubleProperty(Enum<?> urn) {
+    public DoubleProperty(URN urn) {
         super(urn);
     }
 
@@ -39,7 +39,7 @@ public class DoubleProperty extends AbstractProperty {
        @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public DoubleProperty(String urn, double value) {
+    public DoubleProperty(int urn, double value) {
         super(urn, true);
         this.value = value;
     }
@@ -49,7 +49,7 @@ public class DoubleProperty extends AbstractProperty {
        @param urn The urn of this property.
        @param value The initial value of the property.
     */
-    public DoubleProperty(Enum<?> urn, double value) {
+    public DoubleProperty(URN urn, double value) {
         super(urn, true);
         this.value = value;
     }

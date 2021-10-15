@@ -5,8 +5,8 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
 import java.io.InputStream;
@@ -24,7 +24,7 @@ public class EntityRefProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public EntityRefProperty(String urn) {
+	public EntityRefProperty(int urn) {
 		super(urn);
 	}
 
@@ -33,7 +33,7 @@ public class EntityRefProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public EntityRefProperty(Enum<?> urn) {
+	public EntityRefProperty(URN urn) {
 		super(urn);
 	}
 
@@ -43,7 +43,7 @@ public class EntityRefProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public EntityRefProperty(String urn, EntityID value) {
+	public EntityRefProperty(int urn, EntityID value) {
 		super(urn, true);
 		this.value = value;
 	}
@@ -54,7 +54,7 @@ public class EntityRefProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public EntityRefProperty(Enum<?> urn, EntityID value) {
+	public EntityRefProperty(URN urn, EntityID value) {
 		super(urn, true);
 		this.value = value;
 	}

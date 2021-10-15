@@ -11,9 +11,9 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -28,7 +28,7 @@ public class IntArrayProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public IntArrayProperty(String urn) {
+	public IntArrayProperty(int urn) {
 		super(urn);
 		data = new ArrayList<Integer>();
 	}
@@ -38,7 +38,7 @@ public class IntArrayProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public IntArrayProperty(Enum<?> urn) {
+	public IntArrayProperty(URN urn) {
 		super(urn);
 		data = new ArrayList<Integer>();
 	}
@@ -49,7 +49,7 @@ public class IntArrayProperty extends AbstractProperty {
 	 * @param urn    The urn of this property.
 	 * @param values The initial values of the property.
 	 */
-	public IntArrayProperty(String urn, int[] values) {
+	public IntArrayProperty(int urn, int[] values) {
 		super(urn, true);
 		data = new ArrayList<Integer>(values.length);
 		for (Integer next : values) {
@@ -63,7 +63,7 @@ public class IntArrayProperty extends AbstractProperty {
 	 * @param urn    The urn of this property.
 	 * @param values The initial values of the property.
 	 */
-	public IntArrayProperty(Enum<?> urn, int[] values) {
+	public IntArrayProperty(URN urn, int[] values) {
 		super(urn, true);
 		data = new ArrayList<Integer>(values.length);
 		for (Integer next : values) {

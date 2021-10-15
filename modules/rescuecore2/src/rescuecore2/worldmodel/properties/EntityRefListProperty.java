@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
@@ -28,7 +28,7 @@ public class EntityRefListProperty extends AbstractProperty {
 	 *
 	 * @param urn The urn of this property.
 	 */
-	public EntityRefListProperty(String urn) {
+	public EntityRefListProperty(int urn) {
 		super(urn);
 		ids = new ArrayList<EntityID>();
 	}
@@ -38,7 +38,7 @@ public class EntityRefListProperty extends AbstractProperty {
 	 *
 	 * @param urn The urn of this property.
 	 */
-	public EntityRefListProperty(Enum<?> urn) {
+	public EntityRefListProperty(URN urn) {
 		super(urn);
 		ids = new ArrayList<EntityID>();
 	}
@@ -49,7 +49,7 @@ public class EntityRefListProperty extends AbstractProperty {
 	 * @param urn The urn of this property.
 	 * @param ids The initial value of the property.
 	 */
-	public EntityRefListProperty(String urn, List<EntityID> ids) {
+	public EntityRefListProperty(int urn, List<EntityID> ids) {
 		super(urn, true);
 		this.ids = new ArrayList<EntityID>(ids);
 	}
@@ -60,7 +60,7 @@ public class EntityRefListProperty extends AbstractProperty {
 	 * @param urn The urn of this property.
 	 * @param ids The initial value of the property.
 	 */
-	public EntityRefListProperty(Enum<?> urn, List<EntityID> ids) {
+	public EntityRefListProperty(URN urn, List<EntityID> ids) {
 		super(urn, true);
 		this.ids = new ArrayList<EntityID>(ids);
 	}

@@ -15,7 +15,7 @@ public interface Property {
        Get the urn of this property.
        @return The urn of this property.
      */
-    String getURN();
+    int getURN();
 
     /**
        Does this property have a defined value?

@@ -8,8 +8,8 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.Property;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
-import rescuecore2.messages.protobuf.RCRSProto.ValueProto;
 import rescuecore2.worldmodel.AbstractProperty;
 
 /**
@@ -23,7 +23,7 @@ public class IntProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public IntProperty(String urn) {
+	public IntProperty(int urn) {
 		super(urn);
 	}
 
@@ -32,7 +32,7 @@ public class IntProperty extends AbstractProperty {
 	 * 
 	 * @param urn The urn of this property.
 	 */
-	public IntProperty(Enum<?> urn) {
+	public IntProperty(URN urn) {
 		super(urn);
 	}
 
@@ -42,7 +42,7 @@ public class IntProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public IntProperty(String urn, int value) {
+	public IntProperty(int urn, int value) {
 		super(urn, true);
 		this.value = value;
 	}
@@ -53,7 +53,7 @@ public class IntProperty extends AbstractProperty {
 	 * @param urn   The urn of this property.
 	 * @param value The initial value of the property.
 	 */
-	public IntProperty(Enum<?> urn, int value) {
+	public IntProperty(URN urn, int value) {
 		super(urn, true);
 		this.value = value;
 	}
