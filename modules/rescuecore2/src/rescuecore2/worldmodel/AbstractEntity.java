@@ -2,7 +2,6 @@ package rescuecore2.worldmodel;
 
 
 import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
-import rescuecore2.messages.protobuf.RCRSProto.EntityURN;
 import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
 import rescuecore2.messages.protobuf.MsgProtoBuf;
 
@@ -96,7 +95,7 @@ public abstract class AbstractEntity implements Entity {
 
 
   @Override
-  public Property getProperty( String propertyURN ) {
+  public Property getProperty( int propertyURN ) {
     return null;
   }
 
@@ -157,7 +156,7 @@ public abstract class AbstractEntity implements Entity {
   public String getFullDescription() {
     StringBuilder result = new StringBuilder();
     String name = getEntityName();
-    String urn = getURN();
+    int urn = getURN();
     if ( !name.equals( urn ) ) {
       result.append( name );
       result.append( " [" );
@@ -204,7 +203,7 @@ public abstract class AbstractEntity implements Entity {
    * @return The name of this entity.
    */
   protected String getEntityName() {
-    return getURN();
+    return this.getClass().getSimpleName();
   }
 
 
@@ -249,7 +248,7 @@ public abstract class AbstractEntity implements Entity {
   public EntityProto toEntityProto() {
 	  EntityProto.Builder builder= EntityProto.newBuilder()
 			  .setEntityID(id.getValue())
-			  .setUrn(EntityURN.valueOf(getURN()));
+			  .setUrn(getURN());
     for ( Property next : getProperties() ) {
       if ( next.isDefined() ) {
         builder.addProperties(next.toPropertyProto());

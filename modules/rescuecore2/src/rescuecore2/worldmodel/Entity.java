@@ -45,7 +45,7 @@ public interface Entity {
    *
    * @return The type.
    */
-  String getURN();
+  int getURN();
 
   /**
    * Get all the properties that this entity has.
@@ -61,7 +61,7 @@ public interface Entity {
    *          The urn to look up.
    * @return The property with the given urn or null if no such property exists.
    */
-  Property getProperty( String urn );
+  Property getProperty( int urn );
 
   /**
    * Write this Entity to a stream.
