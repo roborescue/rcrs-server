@@ -608,7 +608,7 @@ public class MiscSimulator extends StandardSimulator implements GUIComponent {
         return; // we want to only look at buildings
       }
 
-      if ( p.getURN().equals( StandardPropertyURN.BROKENNESS.toString() ) )
+      if ( p.getURN()==( StandardPropertyURN.BROKENNESS.getUrn() ) )
         checkBrokenness( e, oldValue, newValue );
 
     }
