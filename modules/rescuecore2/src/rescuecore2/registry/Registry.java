@@ -1,24 +1,16 @@
 package rescuecore2.registry;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import rescuecore2.log.Logger;
+import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.Property;
-import rescuecore2.messages.Message;
-import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
-import rescuecore2.log.Logger;
 
 /**
  * A class for managing the different types of entities, properties, messages

@@ -2,32 +2,16 @@ package sample;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
 
-import org.jfree.io.FileUtilities;
 import org.json.JSONObject;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
 import rescuecore2.messages.control.ControlMessageFactory;
-import rescuecore2.messages.control.ControlMessageURN;
 import rescuecore2.misc.CommandLineOptions;
-import rescuecore2.registry.EntityFactory;
-import rescuecore2.registry.MessageFactory;
-import rescuecore2.registry.PropertyFactory;
-import rescuecore2.registry.Registry;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
 import rescuecore2.standard.messages.StandardMessageFactory;
@@ -39,7 +23,6 @@ public class URNMapPrinter {
 		Config config=new Config();
 		CommandLineOptions.processArgs(args,config);
 		
-		System.out.println("JSON");
 		JSONObject json = toJSON();
 		write2file(config.getValue("json_out", "rcrs_urn.json"), json.toString());
 		write2file(config.getValue("python_out", "rcrs_urn.py"), toPython(json));
