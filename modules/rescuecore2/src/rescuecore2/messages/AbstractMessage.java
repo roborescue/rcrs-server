@@ -92,7 +92,7 @@ public abstract class AbstractMessage implements Message {
     	MessageProto.Builder builder=MessageProto.newBuilder()
     			.setUrn(getURN());
     	for (MessageComponent next : components) {
-            builder.putComponents(next.getName(),next.toMessageComponentProto());
+            builder.putComponents(next.getName().getUrn(),next.toMessageComponentProto());
         }
     	return builder.build();
     }
@@ -104,9 +104,9 @@ public abstract class AbstractMessage implements Message {
 //    	for(int i=0;i<receivedcomponents.size();i++) {
 //    		components.get(i).fromMessageComponentProto(receivedcomponents.get(i));
 //    	}
-    	Map<String, MessageComponentProto> receivedcomponents = proto.getComponentsMap();
+    	Map<Integer, MessageComponentProto> receivedcomponents = proto.getComponentsMap();
     	for (MessageComponent next : components) {
-            next.fromMessageComponentProto(receivedcomponents.get(next.getName()));
+            next.fromMessageComponentProto(receivedcomponents.get(next.getName().getUrn()));
         }
     	
     }

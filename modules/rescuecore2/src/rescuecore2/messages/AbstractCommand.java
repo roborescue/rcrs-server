@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import rescuecore2.URN;
 import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.components.IntComponent;
+import rescuecore2.messages.control.ControlMessageComponentURN;
+import rescuecore2.URN;
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -81,8 +83,8 @@ public abstract class AbstractCommand extends AbstractMessage implements Command
     }
 
     private void init() {
-        agentID = new EntityIDComponent("Agent ID");
-        time = new IntComponent("Time");
+        agentID = new EntityIDComponent(ControlMessageComponentURN.AgentID);
+        time = new IntComponent(ControlMessageComponentURN.Time);
         addMessageComponent(agentID);
         addMessageComponent(time);
     }
