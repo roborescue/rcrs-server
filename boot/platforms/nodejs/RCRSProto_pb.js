@@ -469,7 +469,7 @@ proto.MessageProto.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = msg.getComponentsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.MessageComponentProto.deserializeBinaryFromReader, "", new proto.MessageComponentProto());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readInt32, jspb.BinaryReader.prototype.readMessage, proto.MessageComponentProto.deserializeBinaryFromReader, 0, new proto.MessageComponentProto());
          });
       break;
     default:
@@ -510,7 +510,7 @@ proto.MessageProto.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getComponentsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.MessageComponentProto.serializeBinaryToWriter);
+    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeInt32, jspb.BinaryWriter.prototype.writeMessage, proto.MessageComponentProto.serializeBinaryToWriter);
   }
 };
 
@@ -534,13 +534,13 @@ proto.MessageProto.prototype.setUrn = function(value) {
 
 
 /**
- * map<string, MessageComponentProto> components = 2;
+ * map<int32, MessageComponentProto> components = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<string,!proto.MessageComponentProto>}
+ * @return {!jspb.Map<number,!proto.MessageComponentProto>}
  */
 proto.MessageProto.prototype.getComponentsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<string,!proto.MessageComponentProto>} */ (
+  return /** @type {!jspb.Map<number,!proto.MessageComponentProto>} */ (
       jspb.Message.getMapField(this, 2, opt_noLazyCreate,
       proto.MessageComponentProto));
 };
