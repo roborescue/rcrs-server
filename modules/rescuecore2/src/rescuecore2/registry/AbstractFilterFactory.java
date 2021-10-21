@@ -2,13 +2,13 @@ package rescuecore2.registry;
 
 import java.util.Set;
 
-public abstract class FilterFactory<T extends Factory> implements Factory {
+public abstract class AbstractFilterFactory<T extends Factory> implements Factory {
 
 	protected T downstream;
 	private Set<Integer> urns;
 	private boolean inclusive;
 
-	public FilterFactory(T downstream, Set<Integer> urns, boolean inclusive) {
+	public AbstractFilterFactory(T downstream, Set<Integer> urns, boolean inclusive) {
 		this.downstream = downstream;
 		this.urns = urns;
 		this.inclusive = inclusive;

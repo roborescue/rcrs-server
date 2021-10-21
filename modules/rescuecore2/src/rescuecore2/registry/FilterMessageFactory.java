@@ -10,7 +10,7 @@ import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 /**
  * A message factory that filters urns that do not match a given set.
  */
-public class FilterMessageFactory extends FilterFactory<MessageFactory>
+public class FilterMessageFactory extends AbstractFilterFactory<MessageFactory>
 		implements MessageFactory {
 
 	/**

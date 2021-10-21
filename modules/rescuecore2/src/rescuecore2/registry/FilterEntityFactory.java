@@ -8,7 +8,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
  * A entity factory that filters urns that match or don't match a given set.
  */
-public class FilterEntityFactory extends FilterFactory<EntityFactory>
+public class FilterEntityFactory extends AbstractFilterFactory<EntityFactory>
 		implements EntityFactory {
 
 	/**

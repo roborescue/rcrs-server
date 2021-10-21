@@ -7,7 +7,7 @@ import rescuecore2.worldmodel.Property;
 /**
  * A property factory that filters urns that do not match a given set.
  */
-public class FilterPropertyFactory extends FilterFactory<PropertyFactory>
+public class FilterPropertyFactory extends AbstractFilterFactory<PropertyFactory>
 		implements PropertyFactory {
 
 	/**
