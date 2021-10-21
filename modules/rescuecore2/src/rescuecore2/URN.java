@@ -6,6 +6,7 @@ import java.util.Map;
 
 public interface URN {
 	public int getUrn();
+//	public String getStringUrn(); //TODO
 	public String name();
 
 	static <T extends Enum<?> & URN> Map<Integer, T> generateMap(
