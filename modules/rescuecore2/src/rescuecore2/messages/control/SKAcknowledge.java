@@ -41,8 +41,8 @@ public class SKAcknowledge extends AbstractMessage implements Control {
 
 	private SKAcknowledge() {
 		super(ControlMessageURN.SK_ACKNOWLEDGE);
-		requestID = new IntComponent("Request ID");
-		simulatorID = new IntComponent("Simulator ID");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		simulatorID = new IntComponent(ControlMessageComponentURN.SimulatorID);
 		addMessageComponent(requestID);
 		addMessageComponent(simulatorID);
 	}

@@ -53,10 +53,10 @@ public class KVConnectOK extends AbstractMessage implements Control {
 
 	private KVConnectOK() {
 		super(ControlMessageURN.KV_CONNECT_OK);
-		viewerID = new IntComponent("Viewer ID");
-		requestID = new IntComponent("Request ID");
-		world = new EntityListComponent("Entities");
-		config = new ConfigComponent("Agent config");
+		viewerID = new IntComponent(ControlMessageComponentURN.ViewerID);
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		world = new EntityListComponent(ControlMessageComponentURN.Entities);
+		config = new ConfigComponent(ControlMessageComponentURN.AgentConfig);
 		addMessageComponent(requestID);
 		addMessageComponent(viewerID);
 		addMessageComponent(world);

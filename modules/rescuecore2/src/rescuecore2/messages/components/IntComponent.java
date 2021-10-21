@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
@@ -20,7 +21,7 @@ public class IntComponent extends AbstractMessageComponent {
        Construct an IntComponent with no content.
        @param name The name of the component.
      */
-    public IntComponent(String name) {
+    public IntComponent(URN name) {
         super(name);
     }
 
@@ -29,7 +30,7 @@ public class IntComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param value The value of this component.
      */
-    public IntComponent(String name, int value) {
+    public IntComponent(URN name, int value) {
         super(name);
         this.value = value;
     }

@@ -54,10 +54,10 @@ public class KASense extends AbstractMessage implements Control {
 
 	private KASense() {
 		super(ControlMessageURN.KA_SENSE);
-		agentID = new EntityIDComponent("Agent ID");
-		time = new IntComponent("Time");
-		updates = new ChangeSetComponent("Updates");
-		hear = new CommandListComponent("Hearing");
+		agentID = new EntityIDComponent(ControlMessageComponentURN.AgentID);
+		time = new IntComponent(ControlMessageComponentURN.Time);
+		updates = new ChangeSetComponent(ControlMessageComponentURN.Updates);
+		hear = new CommandListComponent(ControlMessageComponentURN.Hearing);
 		addMessageComponent(agentID);
 		addMessageComponent(time);
 		addMessageComponent(updates);

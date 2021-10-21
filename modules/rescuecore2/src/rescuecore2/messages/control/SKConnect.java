@@ -44,9 +44,9 @@ public class SKConnect extends AbstractMessage implements Control {
 
 	private SKConnect() {
 		super(ControlMessageURN.SK_CONNECT);
-		requestID = new IntComponent("Request ID");
-		version = new IntComponent("Version");
-		simulatorName = new StringComponent("Name");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		version = new IntComponent(ControlMessageComponentURN.Version);
+		simulatorName = new StringComponent(ControlMessageComponentURN.Name);
 		addMessageComponent(requestID);
 		addMessageComponent(version);
 		addMessageComponent(simulatorName);

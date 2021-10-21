@@ -46,9 +46,9 @@ public class KSCommands extends AbstractMessage implements Control {
 
     private KSCommands() {
         super(ControlMessageURN.KS_COMMANDS);
-        id = new IntComponent("ID");
-        time = new IntComponent("Time");
-        commands = new CommandListComponent("Commands");
+        id = new IntComponent(ControlMessageComponentURN.ID);
+        time = new IntComponent(ControlMessageComponentURN.Time);
+        commands = new CommandListComponent(ControlMessageComponentURN.Commands);
         addMessageComponent(id);
         addMessageComponent(time);
         addMessageComponent(commands);

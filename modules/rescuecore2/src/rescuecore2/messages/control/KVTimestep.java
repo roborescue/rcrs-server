@@ -51,10 +51,10 @@ public class KVTimestep extends AbstractMessage implements Control {
 
     private KVTimestep() {
         super(ControlMessageURN.KV_TIMESTEP);
-        id = new IntComponent("ID");
-        time = new IntComponent("Time");
-        commands = new CommandListComponent("Commands");
-        changes = new ChangeSetComponent("Changes");
+        id = new IntComponent(ControlMessageComponentURN.ID);
+        time = new IntComponent(ControlMessageComponentURN.Time);
+        commands = new CommandListComponent(ControlMessageComponentURN.Commands);
+        changes = new ChangeSetComponent(ControlMessageComponentURN.Changes);
         addMessageComponent(id);
         addMessageComponent(time);
         addMessageComponent(commands);

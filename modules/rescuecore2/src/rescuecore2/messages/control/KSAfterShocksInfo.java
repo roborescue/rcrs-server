@@ -89,8 +89,8 @@ public class KSAfterShocksInfo extends AbstractMessage {
 	 */
 	protected KSAfterShocksInfo() {
 		super(ControlMessageURN.KS_AFTERSHOCKS_INFO);
-		intensities = new FloatListComponent("INTENSITIES");
-		times = new IntListComponent("TIMES");
+		intensities = new FloatListComponent(ControlMessageComponentURN.INTENSITIES);
+		times = new IntListComponent(ControlMessageComponentURN.TIMES);
 		addMessageComponent(times);
 		addMessageComponent(intensities);
 	}

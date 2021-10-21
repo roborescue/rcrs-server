@@ -40,8 +40,8 @@ public class VKAcknowledge extends AbstractMessage implements Control {
 
 	private VKAcknowledge() {
 		super(ControlMessageURN.VK_ACKNOWLEDGE);
-		requestID = new IntComponent("Request ID");
-		viewerID = new IntComponent("Viewer ID");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		viewerID = new IntComponent(ControlMessageComponentURN.ViewerID);
 		addMessageComponent(requestID);
 		addMessageComponent(viewerID);
 	}

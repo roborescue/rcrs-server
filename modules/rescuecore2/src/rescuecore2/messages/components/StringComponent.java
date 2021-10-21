@@ -3,7 +3,7 @@ package rescuecore2.messages.components;
 import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeString;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 import java.io.InputStream;
@@ -20,7 +20,7 @@ public class StringComponent extends AbstractMessageComponent {
        Construct a StringComponent with no content.
        @param name The name of the component.
      */
-    public StringComponent(String name) {
+    public StringComponent(URN name) {
         super(name);
         value = "";
     }
@@ -30,7 +30,7 @@ public class StringComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param value The value of this component.
      */
-    public StringComponent(String name, String value) {
+    public StringComponent(URN name, String value) {
         super(name);
         this.value = value;
     }

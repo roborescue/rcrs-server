@@ -39,8 +39,8 @@ public class KVConnectError extends AbstractMessage implements Control {
 
     private KVConnectError() {
         super(ControlMessageURN.KV_CONNECT_ERROR);
-        requestID = new IntComponent("Request ID");
-        reason = new StringComponent("Reason");
+        requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+        reason = new StringComponent(ControlMessageComponentURN.Reason);
         addMessageComponent(requestID);
         addMessageComponent(reason);
     }

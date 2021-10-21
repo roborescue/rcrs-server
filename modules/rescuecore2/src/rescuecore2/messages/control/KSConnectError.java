@@ -41,8 +41,8 @@ public class KSConnectError extends AbstractMessage implements Control {
 
 	private KSConnectError() {
 		super(ControlMessageURN.KS_CONNECT_ERROR);
-		requestID = new IntComponent("Request ID");
-		reason = new StringComponent("Reason");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		reason = new StringComponent(ControlMessageComponentURN.Reason);
 		addMessageComponent(requestID);
 		addMessageComponent(reason);
 	}

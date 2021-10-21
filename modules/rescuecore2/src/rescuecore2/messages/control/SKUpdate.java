@@ -45,9 +45,9 @@ public class SKUpdate extends AbstractMessage implements Control {
 
 	private SKUpdate() {
 		super(ControlMessageURN.SK_UPDATE);
-		id = new IntComponent("ID");
-		time = new IntComponent("Time");
-		update = new ChangeSetComponent("Changes");
+		id = new IntComponent(ControlMessageComponentURN.ID);
+		time = new IntComponent(ControlMessageComponentURN.Time);
+		update = new ChangeSetComponent(ControlMessageComponentURN.Changes);
 		addMessageComponent(id);
 		addMessageComponent(time);
 		addMessageComponent(update);

@@ -41,7 +41,7 @@ public class GKConnectOK extends AbstractMessage implements Control {
 
 	private GKConnectOK() {
 		super(ControlMessageURN.GK_CONNECT_OK);
-		world = new EntityListComponent("Entities");
+		world = new EntityListComponent(ControlMessageComponentURN.Entities);
 		addMessageComponent(world);
 	}
 

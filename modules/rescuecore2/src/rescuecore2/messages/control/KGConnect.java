@@ -35,7 +35,7 @@ public class KGConnect extends AbstractMessage implements Control {
 
     private KGConnect() {
         super(ControlMessageURN.KG_CONNECT);
-        version = new IntComponent("Version", 0);
+        version = new IntComponent(ControlMessageComponentURN.Version, 0);
         addMessageComponent(version);
     }
 

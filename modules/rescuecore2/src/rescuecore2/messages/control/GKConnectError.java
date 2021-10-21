@@ -35,7 +35,7 @@ public class GKConnectError extends AbstractMessage implements Control {
 
     private GKConnectError() {
         super(ControlMessageURN.GK_CONNECT_ERROR);
-        reason = new StringComponent("Reason");
+        reason = new StringComponent(ControlMessageComponentURN.Reason);
         addMessageComponent(reason);
     }
 

@@ -42,8 +42,8 @@ public class AKAcknowledge extends AbstractMessage implements Control {
 
 	private AKAcknowledge() {
 		super(ControlMessageURN.AK_ACKNOWLEDGE);
-		requestID = new IntComponent("Request ID");
-		agentID = new EntityIDComponent("Agent ID");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		agentID = new EntityIDComponent(ControlMessageComponentURN.AgentID);
 		addMessageComponent(requestID);
 		addMessageComponent(agentID);
 	}

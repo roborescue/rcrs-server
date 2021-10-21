@@ -42,9 +42,9 @@ public class VKConnect extends AbstractMessage implements Control {
 
     private VKConnect() {
         super(ControlMessageURN.VK_CONNECT);
-        requestID = new IntComponent("Request ID");
-        version = new IntComponent("Version");
-        viewerName = new StringComponent("Name");
+        requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+        version = new IntComponent(ControlMessageComponentURN.Version);
+        viewerName = new StringComponent(ControlMessageComponentURN.Name);
         addMessageComponent(requestID);
         addMessageComponent(version);
         addMessageComponent(viewerName);

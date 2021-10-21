@@ -57,10 +57,10 @@ public class KAConnectOK extends AbstractMessage implements Control {
 
 	private KAConnectOK() {
 		super(ControlMessageURN.KA_CONNECT_OK);
-		requestID = new IntComponent("Request ID");
-		agentID = new EntityIDComponent("Agent ID");
-		world = new EntityListComponent("Entities");
-		config = new ConfigComponent("Agent config");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		agentID = new EntityIDComponent(ControlMessageComponentURN.AgentID);
+		world = new EntityListComponent(ControlMessageComponentURN.Entities);
+		config = new ConfigComponent(ControlMessageComponentURN.AgentConfig);
 		addMessageComponent(requestID);
 		addMessageComponent(agentID);
 		addMessageComponent(world);

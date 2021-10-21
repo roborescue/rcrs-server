@@ -4,7 +4,7 @@ import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readBytes;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 import java.io.InputStream;
@@ -24,7 +24,7 @@ public class RawDataComponent extends AbstractMessageComponent {
        Construct a RawDataComponent with no content.
        @param name The name of the component.
      */
-    public RawDataComponent(String name) {
+    public RawDataComponent(URN name) {
         super(name);
     }
 
@@ -33,7 +33,7 @@ public class RawDataComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param data The data of this component.
      */
-    public RawDataComponent(String name, byte[] data) {
+    public RawDataComponent(URN name, byte[] data) {
         super(name);
         this.data = new byte[data.length];
         System.arraycopy(data, 0, this.data, 0, data.length);

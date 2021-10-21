@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
@@ -24,7 +24,7 @@ public class IntListComponent extends AbstractMessageComponent {
        Construct an IntListComponent with no data.
        @param name The name of the component.
      */
-    public IntListComponent(String name) {
+    public IntListComponent(URN name) {
         super(name);
         data = new ArrayList<Integer>();
     }
@@ -34,7 +34,7 @@ public class IntListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param data The data.
      */
-    public IntListComponent(String name, List<Integer> data) {
+    public IntListComponent(URN name, List<Integer> data) {
         super(name);
         this.data = new ArrayList<Integer>(data);
     }

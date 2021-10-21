@@ -43,9 +43,9 @@ public class KSUpdate extends AbstractMessage implements Control {
 
     private KSUpdate() {
         super(ControlMessageURN.KS_UPDATE);
-        id = new IntComponent("ID");
-        time = new IntComponent("Time");
-        changes = new ChangeSetComponent("Changes");
+        id = new IntComponent(ControlMessageComponentURN.ID);
+        time = new IntComponent(ControlMessageComponentURN.Time);
+        changes = new ChangeSetComponent(ControlMessageComponentURN.Changes);
         addMessageComponent(id);
         addMessageComponent(time);
         addMessageComponent(changes);

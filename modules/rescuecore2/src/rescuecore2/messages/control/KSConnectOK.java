@@ -54,10 +54,10 @@ public class KSConnectOK extends AbstractMessage implements Control {
 
 	private KSConnectOK() {
 		super(ControlMessageURN.KS_CONNECT_OK);
-		simulatorID = new IntComponent("Simulator ID");
-		requestID = new IntComponent("Request ID");
-		world = new EntityListComponent("Entities");
-		config = new ConfigComponent("Simulator config");
+		simulatorID = new IntComponent(ControlMessageComponentURN.SimulatorID);
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		world = new EntityListComponent(ControlMessageComponentURN.Entities);
+		config = new ConfigComponent(ControlMessageComponentURN.SimulatorConfig);
 		addMessageComponent(requestID);
 		addMessageComponent(simulatorID);
 		addMessageComponent(world);
