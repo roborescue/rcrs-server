@@ -1,12 +1,6 @@
 package rescuecore2.standard.entities;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.google.common.base.Enums;
-
 import rescuecore2.registry.AbstractEntityFactory;
-import rescuecore2.standard.entities.StandardEntityURN.StandardEntityURN_V1;
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -64,12 +58,4 @@ public final class StandardEntityFactory
 		}
 	}
 
-	@Override
-	public String getV1Equiv(int urnId) {
-		StandardEntityURN_V1 item = Enums
-				.getIfPresent(StandardEntityURN_V1.class,
-						StandardEntityURN.fromInt(urnId).name())
-				.orNull();
-		return item == null ? null : item.toString();
-	}
 }

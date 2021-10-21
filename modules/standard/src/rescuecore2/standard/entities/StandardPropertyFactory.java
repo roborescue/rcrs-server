@@ -1,20 +1,12 @@
 package rescuecore2.standard.entities;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.google.common.base.Enums;
-
 import rescuecore2.registry.AbstractPropertyFactory;
-import rescuecore2.standard.entities.StandardPropertyURN.StandardPropertyURN_V1;
-import rescuecore2.standard.messages.StandardMessageURN;
-import rescuecore2.standard.messages.StandardMessageURN.StandardMessageURN_V1;
 import rescuecore2.worldmodel.Property;
 import rescuecore2.worldmodel.properties.BooleanProperty;
 import rescuecore2.worldmodel.properties.EntityRefListProperty;
 import rescuecore2.worldmodel.properties.EntityRefProperty;
-import rescuecore2.worldmodel.properties.IntProperty;
 import rescuecore2.worldmodel.properties.IntArrayProperty;
+import rescuecore2.worldmodel.properties.IntProperty;
 
 /**
  * PropertyFactory that builds standard Robocup Standard properties.
@@ -84,12 +76,4 @@ public final class StandardPropertyFactory
 		}
 	}
 
-	@Override
-	public String getV1Equiv(int urnId) {
-		StandardPropertyURN_V1 item = Enums
-				.getIfPresent(StandardPropertyURN_V1.class,
-						StandardPropertyURN.fromInt(urnId).name())
-				.orNull();
-		return item == null ? null : item.toString();
-	}
 }

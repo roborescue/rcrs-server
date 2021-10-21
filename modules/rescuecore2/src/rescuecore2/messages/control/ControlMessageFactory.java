@@ -1,22 +1,12 @@
 package rescuecore2.messages.control;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.google.common.base.Enums;
-
 import java.io.IOException;
+import java.io.InputStream;
 
+import rescuecore2.log.Logger;
 import rescuecore2.messages.Message;
-import rescuecore2.messages.control.ControlMessageURN.ControlMessageURN_V1;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.registry.AbstractMessageFactory;
-import rescuecore2.standard.entities.StandardEntityURN;
-import rescuecore2.standard.entities.StandardEntityURN.StandardEntityURN_V1;
-import rescuecore2.standard.messages.StandardMessageURN;
-import rescuecore2.standard.messages.StandardMessageURN.StandardMessageURN_V1;
-import rescuecore2.log.Logger;
 
 /**
  * A factory for control messages.
@@ -147,13 +137,4 @@ public final class ControlMessageFactory
 		}
 	}
 
-	@Override
-	public String getV1Equiv(int urnId) {
-		ControlMessageURN_V1 item = Enums
-				.getIfPresent(ControlMessageURN_V1.class,
-						ControlMessageURN.fromInt(urnId).name())
-				.orNull();
-		return item == null ? null : item.toString();
-	}
-	
 }
