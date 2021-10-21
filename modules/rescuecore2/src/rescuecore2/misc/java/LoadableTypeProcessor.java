@@ -5,6 +5,7 @@ import static rescuecore2.misc.java.JavaTools.instantiateFactory;
 import rescuecore2.config.Config;
 import rescuecore2.registry.MessageFactory;
 import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.Factory;
 import rescuecore2.registry.PropertyFactory;
 import rescuecore2.registry.Registry;
 import rescuecore2.Constants;
@@ -52,9 +53,10 @@ public class LoadableTypeProcessor {
        @param registry The Registry to register factory classes with.
     */
     public void addFactoryRegisterCallbacks(Registry registry) {
-        addCallback(new MessageFactoryRegisterCallback(registry));
-        addCallback(new EntityFactoryRegisterCallback(registry));
-        addCallback(new PropertyFactoryRegisterCallback(registry));
+    	addCallback(new GenericFactoryRegisterCallback(registry));
+//        addCallback(new MessageFactoryRegisterCallback(registry));
+//        addCallback(new EntityFactoryRegisterCallback(registry));
+//        addCallback(new PropertyFactoryRegisterCallback(registry));
     }
 
     /**
@@ -190,77 +192,102 @@ public class LoadableTypeProcessor {
     }
 
     /**
-       A LoadableTypeCallback that will registry MessageFactory implementations.
-    */
-    public static final class MessageFactoryRegisterCallback implements LoadableTypeCallback {
-        private Registry registry;
-
-        private MessageFactoryRegisterCallback(Registry registry) {
-            this.registry = registry;
-        }
-
-        @Override
-        public void classFound(LoadableType type, String className) {
-            MessageFactory factory = instantiateFactory(className, MessageFactory.class);
-            if (factory != null) {
-                registry.registerMessageFactory(factory);
-                Logger.info("Registered message factory '" + className + "' with registry " + registry.getName());
-            }
-        }
-
-        @Override
-        public Collection<LoadableType> getTypes() {
-            return Collections.singleton(LoadableType.MESSAGE_FACTORY);
-        }
-    }
-
-    /**
-       A LoadableTypeCallback that will registry EntityFactory implementations.
-    */
-    public static final class EntityFactoryRegisterCallback implements LoadableTypeCallback {
-        private Registry registry;
-
-        private EntityFactoryRegisterCallback(Registry registry) {
-            this.registry = registry;
-        }
-
-        @Override
-        public void classFound(LoadableType type, String className) {
-            EntityFactory factory = instantiateFactory(className, EntityFactory.class);
-            if (factory != null) {
-                registry.registerEntityFactory(factory);
-                Logger.info("Registered entity factory '" + className + "' with registry " + registry.getName());
-            }
-        }
-
-        @Override
-        public Collection<LoadableType> getTypes() {
-            return Collections.singleton(LoadableType.ENTITY_FACTORY);
-        }
-    }
-
-    /**
-       A LoadableTypeCallback that will registry PropertyFactory implementations.
-    */
-    public static final class PropertyFactoryRegisterCallback implements LoadableTypeCallback {
-        private Registry registry;
-
-        private PropertyFactoryRegisterCallback(Registry registry) {
-            this.registry = registry;
-        }
-
-        @Override
-        public void classFound(LoadableType type, String className) {
-            PropertyFactory factory = instantiateFactory(className, PropertyFactory.class);
-            if (factory != null) {
-                registry.registerPropertyFactory(factory);
-                Logger.info("Registered property factory '" + className + "' with registry " + registry.getName());
-            }
-        }
-
-        @Override
-        public Collection<LoadableType> getTypes() {
-            return Collections.singleton(LoadableType.PROPERTY_FACTORY);
-        }
-    }
+    A LoadableTypeCallback that will registry َAll Factory implementations.
+	 */
+	 public static final class GenericFactoryRegisterCallback implements LoadableTypeCallback {
+	     private Registry registry;
+	
+	     private GenericFactoryRegisterCallback(Registry registry) {
+	         this.registry = registry;
+	     }
+	
+	     @Override
+	     public void classFound(LoadableType type, String className) {
+	         Factory factory = instantiateFactory(className, Factory.class);
+	         if (factory != null) {
+	             registry.registerFactory(factory);
+	             Logger.info("Registered factory '" + className + "' with registry " + registry.getName());
+	         }
+	     }
+	
+	     @Override
+	     public Collection<LoadableType> getTypes() {
+	         return Collections.singleton(LoadableType.GENERIC_FACTORY);
+	     }
+	 }
+     
+//    /**
+//       A LoadableTypeCallback that will registry MessageFactory implementations.
+//    */
+//    public static final class MessageFactoryRegisterCallback implements LoadableTypeCallback {
+//        private Registry registry;
+//
+//        private MessageFactoryRegisterCallback(Registry registry) {
+//            this.registry = registry;
+//        }
+//
+//        @Override
+//        public void classFound(LoadableType type, String className) {
+//            MessageFactory factory = instantiateFactory(className, MessageFactory.class);
+//            if (factory != null) {
+//                registry.registerMessageFactory(factory);
+//                Logger.info("Registered message factory '" + className + "' with registry " + registry.getName());
+//            }
+//        }
+//
+//        @Override
+//        public Collection<LoadableType> getTypes() {
+//            return Collections.singleton(LoadableType.MESSAGE_FACTORY);
+//        }
+//    }
+//
+//    /**
+//       A LoadableTypeCallback that will registry EntityFactory implementations.
+//    */
+//    public static final class EntityFactoryRegisterCallback implements LoadableTypeCallback {
+//        private Registry registry;
+//
+//        private EntityFactoryRegisterCallback(Registry registry) {
+//            this.registry = registry;
+//        }
+//
+//        @Override
+//        public void classFound(LoadableType type, String className) {
+//            EntityFactory factory = instantiateFactory(className, EntityFactory.class);
+//            if (factory != null) {
+//                registry.registerEntityFactory(factory);
+//                Logger.info("Registered entity factory '" + className + "' with registry " + registry.getName());
+//            }
+//        }
+//
+//        @Override
+//        public Collection<LoadableType> getTypes() {
+//            return Collections.singleton(LoadableType.ENTITY_FACTORY);
+//        }
+//    }
+//
+//    /**
+//       A LoadableTypeCallback that will registry PropertyFactory implementations.
+//    */
+//    public static final class PropertyFactoryRegisterCallback implements LoadableTypeCallback {
+//        private Registry registry;
+//
+//        private PropertyFactoryRegisterCallback(Registry registry) {
+//            this.registry = registry;
+//        }
+//
+//        @Override
+//        public void classFound(LoadableType type, String className) {
+//            PropertyFactory factory = instantiateFactory(className, PropertyFactory.class);
+//            if (factory != null) {
+//                registry.registerPropertyFactory(factory);
+//                Logger.info("Registered property factory '" + className + "' with registry " + registry.getName());
+//            }
+//        }
+//
+//        @Override
+//        public Collection<LoadableType> getTypes() {
+//            return Collections.singleton(LoadableType.PROPERTY_FACTORY);
+//        }
+//    }
 }

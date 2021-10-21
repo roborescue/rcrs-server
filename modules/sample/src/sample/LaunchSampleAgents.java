@@ -45,13 +45,13 @@ public final class LaunchSampleAgents {
 	public static void main(String[] args) {
 		try {
 			Registry.SYSTEM_REGISTRY
-					.registerEntityFactory(StandardEntityFactory.INSTANCE);
+					.registerFactory(StandardEntityFactory.INSTANCE);
 			Registry.SYSTEM_REGISTRY
-					.registerMessageFactory(StandardMessageFactory.INSTANCE);
-			Registry.SYSTEM_REGISTRY.registerMessageComponentFactory(
-					StandardMessageComponentFactory.INSTANCE);
+					.registerFactory(StandardMessageFactory.INSTANCE);
 			Registry.SYSTEM_REGISTRY
-					.registerPropertyFactory(StandardPropertyFactory.INSTANCE);
+					.registerFactory(StandardMessageComponentFactory.INSTANCE);
+			Registry.SYSTEM_REGISTRY
+					.registerFactory(StandardPropertyFactory.INSTANCE);
 			Config config = new Config();
 			args = CommandLineOptions.processArgs(args, config);
 			int port = config.getIntValue(Constants.KERNEL_PORT_NUMBER_KEY,

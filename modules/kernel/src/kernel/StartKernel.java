@@ -49,6 +49,7 @@ import rescuecore2.misc.Pair;
 import rescuecore2.misc.java.LoadableType;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.Factory;
 import rescuecore2.registry.MessageComponentFactory;
 import rescuecore2.registry.MessageFactory;
 import rescuecore2.registry.PropertyFactory;
@@ -126,41 +127,49 @@ public final class StartKernel {
 			Registry localRegistry = new Registry("Kernel local registry");
 			// Register preferred message, entity and property factories
 			for (String next : config
-					.getArrayValue(Constants.MESSAGE_FACTORY_KEY, "")) {
-				MessageFactory factory = instantiateFactory(next,
-						MessageFactory.class);
+					.getArrayValue(Constants.FACTORY_KEY, "")) {
+				Factory factory = instantiateFactory(next,Factory.class);
 				if (factory != null) {
-					localRegistry.registerMessageFactory(factory);
-					Logger.info("Registered local message factory: " + next);
+					localRegistry.registerFactory(factory);
+					Logger.info("Registered local factory: " + next);
 				}
 			}
-			for (String next : config
-					.getArrayValue(Constants.MESSAGE_COMPONENT_FACTORY_KEY, "")) {
-				MessageComponentFactory factory = instantiateFactory(next,
-						MessageComponentFactory.class);
-				if (factory != null) {
-					localRegistry.registerMessageComponentFactory(factory);
-					Logger.info("Registered local message factory: " + next);
-				}
-			}
-			for (String next : config
-					.getArrayValue(Constants.ENTITY_FACTORY_KEY, "")) {
-				EntityFactory factory = instantiateFactory(next,
-						EntityFactory.class);
-				if (factory != null) {
-					localRegistry.registerEntityFactory(factory);
-					Logger.info("Registered local entity factory: " + next);
-				}
-			}
-			for (String next : config
-					.getArrayValue(Constants.PROPERTY_FACTORY_KEY, "")) {
-				PropertyFactory factory = instantiateFactory(next,
-						PropertyFactory.class);
-				if (factory != null) {
-					localRegistry.registerPropertyFactory(factory);
-					Logger.info("Registered local property factory: " + next);
-				}
-			}
+//			for (String next : config
+//					.getArrayValue(Constants.MESSAGE_FACTORY_KEY, "")) {
+//				MessageFactory factory = instantiateFactory(next,
+//						MessageFactory.class);
+//				if (factory != null) {
+//					localRegistry.registerMessageFactory(factory);
+//					Logger.info("Registered local message factory: " + next);
+//				}
+//			}
+//			for (String next : config
+//					.getArrayValue(Constants.MESSAGE_COMPONENT_FACTORY_KEY, "")) {
+//				MessageComponentFactory factory = instantiateFactory(next,
+//						MessageComponentFactory.class);
+//				if (factory != null) {
+//					localRegistry.registerMessageComponentFactory(factory);
+//					Logger.info("Registered local message factory: " + next);
+//				}
+//			}
+//			for (String next : config
+//					.getArrayValue(Constants.ENTITY_FACTORY_KEY, "")) {
+//				EntityFactory factory = instantiateFactory(next,
+//						EntityFactory.class);
+//				if (factory != null) {
+//					localRegistry.registerEntityFactory(factory);
+//					Logger.info("Registered local entity factory: " + next);
+//				}
+//			}
+//			for (String next : config
+//					.getArrayValue(Constants.PROPERTY_FACTORY_KEY, "")) {
+//				PropertyFactory factory = instantiateFactory(next,
+//						PropertyFactory.class);
+//				if (factory != null) {
+//					localRegistry.registerPropertyFactory(factory);
+//					Logger.info("Registered local property factory: " + next);
+//				}
+//			}
 
 			// CHECKSTYLE:OFF:MagicNumber
 			config.addConstraint(new IntegerValueConstraint(
@@ -169,13 +178,15 @@ public final class StartKernel {
 			config.addConstraint(new IntegerValueConstraint(
 					KERNEL_STARTUP_TIME_KEY, 0, Integer.MAX_VALUE));
 			config.addConstraint(new ClassNameSetValueConstraint(
-					Constants.MESSAGE_FACTORY_KEY, MessageFactory.class));
-			config.addConstraint(new ClassNameSetValueConstraint(
-					Constants.MESSAGE_COMPONENT_FACTORY_KEY, MessageComponentFactory.class));
-			config.addConstraint(new ClassNameSetValueConstraint(
-					Constants.ENTITY_FACTORY_KEY, EntityFactory.class));
-			config.addConstraint(new ClassNameSetValueConstraint(
-					Constants.PROPERTY_FACTORY_KEY, PropertyFactory.class));
+					Constants.FACTORY_KEY, Factory.class));
+//			config.addConstraint(new ClassNameSetValueConstraint(
+//					Constants.MESSAGE_FACTORY_KEY, MessageFactory.class));
+//			config.addConstraint(new ClassNameSetValueConstraint(
+//					Constants.MESSAGE_COMPONENT_FACTORY_KEY, MessageComponentFactory.class));
+//			config.addConstraint(new ClassNameSetValueConstraint(
+//					Constants.ENTITY_FACTORY_KEY, EntityFactory.class));
+//			config.addConstraint(new ClassNameSetValueConstraint(
+//					Constants.PROPERTY_FACTORY_KEY, PropertyFactory.class));
 			config.addConstraint(new ClassNameSetValueConstraint(
 					COMMAND_FILTERS_KEY, CommandFilter.class));
 			config.addConstraint(new ClassNameSetValueConstraint(

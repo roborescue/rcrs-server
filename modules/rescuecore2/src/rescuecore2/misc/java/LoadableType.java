@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 
 import rescuecore2.registry.MessageFactory;
 import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.Factory;
 import rescuecore2.registry.PropertyFactory;
 import rescuecore2.components.Agent;
 import rescuecore2.components.Simulator;
@@ -23,12 +24,13 @@ import rescuecore2.log.Logger;
    Classes in the jar file can be inspected and checked to see if they extend (or implement) a particular class (interface).
  */
 public class LoadableType {
+	public static final LoadableType GENERIC_FACTORY= new LoadableType("Factory", "(.+Factory).class", Factory.class);
     /** A MessageFactory loadable type. */
-    public static final LoadableType MESSAGE_FACTORY = new LoadableType("MessageFactory", "(.+MessageFactory).class", MessageFactory.class);
-    /** An EntityFactory loadable type. */
-    public static final LoadableType ENTITY_FACTORY = new LoadableType("EntityFactory", "(.+EntityFactory).class", EntityFactory.class);
-    /** A PropertyFactory loadable type. */
-    public static final LoadableType PROPERTY_FACTORY = new LoadableType("PropertyFactory", "(.+PropertyFactory).class", PropertyFactory.class);
+//    public static final LoadableType MESSAGE_FACTORY = new LoadableType("MessageFactory", "(.+MessageFactory).class", MessageFactory.class);
+//    /** An EntityFactory loadable type. */
+//    public static final LoadableType ENTITY_FACTORY = new LoadableType("EntityFactory", "(.+EntityFactory).class", EntityFactory.class);
+//    /** A PropertyFactory loadable type. */
+//    public static final LoadableType PROPERTY_FACTORY = new LoadableType("PropertyFactory", "(.+PropertyFactory).class", PropertyFactory.class);
     /** An Agent loadable type. */
     public static final LoadableType AGENT = new LoadableType("Agent", "(.+(?:FireBrigade|PoliceForce|AmbulanceTeam|Centre|Center|Civilian)).class", Agent.class);
     /** A Simulator loadable type. */
