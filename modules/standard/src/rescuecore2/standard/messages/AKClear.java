@@ -44,7 +44,7 @@ public class AKClear extends AbstractCommand {
 
 	private AKClear() {
 		super(StandardMessageURN.AK_CLEAR);
-		target = new EntityIDComponent("Target");
+		target = new EntityIDComponent(StandardMessageComponentURN.Target);
 		addMessageComponent(target);
 	}
 

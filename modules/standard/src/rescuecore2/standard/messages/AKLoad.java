@@ -44,7 +44,7 @@ public class AKLoad extends AbstractCommand {
 
 	private AKLoad() {
 		super(StandardMessageURN.AK_LOAD);
-		target = new EntityIDComponent("Target");
+		target = new EntityIDComponent(StandardMessageComponentURN.Target);
 		addMessageComponent(target);
 	}
 

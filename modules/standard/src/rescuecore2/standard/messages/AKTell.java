@@ -44,8 +44,8 @@ public class AKTell extends AbstractCommand {
 
 	private AKTell() {
 		super(StandardMessageURN.AK_TELL);
-		channel = new IntComponent("Channel");
-		data = new RawDataComponent("Message");
+		channel = new IntComponent(StandardMessageComponentURN.Channel);
+		data = new RawDataComponent(StandardMessageComponentURN.Message);
 		addMessageComponent(channel);
 		addMessageComponent(data);
 	}

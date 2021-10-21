@@ -44,7 +44,7 @@ public class AKSubscribe extends AbstractCommand {
 
 	private AKSubscribe() {
 		super(StandardMessageURN.AK_SUBSCRIBE);
-		channels = new IntListComponent("Channels");
+		channels = new IntListComponent(StandardMessageComponentURN.Channels);
 		addMessageComponent(channels);
 	}
 

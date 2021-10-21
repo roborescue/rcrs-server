@@ -46,8 +46,8 @@ public class AKSpeak extends AbstractCommand {
 
 	private AKSpeak() {
 		super(StandardMessageURN.AK_SPEAK);
-		channel = new IntComponent("Channel");
-		data = new RawDataComponent("Message");
+		channel = new IntComponent(StandardMessageComponentURN.Channel);
+		data = new RawDataComponent(StandardMessageComponentURN.Message);
 		addMessageComponent(channel);
 		addMessageComponent(data);
 	}

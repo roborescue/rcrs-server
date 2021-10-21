@@ -53,7 +53,7 @@ public class AKSay extends AbstractCommand {
    */
   private AKSay() {
     super( StandardMessageURN.AK_SAY );
-    data = new RawDataComponent( "Message" );
+    data = new RawDataComponent( StandardMessageComponentURN.Message );
     addMessageComponent( data );
   }
 

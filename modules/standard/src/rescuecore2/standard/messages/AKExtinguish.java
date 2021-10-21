@@ -48,8 +48,8 @@ public class AKExtinguish extends AbstractCommand {
 
 	private AKExtinguish() {
 		super(StandardMessageURN.AK_EXTINGUISH);
-		target = new EntityIDComponent("Target");
-		water = new IntComponent("Water");
+		target = new EntityIDComponent(StandardMessageComponentURN.Target);
+		water = new IntComponent(StandardMessageComponentURN.Water);
 		addMessageComponent(target);
 		addMessageComponent(water);
 	}

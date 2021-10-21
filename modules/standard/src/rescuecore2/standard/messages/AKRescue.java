@@ -44,7 +44,7 @@ public class AKRescue extends AbstractCommand {
 
 	private AKRescue() {
 		super(StandardMessageURN.AK_RESCUE);
-		target = new EntityIDComponent("Target");
+		target = new EntityIDComponent(StandardMessageComponentURN.Target);
 		addMessageComponent(target);
 	}
 

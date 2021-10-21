@@ -62,13 +62,13 @@ public class AKConnect extends AbstractMessage implements Control {
 
 	private AKConnect() {
 		super(ControlMessageURN.AK_CONNECT);
-		requestID = new IntComponent("Request ID");
-		version = new IntComponent("Version");
-		agentName = new StringComponent("Name");
+		requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+		version = new IntComponent(ControlMessageComponentURN.Version);
+		agentName = new StringComponent(ControlMessageComponentURN.Name);
 		requestedEntityTypes_v1 = new StringListComponent(
-				"Requested entity types v1");
+				ControlMessageComponentURN.RequestedEntityTypes);
 		requestedEntityTypes = new IntListComponent(
-				"Requested entity types");
+				ControlMessageComponentURN.RequestedEntityTypes);
 		addMessageComponent(requestID);
 		addMessageComponent(version);
 		addMessageComponent(agentName);

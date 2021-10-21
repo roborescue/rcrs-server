@@ -69,9 +69,9 @@ public class AKMove extends AbstractCommand {
 
 	private AKMove() {
 		super(StandardMessageURN.AK_MOVE);
-		path = new EntityIDListComponent("Path");
-		x = new IntComponent("Destination X");
-		y = new IntComponent("Destination Y");
+		path = new EntityIDListComponent(StandardMessageComponentURN.Path);
+		x = new IntComponent(StandardMessageComponentURN.DestinationX);
+		y = new IntComponent(StandardMessageComponentURN.DestinationY);
 		addMessageComponent(path);
 		addMessageComponent(x);
 		addMessageComponent(y);

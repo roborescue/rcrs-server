@@ -48,8 +48,8 @@ public class AKClearArea extends AbstractCommand {
 
 	private AKClearArea() {
 		super(StandardMessageURN.AK_CLEAR_AREA);
-		x = new IntComponent("Destination X");
-		y = new IntComponent("Destination Y");
+		x = new IntComponent(StandardMessageComponentURN.DestinationX);
+		y = new IntComponent(StandardMessageComponentURN.DestinationY);
 		addMessageComponent(x);
 		addMessageComponent(y);
 	}
