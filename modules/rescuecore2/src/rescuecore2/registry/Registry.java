@@ -26,9 +26,9 @@ public final class Registry {
 
 	static {
 		// Register the ControlMessageFactory
-		SYSTEM_REGISTRY.registerMessageFactory(
+		SYSTEM_REGISTRY.registerFactory(
 				rescuecore2.messages.control.ControlMessageFactory.INSTANCE);
-		SYSTEM_REGISTRY.registerMessageComponentFactory(
+		SYSTEM_REGISTRY.registerFactory(
 				rescuecore2.messages.control.ControlMessageComponentFactory.INSTANCE);
 	}
 
@@ -122,134 +122,59 @@ public final class Registry {
 		return name;
 	}
 
+
 	/**
-	 * Register an entity factory. This will register all entity URNs that the
+	 * Register a factory. This will register all message URNs that the
 	 * factory knows about.
 	 * 
-	 * @param factory The entity factory to register.
+	 * @param factory The  factory to register.
 	 */
-	public void registerEntityFactory(EntityFactory factory) {
-		for (Integer urn : factory.getKnownURNs()) {
-			registerEntityFactory(urn, factory);
+	public void registerFactory(Factory factory) {
+		for (int urn : factory.getKnownURNs()) {
+			registerFactory(urn, factory);
 		}
 	}
-
+	
 	/**
-	 * Register an entity URN and assign an EntityFactory for constructing
-	 * instances of this type.
-	 * 
-	 * @param urn     The urn to register.
-	 * @param factory The factory that is responsible for constructing entity
-	 *                instances of this type.
-	 */
-	public void registerEntityFactory(Integer urn, EntityFactory factory) {
-		synchronized (entityFactories) {
-			EntityFactory old = entityFactories.get(urn);
-			if (old != null && old != factory) {
-				Logger.warn(getName() + ": entity " + urn
-						+ " is being clobbered by " + factory
-						+ ". Old factory: " + old);
-			}
-			entityFactories.put(urn, factory);
-			urn_prettyName.put(urn, factory.getPrettyName(urn));
-			String v1urn = factory.getV1Equiv(urn);
-			v1_v2_map.put(v1urn, urn);
-			v2_v1_map.put(urn, v1urn);
-		}
-	}
-
-	/**
-	 * Register a property factory. This will register all property URNs that
-	 * the factory knows about.
-	 * 
-	 * @param factory The property factory to register.
-	 */
-	public void registerPropertyFactory(PropertyFactory factory) {
-		for (Integer urn : factory.getKnownURNs()) {
-			registerPropertyFactory(urn, factory);
-		}
-	}
-
-	/**
-	 * Register a property URN and assign a PropertyFactory for constructing
-	 * instances of this type.
-	 * 
-	 * @param urn     The urn to register.
-	 * @param factory The factory that is responsible for constructing property
-	 *                instances of this type.
-	 */
-	public void registerPropertyFactory(Integer urn, PropertyFactory factory) {
-		synchronized (propertyFactories) {
-			PropertyFactory old = propertyFactories.get(urn);
-			if (old != null && old != factory) {
-				Logger.warn(getName() + ": property " + urn
-						+ " is being clobbered by " + factory
-						+ ". Old factory: " + old);
-			}
-			propertyFactories.put(urn, factory);
-			urn_prettyName.put(urn, factory.getPrettyName(urn));
-			
-			String v1urn = factory.getV1Equiv(urn);
-			v1_v2_map.put(v1urn, urn);
-			v2_v1_map.put(urn, v1urn);
-		}
-	}
-
-	/**
-	 * Register a message factory. This will register all message URNs that the
-	 * factory knows about.
-	 * 
-	 * @param factory The message factory to register.
-	 */
-	public void registerMessageFactory(MessageFactory factory) {
-		for (Integer urn : factory.getKnownURNs()) {
-			registerMessageFactory(urn, factory);
-		}
-	}
-
-	/**
-	 * Register a message URN and assign a MessageFactory for constructing
+	 * Register a URN and assign a Factory for constructing
 	 * instances of this type.
 	 * 
 	 * @param urn     The urn to register.
 	 * @param factory The factory that is responsible for constructing message
 	 *                instances of this type.
 	 */
-	public void registerMessageFactory(Integer urn, MessageFactory factory) {
-		synchronized (messageFactories) {
-			MessageFactory old = messageFactories.get(urn);
+	public void registerFactory(int urn, Factory factory) {
+		if(factory instanceof MessageComponentFactory)
+			registerFactoryInternal(urn,(MessageComponentFactory) factory,messageComponentFactories);
+		else if(factory instanceof MessageFactory)
+			registerFactoryInternal(urn,(MessageFactory) factory,messageFactories);
+//			registerMessageFactory(urn,(MessageFactory) factory);
+		else if(factory instanceof PropertyFactory)
+			registerFactoryInternal(urn,(PropertyFactory) factory,propertyFactories);
+//			registerPropertyFactory(urn,(PropertyFactory) factory);
+		else if(factory instanceof EntityFactory)
+			registerFactoryInternal(urn,(EntityFactory) factory,entityFactories);
+//			registerEntityFactory(urn,(EntityFactory) factory);
+		else 
+			Logger.error(getName() + ":unknown factory! "+factory.getClass().getName());
+		
+	}
+	private <T extends Factory> void registerFactoryInternal(int urn, T factory,Map<Integer, T> target) {
+		synchronized (target) {
+			T old = target.get(urn);
 			if (old != null && old != factory) {
-				Logger.warn(getName() + ": message " + urn
+				Logger.warn(getName() + ": " + urn +" ("+old.getPrettyName(urn)+":"+old.getV1Equiv(urn)+")"
 						+ " is being clobbered by " + factory
 						+ ". Old factory: " + old);
 			}
-			messageFactories.put(urn, factory);
+			target.put(urn, factory);
+			
 			urn_prettyName.put(urn, factory.getPrettyName(urn));
 			String v1urn = factory.getV1Equiv(urn);
 			v1_v2_map.put(v1urn, urn);
 			v2_v1_map.put(urn, v1urn);
 		}
-	}
-
-	public void registerMessageComponentFactory(MessageComponentFactory factory) {
-		for (Integer urn : factory.getKnownURNs()) {
-			registerMessageComponentFactory(urn, factory);
-		}
-	}
-	public void registerMessageComponentFactory(Integer urn, MessageComponentFactory factory) {
-		synchronized (messageComponentFactories) {
-			MessageComponentFactory old = messageComponentFactories.get(urn);
-			if (old != null && old != factory) {
-				Logger.warn(getName() + ": message component " + urn
-						+ " is being clobbered by " + factory
-						+ ". Old factory: " + old);
-			}
-			messageComponentFactories.put(urn, factory);
-			urn_prettyName.put(urn, factory.getPrettyName(urn));
-			String v1urn = factory.getV1Equiv(urn);
-			v1_v2_map.put(v1urn, urn);
-			v2_v1_map.put(urn, v1urn);
-		}
+		
 	}
 	/**
 	 * Create an entity from a urn. If the urn is not recognised then return
