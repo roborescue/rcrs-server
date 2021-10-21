@@ -65,16 +65,34 @@ public enum ControlMessageURN implements URN {
 	ENTITY_ID_RESPONSE(CONTROL_MSG_URN_PREFIX | 25);
 
 	private int urn;
+	private String urnString;
 	public static final Map<Integer, ControlMessageURN> MAP = URN
 			.generateMap(ControlMessageURN.class);
+	public static final Map<String, ControlMessageURN> MAPSTR = URN
+			.generateMapStr(ControlMessageURN.class);
 
-	private ControlMessageURN(int urn) {
+	private ControlMessageURN(int urn) {// TODO remove
+		this(urn, null);
+	}
+
+	private ControlMessageURN(int urn, String urnString) {
 		this.urn = urn;
+		this.urnString = urnString;
+	}
+
+	@Override
+	public int getUrn() {
+		return urn;
+	}
+
+	@Override
+	public String getUrnString() {
+		return urnString;
 	}
 
 	/**
 	 * Convert a String to a ControlMessageURN.
-	 * 
+	 *
 	 * @param s The String to convert.
 	 * @return A ConotrlMessageURN.
 	 */
@@ -82,9 +100,8 @@ public enum ControlMessageURN implements URN {
 		return MAP.get(s);
 	}
 
-	@Override
-	public int getUrn() {
-		return urn;
+	public static ControlMessageURN fromString(String urn) {
+		return MAPSTR.get(urn);
 	}
 
 	public enum ControlMessageURN_V1 {
@@ -152,6 +169,11 @@ public enum ControlMessageURN implements URN {
 
 		private ControlMessageURN_V1(String urn) {
 			this.urn = urn;
+		}
+
+		@Override
+		public String toString() {
+			return urn;
 		}
 	}
 }

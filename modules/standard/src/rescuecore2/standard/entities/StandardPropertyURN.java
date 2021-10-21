@@ -5,8 +5,7 @@ import static rescuecore2.standard.Constants.PROPERTY_URN_PREFIX_V1;
 
 import java.util.Map;
 
-import rescuecore2.URN;
-import rescuecore2.messages.control.ControlMessageURN;;
+import rescuecore2.URN;;
 
 /**
  * URNs for standard property types.
@@ -44,11 +43,29 @@ public enum StandardPropertyURN implements URN {
 	WAITINGLISTSIZE(PROPERTY_URN_PREFIX | 35);
 
 	private int urn;
+	private String urnString;
 	public static final Map<Integer, StandardPropertyURN> MAP = URN
 			.generateMap(StandardPropertyURN.class);
+	public static final Map<String, StandardPropertyURN> MAPSTR = URN
+			.generateMapStr(StandardPropertyURN.class);
 
-	private StandardPropertyURN(int urn) {
+	private StandardPropertyURN(int urn) {// TODO remove
+		this(urn, null);
+	}
+
+	private StandardPropertyURN(int urn, String urnString) {
 		this.urn = urn;
+		this.urnString = urnString;
+	}
+
+	@Override
+	public int getUrn() {
+		return urn;
+	}
+
+	@Override
+	public String getUrnString() {
+		return urnString;
 	}
 
 	/**
@@ -61,9 +78,8 @@ public enum StandardPropertyURN implements URN {
 		return MAP.get(s);
 	}
 
-	@Override
-	public int getUrn() {
-		return urn;
+	public static StandardPropertyURN fromString(String s) {
+		return MAPSTR.get(s);
 	}
 
 	/**

@@ -1,12 +1,11 @@
 package rescuecore2.standard.entities;
 
+import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX;
 import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX_V1;
 
 import java.util.Map;
 
 import rescuecore2.URN;
-
-import static rescuecore2.standard.Constants.ENTITY_URN_PREFIX;
 
 /**
  * URNs for standard entities.
@@ -24,11 +23,19 @@ public enum StandardEntityURN implements URN {
 	POLICE_FORCE(ENTITY_URN_PREFIX | 14);
 
 	private int urn;
+	private String urnString;
 	public static final Map<Integer, StandardEntityURN> MAP = URN
 			.generateMap(StandardEntityURN.class);
+	public static final Map<String, StandardEntityURN> MAPSTR = URN
+			.generateMapStr(StandardEntityURN.class);
 
-	private StandardEntityURN(int urn) {
+	private StandardEntityURN(int urn) {// TODO remove
+		this(urn, null);
+	}
+
+	private StandardEntityURN(int urn, String urnString) {
 		this.urn = urn;
+		this.urnString = urnString;
 	}
 
 	@Override
@@ -36,8 +43,17 @@ public enum StandardEntityURN implements URN {
 		return urn;
 	}
 
+	@Override
+	public String getUrnString() {
+		return urnString;
+	}
+
 	public static StandardEntityURN fromInt(int urn) {
 		return MAP.get(urn);
+	}
+
+	public static StandardEntityURN fromString(String urn) {
+		return MAPSTR.get(urn);
 	}
 
 	/**
