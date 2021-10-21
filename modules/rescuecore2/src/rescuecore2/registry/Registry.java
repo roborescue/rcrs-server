@@ -28,6 +28,8 @@ public final class Registry {
 		// Register the ControlMessageFactory
 		SYSTEM_REGISTRY.registerMessageFactory(
 				rescuecore2.messages.control.ControlMessageFactory.INSTANCE);
+		SYSTEM_REGISTRY.registerMessageComponentFactory(
+				rescuecore2.messages.control.ControlMessageComponentFactory.INSTANCE);
 	}
 
 	private final Map<Integer, EntityFactory> entityFactories;
