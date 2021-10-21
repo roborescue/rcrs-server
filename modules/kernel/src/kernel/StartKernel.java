@@ -49,6 +49,7 @@ import rescuecore2.misc.Pair;
 import rescuecore2.misc.java.LoadableType;
 import rescuecore2.misc.java.LoadableTypeProcessor;
 import rescuecore2.registry.EntityFactory;
+import rescuecore2.registry.MessageComponentFactory;
 import rescuecore2.registry.MessageFactory;
 import rescuecore2.registry.PropertyFactory;
 import rescuecore2.registry.Registry;
@@ -134,6 +135,15 @@ public final class StartKernel {
 				}
 			}
 			for (String next : config
+					.getArrayValue(Constants.MESSAGE_COMPONENT_FACTORY_KEY, "")) {
+				MessageComponentFactory factory = instantiateFactory(next,
+						MessageComponentFactory.class);
+				if (factory != null) {
+					localRegistry.registerMessageComponentFactory(factory);
+					Logger.info("Registered local message factory: " + next);
+				}
+			}
+			for (String next : config
 					.getArrayValue(Constants.ENTITY_FACTORY_KEY, "")) {
 				EntityFactory factory = instantiateFactory(next,
 						EntityFactory.class);
@@ -160,6 +170,8 @@ public final class StartKernel {
 					KERNEL_STARTUP_TIME_KEY, 0, Integer.MAX_VALUE));
 			config.addConstraint(new ClassNameSetValueConstraint(
 					Constants.MESSAGE_FACTORY_KEY, MessageFactory.class));
+			config.addConstraint(new ClassNameSetValueConstraint(
+					Constants.MESSAGE_COMPONENT_FACTORY_KEY, MessageComponentFactory.class));
 			config.addConstraint(new ClassNameSetValueConstraint(
 					Constants.ENTITY_FACTORY_KEY, EntityFactory.class));
 			config.addConstraint(new ClassNameSetValueConstraint(

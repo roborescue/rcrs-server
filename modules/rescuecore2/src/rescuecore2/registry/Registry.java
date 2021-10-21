@@ -33,6 +33,7 @@ public final class Registry {
 	private final Map<Integer, EntityFactory> entityFactories;
 	private final Map<Integer, PropertyFactory> propertyFactories;
 	private final Map<Integer, MessageFactory> messageFactories;
+	private final Map<Integer, MessageComponentFactory> messageComponentFactories;
 	private final Map<String, Integer> v1_v2_map;
 	private final Map<Integer, String> v2_v1_map;
 	private final Map<Integer, String> urn_prettyName;
@@ -78,6 +79,7 @@ public final class Registry {
 		entityFactories = new HashMap<Integer, EntityFactory>();
 		propertyFactories = new HashMap<Integer, PropertyFactory>();
 		messageFactories = new HashMap<Integer, MessageFactory>();
+		messageComponentFactories=new HashMap<Integer, MessageComponentFactory>();
 		v1_v2_map = new HashMap<String,Integer>();
 		v2_v1_map = new HashMap<Integer,String>();
 		urn_prettyName=new HashMap<Integer, String>();
@@ -227,6 +229,26 @@ public final class Registry {
 		}
 	}
 
+	public void registerMessageComponentFactory(MessageComponentFactory factory) {
+		for (Integer urn : factory.getKnownMessageURNs()) {
+			registerMessageComponentFactory(urn, factory);
+		}
+	}
+	public void registerMessageComponentFactory(Integer urn, MessageComponentFactory factory) {
+		synchronized (messageComponentFactories) {
+			MessageComponentFactory old = messageComponentFactories.get(urn);
+			if (old != null && old != factory) {
+				Logger.warn(getName() + ": message component " + urn
+						+ " is being clobbered by " + factory
+						+ ". Old factory: " + old);
+			}
+			messageComponentFactories.put(urn, factory);
+			urn_prettyName.put(urn, factory.getPrettyName(urn));
+			String v1urn = factory.getV1Equiv(urn);
+			v1_v2_map.put(v1urn, urn);
+			v2_v1_map.put(urn, v1urn);
+		}
+	}
 	/**
 	 * Create an entity from a urn. If the urn is not recognised then return
 	 * null. This method will delegate to the

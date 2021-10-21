@@ -10,6 +10,7 @@ public final class Constants {
 	
     /** Config key for message factories. */
     public static final String MESSAGE_FACTORY_KEY = "factory.messages";
+    public static final String MESSAGE_COMPONENT_FACTORY_KEY = "factory.message_components";
     /** Config key for entity factories. */
     public static final String ENTITY_FACTORY_KEY = "factory.entities";
     /** Config key for property factories. */
