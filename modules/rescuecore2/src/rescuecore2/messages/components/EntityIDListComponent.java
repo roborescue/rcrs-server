@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.worldmodel.EntityID;
@@ -25,7 +25,7 @@ public class EntityIDListComponent extends AbstractMessageComponent {
        Construct an EntityIDListComponent with no data.
        @param name The name of the component.
      */
-    public EntityIDListComponent(String name) {
+    public EntityIDListComponent(URN name) {
         super(name);
         ids = new ArrayList<EntityID>();
     }
@@ -35,7 +35,7 @@ public class EntityIDListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param ids The data.
      */
-    public EntityIDListComponent(String name, List<EntityID> ids) {
+    public EntityIDListComponent(URN name, List<EntityID> ids) {
         super(name);
         this.ids = new ArrayList<EntityID>(ids);
     }

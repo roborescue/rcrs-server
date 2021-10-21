@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.FloatListProto;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
@@ -29,7 +29,7 @@ public class FloatListComponent extends AbstractMessageComponent {
 	 * @param name
 	 *            The name of the component.
 	 */
-	public FloatListComponent(String name) {
+	public FloatListComponent(URN name) {
 		super(name);
 		data = new ArrayList<Float>();
 	}
@@ -42,7 +42,7 @@ public class FloatListComponent extends AbstractMessageComponent {
 	 * @param data
 	 *            The data.
 	 */
-	public FloatListComponent(String name, List<Float> data) {
+	public FloatListComponent(URN name, List<Float> data) {
 		super(name);
 		this.data = new ArrayList<Float>(data);
 	}

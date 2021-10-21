@@ -3,7 +3,8 @@ package rescuecore2.messages.components;
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.worldmodel.EntityID;
 
@@ -21,7 +22,7 @@ public class EntityIDComponent extends AbstractMessageComponent {
        Construct an EntityIDComponent with no content.
        @param name The name of the component.
      */
-    public EntityIDComponent(String name) {
+    public EntityIDComponent(URN name) {
         super(name);
         value = null;
     }
@@ -31,7 +32,7 @@ public class EntityIDComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param value The value of this component.
      */
-    public EntityIDComponent(String name, EntityID value) {
+    public EntityIDComponent(URN name, EntityID value) {
         super(name);
         this.value = value;
     }

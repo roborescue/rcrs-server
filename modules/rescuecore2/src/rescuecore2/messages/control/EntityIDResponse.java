@@ -59,9 +59,9 @@ public class EntityIDResponse extends AbstractMessage implements Control {
 
 	private EntityIDResponse() {
 		super(ControlMessageURN.ENTITY_ID_RESPONSE);
-		simID = new IntComponent("Simulator ID");
-		requestID = new IntComponent("Request number");
-		newID = new EntityIDListComponent("New entity IDs");
+		simID = new IntComponent(ControlMessageComponentURN.SimulatorID);
+		requestID = new IntComponent(ControlMessageComponentURN.RequestNumber);
+		newID = new EntityIDListComponent(ControlMessageComponentURN.NewEntityIDs);
 		addMessageComponent(simID);
 		addMessageComponent(requestID);
 		addMessageComponent(newID);

@@ -5,7 +5,7 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeString;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.ConfigProto;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.config.Config;
@@ -26,7 +26,7 @@ public class ConfigComponent extends AbstractMessageComponent {
        Construct a ConfigComponent with no content.
        @param name The name of the component.
      */
-    public ConfigComponent(String name) {
+    public ConfigComponent(URN name) {
         super(name);
         config = new Config();
     }
@@ -36,7 +36,7 @@ public class ConfigComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param data The content.
      */
-    public ConfigComponent(String name, Config data) {
+    public ConfigComponent(URN name, Config data) {
         super(name);
         this.config = data;
     }

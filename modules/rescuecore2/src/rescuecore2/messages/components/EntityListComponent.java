@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.protobuf.RCRSProto.EntityListProto;
 import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
@@ -30,7 +30,7 @@ public class EntityListComponent extends AbstractMessageComponent {
 	 * 
 	 * @param name The name of the component.
 	 */
-	public EntityListComponent(String name) {
+	public EntityListComponent(URN name) {
 		super(name);
 		entities = new ArrayList<Entity>();
 	}
@@ -41,7 +41,7 @@ public class EntityListComponent extends AbstractMessageComponent {
 	 * @param name     The name of the component.
 	 * @param entities The entities in this message component.
 	 */
-	public EntityListComponent(String name,
+	public EntityListComponent(URN name,
 			Collection<? extends Entity> entities) {
 		super(name);
 		this.entities = new ArrayList<Entity>(entities);

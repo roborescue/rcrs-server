@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
 import rescuecore2.messages.Command;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
@@ -30,7 +30,7 @@ public class CommandListComponent extends AbstractMessageComponent {
        Construct a CommandListComponent with no content.
        @param name The name of the component.
     */
-    public CommandListComponent(String name) {
+    public CommandListComponent(URN name) {
         super(name);
         commands = new ArrayList<Command>();
     }
@@ -40,7 +40,7 @@ public class CommandListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param commands The agent commands in this message component.
     */
-    public CommandListComponent(String name, Collection<? extends Command> commands) {
+    public CommandListComponent(URN name, Collection<? extends Command> commands) {
         super(name);
         this.commands = new ArrayList<Command>(commands);
     }
