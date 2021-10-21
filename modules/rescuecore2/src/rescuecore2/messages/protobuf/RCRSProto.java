@@ -25,38 +25,38 @@ public final class RCRSProto {
     int getUrn();
 
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
     int getComponentsCount();
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
     boolean containsComponents(
-        java.lang.String key);
+        int key);
     /**
      * Use {@link #getComponentsMap()} instead.
      */
     @java.lang.Deprecated
-    java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+    java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
     getComponents();
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
-    java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+    java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
     getComponentsMap();
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
 
     rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto getComponentsOrDefault(
-        java.lang.String key,
+        int key,
         rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto defaultValue);
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
 
     rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto getComponentsOrThrow(
-        java.lang.String key);
+        int key);
   }
   /**
    * <pre>
@@ -156,7 +156,7 @@ public final class RCRSProto {
                     ComponentsDefaultEntryHolder.defaultEntry);
                 mutable_bitField0_ |= 0x00000001;
               }
-              com.google.protobuf.MapEntry<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+              com.google.protobuf.MapEntry<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
               components__ = input.readMessage(
                   ComponentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
               components_.getMutableMap().put(
@@ -221,18 +221,18 @@ public final class RCRSProto {
     public static final int COMPONENTS_FIELD_NUMBER = 2;
     private static final class ComponentsDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
-          java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> defaultEntry =
+          java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> defaultEntry =
               com.google.protobuf.MapEntry
-              .<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>newDefaultInstance(
+              .<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>newDefaultInstance(
                   rescuecore2.messages.protobuf.RCRSProto.internal_static_MessageProto_ComponentsEntry_descriptor, 
-                  com.google.protobuf.WireFormat.FieldType.STRING,
-                  "",
+                  com.google.protobuf.WireFormat.FieldType.INT32,
+                  0,
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
                   rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto.getDefaultInstance());
     }
     private com.google.protobuf.MapField<
-        java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> components_;
-    private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+        java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> components_;
+    private com.google.protobuf.MapField<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
     internalGetComponents() {
       if (components_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -245,13 +245,13 @@ public final class RCRSProto {
       return internalGetComponents().getMap().size();
     }
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
 
     @java.lang.Override
     public boolean containsComponents(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        int key) {
+      
       return internalGetComponents().getMap().containsKey(key);
     }
     /**
@@ -259,39 +259,39 @@ public final class RCRSProto {
      */
     @java.lang.Override
     @java.lang.Deprecated
-    public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponents() {
+    public java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponents() {
       return getComponentsMap();
     }
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
 
-    public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponentsMap() {
+    public java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponentsMap() {
       return internalGetComponents().getMap();
     }
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
 
     public rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto getComponentsOrDefault(
-        java.lang.String key,
+        int key,
         rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
+      
+      java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
           internalGetComponents().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+     * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
      */
     @java.lang.Override
 
     public rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto getComponentsOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
+        int key) {
+      
+      java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
           internalGetComponents().getMap();
       if (!map.containsKey(key)) {
         throw new java.lang.IllegalArgumentException();
@@ -317,7 +317,7 @@ public final class RCRSProto {
         output.writeInt32(1, urn_);
       }
       com.google.protobuf.GeneratedMessageV3
-        .serializeStringMapTo(
+        .serializeIntegerMapTo(
           output,
           internalGetComponents(),
           ComponentsDefaultEntryHolder.defaultEntry,
@@ -335,9 +335,9 @@ public final class RCRSProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, urn_);
       }
-      for (java.util.Map.Entry<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> entry
+      for (java.util.Map.Entry<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> entry
            : internalGetComponents().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+        com.google.protobuf.MapEntry<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
         components__ = ComponentsDefaultEntryHolder.defaultEntry.newBuilderForType()
             .setKey(entry.getKey())
             .setValue(entry.getValue())
@@ -725,8 +725,8 @@ public final class RCRSProto {
       }
 
       private com.google.protobuf.MapField<
-          java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> components_;
-      private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+          java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> components_;
+      private com.google.protobuf.MapField<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
       internalGetComponents() {
         if (components_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
@@ -734,7 +734,7 @@ public final class RCRSProto {
         }
         return components_;
       }
-      private com.google.protobuf.MapField<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+      private com.google.protobuf.MapField<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
       internalGetMutableComponents() {
         onChanged();;
         if (components_ == null) {
@@ -751,13 +751,13 @@ public final class RCRSProto {
         return internalGetComponents().getMap().size();
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
 
       @java.lang.Override
       public boolean containsComponents(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+          int key) {
+        
         return internalGetComponents().getMap().containsKey(key);
       }
       /**
@@ -765,39 +765,39 @@ public final class RCRSProto {
        */
       @java.lang.Override
       @java.lang.Deprecated
-      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponents() {
+      public java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponents() {
         return getComponentsMap();
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
       @java.lang.Override
 
-      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponentsMap() {
+      public java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> getComponentsMap() {
         return internalGetComponents().getMap();
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
       @java.lang.Override
 
       public rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto getComponentsOrDefault(
-          java.lang.String key,
+          int key,
           rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
+        
+        java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
             internalGetComponents().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
       @java.lang.Override
 
       public rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto getComponentsOrThrow(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
+          int key) {
+        
+        java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> map =
             internalGetComponents().getMap();
         if (!map.containsKey(key)) {
           throw new java.lang.IllegalArgumentException();
@@ -811,12 +811,12 @@ public final class RCRSProto {
         return this;
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
 
       public Builder removeComponents(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+          int key) {
+        
         internalGetMutableComponents().getMutableMap()
             .remove(key);
         return this;
@@ -825,28 +825,28 @@ public final class RCRSProto {
        * Use alternate mutation accessors instead.
        */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
+      public java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto>
       getMutableComponents() {
         return internalGetMutableComponents().getMutableMap();
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
       public Builder putComponents(
-          java.lang.String key,
+          int key,
           rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        
         if (value == null) { throw new java.lang.NullPointerException(); }
         internalGetMutableComponents().getMutableMap()
             .put(key, value);
         return this;
       }
       /**
-       * <code>map&lt;string, .MessageComponentProto&gt; components = 2;</code>
+       * <code>map&lt;int32, .MessageComponentProto&gt; components = 2;</code>
        */
 
       public Builder putAllComponents(
-          java.util.Map<java.lang.String, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> values) {
+          java.util.Map<java.lang.Integer, rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto> values) {
         internalGetMutableComponents().getMutableMap()
             .putAll(values);
         return this;
@@ -17949,7 +17949,7 @@ public final class RCRSProto {
       "\n\017RCRSProto.proto\"\231\001\n\014MessageProto\022\013\n\003ur" +
       "n\030\001 \001(\005\0221\n\ncomponents\030\002 \003(\0132\035.MessagePro" +
       "to.ComponentsEntry\032I\n\017ComponentsEntry\022\013\n" +
-      "\003key\030\001 \001(\t\022%\n\005value\030\002 \001(\0132\026.MessageCompo" +
+      "\003key\030\001 \001(\005\022%\n\005value\030\002 \001(\0132\026.MessageCompo" +
       "nentProto:\0028\001\"3\n\020MessageListProto\022\037\n\010com" +
       "mands\030\001 \003(\0132\r.MessageProto\"\302\003\n\025MessageCo" +
       "mponentProto\022$\n\tchangeSet\030\001 \001(\0132\017.Change" +

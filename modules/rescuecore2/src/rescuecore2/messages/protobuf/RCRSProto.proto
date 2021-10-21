@@ -106,7 +106,7 @@ option java_outer_classname = "RCRSProto";
 //}
 message MessageProto {
 	int32 urn = 1;
-	map<string,MessageComponentProto> components=2;
+	map<int32,MessageComponentProto> components=2;
 }
 message MessageListProto{
 	repeated MessageProto commands = 1;	
