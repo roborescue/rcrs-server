@@ -4,16 +4,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
 
 import org.json.JSONObject;
 
 import rescuecore2.config.Config;
 import rescuecore2.config.ConfigException;
+import rescuecore2.messages.control.ControlMessageComponentFactory;
 import rescuecore2.messages.control.ControlMessageFactory;
 import rescuecore2.misc.CommandLineOptions;
+import rescuecore2.registry.Factory;
 import rescuecore2.standard.entities.StandardEntityFactory;
 import rescuecore2.standard.entities.StandardPropertyFactory;
+import rescuecore2.standard.messages.StandardMessageComponentFactory;
 import rescuecore2.standard.messages.StandardMessageFactory;
 
 public class URNMapPrinter {
@@ -74,48 +76,20 @@ public class URNMapPrinter {
 	}
 	public static JSONObject toJSON() {
 		JSONObject json=new JSONObject();
-		JSONObject messages=new JSONObject();
-		JSONObject controlComponentMSGs=new JSONObject();
-		JSONObject entities=new JSONObject();
-		JSONObject properties=new JSONObject();
-		JSONObject commands=new JSONObject();
-		JSONObject standardCommandscomponent=new JSONObject();
-		int[] msgkeys = ControlMessageFactory.INSTANCE.getKnownMessageURNs();
-		Arrays.sort(msgkeys);
-		int[] commandskeys = StandardMessageFactory.INSTANCE.getKnownMessageURNs();
-		Arrays.sort(commandskeys);
-		int[] entitykeys  = StandardEntityFactory.INSTANCE.getKnownEntityURNs();
-		Arrays.sort(entitykeys);
-		int[] propskeys  = StandardPropertyFactory.INSTANCE.getKnownPropertyURNs();
-		Arrays.sort(propskeys);
-		
-		for (Integer urn : msgkeys) {
-			String prettyName = ControlMessageFactory.INSTANCE.getPrettyName(urn);
-			messages.put(prettyName,urn);
-		}
-		for (Integer urn : commandskeys) {
-			String prettyName = StandardMessageFactory.INSTANCE.getPrettyName(urn);
-			commands.put(prettyName,urn);
-		}
-		
-		for (Integer urn : entitykeys) {
-			String prettyName = StandardEntityFactory.INSTANCE.getPrettyName(urn);
-			entities.put(prettyName,urn);
-		}
-		
-		for (Integer urn : propskeys ) {
-			String prettyName = StandardPropertyFactory.INSTANCE.getPrettyName(urn);
-			properties.put(prettyName,urn);
-		}
-		
-	
-		json.put("ControlMSG", messages);
-		json.put("ComponentControlMSG", controlComponentMSGs);
-		json.put("Command", commands);
-		json.put("ComponentCommand", standardCommandscomponent);
-		json.put("Entity", entities);
-		json.put("Property", properties);
-		
+		json.put("ControlMSG", buildJson(ControlMessageFactory.INSTANCE));
+		json.put("ComponentControlMSG", buildJson(ControlMessageComponentFactory.INSTANCE));
+		json.put("Command", buildJson(StandardMessageFactory.INSTANCE));
+		json.put("ComponentCommand", buildJson(StandardMessageComponentFactory.INSTANCE));
+		json.put("Entity", buildJson(StandardEntityFactory.INSTANCE));
+		json.put("Property", buildJson(StandardPropertyFactory.INSTANCE));
 		return json;
+	}
+	private static JSONObject buildJson(Factory fac) {
+		JSONObject obj=new JSONObject();
+		for (Integer urn : fac.getKnownURNs()) {
+			String prettyName = fac.getPrettyName(urn);
+			obj.put(prettyName,urn);
+		}
+		return obj;
 	}
 }
