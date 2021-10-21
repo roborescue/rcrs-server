@@ -32,7 +32,7 @@ public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
 	@Override
 	public Registry getPreferredRegistry(Registry parent) {
 		Registry result = new Registry("Custom registry", parent);
-		result.registerEntityFactory(new CustomEntityFactory());
+		result.registerFactory(new CustomEntityFactory());
 		return result;
 	}
 

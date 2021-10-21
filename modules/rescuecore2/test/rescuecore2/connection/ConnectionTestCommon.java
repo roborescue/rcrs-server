@@ -40,7 +40,7 @@ public abstract class ConnectionTestCommon {
     @Before
     public void setup() throws IOException {
         registry = new Registry();
-        registry.registerMessageFactory(new TestMessageFactory(FACTORY_1_NAME, MESSAGE_ID_1));
+        registry.registerFactory(new TestMessageFactory(FACTORY_1_NAME, MESSAGE_ID_1));
 	Pair<Connection, Connection> connections = makeConnectionPair();
 	client = connections.first();
 	server = connections.second();
@@ -245,7 +245,7 @@ public abstract class ConnectionTestCommon {
 	assertEquals(1, serverListener.getMessageCount());
 	assertEquals(m1, serverListener.getMessage(0));
         assertEquals(FACTORY_1_NAME, ((TestMessage)serverListener.getMessage(0)).getDescription());
-        registry.registerMessageFactory(new TestMessageFactory(FACTORY_2_NAME, MESSAGE_ID_2));
+        registry.registerFactory(new TestMessageFactory(FACTORY_2_NAME, MESSAGE_ID_2));
         Message m2 = new TestMessage(MESSAGE_ID_2);
 	client.sendMessage(m2);
 	// Check that the second message was interpreted by the new message factory and that the old message is still OK.
@@ -256,7 +256,7 @@ public abstract class ConnectionTestCommon {
         assertEquals(FACTORY_1_NAME, ((TestMessage)serverListener.getMessage(0)).getDescription());
         assertEquals(FACTORY_2_NAME, ((TestMessage)serverListener.getMessage(1)).getDescription());
         // Try registering a new message factory that replaces the first one
-        registry.registerMessageFactory(new TestMessageFactory(FACTORY_3_NAME, MESSAGE_ID_1));
+        registry.registerFactory(new TestMessageFactory(FACTORY_3_NAME, MESSAGE_ID_1));
         Message m3 = new TestMessage(MESSAGE_ID_1);
         client.sendMessage(m3);
 	// Check that the third message was interpreted by the new message factory and that the old messages are still OK.

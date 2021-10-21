@@ -18,7 +18,7 @@ public class TestMessageFactory implements MessageFactory {
     }
 
     @Override
-    public int[] getKnownMessageURNs() {
+    public int[] getKnownURNs() {
         return urns;
     }
 

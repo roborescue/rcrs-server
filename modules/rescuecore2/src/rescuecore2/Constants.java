@@ -8,13 +8,16 @@ public final class Constants {
 	public static final int CONTROL_MSG_URN_PREFIX = 0x0100;
 	public static final int CONTROL_MSG_COMPONENT_URN_PREFIX = 0x0200;
 	
-    /** Config key for message factories. */
-    public static final String MESSAGE_FACTORY_KEY = "factory.messages";
-    public static final String MESSAGE_COMPONENT_FACTORY_KEY = "factory.message_components";
-    /** Config key for entity factories. */
-    public static final String ENTITY_FACTORY_KEY = "factory.entities";
-    /** Config key for property factories. */
-    public static final String PROPERTY_FACTORY_KEY = "factory.properties";
+	/** Config key for message factories. */
+    public static final String FACTORY_KEY = "factory";
+//    /** Config key for message factories. */
+//    public static final String MESSAGE_FACTORY_KEY = "factory.messages";
+//    /** Config key for message component factories. */
+//    public static final String MESSAGE_COMPONENT_FACTORY_KEY = "factory.message_components";
+//    /** Config key for entity factories. */
+//    public static final String ENTITY_FACTORY_KEY = "factory.entities";
+//    /** Config key for property factories. */
+//    public static final String PROPERTY_FACTORY_KEY = "factory.properties";
     /** Config key for looking up jars for inspection by a LoadableTypeProcessor. */
     public static final String JAR_DIR_KEY = "loadabletypes.inspect.dir";
     /** Config key for specifying whether to do a deep inspection of jars for loadable types. */

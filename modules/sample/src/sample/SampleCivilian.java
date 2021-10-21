@@ -92,9 +92,9 @@ public class SampleCivilian extends AbstractSampleAgent<Civilian> {
     propertyURNs.add( StandardPropertyURN.BURIEDNESS.getUrn() );
     propertyURNs.add( StandardPropertyURN.HP.getUrn() );
     propertyURNs.add( StandardPropertyURN.POSITION.getUrn() );
-    result.registerEntityFactory( new FilterEntityFactory(
+    result.registerFactory( new FilterEntityFactory(
         StandardEntityFactory.INSTANCE, entityURNs, true ) );
-    result.registerPropertyFactory( new FilterPropertyFactory(
+    result.registerFactory( new FilterPropertyFactory(
         StandardPropertyFactory.INSTANCE, propertyURNs, true ) );
     return result;
   }

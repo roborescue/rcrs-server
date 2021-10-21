@@ -30,7 +30,7 @@ public class ConnectionManagerTest {
         manager = new ConnectionManager();
         listener = new TestConnectionManagerListener();
         registry = new Registry();
-        registry.registerMessageFactory(new TestMessageFactory("", MESSAGE_1));
+        registry.registerFactory(new TestMessageFactory("", MESSAGE_1));
     }
 
     @After

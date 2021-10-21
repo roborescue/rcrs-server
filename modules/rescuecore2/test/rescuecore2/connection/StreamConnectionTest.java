@@ -117,7 +117,7 @@ public class StreamConnectionTest extends ConnectionTestCommon {
     public void testNegativeSizeInput() throws IOException, InterruptedException {
         System.err.println("Test negative size input");
         try {
-            registry.registerMessageFactory(new TestMessageFactory("StreamConnectionTest factory", MESSAGE_URN));
+            registry.registerFactory(new TestMessageFactory("StreamConnectionTest factory", MESSAGE_URN));
             TestInputStream in = new TestInputStream(NEGATIVE_SIZE_INPUT);
             TestOutputStream out = new TestOutputStream();
             Connection c = new StreamConnection(in, out);
