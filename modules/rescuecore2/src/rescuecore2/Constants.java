@@ -6,6 +6,8 @@ package rescuecore2;
 public final class Constants {
 	/** prefix for control message URN*/
 	public static final int CONTROL_MSG_URN_PREFIX = 0x0100;
+	public static final int CONTROL_MSG_COMPONENT_URN_PREFIX = 0x0200;
+	
     /** Config key for message factories. */
     public static final String MESSAGE_FACTORY_KEY = "factory.messages";
     /** Config key for entity factories. */
