@@ -29,18 +29,22 @@ public enum ControlMessageComponentURN implements URN {
 	
 	;
 
-	private int stringUrn;
+	private String stringUrn;
 	private int urn;
 
 	ControlMessageComponentURN(int urn, String stringUrn) {
 		this.urn = urn;
-		this.stringUrn = urn;
+		this.stringUrn = stringUrn;
 
 	}
 
 	@Override
 	public int getUrn() {
 		return urn;
+	}
+	
+	public String getStringUrn() {
+		return stringUrn;
 	}
 
 }

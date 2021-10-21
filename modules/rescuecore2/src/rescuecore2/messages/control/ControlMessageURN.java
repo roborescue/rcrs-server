@@ -2,8 +2,6 @@ package rescuecore2.messages.control;
 
 import static rescuecore2.Constants.CONTROL_MSG_URN_PREFIX;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import rescuecore2.URN;

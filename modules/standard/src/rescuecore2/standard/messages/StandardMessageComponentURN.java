@@ -16,12 +16,12 @@ public enum StandardMessageComponentURN implements URN{
 	;
 	
 
-	private int stringUrn;
+	private String stringUrn;
 	private int urn;
 
 	StandardMessageComponentURN(int urn, String stringUrn) {
 		this.urn = urn;
-		this.stringUrn = urn;
+		this.stringUrn = stringUrn;
 
 	}
 
@@ -30,7 +30,7 @@ public enum StandardMessageComponentURN implements URN{
 		return urn;
 	}
 	
-	public int getStringUrn() {
+	public String getStringUrn() {
 		return stringUrn;
 	}
 }

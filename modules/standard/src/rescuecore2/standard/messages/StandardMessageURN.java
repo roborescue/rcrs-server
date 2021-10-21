@@ -5,7 +5,6 @@ import static rescuecore2.standard.Constants.MESSAGE_URN_PREFIX_V1;
 import java.util.Map;
 
 import rescuecore2.URN;
-import rescuecore2.standard.entities.StandardPropertyURN;
 
 import static rescuecore2.standard.Constants.MESSAGE_URN_PREFIX;
 /**
