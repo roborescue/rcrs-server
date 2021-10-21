@@ -38,8 +38,8 @@ public abstract class AbstractEntityFactory<T extends Enum<T> & URN>
 	}
 
 	@Override
-	public int[] getKnownEntityURNs() {
-		EnumSet<T> set = getKnownEntityURNsEnum();
+	public int[] getKnownURNs() {
+		EnumSet<T> set = getKnownURNsEnum();
 		int[] result = new int[set.size()];
 		int i = 0;
 		for (T next : set) {
@@ -73,7 +73,7 @@ public abstract class AbstractEntityFactory<T extends Enum<T> & URN>
 	 * 
 	 * @return An EnumSet containing known entity URNs.
 	 */
-	protected EnumSet<T> getKnownEntityURNsEnum() {
+	protected EnumSet<T> getKnownURNsEnum() {
 		return EnumSet.allOf(clazz);
 	}
 

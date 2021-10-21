@@ -30,8 +30,8 @@ public class FilterEntityFactory implements EntityFactory {
 	}
 
 	@Override
-	public int[] getKnownEntityURNs() {
-		return downstream.getKnownEntityURNs();
+	public int[] getKnownURNs() {
+		return downstream.getKnownURNs();
 	}
 
 	@Override

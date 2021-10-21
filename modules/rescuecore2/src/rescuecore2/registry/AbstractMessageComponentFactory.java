@@ -40,8 +40,8 @@ public abstract class AbstractMessageComponentFactory<T extends Enum<T> & URN>
 	}
 
 	@Override
-	public int[] getKnownMessageURNs() {
-		EnumSet<T> set = getKnownMessageURNsEnum();
+	public int[] getKnownURNs() {
+		EnumSet<T> set = getKnownURNsEnum();
 		int[] result = new int[set.size()];
 		int i = 0;
 		for (T next : set) {
@@ -56,7 +56,7 @@ public abstract class AbstractMessageComponentFactory<T extends Enum<T> & URN>
 	 * 
 	 * @return An EnumSet containing known message URNs.
 	 */
-	protected EnumSet<T> getKnownMessageURNsEnum() {
+	protected EnumSet<T> getKnownURNsEnum() {
 		return EnumSet.allOf(clazz);
 	}
 

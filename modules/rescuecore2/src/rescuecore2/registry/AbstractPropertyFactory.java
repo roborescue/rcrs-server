@@ -38,8 +38,8 @@ public abstract class AbstractPropertyFactory<T extends Enum<T> & URN>
 	}
 
 	@Override
-	public int[] getKnownPropertyURNs() {
-		EnumSet<T> set = getKnownPropertyURNsEnum();
+	public int[] getKnownURNs() {
+		EnumSet<T> set = getKnownURNsEnum();
 		int[] result = new int[set.size()];
 		int i = 0;
 		for (T next : set) {
@@ -73,7 +73,7 @@ public abstract class AbstractPropertyFactory<T extends Enum<T> & URN>
 	 * 
 	 * @return An EnumSet containing known property URNs.
 	 */
-	protected EnumSet<T> getKnownPropertyURNsEnum() {
+	protected EnumSet<T> getKnownURNsEnum() {
 		return EnumSet.allOf(clazz);
 	}
 

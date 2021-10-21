@@ -29,8 +29,8 @@ public class FilterMessageFactory implements MessageFactory {
     }
 
     @Override
-    public int[] getKnownMessageURNs() {
-        return downstream.getKnownMessageURNs();
+    public int[] getKnownURNs() {
+        return downstream.getKnownURNs();
     }
 
     @Override

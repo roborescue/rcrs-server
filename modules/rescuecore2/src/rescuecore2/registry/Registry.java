@@ -129,7 +129,7 @@ public final class Registry {
 	 * @param factory The entity factory to register.
 	 */
 	public void registerEntityFactory(EntityFactory factory) {
-		for (Integer urn : factory.getKnownEntityURNs()) {
+		for (Integer urn : factory.getKnownURNs()) {
 			registerEntityFactory(urn, factory);
 		}
 	}
@@ -165,7 +165,7 @@ public final class Registry {
 	 * @param factory The property factory to register.
 	 */
 	public void registerPropertyFactory(PropertyFactory factory) {
-		for (Integer urn : factory.getKnownPropertyURNs()) {
+		for (Integer urn : factory.getKnownURNs()) {
 			registerPropertyFactory(urn, factory);
 		}
 	}
@@ -202,7 +202,7 @@ public final class Registry {
 	 * @param factory The message factory to register.
 	 */
 	public void registerMessageFactory(MessageFactory factory) {
-		for (Integer urn : factory.getKnownMessageURNs()) {
+		for (Integer urn : factory.getKnownURNs()) {
 			registerMessageFactory(urn, factory);
 		}
 	}
@@ -232,7 +232,7 @@ public final class Registry {
 	}
 
 	public void registerMessageComponentFactory(MessageComponentFactory factory) {
-		for (Integer urn : factory.getKnownMessageURNs()) {
+		for (Integer urn : factory.getKnownURNs()) {
 			registerMessageComponentFactory(urn, factory);
 		}
 	}

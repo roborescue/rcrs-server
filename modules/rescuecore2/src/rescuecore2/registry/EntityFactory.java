@@ -7,7 +7,7 @@ import rescuecore2.worldmodel.EntityID;
 /**
    A factory for vending Entities.
  */
-public interface EntityFactory {
+public interface EntityFactory extends Factory {
     /**
        Create a new Entity.
        @param urn The urn of the entity to create.
@@ -17,11 +17,4 @@ public interface EntityFactory {
      */
     Entity makeEntity(int urn, EntityID id);
 
-    /**
-       Get all entity urns understood by this factory.
-       @return All entity urns.
-    */
-    int[] getKnownEntityURNs();
-    String getV1Equiv(int urnId);
-	String getPrettyName(int urn);
 }

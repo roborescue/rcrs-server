@@ -26,8 +26,8 @@ public class FilterPropertyFactory implements PropertyFactory {
     }
 
     @Override
-    public int[] getKnownPropertyURNs() {
-        return downstream.getKnownPropertyURNs();
+    public int[] getKnownURNs() {
+        return downstream.getKnownURNs();
     }
 
     @Override

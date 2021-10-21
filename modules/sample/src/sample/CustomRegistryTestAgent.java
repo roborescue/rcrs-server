@@ -69,8 +69,8 @@ public class CustomRegistryTestAgent extends AbstractSampleAgent<Human> {
 		}
 
 		@Override
-		public int[] getKnownEntityURNs() {
-			return downstream.getKnownEntityURNs();
+		public int[] getKnownURNs() {
+			return downstream.getKnownURNs();
 		}
 
 		@Override
