@@ -29,9 +29,7 @@ public enum ControlMessageComponentURN implements URN {
 	ID(CONTROL_MSG_COMPONENT_URN_PREFIX | 19, "ID"),
 	Commands(CONTROL_MSG_COMPONENT_URN_PREFIX | 20, "Commands"),
 	SimulatorConfig(CONTROL_MSG_COMPONENT_URN_PREFIX | 21, "Simulator config"),
-	Changes(CONTROL_MSG_COMPONENT_URN_PREFIX | 22, "Changes")
-
-	;
+	Changes(CONTROL_MSG_COMPONENT_URN_PREFIX | 22, "Changes");
 
 	private int urn;
 	private String urnString;
