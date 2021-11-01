@@ -59,47 +59,6 @@ public final class RCRSProto {
         int key);
   }
   /**
-   * <pre>
-   *enum PropertyURN{
-   *	NoneProperty=0;
-   *	START_TIME=1;
-   *	LONGITUDE=2;
-   *	LATITUDE=3;
-   *	WIND_FORCE=4;
-   *	WIND_DIRECTION=5;
-   *	X=6;
-   *	Y=7;
-   *	BLOCKADES=8;
-   *	REPAIR_COST=9;
-   *	FLOORS=10;
-   *	BUILDING_ATTRIBUTES=11;
-   *	IGNITION=12;
-   *	FIERYNESS=13;
-   *	BROKENNESS=14;
-   *	BUILDING_CODE=15;
-   *	BUILDING_AREA_GROUND=16;
-   *	BUILDING_AREA_TOTAL=17;
-   *	APEXES=18;
-   *	EDGES=19;
-   *	POSITION=20;
-   *	DIRECTION=21;
-   *	POSITION_HISTORY=22;
-   *	STAMINA=23;
-   *	HP=24;
-   *	DAMAGE=25;
-   *	BURIEDNESS=26;
-   *	TRAVEL_DISTANCE=27;
-   *	WATER_QUANTITY=28;
-   *	TEMPERATURE=29;
-   *	IMPORTANCE=30;
-   *	CAPACITY=31;
-   *	BEDCAPACITY=32;
-   *	OCCUPIEDBEDS=33;
-   *	REFILLCAPACITY=34;
-   *	WAITINGLISTSIZE=35;
-   *}
-   * </pre>
-   *
    * Protobuf type {@code MessageProto}
    */
   public static final class MessageProto extends
@@ -477,47 +436,6 @@ public final class RCRSProto {
       return builder;
     }
     /**
-     * <pre>
-     *enum PropertyURN{
-     *	NoneProperty=0;
-     *	START_TIME=1;
-     *	LONGITUDE=2;
-     *	LATITUDE=3;
-     *	WIND_FORCE=4;
-     *	WIND_DIRECTION=5;
-     *	X=6;
-     *	Y=7;
-     *	BLOCKADES=8;
-     *	REPAIR_COST=9;
-     *	FLOORS=10;
-     *	BUILDING_ATTRIBUTES=11;
-     *	IGNITION=12;
-     *	FIERYNESS=13;
-     *	BROKENNESS=14;
-     *	BUILDING_CODE=15;
-     *	BUILDING_AREA_GROUND=16;
-     *	BUILDING_AREA_TOTAL=17;
-     *	APEXES=18;
-     *	EDGES=19;
-     *	POSITION=20;
-     *	DIRECTION=21;
-     *	POSITION_HISTORY=22;
-     *	STAMINA=23;
-     *	HP=24;
-     *	DAMAGE=25;
-     *	BURIEDNESS=26;
-     *	TRAVEL_DISTANCE=27;
-     *	WATER_QUANTITY=28;
-     *	TEMPERATURE=29;
-     *	IMPORTANCE=30;
-     *	CAPACITY=31;
-     *	BEDCAPACITY=32;
-     *	OCCUPIEDBEDS=33;
-     *	REFILLCAPACITY=34;
-     *	WAITINGLISTSIZE=35;
-     *}
-     * </pre>
-     *
      * Protobuf type {@code MessageProto}
      */
     public static final class Builder extends
@@ -15899,28 +15817,16 @@ public final class RCRSProto {
         int index);
 
     /**
-     * <pre>
-     *entity ids
-     * </pre>
-     *
      * <code>repeated int32 deletes = 2;</code>
      * @return A list containing the deletes.
      */
     java.util.List<java.lang.Integer> getDeletesList();
     /**
-     * <pre>
-     *entity ids
-     * </pre>
-     *
      * <code>repeated int32 deletes = 2;</code>
      * @return The count of deletes.
      */
     int getDeletesCount();
     /**
-     * <pre>
-     *entity ids
-     * </pre>
-     *
      * <code>repeated int32 deletes = 2;</code>
      * @param index The index of the element to return.
      * @return The deletes at the given index.
@@ -17019,10 +16925,6 @@ public final class RCRSProto {
     public static final int DELETES_FIELD_NUMBER = 2;
     private com.google.protobuf.Internal.IntList deletes_;
     /**
-     * <pre>
-     *entity ids
-     * </pre>
-     *
      * <code>repeated int32 deletes = 2;</code>
      * @return A list containing the deletes.
      */
@@ -17032,10 +16934,6 @@ public final class RCRSProto {
       return deletes_;
     }
     /**
-     * <pre>
-     *entity ids
-     * </pre>
-     *
      * <code>repeated int32 deletes = 2;</code>
      * @return The count of deletes.
      */
@@ -17043,10 +16941,6 @@ public final class RCRSProto {
       return deletes_.size();
     }
     /**
-     * <pre>
-     *entity ids
-     * </pre>
-     *
      * <code>repeated int32 deletes = 2;</code>
      * @param index The index of the element to return.
      * @return The deletes at the given index.
@@ -17691,10 +17585,6 @@ public final class RCRSProto {
          }
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @return A list containing the deletes.
        */
@@ -17704,10 +17594,6 @@ public final class RCRSProto {
                  java.util.Collections.unmodifiableList(deletes_) : deletes_;
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @return The count of deletes.
        */
@@ -17715,10 +17601,6 @@ public final class RCRSProto {
         return deletes_.size();
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @param index The index of the element to return.
        * @return The deletes at the given index.
@@ -17727,10 +17609,6 @@ public final class RCRSProto {
         return deletes_.getInt(index);
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @param index The index to set the value at.
        * @param value The deletes to set.
@@ -17744,10 +17622,6 @@ public final class RCRSProto {
         return this;
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @param value The deletes to add.
        * @return This builder for chaining.
@@ -17759,10 +17633,6 @@ public final class RCRSProto {
         return this;
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @param values The deletes to add.
        * @return This builder for chaining.
@@ -17776,10 +17646,6 @@ public final class RCRSProto {
         return this;
       }
       /**
-       * <pre>
-       *entity ids
-       * </pre>
-       *
        * <code>repeated int32 deletes = 2;</code>
        * @return This builder for chaining.
        */
