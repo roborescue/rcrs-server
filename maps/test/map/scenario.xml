@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<scenario:scenario xmlns:scenario="urn:roborescue:map:scenario">
+  <scenario:refuge scenario:location="298" scenario:bedCapacity="2" />
+  <scenario:refuge scenario:location="255" scenario:bedCapacity="3" />
+  <scenario:civilian scenario:location="254" />
+  <scenario:civilian scenario:location="254" />
+  <scenario:civilian scenario:location="254" />
+  <scenario:civilian scenario:location="254" />
+  <scenario:civilian scenario:location="254" />
+  <scenario:firebrigade scenario:location="256" />
+  <scenario:policeforce scenario:location="279" />
+  <scenario:ambulanceteam scenario:location="976" />
+</scenario:scenario>
