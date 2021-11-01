@@ -6,7 +6,7 @@
 
 - Git
 - Gradle
-- OpenJDK Java 11+
+- OpenJDK Java 11
 
 ## 2. Download project from GitHub
 
@@ -30,16 +30,16 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ cd boot
+$ cd scripts
 
-$ ./start.sh -m ../maps/gml/test/map -c ../maps/gml/test/config
+$ ./start.sh -m ../maps/test/map -c ../maps/test/config
 ```
 
 Open another terminal window, navigate to the ```rcrs-server``` root directory and execute
 
 ```bash
 
-$ cd boot
+$ cd scripts
 
 $ ./sampleagent.sh
 ```
@@ -52,9 +52,14 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ ./gradlew gmlEditor --args=<map file path>
+$ ./gradlew gmlEditor --args='<map file path>'
 ```
-where ```--args=<map file path>``` is optional. The default map file path is ```maps/gml/test/map/map.gml```.
+where ```--args=<map file path>``` is optional.
+
+#### Example
+```
+./gradlew gmlEditor --args='maps/test/map/map.gml'
+```
 
 ### 5.2 Scenario Editor
 
@@ -62,9 +67,14 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ ./gradlew scenarioEditor --args=<scenario path>
+$ ./gradlew scenarioEditor --args='<scenario path>'
 ```
-where ```--args=<scenario path>``` is optional. The default scenario path is ```maps/gml/test/map```.
+where ```--args=<scenario path>``` is optional.
+
+#### Example
+```
+./gradlew scenarioEditor --args='maps/test/map'
+```
 
 ### 5.3 Random Scenario
 
@@ -72,9 +82,14 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ ./gradlew randomScenario --args=<map path>
+$ ./gradlew randomScenario --args="'<map path>' <options>"
 ```
-where ```--args=<map path>``` is optional. The default map path is ```maps/gml/test/map```.
+where ```<map path>``` is the path to the map directory and ```<options>``` are the minimum and maximum value for each entity in the scenario. The ```<options>``` are optional.
+
+#### Example
+```
+./gradlew randomScenario --args="'../maps/test/map' -civ 0 100 -fb 0 10 -fs 0 1 -pf 0 10 -po 0 1 -at 0 5 -ac 0 0 -refuge 0 2 -fire 0 0"
+```
 
 ### 5.4 Log Viewer
 
@@ -82,9 +97,14 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ ./gradlew logViewer --args='-c config/logviewer.cfg <log path>'
+$ ./gradlew logViewer --args="'-c' '<config file>' '<log path>'"
 ```
-where ```--args='-c config/logviewer.cfg <log path>'``` is optional and ```<log path>``` defines the log file path. The default log file path is ```logs/rescue.log```.
+where ```<config file>``` is the path to the log viewer configuration file, default ```config/logviewer.cfg```. The ```<log path>``` is the rescue log file path, default ```logs/log/rescue.log```.
+
+#### Example
+```
+./gradlew logViewer --args="'-c' 'config/logviewer.cfg' 'logs/log/rescue.log'"
+```
 
 ### 5.5 `osm2gml`
 
@@ -92,9 +112,14 @@ Open a terminal window, navigate to the ```rcrs-server``` root directory and exe
 
 ```bash
 
-$ ./gradlew osm2gml --args='<osm map path> <gml map path>'
+$ ./gradlew osm2gml --args="'<osm map path>' '<gml map path>'"
 ```
 The ```<osm map path>``` is the path to the OSM map file and the ```<gml map path>``` is the destination GML map path.
+
+### Example
+```
+./gradlew osm2gml --args="'/home/user/newmap.osm' '/home/user/newmap.gml'"
+```
 
 ## 6. Support
 

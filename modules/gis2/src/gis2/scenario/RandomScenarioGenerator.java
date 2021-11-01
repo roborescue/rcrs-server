@@ -93,7 +93,7 @@ public class RandomScenarioGenerator {
       printUsage();
       return;
     }
-    System.out.println(args[0]);
+
     String dirName = args[0];
     RandomScenarioGenerator generator = new RandomScenarioGenerator();
     for (int i = 1; i < args.length; ++i) {
@@ -173,6 +173,7 @@ public class RandomScenarioGenerator {
     System.out.println("-fs\tmin max\tSet the minimum and maximum number of fire stations");
     System.out.println("-pf\tmin max\tSet the minimum and maximum number of police forces");
     System.out.println("-po\tmin max\tSet the minimum and maximum number of police offices");
+    System.out.println("-at\tmin max\tSet the minimum and maximum number of ambulance teams");
     System.out.println("-ac\tmin max\tSet the minimum and maximum number of ambulance centers");
     System.out.println("-refuge\tmin max\tSet the minimum and maximum number of refuges");
     System.out.println("-fire\tmin max\tSet the minimum and maximum number of fires");
