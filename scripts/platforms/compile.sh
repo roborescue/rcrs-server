@@ -1,6 +1,8 @@
 #!/bin/bash
 
 ## Software
+##   Node.js
+##   NPM
 ##   Google Protobuf
 ##
 ## Require JS libraries

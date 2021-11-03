@@ -52,17 +52,17 @@ function makeClasspath {
 function printUsage {
   echo "Usage: $0 [scenario] [options]"
   echo
-  echo "[scenario]  Scenario directory including the map and config directories. Default: \"../maps/gml/test\""
+  echo "[scenario]  Scenario directory including the map and config directories. Default: \"../maps/test\""
   echo
   echo "[options]"
-  echo "-m    --map       <mapdir>    Set the map directory. Default: \"../maps/gml/map\""
+  echo "-m    --map       <mapdir>    Set the map directory. Default: \"../maps/map\""
   echo "-c    --config    <configdir> Set the config directory. Default: \"../maps/test/config\""
   echo "-t    --team      <teamname>  Set the team name. Default: \"\""
   echo "-l    --log       <logdir>    Set the log directory. Default: \"logs/log\""
   echo "-s    --timestamp             Create a log sub-directory including timestamp, team name and map name"
   echo "-g    --nogui                 Disable GUI"
   echo "-j    --jlog                  Enable Jlog Recorder (startViewerEventLogger)"
-  echo "-r    --jlog-dir <records_dir> Set Jlog Recorder log dir. Default: \"logs/jlog\""
+  echo "-r    --jlog-dir <jlog_dir>   Set Jlog Recorder log dir. Default: \"logs/jlog\""
   echo "[+|-]x                        Enable/Disable XTerm use. Default: \"Disable\""
 }
 
