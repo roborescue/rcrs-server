@@ -140,14 +140,10 @@ public abstract class AbstractEntity implements Entity {
     StringBuilder result = new StringBuilder();
     String name = getEntityName();
     int urn = getURN();
-    if (!name.equals(urn)) {
-      result.append(name);
-      result.append(" [");
-      result.append(urn);
-      result.append("]");
-    } else {
-      result.append(name);
-    }
+    result.append(name);
+    result.append(" [");
+    result.append(urn);
+    result.append("]");
     result.append(" (");
     result.append(id);
     result.append(") [");
