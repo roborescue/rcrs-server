@@ -309,7 +309,7 @@ task sourcesJar(type: GradleBuild) {
   tasks = [ 'clearSourceJar', 'collapseSourceJar', 'gis2SourceJar',
             'humanSourceJar', 'ignitionSourceJar', 'kernelSourceJar',
             'mapsSourceJar', 'miscSourceJar', 'rescuecore2SourceJar',
-            'resqFireSourceJar', 'sampleJar', 'standardSourceJar',
+            'resqFireSourceJar', 'sampleSourceJar', 'standardSourceJar',
             'traffic3SourceJar'
           ]
 }
