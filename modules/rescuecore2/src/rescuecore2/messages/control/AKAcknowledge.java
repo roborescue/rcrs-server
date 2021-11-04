@@ -1,25 +1,24 @@
 package rescuecore2.messages.control;
 
-import rescuecore2.messages.Control;
+import java.io.IOException;
+import java.io.InputStream;
+
 import rescuecore2.messages.AbstractMessage;
+import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
-import rescuecore2.messages.components.EntityIDComponent;
 import rescuecore2.worldmodel.EntityID;
-
-import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * A message for acknowleding a connection to the kernel.
  */
-public class AKAcknowledge extends AbstractMessage implements Control {
+public class AKAcknowledge extends AbstractMessage {
 	private IntComponent requestID;
 	private EntityIDComponent agentID;
 
 	/**
 	 * An AKAcknowledge message that populates its data from a stream.
-	 * 
+	 *
 	 * @param in The InputStream to read.
 	 * @throws IOException If there is a problem reading the stream.
 	 */
@@ -30,7 +29,7 @@ public class AKAcknowledge extends AbstractMessage implements Control {
 
 	/**
 	 * AKAcknowledge message with specific request ID and agent ID components.
-	 * 
+	 *
 	 * @param requestID The request ID.
 	 * @param agentID   The agent ID.
 	 */
@@ -55,7 +54,7 @@ public class AKAcknowledge extends AbstractMessage implements Control {
 
 	/**
 	 * Get the request ID of this acknowledgement.
-	 * 
+	 *
 	 * @return The request ID component.
 	 */
 	public int getRequestID() {
@@ -64,7 +63,7 @@ public class AKAcknowledge extends AbstractMessage implements Control {
 
 	/**
 	 * Get the agent ID of this acknowledgement.
-	 * 
+	 *
 	 * @return The agent ID component.
 	 */
 	public EntityID getAgentID() {

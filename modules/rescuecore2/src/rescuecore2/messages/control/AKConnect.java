@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessage;
-import rescuecore2.messages.Control;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.components.IntListComponent;
 import rescuecore2.messages.components.StringComponent;
@@ -17,7 +16,7 @@ import rescuecore2.registry.Registry;
 /**
  * A message for connecting an agent to the kernel.
  */
-public class AKConnect extends AbstractMessage implements Control {
+public class AKConnect extends AbstractMessage {
   private IntComponent requestID;
   private IntComponent version;
   private StringComponent agentName;
