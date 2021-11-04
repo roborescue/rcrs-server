@@ -2,6 +2,7 @@ package rescuecore2.messages.control;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import rescuecore2.messages.AbstractMessage;
@@ -9,7 +10,9 @@ import rescuecore2.messages.Control;
 import rescuecore2.messages.components.IntComponent;
 import rescuecore2.messages.components.IntListComponent;
 import rescuecore2.messages.components.StringComponent;
+import rescuecore2.messages.components.StringListComponent;
 import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+import rescuecore2.registry.Registry;
 
 /**
  * A message for connecting an agent to the kernel.
@@ -18,7 +21,8 @@ public class AKConnect extends AbstractMessage implements Control {
   private IntComponent requestID;
   private IntComponent version;
   private StringComponent agentName;
-  private IntListComponent requestedEntityTypes;
+  private StringListComponent requestedStrEntityTypes;
+  private IntListComponent requestedIntEntityTypes;
 
   /**
    * An AKConnect message that populates its data from a stream.
@@ -44,19 +48,33 @@ public class AKConnect extends AbstractMessage implements Control {
     this.requestID.setValue(requestID);
     this.version.setValue(version);
     this.agentName.setValue(agentName);
-    this.requestedEntityTypes.setValues(requestedEntityTypes);
+    this.requestedIntEntityTypes.setValues(requestedEntityTypes);
+
+    ArrayList<String> strRequests = new ArrayList<String>();
+    for (int request : this.requestedIntEntityTypes.getValues()) {
+      strRequests.add(Registry.getCurrentRegistry().toURN_Str(request));
+    }
+    this.requestedStrEntityTypes.setValues(strRequests);
   }
 
   private AKConnect() {
     super(ControlMessageURN.AK_CONNECT);
-    requestID = new IntComponent(ControlMessageComponentURN.RequestID);
-    version = new IntComponent(ControlMessageComponentURN.Version);
-    agentName = new StringComponent(ControlMessageComponentURN.Name);
-    requestedEntityTypes = new IntListComponent(ControlMessageComponentURN.RequestedEntityTypes);
+    this.requestID = new IntComponent(ControlMessageComponentURN.RequestID);
+    this.version = new IntComponent(ControlMessageComponentURN.Version);
+    this.agentName = new StringComponent(ControlMessageComponentURN.Name);
+    this.requestedIntEntityTypes = new IntListComponent(ControlMessageComponentURN.RequestedEntityTypes);
+    this.requestedStrEntityTypes = new StringListComponent(ControlMessageComponentURN.RequestedEntityTypes);
     addMessageComponent(requestID);
     addMessageComponent(version);
     addMessageComponent(agentName);
-    addMessageComponent(requestedEntityTypes);
+
+    switch (this.version.getValue()) {
+      case 1:
+        addMessageComponent(requestedStrEntityTypes);
+        break;
+      default:
+        addMessageComponent(requestedIntEntityTypes);
+    }
   }
 
   public AKConnect(MessageProto proto) {
@@ -97,6 +115,6 @@ public class AKConnect extends AbstractMessage implements Control {
    * @return The requested entity types.
    */
   public List<Integer> getRequestedEntityTypes() {
-    return requestedEntityTypes.getValues();
+    return requestedIntEntityTypes.getValues();
   }
 }
