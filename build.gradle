@@ -2,26 +2,46 @@ plugins {
   id 'java'
 }
 
-sourceCompatibility = '16'
-targetCompatibility = '16'
+sourceCompatibility = '17'
+targetCompatibility = '17'
 version = '2.0'
 
 dependencies {
-  runtimeOnly fileTree( dir: new File( rootDir, 'jars' ), include: '*.jar' )
-  implementation fileTree( dir: new File( rootDir, 'lib' ), include: '*.jar' )
+  implementation 'com.google.code.gson:gson:2.8.9'
+  implementation 'com.google.guava:guava:31.0.1-jre'
+  implementation 'com.google.protobuf:protobuf-java:3.19.1'
+  implementation 'com.google.protobuf:protobuf-java-util:3.19.1'
+  implementation 'com.vividsolutions:jts:1.13'
+  implementation 'jaxen:jaxen:1.2.0'
+  implementation 'jfree:jfreechart:1.0.13'
+  implementation 'log4j:log4j:1.2.17'
+  implementation 'net.sf.trove4j:trove4j:2.1.0'
+  implementation 'net.sourceforge.jsi:jsi:1.0.0'
+  implementation 'org.dom4j:dom4j:2.1.3'
+  implementation 'org.json:json:20210307'
+  implementation 'org.jfree:jcommon:1.0.24'
+  implementation 'org.jscience:jscience:4.3.1'
+  implementation 'org.uncommons.maths:uncommons-maths:1.2.2'
+  implementation 'org.tukaani:xz:1.9'
+
+  testImplementation 'junit:junit:4.13.2'
 }
 
 repositories {
   mavenCentral()
+
+  maven {
+    url = 'http://sourceforge.net/projects/jsi/files/m2_repo'
+    allowInsecureProtocol = true
+  }
 }
 
-[compileJava, compileTestJava].each {
-  it.options.encoding = 'UTF-8'
-  it.options.compilerArgs += [ '-Xlint:deprecation' ]
+javadoc {
+  options {
+    encoding = 'UTF-8'
+    addStringOption('Xdoclint:none', '-quiet')
+  }
 }
-
-javadoc.options.encoding = 'UTF-8'
-javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
 sourceSets {
   main {
@@ -50,18 +70,18 @@ test {
   useJUnit()
 }
 
-jar {
-  manifest {
-    attributes( 'Implementation-Title': project.name,
-                'Implementation-Version': project.version )
+clean {
+  doFirst {
+    delete file( new File( rootDir, 'bin' ) )
+    delete file( new File( rootDir, 'build' ) )
+    delete file( new File( rootDir, 'jars' ) )
+    delete file( new File( rootDir, 'test-results' ) )
   }
 }
 
-clean.doFirst {
-  delete file( new File( rootDir, 'bin' ) )
-  delete file( new File( rootDir, 'build' ) )
-  delete file( new File( rootDir, 'jars' ) )
-  delete file( new File( rootDir, 'test-results' ) )
+[compileJava, compileTestJava].each {
+  it.options.encoding = 'UTF-8'
+  it.options.compilerArgs += [ '-Xlint:deprecation' ]
 }
 
 /* Modules jar generation tasks */

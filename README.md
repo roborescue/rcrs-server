@@ -4,9 +4,9 @@
 
 ## 1. Software Pre-Requisites
 
-- Git
-- Gradle
-- OpenJDK Java 17
+* Git
+* OpenJDK Java 17
+* Gradle
 
 ## 2. Download project from GitHub
 
@@ -19,7 +19,7 @@ $ git clone git@github.com:roborescue/rcrs-server.git
 
 ```bash
 
-$ ./gradlew clean
+$ cd rcrs-server
 
 $ ./gradlew completeBuild
 ```
