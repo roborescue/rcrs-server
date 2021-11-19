@@ -38,7 +38,7 @@ function waitFor {
 # Make a classpath argument by looking in a directory of jar files.
 # Positional parameters are the directories to look in
 function makeClasspath {
-  RESULT="../config"
+  RESULT="../."
   while [[ ! -z "$1" ]]; do
     for NEXT in $1/*.jar; do
       RESULT="$RESULT:$NEXT"
@@ -77,12 +77,6 @@ function processArgs {
   NOGUI="no"
   JLOG_RECORD="no"
   XTERM="no"
-
-  if [ $# -gt 0 ] && [[ $1 != -* ]]; then
-    MAP="$1/map"
-    CONFIGDIR="$1/config"
-    shift 1
-  fi
 
   while [[ ! -z "$1" ]]; do
     case "$1" in
