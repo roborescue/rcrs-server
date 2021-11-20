@@ -46,6 +46,9 @@ repositories {
     url = 'http://sourceforge.net/projects/jsi/files/m2_repo'
     allowInsecureProtocol = true
   }
+  maven {
+    url = 'https://jitpack.io'
+  }
 }
 
 sourceSets {
@@ -170,23 +173,6 @@ task gis2Jar(type: Jar) {
   }
   destinationDirectory = file('jars')
   archiveFileName = 'gis2.jar'
-}
-
-task humanSourceJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from(sourceSets.main.allSource) {
-    include 'human/**'
-  }
-  destinationDirectory = file('jars/sources')
-  archiveFileName = 'human-sources.jar'
-}
-
-task humanJar(type: Jar) {
-  from(sourceSets.main.output) {
-    include 'human/**'
-  }
-  destinationDirectory = file('jars')
-  archiveFileName = 'human.jar'
 }
 
 task ignitionSourceJar(type: Jar, dependsOn: classes) {
@@ -363,23 +349,19 @@ task traffic3Jar(type: Jar) {
 /* Generate the compressed source in Jar files  */
 task sourcesJar(type: GradleBuild) {
   tasks = [ 'clearSourceJar', 'collapseSourceJar', 'gis2SourceJar',
-            'humanSourceJar', 'ignitionSourceJar', 'kernelSourceJar',
-            'mapsSourceJar', 'miscSourceJar', 'rescuecore2SourceJar',
-            'resqFireSourceJar', 'sampleSourceJar', 'standardSourceJar',
-            'traffic3SourceJar'
+            'ignitionSourceJar', 'kernelSourceJar', 'mapsSourceJar',
+            'miscSourceJar', 'rescuecore2SourceJar', 'resqFireSourceJar',
+            'sampleSourceJar', 'standardSourceJar', 'traffic3SourceJar'
           ]
 }
 
 /* Perform a complete build of the simulator */
 task completeBuild(type: GradleBuild) {
-  tasks = [ 'clean', 'clearJar', 'collapseJar', 'gis2Jar', 'humanJar',
-  'ignitionJar', 'kernelJar', 'mapsJar', 'miscJar', 'rescuecore2Jar',
-  'resqFireJar', 'sampleJar', 'standardJar', 'traffic3Jar', 'sourcesJar',
-  'exportLibs' ]
-}
-
-tasks.named('build') {
-  finalizedBy('completeBuild')
+  tasks = [ 'clean', 'clearJar', 'collapseJar', 'gis2Jar', 'ignitionJar',
+            'kernelJar', 'mapsJar', 'miscJar', 'rescuecore2Jar', 'resqFireJar',
+            'sampleJar', 'standardJar', 'traffic3Jar', 'sourcesJar',
+            'exportLibs'
+          ]
 }
 
 /* run simulator */
