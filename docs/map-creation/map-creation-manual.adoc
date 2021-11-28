@@ -1,0 +1,252 @@
+= RoboCup Rescue Map and Scenario Creation Manual
+:author: RoboCup Rescue Simulation Team
+:revnumber: 2.0
+:revdate: September 27, 2021
+:size: A4
+:reproducible: true
+:encode: UTF-8
+:lang: en
+:sectids!:
+:sectnums:
+:sectnumlevels: 4
+:toclevels: 3
+:outlinelevels: 3
+:xrefstyle: short
+:imagesdir: images
+:math:
+:stem: latexmath
+:source-highlighter: highlight.js
+:bibtex-style: apa
+:bibtex-order: alphabetical
+:bibtex-format: asciidoc
+:title-page:
+:toc: left
+
+<<<
+
+[#purpose]
+== Purpose
+The RoboCup Rescue Simulator comes with some example maps that can be used to test and analyze a team of agents' performance. Although useful, these different maps do not represent all possible situations to evaluate a strategy or overall performance of a team of agents. Furthermore, teams would benefit to assess their performance in a larger number and variate of maps. Hence, it is useful to be able to create new maps for the RoboCup Rescue Simulator.
+
+This tutorial describes the procedure to create maps and scenarios compatible with the RoboCup Rescue Simulator. The tutorial illustrates the basic steps to create a map and scenario using the creation of the map of the University of São Paulo, Brazil as example.
+
+[#Tools]
+== Tools
+
+[#openstreetmap]
+=== OpenStreetMap
+
+https://www.openstreetmap.org[OpenStreetMap] (OSM) is a free worldwide map web platform developed collaboratively. OpenStreetMap provides free to use geographic information from many places around the world. It was created under the project _Planet OSM_ aimed to provide geographic information in XML format, containing description of Nodes, Ways, and Relations. A new version of the project is released every week in a single XML file (around 93GB compressed at September 5, 2020). The entire map, or the latest weekly changeset, can be downloaded at https://planet.openstreetmap.org/. <<fig:osm_layout>> shows the layout of a reduced `.osm` file.
+
+[#fig:osm_layout]
+.OSM Layout
+image::osm_layout.png[OSM Layout]
+
+[#gml]
+=== Geographic Markup Language
+https://www.iso.org/standard/75676.html[Geographic Markup Language] (GML) is a XML-­based grammar used to describe interchangeable geographic information. It was defined by the https://www.ogc.org/[Open Geospatial Consortium], and it is largely used for providing a rich set of markup primitives that allow the creation of application specific schemas, such as the definition of Buildings and Roads. The RoboCup Rescue Simulator uses the GML format for representing the entities in its maps.
+
+[#josm]
+=== Java OpenStreetMap editor
+https://josm.openstreetmap.de/[Java OpenStreetMap Editor] (JOSM) is an open Java-­based OpenStreetMap editor, an application originally developed by Immanuel Scholz and currently maintained by Dirk Stocker. JOSM can be used to download, edit, and convert maps from OSM to the GML format. The conversion requires a plugin that can be downloaded at https://github.com/roborescue/osm-converter[RCR-converter].
+
+[#osm2gml]
+=== `osm2gml`
+The `osm2gml` enables the conversion from OSM to GML standard, transforming the XML file from one format to the other. The conversion process changes the features in the original map to make it compatible with the GML representation of the maps in the RoboCup Rescue Simulator. The `osm2gml` is part of the RoboCup Rescue Server project (see README at https://github.com/roborescue/rcrs-server[RoboCup Rescue Server]).
+
+[#creation_process]
+== Map and scenario creation process
+In a nutshell, the process of creating a map for the RoboCup Rescue Simulator is comprised of 3 basic steps:
+
+. Capture the map in a OSM file format (`.osm` extension) +
+The JOSM editor is used to browse through the OSM worldwide map, select the wanted area of the map, and export the map area information as an `.osm` file. <<map_capturing>> illustrates in detail how to perform these tasks.
+
+. Convert the OSM file into the GML file format +
+The `osm2gml` tool is used to convert the OSM file into a GML file format. If the conversion fails, perform the map capture again using the JOSM. <<map_conversion>> illustrates in detail how to use the `osm2gml` tool and some recurrent changes that must be made on the OSM map before converting it.
+
+. Create a valid RoboCup Rescue scenario for the map on the simulator +
+To use the map on the RoboCup Rescue Simulator, a scenario has to be created setting the initial position of agents, special buildings like Ambulance Center, Fire Brigade, Police Station, and Refuges. <<map_scenario>> illustrates in detail how to setup a scenario associated to a specific map.
+
+[#map_capturing]
+=== Map capturing
+The map capturing is performed using the JOSM tool and it is comprised of another 3 stages: install and run the JOSM tool <<josm_run>>, select and download locally a region of the map <<map_select>>, and save it as an `.osm` file <<map_save>>.
+
+[#josm_run]
+==== Download and run JOSM
+First, download the JOSM tool from the http://josm.openstreetmap.de/. There are multiple alternatives to download JOSM, i.e., Installer, Launcher, JAR file. The recommended alternative is the JAR file, which is compatible with any environment supporting Java 8+. Once downloaded, execute the JAR file as
+
+[source,shell]
+----
+$ java -jar josm-tested.jar
+----
+
+<<fig:josm_editor>> illustrates the JOSM editor interface.
+
+[#fig:josm_editor]
+.JOSM Editor
+image::josm_editor.png[JOSM Editor]
+
+[#map_select]
+==== Select and download the region of the map
+On the toolbar, select the green arrow button to "Download Map from OSM Server" and a zoomed out map is shown (see <<fig:josm_map>>).
+
+[#fig:josm_map]
+.JOSM Zoomed Map
+image::josm_map.png[JOSM Map]
+
+Manually zoom in until the region of interest is found. After finding the region of interest, select the specific area you want to download, and select the _Download_ button to download the selected region. <<fig:map_usp>> shows the selected area corresponding to the University of São Paulo.
+
+[#fig:map_usp]
+.JOSM University of São Paulo (USP) map selection
+image::map_usp.png[University of São Paulo]
+
+[#map_save]
+==== Save the OSM file
+After downloading the area of the map from the OpenStreetMap server, JOSM will open the edit screen with the downloaded map on display. Before starting editing it, save the map using the `File` -­> `Save As..` menu options (see <<fig:map_save>>).
+
+[#fig:map_save]
+.JOSM Downloaded University of São Paulo (USP) map
+image::map_save.png[Downloaded University of São Paulo (USP) map]
+
+[#map_conversion]
+=== Convert OSM map into GML map format
+After saving the map in OSM format, there is the need to convert it into the GML format compatible with the RoboCup Rescue Simulator using the `osm2gml` tool. The OSM map, however, normally contains some kinds of shapes and streets that causes the conversion to fail, and some buildings and streets not marked as such, which makes them disappear in the conversion process. <<adjust_osm>> describe some of these problems and how to overcome them.
+
+[#adjust_osm]
+==== Adjusting the OSM map
+In order to make the map convertible to the GML format, some changes have to be made on the original OSM map.
+
+NOTE: The problems reported here are not exhaustive, but purely based on experience during the creation of the University of São Paulo map. Some of these problems may not show up in other map conversions and new problems may arise.
+
+[#buildings]
+===== Buildings
+
+* Remove Buildings from outermost shapes
+
+Some of the buildings overlap with the outermost shape in the map. The converter interprets all buildings overlapping with the outermost shape as only one, the outermost one, eliminating all buildings. To prevent this situation, it is necessary to remove the outermost shape, allowing the buildings to be processed separately. In order to remove the outermost shape, click in one of its edges, then press `Delete`. <<fig:outermost_shape>> illustrates the case of multiple buildings inside another shape.
+
+[#fig:outermost_shape]
+.Outermost Shape
+image::outermost_shape.png[Outermost Shape]
+
+* Making _Buildings_ as _Building_
+
+Because most of the times shapes corresponding to _Buildings_ in the original OSM map are not marked as buildings, the converter does not generate a corresponding building at the resulting GML map. Hence, it is necessary to identify manually all the non-marked buildings in the OSM map. To set one shape as Building, select the shape then go to `Presets` -­> `Man Made` -­> `Man Made` -­> `Building` menu option. Then, select one of the Building type.  <<fig:building_setup>> shows the setup of a shape as building.
+
+[#fig:building_setup]
+.Building Setup
+image::building_setup.png[Building Setup]
+
+* Separate Overlapping Buildings
+
+The original map may contain shapes that overlap each other, either two buildings, or one building and a road, or two roads. The converter processes these overlapping during the conversion process, but sometimes it fails. The safest practice is to separate the overlapping shapes in your map before converting it. Select one of the shapes and drag and drop it to separate one from the other. <<fig:overlapping_buildings>> illustrates an example of overlapping buildings.
+
+[#fig:overlapping_buildings]
+.Overlapping Buildings
+image::overlapping_buildings.png[Overlapping Buildings]
+
+[#roads]
+===== Roads
+
+* Setup roads as both ways
+
+Most roads on the original map are set as only one way road, although some of them should be both ways roads (see <<fig:both_way_road>>).
+
+[#fig:both_way_road]
+.Both Way Road
+image::both_way_road.png[Both Way Road]
+
+To set roads as both ways, select it then go to `Presets` -­> `Highways` -> `Streets` and select the street type. A dialog will appear, before clicking `OK`, make sure the checkbox `Oneway` is not selected. <<fig:road_setup_dialog>> illustrates the dialog for the option of "Unclassified" street.
+
+[#fig:road_setup_dialog]
+.Road Setup Dialog
+image::road_setup_dialog.png[Road Setup Dialog]
+
+* Remove roads from inside buildings
+
+The original OSM map may have some lines inside the buildings, which represent the path one can walk inside them. But sometimes these lines are interpreted by the converter as roads, and this can cause the conversion process to fail. To prevent this problem, it is necessary to remove these lines from inside the buildings. <<fig:line_building>> shows an example of lines inside a building.
+
+[#fig:line_building]
+.Lines Inside the Building
+image::line_building.png[Lines Inside the Building]
+
+[#running_converter]
+==== Running the map converter
+To convert the adjusted OSM map into the GML format, it is necessary to run the `osm2gml` converter. The run the converter, open a terminal window, navigate to the `rcrs-server` root directory and execute
+
+[source,shell]
+----
+$ ./gradlew osm2gml --args='<osm map path> <gml map path>'
+----
+
+The `<osm map path>` is the path to the OSM map file and the `<gml map path>` is the destination GML map path.
+
+NOTE: Even after running all the checks in <<adjust_osm>>, there still may be some invalid entities in the map may cause the conversion to fail. Use the JOSM to fix those newly identified error in an iterative process.
+
+<<fig:converter_running>> illustrates the converter application running, and <<fig:converter_result>> shows the resulting map after the conversion.
+
+[#fig:converter_running]
+.Converter `osm2gml` Running
+image::converter_running.png[Converter `osm2gml` Running]
+
+[#fig:converter_result]
+.Conversion Result
+image::converter_result.png[Conversion Result]
+
+[#map_scenario]
+=== Create a Scenario
+Create a scenario means configuring the initial state of the entities in a map such as the initial location of agents, the locations of the centre agents, buildings on fire, etc.
+
+To illustrate the creation of a scenario, the University of São Paulo created in <<creation_process>> is used.
+
+[#map_directory]
+==== Map directory
+The maps and scenarios of the current maps in the RoboCup Rescue Simulator ae stored in the directory `rcrs-server/maps/gml/`. Inside each folder in this directory there are a `map.gml` and a `scenario.xml` file. The former represents the map in GML format, while the latter represents one scenario for that specific map.
+
+[#gml_layout]
+==== GML map file layout
+In order to create a scenario, it is necessary to understand the layout of the GML file. The GML file is separated into 4 important parts: the node list,
+the edge list, the building list, and the road list.
+
+The edge list contains information of all the edges that are composed by the nodes in the node list. The buildings and roads are defined based on the edges. <<fig:building_list>> and <<fig:road_list>> show a example of the building and road lists on a GML map file.
+
+[#fig:building_list]
+.GML Building List
+image::building_list.png[GML Building List]
+
+[#fig:road_list]
+.GML Road List
+image::road_list.png[GML Road List]
+
+[#create_scenario]
+==== Creating a scenario
+The scenario file is also XML formatted file, and contains a list of the entities that compose the simulation initial state, including the starting fires, refuges, civilians, agents, etc. Each element of the xml file has two attributes. The first determines the type of entity being created (fire, refuge,
+ambulance, ambulance centre, etc.) and the second determines where the location of the entity in the map at the beginning of the simulation. The location is a number that refers to the `id` of an entity in the GML file (either a Building or a Road).
+
+There are two tools that can assist in creating a scenario: Scenario Editor and Random Scenario. Please refer the https://roborescue.github.io/rcrs-docs/rcrs-server/manual.html[RoboCup Rescue Simulator Manual] for information of how to run these tools.
+
+<<fig:scenario_layout>> shows a reduced representation of scenario file created for University of São Paulo map.
+
+[#fig:scenario_layout]
+.Scenario Layout
+image::scenario_layout.png[Scenario Layout]
+
+Some types of entities can be located only on Buildings, others only on Roads, and other yet in both. The following list shows the types of entities and where they can be located at.
+
+* Building
+** fire
+** refuge
+** firestation
+** ambulancecentre
+** policeoffice
+** gasstation
+** ambulanceteam
+** policeforce
+** firebrigade
+** civilian
+* Road
+** hydrant
+** ambulanceteam
+** policeforce
+** firebrigade
+** civilian
