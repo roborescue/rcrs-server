@@ -1,0 +1,26 @@
+# Publish Asciidoc Documentation
+name: asciidoctor-ghpages
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: asciidoctor/docker-asciidoctor
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Generate rcrs-server HTML
+      run: asciidoctor -b html5 -r asciidoctor-bibtex -a bibtex-file=docs/rcrs-server/references.bib -a imagesdir=docs/rcrs-server/images docs/rcrs-server/rcrs-server-manual.adoc -o docs/rcrs-server/index.html
+    - name: Generate rcrs-server PDF
+      run: asciidoctor-pdf -r asciidoctor-bibtex -r asciidoctor-mathematical -a bibtex-file=docs/rcrs-server/references.bib -a imagesdir=docs/rcrs-server/images -a mathematical-format=svg -a optimize -a pdf-theme=docs/resources/themes/manual.yml -a pdf-fontsdir=docs/resources/fonts docs/rcrs-server/rcrs-server-manual.adoc -o docs/rcrs-server/rcrs-server-manual.pdf
+    - name: Deploy to GitHub Pages
+      uses: crazy-max/ghaction-github-pages@v2
+      with:
+        target_branch: gh-pages
+        build_dir: docs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
