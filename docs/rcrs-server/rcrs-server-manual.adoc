@@ -12,6 +12,7 @@
 :toclevels: 3
 :outlinelevels: 3
 :xrefstyle: short
+:imagesdir: images
 :math:
 :stem: latexmath
 :source-highlighter: highlight.js
