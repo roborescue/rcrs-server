@@ -20,7 +20,7 @@ rm -rf json/*
 
 ## Generate URN Mapping
 makeClasspath ../../jars ../../lib
-java -Xmx1512m -cp $CP sample.URNMapPrinter --python_out=python/URN.py --js_out=nodejs/URN.js --json_out=json/URN.json
+java -Xmx1512m -cp $CP rescuecore2.standard.misc.URNMapPrinter --python_out=python/URN.py --js_out=nodejs/URN.js --json_out=json/URN.json
 
 ## Java
 protoc -I=../../modules/rescuecore2/src/rescuecore2/messages/protobuf --java_out=../../modules/rescuecore2/src RCRSProto.proto RCRSLogProto.proto

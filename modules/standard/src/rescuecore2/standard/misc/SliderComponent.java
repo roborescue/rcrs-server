@@ -3,7 +3,6 @@ package rescuecore2.standard.misc;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -16,57 +15,74 @@ import javax.swing.event.ChangeListener;
  * update the text field and vice versa.
  */
 public class SliderComponent extends JPanel {
+
   private JSlider slider;
   private JTextField text;
 
   /**
    * Create a vertical SliderComponent with range bounds.
    *
-   * @param min   The minimum value of the slider.
-   * @param max   The maximum value of the slider.
-   * @param value The current value of the slider.
+   * @param min
+   *   The minimum value of the slider.
+   * @param max
+   *   The maximum value of the slider.
+   * @param value
+   *   The current value of the slider.
    */
   public SliderComponent(int min, int max, int value) {
     this(min, max, value, SwingConstants.VERTICAL);
   }
 
+
   /**
    * Create a SliderComponent with range bounds.
    *
-   * @param min         The minimum value of the slider.
-   * @param max         The maximum value of the slider.
-   * @param value       The current value of the slider.
-   * @param orientation The orientation of the slider. Must be either
-   *                    {@link javax.swing.SwingConstants#VERTICAL} or
-   *                    {@link javax.swing.SwingConstants#HORIZONTAL}
+   * @param min
+   *   The minimum value of the slider.
+   * @param max
+   *   The maximum value of the slider.
+   * @param value
+   *   The current value of the slider.
+   * @param orientation
+   *   The orientation of the slider. Must be either
+   *   {@link javax.swing.SwingConstants#VERTICAL} or
+   *   {@link javax.swing.SwingConstants#HORIZONTAL}
    */
   public SliderComponent(int min, int max, int value, int orientation) {
-    this(new JSlider(orientation, min, max, value), new JTextField(String.valueOf(value)));
+    this(new JSlider(orientation, min, max, value),
+        new JTextField(String.valueOf(value)));
   }
+
 
   /**
    * Create a SliderComponent with a given slider. If the slider has vertical
-   * orientation then the text field will be displayed below it, otherwise it will
+   * orientation then the text field will be displayed below it, otherwise it
+   * will
    * be to the right.
    *
-   * @param slider The JSlider to display.
+   * @param slider
+   *   The JSlider to display.
    */
   public SliderComponent(JSlider slider) {
     this(slider, new JTextField(String.valueOf(slider.getValue())));
   }
+
 
   /**
    * Create a SliderComponent with a given slider and text field. If the slider
    * has vertical orientation then the text field will be displayed below it,
    * otherwise it will be to the right.
    *
-   * @param slider The JSlider to display.
-   * @param text   The JTextField to display.
+   * @param slider
+   *   The JSlider to display.
+   * @param text
+   *   The JTextField to display.
    */
   public SliderComponent(JSlider slider, JTextField text) {
     super(new BorderLayout());
     setup(slider, text);
   }
+
 
   /**
    * Get the JSlider component. This is useful if you want to manually set the
@@ -78,6 +94,7 @@ public class SliderComponent extends JPanel {
     return slider;
   }
 
+
   /**
    * Get the JTextField component.
    *
@@ -86,6 +103,7 @@ public class SliderComponent extends JPanel {
   public JTextField getTextField() {
     return text;
   }
+
 
   private void setup(final JSlider s, final JTextField t) {
     this.slider = s;
@@ -98,6 +116,7 @@ public class SliderComponent extends JPanel {
       add(text, BorderLayout.EAST);
     }
     text.addActionListener(new ActionListener() {
+
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
@@ -110,6 +129,7 @@ public class SliderComponent extends JPanel {
       }
     });
     slider.addChangeListener(new ChangeListener() {
+
       @Override
       public void stateChanged(ChangeEvent e) {
         text.setText(String.valueOf(slider.getValue()));

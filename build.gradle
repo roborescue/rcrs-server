@@ -64,7 +64,6 @@ sourceSets {
                   'modules/gis2/src',
                   'modules/ignition/src',
                   'modules/maps/src',
-                  'modules/sample/src',
                   'modules/traffic3/src',
                   'modules/oldsims',
                   'modules/resq-fire/src'
