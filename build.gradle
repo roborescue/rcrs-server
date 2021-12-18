@@ -36,7 +36,8 @@ dependencies {
   implementation 'org.projectlombok:lombok:latest.integration'
   annotationProcessor 'org.projectlombok:lombok:latest.integration'
 
-  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 repositories {
@@ -64,6 +65,7 @@ sourceSets {
                   'modules/gis2/src',
                   'modules/ignition/src',
                   'modules/maps/src',
+                  'modules/sample/src',
                   'modules/traffic3/src',
                   'modules/oldsims',
                   'modules/resq-fire/src'
@@ -73,7 +75,7 @@ sourceSets {
 }
 
 test {
-  useJUnit()
+  useJUnitPlatform()
 }
 
 jar {
@@ -90,17 +92,17 @@ javadoc {
   }
 }
 
-publishing {
-  publications {
-    maven(MavenPublication) {
-      groupId = 'com.github.roborescue'
-      artifactId = 'rcrs-server'
-      version = 'master-SNAPSHOT'
-
-      from components.java
-    }
-  }
-}
+//publishing {
+//  publications {
+//    maven(MavenPublication) {
+//      groupId = 'com.github.roborescue'
+//      artifactId = 'rcrs-server'
+//      version = 'master-SNAPSHOT'
+//
+//      from components.java
+//    }
+//  }
+//}
 
 clean {
   doFirst {
