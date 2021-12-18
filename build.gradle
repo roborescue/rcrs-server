@@ -92,17 +92,17 @@ javadoc {
   }
 }
 
-//publishing {
-//  publications {
-//    maven(MavenPublication) {
-//      groupId = 'com.github.roborescue'
-//      artifactId = 'rcrs-server'
-//      version = 'master-SNAPSHOT'
-//
-//      from components.java
-//    }
-//  }
-//}
+publishing {
+  publications {
+    maven(MavenPublication) {
+      groupId = 'com.github.roborescue'
+      artifactId = 'rcrs-server'
+      version = 'master-SNAPSHOT'
+
+      from components.java
+    }
+  }
+}
 
 clean {
   doFirst {
