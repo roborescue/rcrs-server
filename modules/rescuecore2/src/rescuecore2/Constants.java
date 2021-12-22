@@ -36,7 +36,7 @@ public final class Constants {
   /** Config key for the kernel port number. */
   public static final String KERNEL_PORT_NUMBER_KEY = "kernel.port";
   /** Default kernel port number. */
-  public static final int DEFAULT_KERNEL_PORT_NUMBER = 7000;
+  public static final int DEFAULT_KERNEL_PORT_NUMBER = 27931;
   /** Config key for the gis port number. */
   public static final String GIS_PORT_NUMBER_KEY = "gis.port";
   /** Default gis port number. */
