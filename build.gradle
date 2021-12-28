@@ -364,6 +364,11 @@ task completeBuild(type: GradleBuild) {
             'exportLibs'
           ]
 }
+if (project.hasProperty("args")) {
+    ext.cmdargs = project.getProperty("args")
+} else { 
+    ext.cmdargs = '-c maps/test/config/kernel.cfg --gis.map.dir=maps/test/map --kernel.logname=logs/log/rescue.log.xz'
+}
 
 /* run simulator */
 task run(type: JavaExec) {
@@ -374,7 +379,7 @@ task run(type: JavaExec) {
   mainClass = 'kernel.StartKernel'
   maxHeapSize = '2048m'
   jvmArgs '-Dlog4j.log.dir=logs/log'
-  args('-c maps/test/config/kernel.cfg --gis.map.dir=maps/test/map --kernel.logname=logs/log/rescue.log.xz'.split(' '))
+  args(cmdargs.split(' '))
 }
 
 /* Generate a random scenario */
