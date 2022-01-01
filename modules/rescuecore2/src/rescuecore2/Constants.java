@@ -40,7 +40,7 @@ public final class Constants {
   /** Config key for the gis port number. */
   public static final String GIS_PORT_NUMBER_KEY = "gis.port";
   /** Default gis port number. */
-  public static final int DEFAULT_GIS_PORT_NUMBER = 7001;
+  public static final int DEFAULT_GIS_PORT_NUMBER = 27932;
 
   /** The random seed key. */
   public static final String RANDOM_SEED_KEY = "random.seed";
