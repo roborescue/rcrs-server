@@ -41,7 +41,6 @@ public final class StandardEntityConstants {
     BURNT_OUT;
   }
 
-
   private StandardEntityConstants() {
   }
 }

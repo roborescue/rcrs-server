@@ -156,7 +156,7 @@ public class SampleViewerEventLogger extends StandardViewer {
         JSONObject jsonEntity = entity.toJson();
         JSONObject filteredJsonEntity = new JSONObject();
         for ( Property property : changedProperties ) {
-          String propertyName = property.getURN();
+          String propertyName = property.getURN()+"";
           if ( jsonEntity.has( propertyName )
               && !jsonEntity.isNull( propertyName ) ) {
             String jsonEntityProperty = jsonEntity.get( propertyName ).toString();
@@ -203,7 +203,7 @@ public class SampleViewerEventLogger extends StandardViewer {
 
     for ( Command command : t.getCommands() ) {
       StandardMessageURN commandStandardMessageURN = StandardMessageURN
-          .fromString( command.getURN() );
+          .fromInt( command.getURN() );
       try {
         if ( allowed_command_child.contains( commandStandardMessageURN ) ) {
           jsonAllEntities.put( command.toJson() );

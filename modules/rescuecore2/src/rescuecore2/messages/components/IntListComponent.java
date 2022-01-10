@@ -3,14 +3,16 @@ package rescuecore2.messages.components;
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
-import rescuecore2.messages.AbstractMessageComponent;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
    A message component that is a list of integers.
@@ -22,7 +24,7 @@ public class IntListComponent extends AbstractMessageComponent {
        Construct an IntListComponent with no data.
        @param name The name of the component.
      */
-    public IntListComponent(String name) {
+    public IntListComponent(URN name) {
         super(name);
         data = new ArrayList<Integer>();
     }
@@ -32,7 +34,7 @@ public class IntListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param data The data.
      */
-    public IntListComponent(String name, List<Integer> data) {
+    public IntListComponent(URN name, List<Integer> data) {
         super(name);
         this.data = new ArrayList<Integer>(data);
     }
@@ -85,4 +87,21 @@ public class IntListComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + data.toString();
     }
+    
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data.clear();
+		for (Integer val : proto.getIntList().getValuesList()) {
+			data.add(val);
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		IntListProto.Builder builder=IntListProto.newBuilder();
+		for (Integer next : data) {
+            builder.addValues(next);
+        }
+		return MessageComponentProto.newBuilder().setIntList(builder).build();
+	}
 }

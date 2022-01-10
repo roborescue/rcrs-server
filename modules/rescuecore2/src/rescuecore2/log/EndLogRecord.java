@@ -1,6 +1,11 @@
 package rescuecore2.log;
 
 import java.io.OutputStream;
+
+import rescuecore2.messages.protobuf.RCRSLogProto.EndLogProto;
+import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
+import rescuecore2.messages.protobuf.RCRSLogProto.StartLogProto;
+
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -35,4 +40,13 @@ public class EndLogRecord implements LogRecord {
     @Override
     public void read(InputStream in) throws IOException {
     }
+
+	@Override
+	public void fromLogProto(LogProto log) {
+	}
+
+	@Override
+	public LogProto toLogProto() {
+		return LogProto.newBuilder().setEnd(EndLogProto.newBuilder()).build();
+	}
 }

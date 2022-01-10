@@ -3,15 +3,17 @@ package rescuecore2.messages.components;
 import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 
-import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.worldmodel.EntityID;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.protobuf.RCRSProto.IntListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
+import rescuecore2.worldmodel.EntityID;
 
 /**
    A message component that is a list of entity IDs.
@@ -23,7 +25,7 @@ public class EntityIDListComponent extends AbstractMessageComponent {
        Construct an EntityIDListComponent with no data.
        @param name The name of the component.
      */
-    public EntityIDListComponent(String name) {
+    public EntityIDListComponent(URN name) {
         super(name);
         ids = new ArrayList<EntityID>();
     }
@@ -33,7 +35,7 @@ public class EntityIDListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param ids The data.
      */
-    public EntityIDListComponent(String name, List<EntityID> ids) {
+    public EntityIDListComponent(URN name, List<EntityID> ids) {
         super(name);
         this.ids = new ArrayList<EntityID>(ids);
     }
@@ -75,4 +77,20 @@ public class EntityIDListComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + ids.toString();
     }
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		ids.clear();
+		for (Integer val : proto.getEntityIDList().getValuesList()) {
+			ids.add(new EntityID(val));			
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		IntListProto.Builder builder=IntListProto.newBuilder();
+		for (EntityID next : ids) {
+            builder.addValues(next.getValue());
+        }
+		return MessageComponentProto.newBuilder().setEntityIDList(builder).build();
+	}
 }

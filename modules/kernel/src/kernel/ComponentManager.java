@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.HashMap;
 
 import rescuecore2.config.Config;
@@ -19,6 +20,7 @@ import rescuecore2.connection.ConnectionManagerListener;
 import rescuecore2.messages.Message;
 import rescuecore2.messages.control.KSAfterShocksInfo;
 import rescuecore2.messages.control.VKConnect;
+import rescuecore2.registry.Registry;
 import rescuecore2.messages.control.VKAcknowledge;
 import rescuecore2.messages.control.KVConnectOK;
 import rescuecore2.messages.control.SKConnect;
@@ -54,7 +56,7 @@ public class ComponentManager implements ConnectionManagerListener,
 	private ComponentManagerGUI gui;
 
 	// Entities that have no controller yet. Map from type to list of entities.
-	private Map<String, Queue<ControlledEntityInfo>> uncontrolledEntities;
+	private Map<Integer, Queue<ControlledEntityInfo>> uncontrolledEntities;
 
 	// Connected agents
 	private Set<AgentAck> agentsToAcknowledge;
@@ -95,7 +97,7 @@ public class ComponentManager implements ConnectionManagerListener,
 		this.world = world;
 		this.config = config;
 		this.scenario = scenario;
-		uncontrolledEntities = new HashMap<String, Queue<ControlledEntityInfo>>();
+		uncontrolledEntities = new HashMap<Integer, Queue<ControlledEntityInfo>>();
 		agentsToAcknowledge = new HashSet<AgentAck>();
 		simsToAcknowledge = new HashSet<SimulatorAck>();
 		viewersToAcknowledge = new HashSet<ViewerAck>();
@@ -146,7 +148,7 @@ public class ComponentManager implements ConnectionManagerListener,
 			boolean done = false;
 			do {
 				done = true;
-				for (Map.Entry<String, Queue<ControlledEntityInfo>> next : uncontrolledEntities
+				for (Entry<Integer, Queue<ControlledEntityInfo>> next : uncontrolledEntities
 						.entrySet()) {
 					if (!next.getValue().isEmpty()) {
 						done = false;
@@ -272,9 +274,9 @@ public class ComponentManager implements ConnectionManagerListener,
 		}
 	}
 
-	private ControlledEntityInfo findEntityToControl(List<String> types) {
+	private ControlledEntityInfo findEntityToControl(List<Integer> types) {
 		Logger.debug("Finding entity to control. Requested types: " + types);
-		for (String next : types) {
+		for (Integer next : types) {
 			Queue<ControlledEntityInfo> q = uncontrolledEntities.get(next);
 			Logger.debug("Uncontrolled entities of type " + next + ": " + q);
 			if (q != null) {
@@ -292,7 +294,7 @@ public class ComponentManager implements ConnectionManagerListener,
 		synchronized (agentLock) {
 			for (Queue<ControlledEntityInfo> q : uncontrolledEntities.values()) {
 				for (ControlledEntityInfo info : q) {
-					data.add(info.entity.getURN() + " " + info.entity.getID());
+					data.add(Registry.SYSTEM_REGISTRY.toPrettyName(info.entity.getURN()) + " " + info.entity.getID());
 				}
 			}
 		}
@@ -359,7 +361,7 @@ public class ComponentManager implements ConnectionManagerListener,
 		private void handleAKConnect(AKConnect connect, Connection connection) {
 			// Pull out the request ID and requested entity type list
 			int requestID = connect.getRequestID();
-			List<String> types = connect.getRequestedEntityTypes();
+			List<Integer> types = connect.getRequestedEntityTypes();
 			// See if we can find an entity for this agent to control.
 			Message reply = null;
 			Logger.debug("AKConnect received: " + types);
@@ -505,7 +507,7 @@ public class ComponentManager implements ConnectionManagerListener,
 		@Override
 		public String toString() {
 			return agent.getName() + ": "
-					+ agent.getControlledEntity().getURN() + " "
+					+ Registry.SYSTEM_REGISTRY.toPrettyName(agent.getControlledEntity().getURN()) + " "
 					+ agent.getControlledEntity().getID() + "(" + connection
 					+ " request ID " + requestID + ")";
 		}

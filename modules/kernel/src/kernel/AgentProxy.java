@@ -14,6 +14,7 @@ import rescuecore2.worldmodel.EntityID;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.log.Logger;
 import rescuecore2.misc.collections.LazyMap;
+import rescuecore2.registry.Registry;
 
 /**
    This class is the kernel interface to an agent.
@@ -42,7 +43,7 @@ public class AgentProxy extends AbstractKernelComponent {
 
     @Override
     public String toString() {
-        return getName() + ": " + entity.getURN() + " " + entity.getID();
+        return getName() + ": " + Registry.getCurrentRegistry().toPrettyName(entity.getURN()) + " " + entity.getID();
     }
 
     /**

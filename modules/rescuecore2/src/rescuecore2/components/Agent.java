@@ -15,7 +15,7 @@ public interface Agent extends Component {
        Get the list of entity URNs that this agent is willing to control.
        @return An array of entity URNs.
     */
-    String[] getRequestedEntityURNs();
+    int[] getRequestedEntityURNs();
 
     /**
        Notification that this agent has been connected to the kernel.

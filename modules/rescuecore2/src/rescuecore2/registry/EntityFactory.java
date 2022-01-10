@@ -1,12 +1,13 @@
 package rescuecore2.registry;
 
+
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
 
 /**
    A factory for vending Entities.
  */
-public interface EntityFactory {
+public interface EntityFactory extends Factory {
     /**
        Create a new Entity.
        @param urn The urn of the entity to create.
@@ -14,11 +15,6 @@ public interface EntityFactory {
        @return A new Entity of the correct type.
        @throws IllegalArgumentException If the urn is not recognised.
      */
-    Entity makeEntity(String urn, EntityID id);
+    Entity makeEntity(int urn, EntityID id);
 
-    /**
-       Get all entity urns understood by this factory.
-       @return All entity urns.
-    */
-    String[] getKnownEntityURNs();
 }

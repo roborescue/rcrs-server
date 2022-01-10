@@ -5,12 +5,15 @@ import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeString;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.protobuf.RCRSProto.ConfigProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 import rescuecore2.config.Config;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -23,7 +26,7 @@ public class ConfigComponent extends AbstractMessageComponent {
        Construct a ConfigComponent with no content.
        @param name The name of the component.
      */
-    public ConfigComponent(String name) {
+    public ConfigComponent(URN name) {
         super(name);
         config = new Config();
     }
@@ -33,7 +36,7 @@ public class ConfigComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param data The content.
      */
-    public ConfigComponent(String name, Config data) {
+    public ConfigComponent(URN name, Config data) {
         super(name);
         this.config = data;
     }
@@ -79,4 +82,17 @@ public class ConfigComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " (" + config.getAllKeys().size() + " entries)";
     }
+
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+        config = new Config();
+        for (Entry<String, String> entry : proto.getConfig().getDataMap().entrySet()) {
+            config.setValue(entry.getKey(), entry.getValue());
+        }		
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setConfig(ConfigProto.newBuilder().putAllData(config.getData())).build();
+	}
 }

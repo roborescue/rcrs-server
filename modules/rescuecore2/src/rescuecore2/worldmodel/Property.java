@@ -2,6 +2,9 @@ package rescuecore2.worldmodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import rescuecore2.messages.protobuf.RCRSProto.PropertyProto;
+
 import java.io.IOException;
 
 /**
@@ -12,7 +15,7 @@ public interface Property {
        Get the urn of this property.
        @return The urn of this property.
      */
-    String getURN();
+    int getURN();
 
     /**
        Does this property have a defined value?
@@ -57,4 +60,8 @@ public interface Property {
        @return A copy of this property.
     */
     Property copy();
+    
+    PropertyProto toPropertyProto();
+    void fromPropertyProto(PropertyProto proto);
 }
+

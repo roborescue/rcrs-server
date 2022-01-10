@@ -13,6 +13,10 @@ import java.util.Collection;
 
 import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
+import rescuecore2.messages.protobuf.RCRSLogProto.InitialConditionsLogProto;
+import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
+import rescuecore2.messages.protobuf.RCRSProto.EntityProto;
 import rescuecore2.worldmodel.DefaultWorldModel;
 
 /**
@@ -38,6 +42,9 @@ public class InitialConditionsRecord implements LogRecord {
      */
     public InitialConditionsRecord(InputStream in) throws IOException, LogException {
         read(in);
+    }
+    public InitialConditionsRecord(LogProto in) throws LogException {
+        fromLogProto(in);
     }
 
     @Override
@@ -74,4 +81,25 @@ public class InitialConditionsRecord implements LogRecord {
     public WorldModel<Entity> getWorldModel() {
         return model;
     }
+
+	@Override
+	public void fromLogProto(LogProto log) throws LogException {
+		model = DefaultWorldModel.create();
+		for(EntityProto e:log.getInitialCondition().getEntitiesList()) {
+			Entity en = MsgProtoBuf.entityProto2Entity(e);
+			if(en==null)
+				throw new LogException("Could not read entity from stream");
+			model.addEntity(en);
+		}
+	}
+
+	@Override
+	public LogProto toLogProto() {
+		InitialConditionsLogProto.Builder builder=InitialConditionsLogProto.newBuilder();
+		Collection<? extends Entity> all = model.getAllEntities();
+        for (Entity e : all) {
+            builder.addEntities(e.toEntityProto());
+        }
+		return LogProto.newBuilder().setInitialCondition(builder).build();
+	}
 }

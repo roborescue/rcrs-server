@@ -2,7 +2,6 @@ package gis2.scenario;
 
 import gis2.GisScenario;
 import gis2.ScenarioException;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,7 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -34,7 +32,6 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
-
 import maps.MapException;
 import maps.MapReader;
 import maps.gml.GMLMap;
@@ -43,14 +40,12 @@ import maps.gml.view.DecoratorOverlay;
 import maps.gml.view.FilledShapeDecorator;
 import maps.gml.view.GMLMapViewer;
 import maps.gml.view.GMLObjectInspector;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-
 import rescuecore2.config.Config;
 
 /**
@@ -89,29 +84,43 @@ public class ScenarioEditor extends JPanel {
   private File baseDir;
   private File saveFile;
 
-  private FilledShapeDecorator fireDecorator = new FilledShapeDecorator(FIRE_COLOUR, null, null);
-  private FilledShapeDecorator fireStationDecorator = new FilledShapeDecorator(FIRE_STATION_COLOUR, null, null);
-  private FilledShapeDecorator policeOfficeDecorator = new FilledShapeDecorator(POLICE_OFFICE_COLOUR, null, null);
-  private FilledShapeDecorator ambulanceCentreDecorator = new FilledShapeDecorator(AMBULANCE_CENTRE_COLOUR, null, null);
-  private FilledShapeDecorator refugeDecorator = new FilledShapeDecorator(REFUGE_COLOUR, null, null);
-  private FilledShapeDecorator gasStationDecorator = new FilledShapeDecorator(GAS_STATION_COLOUR, null, null);
-  private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null, HYDRANT_COLOUR, null);
+  private FilledShapeDecorator fireDecorator = new FilledShapeDecorator(
+      FIRE_COLOUR, null, null);
+  private FilledShapeDecorator fireStationDecorator = new FilledShapeDecorator(
+      FIRE_STATION_COLOUR, null, null);
+  private FilledShapeDecorator policeOfficeDecorator = new FilledShapeDecorator(
+      POLICE_OFFICE_COLOUR, null, null);
+  private FilledShapeDecorator ambulanceCentreDecorator = new FilledShapeDecorator(
+      AMBULANCE_CENTRE_COLOUR, null, null);
+  private FilledShapeDecorator refugeDecorator = new FilledShapeDecorator(
+      REFUGE_COLOUR, null, null);
+  private FilledShapeDecorator gasStationDecorator = new FilledShapeDecorator(
+      GAS_STATION_COLOUR, null, null);
+  private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null,
+      HYDRANT_COLOUR, null);
+
+  private static Config config = new Config();
 
   /**
    * Construct a new ScenarioEditor.
    *
-   * @param menuBar The menu bar to add menus to.
+   * @param menuBar
+   *   The menu bar to add menus to.
    */
   public ScenarioEditor(JMenuBar menuBar) {
     this(menuBar, null, null);
   }
 
+
   /**
    * Construct a new ScenarioEditor.
    *
-   * @param menuBar  The menu bar to add menus to.
-   * @param map      The GMLMap to view.
-   * @param scenario The scenario to edit.
+   * @param menuBar
+   *   The menu bar to add menus to.
+   * @param map
+   *   The GMLMap to view.
+   * @param scenario
+   *   The scenario to edit.
    */
   public ScenarioEditor(JMenuBar menuBar, GMLMap map, GisScenario scenario) {
     super(new BorderLayout());
@@ -128,8 +137,10 @@ public class ScenarioEditor extends JPanel {
     viewer.addOverlay(agentOverlay);
     inspector = new GMLObjectInspector(map);
     undoManager = new UndoManager();
-    viewer.setPreferredSize(new Dimension(VIEWER_PREFERRED_SIZE, VIEWER_PREFERRED_SIZE));
-    inspector.setPreferredSize(new Dimension(INSPECTOR_PREFERRED_WIDTH, INSPECTOR_PREFERRED_HEIGHT));
+    viewer.setPreferredSize(
+        new Dimension(VIEWER_PREFERRED_SIZE, VIEWER_PREFERRED_SIZE));
+    inspector.setPreferredSize(
+        new Dimension(INSPECTOR_PREFERRED_WIDTH, INSPECTOR_PREFERRED_HEIGHT));
     viewer.setBackground(Color.GRAY);
     viewer.getPanZoomListener().setPanOnRightMouse();
     changed = false;
@@ -148,7 +159,8 @@ public class ScenarioEditor extends JPanel {
     createToolActions(toolsMenu, toolsToolbar);
     createFunctionActions(functionsMenu, functionsToolbar);
 
-    JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer, inspector);
+    JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewer,
+        inspector);
     add(split, BorderLayout.CENTER);
     JPanel toolbars = new JPanel(new ModifiedFlowLayout());
     toolbars.add(fileToolbar);
@@ -166,10 +178,12 @@ public class ScenarioEditor extends JPanel {
     saveFile = null;
   }
 
+
   /**
    * Entry point.
    *
-   * @param args Command line arguments.
+   * @param args
+   *   Command line arguments.
    */
   public static void main(String[] args) {
     final JFrame frame = new JFrame("Scenario Editor");
@@ -210,22 +224,26 @@ public class ScenarioEditor extends JPanel {
     frame.setVisible(true);
   }
 
+
   /**
    * Load a map and scenario by showing a file chooser dialog.
    *
-   * @throws CancelledByUserException                          If the user cancels
-   *                                                           the change due to
-   *                                                           unsaved changes.
-   * @throws MapException                                      If there is a
-   *                                                           problem reading the
-   *                                                           map.
-   * @throws ScenarioException                                 If there is a
-   *                                                           problem reading the
-   *                                                           scenario.
+   * @throws CancelledByUserException
+   *   If the user cancels
+   *   the change due to
+   *   unsaved changes.
+   * @throws MapException
+   *   If there is a
+   *   problem reading the
+   *   map.
+   * @throws ScenarioException
+   *   If there is a
+   *   problem reading the
+   *   scenario.
    * @throws rescuecore2.scenario.exceptions.ScenarioException
    */
-  public void load() throws CancelledByUserException, MapException, ScenarioException,
-      rescuecore2.scenario.exceptions.ScenarioException {
+  public void load() throws CancelledByUserException, MapException,
+      ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
     JFileChooser chooser = new JFileChooser(baseDir);
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.setFileFilter(new FileFilter() {
@@ -234,6 +252,7 @@ public class ScenarioEditor extends JPanel {
       public boolean accept(File f) {
         return f.isDirectory();
       }
+
 
       @Override
       public String getDescription() {
@@ -245,25 +264,33 @@ public class ScenarioEditor extends JPanel {
     }
   }
 
+
   /**
    * Load a map and scenario from a directory.
    *
-   * @param filename The name of the file to read.
-   * @throws CancelledByUserException                          If the user cancels
-   *                                                           the change due to
-   *                                                           unsaved changes.
-   * @throws MapException                                      If there is a
-   *                                                           problem reading the
-   *                                                           map.
-   * @throws ScenarioException                                 If there is a
-   *                                                           problem reading the
-   *                                                           scenario.
+   * @param filename
+   *   The name of the file to read.
+   *
+   * @throws CancelledByUserException
+   *   If the user cancels
+   *   the change due to
+   *   unsaved changes.
+   * @throws MapException
+   *   If there is a
+   *   problem reading the
+   *   map.
+   * @throws ScenarioException
+   *   If there is a
+   *   problem reading the
+   *   scenario.
    * @throws rescuecore2.scenario.exceptions.ScenarioException
    */
-  public void load(String filename) throws CancelledByUserException, MapException, ScenarioException,
+  public void load(String filename)
+      throws CancelledByUserException, MapException, ScenarioException,
       rescuecore2.scenario.exceptions.ScenarioException {
     load(new File(filename));
   }
+
 
   /**
    * Load a map and scenario from a directory.
@@ -289,7 +316,11 @@ public class ScenarioEditor extends JPanel {
       SAXReader saxReader = new SAXReader();
       r = new FileReader(f);
       Document doc = saxReader.read(r);
+<<<<<<< HEAD
       GisScenario newScenario = new GisScenario(doc, new Config());
+=======
+      GisScenario newScenario = new GisScenario(doc, config);
+>>>>>>> protobuf-v6
       setScenario(newMap, newScenario);
       baseDir = dir;
       saveFile = f;
@@ -308,18 +339,25 @@ public class ScenarioEditor extends JPanel {
     }
   }
 
+
   /**
    * Set the map and scenario.
    *
-   * @param newMap      The new map.
-   * @param newScenario The new scenario.
-   * @throws CancelledByUserException If the user cancels the change due to
-   *                                  unsaved changes.
+   * @param newMap
+   *   The new map.
+   * @param newScenario
+   *   The new scenario.
+   *
+   * @throws CancelledByUserException
+   *   If the user cancels the change due to
+   *   unsaved changes.
    */
-  public void setScenario(GMLMap newMap, GisScenario newScenario) throws CancelledByUserException {
+  public void setScenario(GMLMap newMap, GisScenario newScenario)
+      throws CancelledByUserException {
     checkForChanges();
     if (!checkScenario(newMap, newScenario)) {
-      JOptionPane.showMessageDialog(null, "The scenario file contained errors.");
+      JOptionPane.showMessageDialog(null,
+          "The scenario file contained errors.");
       return;
     }
     map = newMap;
@@ -330,6 +368,7 @@ public class ScenarioEditor extends JPanel {
     updateOverlays();
   }
 
+
   public void updateGMLRefuges() {
     for (int next : scenario.getRefuges()) {
       GMLRefuge refuge = new GMLRefuge(next, map.getBuilding(next).getEdges());
@@ -338,6 +377,7 @@ public class ScenarioEditor extends JPanel {
       scenario.addGMLRefuge(refuge);
     }
   }
+
 
   /**
    * Get the map.
@@ -348,6 +388,7 @@ public class ScenarioEditor extends JPanel {
     return map;
   }
 
+
   /**
    * Get the scenario.
    *
@@ -357,10 +398,12 @@ public class ScenarioEditor extends JPanel {
     return scenario;
   }
 
+
   /**
    * Save the scenario.
    *
-   * @throws ScenarioException If there is a problem saving the scenario.
+   * @throws ScenarioException
+   *   If there is a problem saving the scenario.
    */
   public void save() throws ScenarioException {
     if (saveFile == null) {
@@ -374,14 +417,17 @@ public class ScenarioEditor extends JPanel {
           File parent = saveFile.getParentFile();
           if (!parent.exists()) {
             if (!saveFile.getParentFile().mkdirs()) {
-              throw new ScenarioException("Couldn't create file " + saveFile.getPath());
+              throw new ScenarioException(
+                  "Couldn't create file " + saveFile.getPath());
             }
           }
           if (!saveFile.createNewFile()) {
-            throw new ScenarioException("Couldn't create file " + saveFile.getPath());
+            throw new ScenarioException(
+                "Couldn't create file " + saveFile.getPath());
           }
         }
-        XMLWriter writer = new XMLWriter(new FileOutputStream(saveFile), OutputFormat.createPrettyPrint());
+        XMLWriter writer = new XMLWriter(new FileOutputStream(saveFile),
+            OutputFormat.createPrettyPrint());
         writer.write(doc);
         writer.flush();
         writer.close();
@@ -393,10 +439,12 @@ public class ScenarioEditor extends JPanel {
     }
   }
 
+
   /**
    * Save the scenario.
    *
-   * @throws ScenarioException If there is a problem saving the scenario.
+   * @throws ScenarioException
+   *   If there is a problem saving the scenario.
    */
   public void saveAs() throws ScenarioException {
     JFileChooser chooser = new JFileChooser(baseDir);
@@ -406,15 +454,18 @@ public class ScenarioEditor extends JPanel {
     }
   }
 
+
   /**
    * Close the editor.
    *
-   * @throws CancelledByUserException If the user cancels the close due to unsaved
-   *                                  changes."
+   * @throws CancelledByUserException
+   *   If the user cancels the close due to unsaved
+   *   changes."
    */
   public void close() throws CancelledByUserException {
     checkForChanges();
   }
+
 
   /**
    * Get the map viewer.
@@ -425,6 +476,7 @@ public class ScenarioEditor extends JPanel {
     return viewer;
   }
 
+
   /**
    * Get the object inspector.
    *
@@ -434,6 +486,7 @@ public class ScenarioEditor extends JPanel {
     return inspector;
   }
 
+
   /**
    * Register a change to the map.
    */
@@ -441,16 +494,19 @@ public class ScenarioEditor extends JPanel {
     changed = true;
   }
 
+
   /**
    * Register an undoable edit.
    *
-   * @param edit The edit to add.
+   * @param edit
+   *   The edit to add.
    */
   public void addEdit(UndoableEdit edit) {
     undoManager.addEdit(edit);
     undoAction.setEnabled(undoManager.canUndo());
     redoAction.setEnabled(undoManager.canRedo());
   }
+
 
   /**
    * Update the overlay views.
@@ -464,9 +520,11 @@ public class ScenarioEditor extends JPanel {
     viewer.repaint();
   }
 
+
   private void checkForChanges() throws CancelledByUserException {
     if (changed) {
-      switch (JOptionPane.showConfirmDialog(null, "The current scenario has changes. Do you want to save them?")) {
+      switch (JOptionPane.showConfirmDialog(null,
+          "The current scenario has changes. Do you want to save them?")) {
         case JOptionPane.YES_OPTION:
           try {
             save();
@@ -484,10 +542,12 @@ public class ScenarioEditor extends JPanel {
           throw new CancelledByUserException();
 
         default:
-          throw new RuntimeException("JOptionPane.showConfirmDialog returned something weird");
+          throw new RuntimeException(
+              "JOptionPane.showConfirmDialog returned something weird");
       }
     }
   }
+
 
   private void createFileActions(JMenu menu, JToolBar toolbar) {
     Action newAction = new AbstractAction("New") {
@@ -554,6 +614,7 @@ public class ScenarioEditor extends JPanel {
     menu.add(saveAsAction);
   }
 
+
   private void createEditActions(JMenu menu, JToolBar toolbar) {
     undoAction = new AbstractAction("Undo") {
 
@@ -589,6 +650,7 @@ public class ScenarioEditor extends JPanel {
     menu.add(redoAction);
   }
 
+
   private void createToolActions(JMenu menu, JToolBar toolbar) {
     ButtonGroup toolbarGroup = new ButtonGroup();
     ButtonGroup menuGroup = new ButtonGroup();
@@ -600,29 +662,47 @@ public class ScenarioEditor extends JPanel {
     addTool(new RemoveFireTool(this), menu, toolbar, menuGroup, toolbarGroup);
     addTool(new PlaceRefugeTool(this), menu, toolbar, menuGroup, toolbarGroup);
     addTool(new RemoveRefugeTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new PlaceGasStationTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveGasStationTool(this), menu, toolbar, menuGroup, toolbarGroup);
+    addTool(new PlaceGasStationTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemoveGasStationTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
     addTool(new PlaceHydrantTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveHydrantTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new PlaceCivilianTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveCivilianTool(this), menu, toolbar, menuGroup, toolbarGroup);
+    addTool(new RemoveHydrantTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new PlaceCivilianTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemoveCivilianTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
     menu.addSeparator();
     toolbar.addSeparator();
-    addTool(new PlaceFireBrigadeTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveFireBrigadeTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new PlacePoliceForceTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemovePoliceForceTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new PlaceAmbulanceTeamTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveAmbulanceTeamTool(this), menu, toolbar, menuGroup, toolbarGroup);
+    addTool(new PlaceFireBrigadeTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemoveFireBrigadeTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new PlacePoliceForceTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemovePoliceForceTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new PlaceAmbulanceTeamTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemoveAmbulanceTeamTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
     menu.addSeparator();
     toolbar.addSeparator();
-    addTool(new PlaceFireStationTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveFireStationTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new PlacePoliceOfficeTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemovePoliceOfficeTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new PlaceAmbulanceCentreTool(this), menu, toolbar, menuGroup, toolbarGroup);
-    addTool(new RemoveAmbulanceCentreTool(this), menu, toolbar, menuGroup, toolbarGroup);
+    addTool(new PlaceFireStationTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemoveFireStationTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new PlacePoliceOfficeTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemovePoliceOfficeTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new PlaceAmbulanceCentreTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
+    addTool(new RemoveAmbulanceCentreTool(this), menu, toolbar, menuGroup,
+        toolbarGroup);
   }
+
 
   private void createFunctionActions(JMenu menu, JToolBar toolbar) {
     addFunction(new RandomiseFunction(this), menu, toolbar);
@@ -633,7 +713,9 @@ public class ScenarioEditor extends JPanel {
     addFunction(new RandomHydrantPlacementFunction(this), menu, toolbar);
   }
 
-  private void addTool(final Tool t, JMenu menu, JToolBar toolbar, ButtonGroup menuGroup, ButtonGroup toolbarGroup) {
+
+  private void addTool(final Tool t, JMenu menu, JToolBar toolbar,
+      ButtonGroup menuGroup, ButtonGroup toolbarGroup) {
     final JToggleButton toggle = new JToggleButton();
     final JCheckBoxMenuItem check = new JCheckBoxMenuItem();
     Action action = new AbstractAction(t.getName()) {
@@ -657,6 +739,7 @@ public class ScenarioEditor extends JPanel {
     toolbarGroup.add(toggle);
   }
 
+
   private void addFunction(final Function f, JMenu menu, JToolBar toolbar) {
     Action action = new AbstractAction(f.getName()) {
 
@@ -668,6 +751,7 @@ public class ScenarioEditor extends JPanel {
     toolbar.add(action);
     menu.add(action);
   }
+
 
   private boolean checkScenario(GMLMap newMap, GisScenario newScenario) {
     boolean valid = true;
@@ -725,20 +809,27 @@ public class ScenarioEditor extends JPanel {
     return valid;
   }
 
+
   private void updateStatusLabel() {
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
-        statusLabel.setText(scenario.getFires().size() + " fires, " + scenario.getRefuges().size() + " refuges, "
-            + scenario.getHydrants().size() + " hydrants, " + scenario.getGasStations().size() + " gas stations, "
-            + scenario.getCivilians().size() + " civilians, " + scenario.getFireBrigades().size() + " fb, "
-            + scenario.getFireStations().size() + " fs, " + scenario.getPoliceForces().size() + " pf, "
-            + scenario.getPoliceOffices().size() + " po, " + scenario.getAmbulanceTeams().size() + " at, "
+        statusLabel.setText(scenario.getFires().size() + " fires, "
+            + scenario.getRefuges().size() + " refuges, "
+            + scenario.getHydrants().size() + " hydrants, "
+            + scenario.getGasStations().size() + " gas stations, "
+            + scenario.getCivilians().size() + " civilians, "
+            + scenario.getFireBrigades().size() + " fb, "
+            + scenario.getFireStations().size() + " fs, "
+            + scenario.getPoliceForces().size() + " pf, "
+            + scenario.getPoliceOffices().size() + " po, "
+            + scenario.getAmbulanceTeams().size() + " at, "
             + scenario.getAmbulanceCentres().size() + " ac");
       }
     });
   }
+
 
   private void updateFireOverlay() {
     fireOverlay.clearAllBuildingDecorators();
@@ -747,29 +838,36 @@ public class ScenarioEditor extends JPanel {
     }
   }
 
+
   private void updateCentreOverlay() {
     centreOverlay.clearAllBuildingDecorators();
     centreOverlay.clearAllRoadDecorators();
     for (int next : scenario.getFireStations()) {
-      centreOverlay.setBuildingDecorator(fireStationDecorator, map.getBuilding(next));
+      centreOverlay.setBuildingDecorator(fireStationDecorator,
+          map.getBuilding(next));
     }
     for (int next : scenario.getPoliceOffices()) {
-      centreOverlay.setBuildingDecorator(policeOfficeDecorator, map.getBuilding(next));
+      centreOverlay.setBuildingDecorator(policeOfficeDecorator,
+          map.getBuilding(next));
     }
     for (int next : scenario.getAmbulanceCentres()) {
-      centreOverlay.setBuildingDecorator(ambulanceCentreDecorator, map.getBuilding(next));
+      centreOverlay.setBuildingDecorator(ambulanceCentreDecorator,
+          map.getBuilding(next));
     }
     for (int next : scenario.getRefuges()) {
 
-      centreOverlay.setBuildingDecorator(refugeDecorator, scenario.getRefuge(next));
+      centreOverlay.setBuildingDecorator(refugeDecorator,
+          scenario.getRefuge(next));
     }
     for (int next : scenario.getGasStations()) {
-      centreOverlay.setBuildingDecorator(gasStationDecorator, map.getBuilding(next));
+      centreOverlay.setBuildingDecorator(gasStationDecorator,
+          map.getBuilding(next));
     }
     for (int next : scenario.getHydrants()) {
       centreOverlay.setRoadDecorator(hydrantDecorator, map.getRoad(next));
     }
   }
+
 
   private void updateAgentOverlay() {
   }

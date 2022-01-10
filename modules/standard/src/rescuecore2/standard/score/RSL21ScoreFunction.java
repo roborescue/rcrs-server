@@ -4,19 +4,21 @@ import rescuecore2.Timestep;
 import rescuecore2.config.Config;
 import rescuecore2.score.CompositeScoreFunction;
 import rescuecore2.standard.entities.Civilian;
-import rescuecore2.worldmodel.WorldModel;
 import rescuecore2.worldmodel.Entity;
+import rescuecore2.worldmodel.WorldModel;
 
 public class RSL21ScoreFunction extends CompositeScoreFunction {
+
   private static final double MAX = 10000;
 
   public RSL21ScoreFunction() {
     super("RSL21 Score");
   }
 
+
   @Override
-  public void initialise(WorldModel<? extends Entity> world, Config config) {
-  }
+  public void initialise(WorldModel<? extends Entity> world, Config config) {}
+
 
   @Override
   public double score(WorldModel<? extends Entity> world, Timestep timestep) {

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import rescuecore2.standard.Constants;
+import rescuecore2.registry.Registry;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.Property;
 
@@ -21,7 +21,7 @@ public class StandardEntityInspector extends JTable {
     private static final Comparator<Property> PROPERTY_NAME_COMPARATOR = new Comparator<Property>() {
         @Override
         public int compare(Property p1, Property p2) {
-            return p1.getURN().compareTo(p2.getURN());
+            return Integer.compare(p1.getURN(),p2.getURN());
         }
     };
 
@@ -84,14 +84,14 @@ public class StandardEntityInspector extends JTable {
                     return "Type";
                 }
                 else {
-                    return props.get(row - 2).getURN().substring(Constants.PROPERTY_URN_PREFIX.length());
+                    return Registry.getCurrentRegistry().toPrettyName(props.get(row - 2).getURN());
                 }
             case 1:
                 if (row == 0) {
-                    return e == null ? "" : e.getID();
+                    return e == null ? "-" : e.getID();
                 }
                 else if (row == 1) {
-                    return e == null||e.getURN()==null ? "" : e.getURN().substring(Constants.ENTITY_URN_PREFIX.length());
+                    return e == null?"-": Registry.getCurrentRegistry().toPrettyName(e.getURN());
                 }
                 else {
                     Property prop = props.get(row - 2);

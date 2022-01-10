@@ -1,21 +1,21 @@
 package rescuecore2.messages.components;
 
 
-import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readFloat32;
+import static rescuecore2.misc.EncodingTools.readInt32;
 import static rescuecore2.misc.EncodingTools.writeFloat32;
+import static rescuecore2.misc.EncodingTools.writeInt32;
 
-import rescuecore2.messages.AbstractMessageComponent;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.protobuf.RCRSProto.FloatListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
  * A message component that is a list of floats.
@@ -29,7 +29,7 @@ public class FloatListComponent extends AbstractMessageComponent {
 	 * @param name
 	 *            The name of the component.
 	 */
-	public FloatListComponent(String name) {
+	public FloatListComponent(URN name) {
 		super(name);
 		data = new ArrayList<Float>();
 	}
@@ -42,7 +42,7 @@ public class FloatListComponent extends AbstractMessageComponent {
 	 * @param data
 	 *            The data.
 	 */
-	public FloatListComponent(String name, List<Float> data) {
+	public FloatListComponent(URN name, List<Float> data) {
 		super(name);
 		this.data = new ArrayList<Float>(data);
 	}
@@ -100,7 +100,25 @@ public class FloatListComponent extends AbstractMessageComponent {
 	public String toString() {
 		return getName() + " = " + data.toString();
 	}
-//
+	
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data.clear();
+		for (Float val : proto.getFloatList().getValuesList()) {
+			data.add(val);			
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		FloatListProto.Builder builder=FloatListProto.newBuilder();
+		for (float next : data) {
+            builder.addValues(next);
+        }
+		return MessageComponentProto.newBuilder().setFloatList(builder).build();
+	}
+	
+	//
 //	public static void main(String[] args) throws IOException {
 //		System.out.println("Test starts...");
 //		FloatListComponent flc = new FloatListComponent("test1");

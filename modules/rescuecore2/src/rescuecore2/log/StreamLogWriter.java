@@ -1,45 +1,56 @@
 package rescuecore2.log;
 
 import java.io.OutputStream;
+import java.util.Iterator;
+
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.LZMAOutputStream;
+import org.tukaani.xz.UnsupportedOptionsException;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
-   A class for writing the kernel log to an output stream.
+ * A class for writing the kernel log to an output stream.
  */
 public class StreamLogWriter extends AbstractLogWriter {
-    private OutputStream out;
+	private OutputStream out;
 
-    /**
-       Create a stream log writer.
-       @param stream The stream to write to.
-    */
-    public StreamLogWriter(OutputStream stream) {
-        this.out = stream;
-    }
+	/**
+	 * Create a stream log writer.
+	 * 
+	 * @param stream The stream to write to.
+	 * @throws IOException
+	 */
+	public StreamLogWriter(OutputStream stream) throws IOException {
+		this.out = new LZMAOutputStream(stream, new LZMA2Options(7), -1);
+	}
 
-    @Override
-    protected void write(byte[] bytes) throws LogException {
-        try {
-            out.write(bytes);
-        }
-        catch (IOException e) {
-            throw new LogException(e);
-        }
-    }
+	@Override
+	protected void write(byte[] bytes) throws LogException {
+		try {
+			out.write(bytes);
+		} catch (IOException e) {
+			throw new LogException(e);
+		}
+	}
 
-    @Override
-    public void close() {
-        try {
-            out.flush();
-        }
-        catch (IOException e) {
-            Logger.error("Error flushing log stream", e);
-        }
-        try {
-            out.close();
-        }
-        catch (IOException e) {
-            Logger.error("Error closing log stream", e);
-        }
-    }
+	@Override
+	public void close() {
+		/* not supported for LZMA
+		try {
+			out.flush();
+		} catch (IOException e) {
+			Logger.error("Error flushing log stream", e);
+		}*/
+		try {
+			out.close();
+		} catch (IOException e) {
+			Logger.error("Error closing log stream", e);
+		}
+	}
+
+	
 }

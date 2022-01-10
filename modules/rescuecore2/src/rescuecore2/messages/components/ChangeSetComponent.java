@@ -5,7 +5,8 @@ import java.io.OutputStream;
 import java.io.IOException;
 
 import rescuecore2.worldmodel.ChangeSet;
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
 
 /**
    An ChangeSet component to a message.
@@ -17,7 +18,7 @@ public class ChangeSetComponent extends AbstractMessageComponent {
        Construct a ChangeSetComponent with no content.
        @param name The name of the component.
     */
-    public ChangeSetComponent(String name) {
+    public ChangeSetComponent(URN name) {
         super(name);
         changes = new ChangeSet();
     }
@@ -27,7 +28,7 @@ public class ChangeSetComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param changes The changes in this message component.
     */
-    public ChangeSetComponent(String name, ChangeSet changes) {
+    public ChangeSetComponent(URN name, ChangeSet changes) {
         super(name);
         this.changes = new ChangeSet(changes);
     }
@@ -63,4 +64,15 @@ public class ChangeSetComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + changes.getChangedEntities().size() + " entities";
     }
+
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		changes=new ChangeSet();
+		changes.fromChangeSetProto(proto.getChangeSet());
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		return MessageComponentProto.newBuilder().setChangeSet(changes.toChangeSetProto()).build();
+	}
 }

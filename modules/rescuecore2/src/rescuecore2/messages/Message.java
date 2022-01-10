@@ -2,6 +2,9 @@ package rescuecore2.messages;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+
 import java.io.IOException;
 
 /**
@@ -12,7 +15,7 @@ public interface Message {
        Get the urn of this message type.
        @return The message urn.
      */
-    String getURN();
+    int getURN();
 
     /**
        Write the content of this message to a stream. The content should not include the message type ID.
@@ -27,4 +30,8 @@ public interface Message {
        @throws IOException If the read fails.
      */
     void read(InputStream in) throws IOException;
+    
+    
+    MessageProto toMessageProto();
+    void fromMessageProto(MessageProto proto);
 }

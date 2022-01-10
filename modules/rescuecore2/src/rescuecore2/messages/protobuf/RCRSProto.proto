@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+option java_package = "rescuecore2.messages.protobuf";
+option java_outer_classname = "RCRSProto";
+
+message MessageProto {
+  int32 urn = 1;
+  map<int32, MessageComponentProto> components = 2;
+};
+
+message MessageListProto {
+  repeated MessageProto commands = 1;
+};
+
+message MessageComponentProto {
+  oneof component {
+    ChangeSetProto changeSet = 1;
+    MessageListProto commandList = 2;
+    ConfigProto config = 3;
+    EntityProto entity = 4;
+    int32 entityID = 5;
+    IntListProto entityIDList = 6;
+    EntityListProto entityList = 7;
+    FloatListProto floatList = 8;
+    int32 intValue = 9;
+    IntListProto intList = 10;
+    bytes rawData = 11;
+    string stringValue = 12;
+    StrListProto stringList = 13;
+  }
+};
+
+message StrListProto {
+  repeated string values = 1;
+};
+
+message IntListProto {
+  repeated int32 values = 1;
+};
+
+message FloatListProto {
+  repeated float values = 1;
+};
+
+message IntMatrixProto {
+  repeated IntListProto values = 1;
+};
+
+message ValueProto {
+  bool defined = 1;
+  oneof value {
+    int32 intValue = 2;
+    bool boolValue = 3;
+    double doubleValue = 4;
+    bytes byteList = 5;
+    IntListProto intList = 6;
+    IntMatrixProto intMatrix = 7;
+    EdgeListProto edgeList = 8;
+    Point2DProto point2D = 9;
+  }
+};
+
+message PropertyProto {
+  int32 urn = 1;
+  bool defined = 2;
+  oneof value {
+    int32 intValue = 3;
+    bool boolValue = 4;
+    double doubleValue = 5;
+    bytes byteList = 6;
+    IntListProto intList = 7;
+    IntMatrixProto intMatrix = 8;
+    EdgeListProto edgeList = 9;
+    Point2DProto point2D = 10;
+  }
+};
+
+message Point2DProto {
+  double X = 1;
+  double Y = 2;
+};
+
+message EntityProto {
+  int32 urn = 1;
+  int32 entityID = 2;
+  repeated PropertyProto properties = 3;
+};
+
+message EntityListProto {
+  repeated EntityProto entities = 1;
+};
+
+message ConfigProto {
+  map<string, string> data = 1;
+};
+
+message EdgeListProto {
+  repeated EdgeProto edges = 1;
+};
+
+message EdgeProto {
+  int32 startX = 1;
+  int32 startY = 2;
+  int32 endX = 3;
+  int32 endY = 4;
+  int32 neighbour = 5;
+};
+
+message ChangeSetProto {
+  message EntityChangeProto {
+    int32 entityID = 1;
+    int32 urn = 2;
+    repeated PropertyProto properties = 3;
+  };
+  repeated EntityChangeProto changes = 1;
+  repeated int32 deletes = 2;
+};

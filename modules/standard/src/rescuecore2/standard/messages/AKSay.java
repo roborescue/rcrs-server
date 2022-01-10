@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import rescuecore2.messages.AbstractCommand;
 import rescuecore2.messages.components.RawDataComponent;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
 import rescuecore2.worldmodel.EntityID;
 
 /**
@@ -52,12 +53,18 @@ public class AKSay extends AbstractCommand {
    */
   private AKSay() {
     super( StandardMessageURN.AK_SAY );
-    data = new RawDataComponent( "Message" );
+    data = new RawDataComponent( StandardMessageComponentURN.Message );
     addMessageComponent( data );
   }
 
 
-  /**
+  public AKSay(MessageProto proto) {
+		this();
+		fromMessageProto(proto);
+  }
+
+
+/**
    * Get the content of the message.
    *
    * @return The message content.

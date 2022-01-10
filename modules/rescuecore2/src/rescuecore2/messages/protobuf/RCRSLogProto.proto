@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "RCRSProto.proto";
+
+option java_package = "rescuecore2.messages.protobuf";
+option java_outer_classname = "RCRSLogProto";
+
+message LogProto {
+  oneof log {
+    StartLogProto start = 1;
+    InitialConditionsLogProto initialCondition = 2;
+    CommandLogProto command = 3;
+    PerceptionLogProto perception = 4;
+    ConfigLogProto config = 5;
+    UpdatesLogProto update = 6;
+    EndLogProto end = 7;
+  }
+};
+
+message StartLogProto {
+};
+
+message InitialConditionsLogProto {
+  repeated EntityProto entities = 1;
+};
+
+message CommandLogProto {
+  int32 time = 1;
+  repeated MessageProto commands = 2;
+};
+
+message PerceptionLogProto {
+  int32 time = 1;
+  int32 entityID = 2;
+  ChangeSetProto visible = 3;
+  repeated MessageProto communications = 4;
+};
+
+message ConfigLogProto {
+  ConfigProto config = 1;
+}
+
+message UpdatesLogProto {
+  int32 time = 1;
+  ChangeSetProto changes = 2;
+};
+
+message EndLogProto {
+};

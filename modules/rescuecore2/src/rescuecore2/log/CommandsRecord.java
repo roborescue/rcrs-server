@@ -12,6 +12,12 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
+import rescuecore2.messages.protobuf.RCRSLogProto.CommandLogProto;
+import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+import rescuecore2.worldmodel.ChangeSet;
+import rescuecore2.worldmodel.EntityID;
 import rescuecore2.messages.Command;
 
 /**
@@ -41,7 +47,11 @@ public class CommandsRecord implements LogRecord {
         read(in);
     }
 
-    @Override
+    public CommandsRecord(LogProto log) {
+    	fromLogProto(log);
+    }
+
+	@Override
     public RecordType getRecordType() {
         return RecordType.COMMANDS;
     }
@@ -87,4 +97,25 @@ public class CommandsRecord implements LogRecord {
     public Collection<Command> getCommands() {
         return commands;
     }
+
+	@Override
+	public void fromLogProto(LogProto log) {
+		CommandLogProto command = log.getCommand();
+		time=command.getTime();
+		ArrayList<Command> comms = new ArrayList<>();
+		for (MessageProto m :command.getCommandsList()) {
+			comms.add((Command)MsgProtoBuf.messageProto2Message(m));
+		}
+		commands=comms;
+		
+	}
+
+	@Override
+	public LogProto toLogProto() {
+		CommandLogProto.Builder builder = CommandLogProto.newBuilder()
+				.setTime(time);
+		for (Command c : commands)
+			builder.addCommands(c.toMessageProto());
+		return LogProto.newBuilder().setCommand(builder).build();
+	}
 }

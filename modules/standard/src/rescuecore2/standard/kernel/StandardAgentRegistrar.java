@@ -143,7 +143,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
     private void filterAreaProperties(Area a) {
         for (Property next : a.getProperties()) {
             // Hide blockades
-            StandardPropertyURN urn = StandardPropertyURN.fromString(next.getURN());
+            StandardPropertyURN urn = StandardPropertyURN.fromInt(next.getURN());
             switch (urn) {
             case BLOCKADES:
                 next.undefine();
@@ -158,7 +158,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         filterAreaProperties(b);
         for (Property next : b.getProperties()) {
             // Hide ignition, fieryness, brokenness, temperature
-            StandardPropertyURN urn = StandardPropertyURN.fromString(next.getURN());
+            StandardPropertyURN urn = StandardPropertyURN.fromInt(next.getURN());
             switch (urn) {
             case IGNITION:
             case FIERYNESS:
@@ -176,7 +176,7 @@ public class StandardAgentRegistrar implements AgentRegistrar {
         for (Property next : h.getProperties()) {
             // Human properties: POSITION, X, Y, WATER_QUANTITY
             // Everything else should be undefined
-            StandardPropertyURN urn = StandardPropertyURN.fromString(next.getURN());
+            StandardPropertyURN urn = StandardPropertyURN.fromInt(next.getURN());
             switch (urn) {
             case X:
             case Y:

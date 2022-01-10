@@ -1,21 +1,24 @@
 package rescuecore2.messages.components;
 
 import static rescuecore2.misc.EncodingTools.readInt32;
-import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.readMessage;
+import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeMessage;
 
-import rescuecore2.messages.AbstractMessageComponent;
-import rescuecore2.messages.Command;
-import rescuecore2.messages.Message;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.Command;
+import rescuecore2.messages.Message;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageListProto;
+import rescuecore2.messages.protobuf.RCRSProto.MessageProto;
+import rescuecore2.messages.protobuf.MsgProtoBuf;
 
 /**
    A message component made up of a list of agent commands.
@@ -27,7 +30,7 @@ public class CommandListComponent extends AbstractMessageComponent {
        Construct a CommandListComponent with no content.
        @param name The name of the component.
     */
-    public CommandListComponent(String name) {
+    public CommandListComponent(URN name) {
         super(name);
         commands = new ArrayList<Command>();
     }
@@ -37,7 +40,7 @@ public class CommandListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param commands The agent commands in this message component.
     */
-    public CommandListComponent(String name, Collection<? extends Command> commands) {
+    public CommandListComponent(URN name, Collection<? extends Command> commands) {
         super(name);
         this.commands = new ArrayList<Command>(commands);
     }
@@ -85,4 +88,29 @@ public class CommandListComponent extends AbstractMessageComponent {
     public String toString() {
         return commands.size() + " commands";
     }
+    
+	@Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		commands.clear();
+		for (MessageProto commandProto : proto.getCommandList().getCommandsList()) {
+			
+            Message m = MsgProtoBuf.messageProto2Message(commandProto);
+            if (m instanceof Command) {
+                commands.add((Command)m);
+            }
+            else {
+                throw new Error("Command list stream contained a non-command message: " + m + " (" + m.getClass().getName() + ")");
+            }
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		MessageListProto.Builder builder=MessageListProto.newBuilder();
+		for (Command next : commands) {
+            builder.addCommands(next.toMessageProto());
+        }
+		return MessageComponentProto.newBuilder().setCommandList(builder).build();
+	}
+
 }

@@ -35,7 +35,11 @@ bin
 .AppleDouble
 .LSOverride
 
+# Node.js
+node_modules
+package-lock.json
+
 # Project
-boot/logs
-boot/records
+logs
 jars
+lib

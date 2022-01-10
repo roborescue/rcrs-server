@@ -5,7 +5,9 @@ import static rescuecore2.misc.EncodingTools.readString;
 import static rescuecore2.misc.EncodingTools.writeInt32;
 import static rescuecore2.misc.EncodingTools.writeString;
 
-import rescuecore2.messages.AbstractMessageComponent;
+import rescuecore2.messages.AbstractMessageComponent;import rescuecore2.URN;
+import rescuecore2.messages.protobuf.RCRSProto.MessageComponentProto;
+import rescuecore2.messages.protobuf.RCRSProto.StrListProto;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,7 +26,7 @@ public class StringListComponent extends AbstractMessageComponent {
        Construct an StringListComponent with no data.
        @param name The name of the component.
      */
-    public StringListComponent(String name) {
+    public StringListComponent(URN name) {
         super(name);
         data = new ArrayList<String>();
     }
@@ -34,7 +36,7 @@ public class StringListComponent extends AbstractMessageComponent {
        @param name The name of the component.
        @param data The data.
      */
-    public StringListComponent(String name, List<String> data) {
+    public StringListComponent(URN name, List<String> data) {
         super(name);
         this.data = new ArrayList<String>(data);
     }
@@ -87,4 +89,21 @@ public class StringListComponent extends AbstractMessageComponent {
     public String toString() {
         return getName() + " = " + data.toString();
     }
+    
+    @Override
+	public void fromMessageComponentProto(MessageComponentProto proto) {
+		data.clear();
+		for (String val : proto.getStringList().getValuesList()) {
+			data.add(val);
+        }
+	}
+
+	@Override
+	public MessageComponentProto toMessageComponentProto() {
+		StrListProto.Builder builder=StrListProto.newBuilder();
+		for (String next : data) {
+            builder.addValues(next);
+        }
+		return MessageComponentProto.newBuilder().setStringList(builder).build();
+	}
 }

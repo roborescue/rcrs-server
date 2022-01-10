@@ -10,6 +10,7 @@ import rescuecore2.worldmodel.properties.IntProperty;
  */
 /*
  * Implementation of Refuge Bed Capacity
+ *
  * @author Farshid Faraji May 2020 During Covid-19 :-)))
  */
 public class Refuge extends Building {
@@ -19,98 +20,84 @@ public class Refuge extends Building {
   private IntProperty refillCapacity;
   private IntProperty waitingListSize;
 
-
   /**
    * Construct a Refuge object with entirely undefined values.
    *
-   * @param id
-   *          The ID of this entity.
+   * @param id The ID of this entity.
    */
-  public Refuge( EntityID id ) {
-    super( id );
-    bedCapacity = new IntProperty( StandardPropertyURN.BEDCAPACITY );
-    occupiedBeds = new IntProperty( StandardPropertyURN.OCCUPIEDBEDS );
-    refillCapacity = new IntProperty( StandardPropertyURN.REFILLCAPACITY );
-    waitingListSize = new IntProperty( StandardPropertyURN.WAITINGLISTSIZE );
-    registerProperties( bedCapacity, occupiedBeds, refillCapacity,
-        waitingListSize );
+  public Refuge(EntityID id) {
+    super(id);
+    bedCapacity = new IntProperty(StandardPropertyURN.BED_CAPACITY);
+    occupiedBeds = new IntProperty(StandardPropertyURN.OCCUPIED_BEDS);
+    refillCapacity = new IntProperty(StandardPropertyURN.REFILL_CAPACITY);
+    waitingListSize = new IntProperty(StandardPropertyURN.WAITING_LIST_SIZE);
+    registerProperties(bedCapacity, occupiedBeds, refillCapacity, waitingListSize);
   }
-
 
   /**
    * Refuge copy constructor.
    *
-   * @param other
-   *          The Refuge to copy.
+   * @param other The Refuge to copy.
    */
-  public Refuge( Refuge other ) {
-    super( other );
-    bedCapacity = new IntProperty( StandardPropertyURN.BEDCAPACITY );
-    occupiedBeds = new IntProperty( StandardPropertyURN.OCCUPIEDBEDS );
-    refillCapacity = new IntProperty( StandardPropertyURN.REFILLCAPACITY );
-    waitingListSize = new IntProperty( StandardPropertyURN.WAITINGLISTSIZE );
-    registerProperties( bedCapacity, occupiedBeds, refillCapacity,
-        waitingListSize );
+  public Refuge(Refuge other) {
+    super(other);
+    bedCapacity = new IntProperty(StandardPropertyURN.BED_CAPACITY);
+    occupiedBeds = new IntProperty(StandardPropertyURN.OCCUPIED_BEDS);
+    refillCapacity = new IntProperty(StandardPropertyURN.REFILL_CAPACITY);
+    waitingListSize = new IntProperty(StandardPropertyURN.WAITING_LIST_SIZE);
+    registerProperties(bedCapacity, occupiedBeds, refillCapacity, waitingListSize);
   }
-
 
   /**
    * Create a refuge based on another Building.
    *
-   * @param other
-   *          The Building to copy.
+   * @param other The Building to copy.
    */
-  public Refuge( Building other ) {
-    super( other );
-    bedCapacity = new IntProperty( StandardPropertyURN.BEDCAPACITY );
-    occupiedBeds = new IntProperty( StandardPropertyURN.OCCUPIEDBEDS );
-    refillCapacity = new IntProperty( StandardPropertyURN.REFILLCAPACITY );
-    waitingListSize = new IntProperty( StandardPropertyURN.WAITINGLISTSIZE );
-    registerProperties( bedCapacity, occupiedBeds, refillCapacity,
-        waitingListSize );
+  public Refuge(Building other) {
+    super(other);
+    bedCapacity = new IntProperty(StandardPropertyURN.BED_CAPACITY);
+    occupiedBeds = new IntProperty(StandardPropertyURN.OCCUPIED_BEDS);
+    refillCapacity = new IntProperty(StandardPropertyURN.REFILL_CAPACITY);
+    waitingListSize = new IntProperty(StandardPropertyURN.WAITING_LIST_SIZE);
+    registerProperties(bedCapacity, occupiedBeds, refillCapacity, waitingListSize);
   }
-
 
   @Override
   protected Entity copyImpl() {
-    return new Refuge( getID() );
+    return new Refuge(getID());
   }
-
 
   @Override
   public StandardEntityURN getStandardURN() {
     return StandardEntityURN.REFUGE;
   }
 
-
   @Override
   protected String getEntityName() {
     return "Refuge";
   }
 
-
   @Override
-  public Property getProperty( String urn ) {
+  public Property getProperty(int urn) {
     StandardPropertyURN type;
     try {
-      type = StandardPropertyURN.fromString( urn );
-    } catch ( IllegalArgumentException e ) {
-      return super.getProperty( urn );
+      type = StandardPropertyURN.fromInt(urn);
+    } catch (IllegalArgumentException e) {
+      return super.getProperty(urn);
     }
-    switch ( type ) {
-      case BEDCAPACITY:
+    switch (type) {
+      case BED_CAPACITY:
         return bedCapacity;
-      case OCCUPIEDBEDS:
+      case OCCUPIED_BEDS:
         return occupiedBeds;
-      case REFILLCAPACITY:
+      case REFILL_CAPACITY:
         return refillCapacity;
-      case WAITINGLISTSIZE:
+      case WAITING_LIST_SIZE:
         return waitingListSize;
       default:
-        return super.getProperty( urn );
+        return super.getProperty(urn);
     }
   }
-
 
   /**
    * Get the occupiedBeds property.
@@ -121,7 +108,6 @@ public class Refuge extends Building {
     return occupiedBeds;
   }
 
-
   /**
    * Get the occupiedBeds of this refuge.
    *
@@ -131,50 +117,43 @@ public class Refuge extends Building {
     return occupiedBeds.getValue();
   }
 
-
   /**
    * Set the occupiedBeds of this refuge.
    *
-   * @param capacity
-   *          The new occupiedBeds.
+   * @param capacity The new occupiedBeds.
    */
-  public void setOccupiedBeds( int capacity ) {
-    this.occupiedBeds.setValue( capacity );
+  public void setOccupiedBeds(int capacity) {
+    this.occupiedBeds.setValue(capacity);
   }
-
 
   /**
    * Increase the occupiedBeds of this refuge by one.
    */
   public int increaseOccupiedBeds() {
-    if ( occupiedBeds.getValue() < bedCapacity.getValue() ) {
-      occupiedBeds.setValue( occupiedBeds.getValue() + 1 );
+    if (occupiedBeds.getValue() < bedCapacity.getValue()) {
+      occupiedBeds.setValue(occupiedBeds.getValue() + 1);
     }
     return occupiedBeds.getValue();
   }
-
 
   /**
    * Decrease the occupiedBeds of this refuge by one.
    */
   public int decreaseOccupiedBeds() {
-    if ( occupiedBeds.getValue() > 0 ) {
-      occupiedBeds.setValue( occupiedBeds.getValue() - 1 );
+    if (occupiedBeds.getValue() > 0) {
+      occupiedBeds.setValue(occupiedBeds.getValue() - 1);
     }
     return occupiedBeds.getValue();
   }
 
-
   /**
    * Find out if the occupiedBeds property has been defined.
    *
-   * @return True if the occupiedBeds property has been defined, false
-   *         otherwise.
+   * @return True if the occupiedBeds property has been defined, false otherwise.
    */
   public boolean isOccupiedBedsDefined() {
     return occupiedBeds.isDefined();
   }
-
 
   /**
    * Undefine the occupiedBeds property.
@@ -182,7 +161,6 @@ public class Refuge extends Building {
   public void undefineOccupiedBeds() {
     occupiedBeds.undefine();
   }
-
 
   /**
    * Get the bedCapacity property.
@@ -193,7 +171,6 @@ public class Refuge extends Building {
     return bedCapacity;
   }
 
-
   /**
    * Get the bedCapacity of this refuge.
    *
@@ -203,18 +180,15 @@ public class Refuge extends Building {
     return bedCapacity.getValue();
   }
 
-
   /**
    * Set the bedCapacity of this refuge.
    *
-   * @param capacity
-   *          The new bedCapacity.
+   * @param capacity The new bedCapacity.
    */
-  public void setBedCapacity( int capacity ) {
+  public void setBedCapacity(int capacity) {
     // if((Object) capacity != null)
-    this.bedCapacity.setValue( capacity );
+    this.bedCapacity.setValue(capacity);
   }
-
 
   /**
    * Find out if the bedCapacity property has been defined.
@@ -225,14 +199,12 @@ public class Refuge extends Building {
     return bedCapacity.isDefined();
   }
 
-
   /**
    * Undefine the bedCapacity property.
    */
   public void undefineBedCapacity() {
     bedCapacity.undefine();
   }
-
 
   /**
    * Get the refillCapacity property.
@@ -243,7 +215,6 @@ public class Refuge extends Building {
     return refillCapacity;
   }
 
-
   /**
    * Get the refillCapacity of this refuge.
    *
@@ -253,17 +224,14 @@ public class Refuge extends Building {
     return refillCapacity.getValue();
   }
 
-
   /**
    * Set the refillCapacity of this refuge.
    *
-   * @param capacity
-   *          The new refillCapacity.
+   * @param capacity The new refillCapacity.
    */
-  public void setRefillCapacity( int capacity ) {
-    this.refillCapacity.setValue( capacity );
+  public void setRefillCapacity(int capacity) {
+    this.refillCapacity.setValue(capacity);
   }
-
 
   /**
    * Find out if the refillCapacity property has been defined.
@@ -275,14 +243,12 @@ public class Refuge extends Building {
     return refillCapacity.isDefined();
   }
 
-
   /**
    * Undefine the refillCapacity property.
    */
   public void undefineRefillCapacity() {
     refillCapacity.undefine();
   }
-
 
   /**
    * Get the waitingListSize property.
@@ -293,7 +259,6 @@ public class Refuge extends Building {
     return waitingListSize;
   }
 
-
   /**
    * Get the waitingListSize of this refuge.
    *
@@ -303,17 +268,14 @@ public class Refuge extends Building {
     return waitingListSize.getValue();
   }
 
-
   /**
    * Set the waitingListSize of this refuge.
    *
-   * @param size
-   *          The new waitingList.
+   * @param size The new waitingList.
    */
-  public void setWaitingListSize( int size ) {
-    this.waitingListSize.setValue( size );
+  public void setWaitingListSize(int size) {
+    this.waitingListSize.setValue(size);
   }
-
 
   /**
    * Find out if the waitingListSize property has been defined.
@@ -324,7 +286,6 @@ public class Refuge extends Building {
   public boolean isWaitingListSizeDefined() {
     return waitingListSize.isDefined();
   }
-
 
   /**
    * Undefine the waitingListSize property.
