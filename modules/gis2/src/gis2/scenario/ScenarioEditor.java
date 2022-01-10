@@ -70,7 +70,7 @@ public class ScenarioEditor extends JPanel {
   private GMLObjectInspector inspector;
   private DecoratorOverlay fireOverlay;
   private DecoratorOverlay centreOverlay;
-  private AgentOverlay agentOverlay;
+  private transient AgentOverlay agentOverlay;
   private GisScenario scenario;
   private Tool currentTool;
   private JLabel statusLabel;
@@ -78,8 +78,8 @@ public class ScenarioEditor extends JPanel {
   private boolean changed;
 
   private UndoManager undoManager;
-  private Action undoAction;
-  private Action redoAction;
+  private transient Action undoAction;
+  private transient Action redoAction;
 
   private File baseDir;
   private File saveFile;
@@ -98,8 +98,6 @@ public class ScenarioEditor extends JPanel {
       GAS_STATION_COLOUR, null, null);
   private FilledShapeDecorator hydrantDecorator = new FilledShapeDecorator(null,
       HYDRANT_COLOUR, null);
-
-  private static Config config = new Config();
 
   /**
    * Construct a new ScenarioEditor.
@@ -295,47 +293,37 @@ public class ScenarioEditor extends JPanel {
   /**
    * Load a map and scenario from a directory.
    *
-   * @param dir The directory to read.
-   * @throws CancelledByUserException                          If the user cancels
-   *                                                           the change due to
-   *                                                           unsaved changes.
-   * @throws MapException                                      If there is a
-   *                                                           problem reading the
-   *                                                           map.
-   * @throws ScenarioException                                 If there is a
-   *                                                           problem reading the
-   *                                                           scenario.
+   * @param dir
+   *   The directory to read.
+   *
+   * @throws CancelledByUserException
+   *   If the user cancels
+   *   the change due to
+   *   unsaved changes.
+   * @throws MapException
+   *   If there is a
+   *   problem reading the
+   *   map.
+   * @throws ScenarioException
+   *   If there is a
+   *   problem reading the
+   *   scenario.
    * @throws rescuecore2.scenario.exceptions.ScenarioException
    */
-  public void load(File dir) throws CancelledByUserException, MapException, ScenarioException,
-      rescuecore2.scenario.exceptions.ScenarioException {
-    FileReader r = null;
-    try {
+  public void load(File dir) throws CancelledByUserException, MapException,
+      ScenarioException, rescuecore2.scenario.exceptions.ScenarioException {
+
+    try (FileReader r = new FileReader(new File(dir, "scenario.xml"))) {
       GMLMap newMap = (GMLMap) MapReader.readMap(new File(dir, "map.gml"));
-      File f = new File(dir, "scenario.xml");
+
       SAXReader saxReader = new SAXReader();
-      r = new FileReader(f);
       Document doc = saxReader.read(r);
-<<<<<<< HEAD
       GisScenario newScenario = new GisScenario(doc, new Config());
-=======
-      GisScenario newScenario = new GisScenario(doc, config);
->>>>>>> protobuf-v6
       setScenario(newMap, newScenario);
       baseDir = dir;
-      saveFile = f;
-    } catch (IOException e) {
+      saveFile = new File(dir, "scenario.xml");
+    } catch (IOException | DocumentException e) {
       throw new ScenarioException(e);
-    } catch (DocumentException e) {
-      throw new ScenarioException(e);
-    } finally {
-      if (r != null) {
-        try {
-          r.close();
-        } catch (IOException e) {
-          throw new ScenarioException(e);
-        }
-      }
     }
   }
 
@@ -415,11 +403,9 @@ public class ScenarioEditor extends JPanel {
       try {
         if (!saveFile.exists()) {
           File parent = saveFile.getParentFile();
-          if (!parent.exists()) {
-            if (!saveFile.getParentFile().mkdirs()) {
-              throw new ScenarioException(
-                  "Couldn't create file " + saveFile.getPath());
-            }
+          if ((!parent.exists()) && (!saveFile.getParentFile().mkdirs())) {
+            throw new ScenarioException(
+                "Couldn't create file " + saveFile.getPath());
           }
           if (!saveFile.createNewFile()) {
             throw new ScenarioException(
@@ -558,7 +544,6 @@ public class ScenarioEditor extends JPanel {
           checkForChanges();
           setScenario(map, new GisScenario());
         } catch (CancelledByUserException ex) {
-          return;
         }
       }
     };
@@ -568,17 +553,12 @@ public class ScenarioEditor extends JPanel {
       public void actionPerformed(ActionEvent e) {
         try {
           checkForChanges();
-          try {
-            load();
-          } catch (rescuecore2.scenario.exceptions.ScenarioException ex) {
-            ex.printStackTrace();
-          }
+          load();
         } catch (CancelledByUserException ex) {
-          return;
-        } catch (MapException ex) {
+        } catch (MapException | ScenarioException ex) {
           JOptionPane.showMessageDialog(null, ex);
-        } catch (ScenarioException ex) {
-          JOptionPane.showMessageDialog(null, ex);
+        } catch (rescuecore2.scenario.exceptions.ScenarioException ex) {
+          ex.printStackTrace();
         }
       }
     };
@@ -654,8 +634,6 @@ public class ScenarioEditor extends JPanel {
   private void createToolActions(JMenu menu, JToolBar toolbar) {
     ButtonGroup toolbarGroup = new ButtonGroup();
     ButtonGroup menuGroup = new ButtonGroup();
-    // addTool(new InspectTool(this), menu, toolbar, menuGroup,
-    // toolbarGroup);
     menu.addSeparator();
     toolbar.addSeparator();
     addTool(new PlaceFireTool(this), menu, toolbar, menuGroup, toolbarGroup);
