@@ -127,7 +127,7 @@ public class URNMapPrinter {
       map += "...Object.keys(" + key + ").map(p=>({[" + key + "[p]]:p})),";
     }
     map = map.substring(0, map.length() - 1) + ")";
-    out += "\n\nMAP=" + map;
+    out += "\n\nURN_MAP=" + map;
     return out;
   }
 

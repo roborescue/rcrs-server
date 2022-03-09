@@ -137,4 +137,4 @@ const ComponentControlMSG={
 	Changes:0x0216,
 }
 
-MAP=Object.assign({},...Object.keys(Entity).map(p=>({[Entity[p]]:p})),...Object.keys(Property).map(p=>({[Property[p]]:p})),...Object.keys(Command).map(p=>({[Command[p]]:p})),...Object.keys(ComponentCommand).map(p=>({[ComponentCommand[p]]:p})),...Object.keys(ControlMSG).map(p=>({[ControlMSG[p]]:p})),...Object.keys(ComponentControlMSG).map(p=>({[ComponentControlMSG[p]]:p})))
+URN_MAP=Object.assign({},...Object.keys(Entity).map(p=>({[Entity[p]]:p})),...Object.keys(Property).map(p=>({[Property[p]]:p})),...Object.keys(Command).map(p=>({[Command[p]]:p})),...Object.keys(ComponentCommand).map(p=>({[ComponentCommand[p]]:p})),...Object.keys(ControlMSG).map(p=>({[ControlMSG[p]]:p})),...Object.keys(ComponentControlMSG).map(p=>({[ComponentControlMSG[p]]:p})))
