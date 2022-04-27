@@ -39,13 +39,14 @@ public class ZipLogReader extends AbstractLogReader {
 		}
 
 		for (SevenZArchiveEntry entry : sevenZFile.getEntries()) {
-			if (entry.isDirectory()) {
-				String[] splt = entry.getName().split("/");
-				int c = Integer.parseInt(splt[0]);
-				maxCycle = Math.max(maxCycle, c);
-			} else {
+			if (!entry.isDirectory()) {
 				entries.put(entry.getName(), entry);
-				if (entry.getName().contains(RecordType.PERCEPTION.name())) {
+				if (entry.getName().contains(RecordType.UPDATES.name())) {
+					String[] splt = entry.getName().split("/");
+					int c = Integer.parseInt(splt[0]);
+					maxCycle = Math.max(maxCycle, c);
+				} else if (entry.getName()
+						.contains(RecordType.PERCEPTION.name())) {
 					String[] splt = entry.getName().split("/");
 					int time = Integer.parseInt(splt[0]);
 					if (!entitiesWithUpdates.containsKey(time))
@@ -56,6 +57,9 @@ public class ZipLogReader extends AbstractLogReader {
 
 			}
 		}
+		Logger.info("Found " + maxCycle + " cycles.");
+//		System.out.println(entitiesWithUpdates);
+//		System.out.println(entries);
 		buildWorldModels();
 	}
 
@@ -71,6 +75,7 @@ public class ZipLogReader extends AbstractLogReader {
 
 		if (time % 10 == 0)
 			System.out.println(time);
+		Logger.info("Building worldmodel of " + time + ".");
 
 		// Make the world model for this timestep
 		WorldModel<? extends Entity> newWorld = new DefaultWorldModel<Entity>(
@@ -89,7 +94,8 @@ public class ZipLogReader extends AbstractLogReader {
 
 	private LogProto readFromFile(String path) throws LogException {
 		SevenZArchiveEntry entry = entries.get(path);
-
+		if (entry == null)
+			return null;
 		byte[] content = new byte[(int) entry.getSize()];
 		try {
 			sevenZFile.getInputStream(entry).read(content, 0, content.length);
@@ -131,20 +137,27 @@ public class ZipLogReader extends AbstractLogReader {
 	@Override
 	public PerceptionRecord getPerception(int time, EntityID entity)
 			throws LogException {
-		return new PerceptionRecord(readFromFile(time + "/"
-				+ RecordType.PERCEPTION.name() + "/" + entity.getValue()));
+		LogProto log = readFromFile(time + "/" + RecordType.PERCEPTION.name()
+				+ "/" + entity.getValue());
+		if (log != null)
+			return new PerceptionRecord(log);
+		return null;
 	}
 
 	@Override
 	public CommandsRecord getCommands(int time) throws LogException {
-		return new CommandsRecord(
-				readFromFile(time + "/" + RecordType.COMMANDS.name()));
+		LogProto log = readFromFile(time + "/" + RecordType.COMMANDS.name());
+		if (log != null)
+			return new CommandsRecord(log);
+		return null;
 	}
 
 	@Override
 	public UpdatesRecord getUpdates(int time) throws LogException {
-		return new UpdatesRecord(
-				readFromFile(time + "/" + RecordType.UPDATES.name()));
+		LogProto log = readFromFile(time + "/" + RecordType.UPDATES.name());
+		if (log != null)
+			return new UpdatesRecord(log);
+		return null;
 	}
 
 }
