@@ -1,16 +1,10 @@
 package rescuecore2.log;
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAOutputStream;
-import org.tukaani.xz.UnsupportedOptionsException;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * A class for writing the kernel log to an output stream.
@@ -20,12 +14,15 @@ public class StreamLogWriter extends AbstractLogWriter {
 
 	/**
 	 * Create a stream log writer.
-	 * 
+	 *
 	 * @param stream The stream to write to.
 	 * @throws IOException
 	 */
-	public StreamLogWriter(OutputStream stream) throws IOException {
-		this.out = new LZMAOutputStream(stream, new LZMA2Options(7), -1);
+	public StreamLogWriter(OutputStream stream, boolean isV2)
+			throws IOException {
+		super(isV2);
+		if (isV2)
+			this.out = new LZMAOutputStream(stream, new LZMA2Options(7), -1);
 	}
 
 	@Override
@@ -39,12 +36,14 @@ public class StreamLogWriter extends AbstractLogWriter {
 
 	@Override
 	public void close() {
-		/* not supported for LZMA
-		try {
-			out.flush();
-		} catch (IOException e) {
-			Logger.error("Error flushing log stream", e);
-		}*/
+		if (!isV2) {
+			/* not supported for LZMA */
+			try {
+				out.flush();
+			} catch (IOException e) {
+				Logger.error("Error flushing log stream", e);
+			}
+		}
 		try {
 			out.close();
 		} catch (IOException e) {
@@ -52,5 +51,4 @@ public class StreamLogWriter extends AbstractLogWriter {
 		}
 	}
 
-	
 }
