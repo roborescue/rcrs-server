@@ -61,6 +61,7 @@ import rescuecore2.messages.Command;
 import rescuecore2.messages.control.KVTimestep;
 import rescuecore2.score.ScoreFunction;
 import rescuecore2.standard.components.StandardViewer;
+import rescuecore2.standard.entities.StandardPropertyURN;
 import rescuecore2.standard.messages.StandardMessageURN;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -266,7 +267,7 @@ class JLogGenerator{
 	        JSONObject jsonEntity = entity.toJson();
 	        JSONObject filteredJsonEntity = new JSONObject();
 	        for ( Property property : changedProperties ) {
-	          String propertyName = property.getURN()+"";
+	          String propertyName = StandardPropertyURN.fromInt(property.getURN()).toString();
 	          if ( jsonEntity.has( propertyName )
 	              && !jsonEntity.isNull( propertyName ) ) {
 	            String jsonEntityProperty = jsonEntity.get( propertyName ).toString();
