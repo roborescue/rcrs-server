@@ -15,7 +15,7 @@ public class ZipLogWriter implements LogWriter {
 
 	public ZipLogWriter(File file) throws IOException {
 		sevenZOutput = new SevenZOutputFile(file);
-		sevenZOutput.
+
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ZipLogWriter implements LogWriter {
 //    boolean setCompressMethod = false;
 
 	private SevenZArchiveEntry createArchiveEntry(String path) {
-		final SevenZArchiveEntry entry = new SevenZArchiveEntry();\
+		final SevenZArchiveEntry entry = new SevenZArchiveEntry();
 //		if (!setCompressMethod) {
 //            setCompressMethod = true;
         entry.setContentMethods(Arrays.asList(new SevenZMethodConfiguration(SevenZMethod.BZIP2)));
