@@ -171,7 +171,7 @@ class JLogGenerator{
 		jsonRecord.put( "TimeStep", 0 );
 		
 		writeJsonFile( jsonRecord, logFilePath, true );
-		for(int i=1;i<=reader.getMaxTimestep();i++) {
+		for(int i=0;i<=reader.getMaxTimestep();i++) {
 			LOG.warn("converting ... "+ i+" / "+reader.getMaxTimestep());
 //			handleTimestep(reader.getCommands(i),reader.getEntitiesWithUpdates(i),reader.getUpdates(i))
 			KVTimestep kvt=new KVTimestep(0, i, reader.getCommands(i).getCommands(), reader.getUpdates(i).getChangeSet());
