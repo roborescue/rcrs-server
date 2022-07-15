@@ -132,7 +132,7 @@ public class LogConvertor {
 	
 	
 }
-private class JLogGenerator{
+class JLogGenerator{
 	
 	private static final Logger LOG = Logger.getLogger(LogConvertor.class);
 	private static final int    PRECISION               = 3;
