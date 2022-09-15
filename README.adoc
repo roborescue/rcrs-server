@@ -116,6 +116,20 @@ The ```<osm map path>``` is the path to the OSM map file and the ```<gml map pat
 ./gradlew osm2gml --args="'/home/user/newmap.osm' '/home/user/newmap.gml'"
 ```
 
+== Known Problems
+
+=== Slow agent connection
+If the scenario have many agents, the agents connection to the server may slow down at certain moment. To overcome this issue, you should
+
+1. Install the `rng-tools` package
+2. Edit the ` /etc/defaults/rng-tools` and add the line
+`HRNGDEVICE=/dev/urandom`
+3. Start the rng daemon
+`/etc/init.d/rng-tools start`
+
+[IMPORTANT]
+This instructions are valid for Ubuntu. The package name and initialization commands may change on other distributions.
+
 == Support
 
 To report a bug, suggest improvements or request support, please open an issue at GitHub <https://github.com/roborescue/rcrs-server/issues>.
