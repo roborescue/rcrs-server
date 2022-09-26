@@ -34,6 +34,7 @@ dependencies {
   implementation 'org.uncommons.maths:uncommons-maths:1.2.2'
   implementation 'org.tukaani:xz:1.9'
   implementation 'org.projectlombok:lombok:latest.integration'
+  implementation 'org.apache.commons:commons-compress:1.21'
   annotationProcessor 'org.projectlombok:lombok:latest.integration'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
@@ -371,7 +372,7 @@ if (project.hasProperty("args")) {
 }
 
 /* run simulator */
-task run(type: JavaExec) {
+task run2(type: JavaExec) {
   classpath = files('jars')
   classpath = files('lib')
   classpath += files('.')

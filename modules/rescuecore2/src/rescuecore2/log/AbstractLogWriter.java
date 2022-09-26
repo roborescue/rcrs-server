@@ -11,10 +11,18 @@ import rescuecore2.messages.protobuf.RCRSLogProto.LogProto;
  * Abstract base class for log writer implementations.
  */
 public abstract class AbstractLogWriter implements LogWriter {
+	protected boolean isV2;
+
+	public AbstractLogWriter(boolean isV2) {
+		this.isV2 = isV2;
+	}
+
 	@Override
 	public final void writeRecord(LogRecord entry) throws LogException {
-//        writeRecordV1(entry);
-		writeRecordProtoBuf(entry);
+		if (isV2)
+			writeRecordProtoBuf(entry);
+		else
+			writeRecordV1(entry);
 	}
 
 	private final void writeRecordProtoBuf(LogRecord entry)
