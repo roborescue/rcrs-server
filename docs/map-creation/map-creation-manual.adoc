@@ -1,7 +1,7 @@
 = RoboCup Rescue Map and Scenario Creation Manual
 :author: RoboCup Rescue Simulation Team
-:revnumber: 2.0
-:revdate: September 27, 2021
+:revnumber: 2.1
+:revdate: February 06, 2023
 :size: A4
 :reproducible: true
 :encode: UTF-8
@@ -15,7 +15,7 @@
 :imagesdir: images
 :math:
 :stem: latexmath
-:source-highlighter: highlight.js
+:source-highlighter: rouge
 :bibtex-style: apa
 :bibtex-order: alphabetical
 :bibtex-format: asciidoc
@@ -73,7 +73,7 @@ The map capturing is performed using the JOSM tool and it is comprised of anothe
 
 [#josm_run]
 ==== Download and run JOSM
-First, download the JOSM tool from the http://josm.openstreetmap.de/. There are multiple alternatives to download JOSM, i.e., Installer, Launcher, JAR file. The recommended alternative is the JAR file, which is compatible with any environment supporting Java 8+. Once downloaded, execute the JAR file as
+First, download the JOSM tool from the https://josm.openstreetmap.de/. There are multiple alternatives to download JOSM, i.e., Installer, Launcher, JAR file. The recommended alternative is the JAR file, which is compatible with any environment supporting Java 8+. Once downloaded, execute the JAR file as
 
 [source,shell]
 ----
@@ -201,7 +201,7 @@ To illustrate the creation of a scenario, the University of São Paulo created i
 
 [#map_directory]
 ==== Map directory
-The maps and scenarios of the current maps in the RoboCup Rescue Simulator ae stored in the directory `rcrs-server/maps/gml/`. Inside each folder in this directory there are a `map.gml` and a `scenario.xml` file. The former represents the map in GML format, while the latter represents one scenario for that specific map.
+The maps and scenarios of the current maps in the RoboCup Rescue Simulator ae stored in the directory `rcrs-server/maps/`. Inside each folder in this directory there are a `map.gml` and a `scenario.xml` file. The former represents the map in GML format, while the latter represents one scenario for that specific map.
 
 [#gml_layout]
 ==== GML map file layout
@@ -223,7 +223,7 @@ image::road_list.png[GML Road List]
 The scenario file is also XML formatted file, and contains a list of the entities that compose the simulation initial state, including the starting fires, refuges, civilians, agents, etc. Each element of the xml file has two attributes. The first determines the type of entity being created (fire, refuge,
 ambulance, ambulance centre, etc.) and the second determines where the location of the entity in the map at the beginning of the simulation. The location is a number that refers to the `id` of an entity in the GML file (either a Building or a Road).
 
-There are two tools that can assist in creating a scenario: Scenario Editor and Random Scenario. Please refer the https://roborescue.github.io/rcrs-docs/rcrs-server/manual.html[RoboCup Rescue Simulator Manual] for information of how to run these tools.
+There are two tools that can assist in creating a scenario: Scenario Editor and Random Scenario. Please refer the https://roborescue.github.io/rcrs-server/docs/rcrs-server/index.html[RoboCup Rescue Simulator Manual] for information of how to run these tools.
 
 <<fig:scenario_layout>> shows a reduced representation of scenario file created for University of São Paulo map.
 

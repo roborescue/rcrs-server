@@ -1,7 +1,7 @@
 = RoboCup Rescue Simulator Manual
 :author: RoboCup Rescue Simulation Team
-:revnumber: 1.5
-:revdate: September 27, 2021
+:revnumber: 1.6
+:revdate: February 06, 2023
 :size: A4
 :reproducible: true
 :encode: UTF-8
@@ -15,7 +15,7 @@
 :imagesdir: images
 :math:
 :stem: latexmath
-:source-highlighter: highlight.js
+:source-highlighter: rouge
 :bibtex-style: apa
 :bibtex-order: alphabetical
 :bibtex-format: asciidoc
@@ -35,7 +35,7 @@ This manual assumes the simulator will run in a Linux machine even though it is 
 [#requirements]
 === Software Requirements
 
-* https://openjdk.java.net/[Java OpenJDK 11+]
+* https://adoptium.net/[Java OpenJDK 17]
 * https://git-scm.com/[Git]
 * https://gradle.org/[Gradle]
 * Utilities like `wget`, `bash`, `xterm`, `tar`, `gzip`, etc. +
@@ -54,25 +54,24 @@ git clone https://github.com/roborescue/rcrs-server.git
 === Directories
 The `rcrs-server` contains multiple directories. The important directories of the server are:
 
-* `boot`: scripts to run the simulation server
-** `boot/config/`: default configuration files
-** `boot/logs/`: text log files
-** `boot/records/`: JSON log files
 * `build/`: compiled Java classes
+* `docker`: configuration to run the simulation server in Docker
 * `docs/`: documentation
 * `jars/`: simulator JAR files
 * `lib/`: external libraries
+* `logs/log`: text log files
+* `logs/jlog/`: JSON log files
 * `maps/`: maps and scenarios
 * `modules/`: simulator source code
-* `oldsims/`: old simulator source code
+* `scripts`: scripts to run the simulation server
 
 [#compiling]
 === Compiling
 The simulation server has to be compiled on your machine to generate the required JAR files to run the simulator. Execute the steps below to compile the simulation server.
 
 . Change to the directory `rcrs-server`
-.. If macOS, patch the file `boot/functions.sh` using command +
-     `sed -i -e "/readlink/s/^/#/" boot/functions.sh`
+.. If macOS, patch the file `scripts/functions.sh` using command +
+     `sed -i -e "/readlink/s/^/#/" scripts/functions.sh`
 . Compile the simulator using the command `./gradlew completeBuild`
 . Check the message at the end of the installation. If the installation is successfully completed, the message `BUILD SUCCESSFUL` is displayed; otherwise `BUILD FAILED` is displayed.
 
@@ -81,7 +80,6 @@ The simulation server has to be compiled on your machine to generate the require
 In Ubuntu, the installation proceeds according to the following commands.
 
 [source,shell]
-.Installation on Ubuntu
 ----
 $ git clone https://github.com/roborescue/rcrs-server.git
 $ cd rcrs-server
@@ -91,7 +89,6 @@ $ ./gradlew completeBuild
 The following message will be displayed if the installation is successfully completed.
 
 [source,text]
-.Install Completion
 ----
 BUILD SUCCESSFUL in 2s
 1 actionable task: 1 executed
@@ -108,7 +105,6 @@ In the precomputation mode, the simulator connects one agent of each type and al
 The sequence of commands to run the simulation server in precomputation mode are:
 
 [source,shell]
-.Running simulation server in precomputation mode
 ----
 $ cd rcrs-server
 $ cd boot
@@ -118,7 +114,6 @@ $ bash start-precompute.sh
 After running the simulation server, run the agents. Once the precomputation is completed, push _Control-C_ and type `sh kill.sh` to stop the simulation server of running.
 
 [source,shell]
-.Stop running simulation server in precomputation mode
 ----
 Control-C
 $ bash kill.sh
@@ -131,7 +126,6 @@ In the normal mode, the simulator connects all agents defined in the scenario an
 The sequence of commands to run the simulation server in normal mode are:
 
 [source,shell]
-.Running simulation server in normal mode
 ----
 $ cd rcrs-server
 $ cd boot
@@ -144,19 +138,18 @@ After running the simulation server, run the agents. Once the simulation is comp
 === Parameter Options
 The following parameters can be used to run the simulation server:
 
-* `-m MAPDIR` or `--map MAPDIR`, where `MAPDIR` is the path to the directory containing the map you want to run (default is `../maps/gml/test/map`).
-* `-c CONFIGDIR` or `--config CONFIGDIR`, where `CONFIGDIR` is the directory containing the configuration associated with a map (default is `../maps/gml/test/config`).
-* `-l LOGDIR` or `--log LOGDIR`, where `LOGDIR` is the directory where the log files will be stored (default is `./logs`).
+* `-m MAPDIR` or `--map MAPDIR`, where `MAPDIR` is the path to the directory containing the map you want to run (default is `../maps/test/map`).
+* `-c CONFIGDIR` or `--config CONFIGDIR`, where `CONFIGDIR` is the directory containing the configuration associated with a map (default is `../maps/test/config`).
+* `-l LOGDIR` or `--log LOGDIR`, where `LOGDIR` is the directory where the log files will be stored (default is `../logs`).
 
 These parameters can be used at running a precomputaion and a normal simulation. You must use the same parameters for `MAPDIR` and `CONFIGDIR` to run a simulation server in precomputation and normal mode. An example of how to run the simulation server using these parameters is:
 
 [source,shell]
-.Running Simulation Server with Options
-$ bash start-precompute.sh -m ../maps/gml/kobe/map -l logs2
+$ bash start-precompute.sh -m ../maps/kobe/map -l logs2
 (After completing precomputation)
 Control-C
 $ bash kill.sh
-$ bash start-comprun.sh -m ../maps/gml/kobe/map -l logs2
+$ bash start-comprun.sh -m ../maps/kobe/map -l logs2
 
 [#tools]
 == Tools
@@ -196,8 +189,7 @@ For example,
 [source,shell]
 ----
 $ ./gradlew scenarioEditor
-
-$ ./gradlew scenarioEditor --args="../maps/gml/test/map"
+$ ./gradlew scenarioEditor --args="../maps/test/map"
 ----
 
 [#random-scenario]
@@ -216,7 +208,7 @@ For example,
 ----
 $ ./gradlew randomScenario
 
-$ ./gradlew randomScenario --args="../maps/gml/test/map -civ 10 100 -fb 1 50 -fs 0 1 -pf 1 50 -po 0 1 -at 1 50 -ac 0 1 -refuge 1 2 -fire 0 1"
+$ ./gradlew randomScenario --args="../maps/test/map -civ 10 100 -fb 1 50 -fs 0 1 -pf 1 50 -po 0 1 -at 1 50 -ac 0 1 -refuge 1 2 -fire 0 1"
 ----
 
 [#log-viewer]
@@ -225,10 +217,10 @@ Open a terminal window, navigate to the `rcrs-server` root directory and execute
 
 [source,shell]
 ----
-$ ./gradlew logViewer --args='-c config/logviewer.cfg <log path>'
+$ ./gradlew logViewer --args='-c maps/test/config/logviewer.cfg <log path>'
 ----
 
-where `--args='-c config/logviewer.cfg <log path>'` is optional and `<log path>` defines the log file path. The default log file path is `logs/rescue.log`.
+where `--args='-c maps/test/config/logviewer.cfg <log path>'` is optional and `<log path>` defines the log file path. The default log file path is `logs/log/rescue.log`.
 
 [#osm2gml]
 === `osm2gml`
@@ -252,13 +244,13 @@ The RoboCup Rescue Simulation server is composed of several simulators as listed
 [#table:simulators]
 .List of Simulators
 |===
-| Simulator     | Description
+| Simulator       | Description
 
-| Clear         | Manage blockade removal
-| Collapse      | Manage buildings' structural damage and blockade creation
-| Ignition      | Randomly ignites fire on buildings during the simulation
-| Fire          | Manage the fire spread between buildings and extinction
-| Traffic       | Manage humans' movement
+| Clear              | Manage blockade removal
+| Collapse         | Manage buildings' structural damage and blockade creation
+| Ignition          | Randomly ignites fire on buildings during the simulation
+| Fire                | Manage the fire spread between buildings and extinction
+| Traffic             | Manage humans' movement
 | Miscellaneous | Manage human damage and buriedness
 |===
 

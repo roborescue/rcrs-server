@@ -1,4 +1,3 @@
-# Publish Asciidoc Documentation
 name: asciidoctor-ghpages
 
 on:
@@ -21,6 +20,10 @@ jobs:
       run: asciidoctor -b html5 -r asciidoctor-bibtex -a bibtex-file=docs/map-creation/references.bib docs/map-creation/map-creation-manual.adoc -o docs/map-creation/index.html
     - name: Generate map-creation PDF
       run: asciidoctor-pdf -r asciidoctor-bibtex -r asciidoctor-mathematical -a bibtex-file=docs/map-creation/references.bib -a mathematical-format=svg -a optimize -a pdf-theme=docs/resources/themes/manual.yml -a pdf-fontsdir=docs/resources/fonts docs/map-creation/map-creation-manual.adoc -o docs/map-creation/map-creation-manual.pdf
+    - name: Generate rcrs-competition HTML
+      run: asciidoctor -b html5 -r asciidoctor-bibtex -a bibtex-file=docs/rcrs-competition/references.bib docs/rcrs-competition/rcrs-competition-manual.adoc -o docs/rcrs-competition/index.html
+    - name: Generate rcrs-competition PDF
+      run: asciidoctor-pdf -r asciidoctor-bibtex -r asciidoctor-mathematical -a bibtex-file=docs/rcrs-competition/references.bib -a mathematical-format=svg -a optimize -a pdf-theme=docs/resources/themes/manual.yml -a pdf-fontsdir=docs/resources/fonts docs/rcrs-competition/rcrs-competition-manual.adoc -o docs/rcrs-competition/rcrs-competition-manual.pdf
     - name: Deploy to GitHub Pages
       uses: crazy-max/ghaction-github-pages@v2
       with:

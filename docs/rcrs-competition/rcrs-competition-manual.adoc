@@ -1,7 +1,7 @@
 = RoboCup Rescue Simulation Competition Manual
 :author: RoboCup Rescue Simulation Team
-:revnumber: 1.0
-:revdate: September 27, 2021
+:revnumber: 1.1
+:revdate: February 06, 2023
 :size: A4
 :reproducible: true
 :encode: UTF-8
@@ -16,7 +16,7 @@
 :imagesdir: images
 :math:
 :stem: latexmath
-:source-highlighter: highlight.js
+:source-highlighter: rouge
 :bibtex-file: rcrs-competition/references.bib
 :bibtex-style: apa
 :bibtex-order: alphabetical
@@ -38,7 +38,7 @@ This manual assumes the RoboCup Rescue Simulation competition will run in a clus
 === Software Requirements
 
 * https://www.openssh.com/[OpenSSH]
-* https://openjdk.java.net/[Java OpenJDK 11+]
+* https://adoptium.net/[Java OpenJDK 17]
 * https://git-scm.com/[Git]
 * https://gradle.org/[Gradle]
 * Utilities like bash`, `xterm`, `tar`, `7zip`, `gzip`, etc. +
