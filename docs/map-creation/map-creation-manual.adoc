@@ -223,7 +223,7 @@ image::road_list.png[GML Road List]
 The scenario file is also XML formatted file, and contains a list of the entities that compose the simulation initial state, including the starting fires, refuges, civilians, agents, etc. Each element of the xml file has two attributes. The first determines the type of entity being created (fire, refuge,
 ambulance, ambulance centre, etc.) and the second determines where the location of the entity in the map at the beginning of the simulation. The location is a number that refers to the `id` of an entity in the GML file (either a Building or a Road).
 
-There are two tools that can assist in creating a scenario: Scenario Editor and Random Scenario. Please refer the https://roborescue.github.io/rcrs-server/docs/rcrs-server/index.html[RoboCup Rescue Simulator Manual] for information of how to run these tools.
+There are two tools that can assist in creating a scenario: Scenario Editor and Random Scenario. Please refer the https://roborescue.github.io/rcrs-server/rcrs-server/index.html[RoboCup Rescue Simulator Manual] for information of how to run these tools.
 
 <<fig:scenario_layout>> shows a reduced representation of scenario file created for University of São Paulo map.
 
