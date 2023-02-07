@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  rcrs:
+    build: .
+    ports:
+      - 27931:27931
+    environment:
+      - DISPLAY=$DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./logs:/rcrs_server/logs
+      - ./maps:/rcrs_server/maps
