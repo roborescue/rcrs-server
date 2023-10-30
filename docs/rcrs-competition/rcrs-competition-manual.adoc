@@ -40,7 +40,6 @@ This manual assumes the RoboCup Rescue Simulation competition will run in a clus
 * https://www.openssh.com/[OpenSSH]
 * https://adoptium.net/[Java OpenJDK 17]
 * https://git-scm.com/[Git]
-* https://gradle.org/[Gradle]
 * Utilities like bash`, `xterm`, `tar`, `7zip`, `gzip`, etc. +
   *Note:* If you are using Ubuntu, all of these utilities are present in the default software repositories.
 
