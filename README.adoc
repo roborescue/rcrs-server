@@ -8,7 +8,6 @@
 
 * Git
 * OpenJDK Java 17
-* Gradle
 
 == Installation
 
