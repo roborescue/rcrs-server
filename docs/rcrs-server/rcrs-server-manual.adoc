@@ -37,7 +37,6 @@ This manual assumes the simulator will run in a Linux machine even though it is 
 
 * https://adoptium.net/[Java OpenJDK 17]
 * https://git-scm.com/[Git]
-* https://gradle.org/[Gradle]
 * Utilities like `wget`, `bash`, `xterm`, `tar`, `gzip`, etc. +
   *Note:* If you are using Ubuntu, all of these utilities are present in the default software repositories.
 
