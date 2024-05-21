@@ -14,10 +14,10 @@ import rescuecore2.misc.gui.ScreenTransform;
 public class BuildingIconLayer extends StandardEntityViewLayer<Building> {
     private static final int ICON_SIZE = 32;
 
-    private static final ImageIcon FIRE_STATION = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/FireStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-    private static final ImageIcon POLICE_OFFICE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/PoliceOffice-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-    private static final ImageIcon AMBULANCE_CENTRE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/AmbulanceCentre-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
-    private static final ImageIcon REFUGE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("rescuecore2/standard/view/Refuge-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
+    private static final ImageIcon FIRE_STATION = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("modules/standard/resources/rescuecore2/standard/view/FireStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
+    private static final ImageIcon POLICE_OFFICE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("modules/standard/resources/rescuecore2/standard/view/PoliceOffice-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
+    private static final ImageIcon AMBULANCE_CENTRE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("modules/standard/resources/rescuecore2/standard/view/AmbulanceCentre-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
+    private static final ImageIcon REFUGE = new ImageIcon(BuildingLayer.class.getClassLoader().getResource("modules/standard/resources/rescuecore2/standard/view/Refuge-" + ICON_SIZE + "x" + ICON_SIZE + ".png"));
 
     /**
        Construct a building icon view layer.

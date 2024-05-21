@@ -147,7 +147,7 @@ public class HumanLayer extends StandardEntityViewLayer<Human> {
     private Map<State, Icon> generateIconMap(String type) {
         Map<State, Icon> result = new EnumMap<State, Icon>(State.class);
         for (State state : State.values()) {
-            String resourceName = "rescuecore2/standard/view/" + type + "-" + state.toString() + "-" + iconSize + "x" + iconSize + ".png";
+            String resourceName = "modules/standard/resources/rescuecore2/standard/view/" + type + "-" + state.toString() + "-" + iconSize + "x" + iconSize + ".png";
             URL resource = HumanLayer.class.getClassLoader().getResource(resourceName);
             if (resource == null) {
                 Logger.warn("Couldn't find resource: " + resourceName);

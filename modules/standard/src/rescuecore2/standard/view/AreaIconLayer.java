@@ -16,12 +16,12 @@ import rescuecore2.misc.gui.ScreenTransform;
 public class AreaIconLayer extends StandardEntityViewLayer<Area> {
     private static final int ICON_SIZE = 32;
 
-    private static final ImageIcon FIRE_STATION = Icons.get(BuildingLayer.class,"rescuecore2/standard/view/FireStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
-    private static final ImageIcon POLICE_OFFICE = Icons.get(BuildingLayer.class,"rescuecore2/standard/view/PoliceOffice-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
-    private static final ImageIcon AMBULANCE_CENTRE = Icons.get(BuildingLayer.class,"rescuecore2/standard/view/AmbulanceCentre-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
-    private static final ImageIcon REFUGE = Icons.get(BuildingLayer.class,"rescuecore2/standard/view/Refuge-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
-    private static final ImageIcon HYDRANT = Icons.get(BuildingLayer.class,"rescuecore2/standard/view/Hydrant-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
-    private static final ImageIcon GAS_STATION= Icons.get(BuildingLayer.class,"rescuecore2/standard/view/GasStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
+    private static final ImageIcon FIRE_STATION = Icons.get(BuildingLayer.class,"modules/standard/resources/rescuecore2/standard/view/FireStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
+    private static final ImageIcon POLICE_OFFICE = Icons.get(BuildingLayer.class,"modules/standard/resources/rescuecore2/standard/view/PoliceOffice-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
+    private static final ImageIcon AMBULANCE_CENTRE = Icons.get(BuildingLayer.class,"modules/standard/resources/rescuecore2/standard/view/AmbulanceCentre-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
+    private static final ImageIcon REFUGE = Icons.get(BuildingLayer.class,"modules/standard/resources/rescuecore2/standard/view/Refuge-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
+    private static final ImageIcon HYDRANT = Icons.get(BuildingLayer.class,"modules/standard/resources/rescuecore2/standard/view/Hydrant-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
+    private static final ImageIcon GAS_STATION= Icons.get(BuildingLayer.class,"modules/standard/resources/rescuecore2/standard/view/GasStation-" + ICON_SIZE + "x" + ICON_SIZE + ".png");
     
     /**
        Construct a building icon view layer.
