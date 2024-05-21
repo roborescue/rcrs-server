@@ -42,7 +42,7 @@ public class ZipLogWriter implements LogWriter {
 		return entry;
 	}
 
-	private ArchiveEntry getRecordArchive(LogRecord record) {
+	private SevenZArchiveEntry getRecordArchive(LogRecord record) {
 		String recordType = record.getRecordType().name();
 		switch (record.getRecordType()) {
 		case COMMANDS:
