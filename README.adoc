@@ -97,7 +97,7 @@ where ```<config file>``` is the path to the log viewer configuration file, defa
 
 ==== Example
 ```
-./gradlew logViewer --args="'-c' 'config/logviewer.cfg' 'logs/log/rescue.log'"
+./gradlew logViewer --args="'-c' 'maps/test/config/logviewer.cfg' 'logs/log/rescue.log.7z'"
 ```
 
 === `osm2gml`

@@ -406,9 +406,9 @@ task logViewer(type: JavaExec, dependsOn: classes) {
   classpath = files('.')
   classpath += sourceSets.main.runtimeClasspath
   mainClass = 'sample.SampleLogViewer'
-  maxHeapSize = '2048m'
+  maxHeapSize = '8192m'
   jvmArgs '-Dlog4j.log.dir=logs/log'
-  args = [ '-c', 'config/logviewer.cfg', 'logs/log/rescue.log.7z']
+  args = [ '-c', 'maps/test/config/logviewer.cfg', 'logs/log/rescue.log.7z']
 }
 
 /* Open gml editor */
