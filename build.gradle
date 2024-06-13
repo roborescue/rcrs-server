@@ -34,7 +34,7 @@ dependencies {
   implementation 'org.uncommons.maths:uncommons-maths:1.2.2'
   implementation 'org.tukaani:xz:1.9'
   implementation 'org.projectlombok:lombok:latest.integration'
-  implementation 'org.apache.commons:commons-compress:1.21'
+  implementation 'org.apache.commons:commons-compress:1.26.1'
   annotationProcessor 'org.projectlombok:lombok:latest.integration'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
@@ -406,9 +406,9 @@ task logViewer(type: JavaExec, dependsOn: classes) {
   classpath = files('.')
   classpath += sourceSets.main.runtimeClasspath
   mainClass = 'sample.SampleLogViewer'
-  maxHeapSize = '256m'
+  maxHeapSize = '8192m'
   jvmArgs '-Dlog4j.log.dir=logs/log'
-  args = [ '-c', 'maps/test/config/logviewer.cfg', 'logs/log/rescue.log']
+  args = [ '-c', 'maps/test/config/logviewer.cfg', 'logs/log/rescue.log.7z']
 }
 
 /* Open gml editor */

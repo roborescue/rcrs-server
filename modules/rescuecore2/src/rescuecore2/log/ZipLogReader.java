@@ -33,7 +33,7 @@ public class ZipLogReader extends AbstractLogReader {
 	public ZipLogReader(File file, Registry registry) throws LogException {
 		super(registry);
 		try {
-			sevenZFile = new SevenZFile(file);
+			sevenZFile = SevenZFile.builder().setFile(file).get();
 		} catch (IOException e) {
 			throw new LogException(e);
 		}

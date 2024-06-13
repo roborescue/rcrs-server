@@ -12,10 +12,10 @@ import rescuecore2.log.Logger;
 */
 public final class Icons {
     /** A tick icon. */
-    public static final Icon TICK = Icons.get(Icons.class,"rescuecore2/view/tick.png");
+    public static final Icon TICK = Icons.get(Icons.class,"modules/rescuecore2/resources/rescuecore2/view/tick.png");
 
     /** A cross icon. */
-    public static final Icon CROSS = Icons.get(Icons.class,"rescuecore2/view/cross.png");
+    public static final Icon CROSS = Icons.get(Icons.class,"modules/rescuecore2/resources/rescuecore2/view/cross.png");
 
     private Icons() {}
     
