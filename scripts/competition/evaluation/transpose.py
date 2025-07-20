@@ -30,5 +30,5 @@ def get_row(colum, row):
 #print [len(r) for r in result]
     
 count = len(result[0])
-for row in xrange(0, count):
-    print " ".join(get_row(col, row).strip() for col in result)
+for row in range(0, count):
+    print (" ".join(get_row(col, row).strip() for col in result))

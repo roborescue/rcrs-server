@@ -1,15 +1,39 @@
 #!/bin/bash
 . $(dirname $0)/config.sh
-
+export DISPLAY=172.19.0.2:0.0
 LOGFILE=$(readlink -f $1)
 MAP=$2
 TEAM=$3
+
+
+if [ "$MAP" == "" ];then
+    basename="${LOGFILE%.xz}"           # Remove .xz extension
+    MAP="${basename##*-}"  
+fi
+echo MAP is $MAP
+
+if [ -z "$TEAM" ]; then
+    for T in $TEAM_SHORTHANDS; do
+        NAME="${TEAM_NAMES[$T]}"
+        
+        if [[ "$LOGFILE" == *"$NAME"* ]]; then
+            TEAM="$T"
+            break
+        fi
+    done
+
+    if [ -z "$TEAM" ]; then
+        echo "TEAM is invalid"
+        exit 1
+    fi
+fi
+echo "TEAM=$TEAM"
 MAP_EVALDIR=$HOME/$EVALDIR/$MAP
 
 mkdir -p $MAP_EVALDIR/$TEAM
 cd $MAP_EVALDIR
 
-if [[ $LOGFILE == *.gz ]]; then
+if [[ $LOGFILE == *.tgz ]]; then
     echo "logfile is gzipped: ${LOGFILE%.gz}"
     LOGFILE_GZ=$LOGFILE
     LOGFILE=${LOGFILE%.gz}
@@ -17,7 +41,7 @@ if [[ $LOGFILE == *.gz ]]; then
         gunzip -c $LOGFILE_GZ > $LOGFILE
     fi;
 
-elif [[ $LOGFILE == *.7z ]]; then
+elif [[ $LOGFILE == *.17z ]]; then
     echo "logfile is 7zipped: ${LOGFILE%.7z}"
     LOGFILE_7Z=$LOGFILE
     LOGFILE=${LOGFILE%.7z}
@@ -28,7 +52,9 @@ elif [[ $LOGFILE == *.7z ]]; then
 fi;
 
 
-cd $HOME/$KERNELDIR/boot
+cd $HOME/$KERNELDIR/scripts
+echo $HOME/$KERNELDIR/scripts
+
 ./logextract.sh $LOGFILE $MAP_EVALDIR/$TEAM
 cd $MAP_EVALDIR
 

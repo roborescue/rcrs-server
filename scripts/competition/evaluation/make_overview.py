@@ -13,7 +13,7 @@ lang="en" xml:lang="en">
 <head>
 <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
-<title>RoboCup 2021 Rescue Simulation League Results</title>
+<title>RoboCup 2025 Rescue Simulation League Results</title>
 <style type="text/css">
   body { font-family: sans-serif; }
 
@@ -28,8 +28,8 @@ lang="en" xml:lang="en">
 </head>
 
 <body>
-<h1>RoboCup 2021 Rescue Simulation League Results</h1>
-
+<h1>RoboCup 2025 Rescue Simulation League Results</h1>
+<a href="/agent-logs" >full logs</a> <a href="/kernel-logs/"> All Kernel Logs</a>
 <p>Click on the map names to get detailed results and logfiles</p>
 %(map_download)s
 
@@ -148,10 +148,15 @@ if __name__ == '__main__':
                 continue
             results.append("%.2f" % score)
             teamdata=run.get_team(team)
+            if teamdata is None:
+                results.append("-")
+                continue
             jlog_url="../%s"%(teamdata.jlog)
             full_log_url="../%s"%(teamdata.full_log)
             viewer_url="viewer/?jlog=%s&full_log=%s"%(jlog_url,full_log_url)
-            results.append("%d <a href='%s'><i class='far fa-play-circle'></i></a>" % (rank,viewer_url))
+            if teamdata.jlog:
+               results.append("%d <a href='%s'><i class='far fa-play-circle'></i></a>" % (rank,viewer_url))
+            else:results.append("%d"%rank)
         if day.prev_day:
             _, (prev_score, prev_rank, _) = day.prev_day.get_team_data(team)
             results.append("%.2f" % prev_score)
@@ -210,6 +215,6 @@ if __name__ == '__main__':
         table += "</table>"
         body += table
 
-    print template % locals()
+    print( template % locals())
 
         

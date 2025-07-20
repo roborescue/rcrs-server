@@ -3,37 +3,44 @@
 
 cd $LOCAL_HOMEDIR
 
+echo "syncing $1"
 case "$1" in
-    dist)
-	$(dirname $0)/syncKernels.sh $KERNELDIR $KERNELDIR
+    kernel)
+	$(dirname $0)/syncKernels.sh $KERNELDIR
 #	$(dirname $0)/syncClients.sh $KERNELDIR
 	;;
-
+	scripts)
+		$(dirname $0)/syncKernels.sh scripts
+        $(dirname $0)/syncClients.sh scripts
+	;;
     maps)
-	$(dirname $0)/syncKernels.sh $MAPDIR $MAPDIR
+		$(dirname $0)/syncKernels.sh $MAPDIR
 	;;
     code)
 	if [ ! -z "$2" ]; then
-	    $(dirname $0)/syncClients.sh $CODEDIR/$2 $CODEDIR/
+	    $(dirname $0)/syncClients.sh $CODEDIR/$2/ $CODEDIR/$2/
 	else
-	    $(dirname $0)/syncClients.sh $CODEDIR  $CODEDIR
+	    $(dirname $0)/syncClients.sh $CODEDIR
 	fi
 	;;
 
     logs)
-	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
-	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
+		$(dirname $0)/gatherFromClients.sh $LOGDIR
+		$(dirname $0)/gatherFromKernels.sh $LOGDIR
+		$(dirname $0)/gatherFromKernels.sh records-logs
 	;;
 
     all)
-	$(dirname $0)/syncKernels.sh ~/scripts/ ~/scripts/
-        $(dirname $0)/syncClients.sh ~/scripts/ ~/scripts/
-	$(dirname $0)/syncKernels.sh $KERNELDIR/ $KERNELDIR/
-#	$(dirname $0)/syncClients.sh $KERNELDIR $KERNELDIR
-	$(dirname $0)/syncKernels.sh $MAPDIR/ $MAPDIR/
-	$(dirname $0)/syncClients.sh $CODEDIR/ $CODEDIR/
+		rcrsync scripts
+		rcrsync kernel
+		rcrsync logs
+		rcrsync code
+		rcrsync maps
 
-	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
-	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
+		
+
+	;;
+	*)
+	echo "usage rcrsync [all|scripts|kernel|maps|code|logs]"
 	;;
 esac

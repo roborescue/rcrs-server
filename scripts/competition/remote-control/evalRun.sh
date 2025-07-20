@@ -6,14 +6,14 @@ CLUSTER=$1
 
 SERVER=$(getServerHost $CLUSTER)
 
-eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/boot/$LOCKFILE_NAME 2>/dev/null)
+eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/scripts/$LOCKFILE_NAME 2>/dev/null)
 if [ ! -z $RUNNING_TEAM ]; then
     echo "There is still a server running on cluster $CLUSTER"
     echo "${TEAM_NAMES[$RUNNING_TEAM]} ($RUNNING_TEAM) on $RUNNING_MAP"
     exit 1
 fi;
 
-eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/boot/$STATFILE_NAME 2>/dev/null)
+eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/scripts/$STATFILE_NAME 2>/dev/null)
 if [ -z $RUNNING_TEAM ]; then
     echo "No run recorded on cluster $CLUSTER"
     exit 1
@@ -37,3 +37,5 @@ else
 
     mapSummary.sh $RUNNING_MAP
 fi
+cd $HOME/$EVALDIR
+make_overview.py > index.html

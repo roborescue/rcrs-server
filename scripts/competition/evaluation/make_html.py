@@ -84,7 +84,8 @@ class TeamEntry(object):
         try:
             self.full_log=self.get_logfile(self.map.mapname)[1]
             self.jlog=self.get_jlogfile(self.map.mapname)[1]
-        except:
+        except Exception as e:
+            # print(f"error {e}",file=sys.stderr)
             pass
 
     def valid(self):
@@ -94,17 +95,20 @@ class TeamEntry(object):
 
     def get_logfile(self, mapdir):
 #        files = glob.glob(os.path.join(mapdir, "*-%s*.gz" % self.name))
-        files = glob.glob(os.path.join(mapdir, "*-%s*.7z" % self.name))
+#        print(mapdir,"*-%s*.7z" % self.name)
+        files = glob.glob(os.path.join(mapdir, "*-%s*.[x7]z" % self.name)) or glob.glob( "*-%s*.[x7]z" % self.name)
         if len(files) != 1:
+      #      print("=========",mapdir,"*-%s*.log*" % self.name,files,"Can't identify team logfile")
             #Can't identify team logfile
-            raise KeyError
+            raise KeyError(mapdir,"*-%s*.log*" % self.name,files,"Can't identify team logfile")
         size = os.stat(files[0])[stat.ST_SIZE]
         return (size, files[0])
 
     def get_jlogfile(self, mapdir):
-        files = glob.glob(os.path.join(mapdir, "*-%s*.jlog.zip" % self.name))
+        files = glob.glob(os.path.join(mapdir, "*-%s*.jlog.zip" % self.name)) or glob.glob("*-%s*.jlog.zip" % self.name)
         if len(files) != 1:
             #Can't identify team logfile
+       #     print("=========",mapdir,"*-%s*.jlog.zip" % self.name ,files,"Can't identify team jlogfile")
             raise KeyError
         size = os.stat(files[0])[stat.ST_SIZE]
         return (size, files[0])
@@ -145,12 +149,13 @@ class MapData(object):
         elif os.path.exists("plot-%s.svg" % mapname):
             self.path = "."
         else:
-            print >> sys.stderr, "Couldn't find eval directory for map %s." % mapname
+            print("Couldn't find eval directory for map %s." % mapname,file=sys.stderr)
             return
 
         used_teams = teams if teams else all_teams
         for t in used_teams:
           try:
+            
             entry = TeamEntry(t, self)
             if entry.valid():
                 self.entries.append(entry)
@@ -159,13 +164,14 @@ class MapData(object):
             elif teams is not None:
                 self.entries.append(entry)
           except:
-             print >> sys.stderr, "Couldn't find eval directory for map %s team %s." % (mapname,t)
-             return
+             print( "Couldn't find eval directory for map %s team %s." % (mapname,t),file=sys.stderr)
+             continue
         for t in self.entries:
             if t.max_time != self.turns:
                 t.final_score = 0.0
 
         sorted_by_score = sorted(self.entries, key=lambda t: -t.final_score)
+        if len(sorted_by_score)==0:return
         if sorted_by_score[0].last_score != 0.0:
             self.started = True
 
@@ -223,7 +229,7 @@ class MapData(object):
     def get_team(self, id):
         if self.teamdict is None:
             self.teamdict = dict((t.id, t) for t in self.entries)
-        return self.teamdict[id]
+        return self.teamdict.get(id)
 
     def get_screenshot_timepoints(self):
         t = 50
@@ -277,7 +283,7 @@ if __name__ == '__main__':
     pack_size, pack_path = data.get_logpackage()
     log_download = ""
     if pack_path:
-        archive_url = "http://sourceforge.net/projects/roborescue/files/logs/2011/%s/%s-all.tar" % (mapname, mapname)
+        archive_url = "http://sourceforge.net/projects/roborescue/files/logs/2025/%s/%s-all.tar" % (mapname, mapname)
         log_download = '<a href="%s">Download all logs</a> (Size: %s)' % (archive_url, sizeof_fmt(pack_size))
 
     map_size, map_path = data.get_mapfile()
@@ -307,20 +313,30 @@ if __name__ == '__main__':
             else:
                 html = ''
             result.append(html)
-        if config.add_downloads and team.valid():
+        if 1 or config.add_downloads and team.valid():
+            dlcell=""
+            log_url=""
             try:
                 size, log = team.get_logfile(data.path)
-                jsize, jlog = team.get_jlogfile(data.path)
-                # log_url = log
-#                log_url = "http://sourceforge.net/projects/roborescue/files/%s/%s/%s/download" % (config.log_location, data.mapname, log)
-                log_url = "%s" % (log)
-                jlog_url= "../viewer/?jlog=../%s/%s&full_log=../%s/%s"%(mapname,jlog,mapname,log_url)
+                log_url = log
+#                log_url = "http://sourceforge.net/projects/roborescue/files/%s/%s/%s/download" % (config.log_location, dat>                log_url = "%s" % (log)
+            #    result.append('<a href="%s">Download</a>'% log_url)
                 # log_url = "http://sourceforge.net/projects/roborescue/files/logs/2011/%s" % log
-                result += ['<a href="%s">View Simulation</a> (%s)<br/><a href="%s">Download Simulation</a> (%s)' % (jlog_url,sizeof_fmt(jsize), log_url, sizeof_fmt(size))]
-            except KeyError:
+                dlcell += '<a href="%s">Download Simulation</a> (%s)' % (log_url,sizeof_fmt(size))
+            except KeyError as e:
+                print(f"error {e}",file=sys.stderr)
+                
                 pass
+            try:
+                jsize, jlog = team.get_jlogfile(data.path)
+                jlog_url= "../viewer/?jlog=../%s/%s&full_log=../%s/%s"%(mapname,jlog,mapname,log_url)
+                dlcell+='<a href="%s">View Simulation</a> (%s)<br/>' % (jlog_url,sizeof_fmt(jsize))
+            except KeyError as e:
+                print(f"error {e}",file=sys.stderr)
+                pass
+            result+=[dlcell]
         else:
-            result.append("")
+            result.append("-")
 
             #result += [""] * (count - len(result))
         return result, classes
@@ -331,9 +347,10 @@ if __name__ == '__main__':
 
     table = '<table border="2" cellspacing="0" cellpadding="5">'
     table += list_to_row((headers, None), "th")
+    print(data.entries,file=sys.stderr)
     for t in data.entries:
         table += list_to_row(make_table_row(t, len(headers))) + "\n"
     table += "</table"
 
 
-    print template % locals()
+    print (template % locals())

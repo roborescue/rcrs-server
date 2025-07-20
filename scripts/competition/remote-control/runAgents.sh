@@ -9,7 +9,12 @@ NAME=${TEAM_NAMES[$TEAM]}
 
 SERVER=$(getServerHost $CLUSTER)
 
-for i in 1 2 3; do
+if [ $MODE == "agent-all" ];then
+ CLIENT=$(getClientHost $CLUSTER 1)
+ ssh $REMOTE_USER@$CLIENT $SCRIPTDIR/remoteStartAgents.sh $TEAM $SERVER 4 $MAP&
+else
+ for i in 1 2 3 ; do
     CLIENT=$(getClientHost $CLUSTER $i)
     ssh $REMOTE_USER@$CLIENT $SCRIPTDIR/remoteStartAgents.sh $TEAM $SERVER $i $MAP&
-done;
+ done;
+fi

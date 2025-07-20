@@ -6,7 +6,7 @@ MAP=$1
 TEAM=$2
 NAME=${TEAM_NAMES[$TEAM]}
 
-#export DISPLAY=:0
+export DISPLAY=172.19.0.2:0.0
 
 cd $HOME
 
@@ -27,7 +27,7 @@ MAPNAME="`basename $MAP`"
 
 KERNEL_LOGDIR=$HOME/kernel-logs/$DAY/$TIME-$NAME-$MAPNAME-precompute
 mkdir -p $KERNEL_LOGDIR
-cd $KERNELDIR/boot
+cd $KERNELDIR/scripts
 
 RESCUE_LOG=$LOGDIR/$DAY/kernel/$TIME-$NAME-$MAPNAME-precompute
 

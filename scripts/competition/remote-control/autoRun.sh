@@ -12,7 +12,7 @@ for i in $CLUSTERS; do
     RUNNING_TEAM=""
     PRECOMPUTE=""
     TURN="-"
-    eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/boot/$LOCKFILE_NAME 2>/dev/null)
+    eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/scripts/$LOCKFILE_NAME 2>/dev/null)
     if [ ! -z $RUNNING_TEAM ]; then
 	COUNT[$i]=0
     else
@@ -60,3 +60,4 @@ for item in $ALL; do
 	run.sh $FREE $MAP $TEAM &
 	#xterm -T "run.sh $FREE $MAP $TEAM" -e "run.sh $FREE $MAP $TEAM" &
 done
+gatherLogs.sh

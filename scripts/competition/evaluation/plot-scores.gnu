@@ -22,7 +22,7 @@ set style line 13 lt 4 lc rgb "red"
 set style line 14 lt 4 lc rgb "green"
 set style line 15 lt 4 lc rgb "blue"
 set style line 16 lt 4 lc rgb "black"
-set style increment user 
+
 
 set terminal svg dashed lw 2 size 1024,768
 set output system("echo plot-$RCR_MAP.svg")

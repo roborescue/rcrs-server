@@ -24,7 +24,7 @@ for TEAM in $TEAM_SHORTHANDS; do
         echo -n "\"$NAME\" ">> scores.tmp
         cat $TEAM/scores.txt >> scores.tmp
         echo >> scores.tmp
-	echo "$TEAM"
+    	echo "$TEAM"
         # echo -n "$TEAM " >> final-scores.txt
         # cat $TEAM/final-score.txt >> final-scores.txt
         # echo >> final-scores.txt
@@ -37,11 +37,13 @@ for TEAM in $TEAM_SHORTHANDS; do
             cp $TEAM/snapshot-init.png snapshot-init.png
             convert -format png -thumbnail 400x300 -strip -quality 95 PNG8:snapshot-init.png snapshot-init-small.png
         fi
-        LOGFILES=$(ls $HOME/$LOGDIR/$DAY/kernel/*$NAME-$MAP.7z 2>/dev/null)
-	echo $HOME/$LOGDIR/$DAY/kernel/*$NAME-$MAP.7z
-echo === $LOGFILES
+        LOGFILES=$(ls $HOME/$LOGDIR/$DAY/kernel/*$NAME-$MAP.[x7]z 2>/dev/null)
+        JLOGFILES=$(ls $HOME/records-logs/$DAY/*$NAME-$MAP.jlog.zip 2>/dev/null)
         if [[ -f "$LOGFILES" && ! -f $MAP_EVALDIR/$LOGFILES ]]; then
             cp $LOGFILES $MAP_EVALDIR
+        fi;
+         if [[ -f "$JLOGFILES" && ! -f $MAP_EVALDIR/$JLOGFILES ]]; then
+            cp $JLOGFILES $MAP_EVALDIR
         fi;
         NUM_PROCESSED=$((NUM_PROCESSED+1))
 #        echo "recompressing ..."
@@ -67,3 +69,6 @@ echo $RCR_COUNT teams processed
 gnuplot $EVAL_SCRIPTS/plot-scores.gnu
 
 make_html.py $MAP > index.html
+
+cd ~/$EVALDIR
+make_overview.py>index.html

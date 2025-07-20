@@ -7,7 +7,7 @@ for i in $CLUSTERS; do
     RUNNING_TEAM=""
     PRECOMPUTE=""
     TURN="-"
-    eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/boot/$LOCKFILE_NAME 2>/dev/null)
+    eval $(ssh $REMOTE_USER@$SERVER cat $KERNELDIR/scripts/$LOCKFILE_NAME 2>/dev/null)
     if [ ! -z $RUNNING_TEAM ]; then
         if [ "$PRECOMPUTE" == "yes" ]; then
             echo " $i: $RUNNING_TEAM precomputing on $RUNNING_MAP"

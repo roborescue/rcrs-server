@@ -8,6 +8,7 @@ TYPE=$3
 MAP=$4
 
 declare -A CODES
+CODES[4]=all
 CODES[1]=fire
 CODES[2]=police
 CODES[3]=ambulance
@@ -21,10 +22,17 @@ cd $HOME/$CODEDIR/$TEAM
 
 echo Starting agents on machine $(hostname)
 
+if (( $TYPE == 4)); then
+    echo "Running: /bin/sh \"start.sh\" -1 -1 -1 -1 -1 -1 $HOST 2>&1 | tee $LOGFILE"
+   /bin/sh "start.sh"  -1 -1 -1 -1 -1 -1 $HOST 2>&1 | tee $LOGFILE
+
+fi
 # firebrigade
 if (( $TYPE == 1)); then
     echo "Running: /bin/sh \"start.sh\" -1 -1 0 0 0 0 $HOST 2>&1 | tee $LOGFILE"
     /bin/sh "start.sh"  -1 -1 0 0 0 0 $HOST 2>&1 | tee $LOGFILE
+#   /bin/sh "start.sh"  -1 -1 -1 -1 -1 -1 $HOST 2>&1 | tee $LOGFILE
+
 fi
 
 # policeforce
