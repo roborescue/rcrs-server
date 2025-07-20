@@ -7,11 +7,11 @@ fi
 
 . functions.sh
 
-processArgs $*
-
+processArgs -c ../maps/kobe/config 
+BASEDIR=../
 TEAM_NAME=$1
 HOSTNAME=$2
 OUTDIR=$3
 
 makeClasspath $BASEDIR/jars $BASEDIR/lib
-java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.LiveLogExtractor -c $BASEDIR/config/viewer.cfg -h $HOSTNAME --viewer.team-name=$TEAM_NAME --viewer.output-dir=$OUTDIR
+java -Xmx512m -cp $CP -Dlog4j.log.dir=$LOGDIR rescuecore2.LaunchComponents sample.LiveLogExtractor -c $BASEDIR/maps/kobe/config/viewer.cfg -h $HOSTNAME --viewer.team-name=$TEAM_NAME --viewer.output-dir=$OUTDIR

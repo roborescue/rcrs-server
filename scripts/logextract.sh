@@ -8,4 +8,4 @@ fi
 . functions.sh
 
 makeClasspath $BASEDIR/jars $BASEDIR/lib
-java -Xmx1024m -cp $CP -Dlog4j.log.dir=$BASEDIR/logs/log rescuecore2.log.LogExtractor -c $BASEDIR/config/logviewer.cfg $1 $2
+java -Xmx3024m -cp $CP -Dlog4j.log.dir=$BASEDIR/logs/log rescuecore2.log.LogExtractor -c $BASEDIR/maps/kobe/config/logviewer.cfg -c $BASEDIR/maps/kobe/config/kernel.cfg $1 $2
