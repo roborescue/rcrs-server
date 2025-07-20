@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  php-apache:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www/html
+      - ~/logs:/var/www/html/agent-logs
+      - ./compile:/opt/compile
+      - gradle-cache:/var/www/.gradle
+      - ~/code:/opt/codes/
+      - ./history:/opt/history/
+      - ~/evaluation:/var/www/html/results/
+      - ./ssh:/var/www/.ssh
+
+volumes:
+  gradle-cache:
