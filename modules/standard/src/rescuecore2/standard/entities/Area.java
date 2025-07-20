@@ -304,9 +304,9 @@ public abstract class Area extends StandardEntity {
    */
   public List<EntityID> getNeighbours() {
     if ( neighbours == null ) {
-      neighbours = new ArrayList<EntityID>();
+      neighbours = new ArrayList<>();
       for ( Edge next : edges.getValue() ) {
-        if ( next.isPassable() ) {
+        if ( next.isPassable() && !neighbours.contains( next.getNeighbour() ) ) {
           neighbours.add( next.getNeighbour() );
         }
       }
