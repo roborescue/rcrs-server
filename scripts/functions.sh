@@ -156,7 +156,7 @@ function processArgs {
   fi
 
   if [ "$(uname -s)" = 'Linux' ]; then
-    LOGDIR=`readlink -f $LOGDIR`
+    LOGDIR=`readlink -m $LOGDIR`
   fi
   mkdir -p $LOGDIR
   mkdir -p $RECORDSDIR
