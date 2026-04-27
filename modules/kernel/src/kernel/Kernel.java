@@ -20,7 +20,6 @@ import rescuecore2.config.Config;
 import rescuecore2.log.CommandsRecord;
 import rescuecore2.log.ConfigRecord;
 import rescuecore2.log.EndLogRecord;
-//import rescuecore2.log.FileLogWriter;
 import rescuecore2.log.InitialConditionsRecord;
 import rescuecore2.log.LogException;
 import rescuecore2.log.LogWriter;
@@ -31,7 +30,6 @@ import rescuecore2.log.StartLogRecord;
 import rescuecore2.log.UpdatesRecord;
 import rescuecore2.messages.Command;
 import rescuecore2.score.ScoreFunction;
-//import rescuecore2.misc.gui.ChangeSetComponent;
 import rescuecore2.worldmodel.ChangeSet;
 import rescuecore2.worldmodel.Entity;
 import rescuecore2.worldmodel.EntityID;
@@ -66,8 +64,6 @@ public class Kernel {
 	private CommandCollector commandCollector;
 
 	private boolean isShutdown;
-
-	// private ChangeSetComponent simulatorChanges;
 
 	/**
 	 * Construct a kernel.
@@ -137,8 +133,6 @@ public class Kernel {
 					communicationModel.getClass().getName());
 			config.setValue(Constants.PERCEPTION_KEY,
 					perception.getClass().getName());
-
-			// simulatorChanges = new ChangeSetComponent();
 
 			// Initialise
 			perception.initialise(config, worldModel);
@@ -381,7 +375,6 @@ public class Kernel {
 				long commandsTime = System.currentTimeMillis();
 				Logger.debug("Broadcasting commands");
 				ChangeSet changes = sendCommandsToSimulators(time, commands);
-				// simulatorUpdates.show(changes);
 				nextTimestep.setChangeSet(changes);
 				log.writeRecord(new UpdatesRecord(time, changes));
 				long updatesTime = System.currentTimeMillis();
@@ -480,10 +473,19 @@ public class Kernel {
 		}
 	}
 
+	/**
+	 * Send perception updates to all agents, including entities visible to each
+	 * agent and any entities deleted in the previous timestep.
+	 */
 	private void sendAgentUpdates(Timestep timestep,
 			Collection<Command> commandsLastTimestep)
 			throws InterruptedException, KernelException, LogException {
+		ChangeSet previousChanges = (previousTimestep == null)
+			? new ChangeSet()
+			: previousTimestep.getChangeSet();
+
 		perception.setTime(time);
+		perception.setChangeSet(previousChanges);
 		communicationModel.process(time, commandsLastTimestep);
 		for (AgentProxy next : agents) {
 			if (Thread.interrupted()) {

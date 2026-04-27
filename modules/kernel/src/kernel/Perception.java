@@ -28,4 +28,11 @@ public interface Perception {
        @param timestep The current timestep.
     */
     void setTime(int timestep);
+
+    /**
+       Notify this perception object of the changes that occured in the previous timestep.
+       This is used to propagate deleted entities to agents.
+       @param changes The ChangeSet from the previous timestep, including deleted entity IDs.
+     */
+    void setChangeSet(ChangeSet changes);
 }

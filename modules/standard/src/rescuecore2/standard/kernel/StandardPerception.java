@@ -83,6 +83,7 @@ public class StandardPerception implements Perception, GUIComponent {
   private Set<Building> unburntBuildings;
   private Map<Building, Integer> ignitionTimes;
   private Config config;
+  private ChangeSet previousChanges = new ChangeSet();
 
   // Lock object for updating via the GUI.
   private final Object lock = new Object();
@@ -153,6 +154,11 @@ public class StandardPerception implements Perception, GUIComponent {
     time = timestep;
     // Look for scripting elements in the config file
     checkForScript();
+  }
+
+  @Override
+  public void setChangeSet(ChangeSet changes) {
+    this.previousChanges = changes;
   }
 
   @Override
@@ -228,6 +234,9 @@ public class StandardPerception implements Perception, GUIComponent {
             addRefugeProperties((Refuge) next, result);
           }
         }
+      }
+      for (EntityID deletedID : previousChanges.getDeletedEntities()) {
+          result.entityDeleted(deletedID);
       }
       return result;
     }
