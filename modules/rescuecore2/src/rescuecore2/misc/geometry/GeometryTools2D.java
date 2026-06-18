@@ -97,13 +97,11 @@ public final class GeometryTools2D {
     public static double positionOnLine(Line2D line, Point2D point) {
         if (nearlyZero(line.getDirection().getX())) {
             // Line is parallel to the Y axis so just solve for Y
-            double d = (point.getY() - line.getOrigin().getY()) / line.getDirection().getY();
-            return d;
+            return (point.getY() - line.getOrigin().getY()) / line.getDirection().getY();
         }
         if (nearlyZero(line.getDirection().getY())) {
             // Line is parallel to the X axis so just solve for X
-            double d = (point.getX() - line.getOrigin().getX()) / line.getDirection().getX();
-            return d;
+            return (point.getX() - line.getOrigin().getX()) / line.getDirection().getX();
         }
         // Solve for both X and Y
         double tx = (point.getX() - line.getOrigin().getX()) / line.getDirection().getX();
@@ -495,11 +493,50 @@ public final class GeometryTools2D {
 
     /**
      * Translate a list of points by a given vector.
+     *
      * @param points The points to translate.
      * @param vector The translation vector.
      * @return A new list of points, each shifted by the translation vector.
      */
-    public static List<Point2D> translate(List<Point2D> points, Vector2D vector) {
+    public static List<Point2D> translate(final List<Point2D> points, final Vector2D vector) {
         return points.stream().map(p -> p.plus(vector)).toList();
     }
+
+    /**
+     * Computes the Z-component of the cross product (twice the signed area) of two vectors
+     * formed by three points. This is used as an indicator to determine which side of a line
+     * segment a point lies on.
+     *
+     * @param p1 The first point to evaluate.
+     * @param p2 The second point to evaluate.
+     * @param p3 The reference point (origin of the vectors).
+     * @return The Z-component of the cross product (positive, negative, or zero).
+     */
+    public static double computeSign(final Point2D p1, final Point2D p2, final Point2D p3) {
+        return (p1.getX() - p3.getX()) * (p2.getY() - p3.getY()) -
+               (p2.getX() - p3.getX()) * (p1.getY() - p3.getY());
+    }
+
+    /**
+     * Determines whether a specified point is located inside a triangle defined by three vertices.
+     * (Points lying exactly on the edges or vertices are considered inside.)
+     *
+     * @param pt The point to check.
+     * @param v1 The first vertex of the triangle.
+     * @param v2 The second vertex of the triangle.
+     * @param v3 The third vertex of the triangle.
+     * @return True if the point is inside or on the boundary of the triangle, false otherwise.
+     */
+    public static boolean isPointInTriangle(final Point2D pt, final Point2D v1, final Point2D v2, final Point2D v3) {
+        final double d1 = computeSign(pt, v1, v2);
+        final double d2 = computeSign(pt, v2, v3);
+        final double d3 = computeSign(pt, v3, v1);
+
+        // If all signs are the same (or zero), the point is inside the triangle.
+        final boolean hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+        final boolean hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+        return !(hasNeg && hasPos);
+    }
+
 }

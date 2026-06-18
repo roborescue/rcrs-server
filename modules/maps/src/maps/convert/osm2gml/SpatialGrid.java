@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * A generic spatial grid that can index any object implementing the SpatialIndexable interface.
@@ -38,8 +39,31 @@ public class SpatialGrid<T extends SpatialIndexable> {
      * Registers a SpatialIndexable object into the grid.
      * @param item The object to add.
      */
-    public void add(T item) {
-        Rectangle2D bounds = item.getBounds();
+    public void add(final T item) {
+        forEachCell(item, (x, y) -> addToCell(x, y, item));
+    }
+
+    /**
+     * Removes a {@link SpatialIndexable} object from the grid.
+     * Empty cells are cleaned up immediately to avoid memory leaks.
+     * @param item The object to remove.
+     */
+    public void remove(final T item) {
+        forEachCell(item, (x, y) -> {
+            final Set<T> cell = grid.get(new GridPoint(x, y));
+            if (cell == null) return;
+            cell.remove(item);
+            if (cell.isEmpty()) {
+                grid.remove(new GridPoint(x, y));
+            }
+        });
+    }
+
+    // Iterates over all grid cells covered by the bounding box of the given item
+    // and applies the given action to each cell coordinate.
+    // If the item's bounds are null or empty, no action is taken.
+    private void forEachCell(final T item, final BiConsumer<Integer, Integer> action) {
+        final Rectangle2D bounds = item.getBounds();
         if (bounds == null || bounds.isEmpty()) return;
 
         int minCellX = getXCell(bounds.getMinX());
@@ -49,7 +73,7 @@ public class SpatialGrid<T extends SpatialIndexable> {
 
         for (int x = minCellX; x <= maxCellX; x++) {
             for (int y = minCellY; y <= maxCellY; y++) {
-                addToCell(x, y, item);
+                action.accept(x, y);
             }
         }
     }

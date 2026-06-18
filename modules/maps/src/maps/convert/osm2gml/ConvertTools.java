@@ -5,16 +5,12 @@ import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.gui.ShapeDebugFrame;
-//import rescuecore2.log.Logger;
 
 import maps.gml.GMLMap;
 import maps.gml.GMLNode;
 import maps.gml.debug.GMLNodeShapeInfo;
 import maps.gml.GMLEdge;
 import maps.gml.debug.GMLEdgeShapeInfo;
-//import maps.gml.GMLFace;
-//import maps.gml.debug.GMLFaceShapeInfo;
-import maps.gml.GMLDirectedEdge;
 import maps.gml.GMLObject;
 import maps.gml.GMLRoad;
 import maps.gml.GMLBuilding;
@@ -28,12 +24,7 @@ import maps.MapTools;
 
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
-import java.util.Set;
-import java.util.List;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 
 import java.awt.Color;
 
@@ -78,48 +69,6 @@ public final class ConvertTools {
     */
     public static double nearbyThreshold(OSMMap map, double thresholdM) {
         return sizeOf1Metre(map) * thresholdM;
-    }
-
-    /**
-       Convert a GMLEdge to a Line2D.
-       @param edge The edge to convert.
-       @return A new Line2D.
-    */
-    public static Line2D gmlEdgeToLine(GMLEdge edge) {
-        GMLNode start = edge.getStart();
-        GMLNode end = edge.getEnd();
-        Point2D origin = new Point2D(start.getX(), start.getY());
-        Point2D endPoint = new Point2D(end.getX(), end.getY());
-        return new Line2D(origin, endPoint);
-    }
-
-    /**
-       Convert a GMLEdge to a Line2D.
-       @param edge The edge to convert.
-       @param start The node to start from. This must be one of the endpoints of the edge.
-       @return A new Line2D.
-    */
-    public static Line2D gmlEdgeToLine(GMLEdge edge, GMLNode start) {
-        if (!start.equals(edge.getStart()) && !start.equals(edge.getEnd())) {
-            throw new IllegalArgumentException("'start' must be one of the endpoints of 'edge'");
-        }
-        GMLNode end = start.equals(edge.getStart()) ? edge.getEnd() : edge.getStart();
-        Point2D origin = new Point2D(start.getX(), start.getY());
-        Point2D endPoint = new Point2D(end.getX(), end.getY());
-        return new Line2D(origin, endPoint);
-    }
-
-    /**
-       Convert a GMLDirectedEdge to a Line2D.
-       @param edge The edge to convert.
-       @return A new Line2D.
-    */
-    public static Line2D gmlDirectedEdgeToLine(GMLDirectedEdge edge) {
-        GMLNode start = edge.getStartNode();
-        GMLNode end = edge.getEndNode();
-        Point2D origin = new Point2D(start.getX(), start.getY());
-        Point2D endPoint = new Point2D(end.getX(), end.getY());
-        return new Line2D(origin, endPoint);
     }
 
     /**
@@ -281,14 +230,6 @@ public final class ConvertTools {
             if (object instanceof GMLEdge) {
                 allShapes.add(new GMLEdgeShapeInfo((GMLEdge)object, "Edges", Constants.BLACK, false));
             }
-            /*
-            if (object instanceof GMLFace) {
-                GMLFace face = (GMLFace)object;
-                Color c = Constants.TRANSPARENT_RED;
-                String name = "Unknown";
-                allShapes.add(new GMLFaceShapeInfo(face, "Faces", Constants.BLACK, Constants.TRANSPARENT_AQUA, false));
-            }
-            */
         }
         return allShapes;
     }
@@ -342,57 +283,6 @@ public final class ConvertTools {
     }
 
     /**
-       Find out if a set of GMLDirectedEdges is convex.
-       @param edges The set of edges to test.
-       @return True iff the face is convex.
-    */
-    public static boolean isConvex(List<DirectedEdge> edges) {
-        Iterator<DirectedEdge> it = edges.iterator();
-        Line2D first = it.next().getLine();
-        Line2D a = first;
-        Line2D b = it.next().getLine();
-        boolean rightTurn = GeometryTools2D.isRightTurn(a, b);
-        while (it.hasNext()) {
-            a = b;
-            b = it.next().getLine();
-            if (rightTurn != GeometryTools2D.isRightTurn(a, b)) {
-                return false;
-            }
-        }
-        if (rightTurn != GeometryTools2D.isRightTurn(b, first)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-       Sum the angles of all turns in a GMLFace.
-       @param face The face to check.
-       @return The sum of angles in the face.
-    */
-    /*
-    public static double getAnglesSum(GMLFace face) {
-        double sum = 0;
-        Iterator<GMLDirectedEdge> it = face.getEdges().iterator();
-        GMLDirectedEdge first = it.next();
-        GMLDirectedEdge a = first;
-        while (it.hasNext()) {
-            GMLDirectedEdge b = it.next();
-            double d = getAngle(a, b);
-            if (!Double.isNaN(d)) {
-                sum += d;
-            }
-            a = b;
-        }
-        double d = getAngle(a, first);
-        if (!Double.isNaN(d)) {
-            sum += d;
-        }
-        return sum;
-    }
-    */
-
-    /**
        Sum the angles of all turns in an OSMBuilding.
        @param building The building to check.
        @param map The OSMMap the building is part of.
@@ -424,17 +314,6 @@ public final class ConvertTools {
     }
 
     /**
-       Find out if a GMLFace is defined clockwise or not.
-       @param face The GMLFace to check.
-       @return True if the face is defined clockwise, false if anti-clockwise.
-    */
-    /*
-    public static boolean isClockwise(GMLFace face) {
-        return nearlyEqual(getAnglesSum(face), CLOCKWISE_SUM, THRESHOLD);
-    }
-    */
-
-    /**
        Find out if an OSMBuilding is defined clockwise or not.
        @param building The OSMBuilding to check.
        @param map The OSM map.
@@ -443,18 +322,6 @@ public final class ConvertTools {
     public static boolean isClockwise(OSMBuilding building, OSMMap map) {
         return nearlyEqual(getAnglesSum(building, map), CLOCKWISE_SUM, THRESHOLD);
     }
-
-    /*
-    private static double getAngle(GMLDirectedEdge a, GMLDirectedEdge b) {
-        Vector2D v1 = new Vector2D(a.getEndNode().getX() - a.getStartNode().getX(), a.getEndNode().getY() - a.getStartNode().getY());
-        Vector2D v2 = new Vector2D(b.getEndNode().getX() - b.getStartNode().getX(), b.getEndNode().getY() - b.getStartNode().getY());
-        double d = GeometryTools2D.getAngleBetweenVectors(v1, v2);
-        if (GeometryTools2D.isRightTurn(v1, v2)) {
-            return -d;
-        }
-        return d;
-    }
-    */
 
     private static double getAngle(long first, long second, long third, OSMMap map) {
         OSMNode n1 = map.getNode(first);
@@ -492,12 +359,12 @@ public final class ConvertTools {
 
                 if (type == PathIterator.SEG_MOVETO) {
                     // This is the start of a new path. Initialize the start/end nodes.
-                    firstNode = map.getNode(coords[0], coords[1]);
+                    firstNode = map.getNodeExact(coords[0], coords[1]);
                     lastNode = firstNode;
                 }
                 else if (type == PathIterator.SEG_LINETO) {
                     // Add a segment to the current path.
-                    Node nextNode = map.getNode(coords[0], coords[1]);
+                    Node nextNode = map.getNodeExact(coords[0], coords[1]);
                     if (lastNode != null && !lastNode.equals(nextNode)) {
                         currentPath.add(map.getDirectedEdge(lastNode, nextNode));
                     }
@@ -567,12 +434,33 @@ public final class ConvertTools {
     private static double calculatePathSignedArea(List<Point2D> path) {
         if (path.size() < 3) return 0.0;
         double areaSum = 0.0;
-        Point2D last = path.get(path.size() - 1);
+        Point2D last = path.getLast();
         for (Point2D current : path) {
             areaSum += (last.getX() * current.getY()) - (current.getX() * last.getY());
             last = current;
         }
         return areaSum / 2.0;
+    }
+
+    /**
+     * Sort nodes by their position along the given edge.
+     * @param edge  The edge defining the direction of sorting.
+     * @param nodes The nodes to sort.
+     * @return A new list of nodes sorted by t-parameter along the edge.
+     */
+    public static List<Node> sortedAlongEdge(final Edge edge, final Collection<Node> nodes) {
+        final double dx = edge.getLine().getDirection().getX();
+        final double dy = edge.getLine().getDirection().getY();
+        final double len2 = dx * dx + dy * dy;
+        final double ox = edge.getLine().getOrigin().getX();
+        final double oy = edge.getLine().getOrigin().getY();
+
+        return nodes.stream()
+                .sorted(Comparator.comparingDouble(n -> {
+                    // Project the node onto the edge direction to obtain a stable t-parameter.
+                    return ((n.getX() - ox) * dx + (n.getY() - oy) * dy) / len2;
+                }))
+                .toList();
     }
 
 }

@@ -107,29 +107,16 @@ public class ConnectBuildingsStep extends BaseModificationStep {
                         connectingPoint = connectingPoint.plus(roadLine.getDirection().normalised().scale(-slideAmount));
                     }
 
-                    // Define the entrance base on the building wall.
-                    Vector2D wallVector = buildingEdge.getLine().getDirection().normalised();
-                    Node b1 = map.getNode(wallMidPoint.plus(wallVector.scale(-halfWidth)));
-                    Node b2 = map.getNode(wallMidPoint.plus(wallVector.scale(halfWidth)));
+                    final Vector2D wallVector = buildingEdge.getLine().getDirection().normalised();
+                    final Vector2D roadVector = roadLine.getDirection().normalised();
+                    final Node b1 = map.getNode(wallMidPoint.plus(wallVector.scale(-halfWidth)));
+                    final Node b2 = map.getNode(wallMidPoint.plus(wallVector.scale(halfWidth)));
+                    final Node r1 = map.getNode(connectingPoint.plus(roadVector.scale(-halfWidth)));
+                    final Node r2 = map.getNode(connectingPoint.plus(roadVector.scale(halfWidth)));
 
-                    // Define the entrance top using these safe distances.
-                    Vector2D roadVector = roadLine.getDirection().normalised();
-                    Node r1 = map.getNode(connectingPoint.plus(roadVector.scale(-halfWidth)));
-                    Node r2 = map.getNode(connectingPoint.plus(roadVector.scale(halfWidth)));
-
-                    // Create entrance shape
-                    List<DirectedEdge> entranceEdges = new ArrayList<>();
-                    if (0 < wallVector.dot(roadVector)) {
-                        entranceEdges.add(map.getDirectedEdge(b1, b2));
-                        entranceEdges.add(map.getDirectedEdge(b2, r2));
-                        entranceEdges.add(map.getDirectedEdge(r2, r1));
-                        entranceEdges.add(map.getDirectedEdge(r1, b1));
-                    } else {
-                        entranceEdges.add(map.getDirectedEdge(b1, b2));
-                        entranceEdges.add(map.getDirectedEdge(b2, r1));
-                        entranceEdges.add(map.getDirectedEdge(r1, r2));
-                        entranceEdges.add(map.getDirectedEdge(r2, b1));
-                    }
+                    // Build entrance edges, merging nearby nodes and skipping degenerate shapes.
+                    final List<DirectedEdge> entranceEdges = buildEntranceEdges(b1, b2, r1, r2, wallVector, roadVector);
+                    if (entranceEdges == null) continue;
 
                     TemporaryIntersection entrance = new TemporaryIntersection(entranceEdges);
 
@@ -157,6 +144,33 @@ public class ConnectBuildingsStep extends BaseModificationStep {
         }
 
         return bestPlan;
+    }
+
+    // Build a list of directed edges forming the entrance polygon from four corner nodes.
+    // Nearby nodes that snap to the same position are deduplicated, yielding a triangle
+    // when two corners coincide. Returns null if fewer than 3 distinct corners remain.
+    private List<DirectedEdge> buildEntranceEdges(
+            final Node b1, final Node b2, final Node r1, final Node r2,
+            final Vector2D wallVector, final Vector2D roadVector) {
+        // Preserve winding order based on the relative orientation of wall and road.
+        final List<Node> orderedCorners = 0 < wallVector.dot(roadVector)
+                ? List.of(b1, b2, r2, r1)
+                : List.of(b1, b2, r1, r2);
+        final List<Node> corners = new ArrayList<>(new LinkedHashSet<>(orderedCorners));
+
+        // Skip if fewer than 3 distinct corners exist;
+        // the entrance would not form a valid polygon.
+        if (corners.size() < 3) return null;
+
+        // Create entrance shape
+        final List<DirectedEdge> entranceEdges = new ArrayList<>();
+        for (int j = 0; j < corners.size(); j++) {
+            entranceEdges.add(map.getDirectedEdge(
+                    corners.get(j),
+                    corners.get((j + 1) % corners.size())));
+        }
+
+        return entranceEdges;
     }
 
     private double calculateAngleDeviation(Line2D centerLine, Edge buildingEdge, Edge roadEdge) {

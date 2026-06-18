@@ -55,26 +55,6 @@ public abstract class ConvertStep {
     }
 
     /**
-       Increase the maximum progress level by one.
-    */
-    protected void bumpMaxProgress() {
-        bumpMaxProgress(1);
-    }
-
-    /**
-       Increase the maximum progress level by some amount.
-       @param amount The amount to increase the maximum progress level.
-    */
-    protected void bumpMaxProgress(final int amount) {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    progress.setMaximum(progress.getMaximum() + amount);
-                    progress.setString(progress.getValue() + " / " + progress.getMaximum());
-                }
-            });
-    }
-
-    /**
        Set the progress maximum.
        @param max The new progress maximum.
     */
@@ -86,6 +66,14 @@ public abstract class ConvertStep {
                     progress.setString(progress.getValue() + " / " + progress.getMaximum());
                 }
             });
+    }
+
+    /**
+     * Get the current progress maximum.
+     * @return The current progress maximum.
+     */
+    protected int getProgressLimit() {
+        return progress.getMaximum();
     }
 
     /**

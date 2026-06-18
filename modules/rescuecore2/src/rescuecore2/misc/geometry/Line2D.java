@@ -60,6 +60,15 @@ public class Line2D implements Indexable {
     }
 
     /**
+     * Get the midpoint of this line segment.
+     *
+     * @return A new {@link Point2D} representing the center of the line segment.
+     */
+    public Point2D getMidpoint() {
+        return getPoint(0.5);
+    }
+
+    /**
        Get the origin of this line segment.
        @return The origin.
     */
