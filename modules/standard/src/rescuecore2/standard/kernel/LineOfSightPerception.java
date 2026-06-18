@@ -88,7 +88,6 @@ public class LineOfSightPerception implements Perception, GUIComponent {
     private Config config;
 
     private LOSView view;
-    private ChangeSet previousChanges = new ChangeSet();
 
     /**
        Create a LineOfSightPerception object.
@@ -132,11 +131,6 @@ public class LineOfSightPerception implements Perception, GUIComponent {
             view.clear();
             view.refresh();
         }
-    }
-
-    @Override
-    public void setChangeSet(ChangeSet changes) {
-        this.previousChanges = changes;
     }
 
     @Override
@@ -204,9 +198,6 @@ public class LineOfSightPerception implements Perception, GUIComponent {
         }
         if (view != null) {
             view.repaint();
-        }
-        for (EntityID deletedID : previousChanges.getDeletedEntities()) {
-            result.entityDeleted(deletedID);
         }
         return result;
     }
