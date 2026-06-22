@@ -14,15 +14,13 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
-
-import rescuecore2.misc.geometry.Line2D;
 //import rescuecore2.log.Logger;
 
 /**
    This step cleans the OpenStreetMap data by removing duplicate nodes and way, fixing degenerate ways, and fixing building edge orderings.
 */
 public class CleanOSMStep extends ConvertStep {
-    private TemporaryMap map;
+    private final TemporaryMap map;
 
     /**
        Construct a CleanOSMStep.
@@ -58,7 +56,7 @@ public class CleanOSMStep extends ConvertStep {
         OSMMap osm = map.getOSMMap();
         int count = 0;
         double threshold = ConvertTools.nearbyThreshold(osm, map.getNearbyThreshold());
-        Set<OSMNode> removed = new HashSet<OSMNode>();
+        Set<OSMNode> removed = new HashSet<>();
         for (OSMNode next : osm.getNodes()) {
             if (removed.contains(next)) {
                 bumpProgress();
@@ -88,7 +86,7 @@ public class CleanOSMStep extends ConvertStep {
         int count = 0;
         for (OSMWay way : ways) {
             // Check that no nodes are listed multiple times in sequence
-            List<Long> ids = new ArrayList<Long>(way.getNodeIDs());
+            List<Long> ids = new ArrayList<>(way.getNodeIDs());
             Iterator<Long> it = ids.iterator();
             if (!it.hasNext()) {
                 // Empty way. Remove it.
@@ -119,7 +117,7 @@ public class CleanOSMStep extends ConvertStep {
 
     private int fixDuplicateWays(Collection<? extends OSMWay> ways) {
         int count = 0;
-        Set<OSMWay> removed = new HashSet<OSMWay>();
+        Set<OSMWay> removed = new HashSet<>();
         for (OSMWay next : ways) {
             if (removed.contains(next)) {
                 bumpProgress();
@@ -203,10 +201,4 @@ public class CleanOSMStep extends ConvertStep {
         }
     }
 
-    private Line2D makeLine(long first, long second) {
-        OSMMap osm = map.getOSMMap();
-        OSMNode n1 = osm.getNode(first);
-        OSMNode n2 = osm.getNode(second);
-        return new Line2D(n1.getLongitude(), n1.getLatitude(), n2.getLongitude() - n1.getLongitude(), n2.getLatitude() - n1.getLatitude());
-    }
 }

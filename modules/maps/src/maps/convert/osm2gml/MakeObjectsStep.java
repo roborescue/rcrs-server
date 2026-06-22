@@ -15,18 +15,26 @@ import java.util.HashMap;
 import java.util.Collection;
 
 /**
-   This step creates the final GML objects.
-*/
+ * This step creates the final GML objects from the temporary OSM representations.
+ *
+ * <p>
+ * It handles the calculation of the map's bounding box and scale (converting coordinates
+ * to meters), and translates all {@code Node}, {@code Edge}, and
+ * {@code TemporaryObject} instances into their corresponding GML representations
+ * (nodes, edges, buildings, roads, and intersections). Finally, it establishes
+ * the topological neighbor relationships between the generated shapes.
+ */
 public class MakeObjectsStep extends ConvertStep {
-    private TemporaryMap map;
-    private GMLMap gmlMap;
+    private final TemporaryMap map;
+    private final GMLMap gmlMap;
 
     /**
-       Construct a MakeObjectsStep.
-       @param map The TemporaryMap to read.
-       @param gmlMap The GMLMap to populate.
-    */
-    public MakeObjectsStep(TemporaryMap map, GMLMap gmlMap) {
+     * Constructs a {@code MakeObjectsStep}.
+     *
+     * @param map    The {@code TemporaryMap} to road data from.
+     * @param gmlMap The {@code GMLMap} to populate with the final objects.
+     */
+    public MakeObjectsStep(final TemporaryMap map, final GMLMap gmlMap) {
         super();
         this.map = map;
         this.gmlMap = gmlMap;
@@ -39,65 +47,115 @@ public class MakeObjectsStep extends ConvertStep {
 
     @Override
     protected void step() {
+        final ScaleConversion conversion = createScaleConversion();
+        final Collection<Node> nodes = map.getAllNodes();
+        final Collection<Edge> edges = map.getAllEdges();
+        final Collection<TemporaryObject> objects = map.getAllObjects();
+
+        // Set up progress tracking based on total nodes, edges, and object processing phases.
+        setProgressLimit(nodes.size() + edges.size() + (objects.size() * 2));
+
+        final Map<Node, GMLNode> nodeMap = new HashMap<>();
+        final Map<Edge, GMLEdge> edgeMap = new HashMap<>();
+        final Map<TemporaryObject, GMLShape> shapeMap = new HashMap<>();
+
+        convertNodes(nodes, conversion, nodeMap);
+        convertEdges(edges, nodeMap, edgeMap);
+        convertObjects(objects, edgeMap, shapeMap);
+        generateNeighbours(objects, edgeMap, shapeMap);
+
+        setStatus("Created " + gmlMap.getRoads().size() + " roads and " + gmlMap.getBuildings().size() + " buildings");
+    }
+
+    // Calculate map bounds and initialize scale conversion (1 unit = 1meter).
+    private ScaleConversion createScaleConversion() {
         double xMin = Double.POSITIVE_INFINITY;
         double yMin = Double.POSITIVE_INFINITY;
-        for (Node next : map.getAllNodes()) {
+        for (final Node next : map.getAllNodes()) {
             xMin = Math.min(xMin, next.getX());
             yMin = Math.min(yMin, next.getY());
         }
-        double sizeOf1m = ConvertTools.sizeOf1Metre(map.getOSMMap());
-        double scale = 1.0 / sizeOf1m;
-        ScaleConversion conversion = new ScaleConversion(xMin, yMin, scale, scale);
-        Collection<Node> nodes = map.getAllNodes();
-        Collection<Edge> edges = map.getAllEdges();
-        setProgressLimit(nodes.size() + edges.size() + (map.getAllObjects().size() * 2));
-        Map<Node, GMLNode> nodeMap = new HashMap<Node, GMLNode>();
-        Map<Edge, GMLEdge> edgeMap = new HashMap<Edge, GMLEdge>();
-        Map<TemporaryObject, GMLShape> shapeMap = new HashMap<TemporaryObject, GMLShape>();
-        for (Node n : nodes) {
-            GMLNode node = gmlMap.createNode(conversion.convertX(n.getX()), conversion.convertY(n.getY()));
-            nodeMap.put(n, node);
+
+        final double sizeOf1m = ConvertTools.sizeOf1Metre(map.getOSMMap());
+        final double scale = 1.0 / sizeOf1m;
+        return new ScaleConversion(xMin, yMin, scale, scale);
+    }
+
+    // Convert all nodes into GML nodes with scaled coordinates.
+    private void convertNodes(
+            final Collection<Node> nodes,
+            final ScaleConversion conversion,
+            final Map<Node, GMLNode> nodeMap) {
+        for (final Node node : nodes) {
+            final double x = conversion.convertX(node.getX());
+            final double y = conversion.convertY(node.getY());
+            final GMLNode gmlNode = gmlMap.createNode(x, y);
+            nodeMap.put(node, gmlNode);
             bumpProgress();
         }
-        for (Edge e : edges) {
-            GMLNode first = nodeMap.get(e.getStart());
-            GMLNode second = nodeMap.get(e.getEnd());
-            GMLEdge edge = gmlMap.createEdge(first, second);
-            edgeMap.put(e, edge);
+    }
+
+    // Convert all edges into GML edges using mapped nodes.
+    private void convertEdges(
+            final Collection<Edge> edges,
+            final Map<Node, GMLNode> nodeMap,
+            final Map<Edge, GMLEdge> edgeMap) {
+        for (final Edge edge : edges) {
+            final GMLNode first   = nodeMap.get(edge.getStart());
+            final GMLNode second  = nodeMap.get(edge.getEnd());
+            final GMLEdge gmlEdge = gmlMap.createEdge(first, second);
+            edgeMap.put(edge, gmlEdge);
             bumpProgress();
         }
-        for (TemporaryBuilding b : map.getBuildings()) {
-            shapeMap.put(b, gmlMap.createBuilding(makeEdges(b, edgeMap)));
+    }
+
+    // Convert all temporary objects into GML shapes.
+    private void convertObjects(
+            final Collection<TemporaryObject> objects,
+            final Map<Edge, GMLEdge> edgeMap,
+            final Map<TemporaryObject, GMLShape> shapeMap) {
+        for (final TemporaryObject object : objects) {
+            final List<GMLDirectedEdge> gmlEdges = makeEdges(object, edgeMap);
+            final GMLShape shape = switch (object) {
+                case TemporaryBuilding     ignored -> gmlMap.createBuilding(gmlEdges);
+                case TemporaryRoad         ignored -> gmlMap.createRoad(gmlEdges);
+                case TemporaryIntersection ignored -> gmlMap.createRoad(gmlEdges);
+                default -> throw new IllegalStateException("Unsupported object type");
+            };
+            shapeMap.put(object, shape);
             bumpProgress();
         }
-        for (TemporaryRoad r : map.getRoads()) {
-            shapeMap.put(r, gmlMap.createRoad(makeEdges(r, edgeMap)));
-            bumpProgress();
-        }
-        for (TemporaryIntersection i : map.getIntersections()) {
-            shapeMap.put(i, gmlMap.createRoad(makeEdges(i, edgeMap)));
-            bumpProgress();
-        }
-        // Generate neighbour information
-        for (TemporaryObject o : map.getAllObjects()) {
-            GMLShape s = shapeMap.get(o);
-            for (DirectedEdge e : o.getEdges()) {
-                TemporaryObject neighbour = o.getNeighbour(e);
-                if (neighbour != null) {
-                    s.setNeighbour(edgeMap.get(e.getEdge()), shapeMap.get(neighbour).getID());
+    }
+
+    // Generate and assign neighbor information for adjacent shapes.
+    private void generateNeighbours(
+            final Collection<TemporaryObject> objects,
+            final Map<Edge, GMLEdge> edgeMap,
+            final Map<TemporaryObject, GMLShape> shapeMap) {
+        for (final TemporaryObject object : objects) {
+            final GMLShape shape = shapeMap.get(object);
+            for (final DirectedEdge edge : object.getEdges()) {
+                final TemporaryObject neighbour = object.getNeighbour(edge);
+                if (neighbour != null && shapeMap.containsKey(neighbour)) {
+                    final GMLEdge gmlEdge = edgeMap.get(edge.getEdge());
+                    final int neighbourID = shapeMap.get(neighbour).getID();
+                    shape.setNeighbour(gmlEdge, neighbourID);
                 }
             }
             bumpProgress();
         }
-        setStatus("Created " + gmlMap.getRoads().size() + " roads and " + gmlMap.getBuildings().size() + " buildings");
     }
 
-    private List<GMLDirectedEdge> makeEdges(TemporaryObject o, Map<Edge, GMLEdge> edgeMap) {
-        List<DirectedEdge> oldEdges = o.getEdges();
-        List<GMLDirectedEdge> result = new ArrayList<GMLDirectedEdge>(oldEdges.size());
-        for (DirectedEdge dEdge : oldEdges) {
-            result.add(new GMLDirectedEdge(edgeMap.get(dEdge.getEdge()), dEdge.isForward()));
+    // Helper method to convert a list of directed edges into GML directed Edges.
+    private List<GMLDirectedEdge> makeEdges(
+            final TemporaryObject object, final Map<Edge, GMLEdge> edgeMap) {
+        final List<DirectedEdge> directedEdges = object.getEdges();
+        final List<GMLDirectedEdge> gmlEdges = new ArrayList<>(directedEdges.size());
+        for (final DirectedEdge edge : directedEdges) {
+            final GMLEdge gmlEdge = edgeMap.get(edge.getEdge());
+            final GMLDirectedEdge gmlDirectedEdge = new GMLDirectedEdge(gmlEdge, edge.isForward());
+            gmlEdges.add(gmlDirectedEdge);
         }
-        return result;
+        return gmlEdges;
     }
 }

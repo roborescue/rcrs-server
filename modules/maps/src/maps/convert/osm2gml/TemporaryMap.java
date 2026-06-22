@@ -18,6 +18,8 @@ public class TemporaryMap {
     */
     private static final double NEARBY_THRESHOLD_M = 1;
 
+    private static final double EXACT_THRESHOLD = 1e-10;
+
     private double threshold;
 
     private Set<Node> nodes;
@@ -262,7 +264,7 @@ public class TemporaryMap {
      * @return All passable shapes.
      */
     public Collection<TemporaryObject> getAllPassableShapes() {
-        List<TemporaryObject> passable = new ArrayList<>();
+        final List<TemporaryObject> passable = new ArrayList<>();
         passable.addAll(tempRoads);
         passable.addAll(tempIntersections);
         return passable;
@@ -377,6 +379,21 @@ public class TemporaryMap {
         return createNode(x, y);
     }
 
+    public Node getNodeExact(final double x, final double y) {
+        for (final Node next : nodes) {
+            final double dx = next.getX() - x;
+            final double dy = next.getY() - y;
+            if (Math.abs(dx) <= EXACT_THRESHOLD && Math.abs(dy) <= EXACT_THRESHOLD) {
+                return next;
+            }
+        }
+        return createNode(x, y);
+    }
+
+    public Node getNodeExact(final Point2D p) {
+        return getNodeExact(p.getX(), p.getY());
+    }
+
     /**
        Get an Edge between two nodes. This will return either a new Edge or a shared instance if one already exists.
        @param from The from node.
@@ -394,13 +411,17 @@ public class TemporaryMap {
     }
 
     /**
-       Get a DirectedEdge between two nodes.
-       @param from The from node.
-       @param to The to node.
-       @return A new DirectedEdge.
-    */
-    public DirectedEdge getDirectedEdge(Node from, Node to) {
-        Edge e = getEdge(from, to);
+     * Get a {@code DirectedEdge} between two nodes.
+     * Returns {@code null} if the two nodes are the same, as a zero-length edge
+     * degenerates to a single node and should be treated as absent.
+     * @param from The from node.
+     * @param to   The to node.
+     * @return     A new {@code DirectedEdge}, or {@code null} if {@code from} and
+     *             {@code to} are the same node.
+     */
+    public DirectedEdge getDirectedEdge(final Node from, final Node to) {
+        if (from.equals(to)) return null;
+        final Edge e = getEdge(from, to);
         return new DirectedEdge(e, from);
     }
 
@@ -420,17 +441,18 @@ public class TemporaryMap {
     }
 
     /**
-       Split an edge into chunks.
-       @param edge The edge to split.
-       @param splitPoints The points to split the line. These must be in order along the line.
-       @return The replacement edges.
-    */
-    public List<Edge> splitEdge(Edge edge, Node... splitPoints) {
-        List<Edge> replacements = new ArrayList<Edge>();
+     * Split an edge into chunks.
+     * @param edge        The edge to split.
+     * @param splitPoints The nodes at which to split the edge.
+     * @return The list of replacement edges created by the split, or an empty list if no split occured.
+     */
+    public List<Edge> splitEdge(final Edge edge, final Collection<Node> splitPoints) {
+        final List<Node> sorted = ConvertTools.sortedAlongEdge(edge, splitPoints);
+
+        final List<Edge> replacements = new ArrayList<>();
         Edge current = edge;
-        for (Node n : splitPoints) {
+        for (final Node n :  sorted) {
             if (n.equals(current.getStart()) || n.equals(current.getEnd())) {
-                // Don't bother if the split point is at the origin or endpoint
                 continue;
             }
             replacements.add(getEdge(current.getStart(), n));
@@ -444,8 +466,18 @@ public class TemporaryMap {
         }
 
         invalidateBoundsCache();
+        return Collections.unmodifiableList(replacements);
+    }
 
-        return replacements;
+    /**
+     * Split an edge into chunks.
+     * @param edge        The edge to split.
+     * @param splitPoints The nodes at which to split the edge.
+     * @return The list of replacement edges created by the split, or an empty list if no split occured.
+     * @see #splitEdge(Edge, Collection)
+     */
+    public List<Edge> splitEdge(Edge edge, Node... splitPoints) {
+        return splitEdge(edge, Arrays.asList(splitPoints));
     }
 
     private Node createNode(double x, double y) {
@@ -473,13 +505,6 @@ public class TemporaryMap {
         }
     }
 
-    private void removeNode(Node n) {
-        nodes.remove(n);
-        edgesAtNode.remove(n);
-
-        invalidateBoundsCache();
-    }
-
     private void removeEdge(Edge e) {
         edges.remove(e);
         edgesAtNode.get(e.getStart()).remove(e);
@@ -495,28 +520,47 @@ public class TemporaryMap {
         }
     }
 
+    /**
+     * Returns the bounding rectangle of all nodes in the map.
+     *
+     * <p>
+     * The result is cached after the first call. Call {@link #invalidateBoundsCache()}
+     * whenever nodes are added or removed to ensure the cached value is refreshed.
+     *
+     * <p>
+     * Width and height are guaranteed to be at least 1 meter, so that
+     * {@link SpatialGrid} never receives an empty rectangle and falls back to
+     * its dummy (no-op) mode.
+     *
+     * @return The bounding rectangle, or an empty {@link Rectangle2D} if the map has no nodes.
+     */
     public Rectangle2D getBounds() {
         if (this.cachedBounds != null) {
             return this.cachedBounds;
         }
 
-        Collection<Node> allNodes = getAllNodes();
+        final Collection<Node> allNodes = getAllNodes();
         if (allNodes.isEmpty()) {
             this.cachedBounds = new Rectangle2D.Double();
             return this.cachedBounds;
         }
 
         double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE;
-        double maxX = Double.MIN_VALUE, maxY = Double.MIN_VALUE;
+        double maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
 
-        for (Node node : allNodes) {
+        for (final Node node : allNodes) {
             minX = Math.min(minX, node.getX());
             minY = Math.min(minY, node.getY());
             maxX = Math.max(maxX, node.getX());
             maxY = Math.max(maxY, node.getY());
         }
 
-        this.cachedBounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+        // Ensure with and height are least 1 meter so that SpatialGrid never
+        // receives an empty rectangle and fall back to its dummy (no-op) mode.
+        this.cachedBounds = new Rectangle2D.Double(
+                minX, minY,
+                Math.max(maxX - minX, 1.0),
+                Math.max(maxY - minY, 1.0));
         return this.cachedBounds;
     }
 
@@ -562,4 +606,14 @@ public class TemporaryMap {
         // Invalidate the bounds cache as the node set has changed.
         invalidateBoundsCache();
     }
+
+    /**
+     * Check whether an edge exists in the map.
+     * @param edge The edge to check.
+     * @return True if the edge exists in the map, false otherwise.
+     */
+    public boolean containsEdge(final Edge edge) {
+        return edges.contains(edge);
+    }
+
 }

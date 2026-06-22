@@ -16,7 +16,9 @@ import maps.convert.ConvertStep;
 public class SplitIntersectingEdgesStep extends ConvertStep {
     private final TemporaryMap map;
     private int splitCount;
-    private Set<Edge> seen;
+
+    // Tolerance used when comparing t-parameters in diagonal-line containment checks.
+    private static final double T_PARAMETER_TOLERANCE = 1e-8;
 
     /**
        Construct a SplitIntersectingEdgesStep.
@@ -33,278 +35,287 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
     @Override
     protected void step() {
-        debug.setBackground(ConvertTools.getAllDebugShapes(map));
         splitCount = 0;
         int inspectedCount = 0;
-        int pass = 0;
 
-        while (true) {
-            pass++;
-            setStatus("Inspected " + inspectedCount + " edges and split " + splitCount);
-
-            List<Edge> edgeThisPass = new ArrayList<>(map.getAllEdges());
-            if (edgeThisPass.isEmpty()) break;
-
-            // Get bounds directly from the map.
-            Rectangle2D bounds = map.getBounds();
-
-            double averageDimension = (bounds.getWidth() + bounds.getHeight()) / 2.0;
-            double cellSizeInDegrees = averageDimension / 100.0;
-
-            // Handle cases where the map is tiny to avoid a cell size to zero.
-            if (cellSizeInDegrees < 1e-9) {
-                cellSizeInDegrees = 1e-9;
-            }
-
-            SpatialGrid<Edge> grid = new SpatialGrid<>(bounds, cellSizeInDegrees);
-            for (Edge e : edgeThisPass) {
-                grid.add(e);
-            }
-
-            boolean anySplitInPass = false;
-            seen = new HashSet<>();
-            setProgressLimit(edgeThisPass.size());
-
-            for (int i = 0; i < edgeThisPass.size(); i++) {
-                Edge next = edgeThisPass.get(i);
-                Set<Edge> nearbyEdges = grid.getNearbyItems(next);
-
-                if (check(next, nearbyEdges)) {
-                    anySplitInPass = true;
-                }
-
-                inspectedCount++;
-                setProgress(i + 1);
-            }
-
-            if (!anySplitInPass) {
-                break;
-            }
+        // Build the spatial grid once upfront.
+        final Rectangle2D bounds = map.getBounds();
+        double cellSize = (bounds.getWidth() + bounds.getHeight()) / 2.0 / 100.0;
+        if (cellSize < 1e-9) cellSize = 1e-9;
+        final SpatialGrid<Edge> grid = new SpatialGrid<>(bounds, cellSize);
+        for (final Edge e : map.getAllEdges()) {
+            grid.add(e);
         }
 
-        setStatus("Inspected " + inspectedCount + " edges and split " + splitCount + " times over " + pass + " passes");
-    }
+        // Initialize the work queue with all edges.
+        // inQueue tracks membership to avoid redundant re-enqueuing.
+        final Queue<Edge> workQueue = new ArrayDeque<>(map.getAllEdges());
+        final Set<Edge> inQueue = new HashSet<>(workQueue);
 
-    private boolean check(Edge e, Set<Edge> candidates) {
-        if (!map.getAllEdges().contains(e) || seen.contains(e)) {
-            return false;
-        }
-        seen.add(e);
-        boolean splitOccurred = false;
+        setProgressLimit(workQueue.size());
 
-        while (true) {
-            boolean mapChangedThisIteration = false;
+        while (!workQueue.isEmpty()) {
+            final Edge target = workQueue.poll();
+            inQueue.remove(target);
+            inspectedCount++;
 
-            for (Edge test : candidates) {
-                if (test.equals(e)) {
-                    continue;
-                }
-                if (!map.getAllEdges().contains(e)) {
-                    return splitOccurred;
-                }
+            // Skip edges that were removed from the map by a previous split.
+            if (!map.containsEdge(target)) {
+                bumpProgress();
+                continue;
+            }
 
-                boolean split = false;
+            final Set<Edge> newEdges = processEdge(target, grid);
 
-                Line2D l1 = e.getLine();
-                Line2D l2 = test.getLine();
-                if (GeometryTools2D.parallel(l1, l2)) {
-                    if (processParallelLines(e, test)) {
-                        split = true;
-                    }
-                } else {
-                    if (checkForIntersection(e, test)) {
-                        split = true;
+            // Re-enqueue only the newly created edges and their spatial neighbors.
+            // These are the only edges whose intersection status may have changed.
+            for (final Edge newEdge : newEdges) {
+                enqueueIfAbsent(newEdge, workQueue, inQueue);
+                for (final Edge neighbor : grid.getNearbyItems(newEdge)) {
+                    if (map.containsEdge(neighbor)) {
+                        enqueueIfAbsent(neighbor, workQueue, inQueue);
                     }
                 }
+            }
 
-                if (split) {
-                    mapChangedThisIteration = true;
-                    splitOccurred = true;
-                    break;
+            // Expand the progress limit to reflect newly created work.
+            setProgressLimit(getProgressLimit() + newEdges.size());
+            bumpProgress();
+        }
+
+        setStatus("Inspected " + inspectedCount + " edges and split " + splitCount + " times");
+    }
+
+    // Enqueue the edge only if it is not already in the queue.
+    private void enqueueIfAbsent(
+            final Edge edge, final Queue<Edge> queue, final Set<Edge> inQueue) {
+        if (inQueue.add(edge)) {
+            queue.add(edge);
+        }
+    }
+
+
+    // Process one edge: attempt to split it against all nearby candidates.
+    // Returns the set of edges newly created by any splits.
+    private Set<Edge> processEdge(final Edge target, final SpatialGrid<Edge> grid) {
+        final Set<Edge> created = new HashSet<>();
+
+        // Keep retrying until a full candidate scan completes without any splits.
+        // Each split changes the map topology, so the candidate list must be rescanned.
+        while (true) {
+            if (!map.containsEdge(target)) break;
+
+            boolean splitThisIteration = false;
+
+            for (final Edge candidate : grid.getNearbyItems(target)) {
+                if (candidate.equals(target)) continue;
+                if (!map.containsEdge(candidate)) continue;
+                if (!map.containsEdge(target)) break;
+
+                final Set<Edge> newFromSplit = trySplit(target, candidate, grid);
+                if (!newFromSplit.isEmpty()) {
+                    created.addAll(newFromSplit);
+                    splitThisIteration = true;
+                    break; // Restart after topology change
                 }
             }
 
-            if (!mapChangedThisIteration) {
-                break;
-            }
+            if (!splitThisIteration) break;
         }
-        return splitOccurred;
+
+        return created;
     }
 
-    /**
-       @return True if e1 was split.
-    */
-    private boolean processParallelLines(Edge e1, Edge e2) {
-        Node e1Start = e1.getStart();
-        Node e1End = e1.getEnd();
-        Node e2Start = e2.getStart();
-        Node e2End = e2.getEnd();
+    // Attempt to split target and candidate at their intersection.
+    // Updates the grid in place and returns any newly created edges.
+    private Set<Edge> trySplit(
+            final Edge target, final Edge candidate, final SpatialGrid<Edge> grid) {
+        final Line2D targetLine    = target.getLine();
+        final Line2D candidateLine = candidate.getLine();
 
-        // If the two parallel lines already share an endpoint, they are considered
-        // connected, and we should not attempt to split them further.
-        if (e1Start.equals(e2Start) || e1Start.equals(e2End) || e1End.equals(e2Start) || e1End.equals(e2End)) {
-            return false; // Already connected, do nothing.
+        if (GeometryTools2D.parallel(targetLine, candidateLine)) {
+            return processParallelLines(target, candidate, grid);
+        } else {
+            return checkForIntersection(target, candidate, grid);
         }
-
-        // Then, check for coordinate proximity (handles distinct nodes at same location)
-        if (map.isNear(e1Start.getCoordinates(), e2Start.getCoordinates())
-         || map.isNear(e1Start.getCoordinates(), e2End.getCoordinates())
-         || map.isNear(e1End.getCoordinates(), e2Start.getCoordinates())
-         || map.isNear(e1End.getCoordinates(), e2End.getCoordinates())) {
-            return false;
-        }
-
-        // Possible cases:
-        // Shorter line entirely inside longer
-        // Shorter line overlaps longer at longer start
-        // Shorter line overlaps longer at longer end
-        // Shorter line start point is same as longer start and end point is inside
-        // Shorter line start point is same as longer end and end point is inside
-        // Shorter line end point is same as longer start and start point is inside
-        // Shorter line end point is same as longer end and start point is inside
-        Edge shorterEdge = e1;
-        Edge longerEdge = e2;
-        if (e1.getLine().getDirection().getLength() > e2.getLine().getDirection().getLength()) {
-            shorterEdge = e2;
-            longerEdge = e1;
-        }
-        Line2D shorter = shorterEdge.getLine();
-        Line2D longer = longerEdge.getLine();
-        boolean shortStartLongStart = shorterEdge.getStart() == longerEdge.getStart();
-        boolean shortStartLongEnd = shorterEdge.getStart() == longerEdge.getEnd();
-        boolean shortEndLongStart = shorterEdge.getEnd() == longerEdge.getStart();
-        boolean shortEndLongEnd = shorterEdge.getEnd() == longerEdge.getEnd();
-        boolean startInside = !shortStartLongStart && !shortStartLongEnd && GeometryTools2D.contains(longer, shorter.getOrigin());
-        boolean endInside = !shortEndLongStart && !shortEndLongEnd && GeometryTools2D.contains(longer, shorter.getEndPoint());
-
-        if (startInside && endInside) {
-            processInternalEdge(shorterEdge, longerEdge);
-            return true;
-        }
-        else if (startInside) {
-            // Either full overlap or coincident end point
-            if (shortEndLongStart) {
-                processCoincidentNode(shorterEdge, longerEdge, shorterEdge.getEnd());
-                return true;
-            }
-            else if (shortEndLongEnd) {
-                processCoincidentNode(shorterEdge, longerEdge, shorterEdge.getEnd());
-                return true;
-            }
-            else {
-                // Full overlap
-                processOverlap(shorterEdge, longerEdge);
-                return true;
-            }
-        }
-        else if (endInside) {
-            // Either full overlap or coincident end point
-            if (shortStartLongStart) {
-                processCoincidentNode(shorterEdge, longerEdge, shorterEdge.getStart());
-                return true;
-            }
-            else if (shortStartLongEnd) {
-                processCoincidentNode(shorterEdge, longerEdge, shorterEdge.getStart());
-                return true;
-            }
-            else {
-                // Full overlap
-                processOverlap(shorterEdge, longerEdge);
-                return true;
-            }
-        }
-        return false;
     }
 
-    /**
-       @return true if first is split.
-    */
-    private boolean checkForIntersection(Edge first, Edge second) {
+    // Returns the set of newly created edges if e1 or the longer edge was split, empty otherwise.
+    private Set<Edge> processParallelLines(final Edge e1, final Edge e2, final SpatialGrid<Edge> grid) {
+        final double e1Length  = e1.getLine().getDirection().getLength();
+        final double e2Length  = e2.getLine().getDirection().getLength();
+        final Edge shorterEdge = e1Length < e2Length ? e1 : e2;
+        final Edge longerEdge  = e1Length < e2Length ? e2 : e1;
+
+        final boolean isShorterStartEqualsLongerStart = shorterEdge.getStart().equals(longerEdge.getStart());
+        final boolean isShorterStartEqualsLongerEnd   = shorterEdge.getStart().equals(longerEdge.getEnd());
+        final boolean isShorterEndEqualsLongerStart   = shorterEdge.getEnd().equals(longerEdge.getStart());
+        final boolean isShorterEndEqualsLongerEnd     = shorterEdge.getEnd().equals(longerEdge.getEnd());
+
+        final boolean isStartShared = isShorterStartEqualsLongerStart || isShorterStartEqualsLongerEnd;
+        final boolean isEndShared   = isShorterEndEqualsLongerStart   || isShorterEndEqualsLongerEnd;
+        final Point2D shorterStart  = shorterEdge.getStart().getCoordinates();
+        final Point2D shorterEnd    = shorterEdge.getEnd().getCoordinates();
+        final boolean isStartInside = !isStartShared && containsRobust(longerEdge.getLine(), shorterStart);
+        final boolean isEndInside   = !isEndShared   && containsRobust(longerEdge.getLine(), shorterEnd);
+
+        if (isStartInside && isEndInside) {
+            return processInternalEdge(shorterEdge, longerEdge, grid);
+        }
+        if (isStartShared && isEndInside) {
+            return processCoincidentNode(shorterEdge, longerEdge, shorterEdge.getStart(), grid);
+        }
+        if (isEndShared && isStartInside) {
+            return processCoincidentNode(shorterEdge, longerEdge, shorterEdge.getEnd(), grid);
+        }
+        if (isStartInside || isEndInside) {
+            return processOverlap(shorterEdge, longerEdge, grid);
+        }
+        return Collections.emptySet();
+    }
+
+    // Returns the set of newly created edges of ether edge was split, empty otherwise.
+    private Set<Edge> checkForIntersection(final Edge first, final Edge second, final SpatialGrid<Edge> grid) {
         Point2D intersection = GeometryTools2D.getSegmentIntersectionPoint(first.getLine(), second.getLine());
 
         if (intersection == null) {
-            // Maybe the intersection is within the map's "nearby" tolerance?
-            intersection = Objects.requireNonNull(GeometryTools2D.getIntersectionPoint(first.getLine(), second.getLine()));
+            intersection = Objects.requireNonNull(
+                    GeometryTools2D.getIntersectionPoint(first.getLine(), second.getLine()));
 
-            // Was this a near miss?
-            if (map.isNear(intersection, first.getStart().getCoordinates()) || map.isNear(intersection, first.getEnd().getCoordinates())) {
-                // Check that the intersection is actually somewhere on the second segment
-                double d = second.getLine().getIntersection(first.getLine());
-                if (d < 0 || d > 1) {
-                    // Nope. Ignore it.
-                    return false;
-                }
-            }
-            else if (map.isNear(intersection, second.getStart().getCoordinates()) || map.isNear(intersection, second.getEnd().getCoordinates())) {
-                // Check that the intersection is actually somewhere on the first line segment
-                double d = first.getLine().getIntersection(second.getLine());
-                if (d < 0 || d > 1) {
-                    // Nope. Ignore it.
-                    return false;
-                }
-            }
-            else {
-                // Not a near miss.
-                return false;
+            if (map.isNear(intersection, first.getStart().getCoordinates())
+             || map.isNear(intersection, first.getEnd().getCoordinates())) {
+                final double d = second.getLine().getIntersection(first.getLine());
+                if (d < 0 || 1 < d) return Collections.emptySet();
+            } else if (map.isNear(intersection, second.getStart().getCoordinates())
+                    || map.isNear(intersection, second.getEnd().getCoordinates())) {
+                final double d = first.getLine().getIntersection(second.getLine());
+                if (d < 0 || 1 < d) return Collections.emptySet();
+            } else {
+                return Collections.emptySet();
             }
         }
 
-        // If the intersection point is very close to an existing endpoint of either line.
+        // Already connected at an endpoint; no split needed
         if (map.isNear(intersection, first.getStart().getCoordinates())
          || map.isNear(intersection, first.getEnd().getCoordinates())
          || map.isNear(intersection, second.getStart().getCoordinates())
          || map.isNear(intersection, second.getEnd().getCoordinates())) {
-            return false; // Already connected at an endpoint, no split needed.
+            return Collections.emptySet();
         }
 
-        Node n = map.getNode(intersection);
-        // Split the two edges into 4 (maybe)
-        // Was the first edge split?
-        boolean splitFirst = !n.equals(first.getStart()) && !n.equals(first.getEnd());
-        boolean splitSecond = !n.equals(second.getStart()) && !n.equals(second.getEnd());
+        final Node n = map.getNode(intersection);
+        final boolean splitFirst  = !n.equals(first.getStart())  && !n.equals(first.getEnd());
+        final boolean splitSecond = !n.equals(second.getStart()) && !n.equals(second.getEnd());
 
-        if (splitFirst) {
-            map.splitEdge(first, n);
-            ++splitCount;
-        }
-        if (splitSecond) {
-            map.splitEdge(second, n);
-            ++splitCount;
-        }
-
-        return splitFirst || splitSecond;
+        final Set<Edge> created = new HashSet<>();
+        if (splitFirst)  created.addAll(splitAndRegister(first,  n, grid));
+        if (splitSecond) created.addAll(splitAndRegister(second, n, grid));
+        return created;
     }
 
-    private void processInternalEdge(Edge shorter, Edge longer) {
-        // Split longer into (up to) three chunks
-        double t1 = GeometryTools2D.positionOnLine(longer.getLine(), shorter.getLine().getOrigin());
-        double t2 = GeometryTools2D.positionOnLine(longer.getLine(), shorter.getLine().getEndPoint());
-        Node first;
-        Node second;
-        if (t1 < t2) {
-            first = shorter.getStart();
-            second = shorter.getEnd();
+    // Returns true if the point lies on the line segment, using a tolerance robust
+    // enough for diagonal lines.
+    private boolean containsRobust(final Line2D line, final Point2D point) {
+        if (GeometryTools2D.nearlyZero(line.getDirection().getX()) ||
+            GeometryTools2D.nearlyZero(line.getDirection().getY())) {
+            return GeometryTools2D.contains(line, point);
         }
-        else {
-            first = shorter.getEnd();
-            second = shorter.getStart();
-        }
-        map.splitEdge(longer, first, second);
-        ++splitCount;
+
+        final double offsetX = point.getX() - line.getOrigin().getX();
+        final double offsetY = point.getY() - line.getOrigin().getY();
+        final double tx = offsetX / line.getDirection().getX();
+        final double ty = offsetY / line.getDirection().getY();
+
+        // Out of segment bounds.
+        if (tx < 0 || 1 < tx || ty < 0 || 1 < ty) return false;
+
+        return Math.abs(tx - ty) <= T_PARAMETER_TOLERANCE;
     }
 
-    private void processCoincidentNode(Edge shorter, Edge longer, Node coincidentPoint) {
-        // Split the long edge at the non-coincident point
-        Node cutPoint = coincidentPoint.equals(shorter.getStart()) ? shorter.getEnd() : shorter.getStart();
-        map.splitEdge(longer, cutPoint);
-        ++splitCount;
+    // Splits the longer edge into chunks using the endpoints of the internal shorter edge.
+    // Returns the newly created edges.
+    private Set<Edge> processInternalEdge(
+            final Edge shorterEdge, final Edge longerEdge, final SpatialGrid<Edge> grid) {
+        final double t1 = GeometryTools2D.positionOnLine(longerEdge.getLine(), shorterEdge.getLine().getOrigin());
+        final double t2 = GeometryTools2D.positionOnLine(longerEdge.getLine(), shorterEdge.getLine().getEndPoint());
+
+        final Node firstCutPoint  = (t1 < t2) ? shorterEdge.getStart() : shorterEdge.getEnd();
+        final Node secondCutPoint = (t1 < t2) ? shorterEdge.getEnd()   : shorterEdge.getStart();
+
+        // Check validity to prevent zero-length edges.
+        final boolean isFirstValid =
+                !firstCutPoint.equals(longerEdge.getStart())  && !firstCutPoint.equals(longerEdge.getEnd());
+        final boolean isSecondValid =
+                !secondCutPoint.equals(longerEdge.getStart()) && !secondCutPoint.equals(longerEdge.getEnd());
+
+        if (isFirstValid && isSecondValid) {
+            return splitAndRegisterTwo(longerEdge, firstCutPoint, secondCutPoint, grid);
+        }
+        if (isFirstValid) {
+            return splitAndRegister(longerEdge, firstCutPoint, grid);
+        }
+        if (isSecondValid) {
+            return splitAndRegister(longerEdge, secondCutPoint, grid);
+        }
+        return Collections.emptySet();
     }
 
-    private void processOverlap(Edge shorter, Edge longer) {
-        Node shortSplit = GeometryTools2D.contains(shorter.getLine(), longer.getLine().getOrigin()) ? longer.getStart() : longer.getEnd();
-        Node longSplit = GeometryTools2D.contains(longer.getLine(), shorter.getLine().getOrigin()) ? shorter.getStart() : shorter.getEnd();
-        map.splitEdge(shorter, shortSplit);
-        map.splitEdge(longer, longSplit);
-        ++splitCount;
+    // Splits the longer edge at the non-shared node of the shorter edge.
+    // Returns the newly created edges.
+    private Set<Edge> processCoincidentNode(
+            final Edge shorterEdge, final Edge longerEdge, final Node sharedNode, final SpatialGrid<Edge> grid) {
+        final Node cutPoint = sharedNode.equals(shorterEdge.getStart()) ?
+                shorterEdge.getEnd() : shorterEdge.getStart();
+
+        if (cutPoint.equals(longerEdge.getStart()) || cutPoint.equals(longerEdge.getEnd())) {
+            return Collections.emptySet();
+        }
+        return splitAndRegister(longerEdge, cutPoint, grid);
     }
+
+    // Splits both edges at their overlap boundary.
+    // Returns the newly created edges.
+    private Set<Edge> processOverlap(
+            final Edge shorterEdge, final Edge longerEdge, final SpatialGrid<Edge> grid) {
+        final Node shorterCutPoint = GeometryTools2D.contains(
+                shorterEdge.getLine(), longerEdge.getLine().getOrigin()) ?
+                longerEdge.getStart() : longerEdge.getEnd();
+        final Node longerCutPoint = GeometryTools2D.contains(
+                longerEdge.getLine(), shorterEdge.getLine().getOrigin()) ?
+                shorterEdge.getStart() : shorterEdge.getEnd();
+
+        final Set<Edge> created = new HashSet<>();
+        if (!shorterCutPoint.equals(shorterEdge.getStart()) && !shorterCutPoint.equals(shorterEdge.getEnd())) {
+            created.addAll(splitAndRegister(shorterEdge, shorterCutPoint, grid));
+        }
+        if (!longerCutPoint.equals(longerEdge.getStart()) && !longerCutPoint.equals(longerEdge.getEnd())) {
+            created.addAll(splitAndRegister(longerEdge, longerCutPoint, grid));
+        }
+        return created;
+    }
+
+    // Split an edge at one node, update the grid, and return the new edges.
+    private Set<Edge> splitAndRegister(
+            final Edge edge, final Node splitNode, final SpatialGrid<Edge> grid) {
+        grid.remove(edge);
+        final List<Edge> created = map.splitEdge(edge, splitNode);
+        for (final Edge newEdge : created) {
+            grid.add(newEdge);
+        }
+        splitCount++;
+        return new HashSet<>(created);
+    }
+
+    // Split an edge at two node, update the grid, and return the new edges.
+    private Set<Edge> splitAndRegisterTwo(
+            final Edge edge, final Node first, final Node second, final SpatialGrid<Edge> grid) {
+        grid.remove(edge);
+        final List<Edge> created = map.splitEdge(edge, first, second);
+        for (final Edge newEdge : created) {
+            grid.add(newEdge);
+        }
+        splitCount += 2;
+        return new HashSet<>(created);
+    }
+
 }
