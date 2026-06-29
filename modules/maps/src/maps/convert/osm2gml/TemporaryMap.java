@@ -43,6 +43,11 @@ public class TemporaryMap {
     private Map<OSMRoadInfo, OSMIntersectionInfo> roadStarts;
     private Map<OSMRoadInfo, OSMIntersectionInfo> roadEnds;
 
+    private final double gridSpacing; // size of 1 meter in map coordinates
+    private final double gridOriginX; // map center X (grid anchor)
+    private final double gridOriginY; // map center Y (grid anchor)
+    private final Map<Long, Node> nodeGrid;
+
     /**
        Construct a TemporaryMap.
        @param osmMap The OpenStreetMap data this map is generated from.
@@ -69,6 +74,11 @@ public class TemporaryMap {
                 return new HashSet<TemporaryObject>();
             }
         };
+
+        gridSpacing = ConvertTools.sizeOf1Metre(osmMap);
+        gridOriginX = osmMap.getCentreLatitude();
+        gridOriginY = osmMap.getCentreLongitude();
+        nodeGrid    = new HashMap<>();
     }
 
     /**
@@ -365,33 +375,44 @@ public class TemporaryMap {
     }
 
     /**
-       Get a Node near a point. If a Node already exists nearby then it will be returned, otherwise a new Node will be created.
-       @param x The X coordinate.
-       @param y The Y coordinate.
-       @return A Node.
-    */
-    public Node getNode(double x, double y) {
-        for (Node next : nodes) {
-            if (isNear(x, y, next.getX(), next.getY())) {
-                return next;
-            }
-        }
-        return createNode(x, y);
+     * Get (or create) the node at the grid cell nearest to (x, y).
+     * @param x The X coordinate.
+     * @param y The Y coordinate.
+     * @return A {@link Node}.
+     */
+    public Node getNode(final double x, final double y) {
+        final long ix = Math.round((x - gridOriginX) / gridSpacing);
+        final long iy = Math.round((y - gridOriginY) / gridSpacing);
+        final long key = gridKey(ix, iy);
+
+        // Return the existing node for this grid cell if one exists.
+        final Node existing = nodeGrid.get(key);
+        if (existing != null) return existing;
+
+        // No node exists yet; create one at the grid-center coordinates.
+       final double cx = gridOriginX + ix * gridSpacing;
+       final double cy = gridOriginY + iy * gridSpacing;
+       return createAndRegisterNode(cx, cy);
     }
 
-    public Node getNodeExact(final double x, final double y) {
-        for (final Node next : nodes) {
-            final double dx = next.getX() - x;
-            final double dy = next.getY() - y;
-            if (Math.abs(dx) <= EXACT_THRESHOLD && Math.abs(dy) <= EXACT_THRESHOLD) {
-                return next;
-            }
-        }
-        return createNode(x, y);
+    // Encode a 2D grid index as a single long key.
+    private static long gridKey(final long ix, final long iy) {
+        return (ix << 32) | (iy & 0xFFFFFFFFL);
     }
 
-    public Node getNodeExact(final Point2D p) {
-        return getNodeExact(p.getX(), p.getY());
+    // Create a new node at (x, y), register it in both the node set and the grid index.
+    private Node createAndRegisterNode(final double x, final double y) {
+        final Node node = new Node(nextID++, x, y);
+        nodes.add(node);
+
+        final long ix = Math.round((x - gridOriginX) / gridSpacing);
+        final long iy = Math.round((y - gridOriginY) / gridSpacing);
+        final long key = gridKey(ix, iy);
+        nodeGrid.put(key, node);
+
+        invalidateBoundsCache();
+
+        return node;
     }
 
     /**
