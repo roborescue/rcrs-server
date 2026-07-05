@@ -1,18 +1,22 @@
 package maps.convert.osm2gml;
 
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
+import java.util.List;
 
+import maps.convert.osm2gml.debug.EdgeLayer;
+import maps.convert.osm2gml.debug.NodeLayer;
+import maps.convert.osm2gml.debug.StepVisualizer;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
-//import rescuecore2.log.Logger;
 
 import maps.convert.ConvertStep;
 
 /**
-   This step splits any edges that intersect.
-*/
+ * This step splits any edges that intersect.
+ */
 public class SplitIntersectingEdgesStep extends ConvertStep {
     private final TemporaryMap map;
     private int splitCount;
@@ -20,12 +24,20 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
     // Tolerance used when comparing t-parameters in diagonal-line containment checks.
     private static final double T_PARAMETER_TOLERANCE = 1e-8;
 
+    private final Set<Node> createdNodes;
+    private final Set<Edge> createdEdges;
+    private final Set<Edge> intactEdges;
+
     /**
-       Construct a SplitIntersectingEdgesStep.
-       @param map The TemporaryMap to use.
-    */
-    public SplitIntersectingEdgesStep(TemporaryMap map) {
+     * Construct a {@code SplitIntersectingEdgesStep}.
+     * @param map The {@code TemporaryMap} to use.
+     */
+    public SplitIntersectingEdgesStep(final TemporaryMap map) {
         this.map = map;
+
+        createdNodes = new HashSet<>();
+        createdEdges = new HashSet<>();
+        intactEdges = new HashSet<>();
     }
 
     @Override
@@ -52,6 +64,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         final Queue<Edge> workQueue = new ArrayDeque<>(map.getAllEdges());
         final Set<Edge> inQueue = new HashSet<>(workQueue);
 
+        intactEdges.addAll(map.getAllEdges());
         setProgressLimit(workQueue.size());
 
         while (!workQueue.isEmpty()) {
@@ -84,6 +97,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         }
 
         setStatus("Inspected " + inspectedCount + " edges and split " + splitCount + " times");
+        visualizeResult();
     }
 
     // Enqueue the edge only if it is not already in the queue.
@@ -176,41 +190,49 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
     // Returns the set of newly created edges of ether edge was split, empty otherwise.
     private Set<Edge> checkForIntersection(final Edge first, final Edge second, final SpatialGrid<Edge> grid) {
-        Point2D intersection = GeometryTools2D.getSegmentIntersectionPoint(first.getLine(), second.getLine());
-
-        if (intersection == null) {
-            intersection = Objects.requireNonNull(
-                    GeometryTools2D.getIntersectionPoint(first.getLine(), second.getLine()));
-
-            if (map.isNear(intersection, first.getStart().getCoordinates())
-             || map.isNear(intersection, first.getEnd().getCoordinates())) {
-                final double d = second.getLine().getIntersection(first.getLine());
-                if (d < 0 || 1 < d) return Collections.emptySet();
-            } else if (map.isNear(intersection, second.getStart().getCoordinates())
-                    || map.isNear(intersection, second.getEnd().getCoordinates())) {
-                final double d = first.getLine().getIntersection(second.getLine());
-                if (d < 0 || 1 < d) return Collections.emptySet();
-            } else {
-                return Collections.emptySet();
-            }
-        }
+        Point2D intersection = resolveIntersectionPoint(first, second);
+        if (intersection == null) return Collections.emptySet();
 
         // Already connected at an endpoint; no split needed
-        if (map.isNear(intersection, first.getStart().getCoordinates())
-         || map.isNear(intersection, first.getEnd().getCoordinates())
-         || map.isNear(intersection, second.getStart().getCoordinates())
-         || map.isNear(intersection, second.getEnd().getCoordinates())) {
+        if (isNearEndpoint(first, intersection) || isNearEndpoint(second, intersection)) {
             return Collections.emptySet();
         }
 
         final Node n = map.getNode(intersection);
-        final boolean splitFirst  = !n.equals(first.getStart())  && !n.equals(first.getEnd());
+        final boolean splitFirst = !n.equals(first.getStart()) && !n.equals(first.getEnd());
         final boolean splitSecond = !n.equals(second.getStart()) && !n.equals(second.getEnd());
 
         final Set<Edge> created = new HashSet<>();
-        if (splitFirst)  created.addAll(splitAndRegister(first,  n, grid));
-        if (splitSecond) created.addAll(splitAndRegister(second, n, grid));
+        if (splitFirst) created.addAll(splitAndRegister(first, grid, n));
+        if (splitSecond) created.addAll(splitAndRegister(second, grid, n));
         return created;
+    }
+
+    // Resolve the intersection point between two segments, falling back to the
+    // infinite-line intersection when as endpoint lies near the other line.
+    // Returns null if no valid intersection lies within both segments.
+    private Point2D resolveIntersectionPoint(final Edge e1, final Edge e2) {
+        final Line2D l1  = e1.getLine();
+        final Line2D l2  = e2.getLine();
+        final Point2D segmentIntersection = GeometryTools2D.getSegmentIntersectionPoint(l1, l2);
+        if (segmentIntersection != null) return segmentIntersection;
+
+        final Point2D lineIntersection = Objects.requireNonNull(GeometryTools2D.getIntersectionPoint(l1, l2));
+        if (isNearEndpoint(e1, lineIntersection)) {
+            final double d = e2.getLine().getIntersection(e1.getLine());
+            return (d < 0 || 1 < d) ? null : lineIntersection;
+        }
+        if (isNearEndpoint(e2, lineIntersection)) {
+            final double d = e1.getLine().getIntersection(e2.getLine());
+            return (d < 0 || 1 < d) ? null : lineIntersection;
+        }
+        return null;
+    }
+
+    // Returns true if the lie near either endpoint of the edge.
+    private boolean isNearEndpoint(final Edge edge, final Point2D point) {
+        return map.isNear(point, edge.getStart().getCoordinates()) ||
+               map.isNear(point, edge.getEnd().getCoordinates());
     }
 
     // Returns true if the point lies on the line segment, using a tolerance robust
@@ -249,13 +271,13 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
                 !secondCutPoint.equals(longerEdge.getStart()) && !secondCutPoint.equals(longerEdge.getEnd());
 
         if (isFirstValid && isSecondValid) {
-            return splitAndRegisterTwo(longerEdge, firstCutPoint, secondCutPoint, grid);
+            return splitAndRegister(longerEdge, grid, firstCutPoint, secondCutPoint);
         }
         if (isFirstValid) {
-            return splitAndRegister(longerEdge, firstCutPoint, grid);
+            return splitAndRegister(longerEdge, grid, firstCutPoint);
         }
         if (isSecondValid) {
-            return splitAndRegister(longerEdge, secondCutPoint, grid);
+            return splitAndRegister(longerEdge, grid, secondCutPoint);
         }
         return Collections.emptySet();
     }
@@ -270,7 +292,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         if (cutPoint.equals(longerEdge.getStart()) || cutPoint.equals(longerEdge.getEnd())) {
             return Collections.emptySet();
         }
-        return splitAndRegister(longerEdge, cutPoint, grid);
+        return splitAndRegister(longerEdge, grid, cutPoint);
     }
 
     // Splits both edges at their overlap boundary.
@@ -286,36 +308,42 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
         final Set<Edge> created = new HashSet<>();
         if (!shorterCutPoint.equals(shorterEdge.getStart()) && !shorterCutPoint.equals(shorterEdge.getEnd())) {
-            created.addAll(splitAndRegister(shorterEdge, shorterCutPoint, grid));
+            created.addAll(splitAndRegister(shorterEdge, grid, shorterCutPoint));
         }
         if (!longerCutPoint.equals(longerEdge.getStart()) && !longerCutPoint.equals(longerEdge.getEnd())) {
-            created.addAll(splitAndRegister(longerEdge, longerCutPoint, grid));
+            created.addAll(splitAndRegister(longerEdge, grid, longerCutPoint));
         }
         return created;
     }
 
-    // Split an edge at one node, update the grid, and return the new edges.
+    // Split an edge at the given nodes, update the grid, and return the new edges.
     private Set<Edge> splitAndRegister(
-            final Edge edge, final Node splitNode, final SpatialGrid<Edge> grid) {
+            final Edge edge, final SpatialGrid<Edge> grid, final Node... splitNodes) {
         grid.remove(edge);
-        final List<Edge> created = map.splitEdge(edge, splitNode);
-        for (final Edge newEdge : created) {
-            grid.add(newEdge);
-        }
-        splitCount++;
+        final List<Edge> created = map.splitEdge(edge, splitNodes);
+        created.forEach(grid::add);
+
+        createdEdges.remove(edge);
+        createdEdges.addAll(created);
+        Collections.addAll(createdNodes, splitNodes);
+        intactEdges.remove(edge);
+        splitCount += splitNodes.length;
         return new HashSet<>(created);
     }
 
-    // Split an edge at two node, update the grid, and return the new edges.
-    private Set<Edge> splitAndRegisterTwo(
-            final Edge edge, final Node first, final Node second, final SpatialGrid<Edge> grid) {
-        grid.remove(edge);
-        final List<Edge> created = map.splitEdge(edge, first, second);
-        for (final Edge newEdge : created) {
-            grid.add(newEdge);
-        }
-        splitCount += 2;
-        return new HashSet<>(created);
+    private void visualizeResult() {
+        StepVisualizer.create(debug)
+            .title("Split Intersecting Edges")
+            .layer(NodeLayer.of(createdNodes)
+                             .name("Created Node")
+                             .color(Color.GREEN))
+            .layer(EdgeLayer.of(createdEdges)
+                            .name("Created Edge")
+                            .color(Color.GREEN))
+            .layer(EdgeLayer.of(intactEdges)
+                            .name("Intact Edge")
+                            .color(Color.GRAY))
+            .show();
     }
 
 }
