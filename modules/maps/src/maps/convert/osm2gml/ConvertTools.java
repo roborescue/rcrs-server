@@ -6,17 +6,6 @@ import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.gui.ShapeDebugFrame;
 
-import maps.gml.GMLMap;
-import maps.gml.GMLNode;
-import maps.gml.debug.GMLNodeShapeInfo;
-import maps.gml.GMLEdge;
-import maps.gml.debug.GMLEdgeShapeInfo;
-import maps.gml.GMLObject;
-import maps.gml.GMLRoad;
-import maps.gml.GMLBuilding;
-import maps.gml.GMLSpace;
-import maps.gml.GMLShape;
-import maps.gml.debug.GMLShapeInfo;
 import maps.osm.OSMMap;
 import maps.osm.OSMNode;
 import maps.osm.OSMBuilding;
@@ -35,7 +24,6 @@ public final class ConvertTools {
     private static final Color BACKGROUND_BUILDING_COLOUR = new Color(0, 255, 0, 32); // Transparent lime
     private static final Color BACKGROUND_INTERSECTION_COLOUR = new Color(192, 192, 192, 32); // Transparent silver
     private static final Color BACKGROUND_ROAD_COLOUR = new Color(128, 128, 128, 32); // Transparent gray
-    private static final Color BACKGROUND_SPACE_COLOUR = new Color(0, 128, 0, 32); // Transparent green
 
     private static final double CLOCKWISE_SUM = -360;
     private static final double THRESHOLD = 0.0001;
@@ -79,16 +67,6 @@ public final class ConvertTools {
     */
     public static Edge findLeftTurn(DirectedEdge from, Set<? extends Edge> candidates) {
         return findBestTurn(from, candidates, true);
-    }
-
-    /**
-       Find the "rightmost" turn in a particular direction, i.e. the one with the highest right angle, or the lowest left angle if there are no right turns possible.
-       @param from The edge we're turning from.
-       @param candidates The set of edges we could turn into.
-       @return The rightmost turn.
-    */
-    public static Edge findRightTurn(DirectedEdge from, Set<? extends Edge> candidates) {
-        return findBestTurn(from, candidates, false);
     }
 
     /**
@@ -154,15 +132,6 @@ public final class ConvertTools {
     }
 
     /**
-       Create ShapeInfo objects for all GMLShapes in a map.
-       @param map The map to debug.
-       @return A list of ShapeInfo objects.
-    */
-    public static List<ShapeDebugFrame.ShapeInfo> getAllDebugShapes(GMLMap map) {
-        return createGMLShapeDebug(map.getAllShapes());
-    }
-
-    /**
        Create ShapeInfo objects for all TemporaryObjects in a map.
        @param map The map to debug.
        @return A list of ShapeInfo objects.
@@ -172,84 +141,12 @@ public final class ConvertTools {
     }
 
     /**
-       Create ShapeInfo objects for a set of GMLShapes.
-       @param objects The objects to debug.
-       @return A list of ShapeInfo objects.
-    */
-    public static List<ShapeDebugFrame.ShapeInfo> createGMLShapeDebug(GMLShape... objects) {
-        return createGMLShapeDebug(Arrays.asList(objects));
-    }
-
-    /**
-       Create ShapeInfo objects for a set of GMLShapes.
-       @param objects The objects to debug.
-       @return A list of ShapeInfo objects.
-    */
-    public static List<ShapeDebugFrame.ShapeInfo> createGMLShapeDebug(Collection<? extends GMLShape> objects) {
-        List<ShapeDebugFrame.ShapeInfo> allShapes = new ArrayList<ShapeDebugFrame.ShapeInfo>();
-        for (GMLShape next : objects) {
-            Color c = Constants.TRANSPARENT_RED;
-            String name = "Unknown";
-            if (next instanceof GMLRoad) {
-                c = BACKGROUND_ROAD_COLOUR;
-                name = "Roads";
-            }
-            if (next instanceof GMLBuilding) {
-                c = BACKGROUND_BUILDING_COLOUR;
-                name = "Buildings";
-            }
-            if (next instanceof GMLSpace) {
-                c = BACKGROUND_SPACE_COLOUR;
-                name = "Spaces";
-            }
-            allShapes.add(new GMLShapeInfo(next, name, Color.BLACK, c));
-        }
-        return allShapes;
-    }
-
-    /**
-       Create ShapeInfo objects for a set of GMLObjects.
-       @param objects The objects to debug.
-       @return A list of ShapeInfo objects.
-    */
-    public static List<ShapeDebugFrame.ShapeInfo> createGMLObjectDebug(GMLObject... objects) {
-        return createGMLObjectDebug(Arrays.asList(objects));
-    }
-
-    /**
-       Create ShapeInfo objects for a set of GMLObjects.
-       @param objects The objects to debug.
-       @return A list of ShapeInfo objects.
-    */
-    public static List<ShapeDebugFrame.ShapeInfo> createGMLObjectDebug(Collection<? extends GMLObject> objects) {
-        List<ShapeDebugFrame.ShapeInfo> allShapes = new ArrayList<ShapeDebugFrame.ShapeInfo>();
-        for (GMLObject object : objects) {
-            if (object instanceof GMLNode) {
-                allShapes.add(new GMLNodeShapeInfo((GMLNode)object, "Nodes", Constants.BLACK, true));
-            }
-            if (object instanceof GMLEdge) {
-                allShapes.add(new GMLEdgeShapeInfo((GMLEdge)object, "Edges", Constants.BLACK, false));
-            }
-        }
-        return allShapes;
-    }
-
-    /**
-       Create ShapeInfo objects for a set of TemporaryObjects.
-       @param objects The objects to debug.
-       @return A list of ShapeInfo objects.
-    */
-    public static List<ShapeDebugFrame.ShapeInfo> createTemporaryObjectDebug(TemporaryObject... objects) {
-        return createTemporaryObjectDebug(Arrays.asList(objects));
-    }
-
-    /**
        Create ShapeInfo objects for a set of TemporaryObjects.
        @param objects The objects to debug.
        @return A list of ShapeInfo objects.
     */
     public static List<ShapeDebugFrame.ShapeInfo> createTemporaryObjectDebug(Collection<? extends TemporaryObject> objects) {
-        List<ShapeDebugFrame.ShapeInfo> allShapes = new ArrayList<ShapeDebugFrame.ShapeInfo>();
+        List<ShapeDebugFrame.ShapeInfo> allShapes = new ArrayList<>();
         for (TemporaryObject next : objects) {
             Color c = Constants.TRANSPARENT_RED;
             String name = "Unknown";
