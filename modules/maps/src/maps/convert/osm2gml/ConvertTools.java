@@ -359,12 +359,12 @@ public final class ConvertTools {
 
                 if (type == PathIterator.SEG_MOVETO) {
                     // This is the start of a new path. Initialize the start/end nodes.
-                    firstNode = map.getNodeExact(coords[0], coords[1]);
+                    firstNode = map.getNode(coords[0], coords[1]);
                     lastNode = firstNode;
                 }
                 else if (type == PathIterator.SEG_LINETO) {
                     // Add a segment to the current path.
-                    Node nextNode = map.getNodeExact(coords[0], coords[1]);
+                    Node nextNode = map.getNode(coords[0], coords[1]);
                     if (lastNode != null && !lastNode.equals(nextNode)) {
                         currentPath.add(map.getDirectedEdge(lastNode, nextNode));
                     }

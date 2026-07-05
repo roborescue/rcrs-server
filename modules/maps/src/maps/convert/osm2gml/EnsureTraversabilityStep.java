@@ -168,7 +168,7 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
             final TemporaryObject original, final List<Point2D> vertices) {
         if (vertices.size() < 3) return null;
 
-        final List<Node> pieceNodes = vertices.stream().map(map::getNodeExact).toList();
+        final List<Node> pieceNodes = vertices.stream().map(map::getNode).toList();
         final List<DirectedEdge> pieceEdges = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
             final Node start = pieceNodes.get(i);
