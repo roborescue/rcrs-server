@@ -60,7 +60,6 @@ public class Convertor {
                 new MergeIntersectionStep             (temp),
                 new GenerateIntersectionAreaStep      (temp),
                 new MakeTempObjectsStep               (temp),
-                new SplitSelfIntersectingBuildingsStep(temp),
                 new CleanBuildingOverlapsStep         (temp),
                 new MergePassableShapesStep           (temp),
                 new ConnectBuildingsStep              (temp),
