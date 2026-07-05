@@ -32,7 +32,6 @@ public class StepVisualizer {
 
     public void show() {
         final List<ShapeDebugFrame.ShapeInfo> shapes = layers.stream()
-            .peek(layer -> System.out.println(layer.toString()))
             .map(ShapeLayer::createShapes)
             .flatMap(List::stream)
             .toList();

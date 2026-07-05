@@ -64,7 +64,7 @@ public class SpatialGrid<T extends SpatialIndexable> {
     // If the item's bounds are null or empty, no action is taken.
     private void forEachCell(final T item, final BiConsumer<Integer, Integer> action) {
         final Rectangle2D bounds = item.getBounds();
-        if (bounds == null || bounds.isEmpty()) return;
+        if (hasInvalidBounds(bounds)) return;
 
         int minCellX = getXCell(bounds.getMinX());
         int minCellY = getYCell(bounds.getMinY());
@@ -76,6 +76,10 @@ public class SpatialGrid<T extends SpatialIndexable> {
                 action.accept(x, y);
             }
         }
+    }
+
+    private boolean hasInvalidBounds(final Rectangle2D bounds) {
+        return bounds == null || bounds.getWidth() < 0 || bounds.getHeight() < 0;
     }
 
     /**
