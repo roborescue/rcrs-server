@@ -100,9 +100,14 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
     // Extracts the boundary lines that are shared with other objects and cannot be crossed.
     private List<Line2D> getImpassableLines(final TemporaryObject object) {
         return object.getEdges().stream()
-                .filter(edge -> 1 < map.getAttachedObjects(edge.getEdge()).size())
+                .filter(this::isExteriorEdge)
                 .map(DirectedEdge::getLine)
                 .toList();
+    }
+
+    // An edge is exterior (impassable) when this object is its only owner.
+    private boolean isExteriorEdge(final DirectedEdge edge) {
+        return map.getAttachedObjects(edge.getEdge()).size() == 1;
     }
 
     // Checks if a polygon is traversable from its centroid to its passable edges.
