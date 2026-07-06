@@ -16,7 +16,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Area;
 import java.awt.Shape;
+import java.util.concurrent.atomic.AtomicLong;
 
+import lombok.Getter;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
@@ -25,9 +27,13 @@ import maps.gml.GMLCoordinates;
 import maps.gml.GMLTools;
 
 /**
-   Abstract base class for temporary data structures during conversion.
-*/
+ * Abstract base class for temporary data structures during conversion.
+ */
 public abstract class TemporaryObject implements SpatialIndexable {
+    private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
+
+    @Getter
+    private final long id;
     private final List<DirectedEdge> edges;
     private final Map<DirectedEdge, TemporaryObject> neighbours;
 
@@ -37,12 +43,13 @@ public abstract class TemporaryObject implements SpatialIndexable {
     private Point2D centroid;
 
     /**
-       Construct a new TemporaryObject.
-       @param edges The edges of the object in counter-clockwise order.
-    */
-    protected TemporaryObject(List<DirectedEdge> edges) {
+     * Construct a new TemporaryObject.
+     * @param edges The edges of the object in counter-clockwise order.
+     */
+    protected TemporaryObject(final List<DirectedEdge> edges) {
+        this.id = ID_GENERATOR.getAndIncrement();
         this.edges = new ArrayList<>(edges);
-        neighbours = new HashMap<>();
+        this.neighbours = new HashMap<>();
     }
 
     /**
@@ -303,5 +310,10 @@ public abstract class TemporaryObject implements SpatialIndexable {
             lines.add(edge.getLine());
         }
         return Collections.unmodifiableList(lines);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "#" + id;
     }
 }

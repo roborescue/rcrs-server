@@ -111,7 +111,7 @@ public class SplitShapesStep extends ConvertStep {
                     newObject = new TemporaryIntersection(result);
                 }
                 if (shape instanceof TemporaryBuilding) {
-                    newObject = new TemporaryBuilding(result, ((TemporaryBuilding)shape).getBuildingID());
+                    newObject = new TemporaryBuilding(result, ((TemporaryBuilding)shape).getOsmId());
                 }
                 if (newObject != null) {
                     map.addTemporaryObject(newObject);

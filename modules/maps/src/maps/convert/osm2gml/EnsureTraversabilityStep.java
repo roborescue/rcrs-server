@@ -180,7 +180,7 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         return switch (original) {
             case TemporaryRoad         ignored  -> new TemporaryRoad(pieceEdges);
             case TemporaryIntersection ignored  -> new TemporaryIntersection(pieceEdges);
-            case TemporaryBuilding     building -> new TemporaryBuilding(pieceEdges, building.getBuildingID());
+            case TemporaryBuilding     building -> new TemporaryBuilding(pieceEdges, building.getOsmId());
             default -> throw new IllegalStateException("Unsupported TemporaryObject type: "
                     + original.getClass().getSimpleName());
         };
