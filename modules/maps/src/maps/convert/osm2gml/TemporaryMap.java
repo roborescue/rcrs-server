@@ -13,25 +13,20 @@ import rescuecore2.misc.collections.LazyMap;
    This class holds all temporary information during map conversion.
 */
 public class TemporaryMap {
-    /**
-       The threshold for determining if nodes are co-located in metres.
-    */
-    private static final double NEARBY_THRESHOLD_M = 1;
+    /** The threshold for determining if nodes are co-located in metres. */
+    private static final double NEARBY_THRESHOLD_M = 0.1;
+    private final double threshold;
 
-    private static final double EXACT_THRESHOLD = 1e-10;
+    private final Set<Node> nodes;
+    private final Set<Edge> edges;
+    private final Map<Node, Set<Edge>> edgesAtNode;
+    private final Map<Edge, Set<TemporaryObject>> objectsAtEdge;
+    private final Set<TemporaryRoad> tempRoads;
+    private final Set<TemporaryIntersection> tempIntersections;
+    private final Set<TemporaryBuilding> tempBuildings;
+    private final Set<TemporaryObject> allObjects;
 
-    private double threshold;
-
-    private Set<Node> nodes;
-    private Set<Edge> edges;
-    private Map<Node, Set<Edge>> edgesAtNode;
-    private Map<Edge, Set<TemporaryObject>> objectsAtEdge;
-    private Set<TemporaryRoad> tempRoads;
-    private Set<TemporaryIntersection> tempIntersections;
-    private Set<TemporaryBuilding> tempBuildings;
-    private Set<TemporaryObject> allObjects;
-
-    private OSMMap osmMap;
+    private final OSMMap osmMap;
     private Collection<OSMIntersectionInfo> osmIntersections;
     private Collection<OSMRoadInfo> osmRoads;
     private Collection<OSMBuildingInfo> osmBuildings;
@@ -55,23 +50,23 @@ public class TemporaryMap {
     public TemporaryMap(OSMMap osmMap) {
         this.osmMap = osmMap;
         nextID = 0;
-        nodes = new HashSet<Node>();
-        edges = new HashSet<Edge>();
+        nodes = new HashSet<>();
+        edges = new HashSet<>();
         threshold = ConvertTools.nearbyThreshold(osmMap, NEARBY_THRESHOLD_M);
-        tempRoads = new HashSet<TemporaryRoad>();
-        tempIntersections = new HashSet<TemporaryIntersection>();
-        tempBuildings = new HashSet<TemporaryBuilding>();
-        allObjects = new HashSet<TemporaryObject>();
-        edgesAtNode = new LazyMap<Node, Set<Edge>>() {
+        tempRoads = new HashSet<>();
+        tempIntersections = new HashSet<>();
+        tempBuildings = new HashSet<>();
+        allObjects = new HashSet<>();
+        edgesAtNode = new LazyMap<>() {
             @Override
             public Set<Edge> createValue() {
-                return new HashSet<Edge>();
+                return new HashSet<>();
             }
         };
-        objectsAtEdge = new LazyMap<Edge, Set<TemporaryObject>>() {
+        objectsAtEdge = new LazyMap<>() {
             @Override
             public Set<TemporaryObject> createValue() {
-                return new HashSet<TemporaryObject>();
+                return new HashSet<>();
             }
         };
 
@@ -250,7 +245,7 @@ public class TemporaryMap {
        @return All roads.
     */
     public Collection<TemporaryRoad> getRoads() {
-        return new HashSet<TemporaryRoad>(tempRoads);
+        return new HashSet<>(tempRoads);
     }
 
     /**
@@ -258,7 +253,7 @@ public class TemporaryMap {
        @return All intersections.
     */
     public Collection<TemporaryIntersection> getIntersections() {
-        return new HashSet<TemporaryIntersection>(tempIntersections);
+        return new HashSet<>(tempIntersections);
     }
 
     /**
@@ -266,7 +261,7 @@ public class TemporaryMap {
        @return All buildings.
     */
     public Collection<TemporaryBuilding> getBuildings() {
-        return new HashSet<TemporaryBuilding>(tempBuildings);
+        return new HashSet<>(tempBuildings);
     }
 
     /**
@@ -285,7 +280,7 @@ public class TemporaryMap {
        @return All objects.
     */
     public Collection<TemporaryObject> getAllObjects() {
-        return new HashSet<TemporaryObject>(allObjects);
+        return new HashSet<>(allObjects);
     }
 
     /**
@@ -293,7 +288,7 @@ public class TemporaryMap {
        @return All nodes.
     */
     public Collection<Node> getAllNodes() {
-        return new HashSet<Node>(nodes);
+        return new HashSet<>(nodes);
     }
 
     /**
@@ -301,7 +296,7 @@ public class TemporaryMap {
        @return All edges.
     */
     public Collection<Edge> getAllEdges() {
-        return new HashSet<Edge>(edges);
+        return new HashSet<>(edges);
     }
 
     /**
@@ -310,7 +305,7 @@ public class TemporaryMap {
        @return All attached TemporaryObjects.
     */
     public Set<TemporaryObject> getAttachedObjects(Edge e) {
-        return new HashSet<TemporaryObject>(objectsAtEdge.get(e));
+        return new HashSet<>(objectsAtEdge.get(e));
     }
 
     /**
@@ -319,15 +314,7 @@ public class TemporaryMap {
        @return All attached edges.
     */
     public Set<Edge> getAttachedEdges(Node n) {
-        return new HashSet<Edge>(edgesAtNode.get(n));
-    }
-
-    /**
-       Set the threshold for deciding if two points are the same. The {@link #isNear(Point2D, Point2D)} method uses this value to check if a new point needs to be registered.
-       @param t The new threshold.
-    */
-    public void setNearbyThreshold(double t) {
-        threshold = t;
+        return new HashSet<>(edgesAtNode.get(n));
     }
 
     /**
@@ -416,15 +403,15 @@ public class TemporaryMap {
     }
 
     /**
-       Get an Edge between two nodes. This will return either a new Edge or a shared instance if one already exists.
-       @param from The from node.
-       @param to The to node.
-       @return An Edge.
-    */
-    public Edge getEdge(Node from, Node to) {
-        for (Edge next : edges) {
+     * Get the edge connecting two nodes, creating it if necessary.
+     * @param from One end of the edge.
+     * @param to   The other end of the edge.
+     * @return The existing or newly created edge.
+     */
+    public Edge getEdge(final Node from, final Node to) {
+        for (final Edge next : edges) {
             if (next.getStart().equals(from) && next.getEnd().equals(to)
-                || next.getStart().equals(to) && next.getEnd().equals(from)) {
+             || next.getStart().equals(to)   && next.getEnd().equals(from)) {
                 return next;
             }
         }
@@ -432,13 +419,10 @@ public class TemporaryMap {
     }
 
     /**
-     * Get a {@code DirectedEdge} between two nodes.
-     * Returns {@code null} if the two nodes are the same, as a zero-length edge
-     * degenerates to a single node and should be treated as absent.
-     * @param from The from node.
-     * @param to   The to node.
-     * @return     A new {@code DirectedEdge}, or {@code null} if {@code from} and
-     *             {@code to} are the same node.
+     * Get a directed edge from one node to another.
+     * @param from The start node.
+     * @param to   The end node.
+     * @return     The directed edge, or {@code null} if both nodes are the same.
      */
     public DirectedEdge getDirectedEdge(final Node from, final Node to) {
         if (from.equals(to)) return null;
@@ -465,7 +449,7 @@ public class TemporaryMap {
      * Split an edge into chunks.
      * @param edge        The edge to split.
      * @param splitPoints The nodes at which to split the edge.
-     * @return The list of replacement edges created by the split, or an empty list if no split occured.
+     * @return The list of replacement edges created by the split, or an empty list if no split occurred.
      */
     public List<Edge> splitEdge(final Edge edge, final Collection<Node> splitPoints) {
         final List<Node> sorted = ConvertTools.sortedAlongEdge(edge, splitPoints);
@@ -494,20 +478,11 @@ public class TemporaryMap {
      * Split an edge into chunks.
      * @param edge        The edge to split.
      * @param splitPoints The nodes at which to split the edge.
-     * @return The list of replacement edges created by the split, or an empty list if no split occured.
+     * @return The list of replacement edges created by the split, or an empty list if no split occurred.
      * @see #splitEdge(Edge, Collection)
      */
     public List<Edge> splitEdge(Edge edge, Node... splitPoints) {
         return splitEdge(edge, Arrays.asList(splitPoints));
-    }
-
-    private Node createNode(double x, double y) {
-        Node result = new Node(nextID++, x, y);
-        nodes.add(result);
-
-        invalidateBoundsCache();
-
-        return result;
     }
 
     private Edge createEdge(Node from, Node to) {
