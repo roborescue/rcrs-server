@@ -41,7 +41,7 @@ public class ConnectBuildingsStep extends BaseModificationStep {
         final List<TemporaryIntersection> created = new ArrayList<>();
         setProgressLimit(buildings.size());
 
-        final double cellSize = maxConnectDistance * 2;
+        final double cellSize = maxConnectDistance * 1.2;
         final SpatialGrid<TemporaryObject> objectGrid = new SpatialGrid<>(map.getBounds(), cellSize);
         map.getAllObjects().forEach(objectGrid::add);
 
@@ -70,34 +70,37 @@ public class ConnectBuildingsStep extends BaseModificationStep {
         visualizeDifference(Collections.emptyList(), created, "Building Connection Results");
     }
 
-    private EntrancePlan findBestPlanForBuilding(TemporaryBuilding building, SpatialGrid<TemporaryObject> roadGrid) {
+    private EntrancePlan findBestPlanForBuilding(
+            final TemporaryBuilding building, final SpatialGrid<TemporaryObject> objectGrid) {
         EntrancePlan bestPlan = null;
         double bestAngleDeviation = Double.MAX_VALUE;
+        final boolean isBuildingCCW = GeometryTools2D.isCounterClockwise(building.getVertices());
 
-        for (DirectedEdge de : building.getEdges()) {
-            Edge buildingEdge = de.getEdge();
-            if (buildingEdge.getLine().getDirection().getLength() < entranceWidth) continue;
+        for (final DirectedEdge buildingEdge : building.getEdges()) {
+            if (buildingEdge.getLength() < entranceWidth) continue;
 
-            for (TemporaryObject obj : roadGrid.getNearbyItems(building)) {
-                if (!(obj instanceof final TemporaryRoad road)) continue;
+            for (final TemporaryObject object : objectGrid.getNearbyItems(building)) {
+                if (!(object instanceof final TemporaryRoad road)) continue;
 
-                for (DirectedEdge roadDE : road.getEdges()) {
-                    Edge roadEdge = roadDE.getEdge();
+                final boolean isRoadCCW = GeometryTools2D.isCounterClockwise(road.getVertices());
 
-                    boolean isPassableEdge = 1 < map.getAttachedObjects(roadEdge).size();
-                    if (isPassableEdge) continue;
+                for (final DirectedEdge roadEdge : road.getEdges()) {
+                    if (1 < map.getAttachedObjects(roadEdge).size()) continue;
+                    if (roadEdge.getLength() < entranceWidth) continue;
 
-                    boolean isRoadEdgeTooShort = roadEdge.getLine().getDirection().getLength() < entranceWidth;
-                    if (isRoadEdgeTooShort) continue;
-
-                    Point2D wallMidPoint = buildingEdge.getMidPoint();
-                    Line2D roadLine = roadEdge.getLine();
+                    final Point2D wallMidPoint = buildingEdge.getMidpoint();
+                    final Line2D roadLine = roadEdge.getLine();
                     Point2D connectingPoint = GeometryTools2D.getClosestPointOnSegment(roadLine, wallMidPoint);
 
+                    final Vector2D wallToRoad = connectingPoint.minus(wallMidPoint);
+                    if (pointsInward(wallToRoad, buildingEdge, isBuildingCCW)) continue;
+                    final Vector2D roadToWall = wallMidPoint.minus(connectingPoint);
+                    if (pointsInward(roadToWall, roadEdge, isRoadCCW)) continue;
+
                     // Safely calculate the entrance roof on the road, sliding if necessary.
-                    double distFromStart = GeometryTools2D.getDistance(roadLine.getOrigin(), connectingPoint);
-                    double distFromEnd = roadLine.getDirection().getLength() - distFromStart;
-                    double halfWidth = entranceWidth / 2.0;
+                    final double distFromStart = GeometryTools2D.getDistance(roadLine.getOrigin(), connectingPoint);
+                    final double distFromEnd = roadEdge.getLength() - distFromStart;
+                    final double halfWidth = entranceWidth / 2.0;
                     if (distFromStart < halfWidth) {
                         double slideAmount = halfWidth - distFromStart;
                         connectingPoint = connectingPoint.plus(roadLine.getDirection().normalised().scale(slideAmount));
@@ -117,10 +120,12 @@ public class ConnectBuildingsStep extends BaseModificationStep {
                     final List<DirectedEdge> entranceEdges = buildEntranceEdges(b1, b2, r1, r2, wallVector, roadVector);
                     if (entranceEdges == null) continue;
 
-                    TemporaryIntersection entrance = new TemporaryIntersection(entranceEdges);
+                    if (connectingEdgesCrossOwnGeometry(entranceEdges, b1, b2, buildingEdge, roadEdge, building, road))
+                        continue;
 
-                    Line2D entranceCenterLine = new Line2D(wallMidPoint, connectingPoint);
-                    double entranceLength = entranceCenterLine.getDirection().getLength();
+                    final TemporaryIntersection entrance = new TemporaryIntersection(entranceEdges);
+                    final Line2D entranceCenterLine = new Line2D(wallMidPoint, connectingPoint);
+                    final double entranceLength = entranceCenterLine.getDirection().getLength();
 
                     // This prevents creating entrances that are too short to be meaningful
                     // or are likely to cause geometric instability.
@@ -136,13 +141,50 @@ public class ConnectBuildingsStep extends BaseModificationStep {
 
                     if (angleDeviation < bestAngleDeviation) {
                         bestAngleDeviation = angleDeviation;
-                        bestPlan = new EntrancePlan(entrance, buildingEdge, roadEdge, b1, b2, r1, r2);
+                        bestPlan = new EntrancePlan(entrance, buildingEdge.getEdge(), roadEdge.getEdge(), b1, b2, r1, r2);
                     }
                 }
             }
         }
 
         return bestPlan;
+    }
+
+    private boolean pointsInward(final Vector2D direction, final DirectedEdge polygonEdge, boolean isCCW) {
+        final Vector2D edgeDirection = polygonEdge.getLine().getDirection().normalised();
+        final Vector2D outwardNormal = isCCW ? edgeDirection.getNormal().negate() : edgeDirection.getNormal();
+        return direction.dot(outwardNormal) < 0;
+    }
+
+    private boolean connectingEdgesCrossOwnGeometry(
+            final List<DirectedEdge> entranceEdges, final Node b1, final Node b2,
+            final DirectedEdge buildingEdge, final DirectedEdge roadEdge,
+            final TemporaryBuilding building, final TemporaryRoad road) {
+        for (final DirectedEdge entranceEdge : entranceEdges) {
+            if (isWallOrRoadEdge(entranceEdge, b1, b2)) continue;
+
+            if (crossAnyEdgeExcept(entranceEdge, building.getEdges(), buildingEdge)) return true;
+            if (crossAnyEdgeExcept(entranceEdge, road.getEdges(), roadEdge)) return true;
+        }
+        return false;
+    }
+
+    private boolean isWallOrRoadEdge(final DirectedEdge edge, final Node b1, final Node b2) {
+        final boolean startOnBuildingSide = edge.getStartNode().equals(b1) || edge.getStartNode().equals(b2);
+        final boolean endOnBuildingSide = edge.getEndNode().equals(b1) || edge.getEndNode().equals(b2);
+        return startOnBuildingSide == endOnBuildingSide;
+    }
+
+    private boolean crossAnyEdgeExcept(
+            final DirectedEdge candidate, final List<DirectedEdge> edges, final DirectedEdge excluded) {
+        final Line2D candidateLine = candidate.getLine();
+        for (final DirectedEdge edge : edges) {
+            if (edge.equals(excluded)) continue;
+            if (GeometryTools2D.getSegmentIntersectionPoint(candidateLine, edge.getLine()) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Build a list of directed edges forming the entrance polygon from four corner nodes.
@@ -172,7 +214,7 @@ public class ConnectBuildingsStep extends BaseModificationStep {
         return entranceEdges;
     }
 
-    private double calculateAngleDeviation(Line2D centerLine, Edge buildingEdge, Edge roadEdge) {
+    private double calculateAngleDeviation(Line2D centerLine, DirectedEdge buildingEdge, DirectedEdge roadEdge) {
         double angleToBuilding = Math.abs(90.0 - GeometryTools2D.getAngleBetweenVectors(
                 centerLine.getDirection(), buildingEdge.getLine().getDirection()));
         double angleToRoad = Math.abs(90.0 - GeometryTools2D.getAngleBetweenVectors(
@@ -196,30 +238,17 @@ public class ConnectBuildingsStep extends BaseModificationStep {
         return false;
     }
 
-    private boolean hasCollision(TemporaryIntersection candidate, TemporaryBuilding building, TemporaryRoad road) {
-        if (candidate.getShape() == null) return false;
-        Area entranceArea = new Area(candidate.getShape());
-
-        for (TemporaryObject otherObject : map.getAllObjects()) {
-            if (otherObject.getShape() == null) continue;
-
-            Area otherArea = new Area(otherObject.getShape());
+    private boolean hasCollision(
+            final TemporaryIntersection candidate, final TemporaryBuilding building, final TemporaryRoad road) {
+        final Area entranceArea = new Area(candidate.getShape());
+        for (final TemporaryObject otherObject : map.getAllObjects()) {
+            final Area otherArea = new Area(otherObject.getShape());
             otherArea.intersect(entranceArea);
-
             if (otherArea.isEmpty()) continue;
             if (!otherObject.equals(building) && !otherObject.equals(road)) return true;
-
-            // A significant collision was found
-            if (isSignificantOverlap(otherArea, map)) return true;
         }
 
         return false;
     }
 
-    private boolean isSignificantOverlap(Area intersectionArea, TemporaryMap map) {
-        double oneMeterInDegrees = ConvertTools.sizeOf1Metre(map.getOSMMap());
-        double epsilon = Math.pow(oneMeterInDegrees / 10, 2);
-        double geometricArea = ConvertTools.getGeometricArea(intersectionArea);
-        return epsilon < geometricArea;
-    }
 }
