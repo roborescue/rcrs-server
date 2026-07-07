@@ -21,27 +21,6 @@ import java.io.IOException;
    An OpenStreetMap map.
 */
 public class OSMMap {
-    private static final Collection<String> ROAD_MARKERS = new HashSet<String>();
-
-    static {
-        ROAD_MARKERS.add("motorway");
-        ROAD_MARKERS.add("motorway_link");
-        ROAD_MARKERS.add("trunk");
-        ROAD_MARKERS.add("trunk_link");
-        ROAD_MARKERS.add("primary");
-        ROAD_MARKERS.add("primary_link");
-        ROAD_MARKERS.add("secondary");
-        ROAD_MARKERS.add("secondary_link");
-        ROAD_MARKERS.add("tertiary");
-        ROAD_MARKERS.add("unclassified");
-        ROAD_MARKERS.add("road");
-        ROAD_MARKERS.add("residential");
-        ROAD_MARKERS.add("living_street");
-        ROAD_MARKERS.add("service");
-        ROAD_MARKERS.add("track");
-        ROAD_MARKERS.add("services");
-        ROAD_MARKERS.add("pedestrian");
-    }
 
     private Map<Long, OSMNode> nodes;
     private Map<Long, OSMRoad> roads;
@@ -386,7 +365,7 @@ public class OSMMap {
                 buildings.put(id, building);
                 return;
             }
-            if ("highway".equals(key) && ROAD_MARKERS.contains(value)) {
+            if ("highway".equals(key) && OSMRoadType.fromTagValue(value).isPresent()) {
                 final OSMRoad road = new OSMRoad(id, ids);
                 roads.put(id, road);
                 return;
