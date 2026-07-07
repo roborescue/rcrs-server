@@ -92,6 +92,14 @@ public class DirectedEdge {
         }
     }
 
+    /**
+     * Get the length of this directed edge.
+     * @return The length of the directed edge.
+     */
+    public double getLength() {
+        return line.getDirection().getLength();
+    }
+
     @Override
     public String toString() {
         return "DirectedEdge" + (forward ? "" : " backwards") + " along " + edge;
@@ -109,4 +117,5 @@ public class DirectedEdge {
         }
         return false;
     }
+
 }
