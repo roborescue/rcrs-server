@@ -100,6 +100,14 @@ public class DirectedEdge {
         return line.getDirection().getLength();
     }
 
+    /**
+     * Get the midpoint of this directed edge.
+     * @return A new {@link Point2D} representing the midpoint.
+     */
+    public Point2D getMidpoint() {
+        return edge.getMidpoint();
+    }
+
     @Override
     public String toString() {
         return "DirectedEdge" + (forward ? "" : " backwards") + " along " + edge;
@@ -117,5 +125,4 @@ public class DirectedEdge {
         }
         return false;
     }
-
 }
