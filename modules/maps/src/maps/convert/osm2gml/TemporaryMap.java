@@ -300,12 +300,21 @@ public class TemporaryMap {
     }
 
     /**
-       Get all objects attached to an Edge.
-       @param e The Edge.
-       @return All attached TemporaryObjects.
-    */
+     * Get all objects attached to the specified edge.
+     * @param e The edge.
+     * @return An unmodifiable set of objects attached to the edge.
+     */
     public Set<TemporaryObject> getAttachedObjects(Edge e) {
-        return new HashSet<>(objectsAtEdge.get(e));
+        return Collections.unmodifiableSet(objectsAtEdge.get(e));
+    }
+
+    /**
+     * Get all objects attached to the specified directed edge.
+     * @param e The directed edge.
+     * @return An unmodifiable set of objects attached to the underlying edge.
+     */
+    public Set<TemporaryObject> getAttachedObjects(DirectedEdge e) {
+        return getAttachedObjects(e.getEdge());
     }
 
     /**
