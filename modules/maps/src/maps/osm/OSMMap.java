@@ -372,41 +372,30 @@ public class OSMMap {
         long id = Long.parseLong(e.attributeValue("id"));
         List<Long> ids = new ArrayList<>();
 
-        for (Element next : e.elements("nd")) {
+        for (final Element next : e.elements("nd")) {
             Long nextID = Long.parseLong(next.attributeValue("ref"));
             ids.add(nextID);
         }
 
-        // Is this way a road or a building?
-        boolean isRoad = false;
-        boolean isBuilding = false;
-        boolean isNonGroundLevel = false;
-
-        for (Element tag : e.elements("tag")) {
+        for (final Element tag : e.elements("tag")) {
             String key = tag.attributeValue("k");
             String value = tag.attributeValue("v");
 
-            isBuilding = isBuilding || "building".equals(key) && "yes".equals(value);
-            isRoad = isRoad || "highway".equals(key) && ROAD_MARKERS.contains(value);
+            if ("building".equals(key) && "yes".equals(value)) {
+                final OSMBuilding building = new OSMBuilding(id, ids);
+                buildings.put(id, building);
+                return;
+            }
+            if ("highway".equals(key) && ROAD_MARKERS.contains(value)) {
+                final OSMRoad road = new OSMRoad(id, ids);
+                roads.put(id, road);
+                return;
+            }
 
             // Check if this object is on a different level (bridge, tunnel, etc.)
             if ("layer".equals(key) && !"0".equals(value) ||
                 "bridge".equals(key) && "yes".equals(value) ||
-                "tunnel".equals(key) && "yes".equals(value)) {
-                isNonGroundLevel = true;
-            }
-        }
-
-        // If the object is on a non-ground level, we ignore it completely
-        if (isNonGroundLevel) {
-            return;
-        }
-
-        if (isBuilding) {
-            buildings.put(id, new OSMBuilding(id, ids));
-        }
-        if (isRoad) {
-            roads.put(id, new OSMRoad(id, ids));
+                "tunnel".equals(key) && "yes".equals(value)) return;
         }
     }
 }
