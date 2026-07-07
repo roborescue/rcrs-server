@@ -22,7 +22,7 @@ public class ConnectBuildingsStep extends BaseModificationStep {
             Node roadNode1, Node roadNode2
     ) {}
 
-    public ConnectBuildingsStep(TemporaryMap map) {
+    public ConnectBuildingsStep(final TemporaryMap map) {
         super(map);
         maxConnectDistance = ConvertTools.sizeOfMeters(map.getOSMMap(), 20);
         minConnectDistance = ConvertTools.sizeOfMeters(map.getOSMMap(), 1); // Nearby threshold
@@ -37,39 +37,37 @@ public class ConnectBuildingsStep extends BaseModificationStep {
 
     @Override
     protected void step() {
-        List<TemporaryBuilding> buildings = new ArrayList<>(map.getBuildings());
-        List<TemporaryIntersection> entrances = new ArrayList<>();
+        final List<TemporaryBuilding> buildings = new ArrayList<>(map.getBuildings());
+        final List<TemporaryIntersection> created = new ArrayList<>();
         setProgressLimit(buildings.size());
 
-        SpatialGrid<TemporaryObject> roadGrid = new SpatialGrid<>(map.getBounds(), maxConnectDistance * 2);
-        for (TemporaryRoad road : map.getRoads()) {
-            roadGrid.add(road);
-        }
+        final double cellSize = maxConnectDistance * 2;
+        final SpatialGrid<TemporaryObject> objectGrid = new SpatialGrid<>(map.getBounds(), cellSize);
+        map.getAllObjects().forEach(objectGrid::add);
 
+        for (final TemporaryBuilding building : buildings) {
+            if (isAlreadyConnected(building, map.getRoads())) {
+                bumpProgress();
+                continue;
+            }
 
-        for (int i = 0; i < buildings.size(); i++) {
-            TemporaryBuilding building = buildings.get(i);
-            setProgress(i);
-
-            if (isAlreadyConnected(building, map.getRoads())) continue;
-
-            EntrancePlan bestPlan = findBestPlanForBuilding(building, roadGrid);
+            final EntrancePlan bestPlan = findBestPlanForBuilding(building, objectGrid);
             if (bestPlan != null) {
                 map.splitEdge(bestPlan.buildingEdge(), bestPlan.buildingNode1(), bestPlan.buildingNode2());
                 map.splitEdge(bestPlan.roadEdge(), bestPlan.roadNode1(), bestPlan.roadNode2());
                 map.addIntersection(bestPlan.entranceObject());
-
-                entrances.add(bestPlan.entranceObject());
+                created.add(bestPlan.entranceObject());
             }
+            bumpProgress();
         }
 
-        if (!entrances.isEmpty()) {
+        if (!created.isEmpty()) {
             map.resynchronizeStateFromObjects();
         }
 
         setProgress(buildings.size());
-        setStatus("Created " + entrances.size() + " new entrances for buildings.");
-        visualizeDifference(Collections.emptyList(), entrances, "Building Connection Results");
+        setStatus("Created " + created.size() + " new entrances for buildings.");
+        visualizeDifference(Collections.emptyList(), created, "Building Connection Results");
     }
 
     private EntrancePlan findBestPlanForBuilding(TemporaryBuilding building, SpatialGrid<TemporaryObject> roadGrid) {
@@ -81,7 +79,8 @@ public class ConnectBuildingsStep extends BaseModificationStep {
             if (buildingEdge.getLine().getDirection().getLength() < entranceWidth) continue;
 
             for (TemporaryObject obj : roadGrid.getNearbyItems(building)) {
-                TemporaryRoad road = (TemporaryRoad) obj;
+                if (!(obj instanceof final TemporaryRoad road)) continue;
+
                 for (DirectedEdge roadDE : road.getEdges()) {
                     Edge roadEdge = roadDE.getEdge();
 
