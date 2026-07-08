@@ -87,7 +87,7 @@ public class OSMMap {
             List<Long> ids = new ArrayList<>(next.getNodeIDs());
             ids.removeIf(nextID -> !nodes.containsKey(nextID));
             if (!ids.isEmpty()) {
-                roads.put(next.getID(), new OSMRoad(next.getID(), ids, next.getType()));
+                roads.put(next.getID(), new OSMRoad(next.getID(), ids, next.getType(), next.getLanes()));
             }
         }
         for (OSMBuilding next : other.buildings.values()) {
@@ -339,6 +339,10 @@ public class OSMMap {
             ids.add(nextID);
         }
 
+        // Road attributes.
+        OSMRoadType type = null;
+        int lanes = -1;
+
         for (final Element tag : e.elements("tag")) {
             final String key = tag.attributeValue("k");
             final String value = tag.attributeValue("v");
@@ -350,6 +354,13 @@ public class OSMMap {
                 return;
             }
 
+            // Check if this object is a road.
+            if ("highway".equals(key)) {
+                final Optional<OSMRoadType> typeOptional = OSMRoadType.fromTagValue(value);
+                if (typeOptional.isEmpty()) continue;
+                type = typeOptional.get();
+            }
+
             // Check if this object is on a different level (bridge, tunnel, etc.).
             if ("layer".equals(key) && !"0".equals(value) ||
                 "bridge".equals(key) && "yes".equals(value) ||
@@ -357,12 +368,13 @@ public class OSMMap {
                 return;
             }
 
-            final Optional<OSMRoadType> type = OSMRoadType.fromTagValue(value);
-            if ("highway".equals(key) && type.isPresent()) {
-                final OSMRoad road = new OSMRoad(id, ids, type.get());
-                roads.put(id, road);
-                return;
+            if ("lanes".equals(key)) {
+                lanes = Integer.parseInt(value);
             }
+        }
+
+        if (type != null) {
+            roads.put(id, new OSMRoad(id, ids, type, lanes));
         }
     }
 }
