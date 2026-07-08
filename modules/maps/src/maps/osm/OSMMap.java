@@ -330,22 +330,30 @@ public class OSMMap {
         nodes.put(id, node);
     }
 
-    private void processWay(Element e) {
-        long id = Long.parseLong(e.attributeValue("id"));
-        List<Long> ids = new ArrayList<>();
+    private void processWay(final Element e) {
+        final long id = Long.parseLong(e.attributeValue("id"));
 
+        final List<Long> ids = new ArrayList<>();
         for (final Element next : e.elements("nd")) {
-            Long nextID = Long.parseLong(next.attributeValue("ref"));
+            final Long nextID = Long.parseLong(next.attributeValue("ref"));
             ids.add(nextID);
         }
 
         for (final Element tag : e.elements("tag")) {
-            String key = tag.attributeValue("k");
-            String value = tag.attributeValue("v");
+            final String key = tag.attributeValue("k");
+            final String value = tag.attributeValue("v");
 
+            // Check if this object is a building.
             if ("building".equals(key) && "yes".equals(value)) {
                 final OSMBuilding building = new OSMBuilding(id, ids);
                 buildings.put(id, building);
+                return;
+            }
+
+            // Check if this object is on a different level (bridge, tunnel, etc.).
+            if ("layer".equals(key) && !"0".equals(value) ||
+                "bridge".equals(key) && "yes".equals(value) ||
+                "tunnel".equals(key) && "yes".equals(value)) {
                 return;
             }
 
@@ -355,11 +363,6 @@ public class OSMMap {
                 roads.put(id, road);
                 return;
             }
-
-            // Check if this object is on a different level (bridge, tunnel, etc.)
-            if ("layer".equals(key) && !"0".equals(value) ||
-                "bridge".equals(key) && "yes".equals(value) ||
-                "tunnel".equals(key) && "yes".equals(value)) return;
         }
     }
 }
