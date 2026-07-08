@@ -71,8 +71,8 @@ public class TemporaryMap {
         };
 
         gridSpacing = ConvertTools.sizeOf1Metre(osmMap);
-        gridOriginX = osmMap.getCentreLatitude();
-        gridOriginY = osmMap.getCentreLongitude();
+        gridOriginX = osmMap.getCenterLatitude();
+        gridOriginY = osmMap.getCenterLongitude();
         nodeGrid    = new HashMap<>();
     }
 

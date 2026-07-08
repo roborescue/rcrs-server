@@ -31,9 +31,9 @@ public class OSMMap {
     */
     public OSMMap() {
         boundsCalculated = false;
-        nodes = new HashMap<Long, OSMNode>();
-        roads = new HashMap<Long, OSMRoad>();
-        buildings = new HashMap<Long, OSMBuilding>();
+        nodes = new HashMap<>();
+        roads = new HashMap<>();
+        buildings = new HashMap<>();
     }
 
     /**
@@ -70,9 +70,9 @@ public class OSMMap {
         this.maxLat = maxLat;
         this.maxLon = maxLon;
         boundsCalculated = true;
-        nodes = new HashMap<Long, OSMNode>();
-        roads = new HashMap<Long, OSMRoad>();
-        buildings = new HashMap<Long, OSMBuilding>();
+        nodes = new HashMap<>();
+        roads = new HashMap<>();
+        buildings = new HashMap<>();
         // Copy all nodes inside the bounds
         for (OSMNode next : other.nodes.values()) {
             double lat = next.getLatitude();
@@ -84,13 +84,8 @@ public class OSMMap {
         }
         // Now copy the bits of roads and buildings that do not have missing nodes
         for (OSMRoad next : other.roads.values()) {
-            List<Long> ids = new ArrayList<Long>(next.getNodeIDs());
-            for (Iterator<Long> it = ids.iterator(); it.hasNext();) {
-                Long nextID = it.next();
-                if (!nodes.containsKey(nextID)) {
-                    it.remove();
-                }
-            }
+            List<Long> ids = new ArrayList<>(next.getNodeIDs());
+            ids.removeIf(nextID -> !nodes.containsKey(nextID));
             if (!ids.isEmpty()) {
                 roads.put(next.getID(), new OSMRoad(next.getID(), ids, next.getType()));
             }
@@ -100,10 +95,11 @@ public class OSMMap {
             for (Long nextID : next.getNodeIDs()) {
                 if (!nodes.containsKey(nextID)) {
                     allFound = false;
+                    break;
                 }
             }
             if (allFound) {
-                buildings.put(next.getID(), new OSMBuilding(next.getID(), new ArrayList<Long>(next.getNodeIDs())));
+                buildings.put(next.getID(), new OSMBuilding(next.getID(), new ArrayList<>(next.getNodeIDs())));
             }
         }
     }
@@ -114,21 +110,15 @@ public class OSMMap {
     */
     public void read(Document doc) throws OSMException {
         boundsCalculated = false;
-        nodes = new HashMap<Long, OSMNode>();
-        roads = new HashMap<Long, OSMRoad>();
-        buildings = new HashMap<Long, OSMBuilding>();
+        nodes = new HashMap<>();
+        roads = new HashMap<>();
+        buildings = new HashMap<>();
         Element root = doc.getRootElement();
         if (!"osm".equals(root.getName())) {
             throw new OSMException("Invalid map file: root element must be 'osm', not " + root.getName());
         }
-        for (Object next : root.elements("node")) {
-            Element e = (Element)next;
-            OSMNode node = processNode(e);
-        }
-        for (Object next : root.elements("way")) {
-            Element e = (Element)next;
-            processWay(e);
-        }
+        root.elements("node").forEach(this::processNode);
+        root.elements("way").forEach(this::processWay);
     }
 
     /**
@@ -187,10 +177,10 @@ public class OSMMap {
     }
 
     /**
-       Get the centre longitude in this map.
-       @return The centre longitude.
+       Get the center longitude in this map.
+       @return The center longitude.
     */
-    public double getCentreLongitude() {
+    public double getCenterLongitude() {
         calculateBounds();
         return (maxLon + minLon) / 2;
     }
@@ -214,10 +204,10 @@ public class OSMMap {
     }
 
     /**
-       Get the centre latitude in this map.
-       @return The centre latitude.
+       Get the center latitude in this map.
+       @return The center latitude.
     */
-    public double getCentreLatitude() {
+    public double getCenterLatitude() {
         calculateBounds();
         return (maxLat + minLat) / 2;
     }
@@ -227,7 +217,7 @@ public class OSMMap {
        @return All nodes.
     */
     public Collection<OSMNode> getNodes() {
-        return new HashSet<OSMNode>(nodes.values());
+        return new HashSet<>(nodes.values());
     }
 
     /**
@@ -288,7 +278,7 @@ public class OSMMap {
        @return All roads.
     */
     public Collection<OSMRoad> getRoads() {
-        return new HashSet<OSMRoad>(roads.values());
+        return new HashSet<>(roads.values());
     }
 
     /**
@@ -304,7 +294,7 @@ public class OSMMap {
        @return All buildings.
     */
     public Collection<OSMBuilding> getBuildings() {
-        return new HashSet<OSMBuilding>(buildings.values());
+        return new HashSet<>(buildings.values());
     }
 
     /**
@@ -332,13 +322,12 @@ public class OSMMap {
         boundsCalculated = true;
     }
 
-    private OSMNode processNode(Element e) {
+    private void processNode(Element e) {
         long id = Long.parseLong(e.attributeValue("id"));
         double lat = Double.parseDouble(e.attributeValue("lat"));
         double lon = Double.parseDouble(e.attributeValue("lon"));
         OSMNode node = new OSMNode(id, lat, lon);
         nodes.put(id, node);
-        return node;
     }
 
     private void processWay(Element e) {

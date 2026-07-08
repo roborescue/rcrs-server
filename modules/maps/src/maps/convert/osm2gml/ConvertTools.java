@@ -36,7 +36,7 @@ public final class ConvertTools {
        @return The size of one metre on the given map.
     */
     public static double sizeOf1Metre(OSMMap map) {
-        return MapTools.sizeOf1Metre(map.getCentreLatitude(), map.getCentreLongitude());
+        return MapTools.sizeOf1Metre(map.getCenterLatitude(), map.getCenterLongitude());
     }
 
     /**
