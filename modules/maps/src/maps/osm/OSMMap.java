@@ -6,13 +6,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,7 +92,7 @@ public class OSMMap {
                 }
             }
             if (!ids.isEmpty()) {
-                roads.put(next.getID(), new OSMRoad(next.getID(), ids));
+                roads.put(next.getID(), new OSMRoad(next.getID(), ids, next.getType()));
             }
         }
         for (OSMBuilding next : other.buildings.values()) {
@@ -365,8 +359,10 @@ public class OSMMap {
                 buildings.put(id, building);
                 return;
             }
-            if ("highway".equals(key) && OSMRoadType.fromTagValue(value).isPresent()) {
-                final OSMRoad road = new OSMRoad(id, ids);
+
+            final Optional<OSMRoadType> type = OSMRoadType.fromTagValue(value);
+            if ("highway".equals(key) && type.isPresent()) {
+                final OSMRoad road = new OSMRoad(id, ids, type.get());
                 roads.put(id, road);
                 return;
             }
