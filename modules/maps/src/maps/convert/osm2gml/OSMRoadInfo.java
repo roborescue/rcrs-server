@@ -77,6 +77,14 @@ public class OSMRoadInfo implements OSMShape {
         area = null;
     }
 
+    /**
+     * Check whether this road has lane count information.
+     * @return {@code true} if the lane count is known, {@code false} if it is unset (represented as -1).
+     */
+    public boolean hasLaneCount() {
+        return laneCount != -1;
+    }
+
     @Override
     public Area getArea() {
         if (area != null) return area;
