@@ -10,12 +10,12 @@ import java.util.List;
 public class NodeLayer extends ShapeLayer<Node> {
     private Color color = Color.BLACK;
 
-    private NodeLayer(final Collection<Node> objects) {
-        super(objects);
+    private NodeLayer(final Collection<Node> nodes) {
+        super(nodes);
     }
 
-    public static NodeLayer of(final Collection<Node> objects) {
-        return new NodeLayer(objects);
+    public static NodeLayer of(final Collection<Node> nodes) {
+        return new NodeLayer(nodes);
     }
 
     public NodeLayer name(final String name) {
@@ -33,7 +33,7 @@ public class NodeLayer extends ShapeLayer<Node> {
         return objects.stream().map(this::createShape).toList();
     }
 
-    private ShapeDebugFrame.ShapeInfo createShape(Node node) {
+    private ShapeDebugFrame.ShapeInfo createShape(final Node node) {
         return new NodeShapeInfo(node, name, color, true);
     }
 }
