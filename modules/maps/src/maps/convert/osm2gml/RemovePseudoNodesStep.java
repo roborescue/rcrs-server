@@ -93,7 +93,7 @@ public class RemovePseudoNodesStep extends BaseSimplificationStep {
                 OSMNode node2 = road2.getFrom().equals(nodeToRemove) ? road2.getTo() : road2.getFrom();
 
                 // Create a new road connecting the outer nodes
-                OSMRoadInfo newRoad = new OSMRoadInfo(node1, node2);
+                OSMRoadInfo newRoad = new OSMRoadInfo(node1, node2, road1.getType(), road1.getLaneCount());
 
                 // Remove old entities and add the new one
                 roads.remove(road1);

@@ -87,7 +87,7 @@ public class OSMMap {
             List<Long> ids = new ArrayList<>(next.getNodeIDs());
             ids.removeIf(nextID -> !nodes.containsKey(nextID));
             if (!ids.isEmpty()) {
-                roads.put(next.getID(), new OSMRoad(next.getID(), ids, next.getType(), next.getLanes()));
+                roads.put(next.getID(), new OSMRoad(next));
             }
         }
         for (OSMBuilding next : other.buildings.values()) {
@@ -341,7 +341,7 @@ public class OSMMap {
 
         // Road attributes.
         OSMRoadType type = null;
-        int lanes = -1;
+        int laneCount = -1;
 
         for (final Element tag : e.elements("tag")) {
             final String key = tag.attributeValue("k");
@@ -369,12 +369,12 @@ public class OSMMap {
             }
 
             if ("lanes".equals(key)) {
-                lanes = Integer.parseInt(value);
+                laneCount = Integer.parseInt(value);
             }
         }
 
         if (type != null) {
-            roads.put(id, new OSMRoad(id, ids, type, lanes));
+            roads.put(id, new OSMRoad(id, ids, type, laneCount));
         }
     }
 }
