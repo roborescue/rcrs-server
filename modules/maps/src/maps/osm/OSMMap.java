@@ -77,7 +77,7 @@ public class OSMMap {
         for (OSMNode next : other.nodes.values()) {
             double lat = next.getLatitude();
             double lon = next.getLongitude();
-            long id = next.getID();
+            long id = next.getId();
             if (lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon) {
                 this.nodes.put(id, new OSMNode(id, lat, lon));
             }
@@ -87,7 +87,7 @@ public class OSMMap {
             List<Long> ids = new ArrayList<>(next.getNodeIDs());
             ids.removeIf(nextID -> !nodes.containsKey(nextID));
             if (!ids.isEmpty()) {
-                roads.put(next.getID(), new OSMRoad(next));
+                roads.put(next.getId(), new OSMRoad(next));
             }
         }
         for (OSMBuilding next : other.buildings.values()) {
@@ -99,7 +99,7 @@ public class OSMMap {
                 }
             }
             if (allFound) {
-                buildings.put(next.getID(), new OSMBuilding(next.getID(), new ArrayList<>(next.getNodeIDs())));
+                buildings.put(next.getId(), new OSMBuilding(next.getId(), new ArrayList<>(next.getNodeIDs())));
             }
         }
     }
@@ -135,13 +135,13 @@ public class OSMMap {
         bounds.addAttribute("maxlon", String.valueOf(maxLon));
         for (OSMNode next : nodes.values()) {
             Element node = root.addElement("node");
-            node.addAttribute("id", String.valueOf(next.getID()));
+            node.addAttribute("id", String.valueOf(next.getId()));
             node.addAttribute("lat", String.valueOf(next.getLatitude()));
             node.addAttribute("lon", String.valueOf(next.getLongitude()));
         }
         for (OSMRoad next : roads.values()) {
             Element node = root.addElement("way");
-            node.addAttribute("id", String.valueOf(next.getID()));
+            node.addAttribute("id", String.valueOf(next.getId()));
             for (Long nextID : next.getNodeIDs()) {
                 node.addElement("nd").addAttribute("ref", String.valueOf(nextID));
             }
@@ -149,7 +149,7 @@ public class OSMMap {
         }
         for (OSMBuilding next : buildings.values()) {
             Element node = root.addElement("way");
-            node.addAttribute("id", String.valueOf(next.getID()));
+            node.addAttribute("id", String.valueOf(next.getId()));
             for (Long nextID : next.getNodeIDs()) {
                 node.addElement("nd").addAttribute("ref", String.valueOf(nextID));
             }
@@ -225,7 +225,7 @@ public class OSMMap {
        @param node The node to remove.
     */
     public void removeNode(OSMNode node) {
-        nodes.remove(node.getID());
+        nodes.remove(node.getId());
     }
 
     /**
@@ -265,10 +265,10 @@ public class OSMMap {
     */
     public void replaceNode(OSMNode old, OSMNode replacement) {
         for (OSMRoad r : roads.values()) {
-            r.replace(old.getID(), replacement.getID());
+            r.replace(old.getId(), replacement.getId());
         }
         for (OSMBuilding b : buildings.values()) {
-            b.replace(old.getID(), replacement.getID());
+            b.replace(old.getId(), replacement.getId());
         }
         removeNode(old);
     }
@@ -286,7 +286,7 @@ public class OSMMap {
        @param road The road to remove.
     */
     public void removeRoad(OSMRoad road) {
-        roads.remove(road.getID());
+        roads.remove(road.getId());
     }
 
     /**
@@ -302,7 +302,7 @@ public class OSMMap {
        @param building The building to remove.
     */
     public void removeBuilding(OSMBuilding building) {
-        buildings.remove(building.getID());
+        buildings.remove(building.getId());
     }
 
     private void calculateBounds() {

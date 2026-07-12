@@ -66,7 +66,7 @@ public class ScanOSMStep extends ConvertStep {
             while (it.hasNext()) {
                 OSMNode end = osm.getNode(it.next());
                 if (start == end) {
-                    System.out.println("Degenerate road: " + road.getID());
+                    System.out.println("Degenerate road: " + road.getId());
                     continue;
                 }
                 OSMIntersectionInfo from = nodeToIntersection.get(start);

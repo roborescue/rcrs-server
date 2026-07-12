@@ -120,7 +120,7 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
             Point2D loc = i.getLocation();
             totalLon += loc.getX();
             totalLat += loc.getY();
-            if (representativeId == -1) representativeId = i.getUnderlyingNode().getID();
+            if (representativeId == -1) representativeId = i.getUnderlyingNode().getId();
         }
 
         double centroidLon = totalLon / group.size();

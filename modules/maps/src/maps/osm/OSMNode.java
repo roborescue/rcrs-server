@@ -39,6 +39,6 @@ public class OSMNode extends OSMObject implements Puntal {
 
     @Override
     public String toString() {
-        return "OSMNode#" + getID() + " (point=" + point + ")";
+        return "OSMNode#" + getId() + " (point=" + point + ")";
     }
 }

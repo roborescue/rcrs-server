@@ -30,7 +30,7 @@ public class OSMRoad extends OSMWay {
      * @param other The {@code OSMRoad} to copy.
      */
     public OSMRoad(final OSMRoad other) {
-        super(other.getID(), other.getNodeIDs());
+        super(other.getId(), other.getNodeIDs());
         this.type  = other.type;
         this.laneCount = other.laneCount;
     }

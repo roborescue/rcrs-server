@@ -27,7 +27,7 @@ public class OSMBuildingInfo implements OSMShape {
        @param map The map.
     */
     public OSMBuildingInfo(OSMBuilding building, OSMMap map) {
-        buildingID = building.getID();
+        buildingID = building.getId();
         vertices = new ArrayList<Point2D>();
         for (Long next : building.getNodeIDs()) {
             OSMNode node = map.getNode(next);
