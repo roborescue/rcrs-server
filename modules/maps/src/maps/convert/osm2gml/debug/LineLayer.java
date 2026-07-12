@@ -6,37 +6,75 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A debug layer that displays a collection of linear objects.
+ * @param <T> The type of linear object in this layer.
+ */
 public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
     private Color color;
     private boolean thick;
     private boolean arrow;
 
+    public static final Color   DEFAULT_COLOR = Color.BLACK;
+    public static final boolean DEFAULT_THICK = false;
+    public static final boolean DEFAULT_ARROW = false;
+
     private LineLayer(final Collection<T> objects) {
         super(objects);
+
+        this.color = DEFAULT_COLOR;
+        this.thick = DEFAULT_THICK;
+        this.arrow = DEFAULT_ARROW;
     }
 
+    /**
+     * Create a new {@code LineLayer}.
+     * @param objects The linear objects to display.
+     * @param <T>     The type of object in this layer.
+     * @return A new {@code LineLayer}.
+     */
     public static <T extends Lineal> LineLayer<T> of(final Collection<T> objects) {
         return new LineLayer<>(objects);
     }
 
+    /**
+     * Set the display name of this layer.
+     * @param name The layer name.
+     * @return This layer, for chaining.
+     */
     public LineLayer<T> name(final String name) {
         this.name = name;
         return this;
     }
 
-    @SuppressWarnings("unuse")
+    /**
+     * Set the line color.
+     * @param color The line color.
+     * @return This layer, for chaining.
+     */
+    @SuppressWarnings("unused")
     public LineLayer<T> color(final Color color) {
         this.color = color;
         return this;
     }
 
-    @SuppressWarnings("unuse")
+    /**
+     * Set whether lines are drawn thick.
+     * @param thick {@code true} to draw thick lines.
+     * @return This layer, for chaining.
+     */
+    @SuppressWarnings("unused")
     public LineLayer<T> thick(final boolean thick) {
         this.thick = thick;
         return this;
     }
 
-    @SuppressWarnings("unuse")
+    /**
+     * Set whether lines are drawn with an arrowhead indicating direction.
+     * @param arrow {@code true} to draw an arrowhead.
+     * @return This layer, for chaining.
+     */
+    @SuppressWarnings("unused")
     public LineLayer<T> arrow(final boolean arrow) {
         this.arrow = arrow;
         return this;

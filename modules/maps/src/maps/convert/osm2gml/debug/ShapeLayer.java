@@ -6,6 +6,10 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Base class for a layer of debug shapes displayed together in a {@link ShapeDebugFrame}.
+ * @param <T> The type of object contained in this layer.
+ */
 public abstract class ShapeLayer<T> {
     protected final Collection<T> objects;
     protected String name = "No name layer";
@@ -14,6 +18,10 @@ public abstract class ShapeLayer<T> {
         this.objects = objects;
     }
 
+    /**
+     * Build the {@link rescuecore2.misc.gui.ShapeDebugFrame.ShapeInfo} instances used to render this layer.
+     * @return The shapes to display for this layer.
+     */
     public abstract List<ShapeDebugFrame.ShapeInfo> createShapes();
 
     @Override
