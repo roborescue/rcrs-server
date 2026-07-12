@@ -39,6 +39,7 @@ public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
      * @param name The layer name.
      * @return This layer, for chaining.
      */
+    @SuppressWarnings("unused")
     public PointLayer<T> name(final String name) {
         this.name = name;
         return this;

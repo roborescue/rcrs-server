@@ -13,15 +13,18 @@ import java.util.List;
 public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
     private Color outlineColor;
     private Color fillColor;
+    private int strokeWidth;
 
     public static final Color DEFAULT_OUTLINE_COLOR = Color.BLACK;
     public static final Color DEFAULT_FILL_COLOR    = Color.GRAY;
+    public static final int   DEFAULT_STROKE_WIDTH  = 2;
 
     private PolygonLayer(final Collection<T> objects) {
         super(objects);
 
         this.outlineColor = DEFAULT_OUTLINE_COLOR;
         this.fillColor    = DEFAULT_FILL_COLOR;
+        this.strokeWidth  = DEFAULT_STROKE_WIDTH;
     }
 
     /**
@@ -39,6 +42,7 @@ public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
      * @param name The layer name.
      * @return This layer, for chaining.
      */
+    @SuppressWarnings("unused")
     public PolygonLayer<T> name(final String name) {
         this.name = name;
         return this;
@@ -49,6 +53,7 @@ public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
      * @param outlineColor The outline color.
      * @return This layer, for chaining.
      */
+    @SuppressWarnings("unused")
     public PolygonLayer<T> outlineColor(final Color outlineColor) {
         this.outlineColor = outlineColor;
         return this;
@@ -59,8 +64,20 @@ public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
      * @param fillColor The fill color.
      * @return This layer, for chaining.
      */
+    @SuppressWarnings("unused")
     public PolygonLayer<T> fillColor(final Color fillColor) {
         this.fillColor = fillColor;
+        return this;
+    }
+
+    /**
+     * Set the polygon outline stroke width.
+     * @param strokeWidth The stroke width, in pixels.
+     * @return This layer, for chaining.
+     */
+    @SuppressWarnings("unused")
+    public PolygonLayer<T> strokeWidth(final int strokeWidth) {
+        this.strokeWidth = strokeWidth;
         return this;
     }
 
@@ -70,6 +87,6 @@ public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
     }
 
     private ShapeDebugFrame.ShapeInfo createShape(final T object) {
-        return new PolygonShapeInfo(object, name, outlineColor, fillColor);
+        return new PolygonShapeInfo(object, name, outlineColor, fillColor, strokeWidth);
     }
 }

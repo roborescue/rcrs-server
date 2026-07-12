@@ -13,6 +13,7 @@ public class PolygonShapeInfo extends ShapeDebugFrame.ShapeInfo {
     private final List<Point2D> vertices;
     private final Color outlineColour;
     private final Color fillColour;
+    private final Stroke stroke;
     private final Rectangle2D bounds;
 
     /**
@@ -23,11 +24,13 @@ public class PolygonShapeInfo extends ShapeDebugFrame.ShapeInfo {
      * @param fillColor    The color to fill the polygon.
      */
     public PolygonShapeInfo(
-            final Polygonal polygon, final String name, final Color outlineColor, final Color fillColor)  {
+            final Polygonal polygon, final String name, final Color outlineColor, final Color fillColor,
+            final int strokeWidth)  {
         super(polygon, name);
         this.vertices      = polygon == null ? Collections.emptyList() : polygon.getVertices();
         this.outlineColour = outlineColor;
         this.fillColour    = fillColor;
+        this.stroke        = new BasicStroke(strokeWidth);
         this.bounds        = computeBounds(vertices);
     }
 
@@ -66,6 +69,7 @@ public class PolygonShapeInfo extends ShapeDebugFrame.ShapeInfo {
             g.fill(polygon);
         }
         if (outlineColour != null) {
+            g.setStroke(stroke);
             g.setColor(outlineColour);
             g.draw(polygon);
         }

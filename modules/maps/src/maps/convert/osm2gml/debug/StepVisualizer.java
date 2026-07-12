@@ -9,11 +9,13 @@ public class StepVisualizer {
     private final ShapeDebugFrame debug;
     private String title;
     private final List<ShapeLayer<?>> layers;
+    private final List<ShapeLayer<?>> backgroundLayers;
 
     private StepVisualizer(final ShapeDebugFrame debug) {
         this.debug = debug;
         this.title = "No title";
         this.layers = new ArrayList<>();
+        this.backgroundLayers = new ArrayList<>();
     }
 
     public static StepVisualizer create(final ShapeDebugFrame debug) {
@@ -25,16 +27,23 @@ public class StepVisualizer {
         return this;
     }
 
-    public <T> StepVisualizer layer(final ShapeLayer<T> layer) {
+    public StepVisualizer layer(final ShapeLayer<?> layer) {
         layers.add(layer);
         return this;
     }
 
+    @SuppressWarnings("unused")
+    public StepVisualizer backgroundLayer(final ShapeLayer<?> layer) {
+        backgroundLayers.add(layer);
+        return this;
+    }
+
     public void show() {
-        final List<ShapeDebugFrame.ShapeInfo> shapes = layers.stream()
-            .map(ShapeLayer::createShapes)
-            .flatMap(List::stream)
-            .toList();
-        debug.show(title, shapes);
+        if (!backgroundLayers.isEmpty()) debug.setBackground(flatten(backgroundLayers));
+        debug.show(title, flatten(layers));
+    }
+
+    private List<ShapeDebugFrame.ShapeInfo> flatten(final List<ShapeLayer<?>> src) {
+        return src.stream().map(ShapeLayer::createShapes).flatMap(List::stream).toList();
     }
 }

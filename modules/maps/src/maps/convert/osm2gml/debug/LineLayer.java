@@ -42,6 +42,7 @@ public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
      * @param name The layer name.
      * @return This layer, for chaining.
      */
+    @SuppressWarnings("unused")
     public LineLayer<T> name(final String name) {
         this.name = name;
         return this;
