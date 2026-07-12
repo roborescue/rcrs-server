@@ -1,12 +1,8 @@
 package maps.convert.osm2gml;
 
 import maps.convert.ConvertStep;
-import maps.convert.osm2gml.debug.LineLayer;
-import maps.convert.osm2gml.debug.PointLayer;
-import maps.convert.osm2gml.debug.PolygonLayer;
-import maps.convert.osm2gml.debug.StepVisualizer;
+import maps.convert.osm2gml.debug.*;
 
-import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -45,13 +41,15 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
         StepVisualizer.create(debug)
                 .title("Generate Intersection Areas")
                 .layer(LineLayer.of(map.getOSMRoadInfo())
-                        .name("OSM Roads"))
+                        .name("OSM Roads")
+                        .color(DebugPalette.MAIN_STROKE))
                 .layer(PointLayer.of(map.getOSMIntersectionInfo())
-                        .name("OSM Intersecions"))
+                        .name("OSM Intersecions")
+                        .color(DebugPalette.MAIN_STROKE))
                 .layer(PolygonLayer.of(map.getOSMIntersectionInfo())
                         .name("Generated Intersection Polygons")
-                        .outlineColor(Color.GREEN)
-                        .fillColor(Constants.TRANSPARENT_GREEN))
+                        .outlineColor(DebugPalette.CREATED_STROKE)
+                        .fillColor(DebugPalette.CREATED_FILL))
                 .show();
     }
 }

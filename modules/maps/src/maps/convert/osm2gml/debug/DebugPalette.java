@@ -13,15 +13,15 @@ public class DebugPalette {
 
     // Main color: outlines/fills for existing background objects (buildings, roads).
     public static final Color MAIN_STROKE = new Color(0x9A, 0xA5, 0xB1);
-    public static final Color MAIN_FILL = new Color(0x9A, 0xA5, 0xB1, 26); // ~10% opacity
+    public static final Color MAIN_FILL = new Color(0x9A, 0xA5, 0xB1, 26);
 
     // Accent 1: removed objects.
     public static final Color REMOVED_STROKE = new Color(0xD6, 0x45, 0x45);
     public static final Color REMOVED_FILL = new Color(0xD6, 0x45, 0x45, 38);
 
     // Accent 2: added objects.
-    public static final Color ADDED_STROKE = new Color(0x17, 0xA0, 0x56);
-    public static final Color ADDED_FILL = new Color(0x17, 0xA0, 0x56, 56);
+    public static final Color CREATED_STROKE = new Color(0x17, 0xA0, 0x56);
+    public static final Color CREATED_FILL = new Color(0x17, 0xA0, 0x56, 56);
 
     // Accent 3: reference/supplementary objects.
     public static final Color REFERENCE_STROKE = new Color(0xC9, 0x7F, 0x1B);
