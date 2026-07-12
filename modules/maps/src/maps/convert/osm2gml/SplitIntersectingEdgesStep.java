@@ -5,8 +5,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.List;
 
-import maps.convert.osm2gml.debug.EdgeLayer;
-import maps.convert.osm2gml.debug.NodeLayer;
+import maps.convert.osm2gml.debug.LineLayer;
+import maps.convert.osm2gml.debug.PointLayer;
 import maps.convert.osm2gml.debug.StepVisualizer;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
@@ -168,8 +168,8 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
         final boolean isStartShared = isShorterStartEqualsLongerStart || isShorterStartEqualsLongerEnd;
         final boolean isEndShared   = isShorterEndEqualsLongerStart   || isShorterEndEqualsLongerEnd;
-        final Point2D shorterStart  = shorterEdge.getStart().getCoordinates();
-        final Point2D shorterEnd    = shorterEdge.getEnd().getCoordinates();
+        final Point2D shorterStart  = shorterEdge.getStart().getPoint();
+        final Point2D shorterEnd    = shorterEdge.getEnd().getPoint();
         final boolean isStartInside = !isStartShared && containsRobust(longerEdge.getLine(), shorterStart);
         final boolean isEndInside   = !isEndShared   && containsRobust(longerEdge.getLine(), shorterEnd);
 
@@ -231,8 +231,8 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
     // Returns true if the lie near either endpoint of the edge.
     private boolean isNearEndpoint(final Edge edge, final Point2D point) {
-        return map.isNear(point, edge.getStart().getCoordinates()) ||
-               map.isNear(point, edge.getEnd().getCoordinates());
+        return map.isNear(point, edge.getStart().getPoint()) ||
+               map.isNear(point, edge.getEnd().getPoint());
     }
 
     // Returns true if the point lies on the line segment, using a tolerance robust
@@ -334,13 +334,13 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
     private void visualizeResult() {
         StepVisualizer.create(debug)
             .title("Split Intersecting Edges")
-            .layer(NodeLayer.of(createdNodes)
+            .layer(PointLayer.of(createdNodes)
                              .name("Created Node")
                              .color(Color.GREEN))
-            .layer(EdgeLayer.of(createdEdges)
+            .layer(LineLayer.of(createdEdges)
                             .name("Created Edge")
                             .color(Color.GREEN))
-            .layer(EdgeLayer.of(intactEdges)
+            .layer(LineLayer.of(intactEdges)
                             .name("Intact Edge")
                             .color(Color.GRAY))
             .show();

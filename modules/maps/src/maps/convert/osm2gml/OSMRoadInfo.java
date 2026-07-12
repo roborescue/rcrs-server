@@ -1,8 +1,9 @@
 package maps.convert.osm2gml;
 
 import lombok.Getter;
-import lombok.Setter;
+import maps.convert.osm2gml.debug.Lineal;
 import maps.osm.OSMRoadType;
+import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 
 import maps.osm.OSMNode;
@@ -15,11 +16,12 @@ import java.util.List;
 /**
  * Information about an OSM road.
  */
-public class OSMRoadInfo implements OSMShape {
-    @Setter @Getter private OSMNode from;
-    @Setter @Getter private OSMNode to;
+public class OSMRoadInfo implements OSMShape, Lineal {
+    @Getter final private OSMNode from;
+    @Getter final private OSMNode to;
     @Getter final private OSMRoadType type;
     @Getter final private int laneCount;
+    @Getter final private Line2D line;
     @Getter private Point2D fromLeft;
     @Getter private Point2D toLeft;
     @Getter private Point2D fromRight;
@@ -34,10 +36,11 @@ public class OSMRoadInfo implements OSMShape {
      * @param laneCount The number of lanes of the road.
      */
     public OSMRoadInfo(final OSMNode from, final OSMNode to, final OSMRoadType type, final int laneCount) {
-        this.from      = from;
-        this.to        = to;
-        this.type      = type;
+        this.from = from;
+        this.to = to;
+        this.type = type;
         this.laneCount = laneCount;
+        this.line = new Line2D(from.getPoint(), to.getPoint());
         area = null;
     }
 

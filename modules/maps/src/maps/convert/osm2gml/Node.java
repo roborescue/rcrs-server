@@ -1,59 +1,57 @@
 package maps.convert.osm2gml;
 
+import maps.convert.osm2gml.debug.Puntal;
 import rescuecore2.misc.geometry.Point2D;
 
 /**
-   A node object.
+ * A node object.
  */
-public class Node extends ManagedObject {
-    private Point2D coordinates;
+public class Node extends ManagedObject implements Puntal {
+    private final Point2D point;
 
     /**
-       Construct a new node.
-       @param id The ID of this node.
-       @param x The x coordinate of this node.
-       @param y The y coordinate of this node.
+     * Construct a new node.
+     * @param id The ID of this node.
+     * @param x  The x coordinate of this node.
+     * @param y  The y coordinate of this node.
      */
-    public Node(long id, double x, double y) {
+    public Node(final long id, final double x, final double y) {
         this(id, new Point2D(x, y));
     }
 
     /**
-       Construct a new node.
-       @param id The ID of this node.
-       @param coordinates The coordinates of this node.
+     * Construct a new node.
+     * @param id    The ID of this node.
+     * @param point The coordinates of this node.
      */
-    public Node(long id, Point2D coordinates) {
+    public Node(final long id, final Point2D point) {
         super(id);
-        this.coordinates = coordinates;
+        this.point = point;
+    }
+
+    @Override
+    public Point2D getPoint() {
+        return point;
     }
 
     /**
-       Get the coordinates of this node.
-       @return The node coordinates.
-     */
-    public Point2D getCoordinates() {
-        return coordinates;
-    }
-
-    /**
-       Get the X coordinate.
-       @return The X coordinate.
+     * Get the X coordinate.
+     * @return The X coordinate.
      */
     public double getX() {
-        return coordinates.getX();
+        return point.getX();
     }
 
     /**
-       Get the Y coordinate.
-       @return The Y coordinate.
+     * Get the Y coordinate.
+     * @return The Y coordinate.
      */
     public double getY() {
-        return coordinates.getY();
+        return point.getY();
     }
 
     @Override
     public String toString() {
-        return "Node " + getID() + " at " + coordinates;
+        return getClass().getSimpleName() + "#" + getID() + "(point=" + point + ")";
     }
 }

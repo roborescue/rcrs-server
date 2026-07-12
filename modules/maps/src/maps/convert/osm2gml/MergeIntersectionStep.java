@@ -66,13 +66,11 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
                 continue;
             }
 
-            road.setFrom(newStart.getUnderlyingNode());
-            road.setTo(newEnd.getUnderlyingNode());
-
-            newStart.addRoadSegment(road);
-            newEnd.addRoadSegment(road);
-
-            finalRoads.add(road);
+            final OSMRoadInfo createdRoad = new OSMRoadInfo(newStart.getUnderlyingNode(), newEnd.getUnderlyingNode(),
+                    road.getType(), road.getLaneCount());
+            newStart.addRoadSegment(createdRoad);
+            newEnd.addRoadSegment(createdRoad);
+            finalRoads.add(createdRoad);
         }
 
         // Update the map with the simplified graph.

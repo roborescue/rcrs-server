@@ -112,6 +112,14 @@ public class TemporaryMap {
         this.roadEnds = roadEnds;
     }
 
+    public void addOSMRoad(final OSMRoadInfo road) {
+        osmRoads.add(road);
+    }
+
+    public void removeOSMRoad(final OSMRoadInfo road) {
+        osmRoads.remove(road);
+    }
+
     /**
        Get the OSM intersection info.
        @return The OSM intersection info.

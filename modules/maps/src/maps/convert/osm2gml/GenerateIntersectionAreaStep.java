@@ -1,7 +1,12 @@
 package maps.convert.osm2gml;
 
 import maps.convert.ConvertStep;
+import maps.convert.osm2gml.debug.LineLayer;
+import maps.convert.osm2gml.debug.PointLayer;
+import maps.convert.osm2gml.debug.PolygonLayer;
+import maps.convert.osm2gml.debug.StepVisualizer;
 
+import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -11,7 +16,7 @@ import java.util.Collection;
 public class GenerateIntersectionAreaStep extends ConvertStep {
     private final TemporaryMap map;
 
-    public GenerateIntersectionAreaStep(TemporaryMap map) {
+    public GenerateIntersectionAreaStep(final TemporaryMap map) {
         this.map = map;
     }
 
@@ -22,16 +27,31 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
 
     @Override
     protected void step() {
-        Collection<OSMIntersectionInfo> intersections = map.getOSMIntersectionInfo();
-        double sizeOf1m = ConvertTools.sizeOf1Metre(map.getOSMMap());
+        final Collection<OSMIntersectionInfo> intersections = map.getOSMIntersectionInfo();
+        final double sizeOf1m = ConvertTools.sizeOf1Metre(map.getOSMMap());
 
         setProgressLimit(intersections.size());
 
-        for (OSMIntersectionInfo next : intersections) {
+        for (final OSMIntersectionInfo next : intersections) {
             next.process(sizeOf1m);
             bumpProgress();
         }
 
         setStatus("Generated polygon areas for " + intersections.size() + " intersections");
+        visualizeResults();
+    }
+
+    private void visualizeResults() {
+        StepVisualizer.create(debug)
+                .title("Generate Intersection Areas")
+                .layer(LineLayer.of(map.getOSMRoadInfo())
+                        .name("OSM Roads"))
+                .layer(PointLayer.of(map.getOSMIntersectionInfo())
+                        .name("OSM Intersecions"))
+                .layer(PolygonLayer.of(map.getOSMIntersectionInfo())
+                        .name("Generated Intersection Polygons")
+                        .outlineColor(Color.GREEN)
+                        .fillColor(Constants.TRANSPARENT_GREEN))
+                .show();
     }
 }

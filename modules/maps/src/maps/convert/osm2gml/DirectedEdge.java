@@ -72,10 +72,10 @@ public class DirectedEdge {
      */
     public Point2D getStartCoordinates() {
         if (forward) {
-            return edge.getStart().getCoordinates();
+            return edge.getStart().getPoint();
         }
         else {
-            return edge.getEnd().getCoordinates();
+            return edge.getEnd().getPoint();
         }
     }
 
@@ -85,10 +85,10 @@ public class DirectedEdge {
      */
     public Point2D getEndCoordinates() {
         if (forward) {
-            return edge.getEnd().getCoordinates();
+            return edge.getEnd().getPoint();
         }
         else {
-            return edge.getStart().getCoordinates();
+            return edge.getStart().getPoint();
         }
     }
 

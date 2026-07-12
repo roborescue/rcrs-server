@@ -1,6 +1,7 @@
 package maps.convert.osm2gml;
 
 import maps.convert.ConvertStep;
+import maps.convert.osm2gml.debug.ObjectShapeInfo;
 import rescuecore2.misc.gui.ShapeDebugFrame;
 
 import java.awt.*;
@@ -42,28 +43,28 @@ public abstract class BaseModificationStep extends ConvertStep {
         // Draw all context objects in a natural colour.
         Collection<TemporaryObject> allObjects = new ArrayList<>(map.getAllObjects());
         for (TemporaryObject obj : allObjects) {
-            shapes.add(new TemporaryObjectInfo(obj, "Context", Color.DARK_GRAY, contextColour));
+            shapes.add(new ObjectShapeInfo(obj, "Context", Color.DARK_GRAY, contextColour));
         }
 
         // Draw the items that were KEPT on the top, so they are not obscured.
         Set<T> kept = new HashSet<>(beforeSet);
         kept.retainAll(afterSet);
         for (T obj : kept) {
-            shapes.add(new TemporaryObjectInfo(obj, "Kept", Color.BLACK, Color.GRAY));
+            shapes.add(new ObjectShapeInfo(obj, "Kept", Color.BLACK, Color.GRAY));
         }
 
         // Draw the items that were REMOVED.
         Set<T> removed = new HashSet<>(beforeSet);
         removed.removeAll(afterSet);
         for (T obj : removed) {
-            shapes.add(new TemporaryObjectInfo(obj, "Removed (Original)", Color.RED.darker(), colourForOld));
+            shapes.add(new ObjectShapeInfo(obj, "Removed (Original)", Color.RED.darker(), colourForOld));
         }
 
         // Draw the items that were ADDED.
         Set<T> added = new HashSet<>(afterSet);
         added.removeAll(beforeSet);
         for (T obj : added) {
-            shapes.add(new TemporaryObjectInfo(obj, "Added", Color.GREEN.darker(), colourForNew));
+            shapes.add(new ObjectShapeInfo(obj, "Added", Color.GREEN.darker(), colourForNew));
         }
 
         debug.show(title, shapes);

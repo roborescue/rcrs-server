@@ -7,6 +7,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 
 import lombok.Getter;
+import maps.convert.osm2gml.debug.Puntal;
 import maps.osm.OSMRoadType;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
@@ -20,7 +21,7 @@ import maps.osm.OSMNode;
 /**
    Information about an OSM intersection.
 */
-public class OSMIntersectionInfo implements OSMShape {
+public class OSMIntersectionInfo implements OSMShape, Puntal {
 
     @Getter private final OSMNode center;
     private final List<RoadAspect> roads;
@@ -221,6 +222,11 @@ public class OSMIntersectionInfo implements OSMShape {
         Point2D end2 = line2.getPoint(1);
         road.setRightEnd(end1);
         road.setLeftEnd(end2);
+    }
+
+    @Override
+    public Point2D getPoint() {
+        return center.getPoint();
     }
 
     private static class RoadAspect {

@@ -1,6 +1,7 @@
 package maps.convert.osm2gml;
 
 import lombok.Getter;
+import maps.convert.osm2gml.debug.Lineal;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 
@@ -10,7 +11,7 @@ import java.awt.geom.Rectangle2D;
    An edge. An edge is a line between two nodes.
  */
 @Getter
-public class Edge extends ManagedObject implements SpatialIndexable{
+public class Edge extends ManagedObject implements SpatialIndexable, Lineal {
     private final Node start;
     private final Node end;
     private final Line2D line;
@@ -25,7 +26,7 @@ public class Edge extends ManagedObject implements SpatialIndexable{
         super(id);
         this.start = start;
         this.end = end;
-        line = new Line2D(start.getCoordinates(), end.getCoordinates());
+        line = new Line2D(start.getPoint(), end.getPoint());
     }
 
     /**
@@ -33,8 +34,8 @@ public class Edge extends ManagedObject implements SpatialIndexable{
      * @return A new {@link Point2D} representing the midpoint.
      */
     public Point2D getMidpoint() {
-        final Point2D p1 = start.getCoordinates();
-        final Point2D p2 = end.getCoordinates();
+        final Point2D p1 = start.getPoint();
+        final Point2D p2 = end.getPoint();
         return new Point2D((p1.getX() + p2.getX()) / 2.0, (p1.getY() + p2.getY()) / 2.0);
     }
 
@@ -52,8 +53,8 @@ public class Edge extends ManagedObject implements SpatialIndexable{
 
     @Override
     public Rectangle2D getBounds() {
-        Point2D p1 = start.getCoordinates();
-        Point2D p2 = end.getCoordinates();
+        Point2D p1 = start.getPoint();
+        Point2D p2 = end.getPoint();
         double x = Math.min(p1.getX(), p2.getX());
         double y = Math.min(p1.getY(), p2.getY());
         double width = Math.abs(p1.getX() - p2.getX());

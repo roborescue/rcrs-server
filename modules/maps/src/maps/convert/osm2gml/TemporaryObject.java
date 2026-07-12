@@ -19,6 +19,7 @@ import java.awt.Shape;
 import java.util.concurrent.atomic.AtomicLong;
 
 import lombok.Getter;
+import maps.convert.osm2gml.debug.Polygonal;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
@@ -29,7 +30,7 @@ import maps.gml.GMLTools;
 /**
  * Abstract base class for temporary data structures during conversion.
  */
-public abstract class TemporaryObject implements SpatialIndexable {
+public abstract class TemporaryObject implements SpatialIndexable, Polygonal {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
 
     @Getter
@@ -83,6 +84,7 @@ public abstract class TemporaryObject implements SpatialIndexable {
      * The first vertex is automatically added at the end to ensure the polygon is closed.
      * @return An unmodifiable list of Point2D representing the vertices of the object.
      */
+    @Override
     public List<Point2D> getVertices() {
         final List<Point2D> vertices = new ArrayList<>();
         if (edges.isEmpty()) return Collections.unmodifiableList(vertices);

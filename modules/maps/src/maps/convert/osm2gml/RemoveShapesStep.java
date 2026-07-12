@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import maps.convert.ConvertStep;
 
+import maps.convert.osm2gml.debug.ObjectShapeInfo;
 import rescuecore2.log.Logger;
 
 /**
@@ -88,8 +89,8 @@ public class RemoveShapesStep extends ConvertStep {
                     Logger.debug("Removed duplicate object: " + second + " is same as " + first);
                 }
                 debug.show("Checking for duplicates",
-                           new TemporaryObjectInfo(first, "First", Color.WHITE, Constants.TRANSPARENT_LIME),
-                           new TemporaryObjectInfo(second, "Second", Color.WHITE, Constants.TRANSPARENT_BLUE));
+                           new ObjectShapeInfo(first, "First", Color.WHITE, Constants.TRANSPARENT_LIME),
+                           new ObjectShapeInfo(second, "Second", Color.WHITE, Constants.TRANSPARENT_BLUE));
             }
         }
         return count;

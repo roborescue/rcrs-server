@@ -1,9 +1,12 @@
 package maps.osm;
 
+import maps.convert.osm2gml.debug.Puntal;
+import rescuecore2.misc.geometry.Point2D;
+
 /**
    An OpenStreetMap node.
  */
-public class OSMNode extends OSMObject {
+public class OSMNode extends OSMObject implements Puntal {
     private double lat;
     private double lon;
 
@@ -38,5 +41,10 @@ public class OSMNode extends OSMObject {
     @Override
     public String toString() {
         return "OSMNode (" + getID() + ") at lat " + lat + ", lon " + lon;
+    }
+
+    @Override
+    public Point2D getPoint() {
+        return new Point2D(lon, lat);
     }
 }

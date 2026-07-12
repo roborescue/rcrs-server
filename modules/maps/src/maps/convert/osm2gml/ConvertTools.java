@@ -1,5 +1,6 @@
 package maps.convert.osm2gml;
 
+import maps.convert.osm2gml.debug.ObjectShapeInfo;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Vector2D;
@@ -162,7 +163,7 @@ public final class ConvertTools {
                 c = BACKGROUND_INTERSECTION_COLOUR;
                 name = "Intersections";
             }
-            allShapes.add(new TemporaryObjectInfo(next, name, Color.BLACK, c));
+            allShapes.add(new ObjectShapeInfo(next, name, Color.BLACK, c));
         }
         return allShapes;
     }
