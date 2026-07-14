@@ -6,15 +6,15 @@ import rescuecore2.misc.geometry.Point2D;
 
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MergeIntersectionStep extends BaseSimplificationStep {
+    private static final double MERGE_DISTANCE = 10;
     private final double mergeDistance;
 
-    public MergeIntersectionStep(TemporaryMap map) {
+    public MergeIntersectionStep(final TemporaryMap map) {
         super(map);
-
-        // Merge intersection within 10 meters of each other.
-        this.mergeDistance = ConvertTools.sizeOf1Metre(map.getOSMMap()) * 10.0;
+        this.mergeDistance = ConvertTools.sizeOfMeters(map.getOSMMap(), MERGE_DISTANCE);
     }
 
     @Override
@@ -24,117 +24,123 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
 
     @Override
     protected void step() {
-        List<OSMIntersectionInfo> initialIntersections = new ArrayList<>(map.getOSMIntersectionInfo());
-        Collection<OSMRoadInfo> initialRoads = new ArrayList<>(map.getOSMRoadInfo());
+        final Set<OSMIntersectionInfo> intersections = new HashSet<>(map.getOSMIntersectionInfo());
 
-        if (initialIntersections.size() < 2) {
+        if (intersections.size() < 2) {
             setStatus("Not enough intersections to merge.");
             return;
         }
 
-        // Group nearby intersections.
-        List<Set<OSMIntersectionInfo>> groupedIntersections = groupIntersections(initialIntersections);
+        final Set<Set<OSMIntersectionInfo>> clusters = clusterIntersections(intersections);
+        final Map<OSMIntersectionInfo, OSMIntersectionInfo> intersectionToCentroid =
+                mapIntersectionsToCentroids(clusters);
+        final List<OSMIntersectionInfo> centroids = intersectionToCentroid.values().stream()
+                .distinct().toList();
 
-        // Create new centroid intersections and create a map from old to new.
-        List<OSMIntersectionInfo> newIntersections = new ArrayList<>();
-        Map<OSMIntersectionInfo, OSMIntersectionInfo> oldToNewMap = new HashMap<>();
+        intersections.forEach(OSMIntersectionInfo::clearRoadSegments);
 
-        for (Set<OSMIntersectionInfo> group : groupedIntersections) {
-            OSMIntersectionInfo newCentroid = createCentroidIntersection(group);
-            newIntersections.add(newCentroid);
-            for (OSMIntersectionInfo old : group) {
-                oldToNewMap.put(old, newCentroid);
-            }
-        }
+        final Set<OSMRoadInfo> roads = new HashSet<>(map.getOSMRoadInfo());
+        final Set<OSMRoadInfo> mergedRoads = createMergedRoads(roads, intersectionToCentroid);//new HashSet<>();
 
-        // Clear the internal state of all new intersections before rebuilding.
-        for (OSMIntersectionInfo intersection : newIntersections) {
-            intersection.clearRoadSegments();
-        }
-
-        // Re-link all roads to the new centroid intersections.
-        Set<OSMRoadInfo> finalRoads = new HashSet<>();
-        for (OSMRoadInfo road : initialRoads) {
-            OSMIntersectionInfo oldStart = map.getRoadStartIntersection(road);
-            OSMIntersectionInfo oldEnd = map.getRoadEndIntersection(road);
-
-            OSMIntersectionInfo newStart = oldToNewMap.get(oldStart);
-            OSMIntersectionInfo newEnd = oldToNewMap.get(oldEnd);
-
-            // Discard invalid roads or roads that were internal to a merged group.
-            if (newStart == null || newEnd == null || newStart.getUnderlyingNode().equals(newEnd.getUnderlyingNode())) {
-                continue;
-            }
-
-            final OSMRoadInfo createdRoad = new OSMRoadInfo(newStart.getUnderlyingNode(), newEnd.getUnderlyingNode(),
-                    road.getType(), road.getLaneCount());
-            newStart.addRoadSegment(createdRoad);
-            newEnd.addRoadSegment(createdRoad);
-            finalRoads.add(createdRoad);
-        }
-
-        // Update the map with the simplified graph.
-        map.setOSMInfo(newIntersections, new ArrayList<>(finalRoads), map.getOSMBuildingInfo());
-
-        visualizeNetworkDifference(initialIntersections, initialRoads, map.getOSMIntersectionInfo(), map.getOSMRoadInfo(), "Intersection Merging Results");
-
-        String status = "Merged " + initialIntersections.size() + " intersections into " + newIntersections.size();
+        map.setOSMInfo(centroids, mergedRoads, map.getOSMBuildingInfo());
+        visualizeNetworkDifference(intersections, roads, map.getOSMIntersectionInfo(), map.getOSMRoadInfo(), "Intersection Merging Results");
+        String status = "Merged " + intersections.size() + " intersections into " + centroids.size();
         setStatus(status);
         Logger.info(status);
     }
 
-    private List<Set<OSMIntersectionInfo>> groupIntersections(List<OSMIntersectionInfo> intersections) {
-        List<Set<OSMIntersectionInfo>> groups = new ArrayList<>();
-        Set<OSMIntersectionInfo> visited = new HashSet<>();
-        for (OSMIntersectionInfo startNode : intersections) {
-            if (visited.contains(startNode)) continue;
+    private Set<Set<OSMIntersectionInfo>> clusterIntersections(final Set<OSMIntersectionInfo> intersections) {
+        final Set<Set<OSMIntersectionInfo>> clusters = new HashSet<>();
+        final Set<OSMIntersectionInfo> visited = new HashSet<>();
 
-            Set<OSMIntersectionInfo> currentGroup = new HashSet<>();
-            Queue<OSMIntersectionInfo> queue = new ArrayDeque<>();
-            queue.add(startNode);
-            visited.add(startNode);
+        for (final OSMIntersectionInfo intersection : intersections) {
+            if (visited.contains(intersection)) continue;
+
+            final Set<OSMIntersectionInfo> cluster = new HashSet<>();
+            final Queue<OSMIntersectionInfo> queue = new ArrayDeque<>();
+            queue.offer(intersection);
+            visited.add(intersection);
 
             while (!queue.isEmpty()) {
-                OSMIntersectionInfo current = queue.poll();
-                currentGroup.add(current);
-                for (OSMIntersectionInfo neighbour : intersections) {
-                    if (!visited.contains(neighbour) && isNear(current.getLocation(), neighbour.getLocation())) {
-                        visited.add(neighbour);
-                        queue.add(neighbour);
-                    }
+                final OSMIntersectionInfo current = queue.poll();
+                cluster.add(current);
+
+                for (final OSMIntersectionInfo neighbor : intersections) {
+                    if (visited.contains(neighbor)) continue;
+                    if (exceedMergeDistance(current, neighbor)) continue;
+                    visited.add(neighbor);
+                    queue.add(neighbor);
                 }
             }
-            groups.add(currentGroup);
+            clusters.add(cluster);
         }
-        return groups;
+        return clusters;
     }
 
-    private OSMIntersectionInfo createCentroidIntersection(Set<OSMIntersectionInfo> group) {
-        if (group.isEmpty()) return null;
-        if (group.size() == 1) return group.iterator().next();
+    private Map<OSMIntersectionInfo, OSMIntersectionInfo> mapIntersectionsToCentroids(
+            final Set<Set<OSMIntersectionInfo>> clusters) {
+        return clusters.stream()
+                .flatMap(cluster -> {
+                    final OSMIntersectionInfo centroid = createCentroidIntersection(cluster);
+                    return cluster.stream()
+                            .map(intersection -> Map.entry(intersection, centroid));
+                })
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
+    private Set<OSMRoadInfo> createMergedRoads(
+            final Set<OSMRoadInfo> roads,
+            final Map<OSMIntersectionInfo, OSMIntersectionInfo> intersectionToCentroid) {
+        final Set<OSMRoadInfo> mergedRoads = new HashSet<>();
+        final Map<OSMIntersectionInfo, OSMIntersectionInfo> connectedCentroids = new HashMap<>();
+
+        for (final OSMRoadInfo road : roads) {
+            final OSMIntersectionInfo startIntersection = map.getRoadStartIntersection(road);
+            final OSMIntersectionInfo endIntersection = map.getRoadEndIntersection(road);
+            final OSMIntersectionInfo startCentroid = intersectionToCentroid.get(startIntersection);
+            final OSMIntersectionInfo endCentroid = intersectionToCentroid.get(endIntersection);
+
+            final boolean isSelfLoop = startCentroid.equals(endCentroid);
+            if (isSelfLoop || isAlreadyConnected(connectedCentroids, startCentroid, endCentroid)) continue;
+
+            final OSMRoadInfo mergedRoad = new OSMRoadInfo(startCentroid.getCenter(), endCentroid.getCenter(),
+                    road.getType(), road.getLaneCount());
+            connectedCentroids.put(startCentroid, endCentroid);
+            startCentroid.addRoadSegment(mergedRoad);
+            endCentroid.addRoadSegment(mergedRoad);
+            mergedRoads.add(mergedRoad);
+        }
+        return mergedRoads;
+    }
+
+    private boolean isAlreadyConnected(
+            final Map<OSMIntersectionInfo, OSMIntersectionInfo> connectedCentroids,
+            final OSMIntersectionInfo startCentroid,
+            final OSMIntersectionInfo endCentroid) {
+        final boolean forwardConnected = endCentroid.equals(connectedCentroids.get(startCentroid));
+        final boolean backwardConnected = startCentroid.equals(connectedCentroids.get(endCentroid));
+        return forwardConnected || backwardConnected;
+    }
+
+    private boolean exceedMergeDistance(final OSMIntersectionInfo first, final OSMIntersectionInfo second) {
+        final Point2D point1 = first.getPoint();
+        final Point2D point2 = second.getPoint();
+        final double distance = point2.minus(point1).getLength();
+        return mergeDistance < distance;
+    }
+
+    private OSMIntersectionInfo createCentroidIntersection(final Set<OSMIntersectionInfo> cluster) {
         double totalLon = 0, totalLat = 0;
-        long representativeId = -1;
-
-        for (OSMIntersectionInfo i : group) {
-            Point2D loc = i.getLocation();
-            totalLon += loc.getX();
-            totalLat += loc.getY();
-            if (representativeId == -1) representativeId = i.getUnderlyingNode().getId();
+        for (final OSMIntersectionInfo intersection : cluster) {
+            Point2D point = intersection.getPoint();
+            totalLon += point.getX();
+            totalLat += point.getY();
         }
 
-        double centroidLon = totalLon / group.size();
-        double centroidLat = totalLat / group.size();
-
-        OSMNode centroidNode = new OSMNode(-Math.abs(representativeId), centroidLat, centroidLon);
-        return new OSMIntersectionInfo(centroidNode);
-    }
-
-    private boolean isNear(Point2D p1, Point2D p2) {
-        if (p1 == null || p2 == null) return false;
-        double dx = p2.getX() - p1.getX();
-        double dy = p2.getY() - p1.getY();
-        double distSq = dx * dx + dy * dy;
-        return distSq <= mergeDistance * mergeDistance;
+        final long id = -Math.abs(cluster.iterator().next().getCenter().getId());
+        final double centroidLon = totalLon / cluster.size();
+        final double centroidLat = totalLat / cluster.size();
+        final OSMNode centroid = new OSMNode(id, centroidLat, centroidLon);
+        return new OSMIntersectionInfo(centroid);
     }
 }
