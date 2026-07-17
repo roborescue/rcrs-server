@@ -12,16 +12,19 @@ import java.util.List;
  */
 public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
     private Color color;
-    private boolean square;
+    private PointShape shape;
+    private int size;
 
-    public static final Color   DEFAULT_COLOR  = Color.BLACK;
-    public static final boolean DEFAULT_SQUARE = true;
+    public static final Color      DEFAULT_COLOR = Color.BLACK;
+    public static final PointShape DEFAULT_SHAPE = PointShape.DOT;
+    public static final int        DEFAULT_SIZE  = 8;
 
     private PointLayer(final Collection<T> objects) {
         super(objects);
 
-        this.color  = DEFAULT_COLOR;
-        this.square = DEFAULT_SQUARE;
+        this.color = DEFAULT_COLOR;
+        this.shape = DEFAULT_SHAPE;
+        this.size  = DEFAULT_SIZE;
     }
 
     /**
@@ -57,13 +60,24 @@ public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
     }
 
     /**
-     * Set whether points are drawn as squares rather than circles.
-     * @param square {@code true} to draw square markers.
+     * Set the point shape.
+     * @param shape The point shape.
      * @return This layer, for chaining.
      */
     @SuppressWarnings("unused")
-    public PointLayer<T> square(final boolean square) {
-        this.square = square;
+    public PointLayer<T> shape(final PointShape shape) {
+        this.shape = shape;
+        return this;
+    }
+
+    /**
+     * Set the point size.
+     * @param size The point size.
+     * @return This layer, for chaining.
+     */
+    @SuppressWarnings("unused")
+    public PointLayer<T> size(final int size) {
+        this.size = size;
         return this;
     }
 
@@ -73,6 +87,6 @@ public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
     }
 
     private ShapeDebugFrame.ShapeInfo createShape(final T object) {
-        return new PointShapeInfo(object, name, color, square);
+        return new PointShapeInfo(object, name, color, shape, size);
     }
 }
