@@ -40,7 +40,7 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
         intersections.forEach(OSMIntersectionInfo::clearRoadSegments);
 
         final Set<OSMRoadInfo> roads = new HashSet<>(map.getOSMRoadInfo());
-        final Set<OSMRoadInfo> mergedRoads = createMergedRoads(roads, intersectionToCentroid);//new HashSet<>();
+        final Set<OSMRoadInfo> mergedRoads = createMergedRoads(roads, intersectionToCentroid);
 
         map.setOSMInfo(centroids, mergedRoads, map.getOSMBuildingInfo());
         visualizeNetworkDifference(intersections, roads, map.getOSMIntersectionInfo(), map.getOSMRoadInfo(), "Intersection Merging Results");
@@ -92,7 +92,7 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
             final Set<OSMRoadInfo> roads,
             final Map<OSMIntersectionInfo, OSMIntersectionInfo> intersectionToCentroid) {
         final Set<OSMRoadInfo> mergedRoads = new HashSet<>();
-        final Map<OSMIntersectionInfo, OSMIntersectionInfo> connectedCentroids = new HashMap<>();
+        final Set<Set<OSMIntersectionInfo>> connectedPairs = new HashSet<>();
 
         for (final OSMRoadInfo road : roads) {
             final OSMIntersectionInfo startIntersection = map.getRoadStartIntersection(road);
@@ -100,26 +100,19 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
             final OSMIntersectionInfo startCentroid = intersectionToCentroid.get(startIntersection);
             final OSMIntersectionInfo endCentroid = intersectionToCentroid.get(endIntersection);
 
-            final boolean isSelfLoop = startCentroid.equals(endCentroid);
-            if (isSelfLoop || isAlreadyConnected(connectedCentroids, startCentroid, endCentroid)) continue;
+            if (startCentroid.equals(endCentroid)) continue;
+
+            final Set<OSMIntersectionInfo> pair = Set.of(startIntersection, endIntersection);
+            if (connectedPairs.contains(pair)) continue;
 
             final OSMRoadInfo mergedRoad = new OSMRoadInfo(startCentroid.getCenter(), endCentroid.getCenter(),
                     road.getType(), road.getLaneCount());
-            connectedCentroids.put(startCentroid, endCentroid);
+            connectedPairs.add(pair);
             startCentroid.addRoadSegment(mergedRoad);
             endCentroid.addRoadSegment(mergedRoad);
             mergedRoads.add(mergedRoad);
         }
         return mergedRoads;
-    }
-
-    private boolean isAlreadyConnected(
-            final Map<OSMIntersectionInfo, OSMIntersectionInfo> connectedCentroids,
-            final OSMIntersectionInfo startCentroid,
-            final OSMIntersectionInfo endCentroid) {
-        final boolean forwardConnected = endCentroid.equals(connectedCentroids.get(startCentroid));
-        final boolean backwardConnected = startCentroid.equals(connectedCentroids.get(endCentroid));
-        return forwardConnected || backwardConnected;
     }
 
     private boolean exceedMergeDistance(final OSMIntersectionInfo first, final OSMIntersectionInfo second) {
