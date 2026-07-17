@@ -86,7 +86,7 @@ public class RemovePseudoNodesStep extends BaseSimplificationStep {
 
             if (!isStraight(pseudoNode, road1, road2)) continue;
 
-            final OSMNode nodeToRemove = pseudoNode.getUnderlyingNode();
+            final OSMNode nodeToRemove = pseudoNode.getNode();
             final OSMNode node1 = road1.getFrom().equals(nodeToRemove) ? road1.getTo() : road1.getFrom();
             final OSMNode node2 = road2.getFrom().equals(nodeToRemove) ? road2.getTo() : road2.getFrom();
             final OSMRoadInfo roadToCreate = new OSMRoadInfo(node1, node2, road1.getType(), road1.getLaneCount());
@@ -104,18 +104,8 @@ public class RemovePseudoNodesStep extends BaseSimplificationStep {
         return removedIntersections;
     }
 
-    private static List<OSMRoadInfo> getConnectedRoads(
-            final OSMIntersectionInfo intersection, final List<OSMRoadInfo> allRoads) {
-        return allRoads.stream()
-                .filter(road -> {
-                    final OSMNode center = intersection.getCenter();
-                    return road.getFrom().equals(center) || road.getTo().equals(center);
-                })
-                .toList();
-    }
-
     private boolean isStraight(OSMIntersectionInfo intersection, OSMRoadInfo road1, OSMRoadInfo road2) {
-        OSMNode centre = intersection.getUnderlyingNode();
+        OSMNode centre = intersection.getNode();
         OSMNode other1 = road1.getFrom().equals(centre) ? road1.getTo() : road1.getFrom();
         OSMNode other2 = road2.getFrom().equals(centre) ? road2.getTo() : road2.getFrom();
 

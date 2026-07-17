@@ -105,7 +105,7 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
             final Set<OSMIntersectionInfo> pair = Set.of(startIntersection, endIntersection);
             if (connectedPairs.contains(pair)) continue;
 
-            final OSMRoadInfo mergedRoad = new OSMRoadInfo(startCentroid.getCenter(), endCentroid.getCenter(),
+            final OSMRoadInfo mergedRoad = new OSMRoadInfo(startCentroid.getNode(), endCentroid.getNode(),
                     road.getType(), road.getLaneCount());
             connectedPairs.add(pair);
             startCentroid.addRoadSegment(mergedRoad);
@@ -130,7 +130,7 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
             totalLat += point.getY();
         }
 
-        final long id = -Math.abs(cluster.iterator().next().getCenter().getId());
+        final long id = -Math.abs(cluster.iterator().next().getNode().getId());
         final double centroidLon = totalLon / cluster.size();
         final double centroidLat = totalLat / cluster.size();
         final OSMNode centroid = new OSMNode(id, centroidLat, centroidLon);

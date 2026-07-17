@@ -1,7 +1,5 @@
 package maps.convert.osm2gml;
 
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 import java.awt.geom.Area;
@@ -16,36 +14,36 @@ import rescuecore2.misc.geometry.Point2D;
 import maps.osm.OSMNode;
 
 /**
-   Information about an OSM intersection.
-*/
+ * Information about an OSM intersection.
+ */
 public class OSMIntersectionInfo implements OSMShape, Puntal {
 
-    @Getter private final OSMNode center;
+    @Getter private final OSMNode node;
     @Getter private final Set<RoadAspect> roads;
     @Getter @Setter private List<Point2D> vertices;
     private Area area;
 
     /**
-       Create an IntersectionInfo.
-       @param center The OSMNode at the centre of the intersection.
-    */
-    public OSMIntersectionInfo(OSMNode center) {
-        this.center = center;
+     * Create an IntersectionInfo.
+     * @param node The OSMNode at the center of the intersection.
+     */
+    public OSMIntersectionInfo(final OSMNode node) {
+        this.node = node;
         this.roads = new HashSet<>();
         this.vertices = new ArrayList<>();
         this.area = null;
     }
 
     /**
-       Add an incoming road.
-       @param road The incoming road.
-    */
-    public void addRoadSegment(OSMRoadInfo road) {
-        if (road.getFrom().equals(center) && road.getTo().equals(center)) {
+     * Add an incoming road.
+     * @param road The incoming road.
+     */
+    public void addRoadSegment(final OSMRoadInfo road) {
+        if (road.getFrom().equals(node) && road.getTo().equals(node)) {
             System.err.println("Degenerate road found");
             return;
         }
-        roads.add(new RoadAspect(road, center));
+        roads.add(new RoadAspect(road, node));
     }
 
     /**
@@ -56,34 +54,11 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
         roads.clear();
     }
 
-    /**
-     * Get the underlying OSMNode that represents the key point of this intersection.
-     * @return The underlying OSMNode.
-     */
-    public OSMNode getUnderlyingNode() {
-        return center;
-    }
-
-    /**
-     * Get the representative geometric location of this intersection.
-     * If the intersection polygon has been processed, it returns the centroid of that polygon.
-     * Otherwise, it returns the location of the central OSMNode.
-     * @return The location as a Point2D.
-     */
-    public Point2D getLocation() {
-        if (area != null && !area.isEmpty()) {
-            Rectangle2D bounds = area.getBounds2D();
-            return new Point2D(bounds.getCenterX(), bounds.getCenterY());
-        }
-        // As a fallback, use the location of the central node.
-        return new Point2D(center.getLongitude(), center.getLatitude());
-    }
-
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("IntersectionInfo (centre ");
-        result.append(center);
+        result.append("IntersectionInfo (center ");
+        result.append(node);
         result.append(") [");
         for (Iterator<Point2D> it = vertices.iterator(); it.hasNext();) {
             result.append(it.next().toString());
@@ -123,6 +98,6 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
 
     @Override
     public Point2D getPoint() {
-        return center.getPoint();
+        return node.getPoint();
     }
 }

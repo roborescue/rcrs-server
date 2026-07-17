@@ -76,7 +76,7 @@ public abstract class BaseSimplificationStep extends ConvertStep {
 
     private void drawIntersections(List<ShapeDebugFrame.ShapeInfo> shapes, Collection<OSMIntersectionInfo> intersections, String name, Color colour, boolean square) {
         for (OSMIntersectionInfo intersection : intersections) {
-            shapes.add(new OSMNodeShapeInfo(intersection.getUnderlyingNode(), name, colour, square));
+            shapes.add(new OSMNodeShapeInfo(intersection.getNode(), name, colour, square));
         }
     }
 }
