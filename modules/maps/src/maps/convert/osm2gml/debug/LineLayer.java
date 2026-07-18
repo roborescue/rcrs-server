@@ -14,17 +14,20 @@ public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
     private Color color;
     private boolean thick;
     private boolean arrow;
+    private boolean dashed;
 
-    public static final Color   DEFAULT_COLOR = Color.BLACK;
-    public static final boolean DEFAULT_THICK = false;
-    public static final boolean DEFAULT_ARROW = false;
+    public static final Color   DEFAULT_COLOR  = Color.BLACK;
+    public static final boolean DEFAULT_THICK  = false;
+    public static final boolean DEFAULT_ARROW  = false;
+    public static final boolean DEFAULT_DASHED = false;
 
     private LineLayer(final Collection<T> objects) {
         super(objects);
 
-        this.color = DEFAULT_COLOR;
-        this.thick = DEFAULT_THICK;
-        this.arrow = DEFAULT_ARROW;
+        this.color  = DEFAULT_COLOR;
+        this.thick  = DEFAULT_THICK;
+        this.arrow  = DEFAULT_ARROW;
+        this.dashed = DEFAULT_DASHED;
     }
 
     /**
@@ -81,12 +84,23 @@ public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
         return this;
     }
 
+    /**
+     * Set whether lines are drawn dashed.
+     * @param dashed {@code true} to draw dashed lines.
+     * @return This layer, for chaining.
+     */
+    @SuppressWarnings("unused")
+    public LineLayer<T> dashed(final boolean dashed) {
+        this.dashed = dashed;
+        return this;
+    }
+
     @Override
     public List<ShapeDebugFrame.ShapeInfo> createShapes() {
         return objects.stream().map(this::createShape).toList();
     }
 
     private ShapeDebugFrame.ShapeInfo createShape(final T object) {
-        return new LineShapeInfo(object, name, color, thick, arrow);
+        return new LineShapeInfo(object, name, color, thick, arrow, dashed);
     }
 }

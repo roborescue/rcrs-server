@@ -35,7 +35,7 @@ public class PointShapeInfo extends ShapeDebugFrame.ShapeInfo {
     }
 
     @Override
-    public void paintLegend(Graphics2D g, int width, int height) {
+    public void paintLegend(final Graphics2D g, final int width, final int height) {
         g.setColor(color);
 
         final int x = width / 2;
