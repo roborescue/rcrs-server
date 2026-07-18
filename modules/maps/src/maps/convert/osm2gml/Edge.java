@@ -8,7 +8,7 @@ import rescuecore2.misc.geometry.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
-   An edge. An edge is a line between two nodes.
+ * An edge. An edge is a line between two nodes.
  */
 @Getter
 public class Edge extends ManagedObject implements SpatialIndexable, Lineal {
@@ -17,10 +17,10 @@ public class Edge extends ManagedObject implements SpatialIndexable, Lineal {
     private final Line2D line;
 
     /**
-       Construct a new Edge.
-       @param id The ID of this object.
-       @param start The start node.
-       @param end The end node.
+     * Construct a new edge.
+     * @param id    The ID of this object.
+     * @param start The start node.
+     * @param end   The end node.
      */
     public Edge(long id, Node start, Node end) {
         super(id);
@@ -34,31 +34,22 @@ public class Edge extends ManagedObject implements SpatialIndexable, Lineal {
      * @return A new {@link Point2D} representing the midpoint.
      */
     public Point2D getMidpoint() {
-        final Point2D p1 = start.getPoint();
-        final Point2D p2 = end.getPoint();
-        return new Point2D((p1.getX() + p2.getX()) / 2.0, (p1.getY() + p2.getY()) / 2.0);
+        return line.getMidpoint();
     }
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("Edge ");
-        result.append(getID());
-        result.append(" from ");
-        result.append(start);
-        result.append(" to ");
-        result.append(end);
-        return result.toString();
+        return "Edge#" + getID() + " (start=" + start + ", end=" + end + ")";
     }
 
     @Override
     public Rectangle2D getBounds() {
-        Point2D p1 = start.getPoint();
-        Point2D p2 = end.getPoint();
-        double x = Math.min(p1.getX(), p2.getX());
-        double y = Math.min(p1.getY(), p2.getY());
-        double width = Math.abs(p1.getX() - p2.getX());
-        double height = Math.abs(p1.getY() - p2.getY());
+        final Point2D p1 = start.getPoint();
+        final Point2D p2 = end.getPoint();
+        final double x = Math.min(p1.getX(), p2.getX());
+        final double y = Math.min(p1.getY(), p2.getY());
+        final double width = Math.abs(p1.getX() - p2.getX());
+        final double height = Math.abs(p1.getY() - p2.getY());
         return new Rectangle2D.Double(x, y, width, height);
     }
 }
