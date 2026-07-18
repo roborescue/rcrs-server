@@ -57,7 +57,6 @@ public class Convertor {
                 new CleanOSMStep                      (temp),
                 new ScanOSMStep                       (temp),
                 new RemovePseudoNodesStep             (temp),
-                new MergeIntersectionStep             (temp),
                 new GenerateIntersectionAreaStep      (temp),
                 new MakeTempObjectsStep               (temp),
                 new ConnectBuildingsStep              (temp),
