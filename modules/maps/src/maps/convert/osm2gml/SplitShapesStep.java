@@ -31,7 +31,7 @@ public class SplitShapesStep extends ConvertStep {
 
     @Override
     protected void step() {
-        Collection<TemporaryObject> all = map.getAllObjects();
+        Collection<TemporaryObject> all = new HashSet<>(map.getAllObjects());
         setProgressLimit(all.size());
         int count = 0;
         debug.setBackground(ConvertTools.getAllDebugShapes(map));
