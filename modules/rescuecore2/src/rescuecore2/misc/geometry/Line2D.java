@@ -60,9 +60,8 @@ public class Line2D implements Indexable {
     }
 
     /**
-     * Get the midpoint of this line segment.
-     *
-     * @return A new {@link Point2D} representing the center of the line segment.
+       Get the midpoint of this line segment.
+       @return A new {@link Point2D} representing the center of the line segment.
      */
     public Point2D getMidpoint() {
         return getPoint(0.5);
@@ -90,6 +89,14 @@ public class Line2D implements Indexable {
     */
     public Vector2D getDirection() {
         return direction;
+    }
+
+    /**
+       Get the length of this line segment.
+       @return The length of the line segment.
+     */
+    public double getLength() {
+        return direction.getLength();
     }
 
     @Override
@@ -129,8 +136,8 @@ public class Line2D implements Indexable {
 	public void setEnd(Point2D end2) {
 		this.end = end2;
 		calculateDirection();
-
 	}
+
 	private void calculateDirection() {
 		this.direction = end.minus(origin);
 	}
