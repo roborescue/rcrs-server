@@ -19,9 +19,14 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
     private final double sizeOf1Meter;
 
     private static final double SETBACK_COEFFICIENT = 0.5;
-    private static final double MITER_DISTANCE_LIMIT_COEFFICIENT = 1.5;
     private static final double STRAIGHT_ANGLE_TOLERANCE_DEGREES = 5.0;
+    private static final double MITER_DISTANCE_LIMIT_COEFFICIENT = 1.5;
+    private static final double BOUNDARY_LENGTH_LIMIT_COEFFICIENT = 0.4;
 
+    /**
+     * Construct a GenerateIntersectionAreaStep.
+     * @param map The map to use.
+     */
     public GenerateIntersectionAreaStep(final TemporaryMap map) {
         this.map = map;
         this.sizeOf1Meter = ConvertTools.sizeOf1Metre(map.getOSMMap());
@@ -64,18 +69,27 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
     }
 
     private List<Point2D> processThroughRoad(final RoadAspect first, final RoadAspect second) {
-        final Point2D firstRightEnd = GeometryTools2D.getIntersectionPoint(
-                first.getRightBoundaryLine(sizeOf1Meter), second.getLeftBoundaryLine(sizeOf1Meter));
-        final Point2D firstLeftEnd = GeometryTools2D.getIntersectionPoint(
-                first.getLeftBoundaryLine(sizeOf1Meter), second.getRightBoundaryLine(sizeOf1Meter));
-        if (firstRightEnd == null || firstLeftEnd == null) {
-            throw new IllegalStateException("Parallel boundary lines at a through-road node");
+        if (isStraight(first, second)) {
+            final double firstRoadWidth = first.getWidth(sizeOf1Meter);
+            first.setRightEnd(setbackPoint(first.getRightBoundaryLine(sizeOf1Meter), firstRoadWidth));
+            first.setLeftEnd(setbackPoint(first.getLeftBoundaryLine(sizeOf1Meter), firstRoadWidth));
+
+            final double secondRoadWidth = second.getWidth(sizeOf1Meter);
+            second.setRightEnd(setbackPoint(second.getRightBoundaryLine(sizeOf1Meter), secondRoadWidth));
+            second.setLeftEnd(setbackPoint(second.getLeftBoundaryLine(sizeOf1Meter), secondRoadWidth));
+
+            return collectVertices(List.of(first, second));
         }
 
-        first.setLeftEnd(firstLeftEnd);
+        final Point2D firstRightEnd = intersectOrThrow(
+                first.getRightBoundaryLine(sizeOf1Meter), second.getLeftBoundaryLine(sizeOf1Meter));
+        final Point2D firstLeftEnd = intersectOrThrow(
+                first.getLeftBoundaryLine(sizeOf1Meter), second.getRightBoundaryLine(sizeOf1Meter));
+
         first.setRightEnd(firstRightEnd);
-        second.setLeftEnd(firstRightEnd);
+        first.setLeftEnd(firstLeftEnd);
         second.setRightEnd(firstLeftEnd);
+        second.setLeftEnd(firstRightEnd);
 
         return List.of(firstRightEnd, firstLeftEnd);
     }
@@ -106,28 +120,46 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
 
     private Point2D computeCorner(final RoadAspect own, final RoadAspect other, final boolean isLeft) {
         final Line2D ownBoundary = own.getBoundaryLine(sizeOf1Meter, isLeft);
-        final double angleBetweenRoads = GeometryTools2D.getAngleBetweenVectors(own.getVector(), other.getVector());
-        if (Math.abs(angleBetweenRoads - 180) < STRAIGHT_ANGLE_TOLERANCE_DEGREES) {
+
+        if (isStraight(own, other)) {
             return setbackPoint(ownBoundary, own.getWidth(sizeOf1Meter));
         }
 
         final Line2D otherBoundary = other.getBoundaryLine(sizeOf1Meter, !isLeft);
-        final Point2D miterCorner = Objects.requireNonNull(
-                GeometryTools2D.getIntersectionPoint(ownBoundary, otherBoundary),
-                "Expect boundary lines to intersect but they were parallel: " +
-                        ownBoundary + ", " + otherBoundary);
-        final double miterDistanceLimit = Math.max(own.getWidth(sizeOf1Meter), other.getWidth(sizeOf1Meter))
-                * MITER_DISTANCE_LIMIT_COEFFICIENT;
+        final Point2D miterCorner = intersectOrThrow(ownBoundary, otherBoundary);
+        final double miterDistanceLimit = computeMiterDistanceLimit(
+                ownBoundary, otherBoundary, own.getWidth(sizeOf1Meter), other.getWidth(sizeOf1Meter));
         final Vector2D cornerOffset = miterCorner.minus(own.getCenterPoint());
+
         if (miterDistanceLimit < cornerOffset.getLength()) {
             return own.getCenterPoint().plus(cornerOffset.normalised().scale(miterDistanceLimit));
         }
         return miterCorner;
     }
 
+    private boolean isStraight(final RoadAspect first, final RoadAspect second) {
+        final double angleBetweenRoads = GeometryTools2D.getAngleBetweenVectors(first.getVector(), second.getVector());
+        return Math.abs(angleBetweenRoads - 180) < STRAIGHT_ANGLE_TOLERANCE_DEGREES;
+    }
+
     private Point2D setbackPoint(final Line2D boundaryLine, final double roadWidth) {
-        final double setbackLength = roadWidth * SETBACK_COEFFICIENT;
+        final double defaultLength = roadWidth * SETBACK_COEFFICIENT;
+        final double lengthLimit = boundaryLine.getLength() * BOUNDARY_LENGTH_LIMIT_COEFFICIENT;
+        final double setbackLength = Math.min(lengthLimit, defaultLength);
         return boundaryLine.getOrigin().plus(boundaryLine.getDirection().normalised().scale(setbackLength));
+    }
+
+    private Point2D intersectOrThrow(final Line2D first, final Line2D second) {
+        return Objects.requireNonNull(GeometryTools2D.getIntersectionPoint(first, second),
+                "Expect boundary lines to intersect but they were parallel: " + first + ", " + second);
+    }
+
+    private double computeMiterDistanceLimit(final Line2D ownBoundary, final Line2D otherBoundary,
+                                             final double ownWidth, final double otherWidth) {
+        final double widthBasedLimit = Math.max(ownWidth, otherWidth) * MITER_DISTANCE_LIMIT_COEFFICIENT;
+        final double boundaryLengthBasedLimit =
+                Math.min(ownBoundary.getLength(), otherBoundary.getLength()) * BOUNDARY_LENGTH_LIMIT_COEFFICIENT;
+        return Math.min(widthBasedLimit, boundaryLengthBasedLimit);
     }
 
     private List<Point2D> collectVertices(final Collection<RoadAspect> roads) {
