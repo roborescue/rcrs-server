@@ -361,13 +361,6 @@ public class OSMMap {
                 type = typeOptional.get();
             }
 
-            // Check if this object is on a different level (bridge, tunnel, etc.).
-            if ("layer".equals(key) && !"0".equals(value) ||
-                "bridge".equals(key) && "yes".equals(value) ||
-                "tunnel".equals(key) && "yes".equals(value)) {
-                return;
-            }
-
             if ("lanes".equals(key)) {
                 laneCount = Integer.parseInt(value);
             }
