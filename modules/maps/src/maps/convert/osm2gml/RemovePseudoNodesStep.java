@@ -1,26 +1,27 @@
 package maps.convert.osm2gml;
 
+import maps.convert.ConvertStep;
 import maps.convert.osm2gml.debug.DebugPalette;
 import maps.convert.osm2gml.debug.LineLayer;
 import maps.convert.osm2gml.debug.PointLayer;
 import maps.convert.osm2gml.debug.StepVisualizer;
 import maps.osm.OSMNode;
 import rescuecore2.misc.geometry.GeometryTools2D;
-import rescuecore2.misc.geometry.Point2D;
-import rescuecore2.misc.geometry.Vector2D;
 
 import java.util.*;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This step simplifies the road network by removing pseudo-nodes.
  */
-public class RemovePseudoNodesStep extends BaseSimplificationStep {
+public class RemovePseudoNodesStep extends ConvertStep {
+    private final TemporaryMap map;
+
     // Angle threshold in degrees. If the angle is less than this, consider it a straight line.
     private static final double STRAIGHT_LINE_ANGLE_THRESHOLD = 10.0;
 
     public RemovePseudoNodesStep(final TemporaryMap map) {
-        super(map);
+        this.map = map;
     }
 
     @Override
@@ -30,95 +31,65 @@ public class RemovePseudoNodesStep extends BaseSimplificationStep {
 
     @Override
     protected void step() {
-        int pass = 0;
-        final Set<OSMIntersectionInfo> removedIntersections = new HashSet<>();
-        final Set<OSMRoadInfo> initialRoads = new HashSet<>(map.getOSMRoadInfo());
+        final Deque<OSMIntersectionInfo> queue = map.getOSMIntersections().stream()
+                .filter(intersection -> map.getOSMIntersectionDegree(intersection) == 2)
+                .collect(Collectors.toCollection(ArrayDeque::new));
 
-        while (pass <= 20) {
-            final Set<OSMIntersectionInfo> result = processPseudoNodes();
-            if (result.isEmpty()) {
-                // No nodes were removed in a full pass, so the process has converged
-                break;
+        setProgressLimit(queue.size());
+
+        final Set<OSMRoadInfo> beforeRoads = new HashSet<>(map.getOSMRoads());
+        final Set<OSMIntersectionInfo> removedIntersections = new HashSet<>();
+
+        while (!queue.isEmpty()) {
+            final OSMIntersectionInfo pseudoNode = queue.poll();
+
+            final Set<OSMRoadInfo> connectedRoads = map.getConnectedOSMRoads(pseudoNode);
+            final Iterator<OSMRoadInfo> it = connectedRoads.iterator();
+            final OSMRoadInfo firstRoad = it.next();
+            final OSMRoadInfo secondRoad = it.next();
+
+            if (!isStraight(firstRoad, secondRoad)) continue;
+            if (firstRoad.getType() != secondRoad.getType()) continue;
+            if (firstRoad.getLaneCount() != secondRoad.getLaneCount()) continue;
+
+            final OSMNode nodeToRemove = pseudoNode.getNode();
+            final OSMNode firstNode = firstRoad.getOtherNode(nodeToRemove);
+            final OSMNode secondNode = secondRoad.getOtherNode(nodeToRemove);
+            final OSMRoadInfo mergedRoad = new OSMRoadInfo(
+                    firstNode, secondNode, firstRoad.getType(), firstRoad.getLaneCount());
+
+            map.removeOSMRoad(firstRoad);
+            map.removeOSMRoad(secondRoad);
+            map.addOSMRoad(mergedRoad);
+            map.removeOSMIntersection(pseudoNode);
+
+            removedIntersections.add(pseudoNode);
+
+            final OSMIntersectionInfo firstIntersection = map.getOSMIntersection(firstNode);
+            if (map.getOSMIntersectionDegree(firstIntersection) == 2 && !queue.contains(firstIntersection)) {
+                queue.offer(firstIntersection);
             }
 
-            pass++;
-            removedIntersections.addAll(result);
+            final OSMIntersectionInfo secondIntersection = map.getOSMIntersection(secondNode);
+            if (map.getOSMIntersectionDegree(secondIntersection) == 2 && !queue.contains(secondIntersection))
+                queue.offer(secondIntersection);
+
+            setProgress(getProgressLimit() - queue.size());
         }
+        setProgress(getProgressLimit());
 
-        final Set<OSMRoadInfo> removedRoads = new HashSet<>(initialRoads);
-        removedRoads.removeAll(map.getOSMRoadInfo());
-
-        final Set<OSMRoadInfo> createdRoads = new HashSet<>(map.getOSMRoadInfo());
-        createdRoads.removeAll(initialRoads);
-
-        // Safety break to prevent potential infinite loops in complex scenarios
-        if (20 < pass) {
-            System.err.println("Exceeded 20 passes in RemovePseudoNodesStep. Aborting.");
-        }
-
+        final Set<OSMRoadInfo> afterRoads = new HashSet<>(map.getOSMRoads());
+        final Set<OSMRoadInfo> removedRoads = new HashSet<>(beforeRoads);
+        removedRoads.removeAll(afterRoads);
+        final Set<OSMRoadInfo> createdRoads = new HashSet<>(afterRoads);
+        createdRoads.removeAll(beforeRoads);
         setStatus("Removed " + removedIntersections.size() + " pseudo-nodes.");
         visualizeResults(removedIntersections, removedRoads, createdRoads);
     }
 
-    private Set<OSMIntersectionInfo> processPseudoNodes() {
-        // We must work with copies as we will be modifying the map's lists
-        final List<OSMIntersectionInfo> intersections = new ArrayList<>(map.getOSMIntersectionInfo());
-        final List<OSMRoadInfo> roads = new ArrayList<>(map.getOSMRoadInfo());
-
-        // Find all pseudo-nodes in the current graph
-        final List<OSMIntersectionInfo> pseudoNodes = intersections.stream()
-                .filter(intersection -> getConnectedRoads(intersection, roads).size() == 2)
-                .toList();
-
-        if (pseudoNodes.isEmpty()) return Collections.emptySet();
-
-        final Set<OSMIntersectionInfo> removedIntersections = new HashSet<>();
-
-        for (final OSMIntersectionInfo pseudoNode : pseudoNodes) {
-            // The intersection might have been removed already as part of another merge
-            if (!intersections.contains(pseudoNode)) continue;
-
-            final List<OSMRoadInfo> connectedRoads = getConnectedRoads(pseudoNode, roads);
-            if (connectedRoads.size() != 2) continue; // State changed, skip
-
-            final OSMRoadInfo road1 = connectedRoads.get(0);
-            final OSMRoadInfo road2 = connectedRoads.get(1);
-
-            if (!isStraight(pseudoNode, road1, road2)) continue;
-
-            final OSMNode nodeToRemove = pseudoNode.getNode();
-            final OSMNode node1 = road1.getFrom().equals(nodeToRemove) ? road1.getTo() : road1.getFrom();
-            final OSMNode node2 = road2.getFrom().equals(nodeToRemove) ? road2.getTo() : road2.getFrom();
-            final OSMRoadInfo roadToCreate = new OSMRoadInfo(node1, node2, road1.getType(), road1.getLaneCount());
-
-            roads.remove(road1);
-            roads.remove(road2);
-            roads.add(roadToCreate);
-            intersections.remove(pseudoNode);
-
-            removedIntersections.add(pseudoNode);
-        }
-
-        if (!removedIntersections.isEmpty()) map.setOSMInfo(intersections, roads, map.getOSMBuildingInfo());
-
-        return removedIntersections;
-    }
-
-    private boolean isStraight(OSMIntersectionInfo intersection, OSMRoadInfo road1, OSMRoadInfo road2) {
-        OSMNode centre = intersection.getNode();
-        OSMNode other1 = road1.getFrom().equals(centre) ? road1.getTo() : road1.getFrom();
-        OSMNode other2 = road2.getFrom().equals(centre) ? road2.getTo() : road2.getFrom();
-
-        Point2D pCentre = new Point2D(centre.getLongitude(), centre.getLatitude());
-        Point2D p1 = new Point2D(other1.getLongitude(), other1.getLatitude());
-        Point2D p2 = new Point2D(other2.getLongitude(), other2.getLatitude());
-
-        Vector2D v1 = p1.minus(pCentre);
-        Vector2D v2 = p2.minus(pCentre);
-
-        double angle = GeometryTools2D.getAngleBetweenVectors(v1, v2);
-
-        return Math.abs(180 - angle) < STRAIGHT_LINE_ANGLE_THRESHOLD;
+    private boolean isStraight(final OSMRoadInfo first, final OSMRoadInfo second) {
+        double angle = GeometryTools2D.getLeftAngleBetweenLines(first.getLine(), second.getLine());
+        return angle < STRAIGHT_LINE_ANGLE_THRESHOLD || 360 - STRAIGHT_LINE_ANGLE_THRESHOLD < angle;
     }
 
     private void visualizeResults(final Set<OSMIntersectionInfo> removedIntersections,
@@ -135,7 +106,7 @@ public class RemovePseudoNodesStep extends BaseSimplificationStep {
                 .layer(LineLayer.of(createdRoads)
                         .name("Created Roads")
                         .color(DebugPalette.CREATED_STROKE))
-                .backgroundLayer(LineLayer.of(map.getOSMRoadInfo())
+                .backgroundLayer(LineLayer.of(map.getOSMRoads())
                         .name("Roads")
                         .color(DebugPalette.MAIN_STROKE))
                 .show();

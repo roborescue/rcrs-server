@@ -12,6 +12,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Information about an OSM road.
@@ -88,6 +89,16 @@ public class OSMRoadInfo implements OSMShape, Lineal {
         return laneCount != -1;
     }
 
+    public boolean contains(final OSMNode node) {
+        return node.equals(from) || node.equals(to);
+    }
+
+    public OSMNode getOtherNode(final OSMNode node) {
+        if (from.equals(node)) return to;
+        if (to.equals(node)) return from;
+        throw new IllegalArgumentException("Node is not an endpoint of this road: " + node);
+    }
+
     @Override
     public Area getArea() {
         if (area != null) return area;
@@ -111,5 +122,21 @@ public class OSMRoadInfo implements OSMShape, Lineal {
     @Override
     public String toString() {
         return "RoadInfo [" + fromLeft + ", " + fromRight + ", " + toRight + ", " + toLeft + "]";
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof OSMRoadInfo other)) return false;
+
+        return from.getId() == other.from.getId() && to.getId() == other.to.getId() ||
+               from.getId() == other.to.getId() && to.getId() == other.from.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        final long a = Math.min(from.getId(), to.getId());
+        final long b = Math.max(from.getId(), to.getId());
+        return Objects.hash(a, b);
     }
 }

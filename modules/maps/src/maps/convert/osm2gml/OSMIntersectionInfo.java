@@ -35,23 +35,19 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
     }
 
     /**
-     * Add an incoming road.
-     * @param road The incoming road.
+     * Add the road that connect to this intersection.
+     * @param road The road that connect to this intersection.
      */
     public void addRoadSegment(final OSMRoadInfo road) {
-        if (road.getFrom().equals(node) && road.getTo().equals(node)) {
-            System.err.println("Degenerate road found");
-            return;
-        }
         roads.add(new RoadAspect(road, node));
     }
 
     /**
-     * Clear the list of connected road segments.
-     * Used before rebuilding the intersection's connections after a merge.
+     * Remove the road that connected to this intersection.
+     * @param road The road that connected to this intersection.
      */
-    public void clearRoadSegments() {
-        roads.clear();
+    public void removeRoadSegment(final OSMRoadInfo road) {
+        roads.remove(new RoadAspect(road, node));
     }
 
     @Override
@@ -99,5 +95,18 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
     @Override
     public Point2D getPoint() {
         return node.getPoint();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof OSMIntersectionInfo other)) return false;
+
+        return node.getId() == other.node.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node.getId());
     }
 }

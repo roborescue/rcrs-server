@@ -7,6 +7,8 @@ import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Vector2D;
 
+import java.util.Objects;
+
 public class RoadAspect {
     private final OSMRoadInfo road;
     private final boolean isIncoming;
@@ -15,17 +17,15 @@ public class RoadAspect {
     private Line2D leftBoundaryLine;
     private Line2D rightBoundaryLine;
 
-    @Getter private final Point2D centerPoint;
-    @Getter private final Point2D farPoint;
-    @Getter private final Vector2D vector;
+    @Getter private final OSMNode center;
+    @Getter private final OSMNode farNode;
 
     public RoadAspect(final OSMRoadInfo road, final OSMNode center) {
         this.road = road;
         this.isIncoming = road.getTo().equals(center);
 
-        this.centerPoint = center.getPoint();
-        this.farPoint = (isIncoming ? road.getFrom() : road.getTo()).getPoint();
-        this.vector = farPoint.minus(centerPoint);
+        this.center = center;
+        this.farNode = isIncoming ? road.getFrom() : road.getTo();
     }
 
     public void setRightEnd(final Point2D rightEnd) {
@@ -46,32 +46,58 @@ public class RoadAspect {
         }
     }
 
-    public Line2D getMouthBoundary() {
-        return rightEnd == null || leftEnd == null ? null : new Line2D(rightEnd, leftEnd);
+    public Point2D getCenterPoint() {
+        return center.getPoint();
     }
 
-    public Line2D getLeftBoundaryLine(final double sizeOf1Meter) {
-        if (leftBoundaryLine == null) leftBoundaryLine = createBoundaryLine(true, sizeOf1Meter);
-        return leftBoundaryLine;
+    public Point2D getFarPoint() {
+        return farNode.getPoint();
     }
 
-    public Line2D getRightBoundaryLine(final double sizeOf1Meter) {
-        if (rightBoundaryLine == null) rightBoundaryLine = createBoundaryLine(false, sizeOf1Meter);
-        return rightBoundaryLine;
+    public Vector2D getVector() {
+        return getFarPoint().minus(getCenterPoint());
     }
 
-    private Line2D createBoundaryLine(final boolean isLeft, final double sizeOf1Meter) {
-        final double halfWidth = calculateWidth(sizeOf1Meter) / 2;
-        final Vector2D normalVector = vector.getNormal().normalised();
-        final Point2D origin = centerPoint.plus(normalVector.scale((isLeft ? 1 : -1) * halfWidth));
-        return new Line2D(origin, vector);
-    }
-
-    private double calculateWidth(final double sizeOf1Meter) {
+    public double getWidth(final double sizeOf1Meter) {
         final OSMRoadType roadType = road.getType();
         final double widthMeter = road.hasLaneCount() ?
                 road.getLaneCount() * roadType.getLaneWidth() + 2 * roadType.getShoulderWidth() :
                 roadType.getDefaultWidth();
         return widthMeter * sizeOf1Meter;
+    }
+
+    public Line2D getMouthBoundary() {
+        return rightEnd == null || leftEnd == null ? null : new Line2D(rightEnd, leftEnd);
+    }
+
+    public Line2D getLeftBoundaryLine(final double sizeOf1Meter) {
+        if (leftBoundaryLine == null) leftBoundaryLine = getBoundaryLine(sizeOf1Meter, true);
+        return leftBoundaryLine;
+    }
+
+    public Line2D getRightBoundaryLine(final double sizeOf1Meter) {
+        if (rightBoundaryLine == null) rightBoundaryLine = getBoundaryLine(sizeOf1Meter, false);
+        return rightBoundaryLine;
+    }
+
+    public Line2D getBoundaryLine(final double sizeOf1Meter, final boolean isLeft) {
+        final double halfWidth = getWidth(sizeOf1Meter) / 2;
+        final Vector2D vector = getVector();
+        final Vector2D normalVector = vector.getNormal().normalised();
+        final Point2D origin = getCenterPoint().plus(normalVector.scale((isLeft ? 1 : -1) * halfWidth));
+        return new Line2D(origin, vector);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof RoadAspect other)) return false;
+
+        return center.getId() == other.center.getId() && farNode.getId() == other.farNode.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(center.getId(), farNode.getId());
     }
 }

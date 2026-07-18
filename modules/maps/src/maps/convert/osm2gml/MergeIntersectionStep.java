@@ -1,19 +1,23 @@
 package maps.convert.osm2gml;
 
+import maps.convert.ConvertStep;
+import maps.convert.osm2gml.debug.DebugPalette;
+import maps.convert.osm2gml.debug.LineLayer;
+import maps.convert.osm2gml.debug.PointLayer;
+import maps.convert.osm2gml.debug.StepVisualizer;
 import maps.osm.OSMNode;
-import rescuecore2.log.Logger;
 import rescuecore2.misc.geometry.Point2D;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
-public class MergeIntersectionStep extends BaseSimplificationStep {
-    private static final double MERGE_DISTANCE = 10;
+public class MergeIntersectionStep extends ConvertStep {
+    private final TemporaryMap map;
     private final double mergeDistance;
+    private static final double MERGE_DISTANCE = 10;
 
     public MergeIntersectionStep(final TemporaryMap map) {
-        super(map);
+        this.map = map;
         this.mergeDistance = ConvertTools.sizeOfMeters(map.getOSMMap(), MERGE_DISTANCE);
     }
 
@@ -24,7 +28,7 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
 
     @Override
     protected void step() {
-        final Set<OSMIntersectionInfo> intersections = new HashSet<>(map.getOSMIntersectionInfo());
+        final Set<OSMIntersectionInfo> intersections = new HashSet<>(map.getOSMIntersections());
 
         if (intersections.size() < 2) {
             setStatus("Not enough intersections to merge.");
@@ -32,21 +36,44 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
         }
 
         final Set<Set<OSMIntersectionInfo>> clusters = clusterIntersections(intersections);
-        final Map<OSMIntersectionInfo, OSMIntersectionInfo> intersectionToCentroid =
-                mapIntersectionsToCentroids(clusters);
-        final List<OSMIntersectionInfo> centroids = intersectionToCentroid.values().stream()
-                .distinct().toList();
+        final Map<OSMIntersectionInfo, OSMIntersectionInfo> replacementMap = mapIntersectionsToCentroids(clusters);
 
-        intersections.forEach(OSMIntersectionInfo::clearRoadSegments);
+        final Set<OSMIntersectionInfo> createdIntersections = new HashSet<>();
+        for (final OSMIntersectionInfo intersectionToCreate : replacementMap.values()) {
+            map.addOSMIntersection(intersectionToCreate);
+            createdIntersections.add(intersectionToCreate);
+        }
 
-        final Set<OSMRoadInfo> roads = new HashSet<>(map.getOSMRoadInfo());
-        final Set<OSMRoadInfo> mergedRoads = createMergedRoads(roads, intersectionToCentroid);
+        final Set<OSMRoadInfo> currentRoads = new HashSet<>(map.getOSMRoads());
+        final Set<OSMRoadInfo> removedRoads = new HashSet<>();
+        final Set<OSMRoadInfo> createdRoads = new HashSet<>();
+        for (final OSMRoadInfo road : currentRoads) {
+            final OSMIntersectionInfo startInt = map.getOSMIntersection(road.getFrom());
+            final OSMIntersectionInfo endInt = map.getOSMIntersection(road.getTo());
 
-        map.setOSMInfo(centroids, mergedRoads, map.getOSMBuildingInfo());
-        visualizeNetworkDifference(intersections, roads, map.getOSMIntersectionInfo(), map.getOSMRoadInfo(), "Intersection Merging Results");
-        String status = "Merged " + intersections.size() + " intersections into " + centroids.size();
-        setStatus(status);
-        Logger.info(status);
+            final OSMIntersectionInfo newStart = replacementMap.getOrDefault(startInt, startInt);
+            final OSMIntersectionInfo newEnd = replacementMap.getOrDefault(endInt, endInt);
+
+            if (newStart.equals(startInt) && newEnd.equals(endInt)) continue;
+
+            map.removeOSMRoad(road);
+            removedRoads.add(road);
+            if (newStart.equals(newEnd)) continue;
+
+            final OSMRoadInfo roadToCreate =
+                    new OSMRoadInfo(newStart.getNode(), newEnd.getNode(), road.getType(), road.getLaneCount());
+            map.addOSMRoad(roadToCreate);
+            createdRoads.add(roadToCreate);
+        }
+
+        final Set<OSMIntersectionInfo> removedIntersections = new HashSet<>();
+        for (final OSMIntersectionInfo intersectionToRemove : replacementMap.keySet()) {
+            map.removeOSMIntersection(intersectionToRemove);
+            removedIntersections.add(intersectionToRemove);
+        }
+
+        setStatus("Merged " + intersections.size() + " intersections into " + clusters.size());
+        visualizeResults(removedRoads, createdRoads, removedIntersections, createdIntersections);
     }
 
     private Set<Set<OSMIntersectionInfo>> clusterIntersections(final Set<OSMIntersectionInfo> intersections) {
@@ -72,9 +99,18 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
                     queue.add(neighbor);
                 }
             }
+            if (cluster.size() == 1) continue;
+
             clusters.add(cluster);
         }
         return clusters;
+    }
+
+    private boolean exceedMergeDistance(final OSMIntersectionInfo first, final OSMIntersectionInfo second) {
+        final Point2D point1 = first.getPoint();
+        final Point2D point2 = second.getPoint();
+        final double distance = point2.minus(point1).getLength();
+        return mergeDistance < distance;
     }
 
     private Map<OSMIntersectionInfo, OSMIntersectionInfo> mapIntersectionsToCentroids(
@@ -86,40 +122,6 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
                             .map(intersection -> Map.entry(intersection, centroid));
                 })
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Set<OSMRoadInfo> createMergedRoads(
-            final Set<OSMRoadInfo> roads,
-            final Map<OSMIntersectionInfo, OSMIntersectionInfo> intersectionToCentroid) {
-        final Set<OSMRoadInfo> mergedRoads = new HashSet<>();
-        final Set<Set<OSMIntersectionInfo>> connectedPairs = new HashSet<>();
-
-        for (final OSMRoadInfo road : roads) {
-            final OSMIntersectionInfo startIntersection = map.getRoadStartIntersection(road);
-            final OSMIntersectionInfo endIntersection = map.getRoadEndIntersection(road);
-            final OSMIntersectionInfo startCentroid = intersectionToCentroid.get(startIntersection);
-            final OSMIntersectionInfo endCentroid = intersectionToCentroid.get(endIntersection);
-
-            if (startCentroid.equals(endCentroid)) continue;
-
-            final Set<OSMIntersectionInfo> pair = Set.of(startIntersection, endIntersection);
-            if (connectedPairs.contains(pair)) continue;
-
-            final OSMRoadInfo mergedRoad = new OSMRoadInfo(startCentroid.getNode(), endCentroid.getNode(),
-                    road.getType(), road.getLaneCount());
-            connectedPairs.add(pair);
-            startCentroid.addRoadSegment(mergedRoad);
-            endCentroid.addRoadSegment(mergedRoad);
-            mergedRoads.add(mergedRoad);
-        }
-        return mergedRoads;
-    }
-
-    private boolean exceedMergeDistance(final OSMIntersectionInfo first, final OSMIntersectionInfo second) {
-        final Point2D point1 = first.getPoint();
-        final Point2D point2 = second.getPoint();
-        final double distance = point2.minus(point1).getLength();
-        return mergeDistance < distance;
     }
 
     private OSMIntersectionInfo createCentroidIntersection(final Set<OSMIntersectionInfo> cluster) {
@@ -135,5 +137,29 @@ public class MergeIntersectionStep extends BaseSimplificationStep {
         final double centroidLat = totalLat / cluster.size();
         final OSMNode centroid = new OSMNode(id, centroidLat, centroidLon);
         return new OSMIntersectionInfo(centroid);
+    }
+
+    private void visualizeResults(
+            final Set<OSMRoadInfo> removedRoads, final Set<OSMRoadInfo> createdRoads,
+            final Set<OSMIntersectionInfo> removedIntersections, final Set<OSMIntersectionInfo> createdIntersections) {
+
+        StepVisualizer.create(debug)
+                .title("Intersection Merging Results")
+                .backgroundLayer(LineLayer.of(map.getOSMRoads())
+                        .name("OSM Roads")
+                        .color(DebugPalette.MAIN_STROKE))
+                .layer(LineLayer.of(removedRoads)
+                        .name("Removed Roads")
+                        .color(DebugPalette.REMOVED_STROKE))
+                .layer(LineLayer.of(createdRoads)
+                        .name("Created Roads")
+                        .color(DebugPalette.CREATED_STROKE))
+                .layer(PointLayer.of(removedIntersections)
+                        .name("Removed Intersections")
+                        .color(DebugPalette.REMOVED_STROKE))
+                .layer(PointLayer.of(createdIntersections)
+                        .name("Created Intersections")
+                        .color(DebugPalette.CREATED_STROKE))
+                .show();
     }
 }

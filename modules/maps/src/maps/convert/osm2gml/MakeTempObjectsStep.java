@@ -31,9 +31,9 @@ public class MakeTempObjectsStep extends ConvertStep {
 
     @Override
     protected void step() {
-        Collection<OSMRoadInfo> roads = map.getOSMRoadInfo();
-        Collection<OSMIntersectionInfo> intersections = map.getOSMIntersectionInfo();
-        Collection<OSMBuildingInfo> buildings = map.getOSMBuildingInfo();
+        Collection<OSMRoadInfo> roads = map.getOSMRoads();
+        Collection<OSMIntersectionInfo> intersections = map.getOSMIntersections();
+        Collection<OSMBuildingInfo> buildings = map.getOSMBuildings();
         setProgressLimit(roads.size() + intersections.size() + buildings.size());
         generateRoadObjects(roads);
         generateIntersectionObjects(intersections);

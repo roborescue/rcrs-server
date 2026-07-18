@@ -2,6 +2,7 @@ package maps.convert.osm2gml;
 
 import java.awt.geom.Rectangle2D;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import maps.osm.OSMMap;
 
@@ -27,16 +28,13 @@ public class TemporaryMap {
     private final Set<TemporaryObject> allObjects;
 
     private final OSMMap osmMap;
-    private Collection<OSMIntersectionInfo> osmIntersections;
-    private Collection<OSMRoadInfo> osmRoads;
-    private Collection<OSMBuildingInfo> osmBuildings;
+    private final Collection<OSMIntersectionInfo> osmIntersections;
+    private final Collection<OSMRoadInfo> osmRoads;
+    private final Collection<OSMBuildingInfo> osmBuildings;
 
     private int nextID;
 
     private Rectangle2D cachedBounds;
-
-    private Map<OSMRoadInfo, OSMIntersectionInfo> roadStarts;
-    private Map<OSMRoadInfo, OSMIntersectionInfo> roadEnds;
 
     private final double gridSpacing; // size of 1 meter in map coordinates
     private final double gridOriginX; // map center X (grid anchor)
@@ -48,7 +46,11 @@ public class TemporaryMap {
        @param osmMap The OpenStreetMap data this map is generated from.
     */
     public TemporaryMap(OSMMap osmMap) {
-        this.osmMap = osmMap;
+        this.osmMap           = osmMap;
+        this.osmIntersections = new HashSet<>();
+        this.osmRoads         = new HashSet<>();
+        this.osmBuildings     = new HashSet<>();
+
         nextID = 0;
         nodes = new HashSet<>();
         edges = new HashSet<>();
@@ -70,10 +72,10 @@ public class TemporaryMap {
             }
         };
 
-        gridSpacing = ConvertTools.sizeOf1Metre(osmMap);
-        gridOriginX = osmMap.getCenterLatitude();
-        gridOriginY = osmMap.getCenterLongitude();
-        nodeGrid    = new HashMap<>();
+        this.gridSpacing = ConvertTools.sizeOf1Metre(osmMap);
+        this.gridOriginX = osmMap.getCenterLatitude();
+        this.gridOriginY = osmMap.getCenterLongitude();
+        this.nodeGrid    = new HashMap<>();
     }
 
     /**
@@ -84,47 +86,60 @@ public class TemporaryMap {
         return osmMap;
     }
 
-    /**
-     * Set the core OSM graph information (intersections, roads, buildings).
-     * This method is the single source of truth for updating the map's graph structure.
-     * It automatically rebuilds the internal road-to-intersection mappings to ensure data.
-     * @param intersections The new collection of intersections.
-     * @param roads         The new collection of roads.
-     * @param buildings     The new collection of buildings.
-     */
-    public void setOSMInfo(Collection<OSMIntersectionInfo> intersections, Collection<OSMRoadInfo> roads, Collection<OSMBuildingInfo> buildings) {
-        osmIntersections = new HashSet<>(intersections);
-        osmRoads = new HashSet<>(roads);
-        osmBuildings = new HashSet<>(buildings);
+    public void addOSMIntersection(final OSMIntersectionInfo intersection) {
+        osmIntersections.add(intersection);
+    }
 
-        Map<OSMNode, OSMIntersectionInfo> nodeToIntersection = new HashMap<>();
-        for (OSMIntersectionInfo i : osmIntersections) {
-            nodeToIntersection.put(i.getUnderlyingNode(), i);
-        }
-
-        Map<OSMRoadInfo, OSMIntersectionInfo> roadStarts = new HashMap<>();
-        Map<OSMRoadInfo, OSMIntersectionInfo> roadEnds = new HashMap<>();
-        for (OSMRoadInfo road : osmRoads) {
-            roadStarts.put(road, nodeToIntersection.get(road.getFrom()));
-            roadEnds.put(road, nodeToIntersection.get(road.getTo()));
-        }
-        this.roadStarts = roadStarts;
-        this.roadEnds = roadEnds;
+    public void removeOSMIntersection(final OSMIntersectionInfo intersection) {
+        osmIntersections.remove(intersection);
     }
 
     public void addOSMRoad(final OSMRoadInfo road) {
+        final OSMIntersectionInfo from = getOSMIntersection(road.getFrom());
+        final OSMIntersectionInfo to = getOSMIntersection(road.getTo());
         osmRoads.add(road);
+        from.addRoadSegment(road);
+        to.addRoadSegment(road);
     }
 
     public void removeOSMRoad(final OSMRoadInfo road) {
+        final OSMIntersectionInfo from = getOSMIntersection(road.getFrom());
+        final OSMIntersectionInfo to = getOSMIntersection(road.getTo());
         osmRoads.remove(road);
+        from.removeRoadSegment(road);
+        to.removeRoadSegment(road);
+    }
+
+    public void addOSMBuilding(final OSMBuildingInfo osmBuildingInfo) {
+        osmBuildings.add(osmBuildingInfo);
+    }
+
+    public Set<OSMRoadInfo> getConnectedOSMRoads(final OSMIntersectionInfo intersection) {
+        return getOSMRoadsContaining(intersection.getNode());
+    }
+
+    public Set<OSMRoadInfo> getOSMRoadsContaining(final OSMNode node) {
+        return osmRoads.stream()
+                .filter(road -> road.contains(node))
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public OSMIntersectionInfo getOSMIntersection(final OSMNode node) {
+        return osmIntersections.stream()
+                .filter(intersection -> intersection.getNode().equals(node))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public int getOSMIntersectionDegree(final OSMIntersectionInfo intersection) {
+        return getConnectedOSMRoads(intersection).size();
     }
 
     /**
        Get the OSM intersection info.
        @return The OSM intersection info.
     */
-    public Collection<OSMIntersectionInfo> getOSMIntersectionInfo() {
+    public Collection<OSMIntersectionInfo> getOSMIntersections() {
         return Collections.unmodifiableCollection(osmIntersections);
     }
 
@@ -132,7 +147,7 @@ public class TemporaryMap {
        Get the OSM road info.
        @return The OSM road info.
     */
-    public Collection<OSMRoadInfo> getOSMRoadInfo() {
+    public Collection<OSMRoadInfo> getOSMRoads() {
         return Collections.unmodifiableCollection(osmRoads);
     }
 
@@ -140,26 +155,8 @@ public class TemporaryMap {
        Get the OSM building info.
        @return The OSM building info.
     */
-    public Collection<OSMBuildingInfo> getOSMBuildingInfo() {
+    public Collection<OSMBuildingInfo> getOSMBuildings() {
         return Collections.unmodifiableCollection(osmBuildings);
-    }
-
-    /**
-     * Get the starting intersection for a given road segment.
-     * @param road The road segment to look up.
-     * @return The starting OSMIntersectionInfo.
-     */
-    public OSMIntersectionInfo getRoadStartIntersection(OSMRoadInfo road) {
-        return roadStarts.get(road);
-    }
-
-    /**
-     * Get the ending intersection for a given road segment.
-     * @param road The road segment to look up.
-     * @return The ending OSMIntersectionInfo.
-     */
-    public OSMIntersectionInfo getRoadEndIntersection(OSMRoadInfo road) {
-        return roadEnds.get(road);
     }
 
     /**
@@ -628,5 +625,4 @@ public class TemporaryMap {
     public boolean containsEdge(final Edge edge) {
         return edges.contains(edge);
     }
-
 }
