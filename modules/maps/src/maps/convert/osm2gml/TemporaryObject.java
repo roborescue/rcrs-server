@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import lombok.Getter;
 import maps.convert.osm2gml.debug.Polygonal;
-import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 
@@ -41,7 +40,6 @@ public abstract class TemporaryObject implements SpatialIndexable, Polygonal {
     // The following properties are cached for performance.
     private Path2D path;
     private Rectangle2D bounds;
-    private Point2D centroid;
 
     /**
      * Construct a new TemporaryObject.
@@ -265,7 +263,6 @@ public abstract class TemporaryObject implements SpatialIndexable, Polygonal {
         }
         bounds = null;
         path = null;
-        centroid = null;
     }
 
     private DirectedEdge findNewEdge(Node from, Set<Edge> candidates) {
@@ -287,18 +284,6 @@ public abstract class TemporaryObject implements SpatialIndexable, Polygonal {
             }
         }
         throw new IllegalArgumentException("Edge " + e + " not found");
-    }
-
-    /**
-     * Compute the centroid of this object.
-     * The centroid is calculated from the vertices of the object treated as a closed polygon.
-     * @return The centroid as a Point2D.
-     */
-    public Point2D getCentroid() {
-        if (centroid == null) {
-            centroid = GeometryTools2D.computeCentroid(getVertices());
-        }
-        return centroid;
     }
 
     /**

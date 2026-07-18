@@ -55,9 +55,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         double cellSize = (bounds.getWidth() + bounds.getHeight()) / 2.0 / 100.0;
         if (cellSize < 1e-9) cellSize = 1e-9;
         final SpatialGrid<Edge> grid = new SpatialGrid<>(bounds, cellSize);
-        for (final Edge e : map.getAllEdges()) {
-            grid.add(e);
-        }
+        map.getAllEdges().forEach(grid::add);
 
         // Initialize the work queue with all edges.
         // inQueue tracks membership to avoid redundant re-enqueuing.
@@ -118,9 +116,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         // Each split changes the map topology, so the candidate list must be rescanned.
         while (true) {
             if (!map.containsEdge(target)) break;
-
             boolean splitThisIteration = false;
-
             for (final Edge candidate : grid.getNearbyItems(target)) {
                 if (candidate.equals(target)) continue;
                 if (!map.containsEdge(candidate)) continue;
@@ -193,11 +189,6 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         Point2D intersection = resolveIntersectionPoint(first, second);
         if (intersection == null) return Collections.emptySet();
 
-        // Already connected at an endpoint; no split needed
-        if (isNearEndpoint(first, intersection) || isNearEndpoint(second, intersection)) {
-            return Collections.emptySet();
-        }
-
         final Node n = map.getNode(intersection);
         final boolean splitFirst = !n.equals(first.getStart()) && !n.equals(first.getEnd());
         final boolean splitSecond = !n.equals(second.getStart()) && !n.equals(second.getEnd());
@@ -211,19 +202,19 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
     // Resolve the intersection point between two segments, falling back to the
     // infinite-line intersection when as endpoint lies near the other line.
     // Returns null if no valid intersection lies within both segments.
-    private Point2D resolveIntersectionPoint(final Edge e1, final Edge e2) {
-        final Line2D l1  = e1.getLine();
-        final Line2D l2  = e2.getLine();
+    private Point2D resolveIntersectionPoint(final Edge first, final Edge second) {
+        final Line2D l1 = first.getLine();
+        final Line2D l2 = second.getLine();
         final Point2D segmentIntersection = GeometryTools2D.getSegmentIntersectionPoint(l1, l2);
         if (segmentIntersection != null) return segmentIntersection;
 
         final Point2D lineIntersection = Objects.requireNonNull(GeometryTools2D.getIntersectionPoint(l1, l2));
-        if (isNearEndpoint(e1, lineIntersection)) {
-            final double d = e2.getLine().getIntersection(e1.getLine());
+        if (isNearEndpoint(first, lineIntersection)) {
+            final double d = second.getLine().getIntersection(first.getLine());
             return (d < 0 || 1 < d) ? null : lineIntersection;
         }
-        if (isNearEndpoint(e2, lineIntersection)) {
-            final double d = e1.getLine().getIntersection(e2.getLine());
+        if (isNearEndpoint(second, lineIntersection)) {
+            final double d = first.getLine().getIntersection(second.getLine());
             return (d < 0 || 1 < d) ? null : lineIntersection;
         }
         return null;
