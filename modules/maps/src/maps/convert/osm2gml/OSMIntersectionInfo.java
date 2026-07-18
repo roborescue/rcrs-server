@@ -29,7 +29,7 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
      */
     public OSMIntersectionInfo(final OSMNode node) {
         this.node = node;
-        this.roads = new HashSet<>();
+        this.roads = new LinkedHashSet<>();
         this.vertices = new ArrayList<>();
         this.area = null;
     }
@@ -101,12 +101,11 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof OSMIntersectionInfo other)) return false;
-
         return node.getId() == other.node.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(node.getId());
+        return Long.hashCode(node.getId());
     }
 }

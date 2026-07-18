@@ -15,7 +15,7 @@ import rescuecore2.misc.collections.LazyMap;
 */
 public class TemporaryMap {
     /** The threshold for determining if nodes are co-located in metres. */
-    private static final double NEARBY_THRESHOLD_M = 0.1;
+    private static final double NEARBY_THRESHOLD_M = 0.01;
     private final double threshold;
 
     private final Set<Node> nodes;
@@ -28,9 +28,9 @@ public class TemporaryMap {
     private final Set<TemporaryObject> allObjects;
 
     private final OSMMap osmMap;
-    private final Collection<OSMIntersectionInfo> osmIntersections;
-    private final Collection<OSMRoadInfo> osmRoads;
-    private final Collection<OSMBuildingInfo> osmBuildings;
+    private final Set<OSMIntersectionInfo> osmIntersections;
+    private final Set<OSMRoadInfo> osmRoads;
+    private final Set<OSMBuildingInfo> osmBuildings;
 
     private int nextID;
 
@@ -47,35 +47,35 @@ public class TemporaryMap {
     */
     public TemporaryMap(OSMMap osmMap) {
         this.osmMap           = osmMap;
-        this.osmIntersections = new HashSet<>();
-        this.osmRoads         = new HashSet<>();
-        this.osmBuildings     = new HashSet<>();
+        this.osmIntersections = new LinkedHashSet<>();
+        this.osmRoads         = new LinkedHashSet<>();
+        this.osmBuildings     = new LinkedHashSet<>();
 
         nextID = 0;
-        nodes = new HashSet<>();
-        edges = new HashSet<>();
+        nodes = new LinkedHashSet<>();
+        edges = new LinkedHashSet<>();
         threshold = ConvertTools.nearbyThreshold(osmMap, NEARBY_THRESHOLD_M);
-        tempRoads = new HashSet<>();
-        tempIntersections = new HashSet<>();
-        tempBuildings = new HashSet<>();
-        allObjects = new HashSet<>();
+        tempRoads = new LinkedHashSet<>();
+        tempIntersections = new LinkedHashSet<>();
+        tempBuildings = new LinkedHashSet<>();
+        allObjects = new LinkedHashSet<>();
         edgesAtNode = new LazyMap<>() {
             @Override
             public Set<Edge> createValue() {
-                return new HashSet<>();
+                return new LinkedHashSet<>();
             }
         };
         objectsAtEdge = new LazyMap<>() {
             @Override
             public Set<TemporaryObject> createValue() {
-                return new HashSet<>();
+                return new LinkedHashSet<>();
             }
         };
 
         this.gridSpacing = ConvertTools.sizeOf1Metre(osmMap);
         this.gridOriginX = osmMap.getCenterLatitude();
         this.gridOriginY = osmMap.getCenterLongitude();
-        this.nodeGrid    = new HashMap<>();
+        this.nodeGrid    = new LinkedHashMap<>();
     }
 
     /**
@@ -250,7 +250,7 @@ public class TemporaryMap {
        @return All roads.
     */
     public Collection<TemporaryRoad> getRoads() {
-        return new HashSet<>(tempRoads);
+        return Collections.unmodifiableSet(tempRoads);
     }
 
     /**
@@ -258,7 +258,7 @@ public class TemporaryMap {
        @return All intersections.
     */
     public Collection<TemporaryIntersection> getIntersections() {
-        return new HashSet<>(tempIntersections);
+        return Collections.unmodifiableSet(tempIntersections);
     }
 
     /**
@@ -266,7 +266,7 @@ public class TemporaryMap {
        @return All buildings.
     */
     public Collection<TemporaryBuilding> getBuildings() {
-        return new HashSet<>(tempBuildings);
+        return Collections.unmodifiableSet(tempBuildings);
     }
 
     /**
@@ -285,7 +285,7 @@ public class TemporaryMap {
        @return All objects.
     */
     public Collection<TemporaryObject> getAllObjects() {
-        return new HashSet<>(allObjects);
+        return Collections.unmodifiableSet(allObjects);
     }
 
     /**
@@ -293,7 +293,7 @@ public class TemporaryMap {
        @return All nodes.
     */
     public Collection<Node> getAllNodes() {
-        return new HashSet<>(nodes);
+        return Collections.unmodifiableSet(nodes);
     }
 
     /**
@@ -301,7 +301,7 @@ public class TemporaryMap {
        @return All edges.
     */
     public Collection<Edge> getAllEdges() {
-        return new HashSet<>(edges);
+        return Collections.unmodifiableSet(edges);
     }
 
     /**
@@ -328,7 +328,7 @@ public class TemporaryMap {
        @return All attached edges.
     */
     public Set<Edge> getAttachedEdges(Node n) {
-        return new HashSet<>(edgesAtNode.get(n));
+        return Collections.unmodifiableSet(edgesAtNode.get(n));
     }
 
     /**

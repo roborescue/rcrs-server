@@ -15,7 +15,7 @@ import rescuecore2.log.Logger;
    This step removes shapes that are duplicates or contained entirely inside another shape.
 */
 public class RemoveShapesStep extends ConvertStep {
-    private TemporaryMap map;
+    private final TemporaryMap map;
 
     /**
        Construct a RemoveFacesStep.
@@ -35,9 +35,9 @@ public class RemoveShapesStep extends ConvertStep {
     protected void step() {
         debug.setBackground(ConvertTools.getAllDebugShapes(map));
         debug.setAutozoomEnabled(false);
-        Collection<TemporaryObject> allObjects = map.getAllObjects();
+        Set<TemporaryObject> allObjects = new HashSet<>(map.getAllObjects());
         setProgressLimit(allObjects.size() * 2);
-        Set<TemporaryObject> removed = new HashSet<TemporaryObject>();
+        Set<TemporaryObject> removed = new HashSet<>();
         setStatus("Removing duplicate shapes");
         int duplicateCount = 0;
         int interiorCount = 0;
@@ -49,9 +49,9 @@ public class RemoveShapesStep extends ConvertStep {
         duplicateCount += removeDuplicates(map.getRoads(), removed, allObjects);
         Logger.debug("Removing interior faces");
         setStatus("Removing interior faces");
-        interiorCount += removeInterior(map.getRoads(), removed, allObjects);
-        interiorCount += removeInterior(map.getIntersections(), removed, allObjects);
-        interiorCount += removeInterior(map.getBuildings(), removed, allObjects);
+        interiorCount += removeInterior(new HashSet<>(map.getRoads()), removed, allObjects);
+        interiorCount += removeInterior(new HashSet<>(map.getIntersections()), removed, allObjects);
+        interiorCount += removeInterior(new HashSet<>(map.getBuildings()), removed, allObjects);
         setStatus("Removed " + removed.size() + " faces: " + duplicateCount + " duplicates and " + interiorCount + " interior");
         debug.clearBackground();
         debug.activate();

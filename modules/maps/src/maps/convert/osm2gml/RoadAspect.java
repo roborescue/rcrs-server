@@ -92,7 +92,6 @@ public class RoadAspect {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof RoadAspect other)) return false;
-
         return center.getId() == other.center.getId() && farNode.getId() == other.farNode.getId();
     }
 

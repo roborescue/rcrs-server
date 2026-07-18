@@ -128,7 +128,6 @@ public class OSMRoadInfo implements OSMShape, Lineal {
     public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof OSMRoadInfo other)) return false;
-
         return from.getId() == other.from.getId() && to.getId() == other.to.getId() ||
                from.getId() == other.to.getId() && to.getId() == other.from.getId();
     }

@@ -318,4 +318,16 @@ public abstract class TemporaryObject implements SpatialIndexable, Polygonal {
     public String toString() {
         return getClass().getSimpleName() + "#" + id;
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof TemporaryObject other)) return false;
+        return this.id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
 }
