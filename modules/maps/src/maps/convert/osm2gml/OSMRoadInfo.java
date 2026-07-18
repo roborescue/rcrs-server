@@ -121,7 +121,8 @@ public class OSMRoadInfo implements OSMShape, Lineal {
 
     @Override
     public String toString() {
-        return "RoadInfo [" + fromLeft + ", " + fromRight + ", " + toRight + ", " + toLeft + "]";
+        return "RoadInfo (type=" + type + ", laneCount=" + laneCount + ", vertices=["
+                + fromLeft + ", " + fromRight + ", " + toRight + ", " + toLeft + "])";
     }
 
     @Override
