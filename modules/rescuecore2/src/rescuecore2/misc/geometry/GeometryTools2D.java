@@ -1,5 +1,6 @@
 package rescuecore2.misc.geometry;
 
+import java.awt.geom.Path2D;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -231,16 +232,16 @@ public final class GeometryTools2D {
     }
 
     /**
-     * Compute the signed area of a simple polygon.
-     * The sigh of the area indicates the orientation of the vertices:
-     * positive if counter-clockwise, negative if clockwise.
-     * @param vertices The vertices of the polygon in order.
-     * @return The signed area of the polygon. Positive for counter-clockwise orientation.
+       Compute the signed area of a simple polygon.
+       The sigh of the area indicates the orientation of the vertices:
+       positive if counter-clockwise, negative if clockwise.
+       @param vertices The vertices of the polygon in order.
+       @return The signed area of the polygon. Positive for counter-clockwise orientation.
      */
     public static double computeSignedArea(List<Point2D> vertices) {
         // Shift all vertices so that the first vertex becomes the origin (0,0).
         // This improves numerical stability when computing the polygon area.
-        List<Point2D> shiftedVertices = translate(vertices, vertices.get(0).toVector().negate());
+        List<Point2D> shiftedVertices = translate(vertices, vertices.getFirst().toVector().negate());
 
         Iterator<Point2D> it = shiftedVertices.iterator();
         Point2D last = it.next();
@@ -309,11 +310,11 @@ public final class GeometryTools2D {
     }
 
     /**
-     * Check if the vertices of a polygon are ordered in a counter-clockwise direction.
-     * This is determined by the sign of the signed area of the polygon.
-     * A positive area corresponds to a counter-clockwise ordering.
-     * @param vertices The vertices of the polygon.
-     * @return true if the vertices are in counter-clockwise order, false otherwise.
+       Check if the vertices of a polygon are ordered in a counter-clockwise direction.
+       This is determined by the sign of the signed area of the polygon.
+       A positive area corresponds to a counter-clockwise ordering.
+       @param vertices The vertices of the polygon.
+       @return {@code true} if the vertices are in counter-clockwise order, {@code false} otherwise.
      */
     public static boolean isCounterClockwise(List<Point2D> vertices) {
         return 0 < computeSignedArea(vertices);
@@ -492,51 +493,31 @@ public final class GeometryTools2D {
     }
 
     /**
-     * Translate a list of points by a given vector.
-     *
-     * @param points The points to translate.
-     * @param vector The translation vector.
-     * @return A new list of points, each shifted by the translation vector.
+       Translate a list of points by a given vector.
+       @param points The points to translate.
+       @param vector The translation vector.
+       @return A new list of points, each shifted by the translation vector.
      */
     public static List<Point2D> translate(final List<Point2D> points, final Vector2D vector) {
         return points.stream().map(p -> p.plus(vector)).toList();
     }
 
     /**
-     * Computes the Z-component of the cross product (twice the signed area) of two vectors
-     * formed by three points. This is used as an indicator to determine which side of a line
-     * segment a point lies on.
-     *
-     * @param p1 The first point to evaluate.
-     * @param p2 The second point to evaluate.
-     * @param p3 The reference point (origin of the vectors).
-     * @return The Z-component of the cross product (positive, negative, or zero).
+       Determines whether a point lies inside a polygon.
+       The polygon is defined by a list of vertices connected in the given order,
+       and is treated a closed polygon.
+       @param p        The point to test.
+       @param vertices The vertices defining the polygon.
+       @return {@code true} if the point lies inside the polygon; {@code false} otherwise.
      */
-    public static double computeSign(final Point2D p1, final Point2D p2, final Point2D p3) {
-        return (p1.getX() - p3.getX()) * (p2.getY() - p3.getY()) -
-               (p2.getX() - p3.getX()) * (p1.getY() - p3.getY());
+    public static boolean isPointInsidePolygon(final Point2D p, final List<Point2D> vertices) {
+        final Path2D path = new Path2D.Double();
+        final Point2D startPoint = vertices.getFirst();
+        path.moveTo(startPoint.getX(), startPoint.getY());
+        for (int i = 1; i < vertices.size(); i++) {
+            path.lineTo(vertices.get(i).getX(), vertices.get(i).getY());
+        }
+        path.closePath();
+        return path.contains(p.getX(), p.getY());
     }
-
-    /**
-     * Determines whether a specified point is located inside a triangle defined by three vertices.
-     * (Points lying exactly on the edges or vertices are considered inside.)
-     *
-     * @param pt The point to check.
-     * @param v1 The first vertex of the triangle.
-     * @param v2 The second vertex of the triangle.
-     * @param v3 The third vertex of the triangle.
-     * @return True if the point is inside or on the boundary of the triangle, false otherwise.
-     */
-    public static boolean isPointInTriangle(final Point2D pt, final Point2D v1, final Point2D v2, final Point2D v3) {
-        final double d1 = computeSign(pt, v1, v2);
-        final double d2 = computeSign(pt, v2, v3);
-        final double d3 = computeSign(pt, v3, v1);
-
-        // If all signs are the same (or zero), the point is inside the triangle.
-        final boolean hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-        final boolean hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-
-        return !(hasNeg && hasPos);
-    }
-
 }
