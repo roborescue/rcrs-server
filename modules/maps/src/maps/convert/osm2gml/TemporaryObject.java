@@ -41,11 +41,11 @@ public abstract class TemporaryObject implements SpatialIndexable, Polygonal {
     private Path2D path;
     private Rectangle2D bounds;
 
-    /**
-     * Construct a new TemporaryObject.
-     * @param edges The edges of the object in counter-clockwise order.
-     */
-    protected TemporaryObject(final List<DirectedEdge> edges) {
+    protected TemporaryObject(List<DirectedEdge> edges) {
+        if (edges.isEmpty()) {
+            throw new IllegalArgumentException("edges must not be empty");
+        }
+
         this.id = ID_GENERATOR.getAndIncrement();
         this.edges = new ArrayList<>(edges);
         this.neighbours = new HashMap<>();

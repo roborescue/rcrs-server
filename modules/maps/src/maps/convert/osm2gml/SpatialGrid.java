@@ -1,15 +1,13 @@
 package maps.convert.osm2gml;
 
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
- * A generic spatial grid that can index any object implementing the SpatialIndexable interface.
- * @param <T> The type of object to be stored in the grid.
+ * A spatial grid for indexing {@link SpatialIndexable} objects.
+ *
+ * @param <T> the type of object stored in this grid
  */
 public class SpatialGrid<T extends SpatialIndexable> {
 
@@ -21,13 +19,25 @@ public class SpatialGrid<T extends SpatialIndexable> {
 
     private record GridPoint(int x, int y) {}
 
+    /**
+     * Constructs a spatial grid with the specified bounds and cell size.
+     *
+     * @param bounds the bounds of the grid
+     * @param cellSize the size of each grid cell
+     * @throws NullPointerException if {@code bounds} is {@code null}
+     * @throws IllegalArgumentException if {@code bounds} is empty or
+     *         {@code cellSize} is not positive
+     */
     public SpatialGrid(Rectangle2D bounds, double cellSize) {
-        if (bounds == null || bounds.isEmpty() || cellSize <= 0) {
-            // Create a dummy grid if bounds are invalid
-            this.minX = 0; this.minY = 0; this.cellWidth = 1; this.cellHeight = 1;
-            this.grid = new HashMap<>();
-            return;
+        Objects.requireNonNull(bounds, "bounds");
+
+        if (bounds.isEmpty()) {
+            throw new IllegalArgumentException("bounds must not be empty");
         }
+        if (cellSize <= 0) {
+            throw new IllegalArgumentException("cellSize must be positive");
+        }
+
         this.minX = bounds.getMinX();
         this.minY = bounds.getMinY();
         this.cellWidth = cellSize;
@@ -36,21 +46,22 @@ public class SpatialGrid<T extends SpatialIndexable> {
     }
 
     /**
-     * Registers a SpatialIndexable object into the grid.
-     * @param item The object to add.
+     * Adds the specified object to this grid.
+     *
+     * @param item the object to add
      */
-    public void add(final T item) {
+    public void add(T item) {
         forEachCell(item, (x, y) -> addToCell(x, y, item));
     }
 
     /**
-     * Removes a {@link SpatialIndexable} object from the grid.
-     * Empty cells are cleaned up immediately to avoid memory leaks.
-     * @param item The object to remove.
+     * Removes the specified object from this grid.
+     *
+     * @param item the object to remove
      */
-    public void remove(final T item) {
+    public void remove(T item) {
         forEachCell(item, (x, y) -> {
-            final Set<T> cell = grid.get(new GridPoint(x, y));
+            Set<T> cell = grid.get(new GridPoint(x, y));
             if (cell == null) return;
             cell.remove(item);
             if (cell.isEmpty()) {
@@ -59,9 +70,6 @@ public class SpatialGrid<T extends SpatialIndexable> {
         });
     }
 
-    // Iterates over all grid cells covered by the bounding box of the given item
-    // and applies the given action to each cell coordinate.
-    // If the item's bounds are null or empty, no action is taken.
     private void forEachCell(final T item, final BiConsumer<Integer, Integer> action) {
         final Rectangle2D bounds = item.getBounds();
         if (hasInvalidBounds(bounds)) return;
@@ -83,14 +91,15 @@ public class SpatialGrid<T extends SpatialIndexable> {
     }
 
     /**
-     * Gets all objects that are potentially near the given object.
-     * @param item The object to find neighbors for.
-     * @return A Set of nearby objects.
+     * Returns the objects contained in the grid cells surrounding the specified
+     * object.
+     *
+     * @param item the object to find nearby for
+     * @return the objects contained in the surrounding grid cells
      */
     public Set<T> getNearbyItems(T item) {
-        Set<T> nearby = new HashSet<>();
+        Set<T> nearbyItems = new HashSet<>();
         Rectangle2D bounds = item.getBounds();
-        if (bounds == null || bounds.isEmpty()) return nearby;
 
         int minCellX = getXCell(bounds.getMinX()) - 1;
         int minCellY = getYCell(bounds.getMinY()) - 1;
@@ -99,13 +108,13 @@ public class SpatialGrid<T extends SpatialIndexable> {
 
         for (int x = minCellX; x <= maxCellX; x++) {
             for (int y = minCellY; y <= maxCellY; y++) {
-                Set<T> cellContent = getFromCell(x, y);
-                if (cellContent != null) {
-                    nearby.addAll(cellContent);
+                Set<T> cellItems = getCellItems(x, y);
+                if (cellItems != null) {
+                    nearbyItems.addAll(cellItems);
                 }
             }
         }
-        return nearby;
+        return nearbyItems;
     }
 
     private int getXCell(double x) { return (int) Math.floor((x - minX) / cellWidth); }
@@ -115,7 +124,7 @@ public class SpatialGrid<T extends SpatialIndexable> {
         grid.computeIfAbsent(new GridPoint(x, y), k -> new HashSet<>()).add(item);
     }
 
-    private Set<T> getFromCell(int x, int y) {
+    private Set<T> getCellItems(int x, int y) {
         return grid.get(new GridPoint(x, y));
     }
 }
