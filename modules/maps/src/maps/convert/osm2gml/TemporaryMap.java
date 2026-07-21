@@ -486,6 +486,25 @@ public class TemporaryMap {
     }
 
     /**
+     * Returns whether this map contains an edge connecting the specified nodes,
+     * regardless of its direction.
+     *
+     * @param node1 one endpoint of the edge
+     * @param node2 the other endpoint of the edge
+     * @return {@code true} if this map contains an edge connecting the specified
+     *         nodes; {@code false} otherwise
+     */
+    public boolean containsEdge(Node node1, Node node2) {
+        for (Edge edge : edges) {
+            if (edge.getStart().equals(node1) && edge.getEnd().equals(node2) ||
+                edge.getStart().equals(node2) && edge.getEnd().equals(node1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get a directed edge from one node to another.
      * @param from The start node.
      * @param to   The end node.
