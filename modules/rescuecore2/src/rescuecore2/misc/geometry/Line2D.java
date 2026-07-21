@@ -125,6 +125,19 @@ public class Line2D implements Indexable {
         return t / d;
     }
 
+    /**
+       Determines whether this line is geometrically equivalent to another line.
+       @param other The line to compare.
+       @return {@code true} if both lines have the same endpoints, regardless of direction;
+               {@code false} otherwise.
+     */
+    public boolean isGeometricallyEquivalent(Line2D other) {
+        if (other == null) return false;
+        boolean sameDirection = this.origin.equals(other.origin) && this.end.equals(other.end);
+        boolean reverseDirection = this.origin.equals(other.end) && this.end.equals(other.origin);
+        return sameDirection || reverseDirection;
+    }
+
     @Override
     public Region getBoundingRegion() {
         if (region == null) {

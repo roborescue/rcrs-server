@@ -1,5 +1,6 @@
 package maps.convert.osm2gml.debug;
 
+import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.gui.ShapeDebugFrame;
 
 import java.awt.*;
@@ -10,7 +11,7 @@ import java.util.List;
  * A debug layer that displays a collection of point-like objects.
  * @param <T> The type of point-like object in this layer.
  */
-public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
+public class PointLayer<T> extends ShapeLayer<T> {
     private Color color;
     private PointShape shape;
     private int size;
@@ -33,7 +34,7 @@ public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
      * @param <T>     The type of object in this layer.
      * @return A new {@code PointLayer}.
      */
-    public static <T extends Puntal> PointLayer<T> of(final Collection<T> objects) {
+    public static <T> PointLayer<T> of(final Collection<T> objects) {
         return new PointLayer<>(objects);
     }
 
@@ -87,6 +88,10 @@ public class PointLayer<T extends Puntal> extends ShapeLayer<T> {
     }
 
     private ShapeDebugFrame.ShapeInfo createShape(final T object) {
-        return new PointShapeInfo(object, name, color, shape, size);
+        return switch (object) {
+            case Puntal puntal -> new PointShapeInfo(puntal, name, color, shape, size);
+            case Point2D point -> new PointShapeInfo(point, name, color, shape, size);
+            default -> throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
+        };
     }
 }

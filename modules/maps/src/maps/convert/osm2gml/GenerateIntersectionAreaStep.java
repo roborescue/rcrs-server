@@ -174,14 +174,14 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
                 .title("Generate Intersection Areas")
                 .layer(LineLayer.of(map.getOSMRoads())
                         .name("OSM Roads")
-                        .color(DebugPalette.MAIN_STROKE))
+                        .color(DebugPalette.SLATE_STROKE))
                 .layer(PointLayer.of(map.getOSMIntersections())
                         .name("OSM Intersections")
-                        .color(DebugPalette.MAIN_STROKE))
+                        .color(DebugPalette.SLATE_STROKE))
                 .layer(PolygonLayer.of(map.getOSMIntersections())
                         .name("Generated Intersection Polygons")
-                        .outlineColor(DebugPalette.CREATED_STROKE)
-                        .fillColor(DebugPalette.CREATED_FILL))
+                        .outlineColor(DebugPalette.MOSS_STROKE)
+                        .fillColor(DebugPalette.MOSS_FILL))
                 .show();
     }
 }

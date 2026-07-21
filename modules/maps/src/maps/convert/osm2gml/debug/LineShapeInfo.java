@@ -15,7 +15,7 @@ public class LineShapeInfo extends ShapeDebugFrame.ShapeInfo {
     private static final int THICK_WIDTH = 6;
     private static final float DASH_LENGTH = 6.0f;
 
-    private final Lineal line;
+    private final rescuecore2.misc.geometry.Line2D line;
     private final Color color;
     private final boolean thick;
     private final boolean arrow;
@@ -23,6 +23,17 @@ public class LineShapeInfo extends ShapeDebugFrame.ShapeInfo {
     @Getter private final Shape boundsShape;
 
     public LineShapeInfo(final Lineal line, final String name, final Color color,
+                         final boolean thick, final boolean arrow, final boolean dashed)  {
+        super(line, name);
+        this.line = line.getLine();
+        this.color = color;
+        this.thick = thick;
+        this.arrow = arrow;
+        this.dashed = dashed;
+        this.boundsShape = computeBounds(line.getLine());
+    }
+
+    public LineShapeInfo(final rescuecore2.misc.geometry.Line2D line, final String name, final Color color,
                          final boolean thick, final boolean arrow, final boolean dashed)  {
         super(line, name);
         this.line = line;
@@ -33,9 +44,9 @@ public class LineShapeInfo extends ShapeDebugFrame.ShapeInfo {
         this.boundsShape = computeBounds(line);
     }
 
-    private static Shape computeBounds(final Lineal line) {
-        final rescuecore2.misc.geometry.Point2D start = line.getLine().getOrigin();
-        final rescuecore2.misc.geometry.Point2D end = line.getLine().getEndPoint();
+    private static Shape computeBounds(final rescuecore2.misc.geometry.Line2D line) {
+        final rescuecore2.misc.geometry.Point2D start = line.getOrigin();
+        final rescuecore2.misc.geometry.Point2D end = line.getEndPoint();
         return new Line2D.Double(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
@@ -43,9 +54,8 @@ public class LineShapeInfo extends ShapeDebugFrame.ShapeInfo {
     public Shape paint(final Graphics2D g, final ScreenTransform transform) {
         g.setColor(color);
 
-        final rescuecore2.misc.geometry.Line2D segment = line.getLine();
-        final rescuecore2.misc.geometry.Point2D start = segment.getOrigin();
-        final rescuecore2.misc.geometry.Point2D end = segment.getEndPoint();
+        final rescuecore2.misc.geometry.Point2D start = line.getOrigin();
+        final rescuecore2.misc.geometry.Point2D end = line.getEndPoint();
         final int x1 = transform.xToScreen(start.getX());
         final int y1 = transform.yToScreen(start.getY());
         final int x2 = transform.xToScreen(end.getX());

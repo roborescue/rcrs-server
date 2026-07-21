@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.List;
 
+import maps.convert.osm2gml.debug.DebugPalette;
 import maps.convert.osm2gml.debug.LineLayer;
 import maps.convert.osm2gml.debug.PointLayer;
 import maps.convert.osm2gml.debug.StepVisualizer;
@@ -26,7 +27,6 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
     private final Set<Node> createdNodes;
     private final Set<Edge> createdEdges;
-    private final Set<Edge> intactEdges;
 
     /**
      * Construct a {@code SplitIntersectingEdgesStep}.
@@ -37,7 +37,6 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
 
         createdNodes = new HashSet<>();
         createdEdges = new HashSet<>();
-        intactEdges = new HashSet<>();
     }
 
     @Override
@@ -62,7 +61,6 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         final Queue<Edge> workQueue = new ArrayDeque<>(map.getAllEdges());
         final Set<Edge> inQueue = new HashSet<>(workQueue);
 
-        intactEdges.addAll(map.getAllEdges());
         setProgressLimit(workQueue.size());
 
         while (!workQueue.isEmpty()) {
@@ -317,24 +315,23 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         createdEdges.remove(edge);
         createdEdges.addAll(created);
         Collections.addAll(createdNodes, splitNodes);
-        intactEdges.remove(edge);
         splitCount += splitNodes.length;
         return new HashSet<>(created);
     }
 
     private void visualizeResult() {
         StepVisualizer.create(debug)
-            .title("Split Intersecting Edges")
-            .layer(PointLayer.of(createdNodes)
-                             .name("Created Node")
-                             .color(Color.GREEN))
-            .layer(LineLayer.of(createdEdges)
-                            .name("Created Edge")
-                            .color(Color.GREEN))
-            .layer(LineLayer.of(intactEdges)
-                            .name("Intact Edge")
-                            .color(Color.GRAY))
-            .show();
+                .title("Split Intersecting Edges")
+                .layer(PointLayer.of(createdNodes)
+                        .name("Created Node")
+                        .color(DebugPalette.MOSS_STROKE))
+                .layer(LineLayer.of(createdEdges)
+                        .name("Created Edge")
+                        .color(DebugPalette.MOSS_STROKE))
+                .backgroundLayer(LineLayer.of(map.getAllEdges())
+                        .name("Edges")
+                        .color(DebugPalette.CONTEXT_STROKE))
+                .show();
     }
 
 }

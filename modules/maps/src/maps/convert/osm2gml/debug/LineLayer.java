@@ -1,8 +1,10 @@
 package maps.convert.osm2gml.debug;
 
+import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.gui.ShapeDebugFrame;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,7 +12,7 @@ import java.util.List;
  * A debug layer that displays a collection of linear objects.
  * @param <T> The type of linear object in this layer.
  */
-public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
+public class LineLayer<T> extends ShapeLayer<T> {
     private Color color;
     private boolean thick;
     private boolean arrow;
@@ -36,8 +38,13 @@ public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
      * @param <T>     The type of object in this layer.
      * @return A new {@code LineLayer}.
      */
-    public static <T extends Lineal> LineLayer<T> of(final Collection<T> objects) {
+    public static <T> LineLayer<T> of(final Collection<T> objects) {
         return new LineLayer<>(objects);
+    }
+
+    @SafeVarargs
+    public static <T> LineLayer<T> of(final T... objects) {
+        return new LineLayer<>(Arrays.asList(objects));
     }
 
     /**
@@ -101,6 +108,10 @@ public class LineLayer<T extends Lineal> extends ShapeLayer<T> {
     }
 
     private ShapeDebugFrame.ShapeInfo createShape(final T object) {
-        return new LineShapeInfo(object, name, color, thick, arrow, dashed);
+        return switch (object) {
+            case Lineal lineal -> new LineShapeInfo(lineal, name, color, thick, arrow, dashed);
+            case Line2D line -> new LineShapeInfo(line, name, color, thick, arrow, dashed);
+            default -> throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
+        };
     }
 }

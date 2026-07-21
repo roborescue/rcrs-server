@@ -99,16 +99,16 @@ public class RemovePseudoNodesStep extends ConvertStep {
                 .title("Pseudo-Nodes Removal Results")
                 .layer(LineLayer.of(removedRoads)
                         .name("Removed Roads")
-                        .color(DebugPalette.REMOVED_STROKE))
+                        .color(DebugPalette.CORAL_STROKE))
                 .layer(PointLayer.of(removedIntersections)
                         .name("Removed Intersecions")
-                        .color(DebugPalette.REMOVED_STROKE))
+                        .color(DebugPalette.CORAL_STROKE))
                 .layer(LineLayer.of(createdRoads)
                         .name("Created Roads")
-                        .color(DebugPalette.CREATED_STROKE))
+                        .color(DebugPalette.MOSS_STROKE))
                 .backgroundLayer(LineLayer.of(map.getOSMRoads())
                         .name("Roads")
-                        .color(DebugPalette.MAIN_STROKE))
+                        .color(DebugPalette.SLATE_STROKE))
                 .show();
     }
 }

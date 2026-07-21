@@ -121,16 +121,16 @@ public class MakeTempObjectsStep extends ConvertStep {
                 .title("Make Temporary Objects Results")
                 .layer(PolygonLayer.of(createdRoads)
                         .name("Created Roads")
-                        .outlineColor(DebugPalette.CREATED_STROKE)
-                        .fillColor(DebugPalette.CREATED_FILL))
+                        .outlineColor(DebugPalette.MOSS_STROKE)
+                        .fillColor(DebugPalette.MOSS_FILL))
                 .layer(PolygonLayer.of(createdIntersections)
                         .name("Created Intersections")
-                        .outlineColor(DebugPalette.CREATED_STROKE)
-                        .fillColor(DebugPalette.CREATED_FILL))
+                        .outlineColor(DebugPalette.MOSS_STROKE)
+                        .fillColor(DebugPalette.MOSS_FILL))
                 .layer(PolygonLayer.of(createdBuildings)
                         .name("Created Buildings")
-                        .outlineColor(DebugPalette.CREATED_STROKE)
-                        .fillColor(DebugPalette.CREATED_FILL))
+                        .outlineColor(DebugPalette.MOSS_STROKE)
+                        .fillColor(DebugPalette.MOSS_FILL))
                 .show();
     }
 }

@@ -642,7 +642,6 @@ public class TemporaryMap {
         edges.clear();
         edgesAtNode.clear();
         objectsAtEdge.clear();
-        nodeGrid.clear();
 
         // Re-populate the data from the high-level TemporaryObjects.
         for (TemporaryObject object : allObjects) {

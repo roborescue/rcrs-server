@@ -98,14 +98,14 @@ public class ScanOSMStep extends ConvertStep {
                 .title("Scan OSM Results")
                 .layer(LineLayer.of(createdRoads)
                         .name("Created Roads")
-                        .color(DebugPalette.CREATED_STROKE))
+                        .color(DebugPalette.MOSS_STROKE))
                 .layer(PointLayer.of(createdIntersections)
                         .name("Created Intersections")
-                        .color(DebugPalette.CREATED_STROKE))
+                        .color(DebugPalette.MOSS_STROKE))
                 .layer(PolygonLayer.of(createdBuildings)
                         .name("Created Buildings")
-                        .outlineColor(DebugPalette.CREATED_STROKE)
-                        .fillColor(DebugPalette.CREATED_FILL))
+                        .outlineColor(DebugPalette.MOSS_STROKE)
+                        .fillColor(DebugPalette.MOSS_FILL))
                 .show();
     }
 }
