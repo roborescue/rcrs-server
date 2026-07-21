@@ -367,33 +367,75 @@ public class TemporaryMap {
     }
 
     /**
-       Get a Node near a point. If a Node already exists nearby then it will be returned, otherwise a new Node will be created.
-       @param p The node coordinates.
-       @return A Node.
-    */
-    public Node getNode(Point2D p) {
-        return getNode(p.getX(), p.getY());
+     * Returns the node at the specified location.
+     *
+     * @param point the node location
+     * @return the node at the specified location
+     * @see #getNode(double, double)
+     */
+    public Node getNode(Point2D point) {
+        return getNode(point.getX(), point.getY());
     }
 
     /**
-     * Get (or create) the node at the grid cell nearest to (x, y).
-     * @param x The X coordinate.
-     * @param y The Y coordinate.
-     * @return A {@link Node}.
+     * Returns the node at the specified location, creating it if necessary.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return the existing or newly created node
      */
-    public Node getNode(final double x, final double y) {
-        final long ix = Math.round((x - gridOriginX) / gridSpacing);
-        final long iy = Math.round((y - gridOriginY) / gridSpacing);
-        final long key = gridKey(ix, iy);
+    public Node getNode(double x, double y) {
+        long ix = Math.round((x - gridOriginX) / gridSpacing);
+        long iy = Math.round((y - gridOriginY) / gridSpacing);
+        long key = gridKey(ix, iy);
 
         // Return the existing node for this grid cell if one exists.
-        final Node existing = nodeGrid.get(key);
+        Node existing = nodeGrid.get(key);
         if (existing != null) return existing;
 
         // No node exists yet; create one at the grid-center coordinates.
-       final double cx = gridOriginX + ix * gridSpacing;
-       final double cy = gridOriginY + iy * gridSpacing;
+       double cx = gridOriginX + ix * gridSpacing;
+       double cy = gridOriginY + iy * gridSpacing;
        return createAndRegisterNode(cx, cy);
+    }
+
+    /**
+     * Returns whether this map contains the specified node.
+     *
+     * @param node the node to check
+     * @return {@code true} if this map contains the specified node;
+     *         {@code false} otherwise
+     */
+    @SuppressWarnings("unused")
+    public boolean containsNode(Node node) {
+        return containsNode(node.getX(), node.getY());
+    }
+
+    /**
+     * Returns whether this map contains a node at the specified location.
+     *
+     * @param point the location to check
+     * @return {@code true} if this map contains a node at the specified location;
+     *         {@code false} otherwise
+     */
+    public boolean containsNode(Point2D point) {
+        return containsNode(point.getX(), point.getY());
+    }
+
+    /**
+     * Returns whether this map contains a node at the specified location.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return {@code true} if this map contains a node at the specified location;
+     *         {@code false} otherwise
+     */
+    public boolean containsNode(double x, double y) {
+        long ix = Math.round((x - gridOriginX) / gridSpacing);
+        long iy = Math.round((y - gridOriginY) / gridSpacing);
+        long key = gridKey(ix, iy);
+
+        return nodeGrid.containsKey(key);
     }
 
     // Encode a 2D grid index as a single long key.
@@ -430,6 +472,17 @@ public class TemporaryMap {
             }
         }
         return createEdge(from, to);
+    }
+
+    /**
+     * Returns whether this map contains the specified edge.
+     *
+     * @param edge the edge to check
+     * @return {@code true} if this map contains the specified edge;
+     *         {@code false} otherwise
+     */
+    public boolean containsEdge(Edge edge) {
+        return edges.contains(edge);
     }
 
     /**
@@ -589,6 +642,7 @@ public class TemporaryMap {
         edges.clear();
         edgesAtNode.clear();
         objectsAtEdge.clear();
+        nodeGrid.clear();
 
         // Re-populate the data from the high-level TemporaryObjects.
         for (TemporaryObject object : allObjects) {
@@ -615,14 +669,5 @@ public class TemporaryMap {
 
         // Invalidate the bounds cache as the node set has changed.
         invalidateBoundsCache();
-    }
-
-    /**
-     * Check whether an edge exists in the map.
-     * @param edge The edge to check.
-     * @return True if the edge exists in the map, false otherwise.
-     */
-    public boolean containsEdge(final Edge edge) {
-        return edges.contains(edge);
     }
 }
