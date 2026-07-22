@@ -90,6 +90,71 @@ public final class GeometryTools2D {
     }
 
     /**
+       Determines whether two lines are collinear.
+       @param line1 The first line.
+       @param line2 The second line.
+       @return {@code true} if the two lines are collinear;
+               {@code false} otherwise.
+     */
+    public static boolean collinear(Line2D line1, Line2D line2) {
+        double len1 = line1.getLength();
+        double len2 = line2.getLength();
+        Point2D o1 = line1.getOrigin();
+        Point2D o2 = line2.getOrigin();
+        if (nearlyZero(len1) && nearlyZero(len2)) {
+            return nearlyZero(getDistance(o1, o2));
+        }
+        if (nearlyZero(len1)) {
+            return nearlyZero(getDistance(o1, getClosestPoint(line2, o1)));
+        }
+        if (nearlyZero(len2)) {
+            return nearlyZero(getDistance(o2, getClosestPoint(line1, o2)));
+        }
+        if (!parallel(line1, line2)) {
+            return false;
+        }
+
+        return nearlyZero(getDistance(o2, getClosestPoint(line1, o2)));
+    }
+
+    /**
+       Determines whether two line segments overlap.
+       @param segment1 The first line segment.
+       @param segment2 The second line segment.
+       @return {@code true} if the two line segments overlap;
+               {@code false} otherwise.
+     */
+    public static boolean overlaps(Line2D segment1, Line2D segment2) {
+        if (!collinear(segment1, segment2)) {
+            return false;
+        }
+
+        double t1 = positionOnLine(segment1, segment2.getOrigin());
+        double t2 = positionOnLine(segment1, segment2.getEndPoint());
+
+        if (Double.isNaN(t1) || Double.isNaN(t2)) {
+            return false;
+        }
+
+        double min = Math.min(t1, t2);
+        double max = Math.max(t1, t2);
+
+        return 0 <= max && min <= 1;
+    }
+
+    /**
+       Determines whether two line segments intersects.
+       @param segment1 The first line segment.
+       @param segment2 The second line segment.
+       @return {@code true} if the two line segments share at least one point;
+               {@code false} otherwise.
+     */
+    public static boolean intersects(Line2D segment1, Line2D segment2) {
+        return getSegmentIntersectionPoint(segment1, segment2) != null ||
+                overlaps(segment1, segment2);
+    }
+
+    /**
        Find out how far a point is along a line.
        @param line The line to test.
        @param point The point to test.
@@ -410,13 +475,47 @@ public final class GeometryTools2D {
     }
 
     /**
-       Compute the distance between two points.
+       Computes the distance between two points.
        @param p1 The first point.
        @param p2 The second point.
        @return The distance between the two points.
     */
     public static double getDistance(Point2D p1, Point2D p2) {
         return Math.hypot(p1.getX() - p2.getX(), p1.getY() - p2.getY());
+    }
+
+    /**
+       Computes the distance between a line segment and a point.
+       @param segment The line segment.
+       @param point The point.
+       @return The shortest distance between the line segment and the point.
+     */
+    public static double getDistance(Line2D segment, Point2D point) {
+        return getDistance(point, getClosestPointOnSegment(segment, point));
+    }
+
+    /**
+       Computes the distance between two line segments.
+       @param segment1 The first line segment.
+       @param segment2 The second line segment.
+       @return The shortest distance between the two line segments.
+     */
+    public static double getDistance(Line2D segment1, Line2D segment2) {
+        if (intersects(segment1, segment2)) {
+            return 0.0;
+        }
+
+        Point2D o1 = segment1.getOrigin();
+        Point2D e1 = segment1.getEndPoint();
+        Point2D o2 = segment2.getOrigin();
+        Point2D e2 = segment2.getEndPoint();
+
+        double d1 = getDistance(segment1, o2);
+        double d2 = getDistance(segment1, e2);
+        double d3 = getDistance(segment2, o1);
+        double d4 = getDistance(segment2, e1);
+
+        return Math.min(Math.min(d1, d2), Math.min(d3, d4));
     }
 
     /**
