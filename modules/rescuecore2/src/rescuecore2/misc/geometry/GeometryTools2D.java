@@ -214,8 +214,7 @@ public final class GeometryTools2D {
         if (cos > 1) {
             cos = 1;
         }
-        double angle = Math.toDegrees(Math.acos(cos));
-        return angle;
+        return Math.toDegrees(Math.acos(cos));
     }
 
     /**
@@ -337,7 +336,7 @@ public final class GeometryTools2D {
     */
     public static Point2D computeCentroid(List<Point2D> vertices) {
         // Translation vector to move the first vertex to the origin.
-        Vector2D shiftVector = vertices.get(0).toVector();
+        Vector2D shiftVector = vertices.getFirst().toVector();
 
         // Shift all vertices so that the first vertex lies at (0,0).
         // The improves numerical stability in the centroid calculation.
@@ -391,7 +390,7 @@ public final class GeometryTools2D {
        @return A list of Point2D objects.
     */
     public static List<Point2D> vertexArrayToPoints(int[] vertices) {
-        List<Point2D> result = new ArrayList<Point2D>();
+        List<Point2D> result = new ArrayList<>();
         for (int i = 0; i < vertices.length; i += 2) {
             result.add(new Point2D(vertices[i], vertices[i + 1]));
         }
@@ -404,7 +403,7 @@ public final class GeometryTools2D {
        @return A list of Point2D objects.
     */
     public static List<Point2D> vertexArrayToPoints(double[] vertices) {
-        List<Point2D> result = new ArrayList<Point2D>();
+        List<Point2D> result = new ArrayList<>();
         for (int i = 0; i < vertices.length; i += 2) {
             result.add(new Point2D(vertices[i], vertices[i + 1]));
         }
@@ -427,7 +426,7 @@ public final class GeometryTools2D {
        @return A list of Line2D objects.
     */
     public static List<Line2D> pointsToLines(List<Point2D> points, boolean close) {
-        List<Line2D> result = new ArrayList<Line2D>();
+        List<Line2D> result = new ArrayList<>();
         Iterator<Point2D> it = points.iterator();
         Point2D first = it.next();
         Point2D prev = first;
@@ -584,9 +583,6 @@ public final class GeometryTools2D {
             else {
                 tMax = tB;
             }
-        }
-        if (tMin > tMax) {
-            return null;
         }
         return new Line2D(line.getPoint(tMin), line.getPoint(tMax));
     }
