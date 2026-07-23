@@ -8,15 +8,16 @@ import maps.convert.osm2gml.debug.*;
 import rescuecore2.misc.geometry.Point2D;
 
 /**
-   This step creates TemporaryObjects from the OSM data.
-*/
+ * Creates {@link TemporaryObject}s from OSM data.
+ */
 public class MakeTempObjectsStep extends ConvertStep {
     private final TemporaryMap map;
 
     /**
-       Construct a MakeTempObjectsStep.
-       @param map The TemporaryMap to populate.
-    */
+     * Constructs a new {@code MakeTempObjectsStep}.
+     *
+     * @param map the map
+     */
     public MakeTempObjectsStep(TemporaryMap map) {
         super();
         this.map = map;
@@ -30,79 +31,51 @@ public class MakeTempObjectsStep extends ConvertStep {
     @Override
     protected void step() {
         final Collection<OSMRoadInfo> osmRoads = map.getOSMRoads();
-        final Collection<OSMIntersectionInfo> osmIntersection = map.getOSMIntersections();
+        final Collection<OSMIntersectionInfo> osmIntersections = map.getOSMIntersections();
         final Collection<OSMBuildingInfo> osmBuildings = map.getOSMBuildings();
-        setProgressLimit(osmRoads.size() + osmIntersection.size() + osmBuildings.size());
+        setProgressLimit(osmRoads.size() + osmIntersections.size() + osmBuildings.size());
 
-        final Set<TemporaryRoad> createdRoads = generateRoads(osmRoads);
-        final Set<TemporaryIntersection> createdIntersections = generateIntersections(osmIntersection);
-        final Set<TemporaryBuilding> createdBuildings = generateBuildings(osmBuildings);
-        setStatus("Created " + createdRoads.size() + " roads, " + createdIntersections.size() + " intersections, " +
-                createdBuildings.size() + " buildings");
-        visualizeResults(createdRoads, createdIntersections, createdBuildings);
+        final Set<TemporaryObject> roads = generateObjects(osmRoads);
+        final Set<TemporaryObject> intersections = generateObjects(osmIntersections);
+        final Set<TemporaryObject> buildings = generateObjects(osmBuildings);
+        setStatus("Created " + roads.size() + " roads, " + intersections.size() + " intersections, " +
+                buildings.size() + " buildings");
+        visualizeResults(roads, intersections, buildings);
     }
 
-    private Set<TemporaryRoad> generateRoads(final Collection<OSMRoadInfo> roads) {
-        final Set<TemporaryRoad> createdRoads = new HashSet<>();
-        for (final OSMRoadInfo road : roads) {
-            if (road.getArea() == null) {
+    private <T extends OSMShape> Set<TemporaryObject> generateObjects(Collection<T> osmShapes) {
+        Set<TemporaryObject> created = new LinkedHashSet<>();
+
+        for (OSMShape shape : osmShapes) {
+            if (shape.getArea() == null) {
                 bumpProgress();
                 continue;
             }
-            final List<DirectedEdge> edges = generateEdges(road);
+
+            List<DirectedEdge> edges = generateEdges(shape);
             if (2 < edges.size()) {
-                final TemporaryRoad roadToCreate = new TemporaryRoad(edges);
-                map.addRoad(roadToCreate);
-                createdRoads.add(roadToCreate);
+                TemporaryObject newObject = switch (shape) {
+                    case OSMRoadInfo ignored -> new TemporaryRoad(edges);
+                    case OSMIntersectionInfo ignored -> new TemporaryIntersection(edges);
+                    case OSMBuildingInfo building -> new TemporaryBuilding(edges, building.getBuildingID());
+                    default -> throw new IllegalStateException(
+                            "Unsupported object type: " + osmShapes.getClass().getName());
+                };
+                map.addTemporaryObject(newObject);
+                created.add(newObject);
             }
             bumpProgress();
         }
-        return createdRoads;
+        return created;
     }
 
-    private Set<TemporaryIntersection> generateIntersections(final Collection<OSMIntersectionInfo> intersections) {
-        final Set<TemporaryIntersection> createdIntersections = new HashSet<>();
-        for (final OSMIntersectionInfo intersection : intersections) {
-            if (intersection.getArea() == null) {
-                bumpProgress();
-                continue;
-            }
-            final List<DirectedEdge> edges = generateEdges(intersection);
-            if (2 < edges.size()) {
-                final TemporaryIntersection intersectionToCreate = new TemporaryIntersection(edges);
-                map.addIntersection(intersectionToCreate);
-                createdIntersections.add(intersectionToCreate);
-            }
-            bumpProgress();
-        }
-        return createdIntersections;
-    }
-
-    private Set<TemporaryBuilding> generateBuildings(final Collection<OSMBuildingInfo> buildings) {
-        final Set<TemporaryBuilding> createdBuildings = new HashSet<>();
-        for (final OSMBuildingInfo building : buildings) {
-            if (building.getArea() == null) {
-                bumpProgress();
-                continue;
-            }
-            final List<DirectedEdge> edges = generateEdges(building);
-            if (2 < edges.size()) {
-                final TemporaryBuilding buildingToCreate = new TemporaryBuilding(edges, building.getBuildingID());
-                map.addBuilding(buildingToCreate);
-                createdBuildings.add(buildingToCreate);
-            }
-            bumpProgress();
-        }
-        return createdBuildings;
-    }
-
-    private List<DirectedEdge> generateEdges(final OSMShape shape) {
-        final List<DirectedEdge> result = new ArrayList<>();
-        final Iterator<Point2D> it = shape.getVertices().iterator();
-        final Node first = map.getNode(it.next());
+    private List<DirectedEdge> generateEdges(OSMShape shape) {
+        List<DirectedEdge> result = new ArrayList<>();
+        Iterator<Point2D> it = shape.getVertices().iterator();
+        Node first = map.getNode(it.next());
         Node previous = first;
         while (it.hasNext()) {
-            final Node n = map.getNode(it.next());
+            Node n = map.getNode(it.next());
             if (!n.equals(previous)) {
                 result.add(map.getDirectedEdge(previous, n));
                 previous = n;
@@ -115,19 +88,19 @@ public class MakeTempObjectsStep extends ConvertStep {
     }
 
     private void visualizeResults(
-            final Set<TemporaryRoad> createdRoads, final Set<TemporaryIntersection> createdIntersections,
-            final Set<TemporaryBuilding> createdBuildings) {
+            Set<TemporaryObject> roads, Set<TemporaryObject> intersections, Set<TemporaryObject> buildings) {
+
         StepVisualizer.create(debug)
                 .title("Make Temporary Objects Results")
-                .layer(PolygonLayer.of(createdRoads)
+                .layer(PolygonLayer.of(roads)
                         .name("Created Roads")
                         .outlineColor(DebugPalette.SKY_STROKE)
                         .fillColor(DebugPalette.SKY_FILL))
-                .layer(PolygonLayer.of(createdIntersections)
+                .layer(PolygonLayer.of(intersections)
                         .name("Created Intersections")
                         .outlineColor(DebugPalette.AZURE_STROKE)
                         .fillColor(DebugPalette.AZURE_FILL))
-                .layer(PolygonLayer.of(createdBuildings)
+                .layer(PolygonLayer.of(buildings)
                         .name("Created Buildings")
                         .outlineColor(DebugPalette.MOSS_STROKE)
                         .fillColor(DebugPalette.MOSS_FILL))
