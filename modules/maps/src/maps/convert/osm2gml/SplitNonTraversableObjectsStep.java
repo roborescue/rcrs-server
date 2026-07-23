@@ -1,5 +1,6 @@
 package maps.convert.osm2gml;
 
+import maps.convert.ConvertStep;
 import maps.convert.osm2gml.debug.*;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
@@ -11,17 +12,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This step modify the map so that all shapes are traversable from their centroid.
+ * Splits non-traversable temporary objects into traversable sub-shapes.
  */
-public class EnsureTraversabilityStep extends BaseModificationStep {
+public class SplitNonTraversableObjectsStep extends ConvertStep {
+    private final TemporaryMap map;
+    private final double clearanceThreshold;
+
+    private static final double CLEARANCE_THRESHOLD_METER = 0.1;
+    private static final boolean VISUALIZE_SPLIT_ITERATIONS = false;
 
     /**
-     * Constructs a new {@link EnsureTraversabilityStep}.
+     * Constructs a new {@code SplitNonTraversableObjectsStep}.
      *
-     * @param map The {@link TemporaryMap} to be modified.
+     * @param map the map
      */
-    public EnsureTraversabilityStep(TemporaryMap map) {
-        super(map);
+    public SplitNonTraversableObjectsStep(TemporaryMap map) {
+        this.map = map;
+        clearanceThreshold = ConvertTools.sizeOfMeters(map.getOSMMap(), CLEARANCE_THRESHOLD_METER);
     }
 
     @Override
@@ -33,40 +40,48 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
     protected void step() {
         Collection<TemporaryObject> allObjects = new LinkedHashSet<>(map.getAllObjects());
 
-        List<TemporaryObject> removedObjects = new ArrayList<>();
-        List<TemporaryObject> createdObjects = new ArrayList<>();
+        Set<TemporaryObject> removed = new LinkedHashSet<>();
+        Set<TemporaryObject> created = new LinkedHashSet<>();
 
         setProgressLimit(allObjects.size());
 
         for (TemporaryObject object : allObjects) {
             SplitCandidate candidate = SplitCandidate.of(object, map);
-            if (candidate.isTraversable()) {
+            if (candidate.isTraversable(clearanceThreshold)) {
                 bumpProgress();
                 continue;
             }
 
             Set<SplitCandidate> safePieces = splitIntoTraversableObjects(candidate);
             map.removeTemporaryObject(object);
-            removedObjects.add(object);
+            removed.add(object);
             for (SplitCandidate safePiece : safePieces) {
                 TemporaryObject objectToCreate = createTemporaryObject(safePiece, object);
                 map.addTemporaryObject(objectToCreate);
-                createdObjects.add(objectToCreate);
+                created.add(objectToCreate);
             }
             bumpProgress();
         }
 
         map.resynchronizeStateFromObjects();
 
-        setStatus("Split " + removedObjects.size() + " objects into " + createdObjects.size() + " traversable sub-shapes");
-        visualizeDifference(removedObjects, createdObjects, "Ensure Traversability (Split Polygons)");
+        setStatus("Split " + removed.size() + " objects into " + created.size() + " traversable sub-shapes");
+        visualizeResults(removed, created);
     }
 
     private record SplitCandidate(
             List<Point2D> vertices,
             List<Boolean> edgePassability
     ) {
-        public static SplitCandidate of(TemporaryObject object, TemporaryMap map) {
+
+        /**
+         * Creates a {@link SplitCandidate} from a temporary object.
+         *
+         * @param object the source object
+         * @param map the map used to determine edge passability
+         * @return the corresponding split candidate
+         */
+        static SplitCandidate of(TemporaryObject object, TemporaryMap map) {
             List<Point2D> vertices = new ArrayList<>();
             List<Boolean> edgePassability = new ArrayList<>();
             for (DirectedEdge edge : object.getEdges()) {
@@ -76,9 +91,10 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
             return new SplitCandidate(vertices, edgePassability);
         }
 
-        public Set<Line2D> getPassableLines() {
+        // Returns all passable boundary edges.
+        Set<Line2D> getPassableLines() {
             Set<Line2D> lines = new LinkedHashSet<>();
-            final int n = vertices.size();
+            int n = vertices.size();
             for (int i = 0; i < n; i++) {
                 if (edgePassability.get(i))
                     lines.add(new Line2D(vertices.get(i), vertices.get((i + 1) % n)));
@@ -86,9 +102,10 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
             return Collections.unmodifiableSet(lines);
         }
 
-        public Set<Line2D> getImpassableLines() {
+        // Returns all impassable boundary edges.
+        Set<Line2D> getImpassableLines() {
             Set<Line2D> lines = new LinkedHashSet<>();
-            final int n = vertices.size();
+            int n = vertices.size();
             for (int i = 0; i < n; i++) {
                 if (!edgePassability.get(i))
                     lines.add(new Line2D(vertices.get(i), vertices.get((i + 1) % n)));
@@ -96,29 +113,31 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
             return Collections.unmodifiableSet(lines);
         }
 
+        // Returns the lines of sight from the centroid to each passable edge.
         public Set<Line2D> getLinesOfSight() {
-            final Point2D centroid = GeometryTools2D.computeCentroid(vertices);
+            Point2D centroid = GeometryTools2D.computeCentroid(vertices);
             return getPassableLines().stream()
                     .map(exit -> new Line2D(centroid, exit.getMidpoint()))
                     .collect(Collectors.toUnmodifiableSet());
         }
 
-        private boolean isTraversable() {
+        boolean isTraversable(double threshold) {
             if (vertices.size() < 4) return true;
 
             Set<Line2D> linesOfSight = getLinesOfSight();
             for (Line2D lineOfSight : linesOfSight) {
                 for (Line2D impassableLine : getImpassableLines()) {
-                    if (GeometryTools2D.getSegmentIntersectionPoint(impassableLine, lineOfSight) != null)
+                    if (GeometryTools2D.getDistance(impassableLine, lineOfSight) < threshold) {
                         return false;
+                    }
                 }
             }
             return true;
         }
 
-        public List<Point2D> getConcaveVertices() {
+        List<Point2D> getConcaveVertices() {
             List<Point2D> concave = new ArrayList<>();
-            final int n = vertices.size();
+            int n = vertices.size();
 
             if (n < 4) return concave;
 
@@ -137,9 +156,9 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
             return concave;
         }
 
-        public List<Line2D> getBoundaryLines() {
+        List<Line2D> getBoundaryLines() {
             List<Line2D> lines = new ArrayList<>();
-            final int n = vertices.size();
+            int n = vertices.size();
             for (int i = 0; i < n; i++) {
                 lines.add(new Line2D(vertices.get(i), vertices.get((i + 1) % n)));
             }
@@ -148,12 +167,15 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
     }
 
     private record SplitProposal(Line2D line, int targetVertexIndex, int targetEdgeStartIndex) {
-        public boolean isVertexTarget() {
+
+        // Returns whether the split line terminates at an existing vertex.
+        boolean isVertexTarget() {
             return targetVertexIndex != -1;
         }
     }
 
-    private Set<SplitCandidate> splitIntoTraversableObjects(final SplitCandidate candidate) {
+    // Recursively splits a polygon until every piece become traversable.
+    private Set<SplitCandidate> splitIntoTraversableObjects(SplitCandidate candidate) {
         Queue<SplitCandidate> queue = new ArrayDeque<>();
         Set<SplitCandidate> result = new LinkedHashSet<>();
 
@@ -162,17 +184,15 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         while (!queue.isEmpty()) {
             SplitCandidate current = queue.poll();
 
-            if (current.isTraversable()) {
+            if (current.isTraversable(clearanceThreshold)) {
                 result.add(current);
                 continue;
             }
 
             List<Point2D> concaveVertices = current.getConcaveVertices();
             if (concaveVertices.isEmpty()) {
-                throw new IllegalStateException(
-                    "A non-traversable polygon must have at least one concave vertex. " +
-                    "This indicates a geometric calculation error or an invalid polygon shape."
-                );
+                result.add(current);
+                continue;
             }
 
             SplitProposal bestProposal = findBestSplitLine(current);
@@ -184,46 +204,28 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
                 );
             }
 
-            // DEBUG
-            createCandidateVisualizer(candidate, "Before Split: Best Proposal")
-                    .layer(LineLayer.of(bestProposal.line()).color(DebugPalette.VIOLET_STROKE).dashed(true))
-                    .show();
+            if (VISUALIZE_SPLIT_ITERATIONS) {
+                visualizeSplitProposal(current, bestProposal);
+            }
 
-            Set<SplitCandidate> splitResults = performSplit(candidate, bestProposal);
+            Set<SplitCandidate> splitResults = performSplit(current, bestProposal);
             queue.addAll(splitResults);
 
-            // DEBUG
-            Iterator<SplitCandidate> iterator = splitResults.iterator();
-            SplitCandidate c1 = iterator.next();
-            SplitCandidate c2 = iterator.next();
-            createCandidateVisualizer(c1, "After Split: Piece 1").show();
-            createCandidateVisualizer(c2, "After Split: Piece 2").show();
+            if (VISUALIZE_SPLIT_ITERATIONS) {
+                visualizeSplitResults(splitResults);
+            }
         }
         return result;
     }
 
-    private StepVisualizer createCandidateVisualizer(SplitCandidate candidate, String title) {
-        return StepVisualizer.create(debug)
-                .title(title)
-                .layer(LineLayer.of(candidate.getLinesOfSight())
-                        .color(DebugPalette.MOSS_STROKE).dashed(true))
-                .layer(LineLayer.of(candidate.getImpassableLines())
-                        .color(DebugPalette.INK_STROKE))
-                .layer(LineLayer.of(candidate.getPassableLines())
-                        .color(DebugPalette.SLATE_STROKE).dashed(true))
-                .layer(PointLayer.of(candidate.getConcaveVertices())
-                        .color(DebugPalette.AMBER_STROKE).shape(PointShape.SQUARE))
-                .backgroundLayer(LineLayer.of(map.getAllEdges())
-                        .color(DebugPalette.CONTEXT_STROKE));
-    }
-
-    private TemporaryObject createTemporaryObject(final SplitCandidate safePiece, final TemporaryObject object) {
+    // Creates a temporary object from a split polygon.
+    private TemporaryObject createTemporaryObject(SplitCandidate safePiece, TemporaryObject object) {
         List<Point2D> vertices = safePiece.vertices();
         List<DirectedEdge> edges = new ArrayList<>();
-        final int n = vertices.size();
+        int n = vertices.size();
         for (int i = 0; i < n; i++) {
-            final Node startNode = map.getNode(vertices.get(i));
-            final Node endNode = map.getNode(vertices.get((i + 1) % n));
+            Node startNode = map.getNode(vertices.get(i));
+            Node endNode = map.getNode(vertices.get((i + 1) % n));
             edges.add(map.getDirectedEdge(startNode, endNode));
         }
         return switch (object) {
@@ -234,14 +236,15 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         };
     }
 
-    private SplitProposal findBestSplitLine(final SplitCandidate candidate) {
+    // Finds the highest-scoring valid split line.
+    private SplitProposal findBestSplitLine(SplitCandidate candidate) {
         SplitProposal bestProposal = null;
         double bestScore = -Double.MAX_VALUE;
 
-        final List<Point2D> vertices = candidate.vertices();
-        final int n = vertices.size();
+        List<Point2D> vertices = candidate.vertices();
+        int n = vertices.size();
 
-        for (final Point2D origin : candidate.getConcaveVertices()) {
+        for (Point2D origin : candidate.getConcaveVertices()) {
             for (int i = 1; i < n; i++) {
                 Point2D end = vertices.get(i);
                 Line2D testLine = new Line2D(origin, end);
@@ -249,7 +252,7 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
                     continue;
 
                 SplitProposal proposal = new SplitProposal(testLine, i, -1);
-                final double score = evaluateSplit(candidate, proposal);
+                double score = evaluateSplit(candidate, proposal);
                 if (bestScore < score) {
                     bestScore = score;
                     bestProposal = proposal;
@@ -269,9 +272,9 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
                 if (isInvalidSplitLine(testLine, candidate))
                     continue;
 
-                final int index = candidate.vertices().indexOf(impassableLine.getOrigin());
+                int index = candidate.vertices().indexOf(impassableLine.getOrigin());
                 SplitProposal proposal = new SplitProposal(testLine, -1, index);
-                final double score = evaluateSplit(candidate, proposal);
+                double score = evaluateSplit(candidate, proposal);
                 if (bestScore < score) {
                     bestScore = score;
                     bestProposal = proposal;
@@ -281,7 +284,8 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         return bestProposal;
     }
 
-    private boolean isInvalidSplitLine(final Line2D testLine, final SplitCandidate candidate) {
+    // Returns whether the candidate split line is geometrically valid.
+    private boolean isInvalidSplitLine(Line2D testLine, SplitCandidate candidate) {
         if (testLine.getOrigin().equals(testLine.getEndPoint()))
             return true;
 
@@ -301,11 +305,12 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         return !GeometryTools2D.isPointInsidePolygon(testLine.getMidpoint(), candidate.vertices());
     }
 
-    private double evaluateSplit(final SplitCandidate candidate, final SplitProposal proposal) {
-        final Set<SplitCandidate> splitPieces = performSplit(candidate, proposal);
+    // Evaluates the quality of a split proposal.
+    private double evaluateSplit(SplitCandidate candidate, SplitProposal proposal) {
+        Set<SplitCandidate> splitPieces = performSplit(candidate, proposal);
         double score = 0.0;
         for (SplitCandidate piece : splitPieces) {
-            if (piece.isTraversable()) {
+            if (piece.isTraversable(clearanceThreshold)) {
                 score += 100.0;
             }
         }
@@ -313,6 +318,7 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         return score;
     }
 
+    // Splits a polygon into two polygons.
     private Set<SplitCandidate> performSplit(SplitCandidate candidate, SplitProposal proposal) {
         Point2D p1 = proposal.line().getOrigin();
         Point2D p2 = proposal.line().getEndPoint();
@@ -324,25 +330,26 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         if (proposal.isVertexTarget()) {
             p2Index = proposal.targetVertexIndex();
         } else {
-            final int insertIndex = proposal.targetEdgeStartIndex() + 1;
+            int insertIndex = proposal.targetEdgeStartIndex() + 1;
             workingVertices.add(insertIndex, p2);
             workingPassability.add(insertIndex, workingPassability.get(proposal.targetEdgeStartIndex()));
             p2Index = insertIndex;
         }
 
-        final int p1Index = workingVertices.indexOf(p1);
+        int p1Index = workingVertices.indexOf(p1);
 
         SplitCandidate c1 = extractSubCandidate(workingVertices, workingPassability, p1Index, p2Index);
         SplitCandidate c2 = extractSubCandidate(workingVertices, workingPassability, p2Index, p1Index);
         return Set.of(c1, c2);
     }
 
+    // Extracts a polygon between two vertices.
     private SplitCandidate extractSubCandidate(
             List<Point2D> vertices, List<Boolean> passability, int startIndex, int endIndex) {
 
         List<Point2D> polyVertices = new ArrayList<>();
         List<Boolean> polyPassability = new ArrayList<>();
-        final int n = vertices.size();
+        int n = vertices.size();
 
         int curr = startIndex;
         while (curr != endIndex) {
@@ -354,5 +361,55 @@ public class EnsureTraversabilityStep extends BaseModificationStep {
         polyPassability.add(true);
 
         return new SplitCandidate(polyVertices, polyPassability);
+    }
+
+    // --- Split-iteration debug visualization (see VISUALIZE_SPLIT_ITERATIONS) ---
+
+    // Visualize the chosen split line before it is applied.
+    private void visualizeSplitProposal(SplitCandidate current, SplitProposal bestProposal) {
+        createCandidateVisualizer(current, "Before Split: Best Proposal")
+                .layer(LineLayer.of(bestProposal.line()).color(DebugPalette.VIOLET_STROKE).dashed(true))
+                .show();
+    }
+
+    // Visualize each resulting piece immediately after a split.
+    private void visualizeSplitResults(Set<SplitCandidate> splitResults) {
+        Iterator<SplitCandidate> iterator = splitResults.iterator();
+        SplitCandidate c1 = iterator.next();
+        SplitCandidate c2 = iterator.next();
+        createCandidateVisualizer(c1, "After Split: Piece 1").show();
+        createCandidateVisualizer(c2, "After Split: Piece 2").show();
+    }
+
+    private StepVisualizer createCandidateVisualizer(SplitCandidate candidate, String title) {
+        return StepVisualizer.create(debug)
+                .title(title)
+                .layer(LineLayer.of(candidate.getLinesOfSight())
+                        .color(DebugPalette.MOSS_STROKE).dashed(true))
+                .layer(LineLayer.of(candidate.getImpassableLines())
+                        .color(DebugPalette.INK_STROKE))
+                .layer(LineLayer.of(candidate.getPassableLines())
+                        .color(DebugPalette.SLATE_STROKE).dashed(true))
+                .layer(PointLayer.of(candidate.getConcaveVertices())
+                        .color(DebugPalette.AMBER_STROKE).shape(PointShape.SQUARE))
+                .backgroundLayer(LineLayer.of(map.getAllEdges())
+                        .color(DebugPalette.CONTEXT_STROKE));
+    }
+
+    private void visualizeResults(Set<TemporaryObject> removed, Set<TemporaryObject> created) {
+        StepVisualizer.create(debug)
+                .title("Split Non-traversable Objects Results")
+                .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .fillColor(DebugPalette.SLATE_FILL)
+                        .outlineColor(DebugPalette.SLATE_STROKE))
+                .layer(PolygonLayer.of(removed)
+                        .name("Removed Objects")
+                        .fillColor(DebugPalette.CORAL_FILL)
+                        .outlineColor(DebugPalette.CORAL_STROKE))
+                .layer(PolygonLayer.of(created)
+                        .name("Created Objects")
+                        .fillColor(DebugPalette.MOSS_FILL)
+                        .outlineColor(DebugPalette.MOSS_STROKE))
+                .show();
     }
 }
