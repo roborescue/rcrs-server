@@ -1,6 +1,5 @@
 package maps.convert.osm2gml;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -85,7 +84,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         }
 
         setStatus("Inspected " + inspectedCount + " edges and split " + splitCount + " times");
-        visualizeResult();
+        visualizeResults();
     }
 
     private SpatialGrid<Edge> createEdgeGrid() {
@@ -318,7 +317,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
         return new HashSet<>(created);
     }
 
-    private void visualizeResult() {
+    private void visualizeResults() {
         StepVisualizer.create(debug)
                 .title("Split Intersecting Edges")
                 .layer(PointLayer.of(createdNodes)
