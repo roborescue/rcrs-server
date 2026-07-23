@@ -368,7 +368,9 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
     // Visualize the chosen split line before it is applied.
     private void visualizeSplitProposal(SplitCandidate current, SplitProposal bestProposal) {
         createCandidateVisualizer(current, "Before Split: Best Proposal")
-                .layer(LineLayer.of(bestProposal.line()).color(DebugPalette.VIOLET_STROKE).dashed(true))
+                .layer(LineLayer.of(bestProposal.line())
+                        .name("Split Line")
+                        .color(DebugPalette.VIOLET_STROKE))
                 .show();
     }
 
@@ -385,23 +387,27 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
         return StepVisualizer.create(debug)
                 .title(title)
                 .layer(LineLayer.of(candidate.getLinesOfSight())
-                        .color(DebugPalette.MOSS_STROKE).dashed(true))
+                        .name("Lines of Sight")
+                        .color(DebugPalette.MOSS_STROKE)
+                        .dashed(true))
                 .layer(LineLayer.of(candidate.getImpassableLines())
-                        .color(DebugPalette.INK_STROKE))
+                        .name("Impassable Lines")
+                        .color(DebugPalette.AZURE_STROKE))
                 .layer(LineLayer.of(candidate.getPassableLines())
-                        .color(DebugPalette.SLATE_STROKE).dashed(true))
+                        .name("Passable Lines")
+                        .color(DebugPalette.SKY_STROKE)
+                        .dashed(true))
                 .layer(PointLayer.of(candidate.getConcaveVertices())
+                        .name("Concave Vertices")
                         .color(DebugPalette.AMBER_STROKE).shape(PointShape.SQUARE))
                 .backgroundLayer(LineLayer.of(map.getAllEdges())
-                        .color(DebugPalette.CONTEXT_STROKE));
+                        .name("Edges")
+                        .color(DebugPalette.SLATE_STROKE));
     }
 
     private void visualizeResults(Set<TemporaryObject> removed, Set<TemporaryObject> created) {
         StepVisualizer.create(debug)
                 .title("Split Non-traversable Objects Results")
-                .backgroundLayer(PolygonLayer.of(map.getAllObjects())
-                        .fillColor(DebugPalette.SLATE_FILL)
-                        .outlineColor(DebugPalette.SLATE_STROKE))
                 .layer(PolygonLayer.of(removed)
                         .name("Removed Objects")
                         .fillColor(DebugPalette.CORAL_FILL)
@@ -410,6 +416,10 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
                         .name("Created Objects")
                         .fillColor(DebugPalette.MOSS_FILL)
                         .outlineColor(DebugPalette.MOSS_STROKE))
+                .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .name("Objects")
+                        .fillColor(DebugPalette.SLATE_FILL)
+                        .outlineColor(DebugPalette.SLATE_STROKE))
                 .show();
     }
 }
