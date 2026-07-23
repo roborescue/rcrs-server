@@ -8,7 +8,7 @@ import rescuecore2.misc.geometry.Vector2D;
 import java.awt.geom.Area;
 import java.util.*;
 
-public class ConnectBuildingsStep extends BaseModificationStep {
+public class CreateEntranceStep extends BaseModificationStep {
 
     private final double maxConnectDistance;
     private final double minConnectDistance;
@@ -22,7 +22,7 @@ public class ConnectBuildingsStep extends BaseModificationStep {
             Node roadNode1, Node roadNode2
     ) {}
 
-    public ConnectBuildingsStep(final TemporaryMap map) {
+    public CreateEntranceStep(final TemporaryMap map) {
         super(map);
         maxConnectDistance = ConvertTools.sizeOfMeters(map.getOSMMap(), 20);
         minConnectDistance = ConvertTools.sizeOfMeters(map.getOSMMap(), 1); // Nearby threshold
