@@ -17,8 +17,10 @@ import java.util.stream.Collectors;
 public class SplitNonTraversableObjectsStep extends ConvertStep {
     private final TemporaryMap map;
     private final double clearanceThreshold;
+    private final double minSplitLength;
 
     private static final double CLEARANCE_THRESHOLD_METER = 0.1;
+    private static final double MIN_SPLIT_LENGTH_METER = 1.0;
     private static final boolean VISUALIZE_SPLIT_ITERATIONS = false;
 
     /**
@@ -29,6 +31,7 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
     public SplitNonTraversableObjectsStep(TemporaryMap map) {
         this.map = map;
         clearanceThreshold = ConvertTools.sizeOfMeters(map.getOSMMap(), CLEARANCE_THRESHOLD_METER);
+        minSplitLength = ConvertTools.sizeOfMeters(map.getOSMMap(), MIN_SPLIT_LENGTH_METER);
     }
 
     @Override
@@ -281,20 +284,23 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
 
     // Returns whether the candidate split line is geometrically valid.
     private boolean isInvalidSplitLine(Line2D testLine, SplitCandidate candidate) {
-        if (testLine.getOrigin().equals(testLine.getEndPoint()))
+        if (testLine.getLength() <= minSplitLength) {
             return true;
+        }
 
         for (Line2D boundaryLine : candidate.getBoundaryLines()) {
-            if (testLine.isGeometricallyEquivalent(boundaryLine))
+            if (testLine.isGeometricallyEquivalent(boundaryLine)) {
                 return true;
+            }
         }
 
         for (Line2D boundaryLine : candidate.getBoundaryLines()) {
             Point2D intersection = GeometryTools2D.getSegmentIntersectionPoint(boundaryLine, testLine);
             if (intersection != null &&
                     !intersection.equals(testLine.getOrigin()) &&
-                    !intersection.equals(testLine.getEndPoint()))
+                    !intersection.equals(testLine.getEndPoint())) {
                 return true;
+            }
         }
 
         return !GeometryTools2D.isPointInsidePolygon(testLine.getMidpoint(), candidate.vertices());
