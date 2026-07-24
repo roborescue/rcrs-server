@@ -22,27 +22,27 @@ public class RoadAspect {
 
     public RoadAspect(final OSMRoadInfo road, final OSMNode center) {
         this.road = road;
-        this.isIncoming = road.getTo().equals(center);
+        this.isIncoming = road.getEnd().equals(center);
 
         this.center = center;
-        this.farNode = isIncoming ? road.getFrom() : road.getTo();
+        this.farNode = isIncoming ? road.getStart() : road.getEnd();
     }
 
     public void setRightEnd(final Point2D rightEnd) {
         this.rightEnd = rightEnd;
         if (isIncoming) {
-            road.setFromLeft(rightEnd);
+            road.setStartLeft(rightEnd);
         } else {
-            road.setToRight(rightEnd);
+            road.setEndRight(rightEnd);
         }
     }
 
     public void setLeftEnd(final Point2D leftEnd) {
         this.leftEnd = leftEnd;
         if (isIncoming) {
-            road.setFromRight(leftEnd);
+            road.setStartRight(leftEnd);
         } else {
-            road.setToLeft(leftEnd);
+            road.setEndLeft(leftEnd);
         }
     }
 

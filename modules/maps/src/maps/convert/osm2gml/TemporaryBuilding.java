@@ -5,20 +5,28 @@ import lombok.Getter;
 import java.util.List;
 
 /**
-   A temporary building during conversion.
-*/
+ * A temporary building during conversion.
+ */
 public class TemporaryBuilding extends TemporaryObject {
     @Getter
     private final long osmId;
 
     /**
-       Construct a new TemporaryBuilding.
-       @param edges The edges of the building in counter-clockwise order.
-       @param osmId The ID of the OSM building that generated this data.
-    */
+     * Constructs a temporary building with the specified edges and OSM ID.
+     * @param edges the edges
+     * @param osmId the OSM ID
+     */
     public TemporaryBuilding(List<DirectedEdge> edges, long osmId) {
         super(edges);
         this.osmId = osmId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TemporaryObject copyWithEdges(List<DirectedEdge> edges) {
+        return new TemporaryBuilding(edges, osmId);
     }
 
     @Override

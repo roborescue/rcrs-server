@@ -16,7 +16,7 @@ import maps.osm.OSMNode;
 /**
  * Information about an OSM intersection.
  */
-public class OSMIntersectionInfo implements OSMShape, Puntal {
+public class OSMIntersectionInfo implements OSMObjectInfo, Puntal {
 
     @Getter private final OSMNode node;
     @Getter private final Set<RoadAspect> roads;
@@ -24,51 +24,39 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
     private Area area;
 
     /**
-     * Create an IntersectionInfo.
-     * @param node The OSMNode at the center of the intersection.
+     * Constructs intersection information for the specified node.
+     *
+     * @param node the node
      */
-    public OSMIntersectionInfo(final OSMNode node) {
+    public OSMIntersectionInfo(OSMNode node) {
         this.node = node;
-        this.roads = new LinkedHashSet<>();
-        this.vertices = new ArrayList<>();
-        this.area = null;
+        roads = new LinkedHashSet<>();
+        vertices = new ArrayList<>();
+        area = null;
     }
 
     /**
-     * Add the road that connect to this intersection.
-     * @param road The road that connect to this intersection.
+     * Adds the specified road.
+     *
+     * @param road the road
      */
-    public void addRoadSegment(final OSMRoadInfo road) {
+    public void addRoad(OSMRoadInfo road) {
         roads.add(new RoadAspect(road, node));
     }
 
     /**
-     * Remove the road that connected to this intersection.
-     * @param road The road that connected to this intersection.
+     * Removes the specified road.
+     *
+     * @param road the road
      */
-    public void removeRoadSegment(final OSMRoadInfo road) {
+    public void removeRoad(final OSMRoadInfo road) {
         roads.remove(new RoadAspect(road, node));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("IntersectionInfo (center ");
-        result.append(node);
-        result.append(") [");
-        for (Iterator<Point2D> it = vertices.iterator(); it.hasNext();) {
-            result.append(it.next().toString());
-            if (it.hasNext()) {
-                result.append(", ");
-            }
-        }
-        result.append("]");
-        if (area == null) {
-            result.append(" (degenerate)");
-        }
-        return result.toString();
-    }
-
     public Area getArea() {
         if (roads.size() < 2) return null;
         if (area != null) return area;
@@ -92,9 +80,39 @@ public class OSMIntersectionInfo implements OSMShape, Puntal {
         return new Area(path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TemporaryObject createTemporaryObject(List<DirectedEdge> edges) {
+        return new TemporaryIntersection(edges);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Point2D getPoint() {
         return node.getPoint();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("IntersectionInfo (center ");
+        result.append(node);
+        result.append(") [");
+        for (Iterator<Point2D> it = vertices.iterator(); it.hasNext();) {
+            result.append(it.next().toString());
+            if (it.hasNext()) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
+        if (area == null) {
+            result.append(" (degenerate)");
+        }
+        return result.toString();
     }
 
     @Override

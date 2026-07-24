@@ -274,11 +274,7 @@ public final class ConvertTools {
                         currentPath.add(map.getDirectedEdge(lastNode, firstNode));
                     }
                     if (2 < currentPath.size()) {
-                        if (original instanceof TemporaryRoad) {
-                            result.add(new TemporaryRoad(currentPath));
-                        } else if (original instanceof TemporaryIntersection) {
-                            result.add(new TemporaryIntersection(currentPath));
-                        }
+                        result.add(original.copyWithEdges(currentPath));
                     }
 
                     // Break the inner loop to start processing the next path (if any).

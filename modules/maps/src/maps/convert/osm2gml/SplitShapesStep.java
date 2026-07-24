@@ -100,19 +100,8 @@ public class SplitShapesStep extends ConvertStep {
                 else {
                     ++newShapeCount;
                 }
-                TemporaryObject newObject = null;
-                if (shape instanceof TemporaryRoad) {
-                    newObject = new TemporaryRoad(result);
-                }
-                if (shape instanceof TemporaryIntersection) {
-                    newObject = new TemporaryIntersection(result);
-                }
-                if (shape instanceof TemporaryBuilding) {
-                    newObject = new TemporaryBuilding(result, ((TemporaryBuilding)shape).getOsmId());
-                }
-                if (newObject != null) {
-                    map.addTemporaryObject(newObject);
-                }
+                TemporaryObject newObject = shape.copyWithEdges(result);
+                map.addTemporaryObject(newObject);
             }
         }
         return newShapeCount;

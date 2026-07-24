@@ -10,8 +10,9 @@ import java.util.List;
 public interface Polygonal {
 
     /**
-     * Get the vertices of this polygon.
-     * @return The list of vertices.
+     * Returns the vertices of this object as a closed polygon.
+     *
+     * @return the vertices
      */
     List<Point2D> getVertices();
 }

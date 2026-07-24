@@ -95,19 +95,19 @@ public class TemporaryMap {
     }
 
     public void addOSMRoad(final OSMRoadInfo road) {
-        final OSMIntersectionInfo from = getOSMIntersection(road.getFrom());
-        final OSMIntersectionInfo to = getOSMIntersection(road.getTo());
+        final OSMIntersectionInfo from = getOSMIntersection(road.getStart());
+        final OSMIntersectionInfo to = getOSMIntersection(road.getEnd());
         osmRoads.add(road);
-        from.addRoadSegment(road);
-        to.addRoadSegment(road);
+        from.addRoad(road);
+        to.addRoad(road);
     }
 
     public void removeOSMRoad(final OSMRoadInfo road) {
-        final OSMIntersectionInfo from = getOSMIntersection(road.getFrom());
-        final OSMIntersectionInfo to = getOSMIntersection(road.getTo());
+        final OSMIntersectionInfo from = getOSMIntersection(road.getStart());
+        final OSMIntersectionInfo to = getOSMIntersection(road.getEnd());
         osmRoads.remove(road);
-        from.removeRoadSegment(road);
-        to.removeRoadSegment(road);
+        from.removeRoad(road);
+        to.removeRoad(road);
     }
 
     public void addOSMBuilding(final OSMBuildingInfo osmBuildingInfo) {

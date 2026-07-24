@@ -135,7 +135,7 @@ public class MakeObjectsStep extends ConvertStep {
         for (final TemporaryObject object : objects) {
             final GMLShape shape = shapeMap.get(object);
             for (final DirectedEdge edge : object.getEdges()) {
-                final TemporaryObject neighbour = object.getNeighbour(edge);
+                final TemporaryObject neighbour = object.getNeighbor(edge);
                 if (neighbour != null && shapeMap.containsKey(neighbour)) {
                     final GMLEdge gmlEdge = edgeMap.get(edge.getEdge());
                     final int neighbourID = shapeMap.get(neighbour).getID();

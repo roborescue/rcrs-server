@@ -228,12 +228,7 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
             Node endNode = map.getNode(vertices.get((i + 1) % n));
             edges.add(map.getDirectedEdge(startNode, endNode));
         }
-        return switch (object) {
-            case TemporaryRoad ignore -> new TemporaryRoad(edges);
-            case TemporaryIntersection ignore -> new TemporaryIntersection(edges);
-            case TemporaryBuilding building -> new TemporaryBuilding(edges, building.getOsmId());
-            default -> throw new IllegalStateException("Unsupported object type: " + object.getClass().getName());
-        };
+        return object.copyWithEdges(edges);
     }
 
     // Finds the highest-scoring valid split line.

@@ -43,10 +43,10 @@ public class MakeTempObjectsStep extends ConvertStep {
         visualizeResults(roads, intersections, buildings);
     }
 
-    private <T extends OSMShape> Set<TemporaryObject> generateObjects(Collection<T> osmShapes) {
+    private <T extends OSMObjectInfo> Set<TemporaryObject> generateObjects(Collection<T> osmShapes) {
         Set<TemporaryObject> created = new LinkedHashSet<>();
 
-        for (OSMShape shape : osmShapes) {
+        for (OSMObjectInfo shape : osmShapes) {
             if (shape.getArea() == null) {
                 bumpProgress();
                 continue;
@@ -54,13 +54,7 @@ public class MakeTempObjectsStep extends ConvertStep {
 
             List<DirectedEdge> edges = generateEdges(shape);
             if (2 < edges.size()) {
-                TemporaryObject newObject = switch (shape) {
-                    case OSMRoadInfo ignored -> new TemporaryRoad(edges);
-                    case OSMIntersectionInfo ignored -> new TemporaryIntersection(edges);
-                    case OSMBuildingInfo building -> new TemporaryBuilding(edges, building.getBuildingID());
-                    default -> throw new IllegalStateException(
-                            "Unsupported object type: " + osmShapes.getClass().getName());
-                };
+                TemporaryObject newObject = shape.createTemporaryObject(edges);
                 map.addTemporaryObject(newObject);
                 created.add(newObject);
             }
@@ -69,7 +63,7 @@ public class MakeTempObjectsStep extends ConvertStep {
         return created;
     }
 
-    private List<DirectedEdge> generateEdges(OSMShape shape) {
+    private List<DirectedEdge> generateEdges(OSMObjectInfo shape) {
         List<DirectedEdge> result = new ArrayList<>();
         Iterator<Point2D> it = shape.getVertices().iterator();
         Node first = map.getNode(it.next());
