@@ -59,7 +59,7 @@ public class Convertor {
                 new RemovePseudoNodesStep             (temp),
                 new GenerateIntersectionAreaStep      (temp),
                 new MakeTempObjectsStep               (temp),
-                new ConnectBuildingsStep              (temp),
+                new RemoveSelfIntersectingStep        (temp),
                 new CreateEntranceStep                (temp),
                 new SplitIntersectingEdgesStep        (temp),
                 new CleanBuildingOverlapsStep         (temp),
