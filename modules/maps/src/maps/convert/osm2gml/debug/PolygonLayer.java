@@ -8,7 +8,8 @@ import java.util.List;
 
 /**
  * A debug layer that displays a collection of polygonal objects.
- * @param <T> The type of polygonal object in this layer.
+ *
+ * @param <T> the type of polygonal object in this layer
  */
 public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
     private Color outlineColor;
@@ -16,71 +17,75 @@ public class PolygonLayer<T extends Polygonal> extends ShapeLayer<T> {
     private int strokeWidth;
 
     public static final Color DEFAULT_OUTLINE_COLOR = Color.BLACK;
-    public static final Color DEFAULT_FILL_COLOR    = Color.GRAY;
-    public static final int   DEFAULT_STROKE_WIDTH  = 2;
+    public static final Color DEFAULT_FILL_COLOR = Color.GRAY;
+    public static final int DEFAULT_STROKE_WIDTH = 2;
 
     private PolygonLayer(final Collection<T> objects) {
         super(objects);
 
-        this.outlineColor = DEFAULT_OUTLINE_COLOR;
-        this.fillColor    = DEFAULT_FILL_COLOR;
-        this.strokeWidth  = DEFAULT_STROKE_WIDTH;
+        outlineColor = DEFAULT_OUTLINE_COLOR;
+        fillColor = DEFAULT_FILL_COLOR;
+        strokeWidth = DEFAULT_STROKE_WIDTH;
     }
 
     /**
-     * Create a new {@code PolygonLayer}.
-     * @param objects The polygonal objects to display.
-     * @param <T>     The type of object in this layer.
-     * @return A new {@code PolygonLayer}.
+     * Returns a new {@code PolygonLayer} containing the specified objects.
+     *
+     * @param objects the objects
+     * @param <T> the type of polygonal object
+     * @return a new {@code PolygonLayer}
      */
     public static <T extends Polygonal> PolygonLayer<T> of(final Collection<T> objects) {
         return new PolygonLayer<>(objects);
     }
 
     /**
-     * Set the display name of this layer.
-     * @param name The layer name.
-     * @return This layer, for chaining.
+     * Sets the name of this layer.
+     *
+     * @param name the layer name
+     * @return this layer
      */
-    @SuppressWarnings("unused")
     public PolygonLayer<T> name(final String name) {
         this.name = name;
         return this;
     }
 
     /**
-     * Set the polygon outline color.
-     * @param outlineColor The outline color.
-     * @return This layer, for chaining.
+     * Sets the outline color.
+     *
+     * @param outlineColor the outline color
+     * @return this layer
      */
-    @SuppressWarnings("unused")
     public PolygonLayer<T> outlineColor(final Color outlineColor) {
         this.outlineColor = outlineColor;
         return this;
     }
 
     /**
-     * Set the polygon fill color.
-     * @param fillColor The fill color.
-     * @return This layer, for chaining.
+     * Sets the fill color.
+     *
+     * @param fillColor the fill color
+     * @return this layer
      */
-    @SuppressWarnings("unused")
     public PolygonLayer<T> fillColor(final Color fillColor) {
         this.fillColor = fillColor;
         return this;
     }
 
     /**
-     * Set the polygon outline stroke width.
-     * @param strokeWidth The stroke width, in pixels.
-     * @return This layer, for chaining.
+     * Sets the outline stroke width.
+     *
+     * @param strokeWidth the stroke width
+     * @return this layer
      */
-    @SuppressWarnings("unused")
     public PolygonLayer<T> strokeWidth(final int strokeWidth) {
         this.strokeWidth = strokeWidth;
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ShapeDebugFrame.ShapeInfo> createShapes() {
         return objects.stream().map(this::createShape).toList();
