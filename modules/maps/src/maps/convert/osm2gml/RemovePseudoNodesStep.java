@@ -107,7 +107,6 @@ public class RemovePseudoNodesStep extends ConvertStep {
                         .name("Created Roads")
                         .color(DebugPalette.MOSS_STROKE))
                 .backgroundLayer(LineLayer.of(map.getOSMRoads())
-                        .name("Roads")
                         .color(DebugPalette.SLATE_STROKE))
                 .show();
     }

@@ -32,7 +32,6 @@ public class StepVisualizer {
         return this;
     }
 
-    @SuppressWarnings("unused")
     public StepVisualizer backgroundLayer(final ShapeLayer<?> layer) {
         backgroundLayers.add(layer);
         return this;

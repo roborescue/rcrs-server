@@ -402,7 +402,6 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
                         .name("Concave Vertices")
                         .color(DebugPalette.AMBER_STROKE).shape(PointShape.SQUARE))
                 .backgroundLayer(LineLayer.of(map.getAllEdges())
-                        .name("Edges")
                         .color(DebugPalette.SLATE_STROKE));
     }
 
@@ -418,7 +417,6 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
                         .fillColor(DebugPalette.MOSS_FILL)
                         .outlineColor(DebugPalette.MOSS_STROKE))
                 .backgroundLayer(PolygonLayer.of(map.getAllObjects())
-                        .name("Objects")
                         .fillColor(DebugPalette.SLATE_FILL)
                         .outlineColor(DebugPalette.SLATE_STROKE))
                 .show();

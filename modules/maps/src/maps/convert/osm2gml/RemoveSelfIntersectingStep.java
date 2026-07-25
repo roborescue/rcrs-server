@@ -151,7 +151,6 @@ public class RemoveSelfIntersectingStep extends ConvertStep {
                         .outlineColor(DebugPalette.MOSS_STROKE)
                         .fillColor(DebugPalette.MOSS_FILL))
                 .backgroundLayer(PolygonLayer.of(map.getAllObjects())
-                        .name("Objects")
                         .outlineColor(DebugPalette.SLATE_STROKE)
                         .fillColor(DebugPalette.SLATE_FILL))
                 .show();
