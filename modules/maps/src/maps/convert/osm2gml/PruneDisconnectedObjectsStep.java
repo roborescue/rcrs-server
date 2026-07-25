@@ -1,5 +1,6 @@
 package maps.convert.osm2gml;
 
+import maps.convert.ConvertStep;
 import maps.convert.osm2gml.debug.DebugPalette;
 import maps.convert.osm2gml.debug.PolygonLayer;
 import maps.convert.osm2gml.debug.StepVisualizer;
@@ -10,7 +11,8 @@ import java.util.*;
  * Remove buildings and roads that do not belong to the largest connected
  * component.
  */
-public class PruneDisconnectedObjectsStep extends BaseModificationStep {
+public class PruneDisconnectedObjectsStep extends ConvertStep {
+    private final TemporaryMap map;
 
     /**
      * Constructs a new {@code PruneDisconnectedObjectsStep}.
@@ -18,7 +20,7 @@ public class PruneDisconnectedObjectsStep extends BaseModificationStep {
      * @param map the map
      */
     public PruneDisconnectedObjectsStep(TemporaryMap map) {
-        super(map);
+        this.map = map;
     }
 
     /**
@@ -64,7 +66,6 @@ public class PruneDisconnectedObjectsStep extends BaseModificationStep {
         setStatus("Removed " + toRemove.size() + " disconnected objects across"
             + (components.size() - 1) + " isolated component(s).");
         visualizeResults(toRemove);
-        visualizeDifference(domain, mainComponent, "Fix Connectivity Results");
     }
 
     // Build an adjacency map: two objects are adjacent when they share at least one edge.
