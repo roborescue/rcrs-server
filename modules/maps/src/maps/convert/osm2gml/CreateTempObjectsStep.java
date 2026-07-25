@@ -10,7 +10,7 @@ import rescuecore2.misc.geometry.Point2D;
 /**
  * Creates {@link TemporaryObject}s from OSM data.
  */
-public class MakeTempObjectsStep extends ConvertStep {
+public class CreateTempObjectsStep extends ConvertStep {
     private final TemporaryMap map;
 
     /**
@@ -18,7 +18,7 @@ public class MakeTempObjectsStep extends ConvertStep {
      *
      * @param map the map
      */
-    public MakeTempObjectsStep(TemporaryMap map) {
+    public CreateTempObjectsStep(TemporaryMap map) {
         super();
         this.map = map;
     }
@@ -85,7 +85,7 @@ public class MakeTempObjectsStep extends ConvertStep {
             Set<TemporaryObject> roads, Set<TemporaryObject> intersections, Set<TemporaryObject> buildings) {
 
         StepVisualizer.create(debug)
-                .title("Make Temporary Objects Results")
+                .title("Make Temporary Objects")
                 .layer(PolygonLayer.of(roads)
                         .name("Created Roads")
                         .outlineColor(DebugPalette.SKY_STROKE)

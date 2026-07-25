@@ -24,7 +24,7 @@ import java.util.Collection;
  * (nodes, edges, buildings, roads, and intersections). Finally, it establishes
  * the topological neighbor relationships between the generated shapes.
  */
-public class MakeObjectsStep extends ConvertStep {
+public class CreateObjectsStep extends ConvertStep {
     private final TemporaryMap map;
     private final GMLMap gmlMap;
 
@@ -34,7 +34,7 @@ public class MakeObjectsStep extends ConvertStep {
      * @param map    The {@code TemporaryMap} to road data from.
      * @param gmlMap The {@code GMLMap} to populate with the final objects.
      */
-    public MakeObjectsStep(final TemporaryMap map, final GMLMap gmlMap) {
+    public CreateObjectsStep(final TemporaryMap map, final GMLMap gmlMap) {
         super();
         this.map = map;
         this.gmlMap = gmlMap;

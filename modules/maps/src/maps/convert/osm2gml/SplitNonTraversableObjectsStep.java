@@ -402,12 +402,13 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
                         .name("Concave Vertices")
                         .color(DebugPalette.AMBER_STROKE).shape(PointShape.SQUARE))
                 .backgroundLayer(LineLayer.of(map.getAllEdges())
+                        .name("Edges")
                         .color(DebugPalette.SLATE_STROKE));
     }
 
     private void visualizeResults(Set<TemporaryObject> removed, Set<TemporaryObject> created) {
         StepVisualizer.create(debug)
-                .title("Split Non-traversable Objects Results")
+                .title("Split Non-traversable Objects")
                 .layer(PolygonLayer.of(removed)
                         .name("Removed Objects")
                         .fillColor(DebugPalette.CORAL_FILL)
@@ -417,6 +418,7 @@ public class SplitNonTraversableObjectsStep extends ConvertStep {
                         .fillColor(DebugPalette.MOSS_FILL)
                         .outlineColor(DebugPalette.MOSS_STROKE))
                 .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .name("Objects")
                         .fillColor(DebugPalette.SLATE_FILL)
                         .outlineColor(DebugPalette.SLATE_STROKE))
                 .show();

@@ -95,7 +95,7 @@ public class ScanOSMStep extends ConvertStep {
             final Set<OSMRoadInfo> createdRoads, final Set<OSMIntersectionInfo> createdIntersections,
             final Set<OSMBuildingInfo> createdBuildings) {
         StepVisualizer.create(debug)
-                .title("Scan OSM Results")
+                .title("Scan OSM")
                 .layer(LineLayer.of(createdRoads)
                         .name("Created Roads")
                         .color(DebugPalette.MOSS_STROKE))

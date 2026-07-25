@@ -1,14 +1,20 @@
 package maps.convert.osm2gml;
 
+import maps.convert.ConvertStep;
+import maps.convert.osm2gml.debug.DebugPalette;
+import maps.convert.osm2gml.debug.PolygonLayer;
+import maps.convert.osm2gml.debug.StepVisualizer;
+
 import java.awt.geom.Area;
 import java.util.*;
 
 import static maps.convert.osm2gml.ConvertTools.areaToTemporaryPassableShapes;
 
-public class MergePassableShapesStep extends BaseModificationStep {
+public class MergePassableShapesStep extends ConvertStep {
+    private final TemporaryMap map;
 
     public MergePassableShapesStep(TemporaryMap map) {
-        super(map);
+        this.map = map;
     }
 
     @Override
@@ -37,7 +43,8 @@ public class MergePassableShapesStep extends BaseModificationStep {
                 }
 
                 // Convert the combined area back to new passable shapes. ignoring any holes.
-                List<TemporaryObject> mergedPassableShapes = areaToTemporaryPassableShapes(combinedArea, group.get(0), map);
+                List<TemporaryObject> mergedPassableShapes =
+                        areaToTemporaryPassableShapes(combinedArea, group.getFirst(), map);
 
                 if (!mergedPassableShapes.isEmpty()) {
                     passableShapesToRemove.addAll(group);
@@ -48,7 +55,6 @@ public class MergePassableShapesStep extends BaseModificationStep {
 
         if (passableShapesToRemove.isEmpty()) {
             setStatus("No overlapping passable shapes found to merge.");
-            visualizeDifference(initialPassableShapes, initialPassableShapes, "Passable Shapes Merging Results - No Changes");
             return;
         }
 
@@ -64,7 +70,7 @@ public class MergePassableShapesStep extends BaseModificationStep {
         map.resynchronizeStateFromObjects();
 
         setStatus("Merged " + passableShapesToRemove.size() + " old passable shapes into " + passableShapesToAdd.size() + " new passable shapes.");
-        visualizeDifference(initialPassableShapes, map.getAllPassableShapes(), "Passable Shapes Merging Results");
+        visualizeResults(passableShapesToRemove, passableShapesToAdd);
     }
 
     private List<List<TemporaryObject>> findOverlappingRoadGroups(Collection<TemporaryObject> passableShapes) {
@@ -103,5 +109,23 @@ public class MergePassableShapesStep extends BaseModificationStep {
             allGroups.add(currentGroup);
         }
         return allGroups;
+    }
+
+    private void visualizeResults(List<TemporaryObject> removed, List<TemporaryObject> created) {
+        StepVisualizer.create(debug)
+                .title("Merge Passable Shapes")
+                .layer(PolygonLayer.of(removed)
+                        .name("Removed Objects")
+                        .outlineColor(DebugPalette.CORAL_STROKE)
+                        .fillColor(DebugPalette.CORAL_FILL))
+                .layer(PolygonLayer.of(created)
+                        .name("Created Objects")
+                        .outlineColor(DebugPalette.MOSS_STROKE)
+                        .fillColor(DebugPalette.MOSS_FILL))
+                .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .name("Objects")
+                        .outlineColor(DebugPalette.SLATE_STROKE)
+                        .fillColor(DebugPalette.SLATE_FILL))
+                .show();
     }
 }

@@ -10,10 +10,10 @@ import rescuecore2.misc.geometry.Point2D;
 
 import java.util.*;
 
-public class RemoveSelfIntersectingStep extends ConvertStep {
+public class RemoveSelfIntersectingShapesStep extends ConvertStep {
     private final TemporaryMap map;
 
-    public RemoveSelfIntersectingStep(TemporaryMap map) {
+    public RemoveSelfIntersectingShapesStep(TemporaryMap map) {
         this.map = map;
     }
 
@@ -28,7 +28,7 @@ public class RemoveSelfIntersectingStep extends ConvertStep {
         Set<TemporaryObject> removed = new LinkedHashSet<>();
         Set<TemporaryObject> created = new LinkedHashSet<>();
 
-        setProgress(allObjects.size());
+        setProgressLimit(allObjects.size());
 
         for (TemporaryObject object : allObjects) {
             List<Node> rawNodes = object.getNodes();
@@ -37,17 +37,21 @@ public class RemoveSelfIntersectingStep extends ConvertStep {
 
             if (n < 3) {
                 map.removeTemporaryObject(object);
+                removed.add(object);
             } else if (n != rawNodes.size()) {
                 map.removeTemporaryObject(object);
                 removed.add(object);
+
                 TemporaryObject newObj = createUpdateObject(object, cleanedNodes);
                 map.addTemporaryObject(newObj);
                 created.add(newObj);
                 bumpProgress();
             }
+
             bumpProgress();
         }
 
+        setStatus("Modified " + removed.size() + " self-intersecting objects");
         visualizeResults(removed, created);
     }
 
@@ -141,7 +145,7 @@ public class RemoveSelfIntersectingStep extends ConvertStep {
 
     private void visualizeResults(Set<TemporaryObject> removed, Set<TemporaryObject> created) {
         StepVisualizer.create(debug)
-                .title("Remove Self Interactions Results")
+                .title("Remove Self Interactions")
                 .layer(PolygonLayer.of(removed)
                         .name("Removed Objects")
                         .outlineColor(DebugPalette.CORAL_STROKE)
@@ -151,6 +155,7 @@ public class RemoveSelfIntersectingStep extends ConvertStep {
                         .outlineColor(DebugPalette.MOSS_STROKE)
                         .fillColor(DebugPalette.MOSS_FILL))
                 .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .name("Objects")
                         .outlineColor(DebugPalette.SLATE_STROKE)
                         .fillColor(DebugPalette.SLATE_FILL))
                 .show();

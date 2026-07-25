@@ -96,7 +96,7 @@ public class RemovePseudoNodesStep extends ConvertStep {
                                   final Set<OSMRoadInfo> removedRoads,
                                   final Set<OSMRoadInfo> createdRoads) {
         StepVisualizer.create(debug)
-                .title("Pseudo-Nodes Removal Results")
+                .title("Remove Pseudo-nodes")
                 .layer(LineLayer.of(removedRoads)
                         .name("Removed Roads")
                         .color(DebugPalette.CORAL_STROKE))
@@ -107,6 +107,7 @@ public class RemovePseudoNodesStep extends ConvertStep {
                         .name("Created Roads")
                         .color(DebugPalette.MOSS_STROKE))
                 .backgroundLayer(LineLayer.of(map.getOSMRoads())
+                        .name("Roads")
                         .color(DebugPalette.SLATE_STROKE))
                 .show();
     }

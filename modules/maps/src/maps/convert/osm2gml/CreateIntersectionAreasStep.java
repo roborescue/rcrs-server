@@ -11,9 +11,9 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * Generates polygonal areas for intersections from the intersection graph.
+ * Creates polygonal areas for intersections from the intersection graph.
  */
-public class GenerateIntersectionAreaStep extends ConvertStep {
+public class CreateIntersectionAreasStep extends ConvertStep {
     private final TemporaryMap map;
     private final double sizeOf1Meter;
 
@@ -27,7 +27,7 @@ public class GenerateIntersectionAreaStep extends ConvertStep {
      *
      * @param map the map
      */
-    public GenerateIntersectionAreaStep(TemporaryMap map) {
+    public CreateIntersectionAreasStep(TemporaryMap map) {
         this.map = map;
         sizeOf1Meter = ConvertTools.sizeOf1Metre(map.getOSMMap());
     }

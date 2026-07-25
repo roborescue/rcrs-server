@@ -1,5 +1,10 @@
 package maps.convert.osm2gml;
 
+import maps.convert.ConvertStep;
+import maps.convert.osm2gml.debug.DebugPalette;
+import maps.convert.osm2gml.debug.PolygonLayer;
+import maps.convert.osm2gml.debug.StepVisualizer;
+
 import java.awt.geom.Area;
 import java.util.*;
 import java.util.List;
@@ -10,10 +15,11 @@ import static maps.convert.osm2gml.ConvertTools.areaToTemporaryPassableShapes;
  * This step cleans up overlaps between buildings and roads by subtracting
  * the building shapes from the road shapes.
  */
-public class CleanBuildingOverlapsStep extends BaseModificationStep {
+public class CleanBuildingOverlapsStep extends ConvertStep {
+    private final TemporaryMap map;
 
     public CleanBuildingOverlapsStep(TemporaryMap map) {
-        super(map);
+        this.map = map;
     }
 
 
@@ -75,7 +81,24 @@ public class CleanBuildingOverlapsStep extends BaseModificationStep {
         map.resynchronizeStateFromObjects();
 
         setStatus("Cleaned " + cleanedCount + " passable areas that overlapped with buildings.");
+        visualizeResults(objectsToRemove, newObjects);
+    }
 
-        visualizeDifference(initialPassableShapes, map.getAllPassableShapes(), "Building/Passable-areas Overlap Cleanup");
+    private void visualizeResults(List<TemporaryObject> removed, List<TemporaryObject> created) {
+        StepVisualizer.create(debug)
+                .title("Clean Building Overlaps")
+                .layer(PolygonLayer.of(removed)
+                        .name("Removed Roads/Intersections")
+                        .fillColor(DebugPalette.CORAL_FILL)
+                        .outlineColor(DebugPalette.CORAL_STROKE))
+                .layer(PolygonLayer.of(created)
+                        .name("Created Roads/Intersections")
+                        .fillColor(DebugPalette.MOSS_FILL)
+                        .outlineColor(DebugPalette.MOSS_STROKE))
+                .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .name("Objects")
+                        .fillColor(DebugPalette.SLATE_FILL)
+                        .outlineColor(DebugPalette.SLATE_STROKE))
+                .show();
     }
 }

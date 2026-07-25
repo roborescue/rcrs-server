@@ -1,14 +1,11 @@
 package maps.convert.osm2gml;
 
-import java.awt.Color;
-
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 
 import maps.convert.ConvertStep;
 
-import maps.convert.osm2gml.debug.ObjectShapeInfo;
 import rescuecore2.log.Logger;
 
 /**
@@ -33,8 +30,6 @@ public class RemoveShapesStep extends ConvertStep {
 
     @Override
     protected void step() {
-        debug.setBackground(ConvertTools.getAllDebugShapes(map));
-        debug.setAutozoomEnabled(false);
         Set<TemporaryObject> allObjects = new HashSet<>(map.getAllObjects());
         setProgressLimit(allObjects.size() * 2);
         Set<TemporaryObject> removed = new HashSet<>();
@@ -53,9 +48,6 @@ public class RemoveShapesStep extends ConvertStep {
         interiorCount += removeInterior(new HashSet<>(map.getIntersections()), removed, allObjects);
         interiorCount += removeInterior(new HashSet<>(map.getBuildings()), removed, allObjects);
         setStatus("Removed " + removed.size() + " faces: " + duplicateCount + " duplicates and " + interiorCount + " interior");
-        debug.clearBackground();
-        debug.activate();
-        debug.show("Result", ConvertTools.getAllDebugShapes(map));
     }
 
     /**
@@ -88,9 +80,6 @@ public class RemoveShapesStep extends ConvertStep {
                     ++count;
                     Logger.debug("Removed duplicate object: " + second + " is same as " + first);
                 }
-                debug.show("Checking for duplicates",
-                           new ObjectShapeInfo(first, "First", Color.WHITE, Constants.TRANSPARENT_LIME),
-                           new ObjectShapeInfo(second, "Second", Color.WHITE, Constants.TRANSPARENT_BLUE));
             }
         }
         return count;

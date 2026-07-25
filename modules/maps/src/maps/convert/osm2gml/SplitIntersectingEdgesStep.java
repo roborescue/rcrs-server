@@ -327,6 +327,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
                         .name("Created Edge")
                         .color(DebugPalette.MOSS_STROKE))
                 .backgroundLayer(LineLayer.of(map.getAllEdges())
+                        .name("Edges")
                         .color(DebugPalette.SLATE_STROKE))
                 .show();
     }

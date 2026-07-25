@@ -11,7 +11,7 @@ import java.util.*;
  * Remove buildings and roads that do not belong to the largest connected
  * component.
  */
-public class PruneDisconnectedObjectsStep extends ConvertStep {
+public class RemoveDisconnectedObjectsStep extends ConvertStep {
     private final TemporaryMap map;
 
     /**
@@ -19,7 +19,7 @@ public class PruneDisconnectedObjectsStep extends ConvertStep {
      *
      * @param map the map
      */
-    public PruneDisconnectedObjectsStep(TemporaryMap map) {
+    public RemoveDisconnectedObjectsStep(TemporaryMap map) {
         this.map = map;
     }
 
@@ -139,12 +139,13 @@ public class PruneDisconnectedObjectsStep extends ConvertStep {
 
     private void visualizeResults(List<TemporaryObject> removed) {
         StepVisualizer.create(debug)
-                .title("Prune Disconnected Objects Results")
+                .title("Prune Disconnected Objects")
                 .layer(PolygonLayer.of(removed)
                         .name("Removed Objects")
                         .fillColor(DebugPalette.CORAL_FILL)
                         .outlineColor(DebugPalette.CORAL_STROKE))
                 .backgroundLayer(PolygonLayer.of(map.getAllObjects())
+                        .name("Objects")
                         .fillColor(DebugPalette.SLATE_FILL)
                         .outlineColor(DebugPalette.SLATE_STROKE))
                 .show();
