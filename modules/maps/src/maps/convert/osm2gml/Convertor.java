@@ -64,7 +64,7 @@ public class Convertor {
                 new SplitIntersectingEdgesStep        (temp),
                 new CleanBuildingOverlapsStep         (temp),
                 new MergePassableShapesStep           (temp),
-                new FixConnectivityStep               (temp),
+                new PruneDisconnectedObjectsStep(temp),
                 new SplitNonTraversableObjectsStep    (temp),
                 new SplitShapesStep                   (temp),
                 new RemoveShapesStep                  (temp),
