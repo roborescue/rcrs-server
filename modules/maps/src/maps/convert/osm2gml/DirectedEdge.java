@@ -72,10 +72,10 @@ public class DirectedEdge {
      */
     public Point2D getStartCoordinates() {
         if (forward) {
-            return edge.getStart().getCoordinates();
+            return edge.getStart().getPoint();
         }
         else {
-            return edge.getEnd().getCoordinates();
+            return edge.getEnd().getPoint();
         }
     }
 
@@ -85,11 +85,27 @@ public class DirectedEdge {
      */
     public Point2D getEndCoordinates() {
         if (forward) {
-            return edge.getEnd().getCoordinates();
+            return edge.getEnd().getPoint();
         }
         else {
-            return edge.getStart().getCoordinates();
+            return edge.getStart().getPoint();
         }
+    }
+
+    /**
+     * Get the length of this directed edge.
+     * @return The length of the directed edge.
+     */
+    public double getLength() {
+        return line.getDirection().getLength();
+    }
+
+    /**
+     * Get the midpoint of this directed edge.
+     * @return A new {@link Point2D} representing the midpoint.
+     */
+    public Point2D getMidpoint() {
+        return edge.getMidpoint();
     }
 
     @Override

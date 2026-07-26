@@ -40,7 +40,7 @@ public class ComputePassableEdgesStep extends ConvertStep {
                     if (o1 == o2) {
                         continue;
                     }
-                    o1.setNeighbour(next, o2);
+                    o1.setNeighbor(next, o2);
                 }
             }
             ++count;

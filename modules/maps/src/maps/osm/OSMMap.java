@@ -6,13 +6,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,27 +15,6 @@ import java.io.IOException;
    An OpenStreetMap map.
 */
 public class OSMMap {
-    private static final Collection<String> ROAD_MARKERS = new HashSet<String>();
-
-    static {
-        ROAD_MARKERS.add("motorway");
-        ROAD_MARKERS.add("motorway_link");
-        ROAD_MARKERS.add("trunk");
-        ROAD_MARKERS.add("trunk_link");
-        ROAD_MARKERS.add("primary");
-        ROAD_MARKERS.add("primary_link");
-        ROAD_MARKERS.add("secondary");
-        ROAD_MARKERS.add("secondary_link");
-        ROAD_MARKERS.add("tertiary");
-        ROAD_MARKERS.add("unclassified");
-        ROAD_MARKERS.add("road");
-        ROAD_MARKERS.add("residential");
-        ROAD_MARKERS.add("living_street");
-        ROAD_MARKERS.add("service");
-        ROAD_MARKERS.add("track");
-        ROAD_MARKERS.add("services");
-        ROAD_MARKERS.add("pedestrian");
-    }
 
     private Map<Long, OSMNode> nodes;
     private Map<Long, OSMRoad> roads;
@@ -58,9 +31,9 @@ public class OSMMap {
     */
     public OSMMap() {
         boundsCalculated = false;
-        nodes = new HashMap<Long, OSMNode>();
-        roads = new HashMap<Long, OSMRoad>();
-        buildings = new HashMap<Long, OSMBuilding>();
+        nodes = new HashMap<>();
+        roads = new HashMap<>();
+        buildings = new HashMap<>();
     }
 
     /**
@@ -97,29 +70,24 @@ public class OSMMap {
         this.maxLat = maxLat;
         this.maxLon = maxLon;
         boundsCalculated = true;
-        nodes = new HashMap<Long, OSMNode>();
-        roads = new HashMap<Long, OSMRoad>();
-        buildings = new HashMap<Long, OSMBuilding>();
+        nodes = new HashMap<>();
+        roads = new HashMap<>();
+        buildings = new HashMap<>();
         // Copy all nodes inside the bounds
         for (OSMNode next : other.nodes.values()) {
             double lat = next.getLatitude();
             double lon = next.getLongitude();
-            long id = next.getID();
+            long id = next.getId();
             if (lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon) {
                 this.nodes.put(id, new OSMNode(id, lat, lon));
             }
         }
         // Now copy the bits of roads and buildings that do not have missing nodes
         for (OSMRoad next : other.roads.values()) {
-            List<Long> ids = new ArrayList<Long>(next.getNodeIDs());
-            for (Iterator<Long> it = ids.iterator(); it.hasNext();) {
-                Long nextID = it.next();
-                if (!nodes.containsKey(nextID)) {
-                    it.remove();
-                }
-            }
+            List<Long> ids = new ArrayList<>(next.getNodeIDs());
+            ids.removeIf(nextID -> !nodes.containsKey(nextID));
             if (!ids.isEmpty()) {
-                roads.put(next.getID(), new OSMRoad(next.getID(), ids));
+                roads.put(next.getId(), new OSMRoad(next));
             }
         }
         for (OSMBuilding next : other.buildings.values()) {
@@ -127,10 +95,11 @@ public class OSMMap {
             for (Long nextID : next.getNodeIDs()) {
                 if (!nodes.containsKey(nextID)) {
                     allFound = false;
+                    break;
                 }
             }
             if (allFound) {
-                buildings.put(next.getID(), new OSMBuilding(next.getID(), new ArrayList<Long>(next.getNodeIDs())));
+                buildings.put(next.getId(), new OSMBuilding(next.getId(), new ArrayList<>(next.getNodeIDs())));
             }
         }
     }
@@ -141,21 +110,15 @@ public class OSMMap {
     */
     public void read(Document doc) throws OSMException {
         boundsCalculated = false;
-        nodes = new HashMap<Long, OSMNode>();
-        roads = new HashMap<Long, OSMRoad>();
-        buildings = new HashMap<Long, OSMBuilding>();
+        nodes = new HashMap<>();
+        roads = new HashMap<>();
+        buildings = new HashMap<>();
         Element root = doc.getRootElement();
         if (!"osm".equals(root.getName())) {
             throw new OSMException("Invalid map file: root element must be 'osm', not " + root.getName());
         }
-        for (Object next : root.elements("node")) {
-            Element e = (Element)next;
-            OSMNode node = processNode(e);
-        }
-        for (Object next : root.elements("way")) {
-            Element e = (Element)next;
-            processWay(e);
-        }
+        root.elements("node").forEach(this::processNode);
+        root.elements("way").forEach(this::processWay);
     }
 
     /**
@@ -172,13 +135,13 @@ public class OSMMap {
         bounds.addAttribute("maxlon", String.valueOf(maxLon));
         for (OSMNode next : nodes.values()) {
             Element node = root.addElement("node");
-            node.addAttribute("id", String.valueOf(next.getID()));
+            node.addAttribute("id", String.valueOf(next.getId()));
             node.addAttribute("lat", String.valueOf(next.getLatitude()));
             node.addAttribute("lon", String.valueOf(next.getLongitude()));
         }
         for (OSMRoad next : roads.values()) {
             Element node = root.addElement("way");
-            node.addAttribute("id", String.valueOf(next.getID()));
+            node.addAttribute("id", String.valueOf(next.getId()));
             for (Long nextID : next.getNodeIDs()) {
                 node.addElement("nd").addAttribute("ref", String.valueOf(nextID));
             }
@@ -186,7 +149,7 @@ public class OSMMap {
         }
         for (OSMBuilding next : buildings.values()) {
             Element node = root.addElement("way");
-            node.addAttribute("id", String.valueOf(next.getID()));
+            node.addAttribute("id", String.valueOf(next.getId()));
             for (Long nextID : next.getNodeIDs()) {
                 node.addElement("nd").addAttribute("ref", String.valueOf(nextID));
             }
@@ -214,10 +177,10 @@ public class OSMMap {
     }
 
     /**
-       Get the centre longitude in this map.
-       @return The centre longitude.
+       Get the center longitude in this map.
+       @return The center longitude.
     */
-    public double getCentreLongitude() {
+    public double getCenterLongitude() {
         calculateBounds();
         return (maxLon + minLon) / 2;
     }
@@ -241,10 +204,10 @@ public class OSMMap {
     }
 
     /**
-       Get the centre latitude in this map.
-       @return The centre latitude.
+       Get the center latitude in this map.
+       @return The center latitude.
     */
-    public double getCentreLatitude() {
+    public double getCenterLatitude() {
         calculateBounds();
         return (maxLat + minLat) / 2;
     }
@@ -254,7 +217,7 @@ public class OSMMap {
        @return All nodes.
     */
     public Collection<OSMNode> getNodes() {
-        return new HashSet<OSMNode>(nodes.values());
+        return new HashSet<>(nodes.values());
     }
 
     /**
@@ -262,7 +225,7 @@ public class OSMMap {
        @param node The node to remove.
     */
     public void removeNode(OSMNode node) {
-        nodes.remove(node.getID());
+        nodes.remove(node.getId());
     }
 
     /**
@@ -302,10 +265,10 @@ public class OSMMap {
     */
     public void replaceNode(OSMNode old, OSMNode replacement) {
         for (OSMRoad r : roads.values()) {
-            r.replace(old.getID(), replacement.getID());
+            r.replace(old.getId(), replacement.getId());
         }
         for (OSMBuilding b : buildings.values()) {
-            b.replace(old.getID(), replacement.getID());
+            b.replace(old.getId(), replacement.getId());
         }
         removeNode(old);
     }
@@ -315,7 +278,7 @@ public class OSMMap {
        @return All roads.
     */
     public Collection<OSMRoad> getRoads() {
-        return new HashSet<OSMRoad>(roads.values());
+        return new HashSet<>(roads.values());
     }
 
     /**
@@ -323,7 +286,7 @@ public class OSMMap {
        @param road The road to remove.
     */
     public void removeRoad(OSMRoad road) {
-        roads.remove(road.getID());
+        roads.remove(road.getId());
     }
 
     /**
@@ -331,7 +294,7 @@ public class OSMMap {
        @return All buildings.
     */
     public Collection<OSMBuilding> getBuildings() {
-        return new HashSet<OSMBuilding>(buildings.values());
+        return new HashSet<>(buildings.values());
     }
 
     /**
@@ -339,7 +302,7 @@ public class OSMMap {
        @param building The building to remove.
     */
     public void removeBuilding(OSMBuilding building) {
-        buildings.remove(building.getID());
+        buildings.remove(building.getId());
     }
 
     private void calculateBounds() {
@@ -359,54 +322,52 @@ public class OSMMap {
         boundsCalculated = true;
     }
 
-    private OSMNode processNode(Element e) {
+    private void processNode(Element e) {
         long id = Long.parseLong(e.attributeValue("id"));
         double lat = Double.parseDouble(e.attributeValue("lat"));
         double lon = Double.parseDouble(e.attributeValue("lon"));
         OSMNode node = new OSMNode(id, lat, lon);
         nodes.put(id, node);
-        return node;
     }
 
-    private void processWay(Element e) {
-        long id = Long.parseLong(e.attributeValue("id"));
-        List<Long> ids = new ArrayList<>();
+    private void processWay(final Element e) {
+        final long id = Long.parseLong(e.attributeValue("id"));
 
-        for (Element next : e.elements("nd")) {
-            Long nextID = Long.parseLong(next.attributeValue("ref"));
+        final List<Long> ids = new ArrayList<>();
+        for (final Element next : e.elements("nd")) {
+            final Long nextID = Long.parseLong(next.attributeValue("ref"));
             ids.add(nextID);
         }
 
-        // Is this way a road or a building?
-        boolean isRoad = false;
-        boolean isBuilding = false;
-        boolean isNonGroundLevel = false;
+        // Road attributes.
+        OSMRoadType type = null;
+        int laneCount = -1;
 
-        for (Element tag : e.elements("tag")) {
-            String key = tag.attributeValue("k");
-            String value = tag.attributeValue("v");
+        for (final Element tag : e.elements("tag")) {
+            final String key = tag.attributeValue("k");
+            final String value = tag.attributeValue("v");
 
-            isBuilding = isBuilding || "building".equals(key) && "yes".equals(value);
-            isRoad = isRoad || "highway".equals(key) && ROAD_MARKERS.contains(value);
+            // Check if this object is a building.
+            if ("building".equals(key) && "yes".equals(value)) {
+                final OSMBuilding building = new OSMBuilding(id, ids);
+                buildings.put(id, building);
+                return;
+            }
 
-            // Check if this object is on a different level (bridge, tunnel, etc.)
-            if ("layer".equals(key) && !"0".equals(value) ||
-                "bridge".equals(key) && "yes".equals(value) ||
-                "tunnel".equals(key) && "yes".equals(value)) {
-                isNonGroundLevel = true;
+            // Check if this object is a road.
+            if ("highway".equals(key)) {
+                final Optional<OSMRoadType> typeOptional = OSMRoadType.fromTagValue(value);
+                if (typeOptional.isEmpty()) continue;
+                type = typeOptional.get();
+            }
+
+            if ("lanes".equals(key)) {
+                laneCount = Integer.parseInt(value);
             }
         }
 
-        // If the object is on a non-ground level, we ignore it completely
-        if (isNonGroundLevel) {
-            return;
-        }
-
-        if (isBuilding) {
-            buildings.put(id, new OSMBuilding(id, ids));
-        }
-        if (isRoad) {
-            roads.put(id, new OSMRoad(id, ids));
+        if (type != null) {
+            roads.put(id, new OSMRoad(id, ids, type, laneCount));
         }
     }
 }

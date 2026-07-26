@@ -17,6 +17,6 @@ public class OSMBuilding extends OSMWay {
 
     @Override
     public String toString() {
-        return "OSMBuilding: id " + getID();
+        return "OSMBuilding: id " + getId();
     }
 }

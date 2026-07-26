@@ -1,5 +1,6 @@
 package maps.convert.osm2gml;
 
+import lombok.Getter;
 import maps.osm.OSMBuilding;
 import maps.osm.OSMMap;
 import maps.osm.OSMNode;
@@ -14,21 +15,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
-   Information about an OSM building.
-*/
-public class OSMBuildingInfo implements OSMShape {
-    private List<Point2D> vertices;
-    private Area area;
-    private long buildingID;
+ * Information about an OSM building.
+ */
+public class OSMBuildingInfo implements OSMObjectInfo {
+    @Getter private final List<Point2D> vertices;
+    @Getter private final Area area;
+    @Getter private final long buildingID;
 
     /**
-       Construct a new OSMBuildingInfo.
-       @param building The building.
-       @param map The map.
-    */
+     * Constructs building information for the specified building.
+     *
+     * @param building the building
+     * @param map the map
+     */
     public OSMBuildingInfo(OSMBuilding building, OSMMap map) {
-        buildingID = building.getID();
-        vertices = new ArrayList<Point2D>();
+        buildingID = building.getId();
+        vertices = new ArrayList<>();
         for (Long next : building.getNodeIDs()) {
             OSMNode node = map.getNode(next);
             vertices.add(new Point2D(node.getLongitude(), node.getLatitude()));
@@ -46,22 +48,12 @@ public class OSMBuildingInfo implements OSMShape {
         area = new Area(path.createTransformedShape(null));
     }
 
-    @Override
-    public List<Point2D> getVertices() {
-        return vertices;
-    }
-
-    @Override
-    public Area getArea() {
-        return area;
-    }
-
     /**
-       Get the ID of the building.
-       @return The building ID.
-    */
-    public long getBuildingID() {
-        return buildingID;
+     * {@inheritDoc}
+     */
+    @Override
+    public TemporaryObject createTemporaryObject(List<DirectedEdge> edges) {
+        return new TemporaryBuilding(edges, buildingID);
     }
 
     @Override

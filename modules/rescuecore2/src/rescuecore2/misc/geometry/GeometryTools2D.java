@@ -1,5 +1,6 @@
 package rescuecore2.misc.geometry;
 
+import java.awt.geom.Path2D;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -89,6 +90,71 @@ public final class GeometryTools2D {
     }
 
     /**
+       Determines whether two lines are collinear.
+       @param line1 The first line.
+       @param line2 The second line.
+       @return {@code true} if the two lines are collinear;
+               {@code false} otherwise.
+     */
+    public static boolean collinear(Line2D line1, Line2D line2) {
+        double len1 = line1.getLength();
+        double len2 = line2.getLength();
+        Point2D o1 = line1.getOrigin();
+        Point2D o2 = line2.getOrigin();
+        if (nearlyZero(len1) && nearlyZero(len2)) {
+            return nearlyZero(getDistance(o1, o2));
+        }
+        if (nearlyZero(len1)) {
+            return nearlyZero(getDistance(o1, getClosestPoint(line2, o1)));
+        }
+        if (nearlyZero(len2)) {
+            return nearlyZero(getDistance(o2, getClosestPoint(line1, o2)));
+        }
+        if (!parallel(line1, line2)) {
+            return false;
+        }
+
+        return nearlyZero(getDistance(o2, getClosestPoint(line1, o2)));
+    }
+
+    /**
+       Determines whether two line segments overlap.
+       @param segment1 The first line segment.
+       @param segment2 The second line segment.
+       @return {@code true} if the two line segments overlap;
+               {@code false} otherwise.
+     */
+    public static boolean overlaps(Line2D segment1, Line2D segment2) {
+        if (!collinear(segment1, segment2)) {
+            return false;
+        }
+
+        double t1 = positionOnLine(segment1, segment2.getOrigin());
+        double t2 = positionOnLine(segment1, segment2.getEndPoint());
+
+        if (Double.isNaN(t1) || Double.isNaN(t2)) {
+            return false;
+        }
+
+        double min = Math.min(t1, t2);
+        double max = Math.max(t1, t2);
+
+        return 0 <= max && min <= 1;
+    }
+
+    /**
+       Determines whether two line segments intersects.
+       @param segment1 The first line segment.
+       @param segment2 The second line segment.
+       @return {@code true} if the two line segments share at least one point;
+               {@code false} otherwise.
+     */
+    public static boolean intersects(Line2D segment1, Line2D segment2) {
+        return getSegmentIntersectionPoint(segment1, segment2) != null ||
+                overlaps(segment1, segment2);
+    }
+
+    /**
        Find out how far a point is along a line.
        @param line The line to test.
        @param point The point to test.
@@ -148,8 +214,7 @@ public final class GeometryTools2D {
         if (cos > 1) {
             cos = 1;
         }
-        double angle = Math.toDegrees(Math.acos(cos));
-        return angle;
+        return Math.toDegrees(Math.acos(cos));
     }
 
     /**
@@ -231,16 +296,16 @@ public final class GeometryTools2D {
     }
 
     /**
-     * Compute the signed area of a simple polygon.
-     * The sigh of the area indicates the orientation of the vertices:
-     * positive if counter-clockwise, negative if clockwise.
-     * @param vertices The vertices of the polygon in order.
-     * @return The signed area of the polygon. Positive for counter-clockwise orientation.
+       Compute the signed area of a simple polygon.
+       The sigh of the area indicates the orientation of the vertices:
+       positive if counter-clockwise, negative if clockwise.
+       @param vertices The vertices of the polygon in order.
+       @return The signed area of the polygon. Positive for counter-clockwise orientation.
      */
     public static double computeSignedArea(List<Point2D> vertices) {
         // Shift all vertices so that the first vertex becomes the origin (0,0).
         // This improves numerical stability when computing the polygon area.
-        List<Point2D> shiftedVertices = translate(vertices, vertices.get(0).toVector().negate());
+        List<Point2D> shiftedVertices = translate(vertices, vertices.getFirst().toVector().negate());
 
         Iterator<Point2D> it = shiftedVertices.iterator();
         Point2D last = it.next();
@@ -271,7 +336,7 @@ public final class GeometryTools2D {
     */
     public static Point2D computeCentroid(List<Point2D> vertices) {
         // Translation vector to move the first vertex to the origin.
-        Vector2D shiftVector = vertices.get(0).toVector();
+        Vector2D shiftVector = vertices.getFirst().toVector();
 
         // Shift all vertices so that the first vertex lies at (0,0).
         // The improves numerical stability in the centroid calculation.
@@ -309,11 +374,11 @@ public final class GeometryTools2D {
     }
 
     /**
-     * Check if the vertices of a polygon are ordered in a counter-clockwise direction.
-     * This is determined by the sign of the signed area of the polygon.
-     * A positive area corresponds to a counter-clockwise ordering.
-     * @param vertices The vertices of the polygon.
-     * @return true if the vertices are in counter-clockwise order, false otherwise.
+       Check if the vertices of a polygon are ordered in a counter-clockwise direction.
+       This is determined by the sign of the signed area of the polygon.
+       A positive area corresponds to a counter-clockwise ordering.
+       @param vertices The vertices of the polygon.
+       @return {@code true} if the vertices are in counter-clockwise order, {@code false} otherwise.
      */
     public static boolean isCounterClockwise(List<Point2D> vertices) {
         return 0 < computeSignedArea(vertices);
@@ -325,7 +390,7 @@ public final class GeometryTools2D {
        @return A list of Point2D objects.
     */
     public static List<Point2D> vertexArrayToPoints(int[] vertices) {
-        List<Point2D> result = new ArrayList<Point2D>();
+        List<Point2D> result = new ArrayList<>();
         for (int i = 0; i < vertices.length; i += 2) {
             result.add(new Point2D(vertices[i], vertices[i + 1]));
         }
@@ -338,7 +403,7 @@ public final class GeometryTools2D {
        @return A list of Point2D objects.
     */
     public static List<Point2D> vertexArrayToPoints(double[] vertices) {
-        List<Point2D> result = new ArrayList<Point2D>();
+        List<Point2D> result = new ArrayList<>();
         for (int i = 0; i < vertices.length; i += 2) {
             result.add(new Point2D(vertices[i], vertices[i + 1]));
         }
@@ -361,7 +426,7 @@ public final class GeometryTools2D {
        @return A list of Line2D objects.
     */
     public static List<Line2D> pointsToLines(List<Point2D> points, boolean close) {
-        List<Line2D> result = new ArrayList<Line2D>();
+        List<Line2D> result = new ArrayList<>();
         Iterator<Point2D> it = points.iterator();
         Point2D first = it.next();
         Point2D prev = first;
@@ -409,13 +474,47 @@ public final class GeometryTools2D {
     }
 
     /**
-       Compute the distance between two points.
+       Computes the distance between two points.
        @param p1 The first point.
        @param p2 The second point.
        @return The distance between the two points.
     */
     public static double getDistance(Point2D p1, Point2D p2) {
         return Math.hypot(p1.getX() - p2.getX(), p1.getY() - p2.getY());
+    }
+
+    /**
+       Computes the distance between a line segment and a point.
+       @param segment The line segment.
+       @param point The point.
+       @return The shortest distance between the line segment and the point.
+     */
+    public static double getDistance(Line2D segment, Point2D point) {
+        return getDistance(point, getClosestPointOnSegment(segment, point));
+    }
+
+    /**
+       Computes the distance between two line segments.
+       @param segment1 The first line segment.
+       @param segment2 The second line segment.
+       @return The shortest distance between the two line segments.
+     */
+    public static double getDistance(Line2D segment1, Line2D segment2) {
+        if (intersects(segment1, segment2)) {
+            return 0.0;
+        }
+
+        Point2D o1 = segment1.getOrigin();
+        Point2D e1 = segment1.getEndPoint();
+        Point2D o2 = segment2.getOrigin();
+        Point2D e2 = segment2.getEndPoint();
+
+        double d1 = getDistance(segment1, o2);
+        double d2 = getDistance(segment1, e2);
+        double d3 = getDistance(segment2, o1);
+        double d4 = getDistance(segment2, e1);
+
+        return Math.min(Math.min(d1, d2), Math.min(d3, d4));
     }
 
     /**
@@ -485,58 +584,35 @@ public final class GeometryTools2D {
                 tMax = tB;
             }
         }
-        if (tMin > tMax) {
-            return null;
-        }
         return new Line2D(line.getPoint(tMin), line.getPoint(tMax));
     }
 
     /**
-     * Translate a list of points by a given vector.
-     *
-     * @param points The points to translate.
-     * @param vector The translation vector.
-     * @return A new list of points, each shifted by the translation vector.
+       Translate a list of points by a given vector.
+       @param points The points to translate.
+       @param vector The translation vector.
+       @return A new list of points, each shifted by the translation vector.
      */
     public static List<Point2D> translate(final List<Point2D> points, final Vector2D vector) {
         return points.stream().map(p -> p.plus(vector)).toList();
     }
 
     /**
-     * Computes the Z-component of the cross product (twice the signed area) of two vectors
-     * formed by three points. This is used as an indicator to determine which side of a line
-     * segment a point lies on.
-     *
-     * @param p1 The first point to evaluate.
-     * @param p2 The second point to evaluate.
-     * @param p3 The reference point (origin of the vectors).
-     * @return The Z-component of the cross product (positive, negative, or zero).
+       Determines whether a point lies inside a polygon.
+       The polygon is defined by a list of vertices connected in the given order,
+       and is treated a closed polygon.
+       @param p        The point to test.
+       @param vertices The vertices defining the polygon.
+       @return {@code true} if the point lies inside the polygon; {@code false} otherwise.
      */
-    public static double computeSign(final Point2D p1, final Point2D p2, final Point2D p3) {
-        return (p1.getX() - p3.getX()) * (p2.getY() - p3.getY()) -
-               (p2.getX() - p3.getX()) * (p1.getY() - p3.getY());
+    public static boolean isPointInsidePolygon(final Point2D p, final List<Point2D> vertices) {
+        final Path2D path = new Path2D.Double();
+        final Point2D startPoint = vertices.getFirst();
+        path.moveTo(startPoint.getX(), startPoint.getY());
+        for (int i = 1; i < vertices.size(); i++) {
+            path.lineTo(vertices.get(i).getX(), vertices.get(i).getY());
+        }
+        path.closePath();
+        return path.contains(p.getX(), p.getY());
     }
-
-    /**
-     * Determines whether a specified point is located inside a triangle defined by three vertices.
-     * (Points lying exactly on the edges or vertices are considered inside.)
-     *
-     * @param pt The point to check.
-     * @param v1 The first vertex of the triangle.
-     * @param v2 The second vertex of the triangle.
-     * @param v3 The third vertex of the triangle.
-     * @return True if the point is inside or on the boundary of the triangle, false otherwise.
-     */
-    public static boolean isPointInTriangle(final Point2D pt, final Point2D v1, final Point2D v2, final Point2D v3) {
-        final double d1 = computeSign(pt, v1, v2);
-        final double d2 = computeSign(pt, v2, v3);
-        final double d3 = computeSign(pt, v3, v1);
-
-        // If all signs are the same (or zero), the point is inside the triangle.
-        final boolean hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-        final boolean hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-
-        return !(hasNeg && hasPos);
-    }
-
 }

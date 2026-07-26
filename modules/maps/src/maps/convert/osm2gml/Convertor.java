@@ -54,23 +54,22 @@ public class Convertor {
         // Build the step rows and collect the ordered step list.
         final StepPanelBuilder builder = new StepPanelBuilder();
         final List<ConvertStep> steps = builder.addSteps(
-                new CleanOSMStep                      (temp),
-                new ScanOSMStep                       (temp),
-                new RemovePseudoNodesStep             (temp),
-                new MergeIntersectionStep             (temp),
-                new GenerateIntersectionAreaStep      (temp),
-                new MakeTempObjectsStep               (temp),
-                new SplitSelfIntersectingBuildingsStep(temp),
-                new CleanBuildingOverlapsStep         (temp),
-                new MergePassableShapesStep           (temp),
-                new ConnectBuildingsStep              (temp),
-                new FixConnectivityStep               (temp),
-                new SplitIntersectingEdgesStep        (temp),
-                new EnsureTraversabilityStep          (temp),
-                new SplitShapesStep                   (temp),
-                new RemoveShapesStep                  (temp),
-                new ComputePassableEdgesStep          (temp),
-                new MakeObjectsStep                   (temp, gmlMap)
+                new CleanOSMStep(temp),
+                new ScanOSMStep(temp),
+                new RemovePseudoNodesStep(temp),
+                new CreateIntersectionAreasStep(temp),
+                new CreateTempObjectsStep(temp),
+                new RemoveSelfIntersectingShapesStep(temp),
+                new CreateEntrancesStep(temp),
+                new SplitIntersectingEdgesStep(temp),
+                new CleanBuildingOverlapsStep(temp),
+                new MergePassableShapesStep(temp),
+                new RemoveDisconnectedObjectsStep(temp),
+                new SplitNonTraversableObjectsStep(temp),
+                new SplitShapesStep(temp),
+                new RemoveShapesStep(temp),
+                new ComputePassableEdgesStep(temp),
+                new CreateObjectsStep(temp, gmlMap)
         );
 
         main.add(top, BorderLayout.NORTH);

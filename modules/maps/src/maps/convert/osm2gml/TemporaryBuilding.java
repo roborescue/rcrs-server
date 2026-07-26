@@ -1,28 +1,36 @@
 package maps.convert.osm2gml;
 
+import lombok.Getter;
+
 import java.util.List;
 
 /**
-   A temporary building during conversion.
-*/
+ * A temporary building during conversion.
+ */
 public class TemporaryBuilding extends TemporaryObject {
-    private long id;
+    @Getter
+    private final long osmId;
 
     /**
-       Construct a new TemporaryBuilding.
-       @param edges The edges of the building in counter-clockwise order.
-       @param id The ID of the OSM building that generated this data.
-    */
-    public TemporaryBuilding(List<DirectedEdge> edges, long id) {
+     * Constructs a temporary building with the specified edges and OSM ID.
+     * @param edges the edges
+     * @param osmId the OSM ID
+     */
+    public TemporaryBuilding(List<DirectedEdge> edges, long osmId) {
         super(edges);
-        this.id = id;
+        this.osmId = osmId;
     }
 
     /**
-       Get the ID of the original OSM building.
-       @return The OSM building ID.
-    */
-    public long getBuildingID() {
-        return id;
+     * {@inheritDoc}
+     */
+    @Override
+    public TemporaryObject copyWithEdges(List<DirectedEdge> edges) {
+        return new TemporaryBuilding(edges, osmId);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "(osmId=" + osmId + ")";
     }
 }

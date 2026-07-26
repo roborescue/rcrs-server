@@ -1,7 +1,5 @@
 package maps.convert.osm2gml;
 
-import java.awt.Color;
-
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
@@ -14,7 +12,7 @@ import rescuecore2.log.Logger;
    This step removes shapes that are duplicates or contained entirely inside another shape.
 */
 public class RemoveShapesStep extends ConvertStep {
-    private TemporaryMap map;
+    private final TemporaryMap map;
 
     /**
        Construct a RemoveFacesStep.
@@ -32,11 +30,9 @@ public class RemoveShapesStep extends ConvertStep {
 
     @Override
     protected void step() {
-        debug.setBackground(ConvertTools.getAllDebugShapes(map));
-        debug.setAutozoomEnabled(false);
-        Collection<TemporaryObject> allObjects = map.getAllObjects();
+        Set<TemporaryObject> allObjects = new HashSet<>(map.getAllObjects());
         setProgressLimit(allObjects.size() * 2);
-        Set<TemporaryObject> removed = new HashSet<TemporaryObject>();
+        Set<TemporaryObject> removed = new HashSet<>();
         setStatus("Removing duplicate shapes");
         int duplicateCount = 0;
         int interiorCount = 0;
@@ -48,13 +44,10 @@ public class RemoveShapesStep extends ConvertStep {
         duplicateCount += removeDuplicates(map.getRoads(), removed, allObjects);
         Logger.debug("Removing interior faces");
         setStatus("Removing interior faces");
-        interiorCount += removeInterior(map.getRoads(), removed, allObjects);
-        interiorCount += removeInterior(map.getIntersections(), removed, allObjects);
-        interiorCount += removeInterior(map.getBuildings(), removed, allObjects);
+        interiorCount += removeInterior(new HashSet<>(map.getRoads()), removed, allObjects);
+        interiorCount += removeInterior(new HashSet<>(map.getIntersections()), removed, allObjects);
+        interiorCount += removeInterior(new HashSet<>(map.getBuildings()), removed, allObjects);
         setStatus("Removed " + removed.size() + " faces: " + duplicateCount + " duplicates and " + interiorCount + " interior");
-        debug.clearBackground();
-        debug.activate();
-        debug.show("Result", ConvertTools.getAllDebugShapes(map));
     }
 
     /**
@@ -87,9 +80,6 @@ public class RemoveShapesStep extends ConvertStep {
                     ++count;
                     Logger.debug("Removed duplicate object: " + second + " is same as " + first);
                 }
-                debug.show("Checking for duplicates",
-                           new TemporaryObjectInfo(first, "First", Color.WHITE, Constants.TRANSPARENT_LIME),
-                           new TemporaryObjectInfo(second, "Second", Color.WHITE, Constants.TRANSPARENT_BLUE));
             }
         }
         return count;

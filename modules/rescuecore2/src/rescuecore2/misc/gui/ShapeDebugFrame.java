@@ -350,7 +350,18 @@ public class ShapeDebugFrame extends JFrame {
             int width = getWidth() - insets.left - insets.right;
             int height = getHeight() - insets.top - insets.bottom;
             transform.rescale(width, height);
-            //            Logger.debug("View bounds: " + transform.getViewBounds());
+            if (backgroundEnabled) {
+                for (ShapeInfo next : background) {
+                    boolean visible = transform.isInView(next.getBoundsShape()) || transform.isInView(next.getBoundsPoint());
+                    if (visible) {
+                        Graphics g = graphics.create(insets.left, insets.top, width, height);
+                        Shape shape = next.paint((Graphics2D)g, transform);
+                        if (shape != null) {
+                            drawnShapes.put(shape, next);
+                        }
+                    }
+                }
+            }
             for (ShapeInfo next : shapes) {
                 boolean visible = transform.isInView(next.getBoundsShape()) || transform.isInView(next.getBoundsPoint());
                 if (visible) {
@@ -365,18 +376,6 @@ public class ShapeDebugFrame extends JFrame {
                     //                    Logger.debug("Shape bounds: " + next.getBoundsShape());
                     //                    Logger.debug("Point bounds: " + next.getBoundsPoint());
                     //                }
-            }
-            if (backgroundEnabled) {
-                for (ShapeInfo next : background) {
-                    boolean visible = transform.isInView(next.getBoundsShape()) || transform.isInView(next.getBoundsPoint());
-                    if (visible) {
-                        Graphics g = graphics.create(insets.left, insets.top, width, height);
-                        Shape shape = next.paint((Graphics2D)g, transform);
-                        if (shape != null) {
-                            drawnShapes.put(shape, next);
-                        }
-                    }
-                }
             }
         }
 
