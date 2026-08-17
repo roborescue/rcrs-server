@@ -40,6 +40,7 @@ dependencies {
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.8.1'
 }
 
 repositories {
@@ -66,6 +67,7 @@ sourceSets {
                   'modules/collapse/src',
                   'modules/gis2/src',
                   'modules/ignition/src',
+                  'modules/launcher/src',
                   'modules/maps/src',
                   'modules/sample/src',
                   'modules/traffic3/src',
@@ -210,6 +212,17 @@ task kernelJar(type: Jar) {
   }
   destinationDirectory = file('jars')
   archiveFileName = 'kernel.jar'
+}
+
+task launcherJar(type: Jar, dependsOn: classes) {
+  from(sourceSets.main.output) {
+    include 'rcrs/server/launcher/**'
+  }
+  destinationDirectory = file('jars')
+  archiveFileName = 'rcrs-server-launcher.jar'
+  manifest {
+    attributes('Main-Class': 'rcrs.server.launcher.RCRSLauncher')
+  }
 }
 
 task mapsSourceJar(type: Jar, dependsOn: classes) {
@@ -361,7 +374,7 @@ task sourcesJar(type: GradleBuild) {
 /* Perform a complete build of the simulator */
 task completeBuild(type: GradleBuild) {
   tasks = [ 'clean', 'clearJar', 'collapseJar', 'gis2Jar', 'ignitionJar',
-            'kernelJar', 'mapsJar', 'miscJar', 'rescuecore2Jar', 'resqFireJar',
+            'kernelJar', 'launcherJar', 'mapsJar', 'miscJar', 'rescuecore2Jar', 'resqFireJar',
             'sampleJar', 'standardJar', 'traffic3Jar', 'sourcesJar',
             'exportLibs'
           ]

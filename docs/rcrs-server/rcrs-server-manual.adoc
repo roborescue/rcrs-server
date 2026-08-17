@@ -97,6 +97,20 @@ BUILD SUCCESSFUL in 2s
 == Running
 There are two modes of execution of the simulation server: *Precomputation* and *Normal*.
 
+After running `./gradlew completeBuild`, both modes can be started without a
+POSIX shell by using the cross-platform Java launcher from the project root:
+
+[source,shell]
+----
+$ java -jar jars/rcrs-server-launcher.jar precompute
+$ java -jar jars/rcrs-server-launcher.jar comprun
+----
+
+Run `java -jar jars/rcrs-server-launcher.jar --help` for all available options.
+The maximum heap size of each process can be changed by repeating
+`--memory <name>=<size>`, for example
+`--memory kernel=4g --memory traffic=2g`.
+
 [#precomputation_mode]
 === Precomputation Mode
 In the precomputation mode, the simulator connects one agent of each type and allows them to write the computation results.

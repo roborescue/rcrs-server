@@ -29,7 +29,33 @@ $ ./gradlew completeBuild
 
 === Execute the Rescue Simulation Server
 
-Open a terminal window, navigate to the ```rcrs-server``` root directory and execute
+The cross-platform Java launcher does not require Bash. Open a terminal window,
+navigate to the ```rcrs-server``` root directory and execute one of the following:
+
+```bash
+
+$ java -jar jars/rcrs-server-launcher.jar precompute
+
+$ java -jar jars/rcrs-server-launcher.jar comprun
+```
+
+The launcher accepts the same map, config, log, team, GUI, and JLog options as
+the shell scripts. Each process heap limit can be overridden by repeating the
+`--memory <name>=<size>` option. For example:
+
+```bash
+
+$ java -jar jars/rcrs-server-launcher.jar comprun --memory kernel=4g --memory traffic=2g
+```
+
+Run the following command to see all options and supported process names:
+
+```bash
+
+$ java -jar jars/rcrs-server-launcher.jar --help
+```
+
+The Bash launcher remains available on systems that support it:
 
 ```bash
 
