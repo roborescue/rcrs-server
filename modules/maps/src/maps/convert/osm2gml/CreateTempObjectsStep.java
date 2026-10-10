@@ -5,6 +5,7 @@ import maps.convert.ConvertStep;
 import java.util.*;
 
 import maps.convert.osm2gml.debug.*;
+import maps.osm.OSMNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rescuecore2.misc.geometry.Point2D;
@@ -121,8 +122,28 @@ public class CreateTempObjectsStep extends ConvertStep {
 
     // Logs a shape skipped because it has no area (some vertices are unset)
     private void logNoArea(OSMObjectInfo shape) {
+        if (shape instanceof OSMRoadInfo road) {
+            logRoadNoArea(road);
+            return;
+        }
         LOGGER.info("TEMP_OBJECT_SKIPPED reason=NO_AREA shape_type={} shape={}",
                 shape.getClass().getSimpleName(), shape);
+    }
+
+    // Logs a road skipped because some corners are unset, with the degree of both end intersections
+    private void logRoadNoArea(OSMRoadInfo road) {
+        LOGGER.info("TEMP_OBJECT_SKIPPED reason=NO_AREA shape_type=OSMRoadInfo start_id={} end_id={} " +
+                        "start_degree={} end_degree={} start_left_set={} start_right_set={} " +
+                        "end_left_set={} end_right_set={}",
+                road.getStart().getId(), road.getEnd().getId(),
+                degreeOf(road.getStart()), degreeOf(road.getEnd()),
+                road.getStartLeft() != null, road.getStartRight() != null,
+                road.getEndLeft() != null, road.getEndRight() != null);
+    }
+
+    // Returns the number of roads connected to the intersection at the node
+    private Object degreeOf(OSMNode node) {
+        return map.getOSMIntersectionDegree(map.getOSMIntersection(node));
     }
 
     // Logs a shape skipped because snapping its vertices to nodes left fewer than 3 edges
