@@ -119,6 +119,12 @@ public class CreateIntersectionAreasStep extends ConvertStep {
         Point2D firstLeftEnd = intersectOrThrow(
                 first.getLeftBoundaryLine(sizeOf1Meter), second.getRightBoundaryLine(sizeOf1Meter));
 
+        // The right boundary of one road meets the left boundary of the other at the same corner
+        first.setRightEnd(firstRightEnd);
+        first.setLeftEnd(firstLeftEnd);
+        second.setRightEnd(firstLeftEnd);
+        second.setLeftEnd(firstRightEnd);
+
         double firstWidth  = first.getWidth(sizeOf1Meter);
         double secondWidth = second.getWidth(sizeOf1Meter);
         // No miter limit is applied to a two-road bend, so the overrun is NaN.
