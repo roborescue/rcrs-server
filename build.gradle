@@ -415,3 +415,19 @@ task osm2gml(type: JavaExec) {
             java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss'))
   }
 }
+
+/* Validate a GML map */
+task validateMap(type: JavaExec) {
+  classpath = files('.')
+  classpath += sourceSets.main.runtimeClasspath
+  mainClass = 'maps.validate.GMLMapValidator'
+  maxHeapSize = '2048m'
+  jvmArgs '-Dlog4j.log.dir=logs/log'
+  // Exit status 1 means that errors were found, which is a valid result
+  ignoreExitValue = true
+  doLast {
+    if (executionResult.get().exitValue == 2) {
+       throw new GradleException('Failed to validate the map')
+    }
+  }
+}
