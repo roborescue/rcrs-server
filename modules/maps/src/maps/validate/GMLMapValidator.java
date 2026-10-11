@@ -2,6 +2,7 @@ package maps.validate;
 
 import java.util.List;
 
+import maps.Map;
 import maps.MapException;
 import maps.MapReader;
 import maps.gml.GMLMap;
@@ -13,6 +14,11 @@ import org.slf4j.LoggerFactory;
  */
 public final class GMLMapValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(GMLMapValidator.class);
+
+    // Exit statuses of the command line tool
+    private static final int EXIT_OK = 0;
+    private static final int EXIT_ERRORS_FOUND = 1;
+    private static final int EXIT_FAILURE = 2;
 
     // Validators applied to every GML map, in the order they run
     private static final List<MapValidator<GMLMap>> VALIDATORS = List.of(
@@ -50,13 +56,32 @@ public final class GMLMapValidator {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {
-            GMLMap map = (GMLMap)MapReader.readMap(args[0]);
-            List<ValidationError> errors = validate(map);
-            logResult(args[0], errors);
+        System.exit(run(args));
+    }
+
+    // Validates the map given in args and returns the exit status
+    private static int run(String[] args) {
+        if (args.length != 1) {
+            LOGGER.error("Usage: GMLMapValidator <map-file>");
+            return EXIT_FAILURE;
         }
-        catch (MapException e) {
+        String mapPath = args[0];
+
+        try {
+            Map readMap = MapReader.readMap(mapPath);
+
+            // Only GML maps can be validated
+            if (!(readMap instanceof GMLMap map)) {
+                LOGGER.error("Not a GMLMap: {}", mapPath);
+                return EXIT_FAILURE;
+            }
+
+            List<ValidationError> errors = validate(map);
+            logResult(mapPath, errors);
+            return errors.isEmpty() ? EXIT_OK : EXIT_ERRORS_FOUND;
+        } catch (MapException e) {
             LOGGER.error("Failed to read the map: {}", args[0], e);
+            return EXIT_FAILURE;
         }
     }
 
