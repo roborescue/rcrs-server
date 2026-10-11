@@ -90,6 +90,6 @@ public final class GMLMapValidator {
         errors.forEach(error -> LOGGER.info(
                 "VALIDATION_ERROR map={} kind={} id={} message={}",
                 mapName, error.getKind(), error.getId(), error.getMessage()));
-        LOGGER.info("VALIDATION_SUMMARY map={} errors{}", mapName, errors.size());
+        LOGGER.info("VALIDATION_SUMMARY map={} errors={}", mapName, errors.size());
     }
 }
