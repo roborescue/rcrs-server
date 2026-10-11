@@ -1,18 +1,19 @@
 package maps.validate;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import maps.MapException;
 import maps.MapReader;
 import maps.gml.GMLMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Loads a map and checks it for errors.
  */
 public final class GMLMapValidator {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GMLMapValidator.class);
+
     // Validators applied to every GML map, in the order they run
     private static final List<MapValidator<GMLMap>> VALIDATORS = List.of(
             new GMLConnectivityValidator(),
@@ -52,7 +53,7 @@ public final class GMLMapValidator {
             errors.forEach(System.out::println);
         }
         catch (MapException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to read the map: {}", args[0], e);
         }
     }
 }
