@@ -32,6 +32,19 @@ public final class GMLMapValidator {
     }
 
     /**
+     * Validates the given map with the default validators.
+     *
+     * @param map the map to validate
+     * @return the errors found, in the order the validators ran
+     */
+    public static List<ValidationError> validate(GMLMap map) {
+        // Collect the errors of all validators in execution order
+        return VALIDATORS.stream()
+                .flatMap(validator -> validator.validate(map).stream())
+                .toList();
+    }
+
+    /**
      * Validates the GML map given as the first argument and prints the errors.
      *
      * @param args the command line arguments
@@ -39,11 +52,7 @@ public final class GMLMapValidator {
     public static void main(String[] args) {
         try {
             GMLMap map = (GMLMap)MapReader.readMap(args[0]);
-
-            // Collect the errors of all validators in execution order
-            List<ValidationError> errors = VALIDATORS.stream()
-                    .flatMap(validator -> validator.validate(map).stream())
-                    .toList();
+            List<ValidationError> errors = validate(map);
 
             // Report success and stop when nothing was found
             if (errors.isEmpty()) {
