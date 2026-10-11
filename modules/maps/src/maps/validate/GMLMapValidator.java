@@ -39,7 +39,7 @@ public final class GMLMapValidator {
     public static void main(String[] args) {
         try {
             GMLMap map = (GMLMap)MapReader.readMap(args[0]);
-            boolean hasErrors = true;
+            boolean hasErrors = false;
             for (MapValidator<GMLMap> val : validators) {
                 Collection<ValidationError> errors = val.validate(map);
                 for (ValidationError e : errors) {
