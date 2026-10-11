@@ -417,14 +417,14 @@ task osm2gml(type: JavaExec) {
 }
 
 /* Validate a GML map */
-task validateMap(type: JavaExec) {
+tasks.register('validateMap', JavaExec) {
   classpath = files('.')
   classpath += sourceSets.main.runtimeClasspath
   mainClass = 'maps.validate.GMLMapValidator'
   maxHeapSize = '2048m'
   jvmArgs '-Dlog4j.log.dir=logs/log'
   // Exit status 1 means that errors were found, which is a valid result
-  ignoreExitValue = true
+  setIgnoreExitValue(true)
   doLast {
     if (executionResult.get().exitValue == 2) {
        throw new GradleException('Failed to validate the map')
