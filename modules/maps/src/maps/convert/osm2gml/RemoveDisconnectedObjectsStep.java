@@ -4,8 +4,11 @@ import maps.convert.ConvertStep;
 import maps.convert.osm2gml.debug.DebugPalette;
 import maps.convert.osm2gml.debug.PolygonLayer;
 import maps.convert.osm2gml.debug.StepVisualizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Remove buildings and roads that do not belong to the largest connected
@@ -13,6 +16,8 @@ import java.util.*;
  */
 public class RemoveDisconnectedObjectsStep extends ConvertStep {
     private final TemporaryMap map;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoveDisconnectedObjectsStep.class);
 
     /**
      * Constructs a new {@code PruneDisconnectedObjectsStep}.
@@ -63,8 +68,9 @@ public class RemoveDisconnectedObjectsStep extends ConvertStep {
             map.resynchronizeStateFromObjects();
         }
 
-        setStatus("Removed " + toRemove.size() + " disconnected objects across"
+        setStatus("Removed " + toRemove.size() + " disconnected objects across "
             + (components.size() - 1) + " isolated component(s).");
+        logRemovedCountsByType(toRemove);
         visualizeResults(toRemove);
     }
 
@@ -135,6 +141,25 @@ public class RemoveDisconnectedObjectsStep extends ConvertStep {
         return components.stream()
                 .max(Comparator.comparingInt(Set::size))
                 .orElse(Collections.emptySet());
+    }
+
+    // Log the number of removed objects for each concrete object type.
+    private static void logRemovedCountsByType(List<TemporaryObject> removed) {
+        // Guard: nothing to report.
+        if (removed.isEmpty()) {
+            LOGGER.info("No disconnected objects were removed.");
+            return;
+        }
+
+        LOGGER.info("Removed {} disconnected objects:", removed.size());
+
+        // Count objects per concrete class; TreeMap keeps the output order deterministic.
+        removed.stream()
+                .collect(Collectors.groupingBy(
+                        object -> object.getClass().getSimpleName(),
+                        TreeMap::new,
+                        Collectors.counting()))
+                .forEach((type, count) -> LOGGER.info("  {}: {}", type, count));
     }
 
     private void visualizeResults(List<TemporaryObject> removed) {

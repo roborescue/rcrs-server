@@ -93,7 +93,7 @@ public class SplitIntersectingEdgesStep extends ConvertStep {
                 .map(Edge::getLine)
                 .mapToDouble(Line2D::getLength)
                 .average().orElseThrow();
-        final double cellSize = Math.max(averageLength, ConvertTools.sizeOf1Metre(map.getOSMMap()));
+        final double cellSize = Math.max(averageLength, ConvertTools.sizeOf1MetreLatitude(map.getOSMMap()));
         SpatialGrid<Edge> grid = new SpatialGrid<>(map.getBounds(), cellSize);
         map.getAllEdges().forEach(grid::add);
         return grid;

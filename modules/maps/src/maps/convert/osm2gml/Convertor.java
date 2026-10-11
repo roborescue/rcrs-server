@@ -38,11 +38,40 @@ public class Convertor {
         final GMLMap gmlMap = new GMLMap();
         final TemporaryMap temp = new TemporaryMap(map);
 
-        final JFrame frame = new JFrame("OSM to GML converter");
-        final JPanel main  = new JPanel(new BorderLayout());
+        final List<ConvertStep> steps = new ArrayList<>();
+        steps.add(new CleanOSMStep(temp));
+        steps.add(new ScanOSMStep(temp));
+        steps.add(new RemovePseudoNodesStep(temp));
+        steps.add(new CreateIntersectionAreasStep(temp));
+        steps.add(new CreateTempObjectsStep(temp));
+        steps.add(new RemoveSelfIntersectingShapesStep(temp));
+        steps.add(new CreateEntrancesStep(temp));
+        steps.add(new SplitIntersectingEdgesStep(temp));
+        steps.add(new CleanBuildingOverlapsStep(temp));
+        steps.add(new MergePassableShapesStep(temp));
+        steps.add(new RemoveDisconnectedObjectsStep(temp));
+        steps.add(new SplitNonTraversableObjectsStep(temp));
+        steps.add(new SplitShapesStep(temp));
+        steps.add(new RemoveShapesStep(temp));
+        steps.add(new ComputePassableEdgesStep(temp));
+        steps.add(new CreateObjectsStep(temp, gmlMap));
 
-        // Build the header labels describing the source map.
-        final JComponent top = Box.createVerticalBox();
+        if (ConvertStep.isGuiEnabled()) {
+            showProgressWindow(map, steps);
+        }
+
+        for (final ConvertStep next : steps) {
+            next.doStep();
+        }
+
+        return gmlMap;
+    }
+
+    private void showProgressWindow(OSMMap map, List<ConvertStep> steps) {
+        JFrame frame = new JFrame("OSM to GML converter");
+        JPanel main  = new JPanel(new BorderLayout());
+
+        JComponent top = Box.createVerticalBox();
         top.add(new JLabel("Converting OSM map with "
                 + map.getRoads().size() + " roads and "
                 + map.getBuildings().size() + " buildings"));
@@ -51,26 +80,8 @@ public class Convertor {
                 " x "
                 + (map.getMaxLatitude() - map.getMinLatitude())));
 
-        // Build the step rows and collect the ordered step list.
-        final StepPanelBuilder builder = new StepPanelBuilder();
-        final List<ConvertStep> steps = builder.addSteps(
-                new CleanOSMStep(temp),
-                new ScanOSMStep(temp),
-                new RemovePseudoNodesStep(temp),
-                new CreateIntersectionAreasStep(temp),
-                new CreateTempObjectsStep(temp),
-                new RemoveSelfIntersectingShapesStep(temp),
-                new CreateEntrancesStep(temp),
-                new SplitIntersectingEdgesStep(temp),
-                new CleanBuildingOverlapsStep(temp),
-                new MergePassableShapesStep(temp),
-                new RemoveDisconnectedObjectsStep(temp),
-                new SplitNonTraversableObjectsStep(temp),
-                new SplitShapesStep(temp),
-                new RemoveShapesStep(temp),
-                new ComputePassableEdgesStep(temp),
-                new CreateObjectsStep(temp, gmlMap)
-        );
+        StepPanelBuilder builder = new StepPanelBuilder();
+        builder.addRows(steps);
 
         main.add(top, BorderLayout.NORTH);
         main.add(builder.getPanel(), BorderLayout.CENTER);
@@ -78,13 +89,6 @@ public class Convertor {
         frame.setContentPane(main);
         frame.pack();
         frame.setVisible(true);
-
-        // Execute steps in order.
-        for (final ConvertStep next : steps) {
-            next.doStep();
-        }
-
-        return gmlMap;
     }
 
     /**
@@ -105,34 +109,30 @@ public class Convertor {
             c.gridy       = 0;
         }
 
-        // Append one row per step and return the steps in insertion order.
-        List<ConvertStep> addSteps(final ConvertStep... steps) {
-            final List<ConvertStep> ordered = new ArrayList<>();
-            for (final ConvertStep step : steps) {
-                addRow(step);
-                ordered.add(step);
-            }
-            return ordered;
+        void addRows(List<ConvertStep> steps) {
+            steps.forEach(this::addRow);
         }
 
-        private void addRow(final ConvertStep step) {
-            final JProgressBar progress = step.getProgressBar();
-            final JComponent  status   = step.getStatusComponent();
+        private void addRow(ConvertStep step) {
+            JProgressBar progress = step.getProgressBar();
+            JComponent status = step.getStatusComponent();
             progress.setPreferredSize(new Dimension(PROGRESS_WIDTH, PROGRESS_HEIGHT));
-            status  .setPreferredSize(new Dimension(STATUS_WIDTH  , STATUS_HEIGHT  ));
+            status.setPreferredSize(new Dimension(STATUS_WIDTH  , STATUS_HEIGHT  ));
 
             addCell(new JLabel(step.getDescription()), 0, 1.0);
-            addCell(progress                         , 1, 0.0);
-            addCell(status                           , 2, 1.0);
+            addCell(progress, 1, 0.0);
+            addCell(status, 2, 1.0);
             c.gridy++;
         }
 
-        private void addCell(final JComponent component, final int gridX, final double weightX) {
-            c.gridx   = gridX;
+        private void addCell(JComponent component, int gridX, double weightX) {
+            c.gridx = gridX;
             c.weightx = weightX;
             panel.add(component, c);
         }
 
-        JPanel getPanel() { return panel; }
+        JPanel getPanel() {
+            return panel;
+        }
     }
 }

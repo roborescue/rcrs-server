@@ -2,12 +2,15 @@ package maps.convert.osm2gml;
 
 import maps.convert.ConvertStep;
 import maps.convert.osm2gml.debug.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rescuecore2.misc.geometry.GeometryTools2D;
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.misc.geometry.Vector2D;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -22,14 +25,33 @@ public class CreateIntersectionAreasStep extends ConvertStep {
     private static final double MITER_DISTANCE_LIMIT_COEFFICIENT = 1.5;
     private static final double BOUNDARY_LENGTH_LIMIT_COEFFICIENT = 0.4;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateIntersectionAreasStep.class);
+
+    // How a corner position was derived.
+    private enum CornerType { STRAIGHT, MITER, CLAMPED }
+
+    // A computed corner with diagnostics. Widths are in map units.
+    // miterOverrun is (unclamped miter distance / limit), or NaN when no limit was evaluated.
+    private record Corner(Point2D point, CornerType type,
+                          double ownWidth, double otherWidth, double miterOverrun) {
+
+        // Returns the ratio of the wider road to the narrower one (always >= 1).
+        double widthRatio() {
+            return Math.max(ownWidth, otherWidth) / Math.min(ownWidth, otherWidth);
+        }
+    }
+
+    // Geometry of one intersection: the mouth vertices and the per-corner diagnostics.
+    private record IntersectionGeometry(int degree, List<Point2D> vertices, List<Corner> corners) {}
+
     /**
-     * Constructs a new {@code GenerateIntersectionAreaStep}.
+     * Constructs a new {@code CreateIntersectionAreasStep}.
      *
      * @param map the map
      */
     public CreateIntersectionAreasStep(TemporaryMap map) {
         this.map = map;
-        sizeOf1Meter = ConvertTools.sizeOf1Metre(map.getOSMMap());
+        sizeOf1Meter = ConvertTools.sizeOf1MetreLatitude(map.getOSMMap());
     }
 
     @Override
@@ -41,19 +63,25 @@ public class CreateIntersectionAreasStep extends ConvertStep {
     protected void step() {
         Collection<OSMIntersectionInfo> intersections = map.getOSMIntersections();
         setProgressLimit(intersections.size());
-        intersections.forEach(this::computeIntersectionGeometry);
+        List<IntersectionGeometry> results = intersections.stream()
+                .map(this::computeIntersectionGeometry)
+                .toList();
         setStatus("Generated polygon areas for " + intersections.size() + " intersections");
+        logSummary(results);
         visualizeResults();
     }
 
-    private void computeIntersectionGeometry(OSMIntersectionInfo intersection) {
-        intersection.setVertices(computeVertices(intersection.getRoads()));
+    private IntersectionGeometry computeIntersectionGeometry(OSMIntersectionInfo intersection) {
+        IntersectionGeometry geometry = computeGeometry(intersection.getRoads());
+        intersection.setVertices(geometry.vertices());
+        logIntersection(intersection, geometry);
         bumpProgress();
+        return geometry;
     }
 
-    private List<Point2D> computeVertices(Set<RoadAspect> roads) {
+    private IntersectionGeometry computeGeometry(Set<RoadAspect> roads) {
         return switch (roads.size()) {
-            case 0 -> Collections.emptyList();
+            case 0 -> new IntersectionGeometry(0, Collections.emptyList(), List.of());
             case 1 -> processDeadEnd(roads.iterator().next());
             case 2 -> {
                 final Iterator<RoadAspect> it = roads.iterator();
@@ -63,23 +91,27 @@ public class CreateIntersectionAreasStep extends ConvertStep {
         };
     }
 
-    private List<Point2D> processDeadEnd(RoadAspect road) {
+    private IntersectionGeometry processDeadEnd(RoadAspect road) {
         road.setRightEnd(road.getRightBoundaryLine(sizeOf1Meter).getOrigin());
         road.setLeftEnd(road.getLeftBoundaryLine(sizeOf1Meter).getOrigin());
-        return collectVertices(List.of(road));
+        return new IntersectionGeometry(1, collectVertices(List.of(road)), List.of());
     }
 
-    private List<Point2D> processThroughRoad(RoadAspect first, RoadAspect second) {
+    private IntersectionGeometry processThroughRoad(RoadAspect first, RoadAspect second) {
+        // Straight connections reuse computeCorner so that they are logged like any other corner.
         if (isStraight(first, second)) {
-            double firstRoadWidth = first.getWidth(sizeOf1Meter);
-            first.setRightEnd(setbackPoint(first.getRightBoundaryLine(sizeOf1Meter), firstRoadWidth));
-            first.setLeftEnd(setbackPoint(first.getLeftBoundaryLine(sizeOf1Meter), firstRoadWidth));
+            Corner firstRight  = computeCorner(first, second, false);
+            Corner firstLeft   = computeCorner(first, second, true);
+            Corner secondRight = computeCorner(second, first, false);
+            Corner secondLeft  = computeCorner(second, first, true);
 
-            double secondRoadWidth = second.getWidth(sizeOf1Meter);
-            second.setRightEnd(setbackPoint(second.getRightBoundaryLine(sizeOf1Meter), secondRoadWidth));
-            second.setLeftEnd(setbackPoint(second.getLeftBoundaryLine(sizeOf1Meter), secondRoadWidth));
+            first.setRightEnd(firstRight.point());
+            first.setLeftEnd(firstLeft.point());
+            second.setRightEnd(secondRight.point());
+            second.setLeftEnd(secondLeft.point());
 
-            return collectVertices(List.of(first, second));
+            return new IntersectionGeometry(2, collectVertices(List.of(first, second)),
+                    List.of(firstRight, firstLeft, secondRight, secondLeft));
         }
 
         Point2D firstRightEnd = intersectOrThrow(
@@ -87,28 +119,41 @@ public class CreateIntersectionAreasStep extends ConvertStep {
         Point2D firstLeftEnd = intersectOrThrow(
                 first.getLeftBoundaryLine(sizeOf1Meter), second.getRightBoundaryLine(sizeOf1Meter));
 
+        // The right boundary of one road meets the left boundary of the other at the same corner
         first.setRightEnd(firstRightEnd);
         first.setLeftEnd(firstLeftEnd);
         second.setRightEnd(firstLeftEnd);
         second.setLeftEnd(firstRightEnd);
 
-        return List.of(firstRightEnd, firstLeftEnd);
+        double firstWidth  = first.getWidth(sizeOf1Meter);
+        double secondWidth = second.getWidth(sizeOf1Meter);
+        // No miter limit is applied to a two-road bend, so the overrun is NaN.
+        List<Corner> corners = List.of(
+                new Corner(firstRightEnd, CornerType.MITER, firstWidth, secondWidth, Double.NaN),
+                new Corner(firstLeftEnd, CornerType.MITER, firstWidth, secondWidth, Double.NaN));
+
+        return new IntersectionGeometry(2, List.of(firstRightEnd, firstLeftEnd), corners);
     }
 
-    private List<Point2D> generateIntersectionPolygon(Set<RoadAspect> roads) {
+    private IntersectionGeometry generateIntersectionPolygon(Set<RoadAspect> roads) {
         List<RoadAspect> sortedRoads = sortRoadsCCW(roads);
         int degree = sortedRoads.size();
+        List<Corner> corners = new ArrayList<>();
 
         for (int i = 0; i < degree; i++) {
             RoadAspect prev = sortedRoads.get((i - 1 + degree) % degree);
             RoadAspect curr = sortedRoads.get(i);
             RoadAspect next = sortedRoads.get((i + 1) % degree);
 
-            curr.setRightEnd(computeCorner(curr, prev, false));
-            curr.setLeftEnd(computeCorner(curr, next, true));
+            Corner right = computeCorner(curr, prev, false);
+            Corner left  = computeCorner(curr, next, true);
+            curr.setRightEnd(right.point());
+            curr.setLeftEnd(left.point());
+            corners.add(right);
+            corners.add(left);
         }
 
-        return collectVertices(sortedRoads);
+        return new IntersectionGeometry(degree, collectVertices(sortedRoads), corners);
     }
 
     private List<RoadAspect> sortRoadsCCW(Collection<RoadAspect> roads) {
@@ -119,23 +164,27 @@ public class CreateIntersectionAreasStep extends ConvertStep {
         })).toList();
     }
 
-    private Point2D computeCorner(RoadAspect own, RoadAspect other, boolean isLeft) {
+    private Corner computeCorner(RoadAspect own, RoadAspect other, boolean isLeft) {
+        double ownWidth   = own.getWidth(sizeOf1Meter);
+        double otherWidth = other.getWidth(sizeOf1Meter);
         Line2D ownBoundary = own.getBoundaryLine(sizeOf1Meter, isLeft);
 
         if (isStraight(own, other)) {
-            return setbackPoint(ownBoundary, own.getWidth(sizeOf1Meter));
+            return new Corner(setbackPoint(ownBoundary, ownWidth),
+                    CornerType.STRAIGHT, ownWidth, otherWidth, Double.NaN);
         }
 
         Line2D otherBoundary = other.getBoundaryLine(sizeOf1Meter, !isLeft);
         Point2D miterCorner = intersectOrThrow(ownBoundary, otherBoundary);
-        double miterDistanceLimit = computeMiterDistanceLimit(
-                ownBoundary, otherBoundary, own.getWidth(sizeOf1Meter), other.getWidth(sizeOf1Meter));
+        double miterDistanceLimit = computeMiterDistanceLimit(ownBoundary, otherBoundary, ownWidth, otherWidth);
         Vector2D cornerOffset = miterCorner.minus(own.getCenterPoint());
+        double overrun = cornerOffset.getLength() / miterDistanceLimit;
 
         if (miterDistanceLimit < cornerOffset.getLength()) {
-            return own.getCenterPoint().plus(cornerOffset.normalised().scale(miterDistanceLimit));
+            Point2D clamped = own.getCenterPoint().plus(cornerOffset.normalised().scale(miterDistanceLimit));
+            return new Corner(clamped, CornerType.CLAMPED, ownWidth, otherWidth, overrun);
         }
-        return miterCorner;
+        return new Corner(miterCorner, CornerType.MITER, ownWidth, otherWidth, overrun);
     }
 
     private boolean isStraight(RoadAspect first, RoadAspect second) {
@@ -184,5 +233,39 @@ public class CreateIntersectionAreasStep extends ConvertStep {
                         .outlineColor(DebugPalette.MOSS_STROKE)
                         .fillColor(DebugPalette.MOSS_FILL))
                 .show();
+    }
+
+    // Logs one line per intersection and one line per corner in a machine-readable format.
+    // Every line carries the OSM node ID so that corner lines can be joined to their intersection.
+    private void logIntersection(OSMIntersectionInfo intersection, IntersectionGeometry geometry) {
+        long nodeId = intersection.getNode().getId();
+        Point2D center = intersection.getPoint();
+        double maxWidthRatio = geometry.corners().stream()
+                .mapToDouble(Corner::widthRatio)
+                .max()
+                .orElse(Double.NaN);
+        LOGGER.info("INTERSECTION_RESULT osm_node_id={} x={} y={} degree={} vertex_count={} "
+                + "corner_count={} max_width_ratio={}",
+                nodeId, center.getX(), center.getY(), geometry.degree(),
+                geometry.vertices().size(), geometry.corners().size(), maxWidthRatio);
+
+        geometry.corners().forEach(corner -> LOGGER.info(
+                "INTERSECTION_CORNER type={} own_width_m={} other_width_m={} "
+                + "width_ratio={} miter_overrun={}",
+                corner.type(), corner.ownWidth() / sizeOf1Meter, corner.otherWidth() / sizeOf1Meter,
+                corner.widthRatio(), corner.miterOverrun()));
+    }
+
+    // Logs aggregated corner statistics for the whole step.
+    private void logSummary(List<IntersectionGeometry> results) {
+        List<Corner> corners = results.stream().flatMap(r -> r.corners().stream()).toList();
+        Map<CornerType, Long> typeCounts = corners.stream().collect(Collectors.groupingBy(
+                Corner::type, () -> new EnumMap<>(CornerType.class), Collectors.counting()));
+
+        LOGGER.info("INTERSECTION_SUMMARY intersections={} corners={} straight={} miter={} clamped={}",
+                results.size(), corners.size(),
+                typeCounts.getOrDefault(CornerType.STRAIGHT, 0L),
+                typeCounts.getOrDefault(CornerType.MITER, 0L),
+                typeCounts.getOrDefault(CornerType.CLAMPED, 0L));
     }
 }

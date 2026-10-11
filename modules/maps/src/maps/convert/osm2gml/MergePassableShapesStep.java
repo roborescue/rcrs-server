@@ -8,8 +8,6 @@ import maps.convert.osm2gml.debug.StepVisualizer;
 import java.awt.geom.Area;
 import java.util.*;
 
-import static maps.convert.osm2gml.ConvertTools.areaToTemporaryPassableShapes;
-
 public class MergePassableShapesStep extends ConvertStep {
     private final TemporaryMap map;
 
@@ -43,8 +41,8 @@ public class MergePassableShapesStep extends ConvertStep {
                 }
 
                 // Convert the combined area back to new passable shapes. ignoring any holes.
-                List<TemporaryObject> mergedPassableShapes =
-                        areaToTemporaryPassableShapes(combinedArea, group.getFirst(), map);
+                List<TemporaryObject> mergedPassableShapes = ConvertTools.areaToTemporaryPassableShapes(
+                        combinedArea, group.getFirst(), map);
 
                 if (!mergedPassableShapes.isEmpty()) {
                     passableShapesToRemove.addAll(group);
@@ -94,16 +92,11 @@ public class MergePassableShapesStep extends ConvertStep {
 
                 for (int j = i; j < objectList.size(); j++) {
                     TemporaryObject neighbour = objectList.get(j);
-                    if (!visited.contains(neighbour) && !current.equals(neighbour)) {
-                        if (current.getBounds().intersects(neighbour.getBounds())) {
-                            Area intersection = new Area(current.getShape());
-                            intersection.intersect(new Area(neighbour.getShape()));
-                            if (!intersection.isEmpty()) {
-                                visited.add(neighbour);
-                                queue.add(neighbour);
-                            }
-                        }
-                    }
+                    if (visited.contains(neighbour) || current.equals(neighbour)) continue;
+                    if (!ConvertTools.overlaps(current, neighbour)) continue;
+
+                    visited.add(neighbour);
+                    queue.add(neighbour);
                 }
             }
             allGroups.add(currentGroup);

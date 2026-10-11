@@ -59,13 +59,11 @@ public class RemoveShapesStep extends ConvertStep {
     */
     private int removeDuplicates(Collection<? extends TemporaryObject> test, Set<TemporaryObject> removed, Collection<TemporaryObject> toCheck) {
         int count = 0;
-        Logger.debug(test.size() + " test objects, " + toCheck.size() + " to check, " + removed.size() + " already removed");
         for (TemporaryObject first : test) {
             bumpProgress();
             if (removed.contains(first)) {
                 continue;
             }
-            Logger.debug("Next test object: " + first);
             for (TemporaryObject second : toCheck) {
                 if (removed.contains(second)) {
                     continue;
@@ -73,7 +71,6 @@ public class RemoveShapesStep extends ConvertStep {
                 if (first == second) {
                     continue;
                 }
-                Logger.debug("Next check object: " + second);
                 if (first.isDuplicate(second)) {
                     map.removeTemporaryObject(second);
                     removed.add(second);

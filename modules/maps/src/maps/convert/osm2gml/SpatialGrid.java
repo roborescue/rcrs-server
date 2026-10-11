@@ -42,7 +42,7 @@ public class SpatialGrid<T extends SpatialIndexable> {
         this.minY = bounds.getMinY();
         this.cellWidth = cellSize;
         this.cellHeight = cellSize;
-        this.grid = new HashMap<>();
+        this.grid = new LinkedHashMap<>();
     }
 
     /**
@@ -94,11 +94,15 @@ public class SpatialGrid<T extends SpatialIndexable> {
      * Returns the objects contained in the grid cells surrounding the specified
      * object.
      *
+     * <p>The cells are scanned in increasing order of x and then y, and the objects
+     * of a cell are returned in the order they were added, so the iteration order of the
+     * result is deterministic.
+     *
      * @param item the object to find nearby for
      * @return the objects contained in the surrounding grid cells
      */
     public Set<T> getNearbyItems(T item) {
-        Set<T> nearbyItems = new HashSet<>();
+        Set<T> nearbyItems = new LinkedHashSet<>();
         Rectangle2D bounds = item.getBounds();
 
         int minCellX = getXCell(bounds.getMinX()) - 1;
@@ -121,7 +125,7 @@ public class SpatialGrid<T extends SpatialIndexable> {
     private int getYCell(double y) { return (int) Math.floor((y - minY) / cellHeight); }
 
     private void addToCell(int x, int y, T item) {
-        grid.computeIfAbsent(new GridPoint(x, y), k -> new HashSet<>()).add(item);
+        grid.computeIfAbsent(new GridPoint(x, y), k -> new LinkedHashSet<>()).add(item);
     }
 
     private Set<T> getCellItems(int x, int y) {

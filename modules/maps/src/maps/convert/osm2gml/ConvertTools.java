@@ -31,13 +31,12 @@ public final class ConvertTools {
 
     private ConvertTools() {}
 
-    /**
-       Compute the size of one metre in latitude/longitude for an OSMMap.
-       @param map The map to look up.
-       @return The size of one metre on the given map.
-    */
-    public static double sizeOf1Metre(OSMMap map) {
-        return MapTools.sizeOf1Metre(map.getCenterLatitude(), map.getCenterLongitude());
+    public static double sizeOf1MetreLatitude(OSMMap map) {
+        return MapTools.sizeOf1MetreLatitude(map.getCenterLatitude(), map.getCenterLongitude());
+    }
+
+    public static double sizeOf1MetreLongitude(OSMMap map) {
+        return MapTools.sizeOf1MetreLongitude(map.getCenterLatitude(), map.getCenterLongitude());
     }
 
     /**
@@ -47,7 +46,7 @@ public final class ConvertTools {
      * @return The equivalent size in degrees.
      */
     public static double sizeOfMeters(OSMMap map, double metres) {
-        return sizeOf1Metre(map) * metres;
+        return sizeOf1MetreLatitude(map) * metres;
     }
 
     /**
@@ -57,7 +56,7 @@ public final class ConvertTools {
        @return The size of the nearby-node threshold for the map in degrees.
     */
     public static double nearbyThreshold(OSMMap map, double thresholdM) {
-        return sizeOf1Metre(map) * thresholdM;
+        return sizeOf1MetreLatitude(map) * thresholdM;
     }
 
     /**
@@ -357,4 +356,22 @@ public final class ConvertTools {
                 .toList();
     }
 
+    /**
+     * Returns whether the shapes of the two objects overlap with a positive area.
+     * Objects that only touch along an edge or at a point do not overlap.
+     *
+     * @param a the first object
+     * @param b the second object
+     * @return {@code true} if the shapes of the two objects share a non-empty area;
+     *         {@code false} otherwise
+     */
+    public static boolean overlaps(TemporaryObject a, TemporaryObject b) {
+        // Quick rejection by bounding boxes
+        if (!a.getBounds().intersects(b.getBounds())) {
+            return false;
+        }
+        Area intersection = new Area(a.getShape());
+        intersection.intersect(new Area(b.getShape()));
+        return !intersection.isEmpty();
+    }
 }

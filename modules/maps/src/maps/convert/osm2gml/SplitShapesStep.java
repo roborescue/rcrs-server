@@ -8,18 +8,22 @@ import java.util.Collection;
 
 import maps.convert.ConvertStep;
 
-import rescuecore2.log.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
-   This step splits any shapes that overlap.
-*/
+ * Splits any shapes that overlap.
+ */
 public class SplitShapesStep extends ConvertStep {
     private final TemporaryMap map;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SplitShapesStep.class);
+
     /**
-       Construct a SplitFacesStep.
-       @param map The map to use.
-    */
+     * Constructs a new {@code SplitShapesStep}.
+     *
+     * @param map the map
+     */
     public SplitShapesStep(TemporaryMap map) {
         this.map = map;
     }
@@ -55,7 +59,7 @@ public class SplitShapesStep extends ConvertStep {
             result.add(dEdge);
             edgesRemaining.remove(dEdge); // Remove edge as it is used
 
-            Logger.debug("Starting walk from " + dEdge);
+            LOGGER.debug("Starting walk from {}", dEdge);
 
             while (!end.equals(start)) {
                 Set<Edge> candidates = new HashSet<>(map.getAttachedEdges(end));
@@ -75,13 +79,13 @@ public class SplitShapesStep extends ConvertStep {
 
                 // If we are removing a directed edge that has the opposite direction in the set.
                 if (!edgesRemaining.remove(dEdge) && !edgesRemaining.remove(dEdge.getReverse())) {
-                    Logger.warn("Walked along an edge not in the original shape: " + dEdge + ". Abandoning path.");
+                    LOGGER.warn("Walked along an edge not in the original shape: {}. Abandoning path.", dEdge);
                     result.clear();
                     break;
                 }
 
                 result.add(dEdge);
-                Logger.debug("Added " + dEdge + ", new end: " + end);
+                LOGGER.debug("Added {}, new end: {}", dEdge, end);
             }
 
             // If the inner loop was broken, result will be empty.

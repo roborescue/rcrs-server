@@ -5,138 +5,102 @@ import javax.swing.JLabel;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+import lombok.Getter;
+import lombok.Setter;
 import rescuecore2.misc.gui.ShapeDebugFrame;
-import rescuecore2.log.Logger;
 
-/**
-   A step in the map conversion process.
-*/
 public abstract class ConvertStep {
-    /** A ShapeDebugFrame for use by subclasses. */
-    protected ShapeDebugFrame debug;
+    @Setter @Getter private static boolean guiEnabled = false;
 
     private JProgressBar progress;
     private JLabel status;
+    private int progressValue;
+    private int progressMax;
 
-    /**
-       Construct a ConvertStep.
-    */
+    protected ShapeDebugFrame debug;
+
     protected ConvertStep() {
-        this.progress = new JProgressBar();
-        this.status = new JLabel();
-        progress.setString("");
-        progress.setStringPainted(true);
         debug = new ShapeDebugFrame();
+        if (guiEnabled) {
+            progress = new JProgressBar();
+            progress.setString("");
+            progress.setStringPainted(true);
+            status = new JLabel();
+        } else {
+            debug.deactivate();
+        }
     }
 
-    /**
-       Set the progress level.
-       @param amount The new progress.
-    */
-    protected void setProgress(final int amount) {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    progress.setValue(amount);
-                    progress.setString(progress.getValue() + " / " + progress.getMaximum());
-                }
-            });
+    protected void setProgress(int amount) {
+        progressValue = amount;
+        if (!guiEnabled) {
+            return;
+        }
+        SwingUtilities.invokeLater(() -> {
+            progress.setValue(amount);
+            progress.setString(progress.getValue() + " / " + progress.getMaximum());
+        });
     }
 
-    /**
-       Increase the progress level by one.
-    */
     protected void bumpProgress() {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    progress.setValue(progress.getValue() + 1);
-                    progress.setString(progress.getValue() + " / " + progress.getMaximum());
-                }
-            });
+        progressValue++;
+        if (!guiEnabled) {
+            return;
+        }
+        SwingUtilities.invokeLater(() -> {
+            progress.setValue(progress.getValue() + 1);
+            progress.setString(progress.getValue() + " / " + progress.getMaximum());
+        });
     }
 
-    /**
-       Set the progress maximum.
-       @param max The new progress maximum.
-    */
-    protected void setProgressLimit(final int max) {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    progress.setIndeterminate(false);
-                    progress.setMaximum(max);
-                    progress.setString(progress.getValue() + " / " + progress.getMaximum());
-                }
-            });
+    protected void setProgressLimit(int max) {
+        progressMax = max;
+        if (!guiEnabled) {
+            return;
+        }
+        SwingUtilities.invokeLater(() -> {
+            progress.setIndeterminate(false);
+            progress.setMaximum(max);
+            progress.setString(progress.getValue() + " / " + progress.getMaximum());
+        });
     }
 
-    /**
-     * Get the current progress maximum.
-     * @return The current progress maximum.
-     */
     protected int getProgressLimit() {
-        return progress.getMaximum();
+        return progressMax;
     }
 
-    /**
-       Set the status label.
-       @param s The new status label.
-    */
-    protected void setStatus(final String s) {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    status.setText(s);
-                }
-            });
+    protected void setStatus(String s) {
+        if (guiEnabled) {
+            SwingUtilities.invokeLater(() -> status.setText(s));
+        } else {
+            System.out.println(s);
+        }
     }
 
-    /**
-       Get the JProgressBar component for this step.
-       @return The progress bar component.
-    */
     public JProgressBar getProgressBar() {
         return progress;
     }
 
-    /**
-       Get the status component for this step.
-       @return The status component.
-    */
     public JComponent getStatusComponent() {
         return status;
     }
 
-    /**
-       Perform the conversion step.
-    */
-    public final void doStep() {
-        try {
-            Logger.pushLogContext(getClass().getName());
-            SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        progress.setIndeterminate(true);
-                    }
-                });
-            step();
-            SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        progress.setIndeterminate(false);
-                        progress.setValue(progress.getMaximum());
-                    }
-                });
-            debug.deactivate();
+    public void doStep() {
+        if (guiEnabled) {
+            SwingUtilities.invokeLater(() -> progress.setIndeterminate(true));
+        } else {
+            System.out.println(getDescription());
         }
-        finally {
-            Logger.popLogContext();
+        step();
+        if (guiEnabled) {
+            SwingUtilities.invokeLater(() -> {
+                progress.setIndeterminate(false);
+                progress.setValue(progress.getMaximum());
+            });
         }
     }
 
-    /**
-       Get a user-friendly description of this step.
-       @return A description string.
-    */
     public abstract String getDescription();
 
-    /**
-       Perform the step.
-    */
     protected abstract void step();
 }

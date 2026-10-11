@@ -408,4 +408,10 @@ task osm2gml(type: JavaExec) {
   mainClass = 'maps.convert.Convert'
   maxHeapSize = '2048m'
   jvmArgs '-Dlog4j.log.dir=logs/log'
+  doFirst {
+    // Give each run its own log file. This is evaluated at execution time
+    // so that the timestamp is never reused from a cached configuration.
+    systemProperty 'osm2gml.run.id',
+            java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss'))
+  }
 }

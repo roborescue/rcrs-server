@@ -76,9 +76,11 @@ public class CreateObjectsStep extends ConvertStep {
             yMin = Math.min(yMin, next.getY());
         }
 
-        final double sizeOf1m = ConvertTools.sizeOf1Metre(map.getOSMMap());
-        final double scale = 1.0 / sizeOf1m;
-        return new ScaleConversion(xMin, yMin, scale, scale);
+        double sizeOf1mLat = ConvertTools.sizeOf1MetreLatitude(map.getOSMMap());
+        double sizeOf1mLon = ConvertTools.sizeOf1MetreLongitude(map.getOSMMap());
+        double scaleX = 1.0 / sizeOf1mLon;
+        double scaleY = 1.0 / sizeOf1mLat;
+        return new ScaleConversion(xMin, yMin, scaleX, scaleY);
     }
 
     // Convert all nodes into GML nodes with scaled coordinates.

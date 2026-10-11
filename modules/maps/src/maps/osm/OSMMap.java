@@ -10,6 +10,7 @@ import java.util.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 /**
    An OpenStreetMap map.
@@ -117,8 +118,9 @@ public class OSMMap {
         if (!"osm".equals(root.getName())) {
             throw new OSMException("Invalid map file: root element must be 'osm', not " + root.getName());
         }
-        root.elements("node").forEach(this::processNode);
-        root.elements("way").forEach(this::processWay);
+        processNodes(root);
+        processWays(root);
+        processRelations(root);
     }
 
     /**
@@ -322,6 +324,10 @@ public class OSMMap {
         boundsCalculated = true;
     }
 
+    private void processNodes(Element root) {
+        root.elements("node").forEach(this::processNode);
+    }
+
     private void processNode(Element e) {
         long id = Long.parseLong(e.attributeValue("id"));
         double lat = Double.parseDouble(e.attributeValue("lat"));
@@ -330,44 +336,83 @@ public class OSMMap {
         nodes.put(id, node);
     }
 
+    private void processWays(Element root) {
+        root.elements("way").forEach(this::processWay);
+    }
+
     private void processWay(final Element e) {
-        final long id = Long.parseLong(e.attributeValue("id"));
+        long id = Long.parseLong(e.attributeValue("id"));
+        List<Long> ids = new ArrayList<>();
+        for (Element next : e.elements("nd")) {
+            ids.add(Long.parseLong(next.attributeValue("ref")));
+        }
+        Map<String, String> tags = readTags(e);
 
-        final List<Long> ids = new ArrayList<>();
-        for (final Element next : e.elements("nd")) {
-            final Long nextID = Long.parseLong(next.attributeValue("ref"));
-            ids.add(nextID);
+        // Buildings take priority over roads, as before
+        if (OSMBuilding.isBuildingTagValue(tags.get("building"))) {
+            buildings.put(id, new OSMBuilding(id, ids));
+            return;
         }
 
-        // Road attributes.
-        OSMRoadType type = null;
-        int laneCount = -1;
+        // Ignore ways whose "highway" value is absent or unsupported
+        Optional<OSMRoadType> type = OSMRoadType.fromTagValue(tags.get("highway"));
+        if (type.isEmpty()) return;
 
-        for (final Element tag : e.elements("tag")) {
-            final String key = tag.attributeValue("k");
-            final String value = tag.attributeValue("v");
+        int laneCount = Optional.ofNullable(tags.get("lanes")).map(Integer::parseInt).orElse(-1);
+        roads.put(id, new OSMRoad(id, ids, type.get(), laneCount));
+    }
 
-            // Check if this object is a building.
-            if ("building".equals(key) && "yes".equals(value)) {
-                final OSMBuilding building = new OSMBuilding(id, ids);
-                buildings.put(id, building);
-                return;
-            }
+    // Converts multipolygon relations tagged as buildings into buildings
+    private void processRelations(Element root) {
+        Map<Long, List<Long>> wayNodes = readWayNodes(root);
 
-            // Check if this object is a road.
-            if ("highway".equals(key)) {
-                final Optional<OSMRoadType> typeOptional = OSMRoadType.fromTagValue(value);
-                if (typeOptional.isEmpty()) continue;
-                type = typeOptional.get();
-            }
+        // Relation IDs may collide with IDs, so use IDs above all way IDs
+        long nextId = wayNodes.keySet().stream().mapToLong(Long::longValue).max().orElse(0L) + 1;
 
-            if ("lanes".equals(key)) {
-                laneCount = Integer.parseInt(value);
+        for (Element relation : root.elements("relation")) {
+            Map<String, String> tags = readTags(relation);
+            if (!"multipolygon".equals(tags.get("type"))) continue;
+            if (!OSMBuilding.isBuildingTagValue(tags.get("building"))) continue;
+
+            for (List<Long> ring : outerRings(relation, wayNodes)) {
+                buildings.put(nextId, new OSMBuilding(nextId, ring));
+                nextId++;
             }
         }
+    }
 
-        if (type != null) {
-            roads.put(id, new OSMRoad(id, ids, type, laneCount));
+    // Reads the node IDs of all ways, including untagged ways that make up rings
+    private Map<Long, List<Long>> readWayNodes(Element root) {
+        Map<Long, List<Long>> wayNodes = new HashMap<>();
+        for (Element way : root.elements("way")) {
+            wayNodes.put(Long.parseLong(way.attributeValue("id")), readNodeIDs(way));
         }
+        return wayNodes;
+    }
+
+    // Assembles the closed outer rings of a multipolygon relation
+    private List<List<Long>> outerRings(Element relation, Map<Long, List<Long>> wayNodes) {
+        List<List<Long>> segments = relation.elements("member").stream()
+                .filter(member -> "way".equals(member.attributeValue("type")))
+                .filter(member -> "outer".equals(member.attributeValue("role")))
+                .map(member -> wayNodes.get(Long.parseLong(member.attributeValue("ref"))))
+                // Members missing from the extract are skipped
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return OSMRingAssembler.assemble(segments);
+    }
+
+    // Reads the node IDs reference by a way
+    private List<Long> readNodeIDs(Element way) {
+        return way.elements("nd").stream()
+                .map(nd -> Long.parseLong(nd.attributeValue("ref")))
+                .collect(Collectors.toList());
+    }
+
+    // Collect the key-value pairs of all tags of a way
+    private Map<String, String> readTags(Element way) {
+        Map<String, String> tags = new HashMap<>();
+        way.elements("tag").forEach(tag -> tags.put(tag.attributeValue("k"), tag.attributeValue("v")));
+        return tags;
     }
 }

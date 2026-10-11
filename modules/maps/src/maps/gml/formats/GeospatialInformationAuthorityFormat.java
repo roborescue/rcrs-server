@@ -77,7 +77,7 @@ public final class GeospatialInformationAuthorityFormat extends GMLMapFormat {
         readBuildings(doc, result);
         readRoads(doc, result);
         // Convert from lat/lon to metres
-        double scale = 1.0 / MapTools.sizeOf1Metre((result.getMinY() + result.getMaxY()) / 2, (result.getMinX() + result.getMaxX()) / 2);
+        double scale = 1.0 / MapTools.sizeOf1MetreLatitude((result.getMinY() + result.getMaxY()) / 2, (result.getMinX() + result.getMaxX()) / 2);
         CoordinateConversion conversion = new ScaleConversion(result.getMinX(), result.getMinY(), scale, scale);
         result.convertCoordinates(conversion);
         return result;

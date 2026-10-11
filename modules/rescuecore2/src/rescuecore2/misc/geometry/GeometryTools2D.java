@@ -210,10 +210,7 @@ public final class GeometryTools2D {
     public static double getAngleBetweenVectors(Vector2D first, Vector2D second) {
         Vector2D v1 = first.normalised();
         Vector2D v2 = second.normalised();
-        double cos = v1.dot(v2);
-        if (cos > 1) {
-            cos = 1;
-        }
+        double cos = Math.clamp(v1.dot(v2), -1.0, 1.0);
         return Math.toDegrees(Math.acos(cos));
     }
 

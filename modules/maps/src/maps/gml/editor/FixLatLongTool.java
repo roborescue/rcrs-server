@@ -24,7 +24,7 @@ public class FixLatLongTool extends AbstractTool {
     public void activate() {
         double minX = editor.getMap().getMinX();
         double minY = editor.getMap().getMinY();
-        double factor = 1.0 / MapTools.sizeOf1Metre(minX, minY);
+        double factor = 1.0 / MapTools.sizeOf1MetreLatitude(minX, minY);
         ScaleConversion c = new ScaleConversion(minX, minY, factor, factor);
         editor.getMap().convertCoordinates(c);
         editor.setChanged();

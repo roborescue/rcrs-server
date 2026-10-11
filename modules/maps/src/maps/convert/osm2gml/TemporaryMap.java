@@ -72,7 +72,7 @@ public class TemporaryMap {
             }
         };
 
-        this.gridSpacing = ConvertTools.sizeOf1Metre(osmMap);
+        this.gridSpacing = ConvertTools.sizeOf1MetreLatitude(osmMap);
         this.gridOriginX = osmMap.getCenterLatitude();
         this.gridOriginY = osmMap.getCenterLongitude();
         this.nodeGrid    = new LinkedHashMap<>();
@@ -385,18 +385,17 @@ public class TemporaryMap {
      * @return the existing or newly created node
      */
     public Node getNode(double x, double y) {
-        long ix = Math.round((x - gridOriginX) / gridSpacing);
-        long iy = Math.round((y - gridOriginY) / gridSpacing);
-        long key = gridKey(ix, iy);
+        GridIndex index = gridIndexOf(x, y);
+        long key = gridKey(index);
 
         // Return the existing node for this grid cell if one exists.
         Node existing = nodeGrid.get(key);
         if (existing != null) return existing;
 
         // No node exists yet; create one at the grid-center coordinates.
-       double cx = gridOriginX + ix * gridSpacing;
-       double cy = gridOriginY + iy * gridSpacing;
-       return createAndRegisterNode(cx, cy);
+        double cx = gridOriginX + index.ix() * gridSpacing;
+        double cy = gridOriginY + index.iy() * gridSpacing;
+        return createAndRegisterNode(cx, cy);
     }
 
     /**
@@ -406,7 +405,6 @@ public class TemporaryMap {
      * @return {@code true} if this map contains the specified node;
      *         {@code false} otherwise
      */
-    @SuppressWarnings("unused")
     public boolean containsNode(Node node) {
         return containsNode(node.getX(), node.getY());
     }
@@ -431,16 +429,39 @@ public class TemporaryMap {
      *         {@code false} otherwise
      */
     public boolean containsNode(double x, double y) {
+        return nodeGrid.containsKey(gridCellKey(x, y));
+    }
+
+    /**
+     * Returns whether two points would be snapped to the same grid node by {@link #getNode(Point2D)}.
+     * This performs no lookup or registration; it only compares grid cell coordinates.
+     *
+     * @param point1 the first point
+     * @param point2 the second point
+     * @return {@code true} if both points fall within the same grid cell
+     */
+    public boolean sameGridCell(Point2D point1, Point2D point2) {
+        return gridCellKey(point1.getX(), point1.getY()) == gridCellKey(point2.getX(), point2.getY());
+    }
+
+    // Grid cell indices for a coordinate.
+    private record GridIndex(long ix, long iy) {}
+
+    // Compute the grid cell indices for a coordinate.
+    private GridIndex gridIndexOf(double x, double y) {
         long ix = Math.round((x - gridOriginX) / gridSpacing);
         long iy = Math.round((y - gridOriginY) / gridSpacing);
-        long key = gridKey(ix, iy);
+        return new GridIndex(ix, iy);
+    }
 
-        return nodeGrid.containsKey(key);
+    // Compute the grid cell key for a coordinate.
+    private long gridCellKey(double x, double y) {
+        return gridKey(gridIndexOf(x, y));
     }
 
     // Encode a 2D grid index as a single long key.
-    private static long gridKey(final long ix, final long iy) {
-        return (ix << 32) | (iy & 0xFFFFFFFFL);
+    private static long gridKey(GridIndex index) {
+        return (index.ix() << 32) | (index.iy() & 0xFFFFFFFFL);
     }
 
     // Create a new node at (x, y), register it in both the node set and the grid index.
@@ -448,9 +469,7 @@ public class TemporaryMap {
         final Node node = new Node(nextID++, x, y);
         nodes.add(node);
 
-        final long ix = Math.round((x - gridOriginX) / gridSpacing);
-        final long iy = Math.round((y - gridOriginY) / gridSpacing);
-        final long key = gridKey(ix, iy);
+        final long key = gridCellKey(x, y);
         nodeGrid.put(key, node);
 
         invalidateBoundsCache();
