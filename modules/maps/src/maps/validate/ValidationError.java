@@ -6,16 +6,31 @@ package maps.validate;
  */
 public class ValidationError {
     private int id;
+    private ValidationErrorKind kind;
     private String message;
 
     /**
-     * Create a new ValidationError object.
-     * @param id The id of the GMLObject containing the error.
-     * @param message The error message.
+     * Creates a new error of the given kind.
+     *
+     * @param id the id of the map object containing the error
+     * @param kind the kind of the error
+     * @param message the error message
      */
-    public ValidationError(int id, String message) {
+    public ValidationError(int id, ValidationErrorKind kind, String message) {
         this.id = id;
+        this.kind = kind;
         this.message = message;
+    }
+
+    /**
+     * Creates a new error without a specific kind.
+     *
+     * @param id the id of the map object containing the error
+     * @param message the error message
+     */
+    @Deprecated
+    public ValidationError(int id, String message) {
+        this(id, ValidationErrorKind.UNCLASSIFIED, message);
     }
 
     /**
@@ -24,6 +39,15 @@ public class ValidationError {
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * Returns the kind of this error.
+     *
+     * @return the kind of the error
+     */
+    public ValidationErrorKind getKind() {
+        return kind;
     }
 
     /**
