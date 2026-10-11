@@ -53,16 +53,18 @@ public final class GMLMapValidator {
         try {
             GMLMap map = (GMLMap)MapReader.readMap(args[0]);
             List<ValidationError> errors = validate(map);
-
-            // Report success and stop when nothing was found
-            if (errors.isEmpty()) {
-                System.out.println("No errors have been found.");
-                return;
-            }
-            errors.forEach(System.out::println);
+            logResult(args[0], errors);
         }
         catch (MapException e) {
             LOGGER.error("Failed to read the map: {}", args[0], e);
         }
+    }
+
+    // Logs each error and a summary line in the TAG key=value format
+    private static void logResult(String mapName, List<ValidationError> errors) {
+        errors.forEach(error -> LOGGER.info(
+                "VALIDATION_ERROR map={} kind={} id={} message={}",
+                mapName, error.getKind(), error.getId(), error.getMessage()));
+        LOGGER.info("VALIDATION_SUMMARY map={} errors{}", mapName, errors.size());
     }
 }
