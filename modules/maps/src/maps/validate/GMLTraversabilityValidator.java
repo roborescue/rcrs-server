@@ -62,7 +62,7 @@ public class GMLTraversabilityValidator implements MapValidator<GMLMap> {
         try {
             Geometry polygon = JTSTools.shapeToPolygon(shape);
             if (!polygon.isValid()) {
-                return new ValidationError(shape.getID(), "invalid shape");
+                return new ValidationError(shape.getID(), ValidationErrorKind.INVALID_SHAPE, "invalid shape");
             }
             Geometry boundary = impassableLines(shape);
             Geometry buffer = boundary.buffer(((double) minWidth) / 2);
@@ -87,7 +87,7 @@ public class GMLTraversabilityValidator implements MapValidator<GMLMap> {
                     if (lineOfSight.intersects(boundary)) {
                         String message = "Edge " + e.getEdge().getID()
                             + " has no line of sight to shape center.";
-                        return new ValidationError(shape.getID(), message);
+                        return new ValidationError(shape.getID(), ValidationErrorKind.NO_LINE_OF_SIGHT, message);
                     }
                 }
                 else {
@@ -123,8 +123,7 @@ public class GMLTraversabilityValidator implements MapValidator<GMLMap> {
                 if (polyIndex == -1) {
                     // Entrance edge no longer in polygon
                     String message = "Edge is too narrow to pass through.";
-                    return new ValidationError(etr.get(0).getEdge().getID(),
-                            message);
+                    return new ValidationError(etr.get(0).getEdge().getID(), ValidationErrorKind.EDGE_TOO_NARROW, message);
                 }
                 if (firstEdge == null) {
                     firstEdge = etr.get(0);
@@ -136,7 +135,7 @@ public class GMLTraversabilityValidator implements MapValidator<GMLMap> {
                     String message = "Can't reach edge "
                             + firstEdge.getEdge().getID() + " from "
                             + etr.get(0).getEdge().getID();
-                    return new ValidationError(shape.getID(), message);
+                    return new ValidationError(shape.getID(), ValidationErrorKind.UNREACHABLE_EDGE, message);
                 }
 
             }

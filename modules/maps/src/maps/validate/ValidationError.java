@@ -23,17 +23,6 @@ public class ValidationError {
     }
 
     /**
-     * Creates a new error without a specific kind.
-     *
-     * @param id the id of the map object containing the error
-     * @param message the error message
-     */
-    @Deprecated
-    public ValidationError(int id, String message) {
-        this(id, ValidationErrorKind.UNCLASSIFIED, message);
-    }
-
-    /**
      * Get the id of the object this error refers to.
      * @return The id of the GMLObject containing the error.
      */

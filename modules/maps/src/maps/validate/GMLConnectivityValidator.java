@@ -54,7 +54,7 @@ public class GMLConnectivityValidator implements MapValidator<GMLMap> {
                 if (!(n instanceof GMLBuilding || n instanceof GMLRoad)) {
                     String message = "Can reach non-building, non-road shape "
                             + n.getID();
-                    errors.add(new ValidationError(next.getID(), message));
+                    errors.add(new ValidationError(next.getID(), ValidationErrorKind.REACHES_NON_TRAVERSABLE_SHAPE, message));
 
                 }
             }
@@ -64,7 +64,7 @@ public class GMLConnectivityValidator implements MapValidator<GMLMap> {
             for (GMLShape unreachable : toBeChecked) {
                 String message = "The map is not fully connected. Shape cannot be reached from "
                         + first.getID();
-                errors.add(new ValidationError(unreachable.getID(), message));
+                errors.add(new ValidationError(unreachable.getID(), ValidationErrorKind.NOT_FULLY_CONNECTED, message));
             }
         }
 
@@ -88,12 +88,12 @@ public class GMLConnectivityValidator implements MapValidator<GMLMap> {
                 if (neighbour == null) {
                     String message = "Connection to nonexisting id " + nId
                             + " via Edge " + e.getEdge().getID();
-                    errors.add(new ValidationError(shape.getID(), message));
+                    errors.add(new ValidationError(shape.getID(), ValidationErrorKind.NEIGHBOUR_NOT_FOUND, message));
                 }
                 else if (neighbour == shape) {
                     String message = "Shape is connected to itself via Edge"
                             + e.getEdge().getID();
-                    errors.add(new ValidationError(shape.getID(), message));
+                    errors.add(new ValidationError(shape.getID(), ValidationErrorKind.SELF_CONNECTED, message));
                 }
                 else {
                     GMLShape backRef = null;
@@ -106,13 +106,13 @@ public class GMLConnectivityValidator implements MapValidator<GMLMap> {
                             String message = "Connection to " + neighbour.getID()
                                     + " via Edge " + e.getEdge().getID()
                                     + " is not reflexive.";
-                            errors.add(new ValidationError(shape.getID(), message));
+                            errors.add(new ValidationError(shape.getID(), ValidationErrorKind.NOT_REFLEXIVE, message));
                         }
                     }
                     catch (IllegalArgumentException ex) {
                         String message = "Neigbour " + neighbour.getID()
                         + " does not share Edge " + e.getEdge().getID();
-                        errors.add(new ValidationError(shape.getID(), message));
+                        errors.add(new ValidationError(shape.getID(), ValidationErrorKind.EDGE_NOT_SHARED, message));
                     }
                 }
             }

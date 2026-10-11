@@ -52,21 +52,18 @@ public final class JTSTools {
             coord[0] = nodeToCoordinate(e.getStartNode());
             coord[1] = nodeToCoordinate(e.getEndNode());
             if (coord[0].equals(coord[1])) {
-                throw new ValidationException(e.getEdge().getID(),
-                        "Zero length edge.");
+                throw new ValidationException(e.getEdge().getID(), ValidationErrorKind.ZERO_LENGTH_EDGE, "Zero length edge.");
             }
             seq.add(geomFactory.createLineString(coord));
         }
 
         try {
             if (!seq.isSequenceable()) {
-                throw new ValidationException(shape.getID(),
-                "Outline is not a single line.");
+                throw new ValidationException(shape.getID(), ValidationErrorKind.BROKEN_OUTLINE, "Outline is not a single line.");
             }
         }
         catch (AssertionFailedException e) {
-            throw new ValidationException(shape.getID(),
-                    "Could not get outline: " + e.getMessage());
+            throw new ValidationException(shape.getID(), ValidationErrorKind.BROKEN_OUTLINE, "Could not get outline: " + e.getMessage());
         }
         Geometry line = seq.getSequencedLineStrings();
 
@@ -76,7 +73,7 @@ public final class JTSTools {
         // CHECKSTYLE:OFF:MagicNumber
         if (coord.size() < 4) {
             // CHECKSTYLE:ON:MagicNumber
-            throw new ValidationException(shape.getID(), "Degenerate Shape");
+            throw new ValidationException(shape.getID(), ValidationErrorKind.DEGENERATE_SHAPE, "Degenerate Shape");
         }
 
         Geometry ring = geomFactory.createLinearRing(coord.toCoordinateArray());

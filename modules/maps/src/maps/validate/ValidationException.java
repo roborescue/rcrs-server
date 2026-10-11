@@ -9,13 +9,15 @@ public class ValidationException extends Exception {
     private ValidationError error;
 
     /**
-     * Create a new ValidationException.
-     * @param id The id of the GMLObject containing the error.
-     * @param message The error message.
+     * Creates a new exception for an error of the given kind.
+     *
+     * @param id the id of the map object containing the error
+     * @param kind the kind of the error
+     * @param message the error message
      */
-    public ValidationException(int id, String message) {
+    public ValidationException(int id, ValidationErrorKind kind, String message) {
         super(message);
-        error = new ValidationError(id, message);
+        error = new ValidationError(id, kind, message);
     }
 
     /**
