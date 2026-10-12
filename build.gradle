@@ -429,7 +429,7 @@ tasks.register('validateMap', JavaExec) {
   doFirst {
     // Give each run its own log file. This is evaluated at execution time
     // so that the timestamp is never reused from a cached configuration.
-    systemProperty 'osm2gml.run.id',
+    systemProperty 'validate.run.id',
             LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss'))
   }
   // Exit status 1 means that errors were found, which is a valid result
