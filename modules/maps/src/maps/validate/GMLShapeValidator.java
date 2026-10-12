@@ -43,7 +43,7 @@ public class GMLShapeValidator implements MapValidator<GMLMap> {
                     int s1Id = shapes.get(i).getID();
                     int s2Id = shapes.get(j).getID();
                     String message = " Shape overlaps with shape " + s2Id;
-                    errors.add(new ValidationError(s1Id, message));
+                    errors.add(new ValidationError(s1Id, ValidationErrorKind.SHAPE_OVERLAP, message));
                 }
             }
         }
@@ -58,10 +58,10 @@ public class GMLShapeValidator implements MapValidator<GMLMap> {
     private static Geometry checkShape(GMLShape shape) throws ValidationException {
         Geometry polygon = JTSTools.shapeToPolygon(shape);
         if (!polygon.isValid()) {
-            throw new ValidationException(shape.getID(), "invalid shape");
+            throw new ValidationException(shape.getID(), ValidationErrorKind.INVALID_SHAPE, "invalid shape");
         }
         if (!polygon.contains(polygon.getCentroid())) {
-            throw new ValidationException(shape.getID(), "Shape doesn't contain centroid.");
+            throw new ValidationException(shape.getID(), ValidationErrorKind.CENTROID_OUTSIDE, "Shape doesn't contain centroid.");
         }
         return polygon;
     }
